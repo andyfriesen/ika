@@ -5,6 +5,7 @@
 #include "types.h"
 #include <map>
 #include <wx\wx.h>
+#include "docview.h"
 
 using std::map;
 
@@ -19,7 +20,7 @@ class wxSashLayoutWindow;
 class wxCheckListBox;
 class wxScrolledWindow;
 
-class CMapView : public wxMDIChildFrame
+class CMapView : public IDocView
 {
     enum
     {
@@ -49,7 +50,7 @@ class CMapView : public wxMDIChildFrame
     CTileSet*    pTileset;
 
 public:
-    CMapView(CMainWnd* parent,const string& fname,const wxPoint& position=wxDefaultPosition,const wxSize& size=wxDefaultSize,const long style=wxDEFAULT_FRAME_STYLE | wxVSCROLL | wxHSCROLL);
+    CMapView(CMainWnd* parent,const string& fname);
 
     void InitLayerVisibilityControl();
 
@@ -57,6 +58,8 @@ public:
     void OnErase(wxEraseEvent&) {}
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
+
+    void OnSave(wxCommandEvent& event) {}
 
     void OnClose();
 

@@ -10,13 +10,13 @@
 #include <wx\fdrepdlg.h>
 #endif
 #include <wx\stc\stc.h>
+#include "docview.h"
 
 class CMainWnd;
 
-class CCodeWnd : public wxMDIChildFrame
+class CCodeView : public IDocView//wxMDIChildFrame
 {
     wxStyledTextCtrl*   pTextctrl;
-    string              sFilename;
     bool                bChanged;
 public:
 
@@ -41,8 +41,8 @@ public:
         id_optionsfont
     };
 
-    CCodeWnd(CMainWnd* parent,const wxString& title,const wxPoint& position,const wxSize& size,const long style,const char* fname=0);
-    ~CCodeWnd();
+    CCodeView(CMainWnd* parent,const string& name);
+    ~CCodeView();
 
     void OnStyleNeeded(wxStyledTextEvent& event);
     void OnCharAdded(wxStyledTextEvent& event);
@@ -69,8 +69,6 @@ public:
 private:
 
     void SetSyntax(int,wxCommandEvent&);
-
-    wxMenuBar* pCurmenubar;
 
 #ifdef WX232
     void DoFind(wxFindDialogEvent& event);

@@ -8,6 +8,7 @@
 #include <wx/bitmap.h>
 
 // Resource objects
+#include "docview.h"
 #include "map.h"
 #include "tileset.h"
 #include "graph.h"
@@ -40,6 +41,8 @@ public:
 
 class CMainWnd : public wxMDIParentFrame
 {
+    std::set<IDocView*> pDocuments;
+
 public:
     enum
     {
@@ -65,13 +68,15 @@ public:
     void NewMap(wxCommandEvent& event);
     void NewScript(wxCommandEvent& event);
     void OnOpen(wxCommandEvent& event);
-    void Bleh(wxCommandEvent& event);
+    void OnQuit(wxCloseEvent& event);
 
     void Open(const std::string& fname);
     void OnToolBarNewScript(wxCommandEvent& event);
     void OnToolBarOpen(wxCommandEvent& event);
     void OnToolBarNewMap(wxCommandEvent& event);
     void OnToolLeftClick(wxCommandEvent& event);
+
+    void OnChildClose(IDocView* child);
 
     wxMenuBar*  CreateBasicMenu();
 private:

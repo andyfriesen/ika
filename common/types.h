@@ -1,9 +1,6 @@
-/* types.h
-
-  Types, enums, etc...
+/*
+    Commonly used types, enums, etc...
 */
-
-// blah!
 
 #ifndef TYPES_H
 #define TYPES_H
@@ -12,6 +9,7 @@
 
 #include <vector>
 #include <string>
+
 using std::string;
 using std::vector;
 

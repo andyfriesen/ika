@@ -15,51 +15,47 @@ namespace
     enum    {   linecountmargin, foldmargin };
 };
 
-BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
-//    EVT_STC_STYLENEEDED(CCodeWnd::id_ed,CCodeWnd::OnStyleNeeded)
-    EVT_STC_CHARADDED(CCodeWnd::id_ed,CCodeWnd::OnCharAdded)
-    EVT_CLOSE(CCodeWnd::OnClose)
+BEGIN_EVENT_TABLE(CCodeView,wxMDIChildFrame)
+    EVT_STC_CHARADDED(CCodeView::id_ed,CCodeView::OnCharAdded)
+    EVT_CLOSE(CCodeView::OnClose)
 
-    EVT_MENU(CCodeWnd::id_filesave,CCodeWnd::OnSave)
-    EVT_MENU(CCodeWnd::id_filesaveas,CCodeWnd::OnSaveAs)
-    EVT_MENU(CCodeWnd::id_fileclose,CCodeWnd::OnClose)
+    EVT_MENU(CCodeView::id_filesave,CCodeView::OnSave)
+    EVT_MENU(CCodeView::id_filesaveas,CCodeView::OnSaveAs)
+    EVT_MENU(CCodeView::id_fileclose,CCodeView::OnClose)
 
-    EVT_MENU(CCodeWnd::id_editundo,CCodeWnd::OnUndo)
-    EVT_MENU(CCodeWnd::id_editredo,CCodeWnd::OnRedo)
-    EVT_MENU(CCodeWnd::id_editcopy,CCodeWnd::OnCopy)
-    EVT_MENU(CCodeWnd::id_editcut ,CCodeWnd::OnCut)
-    EVT_MENU(CCodeWnd::id_editpaste,CCodeWnd::OnPaste)
-    EVT_MENU(CCodeWnd::id_optionsws,CCodeWnd::OnViewWhiteSpace)
-    EVT_MENU(CCodeWnd::id_optionsfont,CCodeWnd::OnSyntaxHighlighting)
+    EVT_MENU(CCodeView::id_editundo,CCodeView::OnUndo)
+    EVT_MENU(CCodeView::id_editredo,CCodeView::OnRedo)
+    EVT_MENU(CCodeView::id_editcopy,CCodeView::OnCopy)
+    EVT_MENU(CCodeView::id_editcut ,CCodeView::OnCut)
+    EVT_MENU(CCodeView::id_editpaste,CCodeView::OnPaste)
+    EVT_MENU(CCodeView::id_optionsws,CCodeView::OnViewWhiteSpace)
+    EVT_MENU(CCodeView::id_optionsfont,CCodeView::OnSyntaxHighlighting)
 
 #ifdef WX232
-    EVT_MENU(CCodeWnd::id_editfind,CCodeWnd::OnFind)
-    EVT_MENU(CCodeWnd::id_editreplace,CCodeWnd::OnReplace)
+    EVT_MENU(CCodeView::id_editfind,CCodeView::OnFind)
+    EVT_MENU(CCodeView::id_editreplace,CCodeView::OnReplace)
     
-    EVT_FIND(-1,CCodeWnd::DoFind)
-    EVT_FIND_NEXT(-1,CCodeWnd::DoFind)
-    EVT_FIND_REPLACE(-1,CCodeWnd::DoFind)
-    EVT_FIND_REPLACE_ALL(-1,CCodeWnd::DoFind)
-    EVT_FIND_CLOSE(-1,CCodeWnd::DoFind)
+    EVT_FIND(-1,CCodeView::DoFind)
+    EVT_FIND_NEXT(-1,CCodeView::DoFind)
+    EVT_FIND_REPLACE(-1,CCodeView::DoFind)
+    EVT_FIND_REPLACE_ALL(-1,CCodeView::DoFind)
+    EVT_FIND_CLOSE(-1,CCodeView::DoFind)
 #endif
 
-    EVT_STC_MARGINCLICK(id_ed,CCodeWnd::OnMarginClick)
+    EVT_STC_MARGINCLICK(id_ed,CCodeView::OnMarginClick)
 
 END_EVENT_TABLE()
 
-CCodeWnd::CCodeWnd(CMainWnd* parent,
-                   const wxString& title,
-                   const wxPoint& position,
-                   const wxSize& size,
-                   const long style,
-                   const char* fname)
-                   : wxMDIChildFrame(parent,-1,title,position,size,style)
+CCodeView::CCodeView(CMainWnd* parent,
+                   const string& name)
+                   : IDocView(parent,name)
 {
     // --- Set up the menu ---
     // Basically, it takes the existing menu, and adds a few commands to it here and there.
     wxMenuBar* menubar=parent->CreateBasicMenu();
 
     // Extra file menu options
+    // the debug build generates a runtime warning from wx.  Ignore it.
     wxMenu* filemenu=menubar->Remove(0);
     filemenu->Insert(2,new wxMenuItem(filemenu,id_filesave,"&Save","Save the script to disk."));
     filemenu->Insert(3,new wxMenuItem(filemenu,id_filesaveas,"Save &As","Save the script under a new filename."));
@@ -73,7 +69,7 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     editmenu->Append(id_editcopy,       "&Copy\tCtrl+Ins","");
     editmenu->Append(id_editcut,        "C&ut\tShift+Del","");
     editmenu->Append(id_editpaste,      "&Paste\tShift+Ins","");
-    editmenu->Append(id_editselectall,  "Select &All\tCtrl+a","");
+    editmenu->Append(id_editselectall,  "Select &All\tCtrl+A","");
 #ifdef WX232
     editmenu->AppendSeparator();
     editmenu->Append(id_editfind,       "&Find...","");
@@ -92,11 +88,10 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     optionsmenu->AppendSeparator();
     optionsmenu->Append(id_optionsfont,"Co&lors...","");
 
-    pCurmenubar=menubar; // not as elegant as I'd like.
     SetMenuBar(menubar);
 
     // --- Set up the text control ---
-    pTextctrl=new wxStyledTextCtrl(this,id_ed,position,size,0);
+    pTextctrl=new wxStyledTextCtrl(this,id_ed);
     pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
     pTextctrl->SetProperty("fold","1");
 
@@ -158,10 +153,10 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
 
     bChanged=false;
 
-    if (fname)
+    if (name.length())
     {
         File f;
-        if (f.OpenRead(fname))
+        if (f.OpenRead(name.c_str()))
         {
             int nSize=f.Size()+50;      // +50?  Don't ask.  I haven't the foggiest.
             char* c=new char[nSize];
@@ -172,7 +167,7 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
             delete[] c;
             f.Close();
 
-            sFilename=fname;
+            sName=name;
         } 
     }
 
@@ -181,13 +176,12 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     pTextctrl->SetFocus();
 }
 
-CCodeWnd::~CCodeWnd()
+CCodeView::~CCodeView()
 {
     delete pTextctrl;
-    pCurmenubar=0;
 }
 
-void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
+void CCodeView::SetSyntax(int nWhich, wxCommandEvent& event)
 {
     // set script font/color/style
     //  -- khross
@@ -259,22 +253,13 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
             font.GetWeight()==wxBOLD,
             font.GetStyle()==wxITALIC,
             font.GetUnderlined());
-        
-        /*
-        pTextctrl->StyleSetBold(nWhich,(font.GetWeight()==wxBOLD)?true:false);
-        pTextctrl->StyleSetItalic(nWhich,(font.GetStyle()==wxITALIC)?true:false);
-        pTextctrl->StyleSetUnderline(nWhich,font.GetUnderlined());
-
-        pTextctrl->StyleSetSize(nWhich,font.GetPointSize());
-        pTextctrl->StyleSetFaceName(nWhich,font.GetFaceName());
-        */
-       
+              
         pTextctrl->Show(true);
         pTextctrl->SetFocus();
     }
 }
 
-void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
+void CCodeView::OnSyntaxHighlighting(wxCommandEvent& event)
 {
     const wxString szChoices[] = 
         {
@@ -309,10 +294,12 @@ void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
     
 }
 
-void CCodeWnd::OnViewWhiteSpace(wxCommandEvent& event)
+void CCodeView::OnViewWhiteSpace(wxCommandEvent& event)
 {
-    wxMenu* pMenu = pCurmenubar->GetMenu(2);
-    int nId = pCurmenubar->FindMenuItem("Options","Visible Whitespace");
+    wxMenuBar& menubar=*GetMenuBar();
+
+    wxMenu* pMenu = menubar.GetMenu(2);
+    int nId = menubar.FindMenuItem("Options","Visible Whitespace");
     if (nId==wxNOT_FOUND)
     {
         // wtf?
@@ -336,7 +323,7 @@ void CCodeWnd::OnViewWhiteSpace(wxCommandEvent& event)
 
 #ifdef WX232
 
-void CCodeWnd::OnFind(wxCommandEvent& event)
+void CCodeView::OnFind(wxCommandEvent& event)
 {
     wxFindReplaceData fdata;
 
@@ -350,7 +337,7 @@ void CCodeWnd::OnFind(wxCommandEvent& event)
     pDialog->Show(true);
 }
 
-void CCodeWnd::OnReplace(wxCommandEvent& event)
+void CCodeView::OnReplace(wxCommandEvent& event)
 {
     wxFindReplaceData fdata;
 
@@ -364,7 +351,7 @@ void CCodeWnd::OnReplace(wxCommandEvent& event)
     pDialog->Show(true);
 }
 
-void CCodeWnd::DoFind(wxFindDialogEvent& event)
+void CCodeView::DoFind(wxFindDialogEvent& event)
 {
     // Handles find/replace stuff.
     // TODO: break this up, maybe.
@@ -420,13 +407,13 @@ void CCodeWnd::DoFind(wxFindDialogEvent& event)
 
 #endif
 
-void CCodeWnd::OnStyleNeeded(wxStyledTextEvent& event)
+void CCodeView::OnStyleNeeded(wxStyledTextEvent& event)
 {
     int currEndStyled = pTextctrl->GetEndStyled();
     pTextctrl->Colourise(currEndStyled, event.GetPosition());
 }
 
-void CCodeWnd::OnCharAdded(wxStyledTextEvent& event)
+void CCodeView::OnCharAdded(wxStyledTextEvent& event)
 {
     static char linebuf[1000];
     char k=event.GetKey();
@@ -474,22 +461,23 @@ void CCodeWnd::OnCharAdded(wxStyledTextEvent& event)
     }
 }
 
-void CCodeWnd::OnSave(wxCommandEvent& event)
+void CCodeView::OnSave(wxCommandEvent& event)
 {
-    if (sFilename.length()==0)
+    if (sName.length()==0)
     {
         OnSaveAs(event);
         return;
     }
 
     File f;
-    if (!f.OpenWrite(sFilename.c_str()))
+    if (!f.OpenWrite(sName.c_str()))
         return;
 
     int nSize=pTextctrl->GetLength();
 
     if (nSize)
     {
+        // FIXME: pTextctrl->GetText() truncates the last character. ;P
         wxString s=pTextctrl->GetText();
         f.Write(s.c_str(),nSize);
     }
@@ -499,11 +487,11 @@ void CCodeWnd::OnSave(wxCommandEvent& event)
     if (bChanged)
     {
         bChanged=false;
-        SetTitle(sFilename.c_str());   // remove the * from the title
+        SetTitle(sName.c_str());   // remove the * from the title
     }
 }
 
-void CCodeWnd::OnSaveAs(wxCommandEvent& event)
+void CCodeView::OnSaveAs(wxCommandEvent& event)
 {
     wxFileDialog dlg(
         this,
@@ -519,28 +507,22 @@ void CCodeWnd::OnSaveAs(wxCommandEvent& event)
     if (result==wxID_CANCEL)
         return;
 
-    sFilename=dlg.GetFilename().c_str();
-    SetTitle(sFilename.c_str());
+    sName=dlg.GetFilename().c_str();
+    SetTitle(sName.c_str());
 
     OnSave(event);
 }
 
 // Trivial stuff
-void CCodeWnd::OnClose(wxCommandEvent& event)
-{   
-    if (pTextctrl->GetLength()==0)
-    {
-        Destroy();
-        return;
-    }
-    
-    if (bChanged)
+void CCodeView::OnClose(wxCommandEvent& event)
+{      
+    if (bChanged || pTextctrl->GetLength())
     {
         wxMessageDialog msgdlg
             (
                 this,
                 "This file has been modified. Save?",
-                "iked",
+                sName.c_str(),
                 wxYES_NO | wxCANCEL | wxICON_QUESTION,
                 wxDefaultPosition
             );
@@ -559,16 +541,16 @@ void CCodeWnd::OnClose(wxCommandEvent& event)
     Destroy();
 }
 
-void CCodeWnd::OnMarginClick(wxStyledTextEvent& event)
+void CCodeView::OnMarginClick(wxStyledTextEvent& event)
 {
     int nLine=pTextctrl->LineFromPosition(event.GetPosition());
 
     pTextctrl->ToggleFold(nLine);
 }
 
-void CCodeWnd::OnUndo(wxCommandEvent& event)        {   pTextctrl->Undo();      }
-void CCodeWnd::OnRedo(wxCommandEvent& event)        {   pTextctrl->Redo();      }
-void CCodeWnd::OnCopy(wxCommandEvent& event)        {   pTextctrl->Copy();      }
-void CCodeWnd::OnCut(wxCommandEvent& event)         {   pTextctrl->Cut();       }
-void CCodeWnd::OnPaste(wxCommandEvent& event)       {   pTextctrl->Paste();     }
-void CCodeWnd::OnSelectAll(wxCommandEvent& event)   {   pTextctrl->SelectAll(); }
+void CCodeView::OnUndo(wxCommandEvent& event)        {   pTextctrl->Undo();      }
+void CCodeView::OnRedo(wxCommandEvent& event)        {   pTextctrl->Redo();      }
+void CCodeView::OnCopy(wxCommandEvent& event)        {   pTextctrl->Copy();      }
+void CCodeView::OnCut(wxCommandEvent& event)         {   pTextctrl->Cut();       }
+void CCodeView::OnPaste(wxCommandEvent& event)       {   pTextctrl->Paste();     }
+void CCodeView::OnSelectAll(wxCommandEvent& event)   {   pTextctrl->SelectAll(); }

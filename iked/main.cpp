@@ -40,6 +40,8 @@ BEGIN_EVENT_TABLE(CMainWnd,wxMDIParentFrame)
     EVT_MENU(CMainWnd::id_filenewscript,CMainWnd::NewScript)
     EVT_MENU(CMainWnd::id_fileopen,CMainWnd::OnOpen)
 
+    EVT_CLOSE(CMainWnd::OnQuit)
+
     // Add more toolbar buttons as iked becomes more functional
     //   -- khross
     EVT_MENU(-1, CMainWnd::OnToolLeftClick)
@@ -102,9 +104,23 @@ void CMainWnd::FileQuit(wxCommandEvent& event)
     Close(TRUE);
 }
 
+void CMainWnd::OnQuit(wxCloseEvent& event)
+{
+    for (std::set<IDocView*>::iterator i=pDocuments.begin(); i!=pDocuments.end(); i++)
+    {
+        IDocView* pDoc=*i;
+        pDoc->Close();
+    }
+
+    pDocuments.empty();
+
+    // continue with the default behaviour
+    event.Skip();        
+}
+
 void CMainWnd::NewProject(wxCommandEvent& event)
 {
-    CProjectWnd* projectwnd=new CProjectWnd(this,"Untitled Project",wxPoint(-1,-1),wxSize(-1,-1),wxDEFAULT_FRAME_STYLE);
+    CProjectView* projectwnd=new CProjectView(this,"");
     projectwnd->SetFocus();
 }
 
@@ -118,13 +134,10 @@ void CMainWnd::NewMap(wxCommandEvent& event)
 
 void CMainWnd::NewScript(wxCommandEvent& event)
 {
-    CCodeWnd* codeview=new CCodeWnd(
-        this,
-        "Untitled script",
-        wxPoint(-1,-1),
-        wxSize(-1,-1),
-        wxDEFAULT_FRAME_STYLE);
-    codeview->SetFocus();
+    CCodeView* codeview=new CCodeView(this,"");
+    
+    pDocuments.insert(codeview);
+    codeview->Activate();
 }
 
 void CMainWnd::OnOpen(wxCommandEvent& event)
@@ -160,62 +173,39 @@ void CMainWnd::Open(const std::string& fname)
 {
     FileType type=GetFileType(fname);
 
+    IDocView* pWnd;
+
     switch (type)
     {
-    case t_project:
-        {
-            CProjectWnd* projectview=new CProjectWnd(
-                this,
-                fname.c_str(),
-                wxDefaultPosition,
-                wxDefaultSize,
-                wxDEFAULT_FRAME_STYLE,
-                fname.c_str()
-                );
+    case t_project:     pWnd=new CProjectView(this,fname);      break;
+    case t_script:      pWnd=new CCodeView(this,fname);         break;
+    case t_map:         pWnd=new CMapView(this,fname.c_str());  break;
 
-            projectview->SetFocus();
-            return;
-        }
-    case t_script:
-        {
-            CCodeWnd* codeview=new CCodeWnd(
-                this,
-                fname.c_str(),
-                wxPoint(-1,-1),
-                wxSize(-1,-1),
-                wxDEFAULT_FRAME_STYLE,
-                fname.c_str()
-                );
-            
-            codeview->SetFocus();
-            return;
-        }
     case t_config:
         {
-#if 0
-            wxDialog* dlg=new wxDialog();
-            dlg->LoadFromResource(this,"ConfigDlg");
-            dlg->ShowModal();
-            dlg->Destroy();
-#else
             CConfigDlg* configdlg=new CConfigDlg(
                 this,
                 -1,
                 fname
                 );
-#endif
-            return;
-        }
-    case t_map:
-        {
-            //Map* m=map.Load(fname);
-
-            new CMapView(this,fname.c_str());
             return;
         }
     default:
-        wxMessageDialog(this,"Not implemented yet","NYI",wxOK).ShowModal();
-    };       
+        {
+            wxMessageDialog(this,"Not implemented yet","NYI",wxOK).ShowModal();
+            return;
+        }
+    };   
+
+    Log::Write("---");
+    for (std::set<IDocView*>::iterator i=pDocuments.begin(); i!=pDocuments.end(); i++)
+    {
+        Log::Write("%s",(*i)->GetFileName().c_str());
+    }
+    Log::Write("   ");
+    
+    pDocuments.insert(pWnd);
+    pWnd->Activate();
 }
 
 FileType CMainWnd::GetFileType(const std::string& fname)
@@ -324,21 +314,17 @@ void CMainWnd::OnToolBarNewMap(wxCommandEvent& event)
 void CMainWnd::OnToolLeftClick(wxCommandEvent& event)
 // this handles the left click mouse event.
 {
-    if (event.GetId() == id_toolnewscript)
+    switch (event.GetId())
     {
-        OnToolBarNewScript(event);
-    }
-
-    else if (event.GetId() == id_toolopen)
-    {
-        OnToolBarOpen(event);
-    }
-
-    else if (event.GetId() == id_toolnewmap)
-    {
-        OnToolBarNewMap(event);
+    case id_toolnewscript:  OnToolBarNewScript(event);  break;
+    case id_toolopen:       OnToolBarOpen(event);       break;
+    case id_toolnewmap:     OnToolBarNewMap(event);     break;
     }
 
     // etc.
+}
 
+void CMainWnd::OnChildClose(IDocView* child)
+{
+    pDocuments.erase(child);
 }

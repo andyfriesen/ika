@@ -282,21 +282,21 @@ END_EVENT_TABLE()
 
 //////////////////////////////////////////////////////////////////////
 
-BEGIN_EVENT_TABLE(CProjectWnd,wxMDIChildFrame)
-    EVT_CLOSE(CProjectWnd::OnClose)
-    EVT_MENU(CProjectWnd::id_filesave,CProjectWnd::OnSave)
-    EVT_MENU(CProjectWnd::id_filesaveas,CProjectWnd::OnSaveAs)
+BEGIN_EVENT_TABLE(CProjectView,wxMDIChildFrame)
+    EVT_CLOSE(CProjectView::OnClose)
+    EVT_MENU(CProjectView::id_filesave,CProjectView::OnSave)
+    EVT_MENU(CProjectView::id_filesaveas,CProjectView::OnSaveAs)
 END_EVENT_TABLE()
 
-CProjectWnd::CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& position,const wxSize& size,const long style,const char* fname)
-                        : wxMDIChildFrame(parent,-1,title,position,size,style)
+CProjectView::CProjectView(CMainWnd* parent,const string& name)
+    : IDocView(parent,name)
 {
     pTreectrl=new CProjectTree(parent,this,CProjectTree::id_treectrl,wxDefaultPosition,wxDefaultSize,wxTR_EDIT_LABELS | wxTR_HAS_BUTTONS);
 
-    if (fname)
+    if (name.length())
     {
-        Load(fname);
-        sFilename=fname;
+        Load(name.c_str());
+        sFilename=name;
     }
 
     else
@@ -333,13 +333,13 @@ CProjectWnd::CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& p
     Show();
 }
 
-CProjectWnd::~CProjectWnd()
+CProjectView::~CProjectView()
 {
     delete pTreectrl;
     delete pImagelist;
 }
 
-void CProjectWnd::OnSave(wxCommandEvent& event)
+void CProjectView::OnSave(wxCommandEvent& event)
 {
     if (sFilename.length()==0)
     {
@@ -351,7 +351,7 @@ void CProjectWnd::OnSave(wxCommandEvent& event)
     SetTitle(sFilename.c_str());
 }
 
-void CProjectWnd::OnSaveAs(wxCommandEvent& event)
+void CProjectView::OnSaveAs(wxCommandEvent& event)
 {
     wxFileDialog dlg
     (
@@ -374,7 +374,7 @@ void CProjectWnd::OnSaveAs(wxCommandEvent& event)
     
 }
 
-void CProjectWnd::Load(const char* fname)
+void CProjectView::Load(const char* fname)
 {
     struct Local
     {
@@ -431,7 +431,7 @@ void CProjectWnd::Load(const char* fname)
     pTreectrl->bChanged=false;
 }
 
-void CProjectWnd::Save(const char* fname)
+void CProjectView::Save(const char* fname)
 {
     struct Local
     {
@@ -492,7 +492,7 @@ void CProjectWnd::Save(const char* fname)
     pTreectrl->bChanged=false;
 }
 
-void CProjectWnd::OnClose(wxCommandEvent& event)
+void CProjectView::OnClose(wxCommandEvent& event)
 {
     if (pTreectrl->bChanged)
     {

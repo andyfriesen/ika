@@ -122,9 +122,11 @@ bool gfxEllipse(handle img,int cx,int cy,int radx,int rady,u32 colour,bool fill)
     int dx,dy;
     int r,rx,ry;
     int x;
+
+    colour=SwapBR(colour);
     
     if (fill)
-        HLine(img,cx-radx,cx+radx,cy,SwapBR(colour));
+        HLine(img,cx-radx,cx+radx,cy,colour);
     else
     {
         gfxSetPixel(img,cx+radx,cy,colour);

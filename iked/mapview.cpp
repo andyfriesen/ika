@@ -100,8 +100,8 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_CLOSE(CMapView::OnClose)
 END_EVENT_TABLE()
 
-CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,const wxSize& size,const long style)
-: wxMDIChildFrame(parent,-1,fname.c_str(),position,size,style)
+CMapView::CMapView(CMainWnd* parent,const string& name)
+:   IDocView(parent,name)
 {
     pParentwnd=parent;
 
@@ -124,7 +124,7 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     pGraph=new CGraphFrame(pRightbar);
 
     // Get resources
-    pMap=pParentwnd->map.Load(fname);                                   // load the map
+    pMap=pParentwnd->map.Load(name);                                    // load the map
     pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());                  // load the VSP
 
     pRightbar->SetScrollbar(wxVERTICAL,0,w,pMap->Height()*pTileset->Height());

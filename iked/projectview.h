@@ -5,10 +5,11 @@
 #include <wx\wx.h>
 #include <wx\treectrl.h>
 #include <wx\imaglist.h>
+#include "docview.h"
 
 class CMainWnd; // in main.cpp/h
 
-class CProjectWnd : public wxMDIChildFrame
+class CProjectView : public IDocView//wxMDIChildFrame
 {
     class CProjectTree* pTreectrl;
     wxImageList* pImagelist;
@@ -29,8 +30,8 @@ public:
         id_filesaveas
     };
 
-    CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& position,const wxSize& size,const long style,const char* fname=0);
-    ~CProjectWnd();
+    CProjectView(CMainWnd* parent,const string& title);
+    ~CProjectView();
 
     // events
     void OnSave(wxCommandEvent& event);
