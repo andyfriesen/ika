@@ -92,8 +92,9 @@ public:
 
     This isn't quite as "correct" as it should be.
     Instead of using a C array, I stuff it in a std::vector, and assume that vectors store things
-    in a sequential, continuous stream.  Should be okay, provided that the accelerator entry is copy
-    safe. ^_^  Personally, I think it's quite elegant, but it is skirting the rules a bit.
+    in a sequential, continuous stream.  (which is part of the standard, as I understand it)
+    Should be okay, provided that the accelerator entry is copy safe. ^_^  Personally, I think
+    it's quite elegant, but it is skirting the rules a bit.
 
 */
     vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
@@ -104,14 +105,16 @@ private:
     DECLARE_EVENT_TABLE()      
         
 public:
-    // public because I'm a lazy bitch and I don't feel like figuring out what classes should be friends with what other classes. ;P
-    // This window owns all the maps, VSPs, CHrs, etc... that get loaded.  It doles them out to child windows when they ask,
-    // and nukes things that no longer need to be in memory
+/*
+     public because I'm a lazy bitch and I don't feel like figuring out what classes should be friends with what other classes. ;P
+     This window owns all the maps, VSPs, CHrs, etc... that get loaded.  It doles them out to child windows when they ask,
+     and nukes things that no longer need to be in memory
+*/
 
     CController<Map> map;
     CController<CTileSet> vsp;
     CController<CSpriteSet> spriteset;
-    // TODO: fonts, sprites, scripts, anything else that comes to mind
+    // TODO: fonts, scripts, (?) anything else that comes to mind
 
 public:
     // "Helper" functions.

@@ -1,92 +1,124 @@
 
 /*
-    This is a little icky, because it depends on some of the base class's members, among other things.
-
-    Hope it doesn't cause problems.
+    This code is a bit more complicated than I'd like.  And it searches for things the most obvious way possible. :x (optimize that
+    if it becomes an issue)
 */
 
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
 #include "types.h"
-#include <map>
+#include <list>
+
+#include "log.h"
 
 template <class T>
 class CController
 {
-    struct Resource : public T
+private:
+    struct Resource
     {
-        int nRefcount;
-        string sName;
+        string  sFilename;
+        int     nRefcount;
+        T*      pData;
 
-        Resource(const string& n)
-            : T(), nRefcount(1),sName(n)
-        {}
-
-        virtual ~Resource()
-        {
-//            ~T();  // wah, don't want to have to tweak existing classes. ;_;
-        }
+        Resource(const string& s="",T* d=0) : sFilename(s),nRefcount(1),pData(d) {}
     };
 
-    std::map<string,Resource*> resources;
+    typedef std::list<Resource> ResourceList;
 
+    ResourceList    rsrc;
 
-    // specialize this!
+    Resource* Find(const string& name)
+    {
+        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
+        {
+            if (i->sFilename==name)
+                return &*i;
+        }
+
+        return 0;
+    }
+
+    Resource* Find(const T* data)
+    {
+        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
+        {
+            if (i->pData==data)
+                return &*i;
+        }
+
+        return 0;
+    }
+
+    // Specialize this if T doesn't have a bool Load(const char* s) method.
     bool LoadFromFile(T* p,const string& name)
     {
-        // default behaviour, just guess. ^_^
-        bool result=p->Load(name.c_str());
-
-        return result;
+        Log::Write("Loading      %s",name.c_str());
+        return p->Load(name.c_str());
     }
 
 public:
 
     T* Load(const string& name)
-    { 
-        // win32 isn't case sensitive to filenames, so in win32, we convert filenames to uppercase.
-#ifdef __WIN32__
-        string sName=Upper(name);
+    {
+#ifdef WIN32
+        const string sName=Upper(name);
 #else
-        string sName=name;
+        const string& sName=name;
 #endif
 
-        Resource* pRsrc=resources[sName];
+        Resource* ri=Find(sName);
 
-        if (pRsrc)
+        if (ri)
         {
-            pRsrc->nRefcount++;
-            return pRsrc;
+            Log::Write("Addref       %s",sName.c_str());
+            ri->nRefcount++;
+            return ri->pData;
         }
-         
-        pRsrc=new Resource(name);
-
-        bool result=LoadFromFile(pRsrc,sName);
-        if (!result)
+        else
         {
-            delete pRsrc;
-            return 0;
-        }
+            T* pData=new T;
+            LoadFromFile(pData,sName);
 
-        resources[name]=pRsrc;
-        return pRsrc;
+            rsrc.push_back(Resource(sName,pData));
+
+            return pData;
+        }
     }
 
-    void Release(T* r)
+    void Release(T* data)
     {
-        Resource* pRsrc=(Resource*) r;
-
-        pRsrc->nRefcount--;
-        if (!pRsrc->nRefcount)
+        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
         {
-            if (resources.find(pRsrc->sName)==resources.end())
+            if (i->pData==data)
             {
+                i->nRefcount--;
+
+                if (i->nRefcount == 0)
+                {
+                    Log::Write("Deallocating %s",i->sFilename.c_str());
+                    delete i->pData;
+                    rsrc.erase(i);
+                    
+                }
+                else
+                    Log::Write("Decref       %s",i->sFilename.c_str());
+
                 return;
             }
+        }
 
-            resources.erase(pRsrc->sName);
-            delete pRsrc;
+        Log::Write("Attempt to deallocate unallocated resource! %8x",data);
+        // !!!
+    }
+
+    ~CController()
+    {
+        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
+        {
+            Log::Write("Leak! %s",i->sFilename.c_str());
+            delete i->pData;
         }
     }
 };
