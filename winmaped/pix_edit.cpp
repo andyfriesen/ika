@@ -1,5 +1,4 @@
 #include "pix_edit.h"
-#include "pixel_matrix_blitter.h"       // hack, so we can use the alpha blending stuff here
 
 //#define ALPHA_BLIT
 
@@ -178,6 +177,7 @@ void CEdit::DrawBlownUpImage()
         iCurrent->Width(),
         iCurrent->Height(),
         SRCCOPY);
+
 
 #endif
 }

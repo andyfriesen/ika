@@ -183,18 +183,18 @@ METHOD(image_clip)
     
     if (x1==-1 || y1==-1 || x2==-1 || y2==-1)
     {
-        RECT r =
-        {
+        Rect r
+        (
             0,
                 0, gfxImageWidth(((v_ImageObject*)self)->data),
                 gfxImageHeight(((v_ImageObject*)self)->data) 
-        };
+        );
         
         gfxClipImage(((v_ImageObject*)self)->data,r);
     }
     else
     {
-        RECT r= { x1,y1,x2,y2 };
+        Rect r( x1,y1,x2,y2 );
         gfxClipImage(
             ((v_ImageObject*)self)->data,
             r);

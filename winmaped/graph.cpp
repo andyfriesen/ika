@@ -27,8 +27,13 @@ if (dirtyrects[i].x==x && dirtyrects[i].y==y)
     dirtyrects.push_back(point(x,y));
 }
 
-void CGraphView::DirtyRect(RECT r)
+void CGraphView::DirtyRect(int x1,int y1,int x2,int y2)
 {
+    RECT r =
+    {
+        x1,y1,x2,y2
+    };
+
     if (r.left>r.right)
 	std::swap(r.left,r.right);
     if (r.top>r.bottom)
@@ -235,7 +240,7 @@ void CGraphView::VLine(int x,int y1,int y2,u32 colour)
     }
 }
 
-void CGraphView::Rect(int x1,int y1,int x2,int y2,u32 colour)
+void CGraphView::DrawRect(int x1,int y1,int x2,int y2,u32 colour)
 {
     HLine(x1,x2,y1,colour);
     HLine(x1,x2,y2,colour);
@@ -281,9 +286,9 @@ void CGraphView::ShowPage()
     dirtyrects.clear();
 }
 
-void CGraphView::ShowPage(const RECT& r)
+void CGraphView::ShowPage(const Rect& r)
 {
-    DirtyRect(r);
+    DirtyRect(r.left,r.top,r.right,r.bottom);
     ShowPage();
 }
 

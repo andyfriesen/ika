@@ -1,6 +1,6 @@
 #include <windows.h>
 #include "pixel_matrix.h"
-#include "pixel_matrix_blitter.h"
+#include "misc.h"
 
 static inline void DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen,const Rect& rClip)
 {
@@ -202,18 +202,13 @@ void CPixelMatrix::Resize(int x,int y)
     nHeight=y;
 }
 
-// Consider removing these functions entirely, and simply exposing the CBlitter class.
-void CPixelMatrix::Blit(CPixelMatrix& dest,int x,int y)
+void CPixelMatrix::SetClipRect(Rect& r)
 {
-    CBlitter<Alpha>::Blit(*this,dest,x,y);
-}
+    cliprect.left=max(0,r.left);
+    cliprect.top=max(0,r.top);
+    cliprect.right=min(nWidth,r.right);
+    cliprect.bottom=min(nHeight,r.bottom);
 
-void CPixelMatrix::OpaqueBlit(CPixelMatrix& dest,int x,int y)
-{
-    CBlitter<Opaque>::Blit(*this,dest,x,y);
-}
-
-void CPixelMatrix::ScaleBlit(CPixelMatrix& dest,int x,int y,int w,int h)
-{
-    CBlitter<Opaque>::ScaleBlit(*this,dest,x,y,w,h);
+    if (r.Width()<0)    swap(r.left,r.right);
+    if (r.Height()<0)   swap(r.top,r.bottom);
 }

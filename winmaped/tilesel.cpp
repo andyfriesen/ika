@@ -204,6 +204,7 @@ void CTileSel::SaveVSP()
         log("pVsp->SaveAs failed! ;_;");
 }
 
+// kudos to JL for this.  I just ported it from Python.
 bool CTileSel::ExportPNG(const char* fname)
 {
     const int nTilewidth = 32;
@@ -221,7 +222,7 @@ bool CTileSel::ExportPNG(const char* fname)
     
     for (int i=0; i<pVsp->NumTiles(); i++)
     {
-        pVsp->GetTile(i).Blit(bigImage,currX,currY);
+        CBlitter<Opaque>::Blit(pVsp->GetTile(i),bigImage,currX,currY);
         
         currX+=pVsp->Width();
         if (currX>=nPixwidth)

@@ -118,7 +118,7 @@ void CImportVSPDlg::ImportImage(int tilex,int tiley,bool pad,bool append,const c
 	for (int x=0; x<nTilewidth; x++)
 	{
 	    // nasty hack to make it work like I want it to.
-            bigimage.Blit(lilimage, (pad?-1:0) -(x*tx) , (pad?-1:0) -(y*ty) );
+            CBlitter<Opaque>::Blit(bigimage, lilimage, (pad?-1:0) -(x*tx) , (pad?-1:0) -(y*ty) );
 	    pVsp->GetTile(nCurtile)=lilimage;
 	    nCurtile++;
 	}

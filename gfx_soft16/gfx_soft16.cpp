@@ -38,14 +38,6 @@ int nScreensurfacewidth,nScreensurfaceheight;		// width/height of the screen sur
 static int nImagecount=0;							// Running count of images, for debugging purposes
 static bool bInited=false;
 
-inline RECT Rect(int x1,int y1,int x2,int y2)
-{
-    RECT r;
-    r.left=x1; r.top=y1;
-    r.right=x2; r.bottom=y2;
-    return r;
-}
-
 inline void ValidateClipRect(handle& img)
 {
     if (img->rClip.left<0) img->rClip.left=0;
@@ -365,7 +357,7 @@ bool gfxClipWnd(int x1,int y1,int x2,int y2)
     return true;
 }
 
-bool gfxClipImage(handle img,RECT r)
+bool gfxClipImage(handle img,Rect& r)
 {
     img->rClip=r;
     ValidateClipRect(img);

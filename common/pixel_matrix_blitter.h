@@ -1,6 +1,12 @@
 // This is pretty cool stuff.  Basically, I'm using C++ templates to inline the pixel blending functions.
 // Not a lot of code doing a whole lot of work. :)
 
+// I may run into some problems with namespaces later on; the blending modes, and the name 'CBlitter' are a bit
+// generic sounding.
+
+#include "misc.h"
+#include "types.h"
+
 namespace
 {
     struct Opaque
@@ -144,11 +150,17 @@ class CBlitter : public Blender
             ylen=rClip.bottom-y;
     }
 
+    static inline void keepinrange(int& i,int min,int max)
+    {
+        if (i<min) i=min;
+        if (i>max) i=max;
+    }
+
 public:
 
     static void Blit(CPixelMatrix& src,CPixelMatrix& dest,int x,int y)
     {
-        const Rect& r=src.GetClipRect();
+        const ::Rect& r=src.GetClipRect();
 
         int xstart=r.left;
         int ystart=r.top;
@@ -193,7 +205,7 @@ public:
         ix=iy=0;
         x=cx; y=cy;
 
-        Rect& srcclip=src.GetClipRect();
+        const ::Rect& srcclip=src.GetClipRect();
         
         xinc=((srcclip.Width())<<16)/w;
         yinc=((srcclip.Height())<<16)/h;
@@ -237,5 +249,318 @@ public:
             iy&=0xFFFF;
             --ylen;
         }
+    }
+
+    // ------------------------------------ Primatives ------------------------------------
+
+    static inline void SetPixel(CPixelMatrix& img,int x,int y,RGBA colour)
+    {
+        RGBA* p=img.GetPixelData()+(y*img.Width() + x);
+
+        *p=Blend(colour,*p);
+    }
+
+    static inline void HLine(CPixelMatrix& img,int x1,int x2,int y,RGBA colour)
+    {
+        const ::Rect& r=img.GetClipRect();
+
+        if (y<r.top || y>=r.bottom)
+            return;
+
+        if (x1>x2)
+            swap(x1,x2);      
+
+        keepinrange(x1,r.left,r.right-1);
+        keepinrange(x2,r.left,r.right-1);
+        
+        RGBA* p=img.GetPixelData()+(y*img.Width())+x1;
+        
+        int xlen=x2-x1;
+        
+        while (xlen--)
+        {
+            *p=Blend(colour,*p);
+            p++;
+        }
+        
+    }
+
+    static inline void VLine(CPixelMatrix& img,int x,int y1,int y2,u32 colour)
+    {
+        const ::Rect& r=img.GetClipRect();
+        
+        if (x<r.left || x>=r.right) return;
+        
+        if (y1>y2)
+            swap(y1,y2);
+        
+        keepinrange(y1,r.top,r.bottom-1);
+        keepinrange(y2,r.top,r.bottom-1);
+        
+        RGBA* p=img.GetPixelData()+(y1*img.Width())+x;
+        
+        int yinc=img.Width();
+        
+        int ylen=y2-y1;
+        
+        while (ylen--)
+        {
+            *p=Blend(colour,*p);
+            p+=yinc;
+        }
+    }
+
+    static void Rect(CPixelMatrix& img,int x1,int y1,int x2,int y2,RGBA colour)
+    {
+        if (filled)
+        {
+            int ydir=y1<y2?1:-1;
+            for (int y=y1; y!=y2; y+=ydir)
+                HLine(img,x1,x2,y,colour);
+        }
+        else
+        {
+            if (abs(y1-y2)>1)
+            {
+                VLine(img,x1,y1+1,y2-1,colour);
+                VLine(img,x2,y1+1,y2-1,colour);
+            }
+            else
+            {
+                HLine(img,x1,x2,y1,colour);
+                return true;
+            }
+            
+            if (abs(x1-x2)>1)
+            {
+                HLine(img,x1,x2,y1,colour);
+                HLine(img,x1,x2,y2,colour);
+            }
+            else
+            {
+                VLine(img,x1,y1,y2,colour);
+                return true;
+            }
+        }
+    }
+
+    static void Line(CPixelMatrix& img,int x1, int y1, int x2, int y2, u32 colour)
+    {
+        // check for the cases in which the line is vertical or horizontal or only one pixel big
+        // we can do those faster through other means
+        if(y1==y2 && x1==x2)
+        {
+            SetPixel(img,x1,y1,colour);
+            return;
+        }
+        if(y1==y2)
+        {
+            HLine(img,x1,x2,y1,colour);
+            return;
+        }
+        if(x1==x2)
+        {
+            VLine(img,x1,y1,y2,colour);
+            return;
+        }
+
+        const ::Rect& r=img.GetClipRect();
+        
+        // it's good to have these handy
+        int cx1=r.left;
+        int cx2=r.right-1;
+        int cy1=r.top;
+        int cy2=r.bottom-1;
+        
+        // variables for the clipping code
+        int v1=0,v2=0;
+        
+        // here begins what is apparently the Cohen-Sutherland line clipping algorithm
+        // there's a doc on it here: http://reality.sgi.com/tomcat_asd/algorithms.html#clipping
+        if(y1<cy1) v1|=8;
+        if(y1>cy2) v1|=4;
+        if(x1>cx2) v1|=2;
+        if(x1<cx1) v1|=1;
+        if(y2<cy1) v2|=8;
+        if(y2>cy2) v2|=4;
+        if(x2>cx2) v2|=2;
+        if(x2<cx1) v2|=1;
+        
+        while((v1&v2)==0&&(v1|v2)!=0)
+        {
+            if(v1)
+            {
+                if(v1&8)      // clip above
+                {
+                    x1-=((x1-x2)*(cy1-y1))/(y2-y1+1);
+                    y1=cy1;
+                }
+                else if(v1&4) // clip below
+                {
+                    x1-=((x1-x2)*(y1-cy2))/(y1-y2+1);
+                    y1=cy2;
+                }
+                else if(v1&2) // clip right
+                {
+                    y1-=((y1-y2)*(x1-cx2))/(x1-x2+1);
+                    x1=cx2;
+                }
+                else          // clip left
+                {
+                    y1-=((y1-y2)*(cx1-x1))/(x2-x1+1);
+                    x1=cx1;
+                }
+                v1=0;
+                if(y1<cy1) v1|=8;
+                if(y1>cy2) v1|=4;
+                if(x1>cx2) v1|=2;
+                if(x1<cx1) v1|=1;
+            }
+            else
+            {
+                if(v2&8)      // clip above
+                {
+                    x2-=((x2-x1)*(cy1-y2))/(y1-y2+1);
+                    y2=cy1;
+                }
+                else if(v2&4) // clip below
+                {
+                    x2-=((x2-x1)*(y2-cy2))/(y2-y1+1);
+                    y2=cy2;
+                }
+                else if(v2&2) // clip right
+                {
+                    y2-=((y2-y1)*(x2-cx2))/(x2-x1+1);
+                    x2=cx2;
+                }
+                else          // clip left
+                {
+                    y2-=((y2-y1)*(cx1-x2))/(x1-x2+1);
+                    x2=cx1;
+                }
+                v2=0;
+                if(y2<cy1) v2|=8;
+                if(y2>cy2) v2|=4;
+                if(x2>cx2) v2|=2;
+                if(x2<cx1) v2|=1;
+            }
+        }
+        
+        // this tells us if the line was clipped in its entirety. yum!
+        if(v1&v2)
+            return;
+        
+        //make these checks again
+        if(y1==y2&&x1==x2)
+        {
+            SetPixel(img,x1,y1,colour);
+            return;
+        }
+        if(y1==y2)
+        {
+            HLine(img,x1,x2,y1,colour);
+            return;
+        }
+        if(x1==x2)
+        {
+            VLine(img,x1,y1,y2,colour);
+            return;
+        }
+        
+        //for the line renderer
+        int xi,yi,xyi;
+        int d,dir,diu,dx,dy;
+        
+        //two pointers because we render the line from both ends
+        /*RGBA* w1=&(img.GetPixelData())[img.Width()*y1+x1];
+        RGBA* w2=&(img.GetPixelData())[img.Width()*y2+x2];*/
+        RGBA* w1=img.GetPixelData() + (img.Width()*y1+x1);
+        RGBA* w2=img.GetPixelData() + (img.Width()*y2+x2);
+
+        //start algorithm presently.
+        xi=1;
+        if((dx=x2-x1)<0)
+        {
+            dx=-dx;
+            xi=-1;
+        }
+        
+        yi=img.Width();
+        if((dy=y2-y1)<0)
+        {
+            yi=-yi;
+            dy=-dy;
+        }
+        
+        xyi=xi+yi;
+        
+        if(dy<dx)
+        {
+            dir=dy*2;
+            d=-dx;
+            diu=2*d;
+            dy=dx/2;
+            
+            for(;;)
+            {
+                *w1=colour;
+                *w2=colour;
+                if((d+=dir)<=0)
+                {
+                    w1+=xi;
+                    w2-=xi;
+                    if((--dy)>0) continue;
+                    *w1=colour;
+                    if((dx&1)==0) return;
+                    *w2=colour;
+                    return;
+                }
+                else
+                {
+                    w1+=xyi;
+                    w2-=xyi;
+                    d+=diu;
+                    if((--dy)>0) continue;
+                    *w1=colour;
+                    if((dx&1)==0) return;
+                    *w2=colour;
+                    return;
+                }
+            }
+        }
+        else
+        {
+            dir=dx*2;
+            d=-dy;
+            diu=d*2;
+            dx=dy/2;
+            for(;;)
+            {
+                *w1=colour;
+                *w2=colour;
+                if((d+=dir)<=0)
+                {
+                    w1+=yi;
+                    w2-=yi;
+                    if((--dx)>0) continue;
+                    *w1=colour;
+                    if((dy&1)==0) return;
+                    *w2=colour;
+                    return;
+                }
+                else
+                {
+                    w1+=xyi;
+                    w2-=xyi;
+                    d+=diu;
+                    if((--dx)>0) continue;
+                    *w1=colour;
+                    if((dy&1)==0) return;
+                    *w2=colour;
+                    return;
+                }
+            }
+        }
+        return;
     }
 };

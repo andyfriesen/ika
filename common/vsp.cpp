@@ -322,7 +322,7 @@ void VSP::PasteTile(const CPixelMatrix& tb,int pos)
 
 void VSP::TPasteTile(CPixelMatrix& tb,int pos)
 {
-    tb.Blit(tiles[pos],0,0);
+    CBlitter<Alpha>::Blit(tb,tiles[pos],0,0);
     // NYI
 }
 

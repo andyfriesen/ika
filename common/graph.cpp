@@ -23,7 +23,7 @@ handle (*gfxCopyImage)(handle img);                                             
 bool (*gfxCopyPixelData)(handle img,u32* data,int width,int height);                                        // Give it an array of RGBA quads, and this function will copy the whole of it to the specified image.
 bool (*gfxClipWnd)(int x1,int y1,int x2,int y2);
 
-bool (*gfxClipImage)(handle img,RECT r);                                                                    // All subsequent blit ops will only blit the specified subsection
+bool (*gfxClipImage)(handle img,Rect& r);                                                                    // All subsequent blit ops will only blit the specified subsection
 handle (*gfxGetScreenImage)();
 
 bool (*gfxBlitImage)(handle img,int x,int y,bool transparent);                                                // blits the image on the current renderdest

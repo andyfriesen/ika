@@ -17,7 +17,6 @@ enum
 
 extern int sgn(int x);
 extern char* va(char* format, ...);
-extern RECT MakeRect(int x1,int y1,int x2,int y2);
 
 struct SConfig
 {

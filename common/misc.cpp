@@ -53,13 +53,3 @@ char* GetCurrentDirectory()
 }
 
 #include <windows.h>
-
-RECT MakeRect(int x1,int y1,int x2,int y2)
-{
-    RECT r;
-    r.left=x1;
-    r.top=y1;
-    r.right=x2;
-    r.bottom=y2;
-    return r;
-}

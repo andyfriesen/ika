@@ -104,9 +104,11 @@ void CMapView::HandleMouse(int x,int y,int b)
 
 void CMapView::DoMouseLeftDown(int x,int y,int b)        // b is the key state
 {
-    int e;    
-    RECT r= { x,y,x+pVsp->Width(),y+pVsp->Height() };    // In a lot of the cases below, we'll be re-rendering
+    int e;
+    // In a lot of the cases below, we'll be re-rendering
     // a specific tile.  We're calculating that rect here, for brevity.
+    Rect r ( x,y,x+pVsp->Width(),y+pVsp->Height() );
+
     switch (nCurlayer)
     {
     case lay_obs:
@@ -166,22 +168,22 @@ void CMapView::DoMouseLeftDown(int x,int y,int b)        // b is the key state
         case mode_copylay:
             pGraph->ShowPage();
             
-            pGraph->DirtyRect(MakeRect(
+            pGraph->DirtyRect(
                 curselection.left*pVsp->Width()-xwin-1,
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
                 curselection.bottom*pVsp->Height()-ywin+1
-                ));                                                                // erase whatever was under the selection rect (including the rect itself)
+                );                                                                  // erase whatever was under the selection rect (including the rect itself)
             
             curselection.right=x+1;
             curselection.bottom=y+1;
             
-            pGraph->DirtyRect(MakeRect(
+            pGraph->DirtyRect(
                 curselection.left*pVsp->Width()-xwin-1,
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
                 curselection.bottom*pVsp->Height()-ywin+1
-                ));                                                                // redraw the new rect
+                );                                                                  // redraw the new rect
             
             pGraph->ShowPage();
             break;
@@ -232,7 +234,7 @@ void CMapView::DoMouseLeftUp(int x,int y,int b)
 
 void CMapView::DoMouseRightDown(int x,int y,int b)
 {
-    RECT r= { x,y,x+pVsp->Width(),y+pVsp->Height() };
+    Rect r ( x,y,x+pVsp->Width(),y+pVsp->Height() );
     
     switch(nCurlayer)
     {
@@ -273,7 +275,7 @@ void CMapView::DoMouseRightDown(int x,int y,int b)
             break;
             
         case mode_copyall:                                                        // at this point, the user is still dragging their selection rectangle
-            pGraph->ShowPage(MakeRect(
+            pGraph->ShowPage(Rect(
                 curselection.left*pVsp->Width()-xwin-1,
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
@@ -283,7 +285,7 @@ void CMapView::DoMouseRightDown(int x,int y,int b)
             curselection.right=x+1;
             curselection.bottom=y+1;                                            // calculate the new rect
             
-            pGraph->ShowPage(MakeRect(
+            pGraph->ShowPage(Rect(
                 curselection.left*pVsp->Width()-xwin-1,
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
@@ -640,7 +642,7 @@ void CMapView::DrawSelection(const RECT& r)
     x2=x2*pVsp->Width()-xwin-r.left;
     y2=y2*pVsp->Height()-ywin-r.top;
     
-    pGraph->Rect(x1,y1,x2,y2,white);
+    pGraph->DrawRect(x1,y1,x2,y2,white);
 }
 
 void CMapView::Render(const RECT& r)

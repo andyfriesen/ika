@@ -23,7 +23,7 @@ struct SImage
     CPixelMatrix pixels;
     const int& nWidth;
     const int& nHeight;
-    Rect& cliprect;
+    const Rect& cliprect;
     
     GLuint	hTex;
     int nTexwidth,nTexheight;
@@ -216,7 +216,6 @@ handle EXPORT gfxCreateImage(int x,int y)
     SImage* i=new SImage;
 
     i->pixels.Resize(x,y);
-    i->cliprect=Rect(0,0,x,y);
 
     SynchTexture(i);
     
@@ -255,17 +254,18 @@ bool EXPORT gfxCopyPixelData(handle img,u32* data,int width,int height)
         img->hTex=0;
     }
 
-    img->cliprect=Rect(0,0,img->nWidth,img->nHeight);
+    img->pixels.SetClipRect(Rect(0,0,img->nWidth,img->nHeight));
 
     SynchTexture(img);    
     return true;
 }
 
-bool EXPORT gfxClipImage(handle img,Rect r)
+bool EXPORT gfxClipImage(handle img,Rect& r)
 {
-    img->cliprect=r;
+    img->pixels.SetClipRect(r);
     if(img->bIsscreen) 
 	glScissor(r.left,yres-r.top,r.right-r.left,yres-(r.top-r.bottom));
+   
     return true;
 }
 
@@ -336,9 +336,9 @@ bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
     else if (img!=hScreen)
     {
         if (transparent)
-            img->pixels.Blit(hRenderdest->pixels,x,y);
+            CBlitter<Alpha>::Blit(img->pixels, hRenderdest->pixels, x, y);
         else
-            img->pixels.OpaqueBlit(hRenderdest->pixels,x,y);
+            CBlitter<Opaque>::Blit(img->pixels, hRenderdest->pixels, x, y);
         hRenderdest->bAltered=true;
     }
 
@@ -382,14 +382,24 @@ bool EXPORT gfxSetPixel(handle img,int x,int y,u32 colour)
 int EXPORT gfxGetPixel(handle img,int x,int y)
 {
     int colour=0;
-    glReadPixels(x, y, 1, 1, GL_RGBA,  GL_BYTE, &colour);
-    return colour;
+    if (img==hScreen)
+    {
+        glReadPixels(x, y, 1, 1, GL_RGBA,  GL_BYTE, &colour);
+        return colour;
+    }
+    else
+        return img->pixels.GetPixel(x,y);
 }
 
 bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
 {
     if (hRenderdest==hScreen)
 	HardLine(x1,y1,x2,y2,colour);
+    else
+    {
+        CBlitter<Alpha>::Line(img->pixels,x1,y1,x2,y2,RGBA(colour));
+        img->bAltered=true;
+    }
     return true;
 }
 

@@ -22,18 +22,17 @@ TODO: add gfxSwitchToFullScreen and gfxSwitchToWindowed, also, more blit functio
 #define GFX_SOFT_H
       
 #include "types.h"
-      
 #include <ddraw.h>
       
-      typedef class SImage* handle;
+typedef class SImage* handle;
 
-class SImage	// A struct with a constructor
+class SImage
 {
 public:
-    int		nWidth,nHeight;
-    int		nPitch;				// pitch is in pixels
-    u32*	pData;
-    RECT	rClip;
+    int	    nWidth,nHeight;
+    int	    nPitch;				// pitch is in pixels
+    u32*    pData;
+    Rect    rClip;
     
     bool (*Blit)(handle img,int x,int y);
     bool (*ScaleBlit)(handle img,int x,int y,int width,int height);
@@ -62,7 +61,7 @@ bool gfxSwitchToWindowed();
 handle gfxCreateImage(int x,int y);																		// Creates a new image of the specified size, and returns the handle
 bool gfxFreeImage(handle img);
 bool gfxCopyPixelData(handle img,u32* data,int width,int height);										// Give it an array of RGBA quads, and this function will copy the whole of it to the specified image.
-bool gfxClipImage(handle img,RECT r);
+bool gfxClipImage(handle img,Rect& r);
 handle gfxGetScreenImage();																				// returns a handle to the screen image
 bool gfxClipWnd(int x1,int y1,int x2,int y2);
 bool gfxSwitchResolution(int x,int y);
@@ -99,7 +98,7 @@ void MakeClientFit();
 void GetPixelFormat();
 void ClipWnd(int x1,int y1,int x2,int y2);
 
-inline void DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen,const RECT& rClip)
+inline void DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen,const Rect& rClip)
 {
     if (x<rClip.left)
     {

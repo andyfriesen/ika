@@ -48,12 +48,10 @@ public:
     void Mirror();
     void Resize(int x,int y);
     
-    // blits
-    void Blit(CPixelMatrix& dest,int x,int y);
-    void OpaqueBlit(CPixelMatrix& dest,int x,int y);
-    void ScaleBlit(CPixelMatrix& dest,int x,int y,int w,int h);
-    
-    Rect& GetClipRect() { return cliprect; }
+    const Rect& GetClipRect() { return cliprect; }
+    void SetClipRect(Rect& r);
 };
+
+#include "pixel_matrix_blitter.h"
 
 #endif

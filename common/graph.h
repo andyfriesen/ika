@@ -21,7 +21,7 @@ extern handle (*gfxCopyImage)(handle img);																// returns a copy of t
 extern bool (*gfxCopyPixelData)(handle img,u32* data,int width,int height);								// Give it an array of RGBA quads, and this function will copy the whole of it to the specified image.
 extern bool (*gfxClipWnd)(int x1,int y1,int x2,int y2);
 
-extern bool (*gfxClipImage)(handle img,RECT r);															// All subsequent blit ops will only blit the specified subsection
+extern bool (*gfxClipImage)(handle img,Rect& r);															// All subsequent blit ops will only blit the specified subsection
 extern handle (*gfxGetScreenImage)();
 	  
 extern bool (*gfxBlitImage)(handle img,int x,int y,bool transparent);									// blits the image on the current renderdest
