@@ -115,7 +115,7 @@ namespace Ika {
         uint len = s.length();
         RGBA colour(255, 255, 255, 255);
 
-        for (uint i=0; i < len; i++) {
+        for (uint i = 0; i < len; i++) {
             switch (s[i]) {
                 case '\n': {        // newline
                     y += _height;
@@ -137,7 +137,7 @@ namespace Ika {
 
                     if (i < len && s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets())) {
                         // ~ followed by a digit is not printed.  the subset is instead changed.
-                        cursubset=s[i] - '0';
+                        cursubset = s[i] - '0';
                         continue;
                     } else {
                         // ~ followed by anything else (or nothing at all) is printed like any other character.

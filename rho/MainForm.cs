@@ -116,7 +116,7 @@ namespace rho {
         }
 
         void CreateDocumentWindow(string filename) {
-            string extension=Path.GetExtension(filename).ToLower();
+            string extension = Path.GetExtension(filename).ToLower();
             DockContent doc;
 
             switch (extension) {
@@ -171,9 +171,9 @@ namespace rho {
                 dlg.Filter = fileFilter;
                 dlg.Multiselect = true;
 
-                DialogResult result=dlg.ShowDialog(this);
+                DialogResult result = dlg.ShowDialog(this);
 
-                if (result==DialogResult.OK) {
+                if (result == DialogResult.OK) {
                     foreach (string s in dlg.FileNames) {
                         CreateDocumentWindow(s);
                     }

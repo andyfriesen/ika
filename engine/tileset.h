@@ -23,10 +23,10 @@ struct Tileset {
 
     Video::Image* GetTile(uint index) const;
 
-    inline int NumTiles() const { return nFrames; }     ///< Returns the number of tiles in the tileset. ;)
+    inline int NumTiles() const { return frameCount; }  ///< Returns the number of tiles in the tileset.
 
-    inline int Width() const { return nFramex; }        ///< Width of the tiles in the tileset.
-    inline int Height() const { return nFramey; }       ///< Height of the tiles in the tileset.
+    inline int Width() const { return frameWidth; }     ///< Width of the tiles in the tileset.
+    inline int Height() const { return frameHeight; }   ///< Height of the tiles in the tileset.
 
     void UpdateAnimation(int time);                     ///< Updates the animation state.  Pass the current time.
 
@@ -35,15 +35,15 @@ private:
     ScopedPtr<VSP> vsp;                                 ///< Source tileset.
 
     std::vector<Video::Image*> hFrame;                  ///< Array of image handles.
-    int nFrames;                                        ///< Number of tiles in the tileset.
-    int nFramex, nFramey;                               ///< Tile dimensions
+    int frameCount;                                     ///< Number of tiles in the tileset.
+    int frameWidth, frameHeight;                        ///< Tile dimensions
 
-    std::vector<int>    nTileidx;                       ///< Translation table for actual tiles <--> the tile that should be drawn. (animating tiles)
-    std::vector<bool>   bFlip;                          ///< For tiles in the "flip" mode. (back and forth)
+    std::vector<int>    tileIndex;                      ///< Translation table for actual tiles <--> the tile that should be drawn. (animating tiles)
+    std::vector<bool>   flipFlag;                       ///< For tiles in the "flip" mode. (back and forth)
     
     std::vector<VSP::AnimState>    animstate;           ///< Animation states for each tile
 
-    int nAnimtimer;                                     ///< used by updateanimation
+    int animTimer;                                      ///< used by UpdateAnimation
 
     void AnimateStrand(VSP::AnimState& anim);           ///< Updates one tile's animation state.
 };

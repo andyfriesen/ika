@@ -13,16 +13,24 @@ demo_dir=ika-$version
 core_dir=core
 src_dir=src
 dll_dir=dll
+xi_dir=xi
 
-original_path=`PWD`
+original_path=`pwd`
 makedist_path=$original_path/$makedist_dir
 demo_path=$makedist_path/$demo_dir
 core_path=$makedist_path/$core_dir
 src_path=$makedist_path/$src_dir
 dll_path=$makedist_path/$dll_dir
+xi_path=$original_path/$xi_dir
 
 if [ $MACHTYPE==i686-pc-cygwin ]
     then
+
+        if [ -e $makedist_path ]
+            then
+                echo Temporary directory still exists!  Deleting...
+                rm -rf $makedist_path
+            fi
 
         echo Creating temporary directories.
 
@@ -34,12 +42,17 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
         echo Assembling core zip...
 
-            cp {engine,iked,ikamap}/Release/*.exe $core_path
+            cp engine/Release/*.exe $core_path
+            #cp iked/Release/*.exe $core_path
+            cp ikamap/Release/*.exe $core_path
+            cp rho/bin/Release/* $core_path
             cp tools/*.exe $core_path
             pushd $core_path
-                upx *.exe
+
+                upx *
+                zip $original_path/ika-core-$version.zip *
+
             popd
-            zip ika-core-$version.zip $core_path/*.exe
 
         echo Done.
 
@@ -49,31 +62,36 @@ if [ $MACHTYPE==i686-pc-cygwin ]
             cp 3rdparty/dlls/corona.dll $dll_path
             cp 3rdparty/dlls/msvcp71.dll $dll_path
             cp 3rdparty/dlls/msvcr71.dll $dll_path
-            cp 3rdparty/dlls/python23.dll $dll_path
+            cp 3rdparty/dlls/python24.dll $dll_path
             cp 3rdparty/dlls/zlib.dll $dll_path
             cp 3rdparty/dlls/sdl.dll $dll_path
 
-            zip ika-dlls-$version.zip $dll_path/*.dll
+            pushd $dll_path
+
+                zip $original_path/ika-dlls-$version.zip *.dll
+
+            popd
 
         echo Done
 
         echo Assembling the main dist zip...
             cp -R dist/* $demo_path
 
-            cp $core_path/*.exe $demo_path
+            cp $core_path/* $demo_path
             cp $dll_path/*.dll $demo_path
+            cp -R $xi_path $demo_path
 
             pushd $demo_path/..
-            zip -r $original_path/ika-win-$version.zip $demo_dir/*
+
+                zip -r $original_path/ika-win-$version.zip $demo_dir/*
+
             popd
         echo Done.
 
         echo Creating NSIS installer.
             pushd $demo_path
 
-            #echo `sed "s/@@VERSION@@/$version/g" < $original_path/ika.nis > $demo_path/ika.nis`
             sed "s/@@VERSION@@/$version/g" < $original_path/ika.nis > $demo_path/ika.nis
-            #(sed "s/@@VERSION@@/$version/g" < $original_path/ika.nis > $demo_path/ika.nis) || echo "FUCK" && exit
 
             /cygdrive/d/Program\ Files/NSIS/makensis.exe ika.nis && \
                 mv ika-install-$version.exe $original_path
@@ -83,7 +101,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
         echo Assembling source archive...
             pushd $src_path
-                cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/ika export -D today common engine iked ikaMap xi
+                cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/ika export -D today common engine iked ikaMap xi >> $makedist_path/makedist.log
                 # hack, since cvs won't pull it in on its own:
                 cp $original_path/SConstruct $src_path
             popd

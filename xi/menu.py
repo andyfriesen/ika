@@ -1,6 +1,6 @@
-# Generic menu interface
-# coded by Andy Friesen
-# copyright whenever.  All rights reserved.
+# Base menu class
+# Coded by Andy Friesen
+# Copyright whenever.  All rights reserved.
 #
 # This source code may be used for any purpose, provided that
 # the original author is never misrepresented in any way.
@@ -9,161 +9,170 @@
 # suitability of this code for any purpose.
 
 import ika
-import widget
+
+import gui
 import cursor
 
-from misc import *
+import sound
+import controls
 
-#------------------------------------------------------------------------------
+from proxy import Proxy
 
-def GetDefaultCursor():
-    return cursor.Cursor(widget.defaultfont)
-
-# Unique object returned when a menu was cancelled.
+# unique object returned when the user cancels a menu.
+# We use this pretty much the same way as None.  It has
+# no attributes.
 Cancel = object()
-# Key repeat delay
-DELAY = 50
-MOVE_DELAY = 5
 
-def SetDefaultCursor(csr):
-    global defaultcursor
-    
-    defaultcursor = csr
+_PAUSE_DELAY= 50
+_REPEAT_DELAY = 0
 
-class Menu(widget.Frame):
-    "A menu window.  Has a list of items that the user can select."
+class Menu(gui.Widget):
+    '''
+    A menu.  A list of textual options displayed in some sort of text
+    container, with a cursor that responds to user input, allowing the user to
+    select an option.
 
-    __slots__ = widget.Frame.__slots__ + [
-        'menuitems',    # The widget that holds the individual menu elements
-        'widgets',      # Inherited from widget.Frame.  List of child widgets.
-        'cursor',       # Image to draw as a cursor
-        'cursorwidth',  # The amount of space to make for the cursor at the left.  Is just a bit smaller than the cursor itself for asthetic reasons.
-        'width',        # The width of the cursor?
-        'pagesize',     # The number of menu items that fit on a single page.
-        'ypos',         # Current Y position of the cursor relative to the window.
-        'active',       # If true, the cursor is drawn.
-        'cursorcount',  # lil count variable for cursor repeating.
-        #'Update',       # Update coroutine
-        ]
-    
-    def __init__(self, x = 0 , y = 0, cursor = None, textcontrol = None):
-        
-        widget.Frame.__init__(self)
-        self.menuitems = textcontrol or widget.TextLabel()
+    I'll readily admit that this is somewhat limiting.  Doing a SoM style ring
+    menu with this class is not very realistic, but it could be implemented as
+    its own class. (and probably should, considering how different it is from
+    this.
+    '''
+    def __init__(self, *args, **kw):
+        gui.Widget.__init__(self, *args)
+        self._textCtrl = kw.get('textctrl') or gui.ScrollableTextLabel()
+        self._cursor = kw.get('cursor') or gui.default_cursor
+        self._cursorWidth = self.cursor.width / 2
+        self._textCtrl.position = (self._cursorWidth, 0)
+        self._cursorY = 0
+        self._cursorPos = 0
+        self._cursorSpeed = 2 # speed at which the cursor moves (in pixels per update)
 
-        self.widgets.append(self.menuitems)
-        self.cursor = cursor or GetDefaultCursor()
-        self.cursorwidth = self.cursor.Width * 2 / 3
-        self.menuitems.x = self.cursorwidth
+        # cursor repeating stuff.
+        self._pauseDelay = kw.get('pausedelay', _PAUSE_DELAY)
+        self._repeatDelay = kw.get('repeatdelay', _REPEAT_DELAY)
+        self._cursorCount = self._pauseDelay
 
-        self.Position = (x, y)
-        self.Size = self.menuitems.Size
-        self.width += self.cursorwidth
-        self.cursorcount = DELAY
+    cursorY = property(lambda self: self._cursorY)
 
-        self.pagesize = self.height / self.menuitems.font.height    # The number of menu items that fit in the window at one time
+    def getCursorPos(self):
+        return self._cursorPos
+    def setCursorPos(self, value):
+        value = max(0, value)
+        self._cursorPos = min(len(self.text), value)
+    cursorPos = property(getCursorPos, setCursorPos)
 
-        self.ypos = 0                                         # The position of the cursor, on the menu
-        self.active = True
+    def getWidth(self):
+        return self._textCtrl.width + self._cursorWidth
+    def setWidth(self, value):
+        self._textCtrl.width = value - self._cursorWidth
+    width = property(getWidth, setWidth)
 
-        #self.Update = self.__Update().next
+    def getHeight(self):
+        return self._textCtrl.height
+    def setHeight(self, value):
+        self._textCtrl.height = value
+    height = property(getHeight, setHeight)
 
-    def set_YPage(self, value):
-        self.menuitems.YPage = value
+    def getFont(self):
+        return self._textCtrl.font
+    font = property(getFont)
 
-    def set_YMax(self, value):
-        self.menuitems.YMax = value
+    def getCursor(self):
+        return self._cursor
+    def setCursor(self, value):
+        self._cursor = value
+    cursor = property(getCursor, setCursor)
 
-    def set_CursorPos(self, value):
-        if value - self.YPage < self.pagesize:
-            self.ypos = value - self.YPage
-        else:
-            self.YPage = value
-            self.ypos = 0
+    def getText(self):
+        return self._textCtrl.text
+    text = property(getText)
 
-    CursorPos = property(lambda self: self.ypos + self.YPage, set_CursorPos)
-    YPage = property(lambda self: self.menuitems.YPage, set_YPage)
-    YMax = property(lambda self: self.menuitems.YMax, set_YMax)
-    Font = property(lambda self: self.menuitems.font)
-    Text = property(lambda self: self.menuitems)
+    def addText(self, *args):
+        self._textCtrl.addText(*args)
 
-    def Draw(self):
-        widget.Frame.Draw(self)
+    def clear(self):
+        self._textCtrl.clear()
 
-        if self.active:
-            self.cursor.Draw(self.x + self.cursorwidth, self.y + (self.ypos + 0.5) * self.menuitems.font.height)
+    def autoSize(self):
+        self._textCtrl.autoSize()
 
-    def Clear(self):
-        self.menuitems.Clear()
+    def update(self):
+        '''
+        Performs one tick of menu input.  This includes scrolling things around,
+        and updating the position of the cursor based on user interaction.
 
-    def AddText(self,*args):
-        self.menuitems.AddText(*args)
-        self.AutoSize()
-
-    def AutoSize(self):
-        self.menuitems.AutoSize()
-        widget.Frame.AutoSize(self)
-        self.pagesize = self.height / self.menuitems.font.height
-
-    def Update(self):
-        def MoveUp():
-            if self.ypos > 0:      self.ypos -= 1
-            elif self.YPage > 0:   self.YPage -= 1
-
-        def MoveDown():
-            if self.CursorPos == self.menuitems.Length - 1:
-                return
-            
-            if self.ypos < self.pagesize - 1:
-                self.ypos += 1
-            elif self.YPage < self.menuitems.Length - self.pagesize:
-                self.YPage += 1
-
-        #--
-                
+        If the user has selected an option, then the return value is the index
+        of that option.  If the user hit the cancel (ESC) key, Cancel is
+        returned.  Else, None is returned, to signify that nothing has happened
+        yet.
+        '''
         ika.Input.Update()
+        cy = self.cursorY
 
-        if ika.Input.up.Position():
-            if self.cursorcount == 0 or self.cursorcount == DELAY:
-                MoveUp()
-            self.cursorcount -= 1
-            if self.cursorcount < 0:
-                self.cursorcount = MOVE_DELAY
+        # update the cursor
+        ymax = max(0, len(self.text) * self.font.height - self._textCtrl.height)
 
 
-        elif ika.Input.down.Position():
-            if self.cursorcount == 0 or self.cursorcount == DELAY:
-                MoveDown()
-            self.cursorcount -= 1
-            if self.cursorcount < 0:
-                self.cursorcount = MOVE_DELAY
+        # Goofy, but kinda cool.
+        # We figure out where the cursor should be given its logical position.
+        # (ie the item it's supposed to point at)  If it's different from its
+        # actual position, we move it.  This way, we get nice smooth cursor
+        # movement.
 
+        delta = self.cursorPos * self.font.height - self._textCtrl.ywin - cy
+        if delta > 0:
+            if cy < self._textCtrl.height - self.font.height:
+                self._cursorY += self._cursorSpeed
+            else:
+                self._textCtrl.ywin += min(delta, self._cursorSpeed)
+        elif delta < 0:
+            if cy > 0:
+                self._cursorY -= self._cursorSpeed
+            elif self._textCtrl.ywin > 0:
+                self._textCtrl.ywin -= min(-delta, self._cursorSpeed)
         else:
-            self.cursorcount = DELAY
 
-        if enter():
-            return self.CursorPos
+            # Only move the cursor if delta is zero.  That way movement doesn't
+            # get bogged down by a cursor that moves too slowly.
+            #
+            # The cursor delaying stuff mucks this up considerably.  Basically, there's
+            # a counter variable (_cursorCount) that is reset when no key is pressed.
+            # When a key is pressed, the cursor is moved iff the count is maxed, or at 0.
+            # when the counter goes below 0, it is set to the repeat count.
+            if controls.up() and self.cursorPos > 0:
+                if self._cursorCount == 0 or self._cursorCount == self._pauseDelay:
+                    self.cursorPos -= 1
+                    sound.cursormove.Play()
 
-        elif cancel():
-            return Cancel
+                self._cursorCount -= 1
 
-        return None            
+                if self._cursorCount < 0:
+                    self._cursorCount = self._repeatDelay
 
-    def Execute(self):
-        self.ypos = self.YPage = 0
-        t = ika.GetTime()
+            elif controls.down() and self.cursorPos < len(self.text) - 1:
+                if self._cursorCount == 0 or self._cursorCount == self._pauseDelay:
+                    self.cursorPos += 1
+                    sound.cursormove.Play()
 
-        while 1:
-            time = ika.GetTime()
-            delta = time - t
-            t = time
+                self._cursorCount -= 1
 
-            while delta > 0:            
-                result = self.Update()
-                if result is not None:
-                    return result
+                if self._cursorCount < 0:
+                    self._cursorCount = self._repeatDelay
 
-            map.Render()
-                
-            self.Draw()
-            ika.Video.ShowPage()
+            elif controls.enter():
+                return self.cursorPos
+            elif controls.cancel():
+                return Cancel
+            else:
+                self._cursorCount = self._pauseDelay
+
+            # execution reaches this point if enter or cancel is not pressed
+            return None
+
+    def draw(self, xoffset = 0, yoffset = 0):
+        self._textCtrl.draw(self.x + xoffset, self.y + yoffset)
+        self.cursor.draw(
+            self.x + self._textCtrl.x + xoffset,
+            self.y + self._textCtrl.y + yoffset + self.cursorY +
+                (self.font.height / 2)
+            )

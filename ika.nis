@@ -18,7 +18,8 @@ Section "ika core files"
         SetOutPath $INSTDIR
         File "ika.exe"
         File "ikamap.exe"
-        File "iked.exe"
+        ; File "iked.exe"
+        File "rho.exe"
         File "user.cfg"
         File "ref.html"
         File "ikamap.html"
@@ -34,14 +35,21 @@ Section "ika DLLs"
         File "corona.dll"
         File "msvcp71.dll"
         File "msvcr71.dll"
-        File "python23.dll"
+        File "python24.dll"
         File "zlib.dll"
 SectionEnd
 
-Section "iked"
-        SetOutPath $INSTDIR
-        File "iked.exe"
+Section "rho"
+        File "rho.exe"
+        File "ICSharpCode.SharpZipLib.dll"
+        File "ScintillaNET.dll"
+        File "WeifenLuo.WinFormsUI.dll"
 SectionEnd
+
+;Section "iked"
+;        SetOutPath $INSTDIR
+;        File "iked.exe"
+;SectionEnd
 
 Section "ikaMap"
         SetOutPath $INSTDIR

@@ -131,8 +131,8 @@ namespace ScriptObject
         if (!PyArg_ParseTuple(args, "iiii|EntityAt", &x, &y, &width, &height))
             return 0;
 
-        int x2=x+width;
-        int y2=y+height;
+        int x2 = x+width;
+        int y2 = y+height;
 
         int count = 0;
         PyObject* pKey = 0;

@@ -1,3 +1,4 @@
+#include <cassert>
 #include <stdexcept>
 #include "tileset.h"
 
@@ -9,7 +10,7 @@
 
 Tileset::Tileset(const std::string& fname, Video::Driver* v)
     : video(v)
-    , nAnimtimer(0)
+    , animTimer(0)
 {
     CDEBUG("ctileset::loadvsp");
     vsp = new VSP;
@@ -18,13 +19,13 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
         throw std::runtime_error("Unable to load VSP file " + fname);
     }
     
-    nFrames = vsp->NumTiles();
-    nFramex = vsp->Width();
-    nFramey = vsp->Height();
+    frameCount = vsp->NumTiles();
+    frameWidth = vsp->Width();
+    frameHeight = vsp->Height();
     
     try {
-        hFrame.resize(nFrames);
-        for (int i = 0; i < nFrames; i++) {
+        hFrame.resize(frameCount);
+        for (int i = 0; i < frameCount; i++) {
             hFrame[i] = video->CreateImage(vsp->GetTile(i));
         }
     }
@@ -33,12 +34,11 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
     }
     
     // Next up, set up the tile animation stuff
-    nTileidx.resize(nFrames);                                   // Make the vectors fit
-    bFlip.resize(nFrames);
-    for (int i = 0; i < nFrames; i++)
-    {
-        nTileidx[i] = i;                                         // set initial values for the vectors
-        bFlip[i] = false;
+    tileIndex.resize(frameCount);                               // Make the vectors fit
+    flipFlag.resize(frameCount);
+    for (int i = 0; i < frameCount; i++) {
+        tileIndex[i] = i;                                       // set initial values for the vectors
+        flipFlag[i] = false;
     }
 
     animstate = vsp->vspAnim;
@@ -47,10 +47,10 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
     }
 }
 
-Tileset::~Tileset()
-{
-    for (int i = 0; i < nFrames; i++)
+Tileset::~Tileset() {
+    for (int i = 0; i < frameCount; i++) {
         video->FreeImage(hFrame[i]);
+    }
 }
 
 void Tileset::Save(const std::string& fileName) const {
@@ -58,94 +58,89 @@ void Tileset::Save(const std::string& fileName) const {
 }
 
 Video::Image* Tileset::GetTile(uint index) const {
-    if (hFrame.empty()) {
-        return 0;
-    }
+    if (hFrame.empty()) return 0;
 
-    if (index < 0 || index >= nTileidx.size()) {
-        index = 0;
-    }
+    if (index < 0 || index >= tileIndex.size()) index = 0;
 
-    index = nTileidx[index];
+    index = tileIndex[index];
 
-    if (index < 0 || index >= nTileidx.size()) {
-        index = 0;
-    }
+    if (index < 0 || index >= tileIndex.size()) index = 0;
 
     return hFrame[index];
 }
 
-void Tileset::UpdateAnimation(int time)
-{
-    int i = time - nAnimtimer;					// how many ticks have elapsed?
-    nAnimtimer = time;
+void Tileset::UpdateAnimation(int time) {
+    int i = time - animTimer;					// how many ticks have elapsed?
+    animTimer = time;
     if (i < 1) return;						// not very much, wait a little longer
     if (i > 100) i = 100;   // hack
     
-    while (i--)
-    {
-        for (int j = 0; j < 100; j++)
-            if (animstate[j].start != animstate[j].finish)
+    while (i--) {
+        for (int j = 0; j < 100; j++) {
+            if (animstate[j].start < animstate[j].finish) {
                 AnimateStrand(animstate[j]);
+            }
+        }
     }
 }
 
-void Tileset::AnimateStrand(VSP::AnimState& anim)
-{
-    int i;
-    
+void Tileset::AnimateStrand(VSP::AnimState& anim) {
     anim.count--;
     
     if (anim.count > 0)	return;
     
-    switch(anim.mode)
-    {
-    case VSP::linear:
-        for (i = anim.start; i < anim.finish; i++)
-        {
-            nTileidx[i]++;
-            if (nTileidx[i] > anim.finish)
-                nTileidx[i] = anim.start;
-        }
-        break;
-
-    case VSP::reverse:
-        for (i = anim.start; i < anim.finish; i++)
-        {
-            nTileidx[i]--;
-            if (nTileidx[i] < anim.start)
-                nTileidx[i] = anim.finish;
-        }
-        break;
-
-    case VSP::random:
-        for (i = anim.start; i < anim.finish; i++)
-            nTileidx[i] = Random(anim.start, anim.finish + 1);
-        break;
-
-    case VSP::  flip:
-        for (i = anim.start; i < anim.finish; i++)
-        {
-            if (bFlip[i])
-            {
-                nTileidx[i]++;
-                if (nTileidx[i] > anim.finish)
-                {
-                    nTileidx[i] = anim.start;
-                    bFlip[i] = !bFlip[i];
+    switch(anim.mode) {
+        case VSP::linear: {
+            for (int i = anim.start; i <= anim.finish; i++) {
+                tileIndex[i]++;
+                if (tileIndex[i] > anim.finish) {
+                    tileIndex[i] = anim.start;
                 }
             }
-            else
-            {
-                nTileidx[i]--;
-                if (nTileidx[i] < anim.start)
-                {
-                    nTileidx[i] = anim.finish;
-                    bFlip[i] = !bFlip[i];
+            break;
+        }
+
+        case VSP::reverse: {
+            for (int i = anim.start; i <= anim.finish; i++) {
+                tileIndex[i]--;
+                if (tileIndex[i] < anim.start)
+                    tileIndex[i] = anim.finish;
+            }
+            break;
+        }
+
+        case VSP::random: {
+            for (int i = anim.start; i <= anim.finish; i++) {
+                tileIndex[i] = Random(anim.start, anim.finish + 1);
+            }
+            break;
+        }
+
+        case VSP::flip: {
+            for (int i = anim.start; i <= anim.finish; i++) {
+                std::vector<bool>::reference flipped = flipFlag[i];
+                std::vector<int>::reference index = tileIndex[i];
+
+                if (flipped && index <= anim.start) {
+                    flipped = false;
+                } else if (!flipped && index >= anim.finish) {
+                    flipped = true;
+                }
+
+                if (flipped) {
+                    index--;
+                } else {
+                    index++;
                 }
             }
+            break;
         }
-        break;
+
+#if _DEBUG
+        for (int i = anim.start; i <= anim.finish; i++) {
+            assert(anim.start <= tileIndex[i] && tileIndex[i] <= anim.finish);
+        }
+#endif
     }
     
     anim.count = anim.delay;

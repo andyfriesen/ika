@@ -7,13 +7,12 @@
 
 #include <map>
 
-namespace Video
-{
+namespace Video {
     struct Driver;
     struct Image;
 }
 
-struct SpriteException{};
+struct SpriteException { };
 
 /**
  *  A hardware dependant representation of a spriteset file.
@@ -23,7 +22,6 @@ struct Sprite : RefCounted {
 
     int	nHotx, nHoty;		                            ///< hotspot position
     int	nHotw, nHoth;		                            ///< hotspot size
-
 
     Sprite(const std::string& fname, Video::Driver* v);
     virtual ~Sprite();
@@ -52,14 +50,14 @@ private:
 
 /**
  *  Responsible for handling sprite allocation and deallocation.
- *  CSpriteController also keeps tabs on redundant requests for the same sprite, and
+ *  SpriteController also keeps tabs on redundant requests for the same sprite, and
  *  refcounts accordingly.
  */
-struct CSpriteController {
+struct SpriteController {
     Sprite* Load(const std::string& fname, Video::Driver* video); ///< loads a CHR file
     void Free(Sprite* s);                                  ///< releases a CHR file
 
-    ~CSpriteController();
+    ~SpriteController();
 
 private:
     typedef std::map<std::string, Sprite*> SpriteMap;

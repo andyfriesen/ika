@@ -297,7 +297,7 @@ void Entity::Update() {
 
             double m = (double)(destVector.y) / destVector.x;
 
-            // typical y=mx+b BS
+            // typical y = mx+b BS
             // targetY is where the entity "should" be on the Y axis, given its current X coordinate.
             int targetY = (int)((x - startX) * m) + startY;
             // deltaY is simply how many pixels up or down the entity must move this tick. (quantity, not direction, as we take the absolute value)

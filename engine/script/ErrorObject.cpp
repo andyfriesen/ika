@@ -34,10 +34,10 @@ namespace Script
         {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt=1;
+            type.ob_refcnt = 1;
             type.ob_type=&PyType_Type;
             type.tp_name="ErrorHandler";
-            type.tp_basicsize=sizeof type;
+            type.tp_basicsize = sizeof type;
             type.tp_dealloc=(destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;

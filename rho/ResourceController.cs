@@ -25,7 +25,7 @@ namespace rho {
         public object this[string fname] {
             get {
                 foreach (Resource r in resources)
-                    if (r.fname==fname) {
+                    if (r.fname == fname) {
                         r.refcount++;
                         return r.o;
                     }
@@ -39,9 +39,9 @@ namespace rho {
 
         public void Free(object o) {
             foreach (Resource r in resources)
-                if (r.o==o) {
+                if (r.o == o) {
                     r.refcount--;
-                    if (r.refcount==0) {
+                    if (r.refcount == 0) {
                         ((IDisposable)o).Dispose();
                         resources.Remove(r);	// now the GCer can clean up at its leisure.
                     }

@@ -1,9 +1,19 @@
+# Entity movement classes
+# Coded by Andy Friesen
+# Copyright whenever.  All rights reserved.
+#
+# This source code may be used for any purpose, provided that
+# the original author is never misrepresented in any way.
+#
+# There is no warranty, express or implied on the functionality, or
+# suitability of this code for any purpose.
+
 import ika
 
 class Wander(object):
     MOVE = 0
     WAIT = 1
-    
+
     def __init__(self, delay, steps):
         self.delay = delay
         self.steps = steps
@@ -32,24 +42,38 @@ class Script(object):
     def __init__(self):
         self.script = []
         self.offset = 0
+        self.killed = False
+
+    def Reset(self):
+        self.killed = False
+        self.offset = 0
+
+    def Kill(self, ent):
+        self.killed = True
+        ent.Stop()
+        ent.movescript = None
 
     def __call__(self, ent):
+        assert not self.killed
+
         if len(self.script) == 0:
-            ent.movescript = ''             # end of script (there is no script :P)
+            self.Kill(ent)             # end of script (there is no script :P)
             return
 
+        s = self.script[self.offset]
         self.offset += 1
-        if self.offset >= len(self.script):       # end of script.  Terminate.
-            ent.movescript = ''
-            return
+        s(ent)
 
-        self.script[self.offset](ent)
+        if self.offset >= len(self.script):       # end of script.  Terminate.
+            #ent.movescript = None
+            self.Kill(ent)
+            return
 
     def Clone(self):
         '''
         Each individual Script instance should be used for one, and only one entity, or the state
         will get all messed up.
-        
+
         This method returns clone of the script; use this if you want many entities to use the same move script.
         '''
         clone = Script()
@@ -60,7 +84,7 @@ class Script(object):
     Now, for defining the move script.
     Calling any of the following methods appends a command to the script.
     They all return a self reference, so you can just chain them along.
-    
+
     eg.
     MyMoveScript = (movescript.Script()        # the beginning parenth causes python to ignore line breaks
         .MoveRight(16)  # move right 16 pixels
@@ -114,15 +138,16 @@ class Script(object):
     def SetSpeed(self, speed):
         def doSetSpeed(ent):
             ent.speed = speed
-            
+
         self.script.append(doSetSpeed)
         return self
 
     def Stop(self):
         'Completely halts the movement script.'
-        
+
         def doStop(ent):
-            ent.movescript = ''
+            #ent.movescript = None
+            self.Kill(ent)
 
         self.script.append(doStop)
         return self
@@ -132,4 +157,12 @@ class Script(object):
             self.offset = 0    # we retain the outer self reference, and can use it like this. >:D
 
         self.script.append(doLoop)
-        return None         # No point in chaining any further.
+        return self
+
+class Follow(object):
+    def __init__(self, ent, target):
+        self.ent = ent
+        self.target = target
+
+    def __call__(self, ent):
+        ent.MoveTo(self.target.x, self.target.y)

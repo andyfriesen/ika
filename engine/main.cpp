@@ -63,7 +63,7 @@ void Engine::CheckMessages() {
             case SDL_KEYDOWN: {
                 the<Input>()->KeyDown(event.key.keysym.sym);
                 // bottom line screenshot if F11 is pressed
-                //if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
+                //if (event.key.keysym.sym == SDLK_F11 && event.key.state == SDL_PRESSED)
                 //    ScreenShot();
 
                 // Alt-F4: Quit.  Now.
@@ -394,12 +394,13 @@ void Engine::RenderLayer(uint layerIndex) {
         firstY = 0;
     }
 
-    if (!layer->wrapx) {
-	    if ((uint)(firstX + lenX) > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
-	}
-    if (!layer->wrapy) {
-		if ((uint)(firstY + lenY) > layer->Height()) lenY = layer->Height() - firstY;
-	}
+    if (!layer->wrapx && (uint)(firstX + lenX) > layer->Width()) {
+        lenX = layer->Width() - firstX;
+    }
+
+    if (!layer->wrapy && (uint)(firstY + lenY) > layer->Height()) {
+        lenY = layer->Height() - firstY;
+    }
 
     if (lenX < 1 || lenY < 1) return;   // not visible
 
@@ -413,21 +414,21 @@ void Engine::RenderLayer(uint layerIndex) {
     video->SetTint(layer->tintColour);
     video->SetBlendMode(Video::Normal);
 
-	for (int y = 0; y < lenY; y++) {
-		for (int x = 0; x < lenX; x++) {
+    for (int y = 0; y < lenY; y++) {
+        for (int x = 0; x < lenX; x++) {
             if (layer->wrapx || layer->wrapy) {
-              t = layer->tiles.GetPointer((firstX + x) % layer->Width(), (firstY + y) % layer->Height());
+                t = layer->tiles.GetPointer((firstX + x) % layer->Width(), (firstY + y) % layer->Height());
             }
 
-			video->BlitImage(tiles->GetTile(*t), curx, cury);
+            video->BlitImage(tiles->GetTile(*t), curx, cury);
 
-			curx += tiles->Width();
-			t++;
-		}
-		cury += tiles->Height();
-		curx = -adjustX;
-		t += xinc;
-	}
+            curx += tiles->Width();
+            t++;
+        }
+        cury += tiles->Height();
+        curx = -adjustX;
+        t += xinc;
+    }
 
     video->SetTint(oldTint);
 }

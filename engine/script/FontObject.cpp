@@ -53,10 +53,10 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt=1;
+            type.ob_refcnt = 1;
             type.ob_type=&PyType_Type;
             type.tp_name="Font";
-            type.tp_basicsize=sizeof type;
+            type.tp_basicsize = sizeof type;
             type.tp_dealloc=(destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;
@@ -76,7 +76,7 @@ namespace Script {
                 return 0;
             }
 
-            FontObject* font=PyObject_New(FontObject, type);
+            FontObject* font = PyObject_New(FontObject, type);
             if (!font) {
                 return 0;
             }
@@ -120,7 +120,7 @@ namespace Script {
                 return 0;
             }
 
-            Ika::Font* f=self->font;
+            Ika::Font* f = self->font;
             f->PrintString(x - f->StringWidth(message) / 2 , y, message);
 
             Py_INCREF(Py_None);

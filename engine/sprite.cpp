@@ -88,9 +88,9 @@ Video::Image* Sprite::GetFrame(uint frame) const
     return _frames[frame];
 }
 
-// -----------------------------------  CSpriteController methods ------------------------
+// -----------------------------------  SpriteController methods ------------------------
 
-Sprite* CSpriteController::Load(const std::string& fname, Video::Driver* video)
+Sprite* SpriteController::Load(const std::string& fname, Video::Driver* video)
 {
     CDEBUG("ccharactercontroller::load");
 
@@ -103,14 +103,14 @@ Sprite* CSpriteController::Load(const std::string& fname, Video::Driver* video)
 
     // Not already loaded, we'll have to do that now.
     Sprite* s = new Sprite(fname, video);
-    s->_fileName=fname;
+    s->_fileName = fname;
     s->ref();
     sprite[fname] = s;
 
     return s;
 }
 
-void CSpriteController::Free(Sprite* s)
+void SpriteController::Free(Sprite* s)
 {
     if (sprite.count(s->_fileName))
     {
@@ -125,7 +125,7 @@ void CSpriteController::Free(Sprite* s)
         Log::Write("Unallocated sprite tried to release!!  \"%s\"", s->_fileName.c_str());
 }
 
-CSpriteController::~CSpriteController()
+SpriteController::~SpriteController()
 {
     for (SpriteMap::iterator i = sprite.begin(); i != sprite.end(); i++)
     {

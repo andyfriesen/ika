@@ -97,7 +97,7 @@ namespace Script {
         if (!PyArg_ParseTuple(args, "i:wait", &ticks))
             return 0;
 
-        ::Entity* pSaveplayer=engine->player;
+        ::Entity* pSaveplayer = engine->player;
         engine->player = 0;                             // stop the player entity
 
         int t = GetTime();
@@ -145,7 +145,7 @@ namespace Script {
     }
 
     METHOD(ika_rgb) {
-        int r, g, b, a=255;
+        int r, g, b, a = 255;
 
         if (!PyArg_ParseTuple(args, "iii|i:RGB", &r, &g, &b, &a))
             return 0;
@@ -239,8 +239,8 @@ namespace Script {
         if (!PyArg_ParseTuple(args, "iiiii|EntitiesAt", &x, &y, &width, &height, &layer))
             return 0;
 
-        int x2=x+width;
-        int y2=y+height;
+        int x2 = x+width;
+        int y2 = y+height;
 
         std::vector< ::Script::Entity::EntityObject*> ents;
 

@@ -36,7 +36,7 @@ std::string CConfigFile::operator [](const std::string& key)
 {
     ConfigMap::iterator i = keys.find(key);
 
-    if (i==keys.end())
+    if (i == keys.end())
         return "";
 
     return i->second;

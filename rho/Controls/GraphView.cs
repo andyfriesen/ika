@@ -31,7 +31,7 @@ namespace rho.Controls {
         protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
 
-            if (Redraw==null)
+            if (Redraw == null)
                 return;
 
             // disable alpha blending; we're doing that offscreen

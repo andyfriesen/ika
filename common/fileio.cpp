@@ -40,7 +40,7 @@ std::string File::GetRealPath(const std::string& fname) {
             nSavepositionofdefaultdirectory = i;
             continue;
         }
-        if (sExtension==directoryinfo[i].sExtension) {
+        if (sExtension == directoryinfo[i].sExtension) {
             nSavepositionofdefaultdirectory=-1;
             sResult = directoryinfo[i].sPath + fname;
             break;
@@ -62,7 +62,7 @@ void File::AddPath(std::string sExtension, std::string sPath) {
     }
 
     for (unsigned int i = 0; i < directoryinfo.size(); i++) {
-        if (directoryinfo[i].sExtension==sExtension) {
+        if (directoryinfo[i].sExtension == sExtension) {
             directoryinfo[i].sPath = sPath;
             return;
         }
@@ -154,14 +154,14 @@ bool File::OpenWrite(const char *fname, bool bBinary) {
 }
 
 void File::Close() {
-    if (mode==closed) return;
+    if (mode == closed) return;
     fclose(f);
     mode = closed;
 }
 
 void File::Read(void* dest, int numbytes) {
-    if (numbytes==0)            return;
-    if (dest==NULL)                     return;
+    if (numbytes == 0)            return;
+    if (dest == NULL)                     return;
     if (mode!=open_read)        return;
 
     fread(dest, 1, numbytes, f);
@@ -226,8 +226,8 @@ std::string File::ReadAll() {
 }
 
 void File::Write(const void* source, int numbytes) {
-    if (numbytes==0)            return;
-    if (source==NULL)           return;
+    if (numbytes == 0)            return;
+    if (source == NULL)           return;
     if (mode!=open_write)       return;
 
     fwrite(source, 1, numbytes, f);
@@ -273,7 +273,7 @@ void File::WriteCompressed(const void* source, int numbytes) {
 }
 
 void File::Seek(int position) {
-    if (mode==closed)           return;
+    if (mode == closed)           return;
 
     fseek(f, position, SEEK_SET);
 }

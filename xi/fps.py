@@ -1,6 +1,6 @@
 # Simple FPS manager
-# coded by Andy Friesen
-# copyright whenever.  All rights reserved.
+# Coded by Andy Friesen
+# Copyright whenever.  All rights reserved.
 #
 # This source code may be used for any purpose, provided that
 # the original author is never misrepresented in any way.
@@ -10,24 +10,31 @@
 
 import ika
 
+MAX_SKIP = 10
+
 class FPSManager(object):
-    __slots__ = [
-        'count'
-        ]
+    def __init__(self, rate = 100):
+        self._rate = rate
+        self._ticksPerFrame = 100.0 / rate
+        self._nextTimeFrame = ika.GetTime()
+        self._skipCount = 0
 
-    def __init__(self):
-        self.count = ika.GetTime()
+    def render(self, func):
+        now = ika.GetTime()
 
-    def Render(self, func):
-        self.count += 1 # What we wish the time was
+        # ahead.  Pause a moment
+        if now < self._nextTimeFrame:
+            ika.Delay(int(self._nextTimeFrame - now))
 
-        t = ika.GetTime()
-        if t > self.count:     # behind schedule
-            return
+        # behind, skip
+        if now > self._nextTimeFrame and self._skipCount < MAX_SKIP:
+            self._skipCount += 1
+        else:
+            self._skipCount = 0
+            func()
+            ika.Video.ShowPage()
 
-        if t == self.count:    # ahead of schedule.  Wait a second.
-            ika.Delay(1)
-            
-        func()
-        ika.Video.ShowPage()
+        self._nextTimeFrame += self._ticksPerFrame
 
+    def sync(self):
+        self._nextTimeFrame = ika.GetTime()

@@ -134,6 +134,10 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "MainForm.resx"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
                     RelPath = "MenuBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -250,6 +254,11 @@
                 />
                 <File
                     RelPath = "Documents\Document.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Documents\DocumentFactory.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -381,6 +390,11 @@
                 <File
                     RelPath = "SpriteEditor\SpriteEditor.cs"
                     SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\SpriteFactory.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

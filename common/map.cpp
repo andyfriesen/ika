@@ -210,7 +210,7 @@ bool Map::Load(const std::string& filename) {
 
                         static bool warn1dot0 = false;
                         if (!warn1dot0) {
-                            Log::Write("Warning: 1.0 tileset loading will be officially dropped in 0.61");
+                            Log::Write("Warning: 1.0 map loading will be officially dropped in 0.61");
                             Log::Write("    Actually, they may still work, but this isn't guaranteed!");
                             Log::Write("    To convert the map to the current version, load and re-save");
                             Log::Write("    it in ikaMap");
@@ -218,7 +218,7 @@ bool Map::Load(const std::string& filename) {
                         }
 
                         compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
-                    } else if (ver == "1.1") {
+                    } else if (ver == "1.1" || ver == "1.2") {
                         std::string un64 = base64::decode(d64);
                         std::copy((u8*)un64.c_str(), (u8*)un64.c_str() + un64.length(), compressed.get());
                         compressedSize = un64.length();
@@ -240,7 +240,7 @@ bool Map::Load(const std::string& filename) {
 
                     if (ver == "1.0") {
                         compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
-                    } else if (ver == "1.1") {
+                    } else if (ver == "1.1" || ver == "1.2") {
                         std::string un64 = base64::decode(d64);
                         std::copy((u8*)(un64.c_str()), (u8*)(un64.c_str() + un64.length()), compressed.get());
                         compressedSize = un64.length();
@@ -322,7 +322,7 @@ bool Map::Load(const std::string& filename) {
 void Map::Save(const std::string& filename) {
     DataNode* rootNode = newNode("ika-map");
 
-    rootNode->addChild(newNode("version")->addChild("1.1"));
+    rootNode->addChild(newNode("version")->addChild("1.2"));
 
     {
         DataNode* infoNode = newNode("information")

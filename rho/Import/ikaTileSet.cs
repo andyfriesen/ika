@@ -3,7 +3,7 @@ using System.Collections;
 using System.Drawing;
 
 
-namespace Import {
+namespace rho.Import {
     class ikaTileset {
         Tileset Load(string fname) {
             return null;	// TODO: Implement

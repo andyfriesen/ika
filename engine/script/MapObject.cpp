@@ -73,13 +73,13 @@ namespace Script {
                 "use this as the layer's name, as if it were set in the editor."
             },
 
-            {   "GetLayerTintColour", (PyCFunction)Map_GetLayerTintColour,  METH_VARARGS,
-                "GetLayerTintColour(layerIndex) -> int\n\n"
+            {   "GetLayerTint", (PyCFunction)Map_GetLayerTint,  METH_VARARGS,
+                "GetLayerTint(layerIndex) -> int\n\n"
                 "Returns the tint colour of the layer with the given index."
             },
 
-            {   "SetLayerTintColour", (PyCFunction)Map_SetLayerTintColour,  METH_VARARGS,
-                "SetLayerTintColour(layerIndex, newTintColour)\n\n"
+            {   "SetLayerTint", (PyCFunction)Map_SetLayerTint,  METH_VARARGS,
+                "SetLayerTint(layerIndex, newTintColour)\n\n"
                 "Sets the layer's tint colour to newTintColour."
             },
 
@@ -411,10 +411,10 @@ namespace Script {
             return Py_None;
         }
 
-        METHOD(Map_GetLayerTintColour) {
+        METHOD(Map_GetLayerTint) {
             uint index;
 
-            if (!PyArg_ParseTuple(args, "i:Map.GetLayerTintColour", &index)) {
+            if (!PyArg_ParseTuple(args, "i:Map.GetLayerTint", &index)) {
                 return 0;
             }
 
@@ -426,11 +426,11 @@ namespace Script {
             return PyInt_FromLong(engine->map.GetLayer(index)->tintColour);
         }
 
-        METHOD(Map_SetLayerTintColour) {
+        METHOD(Map_SetLayerTint) {
             uint index;
             u32 newColour;
 
-            if (!PyArg_ParseTuple(args, "ii:Map.SetLayerTintColour", &index, &newColour))
+            if (!PyArg_ParseTuple(args, "ii:Map.SetLayerTint", &index, &newColour))
                 return 0;
 
             if (index >= engine->map.NumLayers()) {

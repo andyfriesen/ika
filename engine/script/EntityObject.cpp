@@ -266,7 +266,7 @@ namespace Script {
         }
 
         PyObject* New(::Entity* e) {
-            EntityObject* ent=PyObject_New(EntityObject, &type);
+            EntityObject* ent = PyObject_New(EntityObject, &type);
             if (!ent) {
                 return 0;
             }

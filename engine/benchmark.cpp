@@ -16,14 +16,14 @@ namespace
 {
     int testBlitImageEmpty()
     {
-        RGBA* pTemp=new RGBA[16*16];
+        RGBA* pTemp = new RGBA[16*16];
         memset(pTemp, 0, 16*16*sizeof(RGBA));
 
-        handle img=gfxCreateImage(16, 16);
+        handle img = gfxCreateImage(16, 16);
         gfxCopyPixelData(img, (u32*)pTemp, 16, 16);
 
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -35,14 +35,14 @@ namespace
 
     int testBlitImageFilled()
     {
-        RGBA* pTemp=new RGBA[16*16];
+        RGBA* pTemp = new RGBA[16*16];
         memset(pTemp, 255, 16*16*sizeof(RGBA));
 
-        handle img=gfxCreateImage(16, 16);
+        handle img = gfxCreateImage(16, 16);
         gfxCopyPixelData(img, (u32*)pTemp, 16, 16);
 
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -54,15 +54,15 @@ namespace
 
     int testBlitImageRandom()
     {
-        RGBA* pTemp=new RGBA[16*16];
-        for (int i=0; i<16*16; i++)
+        RGBA* pTemp = new RGBA[16*16];
+        for (int i = 0; i<16*16; i++)
             pTemp[i]=RGBA(Random(0, 255), Random(0, 255), Random(0, 255), Random(0, 255));
 
-        handle img=gfxCreateImage(16, 16);
+        handle img = gfxCreateImage(16, 16);
         gfxCopyPixelData(img, (u32*)pTemp, 16, 16);
 
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -78,11 +78,11 @@ namespace
 //    int testDirectTransformBlit();
     int testPoints()
     {
-        handle scr=gfxGetScreenImage();
+        handle scr = gfxGetScreenImage();
         RGBA c(255, 255, 255, 128);
 
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -93,13 +93,13 @@ namespace
     }
     int testLines()
     {
-        handle scr=gfxGetScreenImage();
+        handle scr = gfxGetScreenImage();
         RGBA c(255, 255, 255, 128);
-        int x1=0    , y1=0;
-        int x2=319  , y2=239;
+        int x1 = 0    , y1 = 0;
+        int x2 = 319  , y2 = 239;
 
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -121,10 +121,10 @@ namespace
             (u32)RGBA(0, 0, 255, 255)
         };
 
-        handle scr=gfxGetScreenImage();
+        handle scr = gfxGetScreenImage();
 
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -137,10 +137,10 @@ namespace
     int testRectangles()
     {
         RGBA c(128, 128, 128, 128);
-        handle scr=gfxGetScreenImage();
+        handle scr = gfxGetScreenImage();
 
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -153,7 +153,7 @@ namespace
     int testShowPage()
     {
         int t = timeGetTime();
-        int count=0;
+        int count = 0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
@@ -205,13 +205,13 @@ void Benchmark(HWND hwnd)
     gfxInit(hwnd, 320, 240, 32, false);
 
     int i;
-    for (i=0; i<nTests; i++)
+    for (i = 0; i<nTests; i++)
     {
-        tests[i].result=tests[i].function();
+        tests[i].result = tests[i].function();
     }
 
     Log::Init("benchmark.log");
-    for (i=0; i<nTests; i++)
+    for (i = 0; i<nTests; i++)
         Log::Write("%20s\t%ims", tests[i].name, tests[i].result);
 
     exit(-1);

@@ -513,7 +513,7 @@ namespace Script
 
         /*METHOD(ika_palettemorph)
         {
-            int r=255, g=255, b=255;
+            int r = 255, g = 255, b = 255;
 
             if (!PyArg_ParseTuple(args, "|iii:PaletteMorph", &r, &g, &b))
                 return NULL;

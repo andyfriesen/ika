@@ -1,6 +1,6 @@
-# Menu transition animator
-# coded by Andy Friesen
-# copyright whenever.  All rights reserved.
+# Menu transition classes
+# Coded by Andy Friesen
+# Copyright whenever.  All rights reserved.
 #
 # This source code may be used for any purpose, provided that
 # the original author is never misrepresented in any way.
@@ -8,121 +8,102 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-# Little note: I'm experimenting with notation here.
-# In this particular file, an underscore is being used
-# in place of the traditional 'self'.
-
-# Second note: Functional stuff is so nifty.
-
 import ika
-
-from misc import *
-
-from statelessproxy import *
 
 DEFAULT_TIME = 30
 
-class Transition(StatelessProxy):
+class Transition(object):
     def __init__(self):
-        StatelessProxy.__init__(self)
-        
-        if len(self.__dict__) != 0:
-            return
-        
-        self.time = DEFAULT_TIME
-        self.curtime = 0
-        self.windows = []  # The window itself
-        self.startend = [] # (start, end) (indeces match up with the windows list)
-        self.killqueue = []
-        
-    def AddWindow(self, window, end, remove = False):
-        if len(end) == 2:
-            end = (end[0], end[1], window.width, window.height)
+        self.children = []
 
-        if window in self.windows:
-            i = self.windows.index(window)
-            self.windows.pop(i)
-            self.startend.pop(i)
+    def findChild(self, child):
+        for i,iter in enumerate(self.children):
+            if iter.window == child:
+                return i
+        return None
 
-        self.windows.append(window)
-        self.startend.append((window.Rect, end))
+    def hasChild(self, child):
+        return self.findChild(child) is not None
 
-        if remove:
-            self.killqueue.append(window)
+    def addChild(self, child, startRect = None, endRect = None, time = None):
+        self.removeChild(child)
+        r = child.rect
+        self.children.append(WindowMover(child, startRect or r, endRect or r, time or DEFAULT_TIME))
 
-    def AddWindowReverse(self, window, start, remove = False):
-        if len(start) == 2:
-            start = (start[0], start[1], window.width, window.height)
+    def removeChild(self, child):
+        i = self.findChild(child)
+        if i is not None:
+            self.children.pop(i)
 
-        r = window.Rect
-        window.Rect = start
-        self.AddWindow(window, r, remove)
-
-    def RemoveWindow(self, window):
-        i = self.windows.index(window)
-        if i != -1:
-            self.windows.pop(i)
-            self.startend.pop(i)
-
-    def Reset(self):
-        self.curtime = 0
+    def update(self, timeDelta):
         i = 0
-        for wnd in self.windows:
-            r = wnd.Rect
-            self.startend[i] = (r, r)
-            i += 1
+        while i < len(self.children):
+            iter = self.children[i]
 
-    def Finish(self):
-        self.curtime = self.time
-        i = 0
-        for i in range(len(self.startend)):
-            start, end = self.startend[i]
-            self.windows[i].Rect = end
-            self.startend[i] = (end, end)
+            iter.update(timeDelta)
 
-        while len(self.killqueue):
-            i = self.windows.index(self.killqueue.pop())
-            self.windows.pop(i)
-            self.startend.pop(i)
+            if iter.isDone():
+                self.children.pop(i)
+            else:
+                i += 1
 
-    def Update(self, dt):
-        if dt == 0:
-            return
+    def draw(self):
+        for child in self.children:
+            child.draw()
 
-        if self.curtime + dt >= self.time:
-            self.Finish()
-            return
+    def execute(self, draw = None):
+        now = ika.GetTime()
+        done = False
+        draw = draw or ika.Map.Render
+        while not done:
+            done = True
 
-        self.curtime += dt
+            ika.Input.Update()
+            draw()
 
-        factor = float(dt) / self.time
-        for wnd, (start, end) in zip(self.windows, self.startend):
-            delta = map(lambda x, y: y - x, start, end)
-            wnd.Rect = map(lambda x, y: int(x + factor * y), wnd.Rect, delta)
-
-    def Draw(self):
-        for wnd in self.windows:
-            wnd.Draw()
-
-    def Execute(self):
-        self.curtime = 0
-        t = ika.GetTime()
-        while not self.Done:
-            t2 = ika.GetTime()
-            dt = t2 - t
-            t = t2
-
-            ika.Map.Render()
-
-            self.Update(dt)
-            self.Draw()
+            t = ika.GetTime()
+            delta = t - now
+            now = t
+            for child in self.children:
+                if not child.isDone():
+                    done = False
+                    child.update(delta)
+                child.draw()
 
             ika.Video.ShowPage()
-            while t == ika.GetTime():
-                ika.Input.Update()
 
-        ika.Input.Unpress()
+class WindowMover(object):
+    def __init__(self, window, startRect, endRect, time):
+        self.endTime = float(time)
+        self.time = 0.0
 
-    Done = property(lambda self: self.curtime == self.time)
+        # specifying just a position is fine: we'll use the current size of the window to fill in the gap
+        if len(startRect) == 2: startRect += window.size
+        if len(endRect) == 2:   endRect += window.size
 
-trans = Transition()
+        self.window = window
+        self.startRect = startRect
+        self.endRect = endRect
+
+        # change in position that occurs every tick.
+        self.delta = [(e - s) / self.endTime for s, e in zip(startRect, endRect)]
+
+        self.window.rect = startRect
+
+    def isDone(self):
+        return self.time >= self.endTime
+
+    def update(self, timeDelta):
+        if self.time + timeDelta >= self.endTime:
+            self.time = self.endTime
+            self.window.rect = self.endRect
+        else:
+            self.time += timeDelta
+
+            # typical interpolation stuff
+            # maybe parameterize the algorithm, so that we can have nonlinear movement.
+            # Maybe just use a matrix to express the transform.
+            self.window.rect = [int(d * self.time + s) for s, d in zip(self.startRect, self.delta)]
+
+    def draw(self):
+        self.window.draw()

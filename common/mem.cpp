@@ -36,8 +36,8 @@ void NukeChunk(void* p)
         return;
     }
 
-    for (i=memblocks->begin(); i!=memblocks->end(); i++) {
-        if ((*i)->ptr==p) {
+    for (i = memblocks->begin(); i!=memblocks->end(); i++) {
+        if ((*i)->ptr == p) {
             memblocks->remove(*i);
             return;
         }

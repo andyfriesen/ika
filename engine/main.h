@@ -43,7 +43,7 @@ public:                                                                         
     Tileset*                        tiles;                                          ///< Images.  Of Tiles.
     ScriptEngine                    script;
     
-    CSpriteController               sprite;                                         ///< sprite files
+    SpriteController               sprite;                                         ///< sprite files
     EntityList                      entities;                                       ///< entities
 
     Video::Driver*                  video;                                          ///< video. ;)
