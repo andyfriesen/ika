@@ -160,6 +160,17 @@ Keyboard::~Keyboard()
     }
 }
 
+void Keyboard::Unpress()
+{
+    for (KeyMap::iterator
+        iter = _keys.begin();
+        iter != _keys.end();
+        iter++)
+    {
+        iter->second->Unpress();
+    }
+}
+
 InputControl* Keyboard::GetControl(const std::string& name)
 {
     KeySymMap::iterator iter = _nameToKeySym.find(name);

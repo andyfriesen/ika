@@ -83,6 +83,15 @@ void Engine::CheckMessages()
             the<Input>()->KeyUp(event.key.keysym.sym);
             break;
 
+        case SDL_JOYAXISMOTION:
+            the<Input>()->JoyAxisMove(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+            break;
+
+        case SDL_JOYBUTTONDOWN:
+        case SDL_JOYBUTTONUP:
+            the<Input>()->JoyButtonChange(event.jbutton.which, event.jbutton.button, event.jbutton.state == SDL_PRESSED);
+            break;
+
         case SDL_QUIT:
             Shutdown();
             exit(0);
@@ -515,12 +524,12 @@ void Engine::CheckKeyBindings()
     // The "queue" is only one element big.  Unless someone hit two buttons in the same instant,
     // nobody will notice. (hopefully)
 
-    if (void* func = the<Input>()->GetQueuedEvent())
+    if (ScriptObject* func = the<Input>()->GetQueuedEvent())
     {
         // The key that triggered the event would be initially pressed if not for this.
         // This is not useful behaviour.
         the<Input>()->Unpress();
-        script.ExecObject(func);
+        script.ExecObject(*func);
     }
 }
 

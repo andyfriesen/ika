@@ -14,6 +14,7 @@ public:
 
     // no-op.
     virtual void Update(){}
+    virtual void Unpress();
 
     virtual InputControl* GetControl(const std::string& name);
 

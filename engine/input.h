@@ -24,11 +24,11 @@ class InputDevice
 public:
     virtual ~InputDevice(){}
 
-    virtual void Update() = 0;                              // poll the device
+    virtual void Update()  = 0;                             // poll the device
+    virtual void Unpress() = 0;                             // resets the delta of every control to 0
 
-    // The only polymorphic way to get a control.
-    // Most of the time, we'll have a pointer to a subclass anyway, so this
-    // is only really a provision to make the Python backend simpler.
+    // The only polymorphic way to get a control. (subclasses usually
+    // offer a better way than with arbitrary string identifiers)
     virtual InputControl* GetControl(const std::string& name) = 0;
 };
 
@@ -41,6 +41,9 @@ public:
     virtual float Position() = 0;
     virtual float Delta();
     virtual float PeekDelta();
+
+    // Pretty looking method for 'unpressing'.
+    inline  void  Unpress() { Position(); }
 
     // event thingies.  Python objects go here.
     ScriptObject onPress;

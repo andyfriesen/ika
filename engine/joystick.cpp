@@ -28,9 +28,16 @@ Joystick::~Joystick()
     SDL_JoystickClose(_joystick);
 }
 
-void Joystick::Update()
+void Joystick::Unpress()
 {
-    // do nothing
+    for (uint i = 0; i < _axes.size(); i++)
+    {
+        _axes[i]->Unpress();
+        _reverseAxes[i]->Unpress();
+    }
+
+    for (uint i = 0; i < _buttons.size(); i++)
+        _buttons[i]->Unpress();
 }
 
 InputControl* Joystick::GetControl(const std::string& name)

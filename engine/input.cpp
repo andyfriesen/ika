@@ -126,8 +126,13 @@ void Input::Flush()
 
 void Input::Unpress()
 {
-    // TODO: implement this.
-    assert(false);
+    _keyboard->Unpress();
+    _mouse->Unpress();
+    for (uint i = 0; i < _joysticks.size(); i++)
+    {
+        if (_joysticks[i])
+            _joysticks[i]->Unpress();
+    }
 }
 
 void Input::SetStandardControl(InputControl* const& ctrl, InputControl* newControl)
@@ -160,6 +165,7 @@ Input::Input()
     , right(_right)
     , enter(_enter)
     , cancel(_cancel)
+    , _eventQueue(0)
 {
     _joysticks.resize(SDL_NumJoysticks());
 

@@ -18,7 +18,7 @@ protected:
 
 public:
     ScriptObject();
-    ScriptObject(void* o);
+    explicit ScriptObject(void* o);
     ScriptObject(const ScriptObject& so);
     ~ScriptObject();
 

@@ -4,29 +4,34 @@
 #include "mouse.h"
 
 Mouse::Mouse()
-    : _xAxis(X)
-    , _yAxis(Y)
-    , _wheel(WHEEL)
-    , _left(1)
-    , _right(2)
-    , _middle(3)
+    : _xAxis(new MouseAxisControl(X))
+    , _yAxis(new MouseAxisControl(Y))
+    , _wheel(new MouseAxisControl(WHEEL))
+    , _left(new MouseButtonControl(1))
+    , _right(new MouseButtonControl(2))
+    , _middle(new MouseButtonControl(3))
 {
 }
 
-void Mouse::Update()
+void Mouse::Unpress()
 {
-    // No-op
+    _xAxis->Unpress();
+    _yAxis->Unpress();
+    _wheel->Unpress();
+    _left->Unpress();
+    _right->Unpress();
+    _middle->Unpress();
 }
 
 InputControl* Mouse::GetControl(const std::string& name)
 {
-    // hurk
-    if (name == "X")            return &_xAxis;
-    else if (name == "Y")       return &_yAxis;
-    else if (name == "WHEEL")   return &_wheel;
-    else if (name == "LEFT")    return &_left;
-    else if (name == "RIGHT")   return &_right;
-    else if (name == "MIDDLE")  return &_middle;
+     //hurk
+    if (name == "X")            return _xAxis.get();
+    else if (name == "Y")       return _yAxis.get();
+    else if (name == "WHEEL")   return _wheel.get();
+    else if (name == "LEFT")    return _left.get();
+    else if (name == "RIGHT")   return _right.get();
+    else if (name == "MIDDLE")  return _middle.get();
     else                        return 0;
 }
 
@@ -34,9 +39,9 @@ MouseAxisControl* Mouse::GetAxis(MouseAxis axis)
 {
     switch (axis)
     {
-    case X: return &_xAxis;
-    case Y: return &_yAxis;
-    case WHEEL: return &_wheel;
+    case X: return _xAxis.get();
+    case Y: return _yAxis.get();
+    case WHEEL: return _wheel.get();
     default:    return 0;
     }
 }
@@ -45,9 +50,9 @@ MouseButtonControl* Mouse::GetButton(uint button)
 {
     switch (button)
     {
-    case 0: return &_left;
-    case 1: return &_right;
-    case 2: return &_middle;
+    case 0: return _left.get();
+    case 1: return _right.get();
+    case 2: return _middle.get();
     default: return 0;
     }
 }

@@ -21,7 +21,8 @@ public:
     Joystick(uint index);
     ~Joystick();
 
-    virtual void Update();
+    virtual void Update() {}
+    virtual void Unpress();
     virtual InputControl* GetControl(const std::string& name);
 
     uint GetNumAxes() const;
