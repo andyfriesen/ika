@@ -77,6 +77,16 @@ namespace Script
                 "use this as the layer's name, as if it were set in the editor."
             },
 
+            {   "GetLayerTintColour", (PyCFunction)Map_GetLayerTintColour,  METH_VARARGS,
+                "GetLayerTintColour(layerIndex) -> int\n\n"
+                "Returns the tint colour of the layer with the given index."
+            },
+
+            {   "SetLayerTintColour", (PyCFunction)Map_SetLayerTintColour,  METH_VARARGS,
+                "SetLayerTintColour(layerIndex, newTintColour)\n\n"
+                "Sets the layer's tint colour to newTintColour."
+            },
+
             {   "FindLayerByName", (PyCFunction)Map_FindLayerByName,    METH_VARARGS,
                 "FindLayerByName(name) -> integer\n\n"
                 "Returns the index of the first layer with the given name, or None if no such layer\n"
@@ -404,6 +414,42 @@ namespace Script
             }
 
             engine->map.GetLayer(index)->label = newName;
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Map_GetLayerTintColour)
+        {
+            uint index;
+
+            if (!PyArg_ParseTuple(args, "i:Map.GetLayerTintColour", &index))
+                return 0;
+
+            if (index >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("The map has no layer number %i", index));
+                return 0;
+            }
+
+            return PyInt_FromLong(engine->map.GetLayer(index)->tintColour);
+        }
+
+        METHOD(Map_SetLayerTintColour)
+        {
+            uint index;
+            u32 newColour;
+
+            if (!PyArg_ParseTuple(args, "ii:Map.SetLayerTintColour", &index, &newColour))
+                return 0;
+
+            if (index >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("The map has no layer number %i", index));
+                return 0;
+            }
+
+            engine->map.GetLayer(index)->tintColour = newColour;
 
             Py_INCREF(Py_None);
             return Py_None;
