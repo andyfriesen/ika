@@ -4,7 +4,7 @@
 
 #include <list>
 #include "common/types.h"
-#include "script.h"
+#include "scriptobject.h"
 
 class HookList
 {

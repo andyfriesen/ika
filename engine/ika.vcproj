@@ -163,7 +163,16 @@
 				RelativePath=".\input.cpp">
 			</File>
 			<File
+				RelativePath=".\joystick.cpp">
+			</File>
+			<File
+				RelativePath=".\keyboard.cpp">
+			</File>
+			<File
 				RelativePath=".\main.cpp">
+			</File>
+			<File
+				RelativePath=".\mouse.cpp">
 			</File>
 			<File
 				RelativePath=".\script.cpp">
@@ -206,7 +215,16 @@
 				RelativePath=".\input.h">
 			</File>
 			<File
+				RelativePath=".\joystick.h">
+			</File>
+			<File
+				RelativePath=".\keyboard.h">
+			</File>
+			<File
 				RelativePath=".\main.h">
+			</File>
+			<File
+				RelativePath=".\mouse.h">
 			</File>
 			<File
 				RelativePath="resource.h">
@@ -359,13 +377,25 @@
 				RelativePath="script\ImageObject.cpp">
 			</File>
 			<File
+				RelativePath=".\script\InputDeviceObject.cpp">
+			</File>
+			<File
 				RelativePath="script\InputObject.cpp">
+			</File>
+			<File
+				RelativePath=".\script\JoystickObject.cpp">
+			</File>
+			<File
+				RelativePath=".\script\KeyboardObject.cpp">
 			</File>
 			<File
 				RelativePath="script\MapObject.cpp">
 			</File>
 			<File
 				RelativePath="script\ModuleFuncs.cpp">
+			</File>
+			<File
+				RelativePath=".\script\MouseObject.cpp">
 			</File>
 			<File
 				RelativePath="script\ObjectDefs.h">

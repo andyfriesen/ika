@@ -7,8 +7,8 @@
 
 #include "common/misc.h"
 #include "timer.h"
-#include "common/fileio.h"
 
+#include "input.h"
 #include "opengl/Driver.h"
 //#include "soft32/Driver.h"
 
@@ -65,7 +65,7 @@ void Engine::CheckMessages()
         switch (event.type)
         {
         case SDL_KEYDOWN:
-            input.KeyDown(event.key.keysym.sym);
+            the<Input>()->KeyDown(event.key.keysym.sym);
             // bottom line screenshot if F11 is pressed
 //            if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
 //                ScreenShot();
@@ -80,7 +80,7 @@ void Engine::CheckMessages()
             break;
 
         case SDL_KEYUP:
-            input.KeyUp(event.key.keysym.sym);
+            the<Input>()->KeyUp(event.key.keysym.sym);
             break;
 
         case SDL_QUIT:
@@ -163,7 +163,7 @@ void Engine::Startup()
         Log::Write("--------------------------");
 
         Log::Write("Initializing SDL");
-        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER
+        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER | SDL_INIT_JOYSTICK
 #ifndef _DEBUG
             | SDL_INIT_NOPARACHUTE
 #endif
@@ -202,6 +202,10 @@ void Engine::Startup()
                 SetClassLong(hWnd, GCL_HICON, (long)LoadIcon(GetModuleHandle(0), "AppIcon"));
         }
 #endif
+
+        Log::Write("Initializing Input");
+        SDL_JoystickEventState(SDL_ENABLE);
+        Input::GetInstance(); // force creation of the singleton instance.
 
         Log::Write("Initializing sound");
         Sound::Init(cfg.Int("nosound") != 0);
@@ -508,17 +512,15 @@ void Engine::GameTick()
 
 void Engine::CheckKeyBindings()
 {
-    // This isn't really optimal, but I dunno if anybody will notice.
-    // Pop whatever's on the top of the queue, and just handle that one.
-    // Flush the rest of the queue.
+    // The "queue" is only one element big.  Unless someone hit two buttons in the same instant,
+    // nobody will notice. (hopefully)
 
-    if (void* func = input.GetNextControlEvent())
+    if (void* func = the<Input>()->GetQueuedEvent())
     {
-        // I don't like this, but if I don't, then the key triggerings start to do weird things.
-        // Like, the key that triggered the hook will always initially be pressed. (not useful behaviour)
-        input.Unpress();
+        // The key that triggered the event would be initially pressed if not for this.
+        // This is not useful behaviour.
+        the<Input>()->Unpress();
         script.ExecObject(func);
-        input.ClearEventQueue();
     }
 }
 
@@ -647,7 +649,7 @@ void Engine::TestActivate(const Entity* player)
 
     // adjacent activation
 
-    if (!input.Enter().Pressed()) return;                           // From this point on, the only time we'd have to check this crap is if enter was pressed.
+    if (!the<Input>()->enter->Pressed()) return; // Don't check the rest unless enter was pressed.
 
     tx = player->x; ty = player->y;
     // entity activation
@@ -670,7 +672,7 @@ void Engine::TestActivate(const Entity* player)
         if (ent->activateScript)
         {
             script.ExecObject(ent->activateScript);
-            input.Flush();
+            the<Input>()->Flush();
             return;
         }
     }
@@ -694,7 +696,7 @@ void Engine::DestroyEntity(Entity* e)
 
             // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
             if (cameraTarget == e)  cameraTarget = 0;
-            if (pPlayer == e)       pPlayer = 0;
+            if (player == e)       player = 0;
 
             // actually nuke it
             entities.remove(e);
@@ -783,7 +785,7 @@ void Engine::SetCamera(Point p)
 Engine::Engine()
     : tiles(0)
     , video(0)
-    , pPlayer(0)
+    , player(0)
     , cameraTarget(0)
     , _isMapLoaded(false)
     , _recurseStop(false)

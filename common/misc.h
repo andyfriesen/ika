@@ -60,6 +60,13 @@ inline T clamp(T val, T lower, T upper)
     else return val;
 }
 
+// Neato singleton helper function.  Chad Austin's idea.
+template <typename T>
+inline T* the()
+{
+    return T::GetInstance();
+}
+
 bool IsPowerOf2(uint i);
 uint NextPowerOf2(uint i);
 
@@ -87,7 +94,7 @@ public:
 
     T* operator ->() { return  _data; }
     T& operator * () { return *_data; }
-    T* get()         { return  _data; }
+    T* get() const   { return  _data; }
 
     operator bool () { return _data != 0; }
   
@@ -113,7 +120,7 @@ public:
     T& operator[](int i) { return _data[i]; }
     T* operator ->() { return  _data; }
     T& operator * () { return *_data; }
-    T* get()         { return  _data; }
+    T* get() const   { return  _data; }
 
     operator bool () { return _data != 0; }
   

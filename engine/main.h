@@ -8,7 +8,6 @@
 #include "common/log.h"
 #include "common/misc.h"
 #include "video/Driver.h"
-#include "input.h"
 #include "hooklist.h"
 
 // engine components
@@ -45,7 +44,6 @@ public:                                                                         
     EntityList                      entities;                                       ///< entities ;P
 public:
     
-    Input                           input;                                          ///< keyboard/mouse (todo: joystick)
     Video::Driver*                  video;                                          ///< video. ;)
 
     bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
@@ -55,7 +53,7 @@ private:
     int                             xwin, ywin;                                     ///< world coordinates of the viewport
 
 public:
-    Entity*                         pPlayer;                                        ///< Points to the current player entity
+    Entity*                         player;                                        ///< Points to the current player entity
     Entity*                         cameraTarget;                                   ///< Points to the current camera target
     
     // Odds and ends

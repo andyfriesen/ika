@@ -58,7 +58,7 @@ env.Alias('common', libcommon)
 import distutils.sysconfig as sc
 PY_INC = sc.get_python_inc()
 PY_LIB = sc.get_config_var('LIBDEST')
-PY_VER = '23'#sc.get_config_var('VERSION')
+PY_VER = sc.get_config_var('VERSION')
 include(PY_INC)
 libs('m', 'python%s' % PY_VER)
 libpath(PY_LIB + '/config')

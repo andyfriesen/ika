@@ -1,6 +1,7 @@
 /*
 Map manipulation junque.
 */
+#include <cassert>
 #include "ObjectDefs.h"
 #include "main.h"
 #include "common/fileio.h"
@@ -188,11 +189,8 @@ namespace Script
         PyObject* New()
         {
             PyObject* map = PyObject_New(PyObject, &type);
-
-            if (!map)
-                return 0;
-
-            return (PyObject*)map;
+            assert(map != 0);
+            return map;
         }
 
         void Destroy(PyObject* self)

@@ -7,13 +7,20 @@
 #include <sstream>
 #include <map>
 #include "Python.h"
-#include "../input.h"
 
 // Rain of prototypes
 class CFont;
 struct Entity;
 class Engine;
 class Canvas;
+
+class Input;
+class InputDevice;
+class InputControl;
+class Keyboard;
+class Mouse;
+class Joystick;
+
 namespace audiere   {   class OutputStream; }
 namespace Video
 {
@@ -81,8 +88,7 @@ namespace Script
         struct ControlObject
         {
             PyObject_HEAD
-            Input::Control* control;
-            std::string name;
+            InputControl* control;
         };
 
         // Methods
@@ -92,7 +98,7 @@ namespace Script
 
         void Init();
         void Destroy(ControlObject* self);
-        PyObject* New(Input& input, const char* name);
+        PyObject* New(InputControl* control);
 
         // Method table
         extern PyMethodDef methods[];
@@ -190,6 +196,72 @@ namespace Script
         extern PyTypeObject type;
     }
 
+    namespace InputDevice
+    {
+        // Needed by subclasses.
+        extern PyTypeObject type;
+
+        struct DeviceObject
+        {
+            PyObject_HEAD
+            ::InputDevice* device;
+        };
+
+        // Methods
+        METHOD1(Device_Update, DeviceObject);
+        METHOD(Device_GetControl, DeviceObject);
+
+        void Init();
+        PyObject* New(::InputDevice* device);
+        void Destroy(DeviceObject* self);
+
+        // Method table
+        extern PyMethodDef methods[];
+    }
+
+    namespace Keyboard
+    {
+        METHOD1(Keyboard_GetKey, PyObject);
+        METHOD1(Keyboard_WasKeyPressed, PyObject);
+        METHOD1(Keyboard_ClearKeyQueue, PyObject);
+
+        void Init();
+        PyObject* New();
+        void Destroy(PyObject* self);
+
+        extern PyMethodDef methods[];
+    }
+
+    namespace Mouse
+    {
+        void Init();
+        PyObject* New();
+        void Destroy(PyObject* self);
+
+        extern PyMethodDef methods[];
+    }
+
+    namespace Joystick
+    {
+        struct JoystickObject
+        {
+            PyObject_HEAD
+            ::Joystick* joystick;
+
+            // Tuples containing all the controls.
+            PyObject* axes;
+            PyObject* reverseAxes;
+            PyObject* buttons;
+        };
+
+        void Init();
+        PyObject* New(::Joystick* joystick);
+        void Destroy(JoystickObject* self);
+
+        // Method table
+        extern PyMethodDef methods[];
+    }
+
     // Singletons
     /// Reflects the input core.
     namespace Input
@@ -198,19 +270,16 @@ namespace Script
         struct InputObject
         {
             PyObject_HEAD
-            ::Input* input;
+            PyObject* keyboard;
+            PyObject* mouse;
+            PyObject* joysticks; // tuple containing joystick objects
         };
 
         // Methods
         METHOD1(Input_Update, InputObject);
-        METHOD1(Input_Unpress, InputObject);
-        METHOD(Input_GetControl, InputObject);
-        METHOD1(Input_GetKey, InputObject);
-        METHOD1(Input_ClearKeyQueue, InputObject);
-        METHOD1(Input_WasKeyPressed, InputObject);
 
         void Init();
-        PyObject* New(::Input& i);
+        PyObject* New();
         void Destroy(InputObject* self);
 
         // Method table

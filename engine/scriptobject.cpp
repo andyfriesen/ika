@@ -3,6 +3,12 @@
 
 std::set<ScriptObject*> ScriptObject::_instances;
 
+ScriptObject::ScriptObject()
+    : _object(0)
+{
+    _instances.insert(this);
+}
+
 ScriptObject::ScriptObject(void* o)
     : _object(o)
 {

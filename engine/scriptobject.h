@@ -17,6 +17,7 @@ protected:
     void release();
 
 public:
+    ScriptObject();
     ScriptObject(void* o);
     ScriptObject(const ScriptObject& so);
     ~ScriptObject();

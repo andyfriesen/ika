@@ -99,8 +99,8 @@ namespace Script
         if (!PyArg_ParseTuple(args, "i:wait", &ticks))
             return 0;
 
-        ::Entity* pSaveplayer=engine->pPlayer;
-        engine->pPlayer = 0;                             // stop the player entity
+        ::Entity* pSaveplayer=engine->player;
+        engine->player = 0;                             // stop the player entity
 
         int t = GetTime();
         int endtime = ticks + t;
@@ -119,7 +119,7 @@ namespace Script
             engine->video->ShowPage();
         }
 
-        engine->pPlayer = pSaveplayer;                   // restore the player
+        engine->player = pSaveplayer;                   // restore the player
         Py_INCREF(Py_None);
         return Py_None;
     }
@@ -223,7 +223,7 @@ namespace Script
         {
             Py_XDECREF(playerent);
             playerent = 0;
-            engine->pPlayer = 0;
+            engine->player = 0;
         }
         else
         {
@@ -237,7 +237,7 @@ namespace Script
             Py_XDECREF(playerent);
             playerent = (PyObject*)ent;
 
-            engine->pPlayer = ent->ent;
+            engine->player = ent->ent;
         }
 
         PyObject* result = std_setcameraTarget(self, args);

@@ -7,7 +7,7 @@ namespace Script
     namespace Control
     {
         // A simple way to make sure that multiple control objects aren't created for the same control.
-        std::map<std::string, ControlObject*> _instances;
+        std::map<InputControl*, ControlObject*> _instances;
 
         PyTypeObject type;
 
@@ -95,35 +95,28 @@ namespace Script
             PyType_Ready(&type);
         }
  
-        PyObject* New(::Input& input, const char* name)
+        PyObject* New(InputControl* control)
         {
-            if (_instances.count(name))
+            assert(control);
+
+            if (_instances.count(control))
             {
-                ControlObject* c = _instances[name];
+                ControlObject* c = _instances[control];
                 Py_INCREF(c);
                 return (PyObject*)c;
             }
 
-            ::Input::Control* c = input[name];
-            if (!c)
-                return 0;
-
             ControlObject* ctrl = PyObject_New(ControlObject, &type);
-            new (ctrl) ControlObject;
 
-            ctrl->control = c;
-            ctrl->name = name;
-
-            _instances[name] = ctrl;
+            ctrl->control = control;
+            _instances[control] = ctrl;
 
             return (PyObject*)ctrl;
         }
 
         void Destroy(ControlObject* self)
         {
-            _instances.erase(self->name);
-
-            self->~ControlObject();
+            _instances.erase(self->control);
 
             PyObject_Del(self);
         }

@@ -12,7 +12,7 @@ namespace Script
     namespace Input
     {
         PyTypeObject type;
-        PyMappingMethods mappingmethods;
+        //PyMappingMethods mappingmethods;
 
         PyMethodDef methods[] =
         {
@@ -24,7 +24,7 @@ namespace Script
                 "its tasks."
             },
             
-            {   "Unpress",          (PyCFunction)Input_Unpress,     METH_NOARGS,
+            /*{   "Unpress",          (PyCFunction)Input_Unpress,     METH_NOARGS,
                 "Unpress()\n\n"
                 "Unsets the Pressed() property of all controls.  Has no effect on\n"
                 "their positions.\n"
@@ -54,21 +54,24 @@ namespace Script
                 "WasKeyPressed() -> bool\n\n"
                 "Returns True if there is a key in the key queue.  False if not.\n"
                 "(ie Input.GetKey() will return None if the result is False)"
-            },
+            },*/
 
             {   0   }
         };
 
         // proto
-        PyObject* Input_Subscript(InputObject* self, PyObject* key);
+        //PyObject* Input_Subscript(InputObject* self, PyObject* key);
 
 #define GET(x) PyObject* get ## x(InputObject* self)
-        GET(Up)     { return Input_GetControl(self, Py_BuildValue("(s)", "UP"));     }
-        GET(Down)   { return Input_GetControl(self, Py_BuildValue("(s)", "DOWN"));   }
-        GET(Left)   { return Input_GetControl(self, Py_BuildValue("(s)", "LEFT"));   }
-        GET(Right)  { return Input_GetControl(self, Py_BuildValue("(s)", "RIGHT"));  }
-        GET(Enter)  { return Input_GetControl(self, Py_BuildValue("(s)", "RETURN")); }
-        GET(Cancel) { return Input_GetControl(self, Py_BuildValue("(s)", "ESCAPE")); }
+        GET(Up)         { return Script::Control::New(the< ::Input>()->up);      }
+        GET(Down)       { return Script::Control::New(the< ::Input>()->down);    }
+        GET(Left)       { return Script::Control::New(the< ::Input>()->left);    }
+        GET(Right)      { return Script::Control::New(the< ::Input>()->right);   }
+        GET(Enter)      { return Script::Control::New(the< ::Input>()->enter);   }
+        GET(Cancel)     { return Script::Control::New(the< ::Input>()->cancel);  }
+        GET(Keyboard)   { Py_INCREF(self->keyboard); return self->keyboard;     }
+        GET(Mouse)      { Py_INCREF(self->mouse); return self->mouse;           }
+        GET(Joysticks)  { Py_INCREF(self->joysticks); return self->joysticks;   }
 #undef GET
 
         PyGetSetDef properties[] =
@@ -79,6 +82,9 @@ namespace Script
             {   "right",    (getter)getRight,   0,  "Gets the standard \"Right\" control."  },
             {   "enter",    (getter)getEnter,   0,  "Gets the standard \"Enter\" control."  },
             {   "cancel",   (getter)getCancel,  0,  "Gets the standard \"Cancel\" control." },
+            {   "keyboard", (getter)getKeyboard,0,  "Gets the keyboard device."             },
+            {   "mouse",    (getter)getMouse,   0,  "Gets the mouse device."                },
+            {   "joysticks",(getter)getJoysticks,0, "Gets a tuple containing all the connected joystick devices."   },
             {   0   }
         };
 
@@ -86,9 +92,9 @@ namespace Script
         {
             memset(&type, 0, sizeof type);
 
-            mappingmethods.mp_length = 0;
-            mappingmethods.mp_subscript = (binaryfunc)&Input_Subscript;
-            mappingmethods.mp_ass_subscript = 0;
+            //mappingmethods.mp_length = 0;
+            //mappingmethods.mp_subscript = (binaryfunc)&Input_Subscript;
+            //mappingmethods.mp_ass_subscript = 0;
 
             type.ob_refcnt = 1;
             type.ob_type = &PyType_Type;
@@ -97,20 +103,29 @@ namespace Script
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;
-            type.tp_as_mapping = &mappingmethods;
+            //type.tp_as_mapping = &mappingmethods;
             type.tp_doc = "Interface for hardware input devices. (such as the keyboard and mouse)";
 
             PyType_Ready(&type);
         }
 
-        PyObject* New(::Input& i)
+        PyObject* New()
         {
-            InputObject* input=PyObject_New(InputObject, &type);
+            InputObject* input = PyObject_New(InputObject, &type);
 
             if (!input)
-                return NULL;
+                return 0;
 
-            input->input = &i;
+            input->keyboard = Script::Keyboard::New();
+            input->mouse = Script::Mouse::New();
+
+            const uint numJoy = the< ::Input>()->NumJoysticks();
+            input->joysticks = PyTuple_New(numJoy);
+            for (uint i = 0; i < numJoy; i++)
+            {
+                PyObject* stick = Script::Joystick::New(the< ::Input>()->GetJoystick(i));
+                PyTuple_SET_ITEM(input->joysticks, i, stick);
+            }
 
             return (PyObject*)input;
         }
@@ -131,7 +146,7 @@ namespace Script
             return Py_None;
         }
 
-        METHOD1(Input_Unpress)
+/*        METHOD1(Input_Unpress)
         {
             self->input->Unpress();
 
@@ -171,12 +186,12 @@ namespace Script
         METHOD1(Input_WasKeyPressed)
         {
             return PyInt_FromLong(self->input->WasKeyPressed() ? 1 : 0);
-        }
+        }*/
 
 #undef METHOD
 #undef METHOD1
 
-        PyObject* Input_Subscript(InputObject* self, PyObject* key)
+        /*PyObject* Input_Subscript(InputObject* self, PyObject* key)
         {
             try
             {
@@ -196,6 +211,6 @@ namespace Script
                 PyErr_SetString(PyExc_SyntaxError, s);
                 return 0;
             }
-        }
+        }*/
     }
 }

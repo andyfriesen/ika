@@ -7,6 +7,7 @@
 #include "common/log.h"
 
 #include "main.h"
+#include "input.h"
 #include "script/ObjectDefs.h"
 
 using namespace Script;
@@ -37,6 +38,10 @@ void ScriptEngine::Init(Engine* njin)
     Script::Font::Init();
     Script::Canvas::Init();
     Script::Control::Init();
+    Script::InputDevice::Init();
+    Script::Keyboard::Init();
+    Script::Mouse::Init();
+    Script::Joystick::Init();
     // singletons
     Script::Video::Init();
     Script::Map::Init();
@@ -44,7 +49,7 @@ void ScriptEngine::Init(Engine* njin)
     Script::Error::Init();
 
     // Create singletons
-    PyObject* input = Script::Input::New(engine->input);
+    PyObject* input = Script::Input::New();
     PyObject* map = Script::Map::New();
     PyObject* video = Script::Video::New(engine->video);
 
@@ -239,7 +244,7 @@ void ScriptEngine::CallScript(const std::string& name)
     if (!mapModule)
         return;                                                                // no module loaded == no event
 
-    engine->input.Unpress();
+    the< ::Input>()->Flush();
 
     PyObject* dict = PyModule_GetDict(mapModule);
     PyObject* func = PyDict_GetItemString(dict, const_cast<char*>(name.c_str()));

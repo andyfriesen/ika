@@ -53,7 +53,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         cvs -z3 -d:pserver:anonymous@cvs.ika.sourceforge.net:/cvsroot/ika export -D today common engine iked ikaMap xi
         cd ..
         tar cjf ika-src-$version.tar.bz2 ika
-        rm -rf ika
+        #rm -rf ika
         echo Done.
     else
         echo "This don't work on nonwindows yet."

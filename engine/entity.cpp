@@ -5,6 +5,7 @@
 #include "common/log.h"
 #include "entity.h"
 #include "sprite.h"
+#include "input.h"
 #include "main.h"
 
 Entity::Entity(Engine* njin)
@@ -238,7 +239,7 @@ void Entity::Move(Direction d)
         Entity* pEnt = engine.DetectEntityCollision(this, newx, newy, sprite->nHotw, sprite->nHoth, layerIndex, true);
         if (pEnt && pEnt->obstructsEntities)
         {
-            if (this == engine.pPlayer && pEnt->adjActivateScript)  // Adjacent activation
+            if (this == engine.player && pEnt->adjActivateScript)  // Adjacent activation
                 engine.script.ExecObject(pEnt->adjActivateScript);
         
             Stop(); 
@@ -261,22 +262,22 @@ Direction Entity::HandlePlayer()
 {
     engine.TestActivate(this);
     
-    Input& input = engine.input;
+    Input* const input = the<Input>();
 
-    if (input.Up())
+    if (*input->up)
     {
-        if (input.Left())       return face_upleft;
-        if (input.Right())      return face_upright;
+        if (*input->left)    return face_upleft;
+        if (*input->right)   return face_upright;
         return face_up;
     }
-    if (input.Down())
+    if (*input->down)
     {
-        if (input.Left())       return face_downleft;
-        if (input.Right())      return face_downright;
+        if (*input->left)    return face_downleft;
+        if (*input->right)   return face_downright;
         return face_down;
     }
-    if (input.Left())       return face_left;                                   // by this point, the diagonal possibilities are already taken care of
-    if (input.Right())      return face_right;
+    if (*input->left)        return face_left;                                   // by this point, the diagonal possibilities are already taken care of
+    if (*input->right)       return face_right;
 
     return face_nothing;
 }
@@ -301,7 +302,7 @@ void Entity::Update()
     Direction newDir = face_nothing;;
 
     UpdateAnimation();
-    if (this == engine.pPlayer)
+    if (this == engine.player)
         newDir = HandlePlayer();
 
     if (delayCount == 0 && (x == destLocation.x && y == destLocation.y)) // Nothing to do?
