@@ -18,8 +18,7 @@ import window
 
 defaultwindow = window.Window()
 
-#defaultwindow.Load('window.png', 8)
-defaultwindow.Load('window10.png', 4)
+defaultwindow.Load('window.png', 4)
 defaultfont = ika.Font('arial.fnt')
 #defaultfont = Font('eb.fnt')
 defaultfont.tabsize = 64
@@ -38,25 +37,25 @@ class Widget(object):
         pass
 
     def DockLeft(self, wnd = None):
-        self.x = self.border
+        self.x = self.border * 2
         if wnd is not None:
             self.x += wnd.Right
         return self
     
     def DockRight(self, wnd = None):
-        y = wnd and wnd.Right or ika.GetScreenImage().width
-        self.x = y - self.width - self.border
+        x = wnd and wnd.Right or ika.GetScreenImage().width
+        self.x = x - self.width - self.border * 2
         return self
     
     def DockTop(self, wnd = None):
-        self.y = self.border
+        self.y = self.border * 2
         if wnd is not None:
             self.y += wnd.Bottom
         return self
     
     def DockBottom(self, wnd = None):
         y = wnd and wnd.Bottom or ika.GetScreenImage().height
-        self.y = y - self.height - self.border
+        self.y = y - self.height - self.border * 2
         return self
 
     def get_Position(self):        return self.x, self.y
@@ -64,14 +63,23 @@ class Widget(object):
 
     def get_Size(self):            return self.width, self.height
     def set_Size(self, value):     (self.width, self.height) = value
+    
+    def get_Rect(self):            return (self.x, self.y, self.width, self.height)
+    def set_Rect(self, r):         self.x, self.y, self.width, self.height = r
 
-    Position = property( lambda self: (self.width, self.height), set_Position, doc = 'Gets or sets the position')
+    Position = property(get_Position, set_Position, doc = 'Gets or sets the position')
     Size     = property(get_Size, set_Size, doc = 'Gets or sets the size (in pixels)')
+    Rect     = property(get_Rect, set_Rect)
 
-    Left     = property(lambda self: self.x)
-    Top      = property(lambda self: self.y)
-    Right    = property(lambda self: self.x + self.width)
-    Bottom   = property(lambda self: self.y + self.height)
+    def set_Left(self, value):      self.x = value
+    def set_Right(self, value):     self.width = value - self.x
+    def set_Top(self, value):       self.y = value
+    def set_Bottom(self, value):    self.height = value - self.y
+
+    Left     = property(lambda self: self.x, set_Left)
+    Top      = property(lambda self: self.y, set_Top)
+    Right    = property(lambda self: self.x + self.width, set_Right)
+    Bottom   = property(lambda self: self.y + self.height, set_Bottom)
 
 class Frame(Widget):
     "Base frame class.  A window, with things in it."
@@ -124,6 +132,8 @@ class TextFrame(Frame):
     def AutoSize(self):
         self.__text.AutoSize()
         self.Size = self.__text.Size
+
+    Text = property(lambda self: self.__text.Text)
     
 
 class TextLabel(Widget):
@@ -176,7 +186,6 @@ class TextLabel(Widget):
         curx = 0
         cury = 0
 
-        print 'Print:\t', self.YPage
         i = self.ypage
         while cury < self.height and i < len(self.text):
             self.PrintString(self.x + xoffset + curx, self.y + yoffset + cury, self.text[i])
@@ -199,14 +208,32 @@ class TextLabel(Widget):
         self.height = min(self.height, maxy)
 
     def set_YPage(self, value):
-        print value,'\t', self.ymax - self.height / self.font.height
         self.ypage = min(value, self.height - self.height / self.font.height)
 
+    def set_YMax(self, value):
+        self.ymax = value
+        self.AutoSize()
+
     YPage = property( lambda self: self.ypage, set_YPage )
+    YMax = property( lambda self: self.ymax, set_YMax )
+    Text = property(lambda self: self.text)
 
 class ColumnedTextLabel(Widget):
     'A text label that holds one or more columns of text.  Columns stay lined up.'
     __slots__ = Widget.__slots__ + [ 'font', 'columns', 'columngap' ]
+
+    #-------------------
+    class Row(object):
+        def __init__(self, text, row):
+            self.__text = text
+            self.__row = row
+
+        def __getitem__(self, idx):
+            return self.__text.column[idx].Text[row]
+
+        def __setitem__(self, idx, value):
+            self.__text.column[idx].Text[row] = value
+    #-------------------
 
     def __init__(self, x = 0, y = 0, columns = 1, font = defaultfont, columngap = 10):
         Widget.__init__(self, x, y)
@@ -241,8 +268,10 @@ class ColumnedTextLabel(Widget):
             c.Clear()
 
     def AddText(self,*args):
-        for i in range(min(len(args), len(self.columns))):
-            self.columns[i].AddText(args[i])
+        i = 0
+        for c in self.columns:
+            c.AddText(i < len(args) and args[i] or '')
+            i += 1
         self.AutoSize()
 
     def Draw(self, xoffset = 0, yoffset = 0):
@@ -268,7 +297,9 @@ class ColumnedTextLabel(Widget):
 
     def set_YMax(self, value):
         for c in self.columns:
-            c.ymax = value
+            c.ymax = value  # dirty; should be using the property.  But I'm going to resize it in a minute anyway.
+
+        self.AutoSize()            
 
     YPage = property( lambda self: self.columns[0].YPage, set_YPage )
     YMax = property( lambda self: self.columns[0].maxy, set_YMax )

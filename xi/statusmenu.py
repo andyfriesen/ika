@@ -16,51 +16,75 @@ import equipmenu
 
 from ika import input
 
-from menuwindows import StatusWindow, PortraitWindow, StatusBar, EquipWindow
+from menuwindows import StatusWindow, PortraitWindow, StatusBar, EquipWindow, SkillWindow
+from misc import *
 
 from party import party
 
-def Update(curchar):
-	global portraitwindow, statwindow, equipwindow
-	portraitwindow.Update(curchar)
-	statwindow.Update(curchar)
-	equipwindow.Update(curchar)
-	portraitwindow.DockTop().DockLeft()
-	statwindow.DockLeft(portraitwindow).DockTop()
-	equipwindow.DockLeft().DockTop(statwindow)
-	equipwindow.width = statwindow.Right
+class StatusMenu(object):
+    def __init__(_, statbar):
+        _.statbar = statbar
+        _.portraitwindow = PortraitWindow()
+        _.statwindow = StatusWindow()
+        _.equipwindow = EquipWindow()
+        _.skillwindow = SkillWindow()
+        _.charidx = 0
+        
+    CurChar = property(lambda _: party[_.charidx])
+    
+    def StartShow(_, trans):
+        _.Refresh(_.CurChar)
+        trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
+        trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
+        trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
+        trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, YRes()))
+        
+    def StartHide(_, trans):
+        trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
+        trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
+        trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)
+        trans.AddWindow(_.skillwindow, (_.skillwindow.x, YRes()), remove = True)
 
-def Execute():
-	global portraitwindow, statwindow, equipwindow
-	nCurchar=0
-	statbar=StatusBar()
-	statbar.Update()
-	statbar.DockTop().DockRight()
+    def Refresh(_, curchar):
+        _.portraitwindow.Refresh(curchar)
+        _.statwindow.Refresh(curchar)
+        _.equipwindow.Refresh(curchar)
+        _.skillwindow.Refresh(curchar)
+    
+        _.statbar.Refresh()
+        _.portraitwindow.DockTop().DockLeft()
+        _.statwindow.DockTop(_.portraitwindow).DockLeft()
+        _.statwindow.width = _.portraitwindow.width
+        _.equipwindow.DockTop().DockLeft(_.portraitwindow)
+        _.skillwindow.DockTop(_.equipwindow).DockLeft(_.statwindow)
+        _.equipwindow.Right = _.statbar.x - _.statbar.border * 2
+        _.skillwindow.width = _.equipwindow.width
 
-	portraitwindow = PortraitWindow()
-	statwindow = StatusWindow()
-	equipwindow = EquipWindow()
-
-	Update(party[nCurchar])
-
-	while 1:
-		ika.map.Render()
-		[ x.Draw() for x in (equipwindow, statwindow, statbar, portraitwindow) ]
-		ika.ShowPage()
-
-		input.Update()
-		if input.left and nCurchar>0:
-			input.left=0
-			nCurchar-=1
-			Update(party[nCurchar])
-
-		if input.right and nCurchar<len(party)-1:
-			input.right=0
-			nCurchar+=1
-			Update(party[nCurchar])
-
-		if input.enter or input.cancel:
-			input.enter=input.cancel=0
-			break
-
-	return True
+    def Execute(_):
+        curchar = 0
+    
+        _.Refresh(party[curchar])
+    
+        while 1:
+            ika.map.Render()
+            for x in (_.equipwindow, _.statwindow, _.statbar, _.portraitwindow, _.skillwindow):
+                x.Draw()
+                
+            ika.ShowPage()
+    
+            input.Update()
+            if input.left and curchar > 0:
+                input.left = 0
+                curchar -= 1
+                _.Refresh(party[curchar])
+    
+            if input.right and curchar < len(party) - 1:
+                input.right = 0
+                curchar += 1
+                _.Refresh(party[curchar])
+    
+            if input.enter or input.cancel:
+                input.enter = input.cancel = False
+                break
+    
+        return True

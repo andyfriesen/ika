@@ -13,22 +13,27 @@
 chars = {}  # every character in the game is in this dictionary.  The keys are the characters' names.
 party = []  # the characters in the current party are in this list, ordered according to the current roster
 
-player = None # the player entity.
-itemdb = None # item database thingie
-inv    = None # party's current inventory
+player  = None # the player entity.
+itemdb  = None # item database thingie
+skilldb = None # Skill database thingie
+inv     = None # party's current inventory
 
 #--------------- Imports ----------------
 
 import ika
 import char
 from item import *
+from skill import *
 from itemdatabase import ItemDatabase
+from skilldatabase import SkillDatabase
 
-def Init(itemdat = 'items.dat'):
-    global itemdb, inv
+def Init(itemdat = 'items.dat', fielditemeffects = None, battleitemeffects = None, skilldat = 'skills.dat', fieldskilleffects = None, battleskilleffects = None):
+    global itemdb, skilldb, inv
     
     itemdb = ItemDatabase()
-    itemdb.Init(itemdat)
+    itemdb.Init(itemdat, fielditemeffects, battleitemeffects)
+    skilldb = SkillDatabase()
+    skilldb.Init(skilldat, fieldskilleffects, battleskilleffects)
     inv = Inventory()
 
 #------------------------------------------------------------------------------
@@ -55,7 +60,7 @@ def AddCharacter(name,datname=''):
         ika.SetPlayer(player)
     else:
         chars[name].Spawn(player.x,player.y)
-        chars[name].ent.Chase(player,32)
+        chars[name].ent.Chase(player,24)
         chars[name].ent.isobs = False
         chars[name].ent.mapobs = False
         chars[name].ent.entobs = False

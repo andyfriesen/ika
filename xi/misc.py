@@ -38,3 +38,10 @@ def WrapText(s,wrapwidth):
 
 #--------------------------------------------------------------
 
+import ika
+
+def XRes():
+    return ika.GetScreenImage().width
+    
+def YRes():
+    return ika.GetScreenImage().height

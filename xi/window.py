@@ -90,6 +90,11 @@ class Window:
     #----------------------------------------------------------------
 
     def Draw(self, x1, y1, x2, y2):
+        b = self.Left / 2
+        x1 -= b
+        y1 -= b
+        x2 += b
+        y2 += b
         self.iTopleft.Blit(x1-self.iTopleft.width, y1-self.iTopleft.height)
         self.iTopright.Blit(x2, y1-self.iTopright.height)
         self.iBottomleft.Blit(x1-self.iBottomleft.width, y2)
@@ -114,7 +119,7 @@ class Window:
 #--------------------------------------------------------------------
 
 class SimpleWindow(object):
-    def __init__(self, bordercolour, backgroundcolour):
+    def __init__(self, bordercolour = RGB(0, 0, 0), backgroundcolour = RGB(0, 0, 255)):
         self.__border = bordercolour
         self.__bg = backgroundcolour
         self.Top = self.Bottom = self.Left = self.Right = 1 # border size

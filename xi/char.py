@@ -12,9 +12,13 @@ from ika import *
 import token
 from exception import XiException
 from item import *
+from skill import *
 from itemdatabase import ItemDatabase
+from skilldatabase import SkillDatabase
+import party
 
 itemdb = ItemDatabase()
+skilldb = SkillDatabase()
 
 class Character(object):
     def __init__(self, datfile):
@@ -50,6 +54,8 @@ class Character(object):
         for it in equiptypes:
             self.equip[it]=None
 
+        self.skills = SkillList()        
+
         self.CalcEquip()
 
     #--------------------------------------------------------------------
@@ -57,8 +63,9 @@ class Character(object):
     def CanEquip(self, itemname):
         "Returns true if the character can equip the item"
 
+        #if type(item) is str:   # you can pass a string or an Item object
         item = itemdb[itemname]
-
+        
         if self.charclass in item.equipby:
             return True
         if 'all' in item.equipby:
@@ -80,8 +87,30 @@ class Character(object):
 
     #--------------------------------------------------------------------
 
+    def SetEquip(self, itemname):
+        """
+        Adds the item to the character's current equipment.
+
+        Whatever that item is replacing is destroyed.  The
+        group's inventory is untouched.
+        """
+        item = itemdb[itemname]
+
+        if not item.equiptype in equiptypes:
+            raise XiException('Invalid equipment type '+`item.equiptype`)
+
+        self.equip[item.equiptype] = item
+        self.CalcEquip()
+
+    #--------------------------------------------------------------------
+
     def Equip(self, itemname):
-        "Equips the specified item."
+        """
+        Equips the specified item.equipby
+
+        If there's one in the group's inventory, it's taken from there.
+        The currently equipped item is put in the inventory, if applicable.
+        """
         
         item = itemdb[itemname]
         
@@ -89,9 +118,13 @@ class Character(object):
             raise XiException('Invalid equipment type '+`item.equiptype`)
 
         # put what was equipped before back (if anything was there)
-        self.Unequip(item.equiptype)
+        if self.equip[item.equiptype]:
+            party.inv.Give(self.equip[item.equiptype].name)
 
-        self.equip[item.equiptype]=item
+        if party.inv.Find(itemname) is not None:
+            party.inv.Take(itemname)
+            
+        self.equip[item.equiptype] = item
         self.CalcEquip()
 
     #--------------------------------------------------------------------
@@ -103,6 +136,7 @@ class Character(object):
             raise XiException('char.unequip: Invalid equip type specified.')
 
         self.equip[slot]=None
+        self.CalcEquip()
 
     #--------------------------------------------------------------------
 
@@ -127,6 +161,8 @@ class Character(object):
         for equip in self.equip.values():
             if equip is None:
                 continue
+            #self.maxHP += equip.hp
+            #self.maxMP += equip.mp
             self.str += equip.str
             self.vit += equip.vit
             self.mag += equip.mag
@@ -196,8 +232,6 @@ class Character(object):
                 self.initSPD, self.endSPD = GetPairOfNumbers(tokens)
             elif t =='luk':
                 self.initLUK, self.endLUK = GetPairOfNumbers(tokens)
-    #         elif t =="magic':
-    #            self.ParseMagicList(tokens)
 
             elif t =='/*':                  # comment skipper
                 t = tokens.Next()

@@ -16,75 +16,139 @@ import menu
 import itemmenu
 import statusmenu
 import widget
+import item
 
 from menu import Menu
 
 from menuwindows import *
-
-class EquipItemList(Menu):
-    def __init__(self):
-        Menu.__init__(self, textcontrol = widget.ColumnedTextLabel(columns = 2))
-        
-    def Update(self,char):
-        self.Clear()
-        for i in party.inv:
-            if char.CanEquip(i.Name):
-                self.menuitems.AddText(i.Name, str(i.qty))
-            else:
-                self.menuitems.AddText('~3' + i.Name, str(i.qty))
-                
-        self.AutoSize()
+from misc import *
 
 class EquipMenu(object):
-    def __init__(self):
-        self.equipwindow = EquipWindow()
-        self.portraitwindow = PortraitWindow()
-        self.statwindow = StatusWindow()
-        self.itemlist = EquipItemList()
-        self.charidx = 0
+    def __init__(_):
+        _.equipwindow = EquipWindow()
+        _.portraitwindow = PortraitWindow()
+        _.statwindow = StatusWindow()
+        _.itemlist = InventoryWindow()
+        _.statbar = StatusBar()
+        _.statbar.Refresh()
+        _.statbar.AutoSize()
+        _.statbar.DockTop().DockRight()
+        _.charidx = 0
+        _.slotidx = 0
+        _.itemlist.active = False
+        _.equipwindow.active = True
+        _.state = _.UpdateEquipWindow
+        _.description = widget.TextFrame()
+        _.description.AddText('')
 
-    def Refresh(self, char):
-        for x in (self.equipwindow, self.portraitwindow, self.statwindow, self.itemlist):
-            x.Update(char)
+    CurChar = property(lambda _: party.party[_.charidx])        
+
+    def StartShow(_, trans):
+        _.Refresh(_.CurChar)
+        trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
+        trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
+        trans.AddWindowReverse(_.description, (_.description.x, -_.description.height))
+        trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
+        trans.AddWindowReverse(_.itemlist, (_.itemlist.x, YRes()))
+        
+    def StartHide(_, trans):
+        trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
+        trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
+        trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True)
+        trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)
+        trans.AddWindow(_.itemlist, (_.itemlist.x, YRes()), remove = True)
+
+    def Refresh(_, char):
+        for x in (_.equipwindow, _.portraitwindow, _.statwindow):
+            x.Refresh(char)
+
+        _.itemlist.Refresh(lambda i: char.CanEquip(i.name))
 
         # Layout
-        self.portraitwindow.DockLeft().DockTop()
-        self.statwindow.DockLeft(self.portraitwindow).DockTop()
-        self.equipwindow.DockLeft().DockTop(self.statwindow)
-        self.equipwindow.width = self.statwindow.Right
-        self.itemlist.DockLeft()
-        self.itemlist.y = max(self.equipwindow.Bottom, self.portraitwindow.Bottom) + self.itemlist.border
+        _.portraitwindow.DockTop().DockLeft()
+        
+        _.description.DockTop().DockLeft(_.portraitwindow)
+        _.description.Right = _.statbar.x - _.statbar.border * 2
+        
+        _.statwindow.DockTop(_.portraitwindow).DockLeft()
+        _.statwindow.width = _.portraitwindow.width
+        _.equipwindow.DockTop(_.description).DockLeft(_.portraitwindow)
+        _.itemlist.DockTop(_.equipwindow).DockLeft(_.statwindow)
+        _.statbar.Refresh()
+        _.equipwindow.Right = _.statbar.x - _.statbar.border * 2
+        _.itemlist.width = _.equipwindow.width
 
-    def UpdateEquipWindow(self):
-        if input.left and self.charidx > 0:
-            self.charidx -= 1
-            self.Refresh(party.party[charidx])
+    def UpdateEquipWindow(_):
+        char = _.CurChar
+        
+        if input.left and _.charidx > 0:
+            input.left = False
+            _.charidx -= 1
+            _.Refresh(_.CurChar)
             
+        if input.right and _.charidx < len(party.party) - 1:
+            input.right = False
+            _.charidx += 1
+            _.Refresh(_.CurChar)
+
+        result = _.equipwindow.Update()
+
+        k = item.equiptypes[_.equipwindow.CursorPos]
+        i = char.equip[k]
+        _.description.text[0] = i and i.desc or ''
+
+        if result == -1 or result == None:
+            return result
+
+        _.slotidx = result
+        _.state = _.UpdateItemWindow
+        _.equipwindow.active = False
+        _.itemlist.active = True
+        return None
+
+    def UpdateItemWindow(_):
+        result = _.itemlist.Update()
+
+        i = party.inv[_.itemlist.CursorPos].item
+        _.description.text[0] = i and i.desc or ''
+
+        if result == None:
+            return None
+        elif result == -1:
+            _.state = _.UpdateEquipWindow
+            _.equipwindow.active = True
+            _.itemlist.active = False
+            return None
+
+        # actually change equipment here
+        char = party.party[_.charidx]
+        selecteditem = party.inv[_.itemlist.CursorPos].item
+        slot = item.equiptypes[_.equipwindow.CursorPos]
+
+        if char.CanEquip(selecteditem.name) and slot == selecteditem.equiptype:
+            char.Equip(selecteditem.name)
+
+            _.Refresh(party.party[_.charidx])
         
         return None
 
-    def UpdateItemWindow(self):
-        result = self.itemlist.Update()
-        return None
+    def Execute(_):
+        _.charidx = 0
+        _.Refresh(party.party[_.charidx])
 
-    def Execute(self):
-        self.charidx = 0
-        self.Refresh(party.party[self.charidx])
-
-        states = ( self.UpdateEquipWindow, self.UpdateItemWindow )
-        curstate = 0
+        _.state = _.UpdateEquipWindow
 
         while True:
             input.Update()
             
             ika.map.Render()
 
-            for x in (self.equipwindow, self.portraitwindow, self.statwindow, self.itemlist):
+            for x in (_.equipwindow, _.portraitwindow, _.statwindow, _.itemlist, _.statbar, _.description):
                 x.Draw()
 
             ika.ShowPage()
 
-            result = states[curstate]()
+            result = _.state()
 
             if input.cancel:
                 break

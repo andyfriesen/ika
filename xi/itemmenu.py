@@ -16,49 +16,59 @@ import widget
 import item
 import mainmenu
 from menuwindows import *
-import party
+from misc import *
 
 class ItemMenu(object):
-    def __init__(self):
-        self.menu = menu.Menu(textcontrol = widget.ColumnedTextLabel(columns = 2))
-
-        self.statbar = StatusBar()
-        self.statbar.Update()
-        self.statbar.AutoSize()
+    def __init__(_, statbar):
+        _.menu = InventoryWindow()
         
-        self.description = widget.TextFrame()
-        self.description.DockTop().DockLeft()
-        self.description.AddText( '' )
-        self.description.AutoSize()
+        _.statbar = statbar
 
-        self.statbar.DockTop().DockRight()
-        self.menu.DockLeft().DockTop(self.description)
-        self.description.width = self.statbar.x - self.description.x
-        self.menu.menuitems.YMax = 20
+        _.description = widget.TextFrame()
+        _.description.DockTop().DockLeft()
+        _.description.AddText( '' )
+        _.description.AutoSize()
+
+        _.menu.DockLeft().DockTop(_.description)
+        _.description.Right = _.statbar.x - _.statbar.border * 2
+        _.menu.YMax = (ika.GetScreenImage().height - _.menu.y - 20) / _.menu.Font.height
+
+    #--------------------------------------------
+    
+    def StartShow(_, trans):
+        _.description.DockTop().DockLeft()
+        _.menu.DockLeft().DockTop(_.description)
+        _.description.Right = _.statbar.x - _.statbar.border * 2
+        _.Refresh()
+        
+        trans.AddWindowReverse(_.description, (_.description.x, -_.description.height) )
+        trans.AddWindowReverse(_.menu, (_.menu.x, YRes()) )
+
+    #--------------------------------------------
+    
+    def StartHide(_, trans):
+        trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True )
+        trans.AddWindow(_.menu, (_.menu.x, YRes()), remove = True )
 
     #--------------------------------------------
 
-    def Refresh(self):
-        self.statbar.Update()
-        self.menu.Clear()
-        for itm in party.inv:
-            self.menu.AddText(itm.Name, str(itm.qty) )
-        self.menu.AutoSize()
+    def Refresh(_):
+        _.menu.Refresh(lambda i: i.consumable)
+        _.menu.AutoSize()
 
     #--------------------------------------------
 
-    def Execute(self):
-        self.Refresh()
+    def Execute(_):
         
         while True:
-            self.description.text[0] = party.inv[self.menu.CursorPos].Description
+            _.description.text[0] = party.inv[_.menu.CursorPos].Description
 
             ika.map.Render()
-            for x in (self.menu, self.statbar, self.description):
+            for x in (_.menu, _.statbar, _.description):
                 x.Draw()
             ika.ShowPage()
 
-            result = self.menu.Update()
+            result = _.menu.Update()
             if result == -1:
                 break
             

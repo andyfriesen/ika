@@ -9,57 +9,57 @@
 # suitability of this code for any purpose.
 
 class TokenStream:
-	def __init__(self,filename):
-		f=open(filename,'rt')
-		self.text=f.read()
-		self.curpos=0
-		f.close()
-		self.delimiters=' \t\n\0'
+    def __init__(self, filename):
+        f = open(filename, 'rt')
+        self.text = f.read()
+        self.curpos = 0
+        self.delimiters = ' \t\n\0'
+        f.close()
 
-	def EOF(self):
-		if self.curpos<len(self.text):
-			return 0
-		else:
-			return 1
+    def EOF(self):
+        if self.curpos < len(self.text):
+            return 0
+        else:
+            return 1
 
-	def GetChar(self):
-		if self.curpos>=len(self.text):
-			return 0
+    def GetChar(self):
+        if self.curpos >= len(self.text):
+            return 0
 
-		c=self.text[self.curpos]
-		self.curpos+=1
-		return c
+        c = self.text[self.curpos]
+        self.curpos += 1
+        return c
 
-	def WhiteSpace(self):
-		while 1:
-			c=self.text[self.curpos]
-			if not c in self.delimiters:
-				return
+    def WhiteSpace(self):
+        while 1:
+            c = self.text[self.curpos]
+            if not c in self.delimiters:
+                return
 
-			self.curpos+=1
+            self.curpos += 1
 
-	def Next(self):
-		self.WhiteSpace()
+    def Next(self):
+        self.WhiteSpace()
 
-		s=''
-		while 1:
-			c=self.GetChar()
+        s = ''
+        while 1:
+            c = self.GetChar()
 
-			if c in self.delimiters:
-				return s
+            if c in self.delimiters:
+                return s
 
-			s=s+c
+            s = s + c
 
-	def GetLine(self):
-		self.WhiteSpace()
+    def GetLine(self):
+        self.WhiteSpace()
 
-		s=''
-		while 1:
-			c=self.GetChar()
+        s = ''
+        while 1:
+            c = self.GetChar()
 
-			if c=='\n' or c=='':
-				return s
+            if c == '\n' or c == '':
+                return s
 
-			s=s+c
+            s = s + c
 
 

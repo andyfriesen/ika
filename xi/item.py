@@ -15,10 +15,10 @@ equiptypes= [ 'weapon', 'shield', 'armour', 'accessory' ]
 
 class Item(object):
     __slots__ = [ 'equiptype', 'name', 'desc', 'atk', 'Def', 'hit', 'eva',
-                  'str', 'vit', 'mag', 'wil', 'spd', 'luk', 'consumable',
+                  'hp', 'mp', 'str', 'vit', 'mag', 'wil', 'spd', 'luk', 'consumable',
                   'fieldeffect', 'battleeffect', 'cost', 'equipby', 'useby' ]
     def __init__(self):
-        equiptype = 'none'
+        self.equiptype = ''
         
         self.name = ''
         self.desc = ''
@@ -30,6 +30,8 @@ class Item(object):
         self.eva = 0
         
         # basic stats.  Usually only altered by the more exotic equipment.
+        self.hp = 0
+        self.mp = 0
         self.str = 0
         self.vit = 0
         self.mag = 0
@@ -80,7 +82,7 @@ class Inventory(object):
         'Returns the InventoryEntry containing the specified item, or None.'
 
         for i in self.items:
-            if i.item.name == itemname:
+            if i.Name == itemname:
                 return i
                 
         return None # item not found in inventory

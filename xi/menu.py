@@ -47,8 +47,20 @@ class Menu(widget.Frame):
     def set_YPage(self, value):
         self.menuitems.YPage = value
 
-    CursorPos = property(lambda self: self.ypos + self.YPage)
+    def set_YMax(self, value):
+        self.menuitems.YMax = value
+
+    def set_CursorPos(self, value):
+        if value - self.YPage < self.pagesize:
+            self.ypos = value
+        else:
+            self.YPage = value
+            self.ypos = 0
+
+    CursorPos = property(lambda self: self.ypos + self.YPage, set_CursorPos)
     YPage = property(lambda self: self.menuitems.YPage, set_YPage)
+    YMax = property(lambda self: self.menuitems.YMax, set_YMax)
+    Font = property(lambda self: self.menuitems.font)
 
     def Draw(self):
         widget.Frame.Draw(self)

@@ -66,9 +66,11 @@ class ItemDatabase(StatelessProxy):
                        
                 elif t == 'consumable':     i.consumable = True
                 elif t == 'cost':           i.cost = int(f.Next())
-                elif t == 'useeffect':      i.fieldeffect  = fieldeffects[f.Next()]
+                elif t == 'fieldeffect':    i.fieldeffect  = fieldeffects[f.Next()]
                 elif t == 'battleeffect':   i.battleeffect = battleeffects[f.Next()]
 
+                #elif t == 'hp':       i.hp = int(f.Next())
+                #elif t == 'mp':       i.mp = int(f.Next())
                 elif t == 'atk':      i.atk = int(f.Next())
                 elif t == 'def':      i.Def = int(f.Next())
                 elif t == 'hit':      i.hit = int(f.Next())
