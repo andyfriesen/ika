@@ -660,10 +660,12 @@ bool Map::Load(const char* fname)
     
     int nEnts;
     f.Read(nEnts);
+    entity.resize(nEnts);
     
     for (i=0; i<nEnts; i++)
     {
-        SMapEntity e;
+        SMapEntity& e=entity[i];
+        
         char c[1024];
         f.ReadString(c);        e.sName=c;
         f.Read(e.x);
@@ -689,8 +691,6 @@ bool Map::Load(const char* fname)
         f.ReadString(c);        e.sZone=c;
         f.ReadString(c);        e.sChasetarget=c;
         f.Read(e.nChasedist);
-        
-        entity.push_back(e);
     }
     
     f.Close();

@@ -794,6 +794,8 @@ Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
                 Sys_Error(va("Unable to load CHR file \"%s\"",temp));       // wah
             
             script.AddEntityToList(pEnt);
+
+            //log("%s",temp);
         }
         
         xwin=ywin=0;                                                        // just in case

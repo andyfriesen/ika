@@ -225,8 +225,6 @@ bool AlphaBlit(handle img,int x,int y)
     int xlen=img->rClip.right-img->rClip.left;
     int ylen=img->rClip.bottom-img->rClip.top;
     
-    if (w==0   || h==0)         return true;        // to avoid /0
-    
     DoClipping(x,y,xstart,xlen,ystart,ylen,hRenderdest->rClip);
     if (xlen<1 || ylen<1)	return true;	// offscreen
     
