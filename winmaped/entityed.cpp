@@ -16,21 +16,21 @@ void CEntityDlg::UpdateData(HWND hWnd)
     GetDlgItemText(hWnd,ID_EDNAME, c,255);
     curdata.name=c;
     
-    curdata.x				= GetDlgItemInt(hWnd,ID_EDX,NULL,false);
-    curdata.y				= GetDlgItemInt(hWnd,ID_EDY,NULL,false);
-    GetDlgItemText(hWnd,ID_EDCHR, c,255);			curdata.sCHRname		= c;
-    curdata.nSpeed			= GetDlgItemInt(hWnd,ID_EDSPEED,NULL,false);
-    GetDlgItemText(hWnd,ID_EDMSCRIPT, c,255);		curdata.sMovescript		= c;
-    GetDlgItemText(hWnd,ID_EDSCRIPT, c,255);			curdata.sActscript		= c;
-    curdata.nWandersteps	= GetDlgItemInt(hWnd,ID_EDSTEPS,NULL,false);
-    curdata.nWanderdelay	= GetDlgItemInt(hWnd,ID_EDDELAY,NULL,false);
-    curdata.wanderrect.left	= GetDlgItemInt(hWnd,ID_EDX1,NULL,false);
-    curdata.wanderrect.top	= GetDlgItemInt(hWnd,ID_EDY1,NULL,false);
-    curdata.wanderrect.right	= GetDlgItemInt(hWnd,ID_EDX2,NULL,false);
-    curdata.wanderrect.bottom	= GetDlgItemInt(hWnd,ID_EDY2,NULL,false);
-    GetDlgItemText(hWnd,IDC_EDMZONE, c,255);			curdata.sZone			= c;
-    GetDlgItemText(hWnd,IDC_EDCHASETARGET, c,255);	curdata.sChasetarget	= c;
-    curdata.nChasedist		= GetDlgItemInt(hWnd,IDC_EDCHASEDIST,NULL,false);
+    curdata.x                           = GetDlgItemInt(hWnd,ID_EDX,NULL,false);
+    curdata.y                           = GetDlgItemInt(hWnd,ID_EDY,NULL,false);
+    GetDlgItemText(hWnd,ID_EDCHR, c,255);                       curdata.sCHRname                = c;
+    curdata.nSpeed                      = GetDlgItemInt(hWnd,ID_EDSPEED,NULL,false);
+    GetDlgItemText(hWnd,ID_EDMSCRIPT, c,255);           curdata.moveScript              = c;
+    GetDlgItemText(hWnd,ID_EDSCRIPT, c,255);                    curdata.sActscript              = c;
+    curdata.nWandersteps        = GetDlgItemInt(hWnd,ID_EDSTEPS,NULL,false);
+    curdata.nWanderdelay        = GetDlgItemInt(hWnd,ID_EDDELAY,NULL,false);
+    curdata.wanderrect.left     = GetDlgItemInt(hWnd,ID_EDX1,NULL,false);
+    curdata.wanderrect.top      = GetDlgItemInt(hWnd,ID_EDY1,NULL,false);
+    curdata.wanderrect.right    = GetDlgItemInt(hWnd,ID_EDX2,NULL,false);
+    curdata.wanderrect.bottom   = GetDlgItemInt(hWnd,ID_EDY2,NULL,false);
+    GetDlgItemText(hWnd,IDC_EDMZONE, c,255);                    curdata.sZone                   = c;
+    GetDlgItemText(hWnd,IDC_EDCHASETARGET, c,255);      curdata.sChasetarget    = c;
+    curdata.nChasedist          = GetDlgItemInt(hWnd,IDC_EDCHASEDIST,NULL,false);
     
     curdata.bAdjacentactivation = IsDlgButtonChecked(hWnd,IDC_AUTOACTIVATE)?true:false;
     
@@ -48,7 +48,7 @@ void CEntityDlg::UpdateDialog(HWND hWnd)
     SetDlgItemText(hWnd,ID_EDCHR,curdata.sCHRname.c_str());
     SetDlgItemInt(hWnd,ID_EDSPEED,curdata.nSpeed,false);
     SetDlgItemText(hWnd,ID_EDSCRIPT ,curdata.sActscript.c_str());
-    SetDlgItemText(hWnd,ID_EDMSCRIPT,curdata.sMovescript.c_str());
+    SetDlgItemText(hWnd,ID_EDMSCRIPT,curdata.moveScript.c_str());
     SetDlgItemInt(hWnd,ID_EDSTEPS,curdata.nWandersteps,false);
     SetDlgItemInt(hWnd,ID_EDDELAY,curdata.nWanderdelay,false);
     SetDlgItemInt(hWnd,ID_EDX1,curdata.wanderrect.left,false);
@@ -67,9 +67,9 @@ void CEntityDlg::UpdateDialog(HWND hWnd)
     else
         CheckDlgButton(hWnd,IDC_AUTOACTIVATE,BST_CHECKED);
     
-    //	SetDlgItemText(hWnd,ID_LCHR,pMap->GetCHREntry(curdata.chrindex));
+    //  SetDlgItemText(hWnd,ID_LCHR,pMap->GetCHREntry(curdata.chrindex));
     
-    //	CheckDlgButton(hWnd,ID_MSTOPPED+curdata.state,BST_CHECKED);
+    //  CheckDlgButton(hWnd,ID_MSTOPPED+curdata.state,BST_CHECKED);
     
     switch(curdata.state)
     {

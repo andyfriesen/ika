@@ -9,10 +9,8 @@ CSprite::CSprite(const char* fname, Video::Driver* v)
     : video(v)
 {
     CCHRfile chr;
-    bool bResult = chr.Load(fname);
-    if (!bResult)
-        throw SpriteException();
-    
+    chr.Load(fname);
+        
     nFramex=chr.Width();
     nFramey=chr.Height();
     nHotx=chr.HotX();
@@ -20,9 +18,9 @@ CSprite::CSprite(const char* fname, Video::Driver* v)
     nHotw=chr.HotW();
     nHoth=chr.HotH();
     
-    sScript.resize(chr.sMovescript.size());
-    for (uint s = 0; s < chr.sMovescript.size(); s++)
-        sScript[s] = chr.sMovescript[s];
+    sScript.resize(chr.moveScripts.size());
+    for (uint s = 0; s < chr.moveScripts.size(); s++)
+        sScript[s] = chr.moveScripts[s];
     
     hFrame.resize(chr.NumFrames());
     for (uint i = 0; i < chr.NumFrames(); i++)

@@ -3,6 +3,7 @@
 #define ZONEEDITOR_H
 
 #include "wx/wx.h"
+#include "types.h"
 
 class CMapView;
 class Map;

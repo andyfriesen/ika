@@ -14,13 +14,14 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         cp iked/Release/iked.exe tempdist
         cp winmaped/Release/winmaped.exe tempdist
         cd tempdist
+        upx *.exe
         zip ../ika-core-$version.zip *
         cd ..
-        rm -rf tempdist
+        #rm -rf tempdist
         echo Done.
 
         echo Assembling the main dist zip...
-        mkdir tempdist
+        #mkdir tempdist
         mkdir tempdist/xi
         cp -R dist/* tempdist
         cp xi/* tempdist/xi
@@ -28,12 +29,18 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         cp engine/Release/ika.exe tempdist
         cp iked/Release/iked.exe tempdist
         cp winmaped/Release/winmaped.exe tempdist
-        upx tempdist/*.exe
         cd tempdist
         zip -r ../ika-win-$version.zip *
         cd ..
         #rm -rf tempdist
         echo Done.
+
+        echo Creating NSIS installer.
+        cd tempdist
+        /cygdrive/c/Program\ Files/NSIS/makensis.exe ../ika.nis && mv ika-install-$version.exe ..
+        cd ..
+        echo Done.
+        rm -rf tempdist
 
         echo Assembling source archive...
         mkdir ika

@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib opengl32.lib glu32.lib cppdom.lib"
 				OutputFile=".\Release/ika.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -96,7 +96,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib opengl32.lib glu32.lib cppdom_d.lib"
 				OutputFile=".\Debug/ika.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -231,10 +231,22 @@
 				RelativePath="..\common\CanvasBlitter.h">
 			</File>
 			<File
+				RelativePath="..\common\base64.cpp">
+			</File>
+			<File
+				RelativePath="..\common\base64.h">
+			</File>
+			<File
 				RelativePath="..\common\chr.cpp">
 			</File>
 			<File
 				RelativePath="..\common\chr.h">
+			</File>
+			<File
+				RelativePath="..\common\compression.cpp">
+			</File>
+			<File
+				RelativePath="..\common\compression.h">
 			</File>
 			<File
 				RelativePath="..\common\configfile.cpp">

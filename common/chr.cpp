@@ -650,14 +650,14 @@ void CCHRfile::SaveOld(const std::string& fname)
     
     f.Write((char)5);                                               // version - u8
     
-    f.Write(metaData["description"].c_str(), 64);                               // desc    - 64 byte string
+    f.Write(metaData["description"].c_str(), 64);                   // desc    - 64 byte string
     
     f.Write(moveScripts.size());                                    // write the number of scripts
     
     for (uint i = 0; i < moveScripts.size(); i++)
     {
         f.Write(moveScripts[i].length());                           // write the length
-        f.Write(moveScripts[i].c_str(), moveScripts[i].length());    // write the actual script
+        f.Write(moveScripts[i].c_str(), moveScripts[i].length());   // write the actual script
     }
     
     // Write the frame data

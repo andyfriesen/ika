@@ -585,7 +585,7 @@ void CMapView::Init()
 
     // Load CHRs
 
-    for (int i = 0; i < _map->NumEnts(); i++)
+    for (uint i = 0; i < _map->NumEnts(); i++)
     {
         // If it's not an absolute path, then it is assumed to be relative to the map file.
         wxFileName spriteName(_map->GetEntity(i).sCHRname.c_str());
@@ -601,7 +601,7 @@ void CMapView::Init()
     pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, _map->Width()  * pTileset->Width());
     xwin = ywin = 0;
 
-    for (int i = 0; i < _map->NumLayers(); i++)
+    for (uint i = 0; i < _map->NumLayers(); i++)
         nLayertoggle[i] = true;
 
     UpdateLayerList();
@@ -1064,11 +1064,12 @@ void CMapView::Render()
     {
         if (r[i] >= '0' && r[i] <= '9')
         {
-            int l = r[i] - '1';
+            uint l = r[i] - '1';
             if (r[i] == '0')
                 l = 10;
 
-            if (l >= 0 && l < _map->NumLayers() && nLayertoggle[l] != hidden)
+            // l is unsigned, so it will always be above zero.  If we have a "negative" layer, then l will be gigantic.
+            if (l < _map->NumLayers() && nLayertoggle[l] != hidden)
                 RenderLayer(l);
         }
         else if (r[i]=='E')
@@ -1098,7 +1099,7 @@ void CMapView::RenderEntities()
     y2 += ywin;
 
     // 1) figure out which entities to draw
-    for (int i = 0; i < _map->NumEnts(); i++)
+    for (uint i = 0; i < _map->NumEnts(); i++)
     {
         SMapEntity& e = _map->GetEntity(i);
 

@@ -136,6 +136,7 @@ void CSpriteSetView::OnSaveAs(wxCommandEvent& event)
         "Save CHR",
         "",
         "",
+        "ika-sprite files (*.ika-sprite)|*.ika-sprite|"
         "CHR files (*.chr)|*.chr|"
         "All files (*.*)|*.*",
         wxSAVE | wxOVERWRITE_PROMPT

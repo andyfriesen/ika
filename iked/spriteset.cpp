@@ -34,7 +34,14 @@ bool CSpriteSet::Load(const char* fname)
 
 bool CSpriteSet::Save(const char* fname)
 {
-    pCHR->Save(fname);
+    std::string fileName(fname);
+    int pos = fileName.rfind('.');
+    
+    // If the extension is CHR, then export to the old format.
+    if (pos != std::string::npos && Path::Compare("chr", fileName.substr(pos)) == true)
+        pCHR->SaveOld(fileName);
+    else
+        pCHR->Save(fname);
 
     return true;
 }
