@@ -27,7 +27,7 @@ float InputControl::PeekDelta()
     return Position() - _oldPos;
 }
 
-ScopedPtr<Input> Input::_theInstance = 0;
+ScopedPtr<Input> Input::_theInstance;
 
 Input* Input::GetInstance()
 {
