@@ -25,7 +25,12 @@ public:
         Input* _parent;
 
     protected:
-        Control(Input* p) : _refcount(0), _parent(p){}
+        Control(Input* p) 
+            : _refcount(0)
+            , _parent(p)
+            , onPress(0)
+            , onUnpress(0)
+        {}
 
         void UnregisterControl(int k);
         void UnregisterControl(const std::string& name);

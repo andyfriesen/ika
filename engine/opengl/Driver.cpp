@@ -28,6 +28,8 @@ namespace OpenGL
 
         glScissor(0, 0, _xres, _yres);
         glEnable(GL_SCISSOR_TEST);
+
+        glEnable(GL_TEXTURE_2D);
     }
 
     Driver::~Driver()
@@ -102,7 +104,7 @@ namespace OpenGL
             glEnable(GL_BLEND);
         else
             glDisable(GL_BLEND);
-
+glColor4f(1,0,0,1);
         SwitchTexture(img->_texture);
         glBegin(GL_QUADS);
         glTexCoord2f(0,0);          glVertex2i(x, y);

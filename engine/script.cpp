@@ -50,6 +50,7 @@ void CScriptEngine::Init(CEngine* p)
     Init_Sound();
     Init_Font();
     // singletons
+    Init_Video();
     Init_Map();
     Init_Input();
     Init_Error();
