@@ -105,7 +105,7 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_SCROLLWIN(CMapView::OnScroll)
     EVT_CLOSE(CMapView::OnClose)
     
-    EVT_MOUSE_EVENTS(CMapView::OnMouseMove)
+    EVT_MOUSE_EVENTS(CMapView::HandleMouse)
 END_EVENT_TABLE()
 
 CMapView::CMapView(CMainWnd* parent,const string& name)
@@ -228,7 +228,7 @@ void CMapView::HandleLayerEdit(wxMouseEvent& event)
     switch (csrmode)
     {
     case mode_normal:
-
+        break;
     }
 }
 

@@ -72,6 +72,7 @@ public:
 
 //------------------------------------------------------------
 
+    void HandleLayerEdit(wxMouseEvent& event);
     void HandleMouse(wxMouseEvent& event);
 
 //------------------------------------------------------------

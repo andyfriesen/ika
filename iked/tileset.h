@@ -54,11 +54,7 @@ public:
     VSP& GetVSP() { return *pVsp; }
 
     inline int GetCurTile() const { return nCurtile; }
-    inline void SetCurTile(int t)
-    {
-        if (t<0 || t>=pVsp->NumTiles()) return;
-        nCurtile=t;
-    }
+    void SetCurTile(int t);
 
     // TODO: methods for inserting/deleting tiles, and moving them around
 };
