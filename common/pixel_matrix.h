@@ -51,6 +51,7 @@ public:
     // blits
     void Blit(CPixelMatrix& dest,int x,int y);
     void OpaqueBlit(CPixelMatrix& dest,int x,int y);
+    template <typename BlendMode> void ScaleBlit(BlendMode& b,CPixelMatrix& dest,int x,int y,int w,int h);
     
     Rect& GetClipRect() { return cliprect; }
 };

@@ -1,5 +1,6 @@
 #include <windows.h>
 #include "pixel_matrix.h"
+#include "pixel_matrix_blitter.h"
 
 static inline void DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen,const Rect& rClip)
 {
@@ -204,6 +205,10 @@ void CPixelMatrix::Resize(int x,int y)
 // ............ this sucks
 void CPixelMatrix::Blit(CPixelMatrix& dest,int x,int y)
 {
+    CBlitter<Opaque>::Blit(*this,dest,x,y);
+    return;
+
+#if 0
     int xstart=cliprect.left;
     int ystart=cliprect.top;
     int xlen=cliprect.right-cliprect.left;
@@ -265,7 +270,7 @@ void CPixelMatrix::Blit(CPixelMatrix& dest,int x,int y)
     __asm
     {
 beginloop:
-    mov		eax,[pSrc]
+        mov		eax,[pSrc]
         mov		eax,dword ptr[eax]		// eax=*pSrc
         mov		ebx,eax			// ebx=*pSrc
         shr		eax,24			// al = alpha
@@ -279,7 +284,7 @@ beginloop:
         jmp		skipalpha
         
 alphablend:
-    cmp		al,0			// alpha=0, no blend at all
+        cmp		al,0			// alpha=0, no blend at all
         je		skipalpha
         
         mov		s,ebx			// s=*pSrc
@@ -352,7 +357,7 @@ alphablend:
         
 skipalpha:
     
-    add		pSrc,4			// ++pDest
+        add		pSrc,4			// ++pDest
         add		pDest,4			// ++pSrc
         mov		eax,x			// --x
         dec		eax
@@ -372,11 +377,16 @@ skipalpha:
         jnz		beginloop		// if (--y) continue
     }
 #endif
-    
+
+#endif
 }
 
 void CPixelMatrix::OpaqueBlit(CPixelMatrix& dest,int x,int y)
 {
+    CBlitter<Opaque>::Blit(*this,dest,x,y);
+    return;
+
+#if 0
     int xstart=cliprect.left;
     int ystart=cliprect.top;
     int xlen=cliprect.right-cliprect.left;
@@ -400,4 +410,5 @@ void CPixelMatrix::OpaqueBlit(CPixelMatrix& dest,int x,int y)
         pSrc+=Width();
         ylen--;
     }
+#endif
 }
