@@ -36,7 +36,13 @@ class CMapView : public IDocView
         darkened,
     };
 
-    CMainWnd*    pParentwnd;
+    enum CursorMode
+    {
+        mode_normal,
+        // copy/paste/etc...
+    };
+
+    CMainWnd*           pParentwnd;
 
     wxSashLayoutWindow* pLeftbar;
     wxSashLayoutWindow* pRightbar;
@@ -45,9 +51,10 @@ class CMapView : public IDocView
     CLayerVisibilityControl*
                         pLayerlist;
 
-    Map*         pMap;
+    Map*                pMap;
+    CTileSet*           pTileset;
 
-    CTileSet*    pTileset;
+    CursorMode          csrmode;
 
 public:
     CMapView(CMainWnd* parent,const string& fname);
@@ -65,10 +72,7 @@ public:
 
 //------------------------------------------------------------
 
-    void SetTile(int x,int y);
-
-    void OnLeftDown(wxMouseEvent& event);
-    void OnMouseMove(wxMouseEvent& event);
+    void HandleMouse(wxMouseEvent& event);
 
 //------------------------------------------------------------
 

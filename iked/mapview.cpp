@@ -104,10 +104,8 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_SIZE(CMapView::OnSize)
     EVT_SCROLLWIN(CMapView::OnScroll)
     EVT_CLOSE(CMapView::OnClose)
-
-    EVT_LEFT_DOWN(CMapView::OnLeftDown)
-    EVT_MOTION(CMapView::OnMouseMove)
-
+    
+    EVT_MOUSE_EVENTS(CMapView::OnMouseMove)
 END_EVENT_TABLE()
 
 CMapView::CMapView(CMainWnd* parent,const string& name)
@@ -225,7 +223,16 @@ void CMapView::OnClose()
 
 //------------------------------------------------------------
 
-void CMapView::OnLeftDown(wxMouseEvent& event)
+void CMapView::HandleLayerEdit(wxMouseEvent& event)
+{
+    switch (csrmode)
+    {
+    case mode_normal:
+
+    }
+}
+
+void CMapView::HandleMouse(wxMouseEvent& event)
 {
     wxPoint p=event.GetPosition();
 
@@ -247,10 +254,6 @@ void CMapView::OnLeftDown(wxMouseEvent& event)
 
     Render();
     pGraph->ShowPage();
-}
-
-void CMapView::OnMouseMove(wxMouseEvent& event)
-{
 }
 
 void CMapView::OnLayerChange(int lay)
