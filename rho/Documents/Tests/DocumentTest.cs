@@ -14,7 +14,7 @@ namespace rho.Documents.Tests {
                  
             }
 
-            public override void DoSave(string fileName) {
+            protected override void DoSave(string fileName) {
                 wasSaved = true;
             }
         }

@@ -63,8 +63,15 @@ namespace rho {
             System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(MainForm));
             Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
 
-            Text = "rho alpha 2";
-		
+            System.Reflection.AssemblyName name = System.Reflection.Assembly.GetExecutingAssembly().GetName();
+            Version version = name.Version;
+
+#if DEBUG
+            Text = string.Format("rho build {0}", version);
+#else
+            Text = string.Format("rho {0}.{1}", version.Major, version.Minor);
+#endif
+
             dockManager.Parent = this;
             dockManager.Dock = DockStyle.Fill;
             dockManager.MdiIntegration = true;

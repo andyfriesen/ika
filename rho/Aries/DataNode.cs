@@ -134,6 +134,15 @@ namespace Aries {
         }
 
         /// <summary>
+        /// Convenience method.  Equivalent to node.AddChild(i.ToString())
+        /// </summary>
+        /// <param name="i"></param>
+        /// <returns></returns>
+        public DataNode AddChild(int i) {
+            return AddChild(i.ToString());
+        }
+
+        /// <summary>
         /// Adds the node to the child list.
         /// </summary>
         /// <param name="n"></param>

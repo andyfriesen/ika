@@ -23,15 +23,17 @@ namespace rho.Documents {
             undoList.Push(cmd);
         }
 
-        public abstract void DoSave(string name);
+        protected abstract void DoSave(string name);
 
         public void Save(string name) {
             DoSave(name);
 
+#if false
             if (name != fileName) {
                 // raise event indicating that the name of the document has been changed.
                 throw new NotImplementedException("Document renaming is not yet implemented!");
             }
+#endif
 
             fileName = name;
         }

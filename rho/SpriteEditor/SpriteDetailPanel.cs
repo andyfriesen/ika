@@ -28,11 +28,6 @@ namespace rho.SpriteEditor {
             editHotWidth.Leave += new EventHandler(ChangeHotWidth);
             editHotHeight.Leave += new EventHandler(ChangeHotHeight);
 
-            editHotX.KeyPress += new KeyPressEventHandler(ValidateKey);
-            editHotY.KeyPress += new KeyPressEventHandler(ValidateKey);
-            editHotWidth.KeyPress += new KeyPressEventHandler(ValidateKey);
-            editHotHeight.KeyPress += new KeyPressEventHandler(ValidateKey);
-
             splitter.Dock = DockStyle.Bottom;
 
             metaGrid.CaptionText = "Metadata";
@@ -214,15 +209,15 @@ namespace rho.SpriteEditor {
         readonly Label yLabel = newLabel("Y");
         readonly Label widthLabel = newLabel("Width");
         readonly Label heightLabel = newLabel("Height");
-        readonly TextBox editHotX = new TextBox();
-        readonly TextBox editHotY = new TextBox();
-        readonly TextBox editHotWidth = new TextBox();
-        readonly TextBox editHotHeight = new TextBox();
+        readonly NumberTextBox editHotX = new NumberTextBox();
+        readonly NumberTextBox editHotY = new NumberTextBox();
+        readonly NumberTextBox editHotWidth = new NumberTextBox();
+        readonly NumberTextBox editHotHeight = new NumberTextBox();
         readonly DictionaryGrid animGrid = new DictionaryGrid();
         readonly DictionaryGrid metaGrid = new DictionaryGrid();
         readonly Splitter splitter = new Splitter();
 
-        private void ValidateKey(object sender, KeyPressEventArgs e) {
+        void ValidateKey(object sender, KeyPressEventArgs e) {
             char c = e.KeyChar;
             if (!char.IsDigit(c) && !char.IsControl(c)) {
                 e.Handled = true;

@@ -12,7 +12,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("(c) 2002 Andy Friesen")]
+[assembly: AssemblyCopyright("(c) 2004 Andy Friesen")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

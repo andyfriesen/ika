@@ -16,8 +16,8 @@ namespace rho.SpriteEditor {
             sprite = new ikaSprite(name);
         }
 
-        public override void DoSave(string name) {
-
+        protected override void DoSave(string name) {
+            sprite.Save(name);
         }
 
         public IList Frames {

@@ -1,4 +1,6 @@
-//#define TEST_DICTGRID
+#if DEBUG
+#define TEST_DICTGRID
+#endif
 
 using System;
 using System.Collections;
@@ -28,6 +30,10 @@ namespace rho.Controls {
 
             table.ColumnChanging += new DataColumnChangeEventHandler(ColumnChanging);
             table.RowChanged += new DataRowChangeEventHandler(RowChanged);
+            table.RowDeleting += new DataRowChangeEventHandler(RowDeleted);
+
+            // is never actually raised @_@
+            //table.RowDeleted += new DataRowChangeEventHandler(RowChanged);
         }
 
         public StringDictionary Values {
@@ -88,6 +94,8 @@ namespace rho.Controls {
             string name = (string)e.Row["Name"];
             string value = (string)e.Row["Value"];
 
+            Console.WriteLine(e.Action);
+
             switch (e.Action) {
                 case DataRowAction.Add:
                     OnValueAdded(name, value);
@@ -95,13 +103,14 @@ namespace rho.Controls {
                 case DataRowAction.Change:
                     OnValueChanged(oldName, name, value);
                     break;
-                case DataRowAction.Delete:
-                    OnValueDeleted(name);
-                    break;
                 default:
                     System.Diagnostics.Debug.Assert(false, string.Format("Dunno how to handle {0}", e.Action));
                     break;
             }
+        }
+
+        private void RowDeleted(object sender, DataRowChangeEventArgs e) {
+            OnValueDeleted((string)e.Row["Name"]);
         }
         
         string oldName; // HACK: need to store the old name someplace to handle name changes
@@ -117,9 +126,10 @@ namespace rho.Controls {
                 dict[name] = value;
             }
 
-            public void RowRemoved(string name) {
-                Console.WriteLine("Row removed: {0}", name);
-                Debug.Assert(dict.ContainsKey(name));
+            public void RowRemoved(string key) {
+                Console.WriteLine("Row removed: {0}", key);
+                Debug.Assert(dict.ContainsKey(key));
+                dict.Remove(key);
             }
 
             public void RowChanged(string oldName, string name, string value) {

@@ -20,7 +20,7 @@
                 PostBuildEvent = ""
                 RootNamespace = "rho"
                 RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = "rho.MainForm"
+                StartupObject = "rho.Dialogs.ImportFramesDialog"
             >
                 <Config
                     Name = "Debug"
@@ -179,6 +179,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Controls\BoxSizer.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Controls\DictionaryGrid.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -189,8 +194,38 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Controls\HorizontalBoxSizer.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\NumberTextBox.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Controls\ScrollWindow.cs"
                     SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\SizerFlags.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\VerticalBoxSizer.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\Tests\SizerTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialogs\ImportFramesDialog.cs"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File

@@ -104,5 +104,12 @@ namespace Aries.Tests {
             Assert.IsTrue(node.Children.Count == 1);
         }
 
+        [Test]
+        public void TestAddInt() {
+            int value = 42;
+            DataNode result = node.AddChild(value);
+            Assert.AreSame(node, result);
+            Assert.AreEqual(value.ToString(), node.GetString());
+        }
     }
 }

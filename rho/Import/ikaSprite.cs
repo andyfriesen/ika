@@ -14,20 +14,23 @@ namespace rho.Import {
         : this(16, 16) {
         }
 
-        public ikaSprite(string fileName)
-        : this(new StreamReader(fileName)) { 
-        }
-
         public ikaSprite(int width, int height) {
             Size.Width = width;
             Size.Height = height;
             HotSpot = Rectangle.FromLTRB(0, 0, 0, 0);
+            frames = new ImageArray(width, height);
+        }
+
+        public ikaSprite(string fileName)
+        : this(new StreamReader(fileName)) { 
         }
 
         public unsafe ikaSprite(System.IO.TextReader sourceStream) {
             DataNode document = DataNode.ReadDocument(sourceStream);
 
             DataNode rootNode = document.GetChild("ika-sprite");
+
+            string version = rootNode.GetChild("version").GetString();
 
             DataNode infoNode = rootNode.GetChild("information");
             title = infoNode.GetChild("title").GetString();
@@ -45,10 +48,10 @@ namespace rho.Import {
             Size = new Size(
                 Convert.ToInt32(dimNode.GetChild("width").GetString()),
                 Convert.ToInt32(dimNode.GetChild("height").GetString())
-            );
+                );
             
             DataNode hsNode = framesNode.GetChild("hotspot");
-            HotSpot = Rectangle.FromLTRB(
+            HotSpot = new Rectangle(
                 Convert.ToInt32(hsNode.GetChild("x").GetString()),
                 Convert.ToInt32(hsNode.GetChild("y").GetString()),
                 Convert.ToInt32(hsNode.GetChild("width").GetString()),
@@ -84,7 +87,7 @@ namespace rho.Import {
             iis.Close();
             compressed.Close();
 
-            frames.Resize(width, height);
+            frames = new ImageArray(width, height);
 
             fixed (byte* p = &pixels[0]) {
                 byte* ptr = p;
@@ -96,7 +99,7 @@ namespace rho.Import {
                         new Rectangle(0, 0, width, height),
                         ImageLockMode.WriteOnly,
                         PixelFormat.Format32bppArgb
-                    );
+                        );
 
                     byte* dest = (byte*)bd.Scan0;
                     byte* src = ptr;
@@ -118,6 +121,102 @@ namespace rho.Import {
             }
         }
 
+        public void Save(string fileName) {
+            using (TextWriter stream = new System.IO.StreamWriter(fileName)) {
+                Save(stream);
+            }
+        }
+
+        public unsafe void Save(System.IO.TextWriter stream) {
+            DataNode rootNode = new DataNode("ika-sprite");
+            rootNode.AddChild(new DataNode("version").AddChild("1.1"));
+
+            DataNode infoNode = new DataNode("information");
+            rootNode.AddChild(infoNode);
+            infoNode.AddChild(new DataNode("title").AddChild("Untitled")); 
+        
+            DataNode metaNode = new DataNode("meta");
+            infoNode.AddChild(metaNode);
+            
+            foreach (DictionaryEntry iter in Metadata) {
+                metaNode.AddChild(new DataNode((string)iter.Key).AddChild((string)iter.Value));
+            }
+
+            rootNode.AddChild(new DataNode("header")
+                .AddChild(new DataNode("depth").AddChild("32"))
+                );
+        
+
+            DataNode scriptNode = new DataNode("scripts");
+            rootNode.AddChild(scriptNode);
+
+            foreach (DictionaryEntry iter in Scripts) {
+                scriptNode.AddChild(
+                    new DataNode("script").AddChild(
+                        new DataNode("label").AddChild((string)iter.Key)
+                    )
+                    .AddChild((string)iter.Value)
+                    );
+            }
+
+            DataNode frameNode = new DataNode("frames");
+            rootNode.AddChild(frameNode);
+
+            frameNode
+                .AddChild(new DataNode("count").AddChild(frames.Count))
+                .AddChild(new DataNode("dimensions")
+                .AddChild(new DataNode("width").AddChild(Size.Width))
+                .AddChild(new DataNode("height").AddChild(Size.Height))
+                )
+                .AddChild(new DataNode("hotspot")
+                .AddChild(new DataNode("x").AddChild(HotSpot.X))
+                .AddChild(new DataNode("y").AddChild(HotSpot.Y))
+                .AddChild(new DataNode("width").AddChild(HotSpot.Width))
+                .AddChild(new DataNode("height").AddChild(HotSpot.Height))
+                );
+
+            MemoryStream data = new MemoryStream();
+
+            foreach (Bitmap bmp in Frames) {
+                BitmapData bd = bmp.LockBits(
+                    Rectangle.FromLTRB(0, 0, bmp.Width, bmp.Height), 
+                    ImageLockMode.ReadOnly, 
+                    PixelFormat.Format32bppArgb
+                    );
+
+                int numPixels = bmp.Width * bmp.Height;
+                byte* b = (byte*)bd.Scan0;
+                for (int i = 0; i < numPixels; i++) {
+                    // Swap red and blue
+                    data.WriteByte(b[2]);
+                    data.WriteByte(b[1]);
+                    data.WriteByte(b[0]);
+                    data.WriteByte(b[3]);
+
+                    b += 4;
+                }
+
+                bmp.UnlockBits(bd);
+            }
+
+            MemoryStream cdata = new MemoryStream();
+            DeflaterOutputStream dos = new DeflaterOutputStream(cdata);
+            dos.Write(data.GetBuffer(), 0, (int)data.Position);
+
+            dos.Finish();
+
+            string cdata64 = Convert.ToBase64String(cdata.GetBuffer(), 0, (int)cdata.Length);
+        
+            data.Close();
+            dos.Close();
+
+            frameNode.AddChild(new DataNode("data")
+                .AddChild(new DataNode("format").AddChild("zlib"))
+                .AddChild(cdata64));            
+
+            rootNode.Write(stream);
+        }
+    
         public IList Frames {
             get { return frames; }
         }
@@ -133,6 +232,6 @@ namespace rho.Import {
         public Rectangle HotSpot;
         public readonly StringDictionary Scripts = new StringDictionary();
         public readonly StringDictionary Metadata = new StringDictionary();
-        readonly ImageArray frames = new ImageArray(16, 16);
+        readonly ImageArray frames;
     }
 }

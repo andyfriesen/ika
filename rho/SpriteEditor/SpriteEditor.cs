@@ -48,8 +48,8 @@ namespace rho.SpriteEditor {
 
             MenuItem fileMenu = new MenuItem("&File", new MenuItem[] {
                     MenuBuilder.menu(2, "-"),
-                    MenuBuilder.menu(3, "&Save", null, Shortcut.CtrlS),
-                    MenuBuilder.menu(4, "Save &As...", null, Shortcut.CtrlShiftS),
+                    MenuBuilder.menu(3, "&Save", new EventHandler(Save), Shortcut.CtrlS),
+                    MenuBuilder.menu(4, "Save &As...", new EventHandler(SaveAs), Shortcut.CtrlShiftS),
                 }
             );
             fileMenu.MergeType = MenuMerge.MergeItems;
@@ -72,16 +72,38 @@ namespace rho.SpriteEditor {
         }
 
         public string FileName {
-            get { return fileName; }
-            set { fileName = value; }
+            get { return document.Name; }
+            set { Text = document.Name = value; }
         }
 
         public void Save() {
+            document.Save();
         }
 
         public void Save(string filename) {
+            document.Save(filename);
         }
 
+        void Save(object o, EventArgs e) {
+            if (FileName == null) {
+                SaveAs(o, e);
+            } else {
+                Save();
+            }
+        }
+
+        void SaveAs(object o, EventArgs e) {
+            using (SaveFileDialog fd = new SaveFileDialog()) {
+                fd.AddExtension = true;
+                fd.DefaultExt = "ika-sprite";
+                fd.Filter = "ika Sprites (*.ika-sprite)|*.ika-sprite";
+                fd.RestoreDirectory = true;
+            
+                if (fd.ShowDialog(this) == DialogResult.OK) {
+                    Save(fd.FileName);
+                }
+            }        
+        }
         
         void FrameSelected(FrameEventArgs e) {
             framePanel.SelectedFrame = e.Index;
@@ -148,21 +170,24 @@ namespace rho.SpriteEditor {
         }
 
         void AnimScriptChanged(string oldName, string newName, string newValue) {
+            Console.WriteLine("Anim Script {0} changed: {1} <- {2}", oldName, newName, newValue);
             document.SendCommand(new UpdateAnimScriptCommand(oldName, newName, newValue));
         }
 
         void AnimScriptsRemoved(string[] names) {
+            Console.WriteLine("Anim Script {0} removed", names[0]);
             document.SendCommand(new DeleteAnimScriptCommand(names));
         }
 
         void MetadataChanged(string oldName, string newName, string newValue) {
+            Console.WriteLine("Metadata {0} changed: {1} <- {2}", oldName, newName, newValue);
             document.SendCommand(new UpdateMetadataCommand(oldName, newName, newValue));
         }
 
         void MetadataRemoved(string[] names) {
+            Console.WriteLine("Metadata {0} removed", names[0]);
             document.SendCommand(new DeleteMetadataCommand(names));
         }
-
 
         void ResizeFramePanel() {
             int frameWidth = (document.Size.Width * 256 / zoom) + pad;
@@ -196,7 +221,6 @@ namespace rho.SpriteEditor {
         // pixels of padding between each frame
         int pad = 1;
 
-        string fileName;
         SpriteDocument document;
         readonly ScrollableControl scrollPanel; // contains the framePanel
         readonly SpriteDetailPanel detailPanel;
