@@ -412,6 +412,8 @@ bool OpaqueScaleBlit(handle img,int cx,int cy,int w,int h)
     int xstart,ystart;	// position of first pixel to copy (on the image)
     int xlen,ylen;		// number of screen pixels to copy along each axis
     
+    if (w==0   || h==0)         return true;        // to avoid /0
+
     ix=iy=0;
     x=cx; y=cy;
     
@@ -472,6 +474,8 @@ bool SpriteScaleBlit(handle img,int cx,int cy,int w,int h)
     int xstart,ystart;	// position of first pixel to copy (on the image)
     int xlen,ylen;		// number of screen pixels to copy along each axis
     
+    if (w==0   || h==0)         return true;        // to avoid /0
+
     ix=iy=0;
     x=cx; y=cy;
     
@@ -532,6 +536,8 @@ bool AlphaScaleBlit(handle img,int cx,int cy,int w,int h)
     int xstart,ystart;	// position of first pixel to copy (on the image)
     int xlen,ylen;		// number of screen pixels to copy along each axis
     
+    if (w==0   || h==0)         return true;        // to avoid /0
+
     ix=iy=0;
     x=cx; y=cy;
     

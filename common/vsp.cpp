@@ -431,7 +431,7 @@ void VSP::CreateTilesFromBuffer(u16* data,int numtiles,int tilex,int tiley)
 
     tiles.resize(numtiles);
 
-    RGBA* pBuffer=new RGBA(nTilex*nTiley);
+    RGBA* pBuffer=new RGBA[nTilex*nTiley];
     u16* pSrc=data;
 
     for (int i=0; i<numtiles; i++)

@@ -412,3 +412,8 @@ void CPixelMatrix::OpaqueBlit(CPixelMatrix& dest,int x,int y)
     }
 #endif
 }
+
+void CPixelMatrix::ScaleBlit(CPixelMatrix& dest,int x,int y,int w,int h)
+{
+    CBlitter<Opaque>::ScaleBlit(*this,dest,x,y,w,h);
+}

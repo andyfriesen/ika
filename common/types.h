@@ -78,6 +78,15 @@ struct RGBA
         b=pPal[c*3+2]<<2;
         a=c?255:0;
     }
+
+    RGBA(u32 c)
+    {
+        // not endian independant
+        a=c>>24;
+        r=(c>>16)&255;
+        g=(c>>8)&255;
+        b=c&255;
+    }
     
     inline operator u32() const
     {
