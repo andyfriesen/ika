@@ -355,10 +355,19 @@ void Entity::Update()
 
             if (deltaY == 0)
             {
-                newDir = (x > destLocation.x) ? face_left 
-                                            : face_right;
+                int _x;
+                if (x > destLocation.x)
+                {
+                    newDir = face_left;
+                    _x = x - 1;
+                }
+                else
+                {
+                    newDir = face_right;
+                    _x = x + 1;
+                }
 
-                targetY = int((x - startX) * m) + startY;
+                targetY = int((_x - startX) * m) + startY;
                 deltaY = abs(y - targetY);
             }
 
