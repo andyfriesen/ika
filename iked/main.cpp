@@ -15,15 +15,18 @@
 #include "imageview.h"
 #include "spritesetview.h"
 
-#include "wx\resource.h"
-#include "wx/laywin.h"
-#include "wx/sashwin.h"
+#include <wx/xrc/xmlres.h>
+#include <wx/laywin.h>
+#include <wx/sashwin.h>
+
 #include "controller.h"
 
 IMPLEMENT_APP(CApp);
 
 bool CApp::OnInit()
 {
+    extern void InitXmlResource(); // resource.cpp
+
     Log::Init("iked.log");
     CMainWnd* mainwnd=new CMainWnd(NULL,-1,"iked",
         wxPoint(-1,-1),
@@ -34,8 +37,8 @@ bool CApp::OnInit()
     
     SetTopWindow(mainwnd);
 
-    //wxString sDlginfo=wxLoadUserResource("DIALOGS","TEXT");
-    //wxResourceParseString(const_cast<char*>(sDlginfo.c_str()));
+    wxXmlResource::Get()->InitAllHandlers();
+    InitXmlResource();
   
     return TRUE;
 }

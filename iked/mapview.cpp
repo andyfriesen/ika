@@ -18,7 +18,6 @@
 #include "wx\laywin.h"
 #include "wx\sashwin.h"
 #include "wx\checklst.h"
-//#include "wx\minifram.h"
 
 /*
 
@@ -104,8 +103,6 @@ namespace
         EVT_SCROLLWIN_THUMBTRACK(CMapSash::OnScroll)
         EVT_SCROLLWIN_THUMBRELEASE(CMapSash::OnScroll)
     END_EVENT_TABLE()
-
-//    const int nZoomscale = 16;
 
     class CMapFrame : public CGraphFrame
     {
@@ -345,15 +342,21 @@ void CMapView::OnScroll(wxScrollWinEvent& event)
 
 void CMapView::OnClose()
 {
+    Log::Write("CMapView::Close");
+    Log::Write("Releasing Map.");
     pParentwnd->map.Release(pMap);
+    Log::Write("Releasing tileset.");
     pParentwnd->vsp.Release(pTileset);
 
+    Log::Write("Releasing spritesets.");
     for (std::vector<CSpriteSet*>::iterator i = pSprite.begin(); i!= pSprite.end(); i++)
         pParentwnd->spriteset.Release(*i);
     
     pSprite.clear();
     pMap = 0;
     pTileset = 0;
+
+    Log::Write("Destroying....");
 
     Destroy();
 }

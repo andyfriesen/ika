@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resource version="2.3.0.1">
+  <object class="wxDialog" name="dialog_entity">
+    <size>640,240</size>
+    <object class="wxPanel" name="panel_main">
+      <object class="wxBoxSizer">
+        <object class="sizeritem">
+          <object class="wxListBox" name="list_entities"/>
+        </object>
+        <object class="sizeritem">
+          <object class="wxFlexGridSizer">
+            <cols>4</cols>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Name</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_name"/>
+            </object>
+            <object class="spacer"/>
+            <object class="spacer"/>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>X</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_x"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Y</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_y"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Sprite</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_sprite"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Speed</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_speed"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Activation Script</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_script"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Move Script</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_movescript"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Steps</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_steps"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Delay</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_delay"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>X1</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_x1"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Y1</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_y1"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>X2</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_x2"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Y2</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_y2"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Zone</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_zone"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Chase Target</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_chasetarget"/>
+            </object>
+            <object class="spacer"/>
+            <object class="sizeritem">
+              <object class="wxButton" name="wxID_OK">
+                <label>Ok</label>
+                <default>1</default>
+              </object>
+              <flag>wxALIGN_CENTER_HORIZONTAL</flag>
+            </object>
+          </object>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+              <object class="wxRadioBox" name="radio_movepattern">
+                <label>Movement Pattern</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxCheckBox" name="check_isobs">
+                <label>Is an &amp;Obstruction</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxCheckBox" name="check_mapobs">
+                <label>Is Obstructed by the &amp;Map</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxCheckBox" name="check_entobs">
+                <label>Is Obstructed by &amp;Entities</label>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+    <title>Entities...</title>
+    <style>wxDEFAULT_DIALOG_STYLE|wxDIALOG_MODELESS</style>
+  </object>
+  <object class="wxDialog" name="dialog_zone">
+    <object class="wxPanel" name="panel_main">
+      <object class="wxBoxSizer">
+        <orient>wxHORIZONTAL</orient>
+        <object class="sizeritem">
+          <object class="wxListBox" name="list_zones"/>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+              <object class="wxFlexGridSizer">
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Name</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_zone"/>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Description</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_description"/>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Script</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_script"/>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Chance (%)</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_chance"/>
+                </object>
+                <cols>2</cols>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Delay</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_delay"/>
+                </object>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxCheckBox" name="check_adjactivate">
+                <label>&amp;Adjacent Activation</label>
+              </object>
+            </object>
+            <object class="spacer">
+              <size>0,10</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxBoxSizer">
+                <object class="sizeritem">
+                  <object class="wxButton" name="wxID_OK">
+                    <label>Ok</label>
+                    <default>1</default>
+                  </object>
+                </object>
+                <object class="spacer">
+                  <size>10</size>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxButton" name="button_newzone">
+                    <label>New &amp;Zone</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxButton" name="button_deletezone">
+                    <label>&amp;Delete</label>
+                  </object>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+    <size>400,300</size>
+    <style>wxDEFAULT_DIALOG_STYLE|wxDIALOG_MODELESS</style>
+  </object>
+  <object class="wxDialog" name="dialog_newmap">
+    <size>320,240</size>
+    <object class="wxPanel" name="panel_main">
+      <object class="wxBoxSizer">
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxFlexGridSizer">
+            <cols>2</cols>
+            <object class="sizeritem">
+              <object class="wxRadioButton" name="radio_newtileset">
+                <label>&amp;New Tileset</label>
+              </object>
+              <flag>wxALIGN_CENTER_VERTICAL</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticBoxSizer">
+                <label>New VSP Size</label>
+                <object class="sizeritem">
+                  <object class="wxFlexGridSizer">
+                    <cols>2</cols>
+                    <object class="sizeritem">
+                      <object class="wxStaticText">
+                        <label>Width</label>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <object class="wxTextCtrl" name="edit_width"/>
+                    </object>
+                    <object class="sizeritem">
+                      <object class="wxStaticText">
+                        <label>Height</label>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <object class="wxTextCtrl" name="edit_height"/>
+                    </object>
+                    <growablecols>0,1</growablecols>
+                  </object>
+                  <flag/>
+                </object>
+              </object>
+              <flag>wxALIGN_RIGHT</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxRadioButton" name="radio_loadtileset">
+                <label>&amp;Load Existing Tileset</label>
+              </object>
+              <flag>wxALIGN_CENTER_VERTICAL</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticBoxSizer">
+                <label>Tileset filename</label>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_tilesetfilename"/>
+                  <flag>wxEXPAND|wxALIGN_RIGHT|wxGROW</flag>
+                </object>
+              </object>
+              <flag>wxEXPAND|wxALIGN_RIGHT</flag>
+            </object>
+          </object>
+        </object>
+        <object class="spacer">
+          <size>10,10</size>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <object class="spacer">
+              <size>10,10</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="wxID_OK">
+                <label>Ok</label>
+                <style/>
+                <default>1</default>
+              </object>
+            </object>
+            <object class="spacer">
+              <size>10,10</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="wxID_CANCEL">
+                <label>Cancel</label>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+    <title>New Map</title>
+    <style>wxDEFAULT_DIALOG_STYLE|wxDIALOG_MODAL</style>
+  </object>
+  <object class="wxDialog" name="dialog_importchr">
+    <title>Import CHR</title>
+    <style>wxDEFAULT_DIALOG_STYLE|wxDIALOG_MODAL</style>
+    <object class="wxPanel" name="panel_main">
+      <object class="wxBoxSizer">
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxFlexGridSizer">
+            <cols>2</cols>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Frame &amp;Width</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_framewidth"/>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Frame &amp;Height</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_frameheight"/>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>&amp;Number of Frames</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_numframes"/>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>Frames per &amp;Row</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_framesperrow"/>
+              <flag>wxEXPAND</flag>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>&amp;Filename</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxBoxSizer">
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_filename"/>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxButton" name="button_browse">
+                    <label>...</label>
+                    <size>20,20</size>
+                  </object>
+                </object>
+              </object>
+            </object>
+          </object>
+        </object>
+        <object class="sizeritem">
+          <object class="wxCheckBox" name="check_padding">
+            <label>&amp;1 Pixel padding between frames</label>
+          </object>
+        </object>
+        <object class="spacer">
+          <size>10,10</size>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <orient>wxHORIZONTAL</orient>
+            <object class="sizeritem">
+              <object class="wxButton" name="wxID_OK">
+                <label>Ok</label>
+                <default>1</default>
+              </object>
+            </object>
+            <object class="spacer">
+              <size>10,10</size>
+            </object>
+            <object class="sizeritem">
+              <object class="wxButton" name="wxID_CANCEL">
+                <label>Cancel</label>
+              </object>
+            </object>
+          </object>
+        </object>
+      </object>
+    </object>
+    <size>400,300</size>
+  </object>
+</resource>
