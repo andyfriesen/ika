@@ -98,6 +98,7 @@ public:
 
     char GetKey();
     void ClearKeyQueue();
+    bool WasKeyPressed() const;
 
     typedef ControlMap::iterator iterator;
     iterator begin() { return _controls.begin(); }

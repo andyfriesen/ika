@@ -23,6 +23,7 @@ namespace Script
                 "loops should call this occasionally to give the OS time to perform\n"
                 "its tasks."
             },
+            
             {   "Unpress",          (PyCFunction)Input_Unpress,     METH_NOARGS,
                 "Input.Unpress()\n\n"
                 "Unsets the Pressed() property of all controls.  Has no effect on\n"
@@ -30,12 +31,31 @@ namespace Script
                 "Individual controls can be unpressed by simply calling their Pressed()\n"
                 "method, discarding the result."
             },
+
             {   "GetControl",       (PyCFunction)Input_GetControl,  METH_VARARGS,
                 "Input.GetControl(name -> string)\n\n"
                 "Returns an object that represents the requested control.\n"
                 "Input[name->string] performs the exact same function.\n"
                 "ie x = ika.Input['UP'] or x = ika.Input.GetControl('UP')"
             },
+
+            {   "GetKey",           (PyCFunction)Input_GetKey,  METH_NOARGS,
+                "Input.GetKey() -> char or None\n\n"
+                "Returns the next key in the keyboard queue, or None if the queue is empty."
+            },
+
+            {   "ClearKeyQueue",    (PyCFunction)Input_ClearKeyQueue,   METH_NOARGS,
+                "Input.ClearKeyQueue()\n\n"
+                "Flushes the keyboard queue.  Any keypresses that were in the queue will not\n"
+                "be returned by Input.GetKey()"
+            },
+
+            {   "WasKeyPressed",    (PyCFunction)Input_WasKeyPressed,   METH_NOARGS,
+                "Input.WasKeyPressed() -> bool\n\n"
+                "Returns True if there is a key in the key queue.  False if not.\n"
+                "(ie True if Input.GetKey() will return None if the result is False)"
+            },
+
             {   0   }
         };
 
@@ -82,6 +102,7 @@ namespace Script
 
             PyType_Ready(&type);
         }
+
         PyObject* New(::Input& i)
         {
             InputObject* input=PyObject_New(InputObject, &type);
@@ -99,7 +120,10 @@ namespace Script
             PyObject_Del(self);
         }
 
-        PyObject* Input_Update(InputObject* self)
+#define METHOD(x)  PyObject* x(InputObject* self, PyObject* args)
+#define METHOD1(x) PyObject* x(InputObject* self)
+
+        METHOD1(Input_Update)
         {
             engine->CheckMessages();
 
@@ -107,7 +131,7 @@ namespace Script
             return Py_None;
         }
 
-        PyObject* Input_Unpress(InputObject* self)
+        METHOD1(Input_Unpress)
         {
             self->input->Unpress();
 
@@ -115,7 +139,7 @@ namespace Script
             return Py_None;
         }
 
-        PyObject* Input_GetControl(InputObject* self, PyObject* args)
+        METHOD(Input_GetControl)
         {
             PyObject* obj;
             if (!PyArg_ParseTuple(args, "O:Input.GetControl", &obj))
@@ -123,6 +147,34 @@ namespace Script
 
             return Input_Subscript(self, obj);
         }
+
+        METHOD1(Input_GetKey)
+        {
+            char c = self->input->GetKey();
+
+            if (c)
+                return PyString_FromStringAndSize(&c, 1);   // wtf.  No PyString_FromChar
+            else
+            {
+                Py_INCREF(Py_None);
+                return Py_None;
+            }
+        }
+
+        METHOD1(Input_ClearKeyQueue)
+        {
+            self->input->ClearKeyQueue();
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD1(Input_WasKeyPressed)
+        {
+            return PyInt_FromLong(self->input->WasKeyPressed() ? 1 : 0);
+        }
+
+#undef METHOD
+#undef METHOD1
 
         PyObject* Input_Subscript(InputObject* self, PyObject* key)
         {
@@ -145,6 +197,5 @@ namespace Script
                 return 0;
             }
         }
-
     }
 }

@@ -203,6 +203,9 @@ namespace Script
         METHOD1(Input_Update, InputObject);
         METHOD1(Input_Unpress, InputObject);
         METHOD(Input_GetControl, InputObject);
+        METHOD1(Input_GetKey, InputObject);
+        METHOD1(Input_ClearKeyQueue, InputObject);
+        METHOD1(Input_WasKeyPressed, InputObject);
 
         void Init();
         PyObject* New(::Input& i);

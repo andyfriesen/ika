@@ -304,7 +304,7 @@ Input::~Input()
 
 void Input::KeyDown(int key)
 {
-    if (key < 255)
+    if (key >= 32 && key <= 126)    // only printable characters go to the keyqueue
         _keyQueue.push(key);
     
     if (_keys.count(key))
@@ -333,22 +333,17 @@ void Input::KeyUp(int key)
 
 Input::Control* Input::GetControl(const std::string& name)
 {
-    if (_keyTable.count(name))
+    if (_controls.count(name)) // control exist already?
+        return _controls[name];
+    // key controls are created on demand, so it's possible that the name is valid, yet the control not be created yet
+    else if (_keyTable.count(name)) 
     {
-        // Key controls are created on demand.
-
-        int i = _keyTable[name];
-        KeyControl* c = _keys[i];
-        if (!c)
-        {
-            c = new KeyControl(this, i);
-            _keys[i] = c;
-            _controls[name] = c;
-        }
+        int index = _keyTable[name];
+        KeyControl* c = new KeyControl(this, index);
+        _keys[index] = c;
+        _controls[name] = c;
         return c;
     }
-    else if (_controls.count(name))
-        return _controls[name];
 
     return 0;
 }
@@ -386,6 +381,11 @@ void Input::ClearKeyQueue()
 {
     while (!_keyQueue.empty())
         _keyQueue.pop();
+}
+
+bool Input::WasKeyPressed() const
+{
+    return !_keyQueue.empty();
 }
 
 void Input::Unpress(const std::string& name)
