@@ -14,7 +14,7 @@
 
 class CMainWnd;
 
-class CCodeView : public IDocView//wxMDIChildFrame
+class CCodeView : public IDocView
 {
     wxStyledTextCtrl*   pTextctrl;
     bool                bChanged;

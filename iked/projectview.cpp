@@ -4,13 +4,16 @@
 
 struct CLeaf : public wxTreeItemData
 {
-    std::string sName;                      // the filename
+    string sName;                           // the filename
     FileType   type;                        // the kind of resource
-    CLeaf(){}
+    CLeaf()
+    {}
+    
     CLeaf(const CLeaf& l)
         : sName(l.sName),type(l.type)
     {}
-    CLeaf(const std::string& n,FileType t)
+    
+    CLeaf(const string& n,FileType t)
         : sName(n),type(t)
     {}
 };
@@ -244,7 +247,7 @@ public:
         
     }
 
-    wxTreeItemId AddItem(const wxTreeItemId& parentid,const char* name,const char* fname)
+    wxTreeItemId AddItem(const wxTreeItemId& parentid,const string& name,const string& fname)
     {
         FileType t=pMainwnd->GetFileType(fname);
         int hIcon;
@@ -259,7 +262,7 @@ public:
 
         SetChanged();
 
-        return AppendItem(parentid,name,hIcon,hIcon,new CLeaf( fname, t));
+        return AppendItem(parentid,name.c_str(),hIcon,hIcon,new CLeaf( fname, t));
     }
 
     DECLARE_EVENT_TABLE()
@@ -296,7 +299,7 @@ CProjectView::CProjectView(CMainWnd* parent,const string& name)
     if (name.length())
     {
         Load(name.c_str());
-        sFilename=name;
+        sName=name;
     }
 
     else
@@ -341,14 +344,14 @@ CProjectView::~CProjectView()
 
 void CProjectView::OnSave(wxCommandEvent& event)
 {
-    if (sFilename.length()==0)
+    if (sName.length()==0)
     {
         OnSaveAs(event);
         return;
     }
 
-    Save(sFilename.c_str());
-    SetTitle(sFilename.c_str());
+    Save(sName.c_str());
+    SetTitle(sName.c_str());
 }
 
 void CProjectView::OnSaveAs(wxCommandEvent& event)
@@ -367,9 +370,9 @@ void CProjectView::OnSaveAs(wxCommandEvent& event)
     int result=dlg.ShowModal();
     if (result!=wxID_CANCEL)
     {
-        sFilename=dlg.GetPath().c_str();
-        Save(sFilename.c_str());
-        SetTitle(sFilename.c_str());
+        sName=dlg.GetPath().c_str();
+        Save(sName.c_str());
+        SetTitle(sName.c_str());
     }
     
 }
@@ -378,9 +381,9 @@ void CProjectView::Load(const char* fname)
 {
     struct Local
     {
-        static void ReadNode(FILE* f,CProjectTree* pTreectrl,const wxTreeItemId& parentid)
+        static void ReadNode(const string& sProjectroot,FILE* f,CProjectTree* pTreectrl,const wxTreeItemId& parentid)
         {
-            char s[1024];
+            char s[1024];           
 
             while (1)
             {
@@ -406,7 +409,7 @@ void CProjectView::Load(const char* fname)
                     else
                         id=pTreectrl->AddFolder(parentid,sName.c_str());
 
-                    ReadNode(f,pTreectrl,id);
+                    ReadNode(sProjectroot,f,pTreectrl,id);
 
                     continue;
                 }
@@ -414,19 +417,23 @@ void CProjectView::Load(const char* fname)
                 p=sLine.rfind("FILE");
                 if (p!=std::string::npos)
                 {
-                    std::string sName=Trim(sLine.substr(0,p-1));
-                    pTreectrl->AddItem(parentid,sName.c_str(),sName.c_str());
+                    string sName=Trim(sLine.substr(0,p-1));
+                    string sPath=Path::Directory(sName,sProjectroot).substr(1); // nuke the leading slash
+
+                    pTreectrl->AddItem(parentid, sPath+Path::Filename(sName), sName);
                 }
             }
         }
     };
 
+    string sProjectroot=Path::Directory(fname);
+    
     FILE* f=fopen(fname,"r");
     if (!f)
         return;
 
     pTreectrl->DeleteAllItems();
-    Local::ReadNode(f,pTreectrl,-1);
+    Local::ReadNode(sProjectroot,f,pTreectrl,-1);
     fclose(f);
     pTreectrl->bChanged=false;
 }

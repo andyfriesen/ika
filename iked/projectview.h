@@ -9,16 +9,13 @@
 
 class CMainWnd; // in main.cpp/h
 
-class CProjectView : public IDocView//wxMDIChildFrame
+class CProjectView : public IDocView
 {
     class CProjectTree* pTreectrl;
     wxImageList* pImagelist;
-    std::string sFilename;
 
     wxMenu* filemenu;
     wxMenu* foldermenu;
-
-    
 
 public:
 

@@ -56,7 +56,6 @@ char* GetCurrentDirectory()
 
 const string Trim(string s)
 {
-//    int pos=string::npos;
     int i;
 
     for (i=0; i<s.length(); i++)
