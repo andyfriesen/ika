@@ -82,6 +82,8 @@ namespace Import
             Map(int x,int y);
             ~Map();
 
+            void Save(String* fname);
+
 #define PROPERTY(name,type)                 \
     __property type get_##name();           \
     __property void set_##name(type val);

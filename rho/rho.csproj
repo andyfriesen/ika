@@ -111,6 +111,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "IDocView.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "MainForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
@@ -154,6 +159,11 @@
                     RelPath = "MapEditor\MapView.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MapEditor\MapView.resx"
+                    DependentUpon = "MapView.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "MapEditor\TileSetState.cs"

@@ -5,30 +5,89 @@ using System.Drawing.Drawing2D;
 
 using Import.ika;
 
+using rho;
 using rho.Controls;
 
 namespace rho.MapEditor
 {
 
-    class MapView : Form
+    class MapView : Form, IDocView
     {
+        /// <summary>
+        /// A little proxy class used so that I don't have to generate a billion little dork functions
+        /// for setting each and every single map editor state there is.
+        /// <p/>
+        /// Feed it the map, and the state, and it'll exist.  Bind the menu item to the OnSelect method
+        /// and watch it go.  Super.
+        /// </summary>
+        class EventProxy
+        {
+            MapView view;
+            IState state;
+
+            public void OnSelect(object o,EventArgs e)
+            {
+                view.state=this.state;
+
+                // Check the menuitem just selected.  Uncheck all others.
+                Menu menu=((MenuItem)o).Parent;
+                foreach (MenuItem m in menu.MenuItems)
+                    m.Checked=(m==o);
+            }
+
+            public EventProxy(MapView mv,IState s)
+            {
+                view=mv;
+                state=s;
+            }
+        }
+
         TileSet tiles;
         Map map;
         int xwin,ywin;
         MainForm parent;
+        string filename;
 	
         StatusBar  statusbar;
         GraphView  graphview;
         ListView   layercontrol;
+        MainMenu   menu;
+        protected MenuItem       statemenu;
 
-        private void Init(MainForm p,Map m,TileSet t)
+        IState     state;
+
+        object[][] states;
+
+        private void InitMenu()
         {
-            parent=p;
-            map=m;
-            tiles=t;
-		
-            xwin=ywin=0;
-		
+            menu=new MainMenu();
+            
+            MenuItem filemenu=new MenuItem("&File",new MenuItem[]
+                {
+                    new MenuItem("&Save",new EventHandler(SaveMap))
+                }
+                );
+            filemenu.MergeType=MenuMerge.MergeItems;
+            filemenu.MergeOrder=1;
+
+            statemenu=new MenuItem("&Mode");
+            foreach (object[] o in states)
+                statemenu.MenuItems.Add(
+                    new MenuItem(
+                        o[0].ToString(),
+                        new EventHandler(new EventProxy(this,(IState)o[1]).OnSelect)
+                    )
+                );
+
+            statemenu.MergeType=MenuMerge.MergeItems;
+            statemenu.MergeOrder=2;
+
+            menu.MenuItems.AddRange(new MenuItem[] { filemenu,statemenu });
+            Menu=menu;
+        }
+
+        void InitControls()
+        {
             graphview=new GraphView();
             graphview.Dock=DockStyle.Fill;
             graphview.Redraw+=new PaintEventHandler(Redraw);
@@ -54,9 +113,28 @@ namespace rho.MapEditor
 
             statusbar.SendToBack();	
 				
-            UpdateScrollBars();
-		
             Resize+=new EventHandler(OnResize);
+        }
+
+        // What a mess. -_-;
+        private void Init(MainForm p,Map m,TileSet t)
+        {
+            // When we add a new map editor state, just add another entry here.
+            // I have a handy dandy loop that converts this to menu items. :D
+            states=new object[][]
+            {
+                new object[]    {   "&Tiles",   new TileSetState(this)  },
+            };
+
+            InitControls();
+            InitMenu();
+
+            parent=p;
+            map=m;
+            tiles=t;
+		
+            xwin=ywin=0;
+		
         }
 
         public MapView(MainForm p)
@@ -70,19 +148,25 @@ namespace rho.MapEditor
 
             Init(p,m,t);
 
+            filename="";
             Text="Untitled map";
+
+            UpdateScrollBars();
         }
 	
-        public MapView(MainForm p,string filename) : base()
+        public MapView(MainForm p,string fn) : base()
         {
-            string path=System.IO.Path.GetDirectoryName(filename);
+            Map m=(Map)p.maps.Load(fn);
 
-            Map m=(Map)p.maps.Load(filename);
-            TileSet t=(TileSet)p.tilesets.Load(path+"/"+m.TileSetName);
+            string path=System.IO.Path.GetDirectoryName(fn);            // Get the directory that the map is in...
+            TileSet t=(TileSet)p.tilesets.Load(path+"/"+m.TileSetName); // And read the VSP from that directory.
 
             Init(p,m,t);
 
+            filename=fn;
             Text=filename;
+
+            UpdateScrollBars();
         }
 	
         void UpdateScrollBars()
@@ -202,6 +286,11 @@ namespace rho.MapEditor
             base.OnClosed(e);
         }
 
+        public string FileName
+        {
+            get {   return filename;    }
+            set {   filename=value;     }
+        }
         public int XWin
         {
             get {   return xwin;    }
@@ -230,6 +319,16 @@ namespace rho.MapEditor
             get {   return map; }
         }
 
+
+        public void Save()
+        {
+            Save(filename);
+        }
+
+        public void Save(string filename)
+        {
+        }
+
         public void GetTileCoords(ref int x,ref int y,int layer)
         {
             // Possible performance issue: we create a new LayerInstance info every time we call this.
@@ -249,6 +348,35 @@ namespace rho.MapEditor
 
             x/=tiles.Width;
             y/=tiles.Height;
+        }
+
+        void SaveMap(object o,EventArgs e)
+        {
+
+        }
+
+        protected override void OnMouseDown(MouseEventArgs e)
+        {
+            state.MouseDown(e);
+            base.OnMouseDown(e);
+        }
+
+        protected override void OnMouseUp(MouseEventArgs e)
+        {
+            state.MouseUp(e);
+            base.OnMouseUp(e);
+        }
+
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            state.MouseWheel(e);
+            base.OnMouseWheel(e);
+        }
+
+        protected override void OnMouseMove(MouseEventArgs e)
+        {
+            state.MouseMove(e);
+            base.OnMouseMove(e);
         }
     }
 

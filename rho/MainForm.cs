@@ -1,6 +1,7 @@
 // project created on 26/05/2002 at 6:38 AM
 using System;
 using System.Windows.Forms;
+using System.IO;
 
 using Import.ika;
 using MapView=rho.MapEditor.MapView;
@@ -26,20 +27,27 @@ namespace rho
                                     {
                                         new MenuItem("&Map",new EventHandler(NewMap)),
                                         new MenuItem("&Script",new EventHandler(NewScript)),
-                                }),
-                                    new MenuItem("&Open",new MenuItem[]
-                                    {
-                                        new MenuItem("&Map",new EventHandler(OpenMap)),
-                                        new MenuItem("&Script",new EventHandler(OpenScript)),
-                                }),
+                                    }),
+                                    
+                                    new MenuItem("&Open",new EventHandler(OpenFile)),
                                     new MenuItem("-"),
                                     new MenuItem("E&xit",new EventHandler(Exit))
                                 });
+            file.MergeType=MenuMerge.MergeItems;
+            file.MergeOrder=1;
+
+            MenuItem window=new MenuItem("&Window",new MenuItem[]
+                                {
+                                });
+            window.MdiList=true;
+            window.MergeType=MenuMerge.MergeItems;
+            window.MergeOrder=3;
 		
             Menu=new MainMenu(new MenuItem[]
-                          {
-                              file
-                          }
+                        {
+                            file,
+                            window,                              
+                        }
                 );
 
             Splitter splitter=new Splitter();
@@ -51,6 +59,30 @@ namespace rho
             tree.Dock=DockStyle.Left;
             Controls.Add(tree);
             tree.Show();
+        }
+
+        void CreateDocumentWindow(string filename)
+        {
+            string extension=Path.GetExtension(filename).ToLower();
+            Form doc;
+
+            switch (extension)
+            {
+                case ".map": 
+                    doc=new MapView(this,filename);    
+                    break;
+
+                case ".py":  
+                    doc=new CodeView(this,filename,new PythonHighlightStyle());    
+                    break;
+
+                default:
+                    MessageBox.Show("rho",String.Format("Unrecognized File type \"{0}\"",extension));
+                    return;
+            }
+
+            doc.MdiParent=this;
+            doc.Show();
         }
 	
         void NewMap(object o,EventArgs e)
@@ -67,40 +99,24 @@ namespace rho
             codeview.Show();
         }
 
-        void OpenMap(object o,EventArgs e)
+        void OpenFile(object o,EventArgs e)
         {
             using (OpenFileDialog dlg=new OpenFileDialog())
             {
-                dlg.Filter="v2 map files (*.map)|*.map";
+                dlg.Title="Open Document...";
+                dlg.Filter="All known|*.map;*.py|Map files (*.map)|*.map|Python Scripts (*.py)|*.py|All Files (*.*)|*.*";
+                dlg.Multiselect=true;
 
                 DialogResult result=dlg.ShowDialog(this);
 
                 if (result==DialogResult.OK)
                 {
-                    MapView mapview=new MapView(this,dlg.FileName);
-                    mapview.MdiParent=this;
-                    mapview.Show();
+                    foreach (string s in dlg.FileNames)
+                        CreateDocumentWindow(s);
                 }
             }
         }
 
-        void OpenScript(object o,EventArgs e)
-        {
-            using (OpenFileDialog dlg=new OpenFileDialog())
-            {
-                dlg.Filter="Python scripts (*.py)|*.py";
-
-                DialogResult result=dlg.ShowDialog(this);
-
-                if (result==DialogResult.OK)
-                {
-                    CodeView codeview=new CodeView(this,dlg.FileName,new PythonHighlightStyle());
-                    codeview.MdiParent=this;
-                    codeview.Show();
-                }
-            }
-        }
-	
         void Exit(object o,EventArgs e)
         {
             Close();
@@ -108,6 +124,10 @@ namespace rho
 	
         public static void Main(string[] args)
         {
+            MainForm f=new MainForm();
+            foreach (string s in args)
+                f.CreateDocumentWindow(s);
+
             Application.Run(new MainForm());
         }
     }

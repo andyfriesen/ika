@@ -35,6 +35,11 @@ namespace Import
             delete map;
         }
 
+        void Map::Save(String* fname)
+        {
+            map->Save(c_str(fname));
+        }
+
         String* Map::get_RenderString()
         {
             return net_str(map->GetRString().c_str());
