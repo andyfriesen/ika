@@ -62,7 +62,6 @@ struct MainWindow : public wxFrame, Executor
     void OnEditTileAnim(wxCommandEvent&);
     void OnCloneLayer(wxCommandEvent&);
 
-    void OnChangeCurrentLayer(wxCommandEvent& event);
     void OnShowLayerProperties(wxCommandEvent& event);
     void OnShowLayerContextMenu(wxMouseEvent& event);
     void OnZoomMapIn(wxCommandEvent&);
@@ -80,7 +79,6 @@ struct MainWindow : public wxFrame, Executor
     void OnCursorLeft(wxCommandEvent&);
     void OnCursorRight(wxCommandEvent&);
 
-    void OnToggleLayer(wxCommandEvent& event);
     void OnSetTilePaintState(wxCommandEvent&);
     void OnSetCopyPasteState(wxCommandEvent&);
     void OnSetObstructionState(wxCommandEvent&);
@@ -114,6 +112,8 @@ struct MainWindow : public wxFrame, Executor
     virtual void HandleCommand(::Command* cmd);
     virtual bool IsLayerVisible(uint index);
     virtual void ShowLayer(uint index, bool show);
+
+    virtual void EditLayerProperties(uint index);
 
     virtual uint GetCurrentTile();
     virtual void SetCurrentTile(uint i);

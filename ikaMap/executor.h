@@ -39,6 +39,9 @@ struct Executor
     inline  void ShowLayer(uint index) { ShowLayer(index, true);    }
     inline  void HideLayer(uint index) { ShowLayer(index, false);   }
 
+    // Displays a dialog so the user can tweak the layer.
+    virtual void EditLayerProperties(uint index) = 0;
+
     /*
      * It'd probably be best to discard the idea of a current tile altogeather
      * and just use brushes for everything.

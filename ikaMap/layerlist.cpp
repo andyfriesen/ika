@@ -6,20 +6,20 @@
 
 namespace
 {
-    const int RIDICULOUSLY_HUGE_CONSTANT = 1000;
-
     enum
     {
         id_showLayer = wxID_HIGHEST + 1,
-        id_activateLayer = id_showLayer + RIDICULOUSLY_HUGE_CONSTANT,
-        id_layerProperties
+        id_activateLayer,
+        id_editLayerProperties,
+        id_showOnly,
+        id_showAll,
     };
 }
 
 BEGIN_EVENT_TABLE(LayerBox, wxWindow)
-    EVT_BUTTON(LayerBox::VIS_ICON, LayerBox::DoToggleVisibility)
-    EVT_BUTTON(LayerBox::ACTIVE_ICON, LayerBox::DoActivateLayer)
-    EVT_COMMAND_RANGE(0, RIDICULOUSLY_HUGE_CONSTANT, wxEVT_COMMAND_RIGHT_CLICK, LayerBox::DoRightDown)
+    EVT_BUTTON(id_showLayer, LayerBox::DoToggleVisibility)
+    EVT_BUTTON(id_activateLayer, LayerBox::DoActivateLayer)
+    EVT_CONTEXT_MENU(LayerBox::DoContextMenu)
 END_EVENT_TABLE()
 
 LayerBox::LayerBox(wxWindow* parent, wxPoint position, wxSize size)
@@ -27,8 +27,10 @@ LayerBox::LayerBox(wxWindow* parent, wxPoint position, wxSize size)
 {
     wxIcon blankIcon("blankicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16);
 
-    _visibilityIcon = new wxBitmapButton(this, VIS_ICON, blankIcon, wxDefaultPosition, wxSize(16, 16), 0);
-    _activeIcon     = new wxBitmapButton(this, ACTIVE_ICON, blankIcon, wxDefaultPosition, wxSize(16, 16), 0);
+    const long style = 0;
+
+    _visibilityIcon = new wxBitmapButton(this, id_showLayer, blankIcon, wxDefaultPosition, wxSize(16, 16), style);
+    _activeIcon     = new wxBitmapButton(this, id_activateLayer, blankIcon, wxDefaultPosition, wxSize(16, 16), style);
     _label = new wxStaticText(this, -1, "-");
 
     wxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
@@ -49,21 +51,24 @@ void LayerBox::SetActiveIcon(wxIcon& icon)
     _activeIcon->SetLabel(icon);
 }
 
-void LayerBox::DoToggleVisibility(wxMouseEvent&)
+void LayerBox::DoToggleVisibility(wxCommandEvent& event)
 {
-    GetParent()->AddPendingEvent(wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, id_showLayer + GetId()));
+    event.SetInt(GetId());
+    event.Skip();
     Log::Write("Toggle! %s", _label->GetLabel().c_str());
 }
 
-void LayerBox::DoActivateLayer(wxMouseEvent&)
+void LayerBox::DoActivateLayer(wxCommandEvent& event)
 {
-    GetParent()->AddPendingEvent(wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, id_activateLayer + GetId()));
+    event.SetInt(GetId());
+    event.Skip();
     Log::Write("Activate! %s", _label->GetLabel().c_str());
 }
 
-void LayerBox::DoRightDown(wxMouseEvent& event)
+void LayerBox::DoContextMenu(wxContextMenuEvent& event)
 {
-    GetParent()->AddPendingEvent(wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, id_layerProperties + GetId()));
+    event.SetInt(GetId());
+    event.Skip();
     Log::Write("Right click %s", _label->GetLabel().c_str());
 }
 
@@ -73,10 +78,22 @@ void LayerBox::SetLabel(const std::string& label)
     Layout();
 }
 
+namespace
+{
+    enum
+    {
+        id_properties
+    };
+}
+
 BEGIN_EVENT_TABLE(LayerList, wxScrolledWindow)
-    EVT_COMMAND_RANGE(id_showLayer,     id_showLayer     + RIDICULOUSLY_HUGE_CONSTANT - 1, wxEVT_COMMAND_BUTTON_CLICKED, LayerList::OnToggleVisibility)
-    EVT_COMMAND_RANGE(id_activateLayer, id_activateLayer + RIDICULOUSLY_HUGE_CONSTANT - 1, wxEVT_COMMAND_BUTTON_CLICKED, LayerList::OnActivateLayer)
-    EVT_COMMAND_RANGE(id_layerProperties, id_layerProperties + RIDICULOUSLY_HUGE_CONSTANT - 1, wxEVT_COMMAND_BUTTON_CLICKED, LayerList::OnShowLayerMenu)
+    EVT_BUTTON(id_activateLayer, LayerList::OnActivateLayer)
+    EVT_BUTTON(id_showLayer, LayerList::OnToggleVisibility)
+    EVT_CONTEXT_MENU(LayerList::OnShowContextMenu)
+
+    EVT_MENU(id_editLayerProperties, LayerList::OnEditLayerProperties)
+    EVT_MENU(id_showOnly, LayerList::OnShowOnly)
+    EVT_MENU(id_showAll, LayerList::OnShowAll)
 END_EVENT_TABLE()
 
 LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxSize size)
@@ -90,6 +107,11 @@ LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxS
     SetSizer(_sizer);
     Layout();
     SetScrollRate(0, 1);
+
+    _contextMenu = new wxMenu();
+    _contextMenu->Append(id_showOnly, "Show &Only", "Hide all layers except this one.");
+    _contextMenu->Append(id_showAll, "Show &All", "Unhide all layers.");
+    _contextMenu->Append(id_editLayerProperties, "&Properties", "Edit the properties of this layer.");
 }
 
 void LayerList::OnMapLayersChanged(const MapEvent& event)
@@ -116,29 +138,61 @@ void LayerList::OnLayerActivated(uint index)
 
 void LayerList::OnToggleVisibility(wxCommandEvent& event)
 {
-    int layerIndex = event.GetId() - id_showLayer;
+    uint layerIndex = event.GetInt();
 
-    wxASSERT(layerIndex >= 0 && layerIndex < _executor->GetMap()->NumLayers());
+    wxASSERT(layerIndex < _executor->GetMap()->NumLayers());
 
     bool b = !_executor->IsLayerVisible(layerIndex);
     _executor->ShowLayer(layerIndex, b);
-    /*_boxes[layerIndex]->SetVisibilityIcon(
-        b ? _visibleIcon
-          : _blankIcon);*/
 }
 
 void LayerList::OnActivateLayer(wxCommandEvent& event)
 {
-    int layerIndex = event.GetId() - id_activateLayer;
+    uint layerIndex = event.GetInt();
 
-    wxASSERT(layerIndex >= 0 && layerIndex < _executor->GetMap()->NumLayers());
+    wxASSERT(layerIndex < _executor->GetMap()->NumLayers());
 
     _executor->SetCurrentLayer(layerIndex);
 }
 
-void LayerList::OnShowLayerMenu(wxCommandEvent& event)
+void LayerList::OnShowContextMenu(wxContextMenuEvent& event)
 {
-    Log::Write("Layer Menu %i", event.GetId());
+    _contextMenuIndex = event.GetId();
+    PopupMenu(_contextMenu, ScreenToClient(::wxGetMousePosition()));
+}
+
+void LayerList::OnEditLayerProperties(wxCommandEvent& event)
+{
+    wxASSERT(_contextMenuIndex != -1);
+    _executor->EditLayerProperties(_contextMenuIndex);
+    _contextMenuIndex = -1;
+}
+
+void LayerList::OnShowOnly(wxCommandEvent&)
+{
+    wxASSERT(_contextMenuIndex != -1);
+
+    const uint layerCount = _executor->GetMap()->NumLayers();
+
+    _executor->SetCurrentLayer(_contextMenuIndex);
+
+    for (uint i = 0; i < layerCount; i++)
+    {
+        if (i != _contextMenuIndex)
+            _executor->ShowLayer(i, false);
+    }
+
+    _contextMenuIndex = -1;
+}
+
+void LayerList::OnShowAll(wxCommandEvent&)
+{
+    const uint layerCount = _executor->GetMap()->NumLayers();
+
+    for (uint i = 0; i < layerCount; i++)
+    {
+        _executor->ShowLayer(i);
+    }
 }
 
 void LayerList::Update(Map* map)
@@ -171,8 +225,10 @@ void LayerList::Update(Map* map)
     // we can rename them, and set properties and junk.
     for (int i = 0; i < n; i++)
     {
-        _boxes[i]->SetLabel(map->GetLayer(i)->label);
+        // Maybe icky.  Low id's are probably reserved by wxWindows.  Fix if it becomes an issue.
+        // As it is, though, this is convenient, as each id corresponds to the index of the layer.
         _boxes[i]->SetId(i);
+        _boxes[i]->SetLabel(map->GetLayer(i)->label);
     }
 
     UpdateIcons();

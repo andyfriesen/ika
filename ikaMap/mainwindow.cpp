@@ -83,7 +83,6 @@ namespace
         id_destroylayer,
         id_movelayerup,
         id_movelayerdown,
-        id_editlayerproperties,
 
         id_layerlist,
         id_topbar,
@@ -144,11 +143,6 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_BUTTON(id_destroylayer, MainWindow::OnDestroyLayer)
     EVT_BUTTON(id_movelayerup, MainWindow::OnMoveLayerUp)
     EVT_BUTTON(id_movelayerdown, MainWindow::OnMoveLayerDown)
-
-    EVT_LISTBOX(id_layerlist, MainWindow::OnChangeCurrentLayer)
-    //EVT_LISTBOX_DCLICK(id_layerlist, MainWindow::OnShowLayerProperties)
-    //EVT_CUSTOM(wxEVT_RIGHT_DOWN, id_layerlist, MainWindow::OnShowLayerContextMenu)
-    EVT_CHECKLISTBOX(id_layerlist, MainWindow::OnToggleLayer)
 END_EVENT_TABLE()
 
 void MainWindow::ClearList(std::stack<::Command*>& list)
@@ -178,7 +172,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     _statusBar = GetStatusBar();
     _statusBar->SetStatusWidths(lengthof(widths), widths);
 
-    _sideBar = new wxSashLayoutWindow(this, id_sidebar);
+    _sideBar = new wxSashLayoutWindow(this, id_sidebar, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
     _sideBar->SetAlignment(wxLAYOUT_LEFT);
     _sideBar->SetOrientation(wxLAYOUT_VERTICAL);
     _sideBar->SetSashVisible(wxSASH_RIGHT, true);
@@ -721,26 +715,17 @@ void MainWindow::OnCloneLayer(wxCommandEvent&)
     HandleCommand(new CloneLayerCommand(curLayer));
 }
 
-void MainWindow::OnChangeCurrentLayer(wxCommandEvent& event)
-{
-    wxASSERT(_map != 0 && (uint)event.GetInt() < _map->NumLayers());
-    SetCurrentLayer(event.GetInt());
-    //_layerList->Check(event.GetInt());
-
-    _mapView->Render();
-    _mapView->ShowPage();
-}
-
 void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
 {
-    LayerDlg dlg(this, event.GetInt());
+    uint layerIndex = uint(event.GetInt());
+    LayerDlg dlg(this, layerIndex);
 
     int result = dlg.ShowModal();
 
     if (result == wxID_OK)
     {
         HandleCommand(new ChangeLayerPropertiesCommand(
-            _map->GetLayer(GetCurrentLayer()),
+            _map->GetLayer(layerIndex),
             dlg.label,
             dlg.wrapx,
             dlg.wrapy,
@@ -809,12 +794,6 @@ void MainWindow::OnCursorRight(wxCommandEvent&)
 {
     wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEDOWN, 0, wxHORIZONTAL);
     _mapView->ProcessEvent(evt);
-}
-
-void MainWindow::OnToggleLayer(wxCommandEvent& event)
-{
-    _mapView->Render();
-    _mapView->ShowPage();
 }
 
 void MainWindow::OnSetTilePaintState(wxCommandEvent&)
@@ -1064,9 +1043,32 @@ void MainWindow::ShowLayer(uint index, bool show)
 {
     wxASSERT(index < _map->NumLayers());
 
-    _layerVisibility[index] = show;
+    if (index != _curLayer || show) // disallow hiding the current layer in all cases
+    {
+        _layerVisibility[index] = show;
 
-    mapVisibilityChanged.fire(MapEvent(_map, index));
+        mapVisibilityChanged.fire(MapEvent(_map, index));
+    }
+}
+
+void MainWindow::EditLayerProperties(uint index)
+{
+    wxASSERT(index < _map->NumLayers());
+
+    LayerDlg dlg(this, index);
+
+    int result = dlg.ShowModal();
+
+    if (result == wxID_OK)
+    {
+        HandleCommand(new ChangeLayerPropertiesCommand(
+            _map->GetLayer(index),
+            dlg.label,
+            dlg.wrapx,
+            dlg.wrapy,
+            dlg.x,
+            dlg.y));
+    }
 }
 
 uint MainWindow::GetCurrentTile()
@@ -1093,6 +1095,7 @@ void MainWindow::SetCurrentLayer(uint i)
     wxASSERT(i < _map->NumLayers());
 
     _curLayer = i;
+    _layerVisibility[i] = true; // hack.  Don't want things to respond to effectively the same event twice.
     curLayerChanged.fire(i);
 }
 

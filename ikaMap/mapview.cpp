@@ -98,6 +98,14 @@ void MapView::OnScroll(wxScrollWinEvent& event)
 
 void MapView::OnMouseDown(wxMouseEvent& event)
 {
+    if (!_executor->IsLayerVisible(_executor->GetCurrentLayer()))
+    {
+        ::wxMessageBox("You shouldn't be able to have an active layer that is not\n"
+                       "visible.  If you are reading this now, you are experiencing a bug.", "Internal error.",
+                       wxOK, this);
+        return;
+    }
+
     if (event.MiddleDown())
     {
         _scrollX = event.GetX();

@@ -20,19 +20,13 @@ struct LayerBox : public wxWindow
 
     void SetLabel(const std::string& label);
 
-    void DoToggleVisibility(wxMouseEvent&);
-    void DoActivateLayer(wxMouseEvent&);
-    void DoRightDown(wxMouseEvent& event);
+    void DoToggleVisibility(wxCommandEvent& event);
+    void DoActivateLayer(wxCommandEvent& event);
+    void DoContextMenu(wxContextMenuEvent& event);
 
     DECLARE_EVENT_TABLE();
 
 private:
-    enum
-    {
-        VIS_ICON,
-        ACTIVE_ICON
-    };
-
     wxBitmapButton* _visibilityIcon;
     wxBitmapButton* _activeIcon;
     wxStaticText*   _label;
@@ -51,7 +45,12 @@ public:
     // These we recieve from the LayerBoxes.
     void OnToggleVisibility(wxCommandEvent& event);
     void OnActivateLayer(wxCommandEvent& event);
-    void OnShowLayerMenu(wxCommandEvent& event);
+    void OnShowContextMenu(wxContextMenuEvent& event);
+
+    // Menu event handlers
+    void OnEditLayerProperties(wxCommandEvent&);
+    void OnShowOnly(wxCommandEvent&);
+    void OnShowAll(wxCommandEvent&);
 
     void Update(Map* map);
     void UpdateIcons();
@@ -63,6 +62,9 @@ private:
     Executor* _executor;            // bleh. -_-;
 
     wxBoxSizer* _sizer;
+
+    wxMenu* _contextMenu;
+    int _contextMenuIndex;          // needed to determine which layer is the subject of a context menu command.  -1 if not needed at the moment.
 
     wxIcon _visibleIcon;
     wxIcon _activeIcon;

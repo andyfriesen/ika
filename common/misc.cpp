@@ -7,7 +7,7 @@ look at misc.h :P
 #include <stdio.h>
 #include "misc.h"
 
-const char* IKA_VERSION = "0.55";
+const char* IKA_VERSION = "0.56";
 
 bool IsPowerOf2(uint i)
 {
