@@ -6,7 +6,7 @@
 
 class NewMapDlg : public wxDialog
 {
-    void OnClose();
+    void OnOK(wxCommandEvent& event);
 public:
     NewMapDlg(wxWindow* parent);
 
@@ -18,7 +18,7 @@ public:
     int tilesetwidth;
     int tilesetheight;
 
-    DECLARE_EVENT_TABLE();
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

@@ -14,6 +14,7 @@
 #include "textview.h"
 #include "imageview.h"
 #include "spritesetview.h"
+#include "newmapdlg.h"
 
 #include <wx/xrc/xmlres.h>
 #include <wx/laywin.h>
@@ -28,9 +29,9 @@ bool CApp::OnInit()
     extern void InitXmlResource(); // resource.cpp
 
     Log::Init("iked.log");
-    CMainWnd* mainwnd=new CMainWnd(NULL,-1,"iked",
-        wxPoint(-1,-1),
-        wxSize(600,400),
+    CMainWnd* mainwnd=new CMainWnd(NULL, -1, "iked",
+        wxPoint(-1, -1),
+        wxSize(600, 400),
         wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL);
     
     mainwnd->Show(TRUE);
@@ -43,27 +44,27 @@ bool CApp::OnInit()
     return TRUE;
 }
 
-BEGIN_EVENT_TABLE(CMainWnd,wxMDIParentFrame)
-    EVT_MENU(CMainWnd::id_filequit,CMainWnd::FileQuit)
-    EVT_MENU(CMainWnd::id_filenewproject,CMainWnd::NewProject)
-    EVT_MENU(CMainWnd::id_filenewmap,CMainWnd::NewMap)
-    EVT_MENU(CMainWnd::id_filenewscript,CMainWnd::NewScript)
-    EVT_MENU(CMainWnd::id_fileopen,CMainWnd::OnOpen)
+BEGIN_EVENT_TABLE(CMainWnd, wxMDIParentFrame)
+    EVT_MENU(CMainWnd::id_filequit, CMainWnd::FileQuit)
+    EVT_MENU(CMainWnd::id_filenewproject, CMainWnd::NewProject)
+    EVT_MENU(CMainWnd::id_filenewmap, CMainWnd::NewMap)
+    EVT_MENU(CMainWnd::id_filenewscript, CMainWnd::NewScript)
+    EVT_MENU(CMainWnd::id_fileopen, CMainWnd::OnOpen)
 
     EVT_CLOSE(CMainWnd::OnQuit)
 
     // Add more toolbar buttons as iked becomes more functional
     //   -- khross
     EVT_MENU(-1, CMainWnd::OnToolLeftClick)
-    EVT_TOOL(CMainWnd::id_toolopen,CMainWnd::OnToolBarOpen)
-    EVT_TOOL(CMainWnd::id_toolnewscript,CMainWnd::OnToolBarNewScript)
-    EVT_TOOL(CMainWnd::id_toolnewmap,CMainWnd::OnToolBarNewMap)
+    EVT_TOOL(CMainWnd::id_toolopen, CMainWnd::OnToolBarOpen)
+    EVT_TOOL(CMainWnd::id_toolnewscript, CMainWnd::OnToolBarNewScript)
+    EVT_TOOL(CMainWnd::id_toolnewmap, CMainWnd::OnToolBarNewMap)
     
 END_EVENT_TABLE()
 
-CMainWnd::CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
-                   const wxPoint& position,const wxSize& size,const long style)
-                   : wxMDIParentFrame(parent,id,title,position,size,style)
+CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
+                   const wxPoint& position, const wxSize& size, const long style)
+                   : wxMDIParentFrame(parent, id, title, position, size, style)
 {
 
     wxToolBar* toolbar = CreateBasicToolBar();
@@ -75,13 +76,13 @@ CMainWnd::CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
 
     CreateStatusBar();
 
-    int nWidths[]={ -3,-1 };
+    int nWidths[]={ -3, -1 };
 
     GetStatusBar()->SetFieldsCount(2);
-    GetStatusBar()->SetStatusWidths(2,nWidths);
+    GetStatusBar()->SetStatusWidths(2, nWidths);
 
     vector<wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
-    wxAcceleratorTable table(accel.size(),&*accel.begin());
+    wxAcceleratorTable table(accel.size(), &*accel.begin());
 
     SetAcceleratorTable(table);
 }
@@ -99,17 +100,17 @@ wxMenuBar* CMainWnd::CreateBasicMenu()
     wxMenu* filemenu=new wxMenu;
 
     wxMenu* filenew=new wxMenu;
-    filenew->Append(id_filenewproject,"&Project","Create an empty project workspace.");
+    filenew->Append(id_filenewproject, "&Project", "Create an empty project workspace.");
     filenew->AppendSeparator();
-    //filenew->Append(id_filenewmap,"&Map","Open a fresh, blank map.");
-    filenew->Append(id_filenewscript,"New &Script","Create an empty Python script.");
+    filenew->Append(id_filenewmap, "&Map", "Create an empty map.");
+    filenew->Append(id_filenewscript, "New &Script", "Create an empty Python script.");
 
-    filemenu->Append(id_filenewmap,"&New",filenew,"Create a new document.");  
-    filemenu->Append(id_fileopen,"&Open","Open an existing document.");
+    filemenu->Append(id_filenewmap, "&New", filenew, "Create a new document.");  
+    filemenu->Append(id_fileopen, "&Open", "Open an existing document.");
     filemenu->AppendSeparator();
-    filemenu->Append(id_filequit,"&Quit","Close the application.");
+    filemenu->Append(id_filequit, "&Quit", "Close the application.");
     
-    menu->Append(filemenu,"&File");
+    menu->Append(filemenu, "&File");
 
     return menu;
 }
@@ -118,8 +119,8 @@ vector<wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
 {
     vector<wxAcceleratorEntry> accel;
     accel.resize(2);
-    accel[0].Set(wxACCEL_CTRL,(int)'O',id_fileopen);
-    accel[1].Set(wxACCEL_CTRL,(int)'Q',id_filequit);
+    accel[0].Set(wxACCEL_CTRL, (int)'O', id_fileopen);
+    accel[1].Set(wxACCEL_CTRL, (int)'Q', id_filequit);
 
     return accel;
 }
@@ -145,21 +146,32 @@ void CMainWnd::OnQuit(wxCloseEvent& event)
 
 void CMainWnd::NewProject(wxCommandEvent& event)
 {
-    CProjectView* projectwnd=new CProjectView(this,"");
+    CProjectView* projectwnd=new CProjectView(this, "");
     projectwnd->SetFocus();
 }
 
 void CMainWnd::NewMap(wxCommandEvent& event)
 {
+    NewMapDlg dlg(this);
+
+    int result = dlg.ShowModal();
+    if (result == wxID_OK)
+    {
+        Log::Write("New map!  %ix%i.", dlg.width, dlg.height);
+        if (dlg.loadtileset)
+            Log::Write("Loading %s as a tileset", dlg.tilesetname.c_str());
+        else
+            Log::Write("New Tileset %ix%i", dlg.tilesetwidth, dlg.tilesetheight);
+    }
 /*    Map* m=new Map;
     VSP* v=new VSP;
     
-    CMapWnd* mapview=new CMapWnd(this,"New map",wxPoint(-1,-1),wxSize(-1,-1),wxDEFAULT_FRAME_STYLE,m,v);*/
+    CMapWnd* mapview=new CMapWnd(this, "New map", wxPoint(-1, -1), wxSize(-1, -1), wxDEFAULT_FRAME_STYLE, m, v);*/
 }
 
 void CMainWnd::NewScript(wxCommandEvent& event)
 {
-    CCodeView* codeview=new CCodeView(this,"");
+    CCodeView* codeview=new CCodeView(this, "");
     
     pDocuments.insert(codeview);
     codeview->Activate();
@@ -216,15 +228,15 @@ void CMainWnd::Open(const std::string& fname)
 
     switch (type)
     {
-    case t_project:     pWnd=new CProjectView(this,fname);      break;
-    case t_script:      pWnd=new CCodeView(this,fname);         break;
-    case t_map:         pWnd=new CMapView(this,fname.c_str());  break;
-    case t_vsp:         pWnd=new CTileSetView(this,fname.c_str());  break;
-    case t_font:        pWnd=new CFontView(this,fname.c_str()); break;
+    case t_project:     pWnd=new CProjectView(this, fname);      break;
+    case t_script:      pWnd=new CCodeView(this, fname);         break;
+    case t_map:         pWnd=new CMapView(this, fname.c_str());  break;
+    case t_vsp:         pWnd=new CTileSetView(this, fname.c_str());  break;
+    case t_font:        pWnd=new CFontView(this, fname.c_str()); break;
     case t_unknown:
     case t_text:
-    case t_dat:         pWnd=new CTextView(this,fname.c_str()); break;
-    case t_chr:         pWnd=new CSpriteSetView(this,fname.c_str()); break;
+    case t_dat:         pWnd=new CTextView(this, fname.c_str()); break;
+    case t_chr:         pWnd=new CSpriteSetView(this, fname.c_str()); break;
 
     case t_config:
         {
@@ -241,7 +253,7 @@ void CMainWnd::Open(const std::string& fname)
         }
     default:
         {
-            wxMessageDialog(this,"Not implemented yet","NYI",wxOK).ShowModal();
+            wxMessageDialog(this, "Not implemented yet", "NYI", wxOK).ShowModal();
             return;
         }
     };   
@@ -257,7 +269,6 @@ void CMainWnd::OpenDocument(IDocView* newwnd)
 
 FileType CMainWnd::GetFileType(const std::string& fname)
 {
-    
     char* ext[] =
     {
         "",
@@ -300,10 +311,10 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
 
     pToolbar->AddTool(
         id_toolopen,
-        wxIcon("foldericon",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
+        wxIcon("foldericon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
         wxNullBitmap,
         false,
-        -1,-1,
+        -1, -1,
         NULL,
         "Open",
         "Open a file.");
@@ -312,10 +323,10 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
 
     pToolbar->AddTool(
         id_toolnewscript,
-        wxIcon("pyicon",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
+        wxIcon("pyicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
         wxNullBitmap,
         false,
-        -1,-1,
+        -1, -1,
         NULL,
         "Create source",
         "Create a new source document.");
@@ -323,10 +334,10 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
     // doesn't do anything yet.
     pToolbar->AddTool(
         id_toolnewmap,
-        wxIcon("mapicon",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
+        wxIcon("mapicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
         wxNullBitmap,
         false,
-        -1,-1,
+        -1, -1,
         NULL,
         "Create map",
         "Create a new map.");
@@ -339,7 +350,7 @@ void CMainWnd::OnToolBarNewScript(wxCommandEvent& event)
 {
     wxToolBar* pToolbar = GetToolBar();
     if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolnewscript,!pToolbar->GetToolState(id_toolnewscript));
+    pToolbar->EnableTool(id_toolnewscript, !pToolbar->GetToolState(id_toolnewscript));
     NewScript(event);
 }
 
@@ -347,7 +358,7 @@ void CMainWnd::OnToolBarOpen(wxCommandEvent& event)
 {
     wxToolBar* pToolbar = GetToolBar();
     if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolopen,!pToolbar->GetToolState(id_toolopen));
+    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
     OnOpen(event);
 }
 
@@ -355,7 +366,7 @@ void CMainWnd::OnToolBarNewMap(wxCommandEvent& event)
 {
     wxToolBar* pToolbar = GetToolBar();
     if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolopen,!pToolbar->GetToolState(id_toolopen));
+    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
     // ....
 }
 
