@@ -140,6 +140,7 @@ namespace Script
             type.tp_methods = methods;
             type.tp_getset = properties;
             type.tp_doc="Represents an entity in the ika game engine.";
+            type.tp_new = New;
 
             PyType_Ready(&type);
         }
@@ -156,12 +157,14 @@ namespace Script
         }
 
         // This is much more complicated than it should be.
-        PyObject* New(PyObject* self, PyObject* args)
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
+            static char* keywords[] = { "x", "y", "spritename", 0 };
+
             int x, y;
             char* spritename;
 
-            if (!PyArg_ParseTuple(args, "iis:Entity", &x, &y, &spritename))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "iis:Entity", keywords, &x, &y, &spritename))
                 return 0;
 
             CSprite* sprite = engine->sprite.Load(spritename, engine->video);
@@ -171,7 +174,7 @@ namespace Script
                 return 0;
             }
 
-            EntityObject* ent = PyObject_New(EntityObject, &type);
+            EntityObject* ent = PyObject_New(EntityObject, type);
 
             ent->ent = engine->SpawnEntity();
             ent->ent->x = x;

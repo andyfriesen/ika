@@ -104,16 +104,18 @@ namespace Script
             type.tp_methods = methods;
             type.tp_getset  = properties;
             type.tp_doc = "A software representation of an image that can be manipulated easily.";
+            type.tp_new = New;
     
             PyType_Ready(&type);
         }
         
-        PyObject* New(PyObject* self, PyObject* args)
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
+            static char* keywords[] = { "x", "y", 0 };
             PyObject* o;
             int x, y;
 
-            if (!PyArg_ParseTuple(args, "O|i:Canvas", &o, &y))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "O|i:__init__", keywords, &o, &y))
                 return 0;
 
             if (o->ob_type == &PyInt_Type)
@@ -125,7 +127,7 @@ namespace Script
                     return 0;
                 }
 
-                CanvasObject* c = PyObject_New(CanvasObject, &type);
+                CanvasObject* c = PyObject_New(CanvasObject, type);
                 c->canvas = new ::Canvas(x, y);
                 c->ref = false;
 
@@ -134,7 +136,7 @@ namespace Script
             else if (o->ob_type == &PyString_Type)
             {
                 char* fname = PyString_AsString(o);
-                CanvasObject* c = PyObject_New(CanvasObject, &type);
+                CanvasObject* c = PyObject_New(CanvasObject, type);
                 try
                 {
                     c->canvas = new ::Canvas(fname);

@@ -66,18 +66,20 @@ namespace Script
             type.tp_methods = methods;
             type.tp_getset = properties;
             type.tp_doc="An ika font.\nTODO: say something interesting in here. :P";
+            type.tp_new = New;
 
             PyType_Ready(&type);
         }
 
-        PyObject* New(PyObject* self, PyObject* args)
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
+            static char* keywords[] = { "filename", 0 };
             char* filename;
 
-            if (!PyArg_ParseTuple(args, "s:Font", &filename))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:Font", keywords, &filename))
                 return NULL;
 
-            FontObject* font=PyObject_New(FontObject, &type);
+            FontObject* font=PyObject_New(FontObject, type);
             if (!font)
                 return NULL;
 

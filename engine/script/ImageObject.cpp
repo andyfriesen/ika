@@ -13,6 +13,7 @@ namespace Script
         PyTypeObject type;
 
         PyMethodDef methods[] =
+        {
             {   "Blit",         (PyCFunction)Image_Blit,         METH_VARARGS,
                 "Image.Blit(x, y[, transparent])\n"
                 "Draws the image at (x,y).\n"
@@ -20,15 +21,18 @@ namespace Script
                 "Otherwise, alpha blending is enabled."
 
             },
+
             {   "ScaleBlit",    (PyCFunction)Image_ScaleBlit,    METH_VARARGS,
                 "Image.ScaleBlit(x, y, width, height[, transparent])\n"
                 "Blits the image, but stretches it out to the dimensions\n"
                 "specified in (width,height)."
             },
+
             {   "DistortBlit",  (PyCFunction)Image_DistortBlit,  METH_VARARGS,
-                "Image.DistortBlit(x1, y1), (x2, y2), (x3, y3), (x4, y4)[, transparency])\n"
+                "Image.DistortBlit((x1, y1), (x2, y2), (x3, y3), (x4, y4)[, transparency])\n"
                 "Blits the image scaled to the four points specified."
             },
+
             {   "Clip",         (PyCFunction)Image_Clip,         METH_VARARGS,
                 "Image.Clip(x, y, x2, y2)\n"
                 "Sets the dimensions of the image's clipping rectangle.\n"
@@ -64,6 +68,7 @@ namespace Script
             type.tp_methods = methods;
             type.tp_getset = properties;
             type.tp_doc="A hardware-dependant image.";
+            type.tp_new = New;
             PyType_Ready(&type);
         }
 
@@ -73,11 +78,12 @@ namespace Script
             PyObject_Del(self);
         }
 
-        PyObject* New(PyObject* self,PyObject* args)
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
+            static char* keywords[] = { "src", 0 };
             PyObject* obj;
 
-            if (!PyArg_ParseTuple(args,"O:newimage",&obj))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "O:__new__", keywords, &obj))
                 return NULL;
 
             if (obj->ob_type == &PyString_Type)
@@ -88,7 +94,7 @@ namespace Script
 
                     ::Canvas img(filename);
 
-                    ImageObject* image=PyObject_New(ImageObject,&type);
+                    ImageObject* image=PyObject_New(ImageObject, type);
                     if (!image)
                     {
                         PyErr_SetString(PyExc_MemoryError, "newimage: This should never happen. :o");
@@ -107,7 +113,7 @@ namespace Script
             }
             else if (obj->ob_type == &Script::Canvas::type)
             {
-                ImageObject* image = PyObject_New(ImageObject, &type);
+                ImageObject* image = PyObject_New(ImageObject, type);
                 if (!image)
                     return 0;
 

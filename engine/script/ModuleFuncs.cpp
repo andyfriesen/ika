@@ -559,18 +559,13 @@ namespace Script
             "This feature should be used sparingly, as it will cause serious problems if the queue\n"
             "cannot be executed in less than 1/100th of a second."
         },
+
         { "UnhookTimer",    (PyCFunction)std_unhooktimer,       METH_VARARGS,
             "UnhookTimer([function])\n"
             "Removes the function from the timer queue if it is present.  If not, the call does\n"
             "nothing.  If the argument is omitted, then the list is cleared in its entirety."
         },
 
-        // Object constructors
-        { "Image",          Script::Image::New,                 METH_VARARGS },
-        { "Sound",          Script::Sound::New,                 METH_VARARGS },
-        { "Font",           Script::Font::New,                  METH_VARARGS },
-        { "Entity",         Script::Entity::New,                METH_VARARGS },
-        { "Canvas",         Script::Canvas::New,                METH_VARARGS },
         {    0    }
     };
 

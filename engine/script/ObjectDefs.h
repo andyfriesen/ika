@@ -39,11 +39,12 @@ namespace Script
         METHOD(Image_Clip, ImageObject);
 
         void Init();
-        PyObject* New(PyObject* self, PyObject* args);
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(ImageObject* self);
 
         // Method table
         extern PyMethodDef methods[];
+        extern PyTypeObject type;
     }
 
     /// Reflects a sound stream.
@@ -61,11 +62,12 @@ namespace Script
         METHOD1(Sound_Pause, SoundObject);
 
         void Init();
-        PyObject* New(PyObject* self, PyObject* args);
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(SoundObject* self);
 
         // Method table
         extern PyMethodDef methods[];
+        extern PyTypeObject type;
     }
 
     /// Reflects an input control.
@@ -118,7 +120,7 @@ namespace Script
         METHOD1(Canvas_Mirror, CanvasObject);
 
         void Init();
-        PyObject* New(PyObject* self, PyObject* args);
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(CanvasObject* self);
     }
 
@@ -139,11 +141,12 @@ namespace Script
         METHOD(Font_StringWidth, FontObject);
 
         void Init();
-        PyObject* New(PyObject* self, PyObject* args);
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(FontObject* self);
 
         // Method table
         extern PyMethodDef methods[];
+        extern PyTypeObject type;
     }
 
     /// Reflects a map entity.
@@ -169,11 +172,12 @@ namespace Script
 
         void Init();
         PyObject* New(CEntity* ent);
-        PyObject* New(PyObject* self, PyObject* args);
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(EntityObject* self);
 
         // Method table
         extern PyMethodDef methods[];
+        extern PyTypeObject type;
     }
 
     // Singletons

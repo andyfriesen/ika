@@ -64,15 +64,16 @@ namespace Script
             type.tp_methods = methods;
             type.tp_getset = properties;
             type.tp_doc="A hunk of sound data, like a sound effect, or a piece of music.";
+            type.tp_new = New;
 
             PyType_Ready(&type);
         }
 
-        PyObject* New(PyObject* self, PyObject* args)
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
             char* filename;
 
-            if (!PyArg_ParseTuple(args, "s:newsound", &filename))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:newsound", 0, &filename))
                 return NULL;
 
             SoundObject* sound;
@@ -81,7 +82,7 @@ namespace Script
             {
                 if (!File::Exists(filename))                    throw va("%s does not exist", filename);
 
-                sound=PyObject_New(SoundObject, &type);
+                sound=PyObject_New(SoundObject, type);
                 if (!sound)                                     throw va("Can't load %s due to internal Python weirdness!  Very Bad!", filename);
 
                 sound->sound = ::Sound::OpenSound(filename);
