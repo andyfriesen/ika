@@ -31,15 +31,17 @@ void CScriptEngine::Init(CEngine* p)
     
     Py_Initialize();
     
-    string_k s('.');
+    string_k s(".;");                                           // The delimiter is platform dependant.
     s.append(Py_GetPath());
     PySys_SetPath((char*)s.c_str());
+
+    log("PyPath: %s",s.c_str());
     
     PyImport_AddModule("std");
     PyObject* module=Py_InitModule("std",standard_methods);
     PyObject* dict  =PyModule_GetDict(module);
     
-    pEngine=p;                                                // urk
+    pEngine=p;                                                  // urk
     
     // Initialize objects
     Init_Image();

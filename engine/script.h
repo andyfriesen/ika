@@ -13,6 +13,8 @@
 
     A very, very good idea to try would be to make a template class for all these Python objects.
     
+    I hate this.  It's retarded.  Either wrap it in a namespace and live with its globalness, or
+    figure out how to do it the Right Way.
 */
 
 class CEngine;                                                // proto
