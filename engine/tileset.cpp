@@ -136,4 +136,3 @@ void CTileSet::AnimateStrand(VSP::AnimState& anim)
     
     anim.nCount=anim.nDelay;
 }
-
