@@ -1,32 +1,13 @@
 
-#include "ikaMap.h"
 #include "map.h"
-
-namespace
-{
-    char* c_str(String* s)
-    {
-        static char c[1024];
-
-        char buffer __gc[]=System::Text::Encoding::ASCII->GetBytes(s);
-		char __pin* ptr=&buffer[0];
-		memcpy(c,(char*)ptr,s->Length);
-        c[s->Length]=0;
-
-        return c;
-    }
-
-    String* net_str(const char* c)
-    {
-        return new String((signed char *)(c),0,strlen(c));
-    }
-};
+#include "ikaMap.h"
+#include "Strings.h"
 
 namespace Import
 {
     namespace ika
     {
-        Map* Map::LoadMap(String* filename)
+        Map* Map::Load(String* filename)
         {
             const char* c=c_str(filename);
 
@@ -285,13 +266,27 @@ namespace Import
             return map->EntityAt(x,y);
         }
 
+        int Map::AddLayer()
+        {
+            map->AddLayer(map->NumLayers()-1);
+            return map->NumLayers()-1;
+        }
+
+        void Map::RemoveLayer(int idx)
+        {
+            map->DeleteLayer(idx);
+        }
+
         Array* Map::Copy(int x,int y,int width,int height,int layer)
         {
+            throw new System::Exception(S"Not yet implemented!");
+
             return 0;
         }
 
         void Map::Paste(Array* src,int x,int y,int layer)
         {
+            throw new System::Exception(S"Not yet implemented!");
         }
     };
 };

@@ -73,7 +73,7 @@ namespace Import
             ::Map* map;
 
         public:
-            static Map* LoadMap(String* filename);  // this can fail and return null, so it's not just a constructor
+            static Map* Load(String* filename);  // this can fail and return null, so it's not just a constructor
         private:
             Map(::Map* m);
 
@@ -121,6 +121,9 @@ namespace Import
             EntityInfo* CreateEntity(int& idx);         // idx is assigned to the index of the new entity.  The return value is the entity's properties.
             void DestroyEntity(int idx);
             int  EntityAt(int x,int y);                 // returns the index of the entity under the coordinates specified, or -1 if there isn't one there.
+
+            int AddLayer();
+            void RemoveLayer(int idx);
 
             // I'm returning an Array* and not an int __gc[,] because of a bug in the VC++.NET compiler.  Die MS, die.
             Array* Copy(int x,int y,int width,int height,int layer);    // copies tiles from the specified layer, and returns an int[,] containing them.

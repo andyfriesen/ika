@@ -102,14 +102,26 @@
 				RelativePath="AssemblyInfo.cpp">
 			</File>
 			<File
+				RelativePath="Strings.cpp">
+			</File>
+			<File
 				RelativePath="ikaMap.cpp">
+			</File>
+			<File
+				RelativePath="ikaTileSet.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
 			<File
+				RelativePath="Strings.h">
+			</File>
+			<File
 				RelativePath="ikaMap.h">
+			</File>
+			<File
+				RelativePath="ikaTileSet.h">
 			</File>
 		</Filter>
 		<Filter
