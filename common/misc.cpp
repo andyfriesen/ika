@@ -57,14 +57,14 @@ int Random(int min, int max)
 
 const string Trim(const std::string& s)
 {
-    uint start = 0, end = s.length() - 1;
+    uint start = 0, end = s.length();
 
     while (s[start] == ' ' && start < s.length()) start++;
-    while (s[end] == ' ' && end > 0) end--;
+    while (s[end - 1] == ' ' && end > 0) end--;
     if (start >= end) 
         return "";
     else
-        return s.substr(start, start - end);
+        return s.substr(start, end - start);
 }
 
 string Lower(const string& s)
