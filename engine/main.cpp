@@ -619,7 +619,7 @@ void CEngine::TestActivate(const CEntity& player)
         if (!pEnt->bAdjacentactivate && pEnt->sActscript.length() != 0)
         {
             script.CallEvent(pEnt->sActscript.c_str());
-            input.Enter().Pressed(); // flush
+            input.Flush();
             return;
         }
     }
@@ -635,7 +635,7 @@ void CEngine::TestActivate(const CEntity& player)
     if (zone.bAdjacentactivation)
     {
         script.CallEvent(zone.sActscript.c_str());
-        input.Enter().Pressed(); // flush
+        input.Flush();
     }
 }
 

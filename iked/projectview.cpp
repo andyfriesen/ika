@@ -57,7 +57,7 @@ ProjectView::ProjectView(CMainWnd* parent, const wxPoint& pos, const wxSize& siz
     
     _fileMenu = new wxMenu;
     _fileMenu->Append(id_open, "&Open", "");
-    _fileMenu->Append(id_delete, "&Delete", "");
+    _fileMenu->Append(id_delete, "Re&move", "");
     _fileMenu->Append(id_rename, "&Rename", "");
     
     _folderMenu = new wxMenu;
@@ -82,7 +82,6 @@ ProjectView::ProjectView(CMainWnd* parent, const wxPoint& pos, const wxSize& siz
         _imageList->Add(wxIcon(names[i], wxBITMAP_TYPE_ICO_RESOURCE));
     SetImageList(_imageList);
 
-    //Expand(GetRootItem());
     Show();
 }
 
@@ -125,7 +124,7 @@ void ProjectView::OnRightClick(wxMouseEvent& event)
         pos = r.GetPosition();
     }
 
-    _selected=(Leaf*)GetItemData(id);
+    _selected = (Leaf*)GetItemData(id);
     if (!_selected) return;
 
     if (id == GetRootItem())

@@ -51,7 +51,7 @@ private:
     static std::map<std::string, int> _keyMap;
     static bool _keyMapInitted;
 
-    std::queue<void*> _hookQueue;
+    ScriptObject*    _hookQueue;
     std::queue<char> _keyQueue;
 
     Control* _up;
@@ -99,6 +99,8 @@ public:
     void Unpress(const std::string& name);
     void Unpress(int i);
     void Unpress();
+
+    void Flush();
 };
 
 #endif

@@ -184,6 +184,7 @@ public:
 };*/
 
 Input::Input()
+    : _hookQueue(0)
 {
     if (!_keyMapInitted)
     {
@@ -222,8 +223,8 @@ void Input::KeyDown(int key)
     {
         c->Press();
 
-        if (c->onPress.get())
-            _hookQueue.push(c->onPress.get());
+        if (_hookQueue == 0)
+            _hookQueue = &c->onPress;
     }
 }
 
@@ -234,8 +235,8 @@ void Input::KeyUp(int key)
     {
         c->Unpress();
 
-        if (c->onUnpress.get())
-            _hookQueue.push(c->onUnpress.get());
+        if (_hookQueue == 0)
+            _hookQueue = &c->onUnpress;
     }
 }
 
@@ -259,19 +260,19 @@ Input::Control* Input::GetControl(const std::string& name)
 
 void* Input::GetNextControlEvent()
 {
-    if (_hookQueue.empty())
+    if (_hookQueue != 0)
+    {
+        void* p = _hookQueue->get();
+        _hookQueue = 0;
+        return p;
+    }
+    else
         return 0;
-
-    void* p = _hookQueue.front();
-    _hookQueue.pop();
-
-    return p;
 }
 
 void Input::ClearEventQueue()
 {
-    while (!_hookQueue.empty())
-        _hookQueue.pop();
+    _hookQueue = 0;
 }
 
 char Input::GetKey()
@@ -308,4 +309,11 @@ void Input::Unpress()
 {
     for (std::map<std::string, Control*>::iterator i = _controls.begin(); i != _controls.end(); i++)
         i->second->Pressed();
+}
+
+void Input::Flush()
+{
+    ClearKeyQueue();
+    Unpress();
+    ClearEventQueue();
 }
