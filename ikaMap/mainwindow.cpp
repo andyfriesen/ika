@@ -456,6 +456,8 @@ void MainWindow::OnNewMap(wxCommandEvent&)
 
             ClearList(_undoList);
             ClearList(_redoList);
+
+            mapLoaded.fire(MapTileSetEvent(_map, _tileSet));
         }
         catch (std::runtime_error& error)
         {
@@ -732,11 +734,6 @@ void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
             dlg.x,
             dlg.y));
     }
-}
-
-void MainWindow::OnShowLayerContextMenu(wxMouseEvent& event)
-{
-
 }
 
 void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   _mapView->IncZoom(-1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
