@@ -275,7 +275,7 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
 
     pToolbar->AddTool(
         id_toolopen,
-        wxIcon("wxicon_small_open_folder",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
+        wxIcon("foldericon",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
         wxNullBitmap,
         false,
         -1,-1,

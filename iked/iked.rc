@@ -69,31 +69,11 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-WXICON_TIP              ICON    DISCARDABLE     "wx/msw/tip.ico"
-WXICON_SMALL_CLOSED_FOLDER ICON    DISCARDABLE     "wx/msw/folder1.ico"
-WXICON_SMALL_OPEN_FOLDER ICON    DISCARDABLE     "wx/msw/folder2.ico"
-WXICON_SMALL_FILE       ICON    DISCARDABLE     "wx/msw/file1.ico"
-WXICON_SMALL_COMPUTER   ICON    DISCARDABLE     "wx/msw/computer.ico"
-WXICON_SMALL_DRIVE      ICON    DISCARDABLE     "wx/msw/drive.ico"
-WXICON_SMALL_CDROM      ICON    DISCARDABLE     "wx/msw/cdrom.ico"
-WXICON_SMALL_FLOPPY     ICON    DISCARDABLE     "wx/msw/floppy.ico"
-WXICON_SMALL_REMOVEABLE ICON    DISCARDABLE     "wx/msw/removble.ico"
-FOLDERICON              ICON    DISCARDABLE     "icon1.ico"
+FOLDERICON              ICON    DISCARDABLE     "folder.ico"
 VSPICON                 ICON    DISCARDABLE     "vsp.ico"
 PYICON                  ICON    DISCARDABLE     "py.ico"
 FONTICON                ICON    DISCARDABLE     "font.ico"
 MAPICON                 ICON    DISCARDABLE     "map.ico"
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Bitmap
-//
-
-WXDISABLE_BUTTON_BITMAP BITMAP  MOVEABLE PURE   "wx/msw/disable.bmp"
-TICK_BMP                BITMAP  MOVEABLE PURE   "wx/msw/tick.bmp"
-CROSS_BMP               BITMAP  MOVEABLE PURE   "wx/msw/cross.bmp"
-CSQUERY                 BITMAP  MOVEABLE PURE   "wx/msw/csquery.bmp"
-WXBITMAP_STD_COLOURS    BITMAP  MOVEABLE PURE   "wx/msw/colours.bmp"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -101,18 +81,18 @@ WXBITMAP_STD_COLOURS    BITMAP  MOVEABLE PURE   "wx/msw/colours.bmp"
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE
+1 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE
+2 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE
+3 TEXTINCLUDE DISCARDABLE 
 BEGIN
     "\r\n"
     "\0"
@@ -127,6 +107,13 @@ END
 //
 
 DIALOGS                 TEXT    DISCARDABLE     "dlg.wxr"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+WXBITMAP_STD_COLOURS             BITMAP  DISCARDABLE     "colours.bmp"
 #endif    // English (Canada) resources
 /////////////////////////////////////////////////////////////////////////////
 
