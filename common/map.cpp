@@ -656,6 +656,9 @@ bool Map::Load(const char* fname)
         f.Read(zoneinfo[i].nActdelay);
         f.Read(zoneinfo[i].bAdjacentactivation);
     }
+
+    if (!nZones)
+        zoneinfo.push_back(SMapZone());
     
     int nEnts;
     f.Read(nEnts);

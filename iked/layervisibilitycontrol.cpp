@@ -16,6 +16,12 @@ CLayerVisibilityControl::CLayerVisibilityControl(wxWindow* parent,int id,CMapVie
     : wxCheckListBox(parent,id), pMapview(mapview)
 {}
 
+void CLayerVisibilityControl::Clear()
+{
+    layidx.clear();
+    wxCheckListBox::Clear();
+}
+
 void CLayerVisibilityControl::AppendItem(const std::string& name,int idx)
 {
     layidx.push_back(idx);

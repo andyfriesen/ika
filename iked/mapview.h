@@ -39,26 +39,6 @@ class CMapView : public IDocView
 
     enum
     {
-        id_zoomin=100,
-        id_zoomout,
-        id_zoomnormal,
-        id_zoomin2x,
-        id_zoomin4x,
-        id_zoomout2x,
-        id_zoomout4x,
-
-        id_filesave,
-        id_filesaveas,
-        id_fileclose,
-
-        id_mapentities,
-        id_mapzones,
-        id_vsp,
-        id_script
-    };
-
-    enum
-    {
         lay_entity=-10,
         lay_zone,
         lay_obstruction
@@ -105,7 +85,6 @@ private:
 public:
     CMapView(CMainWnd* parent,const string& fname);
 
-    void InitLayerVisibilityControl();
     void InitAccelerators();
     void InitMenu();
 
@@ -127,6 +106,7 @@ public:
 
     void OnShowEntityEditor(wxCommandEvent& event);
     void OnShowZoneEditor(wxCommandEvent& event);
+    void OnNewLayer(wxCommandEvent& event);
     void OnShowVSP(wxCommandEvent& event);
     void OnShowScript(wxCommandEvent& event);
 
@@ -157,6 +137,7 @@ private:
     void LayerEdit(wxMouseEvent& event);
     void HandleMouse(wxMouseEvent& event);
     void UpdateScrollbars();
+    void UpdateLayerList();
 
     void Render();
     void RenderEntities();

@@ -18,6 +18,7 @@ class CLayerVisibilityControl : public wxCheckListBox
 public:
     CLayerVisibilityControl(wxWindow* parent,int id,CMapView* mapview);
 
+    void Clear();
     void AppendItem(const std::string& name,int idx);
     void CheckItem(int idx);
 

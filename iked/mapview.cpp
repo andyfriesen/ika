@@ -128,28 +128,51 @@ namespace
     BEGIN_EVENT_TABLE(CMapFrame, CGraphFrame)
         EVT_PAINT(CMapFrame::OnPaint)
     END_EVENT_TABLE()
+
+
+    enum
+    {
+        id_zoomin=100,
+        id_zoomout,
+        id_zoomnormal,
+        id_zoomin2x,
+        id_zoomin4x,
+        id_zoomout2x,
+        id_zoomout4x,
+
+        id_filesave,
+        id_filesaveas,
+        id_fileclose,
+
+        id_mapentities,
+        id_mapzones,
+        id_newlayer,
+        id_vsp,
+        id_script
+    };
 };
 
 //-------------------------------------------------------------------------------------
 
 BEGIN_EVENT_TABLE(CMapView, wxMDIChildFrame)
-    EVT_MENU(CMapView::id_zoomin, CMapView::OnZoomIn)
-    EVT_MENU(CMapView::id_zoomout, CMapView::OnZoomOut)
-    EVT_MENU(CMapView::id_zoomnormal, CMapView::OnZoomNormal)
+    EVT_MENU(id_zoomin, CMapView::OnZoomIn)
+    EVT_MENU(id_zoomout, CMapView::OnZoomOut)
+    EVT_MENU(id_zoomnormal, CMapView::OnZoomNormal)
 
-    EVT_MENU(CMapView::id_zoomin2x, CMapView::OnZoomIn2x)
-    EVT_MENU(CMapView::id_zoomin4x, CMapView::OnZoomIn4x)
-    EVT_MENU(CMapView::id_zoomout2x, CMapView::OnZoomOut2x)
-    EVT_MENU(CMapView::id_zoomout4x, CMapView::OnZoomOut4x)
+    EVT_MENU(id_zoomin2x, CMapView::OnZoomIn2x)
+    EVT_MENU(id_zoomin4x, CMapView::OnZoomIn4x)
+    EVT_MENU(id_zoomout2x, CMapView::OnZoomOut2x)
+    EVT_MENU(id_zoomout4x, CMapView::OnZoomOut4x)
 
-    EVT_MENU(CMapView::id_mapentities, CMapView::OnShowEntityEditor)
-    EVT_MENU(CMapView::id_mapzones, CMapView::OnShowZoneEditor)
-    EVT_MENU(CMapView::id_vsp, CMapView::OnShowVSP)
-    EVT_MENU(CMapView::id_script, CMapView::OnShowScript)
+    EVT_MENU(id_mapentities, CMapView::OnShowEntityEditor)
+    EVT_MENU(id_mapzones, CMapView::OnShowZoneEditor)
+    EVT_MENU(id_newlayer, CMapView::OnNewLayer)
+    EVT_MENU(id_vsp, CMapView::OnShowVSP)
+    EVT_MENU(id_script, CMapView::OnShowScript)
 
-    EVT_MENU(CMapView::id_filesave, CMapView::OnSave)
-    EVT_MENU(CMapView::id_filesaveas, CMapView::OnSaveAs)
-    EVT_MENU(CMapView::id_fileclose, CMapView::OnClose)
+    EVT_MENU(id_filesave, CMapView::OnSave)
+    EVT_MENU(id_filesaveas, CMapView::OnSaveAs)
+    EVT_MENU(id_fileclose, CMapView::OnClose)
 
     //EVT_PAINT(CMapView::OnPaint)
     EVT_ERASE_BACKGROUND(CMapView::OnErase)
@@ -205,7 +228,7 @@ CMapView::CMapView(CMainWnd* parent, const string& name)
     pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, pMap->Width()* pTileset->Width());
     xwin = ywin = 0;
 
-    InitLayerVisibilityControl();
+    UpdateLayerList();
     InitAccelerators();
     InitMenu();
 
@@ -218,42 +241,6 @@ CMapView::CMapView(CMainWnd* parent, const string& name)
     _zoneeditor = new ZoneEditor(this, pMap);
 
     Show();
-}
-
-void CMapView::InitLayerVisibilityControl()
-{
-    // Fill up the layer info bar
-    const string& s = pMap->GetRString();
-    
-    for (uint idx = 0; idx < s.length(); idx++)
-    {
-        char c = s[idx];
-        if (c >='0' && c <='9')
-        {
-            if (c == '0')
-                c = 10;
-            else
-                c -= '1';
-
-            SMapLayerInfo lay;
-            pMap->GetLayerInfo(lay, c);
-            pLayerlist->AppendItem(va("Layer %i", c + 1), c);
-            pLayerlist->Check(pLayerlist->Number() - 1);
-
-            nLayertoggle[c]= visible;
-        }
-        else if (c =='E')
-        {
-            pLayerlist->AppendItem("Entities", lay_entity);
-            pLayerlist->Check(pLayerlist->Number() - 1);
-            nLayertoggle[lay_entity] = visible;
-        }
-//        else if (c =='R')
-//            pLayerlist->AppendItem("HookRetrace", -1);  // we don't do anything when the hookretrace "layer" is selected.
-    }
-
-    pLayerlist->AppendItem("Zones", lay_zone);
-    pLayerlist->AppendItem("Obstructions", lay_obstruction);
 }
 
 void CMapView::InitAccelerators()
@@ -306,6 +293,7 @@ void CMapView::InitMenu()
 
     mapmenu->Append(id_vsp, "&VSP");
     mapmenu->Append(id_script, "&Script");
+    mapmenu->Append(id_newlayer, "New &Layer");
     mapmenu->Append(id_mapentities, "&Entities...");
     mapmenu->Append(id_mapzones, "&Zones...");
 
@@ -437,6 +425,17 @@ void CMapView::OnShowVSP(wxCommandEvent& event)
     pParent->Open(pTileset->GetVSP().Name());
 }
 
+void CMapView::OnNewLayer(wxCommandEvent& event)
+{
+    if (pMap->NumLayers() < 10)
+    {
+        pMap->AddLayer(10);
+        std::string s = pMap->GetRString();
+        pMap->SetRString(s + (char)('0' + pMap->NumLayers()));
+        UpdateLayerList();
+    }
+}
+
 void CMapView::OnShowScript(wxCommandEvent& event)
 {
     pParent->Open(Path::ReplaceExtension(sName, "py"));
@@ -556,6 +555,44 @@ void CMapView::UpdateScrollbars()
 
     pRightbar->SetScrollbar(wxHORIZONTAL, xwin, w, pMap->Width() * pTileset->Width()  );
     pRightbar->SetScrollbar(wxVERTICAL, ywin, h,   pMap->Height()* pTileset->Height() );
+}
+
+void CMapView::UpdateLayerList()
+{
+    // Fill up the layer info bar
+    const string& s = pMap->GetRString();
+
+    pLayerlist->Clear();
+    
+    for (uint idx = 0; idx < s.length(); idx++)
+    {
+        char c = s[idx];
+        if (c >='0' && c <='9')
+        {
+            if (c == '0')
+                c = 10;
+            else
+                c -= '1';
+
+            SMapLayerInfo lay;
+            pMap->GetLayerInfo(lay, c);
+            pLayerlist->AppendItem(va("Layer %i", c + 1), c);
+            pLayerlist->Check(pLayerlist->Number() - 1);
+
+            nLayertoggle[c]= visible;
+        }
+        else if (c =='E')
+        {
+            pLayerlist->AppendItem("Entities", lay_entity);
+            pLayerlist->Check(pLayerlist->Number() - 1);
+            nLayertoggle[lay_entity] = visible;
+        }
+//        else if (c =='R')
+//            pLayerlist->AppendItem("HookRetrace", -1);  // we don't do anything when the hookretrace "layer" is selected.
+    }
+
+    pLayerlist->AppendItem("Zones", lay_zone);
+    pLayerlist->AppendItem("Obstructions", lay_obstruction);
 }
 
 // ------------------------------ Rendering -------------------------
