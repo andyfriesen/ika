@@ -136,6 +136,9 @@
 				RelativePath="newmapdlg.cpp">
 			</File>
 			<File
+				RelativePath="obstructionstate.cpp">
+			</File>
+			<File
 				RelativePath="resource.cpp">
 			</File>
 			<File
@@ -183,6 +186,9 @@
 			</File>
 			<File
 				RelativePath="newmapdlg.h">
+			</File>
+			<File
+				RelativePath="obstructionstate.h">
 			</File>
 			<File
 				RelativePath="resource.h">
@@ -305,9 +311,6 @@
 			</File>
 			<File
 				RelativePath="..\common\fontfile.h">
-			</File>
-			<File
-				RelativePath="..\common\invariant.h">
 			</File>
 			<File
 				RelativePath="..\common\log.cpp">

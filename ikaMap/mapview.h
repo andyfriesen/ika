@@ -7,6 +7,7 @@
 #include "map.h"
 #include "editstate.h"
 #include "settilestate.h"
+#include "obstructionstate.h"
 
 class MainWindow;
 
@@ -27,6 +28,7 @@ private:
 
     // Instances of the various edit states.  We only ever create one of each.
     TileSetState _tileSetState;
+    ObstructionState _obstructionState;
     //-
 
 public:
@@ -48,6 +50,7 @@ public:
 
     void RenderLayer(Map::Layer* lay, int xoffset, int yoffset);
     void RenderEntities(Map::Layer* lay, int xoffset, int yoffset);
+    void RenderObstructions(Map::Layer* lay, int xoffset, int yoffset);
 
     void UpdateScrollBars();
 
@@ -59,6 +62,28 @@ public:
 
     uint GetCurLayer() const { return _curLayer; }
     void SetCurLayer(uint i);
+    int  GetXWin() const { return _xwin; }
+    int  GetYWin() const { return _ywin; }
+
+    /*
+    andys evil clone: erg.
+        private:  SetTileState _setTileState;
+        public:  SetSetTileState();
+    aegisz: O_O
+    andys evil clone: yeah.  I dislike that. :)
+    aegisz: TileStateSetter?
+    aegisz: Then you have the whole noun thing going
+    andys evil clone: That doesn't sound like a very good name for the state itself.
+    aegisz: Oh, yeah.
+    andys evil clone: er... it should be "void SetSetTileState();"
+        (actually it shouldn't be that either because that's a horrible name)
+    aegisz: TileSetterState
+    aegisz: lol
+    aegisz: just call it cock() and be done with it
+    andys evil clone: hah.
+    */
+    void Cock();    // Sets the default tile-setting state.  Thanks aegis!
+    void SetObstructionState();
 
     DECLARE_EVENT_TABLE()
 };

@@ -43,6 +43,7 @@ namespace
         id_zoneedit,
         id_waypointedit,
         id_entityedit,
+
         id_newlayer,
         id_destroylayer,
         id_movelayerup,
@@ -69,6 +70,9 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_editundo, MainWindow::OnUndo)
     EVT_MENU(id_editredo, MainWindow::OnRedo)
     EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
+
+    EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
+    EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
 
     EVT_BUTTON(id_newlayer, MainWindow::OnNewLayer)
     EVT_BUTTON(id_destroylayer, MainWindow::OnDestroyLayer)
@@ -382,6 +386,9 @@ void MainWindow::OnChangeCurrentLayer(wxCommandEvent& event)
 {
     wxASSERT(_map != 0 && (uint)event.GetInt() < _map->NumLayers());
     _mapView->SetCurLayer(event.GetInt());
+
+    _mapView->Render();
+    _mapView->ShowPage();
 }
 
 void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
@@ -409,6 +416,16 @@ void MainWindow::OnToggleLayer(wxCommandEvent& event)
 
     _mapView->Render();
     _mapView->ShowPage();
+}
+
+void MainWindow::OnSetTilePaintState(wxCommandEvent&)
+{
+    _mapView->Cock();
+}
+
+void MainWindow::OnSetObstructionState(wxCommandEvent&)
+{
+    _mapView->SetObstructionState();
 }
 
 void MainWindow::OnNewLayer(wxCommandEvent&)

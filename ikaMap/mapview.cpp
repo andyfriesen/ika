@@ -14,19 +14,19 @@ BEGIN_EVENT_TABLE(MapView, wxPanel)
     EVT_PAINT(MapView::OnPaint)
 
     EVT_LEFT_DOWN(MapView::OnMouseDown)
+    EVT_RIGHT_DOWN(MapView::OnMouseDown)
     EVT_MIDDLE_DOWN(MapView::OnMouseDown)
     EVT_LEFT_UP(MapView::OnMouseUp)
+    EVT_RIGHT_UP(MapView::OnMouseUp)
     EVT_MOTION(MapView::OnMouseMove)
     EVT_MOUSEWHEEL(MapView::OnMouseWheel)
-
-
-    
 END_EVENT_TABLE()
 
 MapView::MapView(MainWindow* mw, wxWindow* parent)
     : wxPanel(parent)
     , _mainWnd(mw)
     , _tileSetState(mw)
+    , _obstructionState(mw)
     , _editState(&_tileSetState)
 
     , _xwin(0)
@@ -148,6 +148,8 @@ void MapView::Render()
             // TODO: Parallax, and possibly wrapping.
             RenderLayer(&lay, _xwin - lay.x, _ywin - lay.y);
             RenderEntities(&lay, _xwin - lay.x, _ywin - lay.y);
+
+            //RenderObstructions(&lay, _xwin - lay.x, _ywin - lay.y);
         }
     }
 
@@ -255,6 +257,52 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
     }
 }
 
+void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
+{
+    // Draw a gray square over obstructed things.
+    TileSet* ts = _mainWnd->GetTileSet();
+
+    int width  = _video->LogicalWidth();
+    int height = _video->LogicalHeight();
+
+    int tileX = ts->Width();
+    int tileY = ts->Height();
+
+    int firstX = xoffset / tileX;
+    int firstY = yoffset / tileY;
+    
+    int lenX = width  / tileX + 2;
+    int lenY = height / tileY + 3;
+
+    int adjustX = (xoffset % tileX);
+    int adjustY = (yoffset % tileY);
+
+    if (firstX + lenX > lay->Width())  lenX = lay->Width()  - firstX;
+    if (firstY + lenY > lay->Height()) lenY = lay->Height() - firstY;
+
+    if (firstX < 0)  
+    {
+        lenX -= -firstX;
+        adjustX += firstX * tileX;
+        firstX = 0;
+    }
+    if (firstY < 0)
+    {
+        lenY -= -firstY;
+        adjustY += firstY * tileY;
+        firstY = 0;
+    }
+
+    for (int y = 0; y < lenY; y++)
+    {
+        for (int x = 0; x < lenX; x++)
+        {
+            if (lay->obstructions(x + firstX, y + firstY))
+                _video->RectFill(x * tileX - adjustX, y * tileY - adjustY, tileX, tileY, RGBA(0, 0, 0, 128));
+        }
+    }
+}
+
 void MapView::UpdateScrollBars()
 {
     const Map* map = _mainWnd->GetMap();
@@ -302,4 +350,18 @@ void MapView::SetCurLayer(uint i)
     wxASSERT(i < _mainWnd->GetMap()->NumLayers());
 
     _curLayer = i;
+}
+
+void MapView::Cock()
+{
+    _editState = &_tileSetState;
+    Render();
+    ShowPage();
+}
+
+void MapView::SetObstructionState()
+{
+    _editState = &_obstructionState;
+    Render();
+    ShowPage();
 }

@@ -64,6 +64,8 @@ public:
     void OnChangeCurrentLayer(wxCommandEvent& event);
     void OnShowLayerProperties(wxCommandEvent& event);
     void OnToggleLayer(wxCommandEvent& event);
+    void OnSetTilePaintState(wxCommandEvent&);
+    void OnSetObstructionState(wxCommandEvent&);
 
     void OnNewLayer(wxCommandEvent&);
     void OnDestroyLayer(wxCommandEvent&);

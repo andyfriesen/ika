@@ -124,6 +124,7 @@ void VideoFrame::RectFill(int x, int y, int w, int h, RGBA colour)
 
     glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
     glColor4ub(colour.r, colour.g, colour.b, colour.a);
+    glDisable(GL_TEXTURE_2D);
 
     glBegin(GL_QUADS);
 
