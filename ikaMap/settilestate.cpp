@@ -17,16 +17,19 @@ TileSetState::TileSetState(Executor* e)
     : EditState(e)
     , _oldX(-1)
     , _oldY(-1)
+    , _curGroup(0)
 {}
 
 void TileSetState::OnRenderCurrentLayer()
 {
-/*    wxPoint mousePos = GetMapView()->ScreenToClient(::wxGetMousePosition());
+    /*
+    wxPoint mousePos = GetMapView()->ScreenToClient(::wxGetMousePosition());
     GetMapView()->ScreenToTile(mousePos.x, mousePos.y);	
 
     int w = GetTileSet()->Width();
     int h = GetTileSet()->Height();	
-    GetMapView()->GetVideo()->Rect(mousePos.x*w, mousePos.y*h, w, h, RGBA(255, 192, 192, 255));*/
+    GetMapView()->GetVideo()->Rect(mousePos.x*w, mousePos.y*h, w, h, RGBA(255, 192, 192, 255));
+    */
 }
 
 void TileSetState::OnMouseDown(wxMouseEvent& event)
@@ -40,12 +43,26 @@ void TileSetState::OnMouseDown(wxMouseEvent& event)
         SetCurTile(GetCurLayer()->tiles(x, y));
     }
     else
+    {
         SetTile(event.m_x, event.m_y);
+    }
 }
 
 void TileSetState::OnMouseUp(wxMouseEvent& event)
 {
 	_oldX = _oldY = -1;
+        // odd that the mouse button is able to go up without first going down
+        if (_curGroup)
+        {
+            if (_curGroup->GetCount() == 1)
+            {
+                GetExecutor()->AddCommand(_curGroup->GetIndex(0));
+                delete _curGroup;
+            }
+            else
+                GetExecutor()->AddCommand(_curGroup);
+        }
+        _curGroup = 0;
 }
 
 void TileSetState::OnMouseMove(wxMouseEvent& event)
@@ -85,8 +102,16 @@ void TileSetState::SetTile(int x, int y)
 
     if (GetCurLayer()->tiles(x, y) == GetCurTile()) return; // don't flood the undo buffer with commands that don't actually do anything
 
-    //Log::Write("SetTileCommand!");
-    HandleCommand(new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile()));
+    // Create a new group if we need to
+    if (!_curGroup)
+        _curGroup = new CompositeCommand();
+
+    Command* cmd = new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile());
+    //HandleCommand(c);
+    // naughty.  execute the command, but don't put it on the undo stack
+    // when the mouse button is released, we add the list of commands all in one go.
+    cmd->Do(GetExecutor());
+    _curGroup->Append(cmd);
 }
 
 uint TileSetState::GetCurTile() const

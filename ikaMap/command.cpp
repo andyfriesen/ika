@@ -7,6 +7,9 @@
 #include "map.h"
 #include "tileset.h"
 
+CompositeCommand::CompositeCommand()
+{}
+
 CompositeCommand::CompositeCommand(const std::vector<Command*>& commands)
     : _commands(commands)
 {}
@@ -15,6 +18,24 @@ CompositeCommand::~CompositeCommand()
 {
     for (uint i = 0; i < _commands.size(); i++)
         delete _commands[i];
+}
+
+int CompositeCommand::GetCount() const
+{
+    return _commands.size();
+}
+
+Command* CompositeCommand::GetIndex(int i)
+{
+    if (i < 0 || i >= _commands.size())
+        return 0;
+    else
+        return _commands[i];
+}
+
+void CompositeCommand::Append(Command* cmd)
+{
+    _commands.push_back(cmd);
 }
 
 void CompositeCommand::Do(Executor* e)

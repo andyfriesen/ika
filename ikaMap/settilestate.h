@@ -5,6 +5,8 @@
 #include "types.h"
 #include "editstate.h"
 
+struct CompositeCommand;
+
 struct TileSetState : EditState
 {
 public:
@@ -25,6 +27,8 @@ public:
 
 private:
     int _oldX, _oldY;
+
+    CompositeCommand* _curGroup;
 };
 
 #endif

@@ -69,7 +69,7 @@ public:
     // interface
     void      Sys_Error(const char* errmsg);                                        ///< bitches, and quits
     void      Script_Error();                                                       ///< also bitchy and quitty
-    void      CheckMessages();                                                      ///< Play nice with Mr. Gates
+    void      CheckMessages();                                                      ///< Play nice with Mr. Gates (or Torvalds, or Jobs, or...)
     
     void      GameTick();                                                           ///< 1/100th of a second's worth of AI
     void      CheckKeyBindings();                                                   ///< checks to see if any bound keys are pressed

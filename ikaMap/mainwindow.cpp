@@ -159,7 +159,13 @@ void MainWindow::ClearList(std::stack< ::Command*>& list)
 }
 
 MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long style)
-    : wxFrame(0, -1, va("ikaMap version %s", IKA_VERSION), position, size, style)
+    : wxFrame(0, -1, 
+#if defined(_DEBUG)
+        va("ikaMap version %s (debug)", IKA_VERSION), 
+#else
+        va("ikaMap version %s", IKA_VERSION), 
+#endif
+        position, size, style)
     , _map(0)
     , _tileSet(0)
     , _curScript(0)
@@ -916,30 +922,6 @@ void MainWindow::HighlightToolButton(uint buttonId)
 MapView* MainWindow::GetMapView() const { return _mapView; }
 TileSetView* MainWindow::GetTileSetView() const { return _tileSetView; }
 
-void MainWindow::Undo()
-{
-    if (!_undoList.empty())
-    {
-        ::Command* c = _undoList.top();
-        _undoList.pop();
-
-        c->Undo(this);
-        _redoList.push(c);
-    }
-}
-
-void MainWindow::Redo()
-{
-    if (!_redoList.empty())
-    {
-        ::Command* c = _redoList.top();
-        _redoList.pop();
-
-        c->Do(this);
-        _undoList.push(c);
-    }
-}
-
 void MainWindow::LoadMap(const std::string& fileName)
 {
     Map* newMap = new Map;
@@ -997,11 +979,39 @@ std::vector<Script*>& MainWindow::GetScripts()
 // Executor:
 void MainWindow::HandleCommand(::Command* cmd)
 {
-    ClearList(_redoList);
-
     cmd->Do(this);
-    _undoList.push(cmd);
+    AddCommand(cmd);
     SetChanged(true);
+}
+
+void MainWindow::AddCommand(::Command* cmd)
+{
+    ClearList(_redoList);
+    _undoList.push(cmd);
+}
+
+void MainWindow::Undo()
+{
+    if (!_undoList.empty())
+    {
+        ::Command* c = _undoList.top();
+        _undoList.pop();
+
+        c->Undo(this);
+        _redoList.push(c);
+    }
+}
+
+void MainWindow::Redo()
+{
+    if (!_redoList.empty())
+    {
+        ::Command* c = _redoList.top();
+        _redoList.pop();
+
+        c->Do(this);
+        _undoList.push(c);
+    }
 }
 
 bool MainWindow::IsLayerVisible(uint index)
@@ -1119,3 +1129,4 @@ void MainWindow::SwitchTileSet(TileSet* ts)
     _tileSet = ts;
     tileSetChanged.fire(MapTileSetEvent(_map, _tileSet));
 }
+

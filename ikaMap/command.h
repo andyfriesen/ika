@@ -37,8 +37,13 @@ private:
     std::vector<Command*> _commands;
 
 public:
+    CompositeCommand();
     CompositeCommand(const std::vector<Command*>& commands);
     ~CompositeCommand();
+
+    int GetCount() const;
+    Command* GetIndex(int i);
+    void Append(Command* cmd);
 
     virtual void Do(Executor* e);
     virtual void Undo(Executor* e);

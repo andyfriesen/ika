@@ -24,7 +24,7 @@ struct TileSetView;
  * that are subscribing to the appropriate listeners.
  *
  * I'm not completely happy with this, as I can tell already that it's going
- * to get mighty bloated.  But it's better tossing this around, than the actual
+ * to get mighty bloated.  But it's better tossing this around than the actual
  * main window class.
  *
  * Get methods never ever fire events.  Set methods can be assumed to fire
@@ -33,6 +33,10 @@ struct TileSetView;
 struct Executor
 {
     virtual void HandleCommand(::Command* cmd) = 0;
+    virtual void AddCommand(::Command* cmd) = 0;
+
+    virtual void Undo() = 0;
+    virtual void Redo() = 0;
 
     virtual bool IsLayerVisible(uint index) = 0;
     virtual void ShowLayer(uint index, bool show) = 0;
@@ -43,7 +47,7 @@ struct Executor
     virtual void EditLayerProperties(uint index) = 0;
 
     /*
-     * It'd probably be best to discard the idea of a current tile altogeather
+     * It'd probably be best to discard the idea of a current tile altogether
      * and just use brushes for everything.
      */
     virtual uint GetCurrentTile() = 0;

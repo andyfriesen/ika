@@ -16,6 +16,7 @@ class wxSashLayoutWindow;
 class wxSashEvent;
 class wxCheckListBox;
 struct Command;
+struct CompositeCommand;
 
 struct MapView;
 struct TileSetView;
@@ -103,13 +104,15 @@ struct MainWindow : public wxFrame, Executor
     MapView* GetMapView() const;
     TileSetView* GetTileSetView() const;
 
-    void Undo();
-    void Redo();
-
     void LoadMap(const std::string& fileName);
 
     // Executor:
-    virtual void HandleCommand(::Command* cmd);
+    virtual void HandleCommand(::Command* cmd); ///< executes a command and adds it to the undo stack
+    virtual void AddCommand(::Command* cmd);    ///< adds the command to the undo stack without executing it.
+
+    virtual void Undo();
+    virtual void Redo();
+
     virtual bool IsLayerVisible(uint index);
     virtual void ShowLayer(uint index, bool show);
 

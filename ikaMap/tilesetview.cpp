@@ -156,14 +156,16 @@ void TileSetView::UpdateScrollBars()
 
 void TileSetView::OnTileSetChange(const TileSetEvent& event)
 {
-    Render();
-    ShowPage();
+    Refresh();
+    //Render();
+    //ShowPage();
 }
 
 void TileSetView::OnCurrentTileChange(uint newTile)
 {
-    Render();
-    ShowPage();
+    Refresh();
+    //Render();
+    //ShowPage();
     _executor->SetStatusBar(va("Tile: %3i", newTile), 2);
 }
 
