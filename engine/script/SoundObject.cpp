@@ -71,9 +71,10 @@ namespace Script
 
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
+            char* keywords[] = { "filename" , 0};
             char* filename;
 
-            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:newsound", 0, &filename))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:newsound", keywords, &filename))
                 return NULL;
 
             SoundObject* sound;
@@ -82,7 +83,7 @@ namespace Script
             {
                 if (!File::Exists(filename))                    throw va("%s does not exist", filename);
 
-                sound=PyObject_New(SoundObject, type);
+                sound = PyObject_New(SoundObject, type);
                 if (!sound)                                     throw va("Can't load %s due to internal Python weirdness!  Very Bad!", filename);
 
                 sound->sound = ::Sound::OpenSound(filename);
@@ -90,7 +91,7 @@ namespace Script
             }
             catch(const char* s)
             {
-                PyErr_SetString(PyExc_OSError, s);
+                PyErr_SetString(PyExc_RuntimeError, s);
                 return NULL;
             }
 
