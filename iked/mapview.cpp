@@ -312,19 +312,6 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
     OnSave(event);
 }
 
-void CMapView::OnZoomIn(wxCommandEvent& event)
-{
-    if (nZoom<32) nZoom++;
-    UpdateScrollbars();
-    Render();   pGraph->ShowPage();
-}
-
-void CMapView::OnZoomOut(wxCommandEvent& event)
-{
-    if (nZoom>1) nZoom--;
-    UpdateScrollbars();
-    Render();   pGraph->ShowPage();
-}
 
 void CMapView::Zoom(const int& nZoomscale)
 {
@@ -339,9 +326,12 @@ void CMapView::Zoom(const int& nZoomscale)
     Render();   pGraph->ShowPage();
 }
 
-void CMapView::OnZoomIn2x(wxCommandEvent& event) { Zoom(2); }
-void CMapView::OnZoomIn4x(wxCommandEvent& event) { Zoom(4); }
+
+void CMapView::OnZoomIn(wxCommandEvent& event)    { Zoom(1);  }
+void CMapView::OnZoomOut(wxCommandEvent& event)   { Zoom(-1); }
+void CMapView::OnZoomIn2x(wxCommandEvent& event)  { Zoom(2);  }
 void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
+void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
 void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
 
 void CMapView::OnZoomNormal(wxCommandEvent& event)
