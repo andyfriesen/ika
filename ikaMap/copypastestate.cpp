@@ -2,7 +2,7 @@
 #include "copypastestate.h"
 #include "command.h"
 #include "mapview.h"
-#include "map.h"
+#include "common/map.h"
 #include "tileset.h"
 
 CopyPasteState::CopyPasteState(Executor* e)

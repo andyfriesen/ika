@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 #include "importtilesdlg.h"
-#include "fileio.h"
+#include "common/fileio.h"
 
 BEGIN_EVENT_TABLE(ImportTilesDlg, wxDialog)
     EVT_BUTTON(wxID_OK, ImportTilesDlg::OnOk)
@@ -84,9 +84,9 @@ void ImportTilesDlg::OnCheckAppend(wxCommandEvent& event)
     if (event.GetInt())
     {
         editWidth->Disable();
-        editWidth->SetValue(ToString(_defaultWidth).c_str());
+        editWidth->SetValue(toString(_defaultWidth).c_str());
         editHeight->Disable();
-        editHeight->SetValue(ToString(_defaultHeight).c_str());
+        editHeight->SetValue(toString(_defaultHeight).c_str());
     }
     else
     {
@@ -127,16 +127,16 @@ void ImportTilesDlg::SetDefaultValues()
     wxTextCtrl* w = XRCCTRL(*this, "edit_framewidth", wxTextCtrl);
     wxTextCtrl* h = XRCCTRL(*this, "edit_frameheight", wxTextCtrl);
 
-    w->SetValue(ToString(_width).c_str());   w->Enable(!_append);
-    h->SetValue(ToString(_height).c_str());  h->Enable(!_append);
+    w->SetValue(toString(_width).c_str());   w->Enable(!_append);
+    h->SetValue(toString(_height).c_str());  h->Enable(!_append);
 
     XRCCTRL(*this, "check_append", wxCheckBox)->SetValue(_append);
     XRCCTRL(*this, "check_padding", wxCheckBox)->SetValue(_pad);
     XRCCTRL(*this, "check_autocount", wxCheckBox)->SetValue(_autoCount);
 
-    XRCCTRL(*this, "edit_numframes", wxTextCtrl)->SetValue(ToString(_numTiles).c_str());
+    XRCCTRL(*this, "edit_numframes", wxTextCtrl)->SetValue(toString(_numTiles).c_str());
     XRCCTRL(*this, "edit_numframes", wxTextCtrl)->Enable(!_autoCount);
-    XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->SetValue(ToString(_rowSize).c_str());
+    XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->SetValue(toString(_rowSize).c_str());
     XRCCTRL(*this, "edit_filename", wxTextCtrl)->SetValue(_fileName.c_str());
 }
 

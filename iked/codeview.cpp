@@ -2,11 +2,10 @@
 // TODO: way too many magic numbers
 #include <cassert>
 
-#include "types.h"
-
+#include "common/utility.h"
 #include "main.h"
 #include "codeview.h"
-#include "fileio.h"
+#include "common/fileio.h"
 
 namespace
 {

@@ -1,6 +1,6 @@
 #include "entitydlg.h"
 #include "executor.h"
-#include "misc.h"
+#include "common/utility.h"
 #include "command.h"
 
 #include <wx/xrc/xmlres.h>
@@ -47,15 +47,15 @@ void EntityDlg::UpdateDlg()
 {
     get<wxTextCtrl>("edit_label")->SetValue(                newData.label.c_str());
     get<wxTextCtrl>("edit_sprite")->SetValue(               newData.spriteName.c_str());
-    get<wxTextCtrl>("edit_speed")->SetValue(                ToString(newData.speed).c_str());
+    get<wxTextCtrl>("edit_speed")->SetValue(                toString(newData.speed).c_str());
     get<wxTextCtrl>("edit_movescript")->SetValue(           newData.moveScript.c_str());
     get<wxTextCtrl>("edit_script")->SetValue(               newData.activateScript.c_str());
     get<wxCheckBox>("check_obstructs")->SetValue(           newData.obstructsEntities);
     get<wxCheckBox>("check_obstructedbyentities")->SetValue(newData.obstructedByMap);
     get<wxCheckBox>("check_obstructedbymap")->SetValue(     newData.obstructedByEntities);
 
-    get<wxTextCtrl>("edit_x")->SetValue(                    ToString(newData.x).c_str());
-    get<wxTextCtrl>("edit_y")->SetValue(                    ToString(newData.y).c_str());
+    get<wxTextCtrl>("edit_x")->SetValue(                    toString(newData.x).c_str());
+    get<wxTextCtrl>("edit_y")->SetValue(                    toString(newData.y).c_str());
 }
 
 void EntityDlg::OnOK(wxCommandEvent& event)

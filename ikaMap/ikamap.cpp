@@ -3,7 +3,7 @@
 #include <wx/xrc/xmlres.h>
 #include "mainwindow.h"
 
-#include "log.h"
+#include "common/log.h"
 
 #if defined(__GNUC__)
 #  define __cdecl __attribute__((cdecl))

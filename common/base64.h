@@ -9,8 +9,7 @@
 //* intact.
 //*********************************************************************
 
-#ifndef Base64_H
-#define Base64_H
+#pragma once
 
 #include <string>
 
@@ -21,4 +20,3 @@ public:
     static std::string decode(const std::string& data);
 };
 
-#endif

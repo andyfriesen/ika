@@ -1,7 +1,7 @@
 
 #include "spriteset.h"
 // #include "chr.h"
-#include "log.h"
+#include "common/log.h"
 #include <stdexcept>
 
 SpriteSet::SpriteSet() 
@@ -38,7 +38,7 @@ bool SpriteSet::Save(const std::string& fname)
     int pos = fileName.rfind('.');
     
     // If the extension is CHR, then export to the old format.
-    if (pos != std::string::npos && Path::Compare("chr", fileName.substr(pos)) == true)
+    if (pos != std::string::npos && Path::equals("chr", fileName.substr(pos)) == true)
         _chr->SaveOld(fileName);
     else
         _chr->Save(fname);

@@ -1,7 +1,7 @@
 #ifndef PROJECTVIEW_H
 #define PROJECTVIEW_H
 
-#include "types.h"
+#include "common/utility.h"
 #include <wx\treectrl.h>
 #include "docview.h"
 

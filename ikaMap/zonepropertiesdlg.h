@@ -3,7 +3,7 @@
 #define ZONEPROPERTIESDLG_H
 
 #include "wx/wx.h"
-#include "types.h"
+#include "common/utility.h"
 
 struct Executor;
 struct Map;

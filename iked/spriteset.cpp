@@ -1,7 +1,7 @@
 
 #include "spriteset.h"
-#include "chr.h"
-#include "log.h"
+#include "common/chr.h"
+#include "common/log.h"
 
 CSpriteSet::CSpriteSet() : pCHR(0)
 {
@@ -38,7 +38,7 @@ bool CSpriteSet::Save(const char* fname)
     int pos = fileName.rfind('.');
     
     // If the extension is CHR, then export to the old format.
-    if (pos != std::string::npos && Path::Compare("chr", fileName.substr(pos)) == true)
+    if (pos != std::string::npos && Path::equals("chr", fileName.substr(pos)) == true)
         pCHR->SaveOld(fileName);
     else
         pCHR->Save(fname);

@@ -2,7 +2,7 @@
 #ifndef TILESETSTATE_H
 #define TILESETSTATE_H
 
-#include "types.h"
+#include "common/utility.h"
 #include "editstate.h"
 
 struct CompositeCommand;

@@ -4,7 +4,7 @@
 #include "mapview.h"
 #include "tilesetview.h"
 
-#include "map.h"
+#include "common/map.h"
 #include "tileset.h"
 
 CompositeCommand::CompositeCommand()
@@ -283,29 +283,21 @@ ChangeLayerPropertiesCommand::ChangeLayerPropertiesCommand(
     bool wrapx,
     bool wrapy,
     int x,
-    int y,
-    float parallax_x,
-    float parallax_y)
+    int y)
     : _layer(layer)
-    , _newProperties(label, wrapx, wrapy, x, y, parallax_x, parallax_y)
+    , _newProperties(label, wrapx, wrapy, x, y)
 {}
 
 void ChangeLayerPropertiesCommand::Do(Executor* e)
 {
     // Save the old state
-    _oldProperties = LayerProperties(_layer->label, _layer->wrapx, _layer->wrapy, _layer->x, _layer->y,
-        (float)_layer->parallax.mulx / (float)_layer->parallax.divx, 
-        (float)_layer->parallax.muly / (float)_layer->parallax.divy);
+    _oldProperties = LayerProperties(_layer->label, _layer->wrapx, _layer->wrapy, _layer->x, _layer->y);
 
-    _layer->label         = _newProperties.label;
-    _layer->wrapx         = _newProperties.wrapx;
-    _layer->wrapy         = _newProperties.wrapy;
-    _layer->x             = _newProperties.x;
-    _layer->y             = _newProperties.y;
-    _layer->parallax.divx = 1000;
-    _layer->parallax.divy = 1000;
-    _layer->parallax.mulx = _newProperties.parallax_x * 1000;
-    _layer->parallax.muly = _newProperties.parallax_y * 1000;
+    _layer->label = _newProperties.label;
+    _layer->wrapx = _newProperties.wrapx;
+    _layer->wrapy = _newProperties.wrapy;
+    _layer->x     = _newProperties.x;
+    _layer->y     = _newProperties.y;
 
     e->layerPropertiesChanged.fire(MapEvent(e->GetMap()));
 }
@@ -317,10 +309,6 @@ void ChangeLayerPropertiesCommand::Undo(Executor* e)
     _layer->wrapy = _oldProperties.wrapy;
     _layer->x     = _oldProperties.x;
     _layer->y     = _oldProperties.y;
-    _layer->parallax.divx = 1000;
-    _layer->parallax.divy = 1000;
-    _layer->parallax.mulx = _oldProperties.parallax_x * 1000;
-    _layer->parallax.muly = _oldProperties.parallax_y * 1000;
 
     e->layerPropertiesChanged.fire(MapEvent(e->GetMap()));
 }

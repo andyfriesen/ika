@@ -8,9 +8,9 @@
 #include <stack>
 #include <map>
 
-#include "misc.h"
+#include "common/utility.h"
 #include "executor.h"
-#include "listener.h"
+#include "common/listener.h"
 
 class wxSashLayoutWindow;
 class wxSashEvent;
@@ -125,6 +125,8 @@ struct MainWindow : public wxFrame, Executor
     virtual void SetCurrentLayer(uint i);
 
     virtual void SetStatusBar(const std::string& text, int field);
+    void SetZoom(uint factor);
+    void SetZoomRelative(int factor);
 
     virtual Map* GetMap();
     virtual TileSet* GetTileSet();

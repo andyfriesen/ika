@@ -3,7 +3,7 @@
 #include <mmsystem.h>
 
 #include "graph.h"
-#include "misc.h"
+#include "common/utility.h"
 #include "win32.h"
 #include "log.h"
 #include "configfile.h"

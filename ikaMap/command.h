@@ -1,9 +1,9 @@
 #ifndef COMMAND_H
 #define COMMAND_H
 
-#include "types.h"
-#include "map.h"
-#include "Canvas.h"
+#include "common/utility.h"
+#include "common/map.h"
+#include "common/Canvas.h"
 
 struct Executor;
 
@@ -169,19 +169,15 @@ struct ChangeLayerPropertiesCommand : Command
         std::string label;
         int x;
         int y;
-        float parallax_x;
-        float parallax_y;
         bool wrapx;
         bool wrapy;
 
-        LayerProperties(const std::string& l = "", bool wx = false, bool wy = false, int X = 0, int Y = 0, float parallax_X = 1, float parallax_Y = 1)
+        LayerProperties(const std::string& l = "", bool wx = false, bool wy = false, int X = 0, int Y = 0)
             : label(l)
             , wrapx(wx)
             , wrapy(wy)
             , x(X)
             , y(Y)
-            , parallax_x(parallax_X)
-            , parallax_y(parallax_Y)
         {}
     };
 
@@ -196,9 +192,7 @@ public:
         bool wrapx,
         bool wrapy,
         int x,
-        int y,
-        float parallax_x,
-        float parallax_y);
+        int y);
 
     virtual void Do(Executor* e);
     virtual void Undo(Executor* e);
@@ -394,7 +388,7 @@ public:
 
 //-----------------------------------------------------------------------------
 
-#include "vsp.h"
+#include "common/vsp.h"
 
 struct UpdateTileAnimStrandCommand : Command
 {

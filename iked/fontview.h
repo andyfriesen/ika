@@ -5,10 +5,10 @@
 #include "wx\wx.h"
 #include "wx\colordlg.h"
 
-#include "types.h"
+#include "common/utility.h"
 #include "docview.h"
 #include "graph.h"
-#include "fontfile.h"
+#include "common/fontfile.h"
 
 class FontView : public IDocView
 {

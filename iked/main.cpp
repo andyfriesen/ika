@@ -1,8 +1,9 @@
 #include "main.h"
 
 #include "resource.h"
-#include "misc.h"
-#include "log.h"
+#include "common/utility.h"
+#include "common/version.h"
+#include "common/log.h"
 
 // Document windows
 #include "docview.h"
@@ -246,7 +247,7 @@ void CMainWnd::Open(const std::string& fname)
         // First, see if the document is already open
         for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
         {
-            if (Path::Compare((*i)->GetFileName(), fname))
+            if (Path::equals((*i)->GetFileName(), fname))
             {
                 (*i)->Activate();
                 return;
@@ -448,7 +449,7 @@ FileType CMainWnd::GetFileType(const std::string& fname)
 
     static const types_count = sizeof types / sizeof types[0];
 
-    std::string sExt = ::Lower(Path::Extension(fname));
+    std::string sExt = ::toLower(Path::getExtension(fname));
     
     for (int i = 0; i < types_count; i++)
     {

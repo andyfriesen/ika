@@ -4,7 +4,7 @@
 
 #include "mainwindow.h"
 #include "tileset.h"
-#include "misc.h"
+#include "common/utility.h"
 
 BEGIN_EVENT_TABLE(TileSetView, VideoFrame)
     EVT_SIZE(TileSetView::OnSize)

@@ -1,7 +1,7 @@
 
 #include <stdexcept>
 #include "userdialog.h"
-#include "misc.h"
+#include "common/utility.h"
 
 UserDialog::UserDialog(int cols, char* caption, const ArgList& args)
     // TODO: get this to be a child of the main window. :P
@@ -14,7 +14,7 @@ UserDialog::UserDialog(int cols, char* caption, const ArgList& args)
     for (ArgList::const_iterator iter = args.begin(); iter != args.end(); iter++)
     {
         const std::string name = iter->first;
-        const std::string type = ::Lower(iter->second);
+        const std::string type = ::toLower(iter->second);
 
         if (type == "edit")
         {
@@ -44,7 +44,7 @@ int UserDialog::ShowModal()
     for (ArgList::const_iterator iter = _args.begin(); iter != _args.end(); iter++)
     {
         const std::string name = iter->first;
-        const std::string type = ::Lower(iter->second);
+        const std::string type = ::toLower(iter->second);
 
         if (type == "edit")
         {

@@ -5,7 +5,7 @@
 
 #include "layervisibilitycontrol.h"
 #include "mapview.h"
-#include "log.h"
+#include "common/log.h"
 
 BEGIN_EVENT_TABLE(CLayerVisibilityControl, wxCheckListBox)
     EVT_LISTBOX(-1, CLayerVisibilityControl::OnItemSelected)

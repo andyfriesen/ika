@@ -6,7 +6,7 @@
 #include "mouse.h"
 #include "joystick.h"
 #include "common/log.h"
-#include "common/misc.h"
+#include "common/utility.h"
 
 bool InputControl::Pressed()
 {

@@ -8,7 +8,8 @@
 #include <set>
 
 #include "common/log.h"
-#include "common/misc.h"
+#include "common/utility.h"
+#include "common/types.h"
 #include "video/Driver.h"
 #include "hooklist.h"
 

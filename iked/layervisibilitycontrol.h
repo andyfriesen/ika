@@ -1,5 +1,5 @@
 
-#include "types.h"
+#include "common/utility.h"
 
 #include "wx/wx.h"
 #include "wx/checklst.h"

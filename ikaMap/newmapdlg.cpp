@@ -2,8 +2,8 @@
 #include <wx/xrc/xmlres.h>
 
 #include "newmapdlg.h"
-#include "fileio.h"
-#include "misc.h"
+#include "common/fileio.h"
+#include "common/utility.h"
 
 BEGIN_EVENT_TABLE(NewMapDlg, wxDialog)
     EVT_BUTTON(wxID_OK, NewMapDlg::OnOK)

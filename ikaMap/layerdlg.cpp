@@ -7,10 +7,10 @@
 
 #include "mainwindow.h"
 #include "command.h"
-#include "map.h"
-#include "misc.h"
+#include "common/map.h"
+#include "common/utility.h"
 
-#include "log.h"
+#include "common/log.h"
 
 BEGIN_EVENT_TABLE(LayerDlg, wxDialog)
     EVT_BUTTON(wxID_OK, LayerDlg::OnOk)
@@ -31,25 +31,19 @@ T* LayerDlg::Ctrl(const std::string& name, const T*)
 
 void LayerDlg::OnOk(wxCommandEvent& event)
 {
-    label       = Ctrl<wxTextCtrl>("edit_label")->GetValue().c_str();
-    wrapx       = Ctrl<wxCheckBox>("check_wrapx")->GetValue();
-    wrapy       = Ctrl<wxCheckBox>("check_wrapy")->GetValue();
-    x           = atoi(Ctrl<wxTextCtrl>("edit_x")->GetValue().c_str());
-    y           = atoi(Ctrl<wxTextCtrl>("edit_y")->GetValue().c_str());
-    parallax_x  = atof(Ctrl<wxTextCtrl>("edit_parallax_x")->GetValue().c_str());
-    parallax_y  = atof(Ctrl<wxTextCtrl>("edit_parallax_y")->GetValue().c_str());
+    label = Ctrl<wxTextCtrl>("edit_label")->GetValue().c_str();
+    wrapx = Ctrl<wxCheckBox>("check_wrapx")->GetValue();
+    wrapy = Ctrl<wxCheckBox>("check_wrapy")->GetValue();
+    x     = atoi(Ctrl<wxTextCtrl>("edit_x")->GetValue().c_str());
+    y     = atoi(Ctrl<wxTextCtrl>("edit_y")->GetValue().c_str());
 
     Map::Layer* lay = _mainWnd->GetMap()->GetLayer(_layerIndex);
-    float old_px = (float)lay->parallax.mulx / (float)lay->parallax.divx;
-    float old_py = (float)lay->parallax.muly / (float)lay->parallax.divy;
 
-    if (label       != lay->label ||
-        wrapx       != lay->wrapx ||
-        wrapy       != lay->wrapy ||
-        x           != lay->x     ||
-        y           != lay->y     ||
-        parallax_x  != old_px     ||
-        parallax_y  != old_py)
+    if (label != lay->label ||
+        wrapx != lay->wrapx ||
+        wrapy != lay->wrapy ||
+        x     != lay->x     ||
+        y     != lay->y)
         wxDialog::OnOK(event);
     else
         wxDialog::OnCancel(event);
@@ -91,8 +85,6 @@ LayerDlg::LayerDlg(MainWindow* parent, uint layerIndex)
     Ctrl<wxCheckBox>("check_wrapy")->SetValue(lay->wrapy);
     Ctrl<wxTextCtrl>("edit_x")->SetValue(va("%i", lay->x));
     Ctrl<wxTextCtrl>("edit_y")->SetValue(va("%i", lay->y));
-    Ctrl<wxTextCtrl>("edit_parallax_x")->SetValue(va("%f", (float)lay->parallax.mulx / (float)lay->parallax.divx));
-    Ctrl<wxTextCtrl>("edit_parallax_y")->SetValue(va("%f", (float)lay->parallax.muly / (float)lay->parallax.divy));
 
     Ctrl<wxPanel>("panel_main")->GetSizer()->Fit(this);
 }

@@ -153,7 +153,7 @@ void CSpriteSetView::OnSaveAs(wxCommandEvent& event)
 
     OnSave(event);
 
-    if (!Path::Compare(name, oldname))
+    if (!Path::equals(name, oldname))
     {
         _sprite->Load(oldname.c_str());
         if (!_parent->spriteset.Release(_sprite))

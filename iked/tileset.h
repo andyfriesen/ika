@@ -2,13 +2,13 @@
 #ifndef TILESET_H
 #define TILESET_H
 
-#include "types.h"
+#include "common/utility.h"
 #include <set>
 #include "imagebank.h"
 //#include <wx\wx.h>
 
 
-class VSP;
+struct VSP;
 
 class CTileSet : public CImageBank
 {

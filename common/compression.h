@@ -1,7 +1,6 @@
-#ifndef COMPRESSION_H
-#define COMPRESSION_H
+#pragma once
 
-#include "types.h"
+#include "common/utility.h"
 
 namespace Compression
 {
@@ -9,4 +8,3 @@ namespace Compression
     void decompress(const u8* src, int srclen, u8* dest, int destlen);
 }
 
-#endif

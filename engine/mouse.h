@@ -3,7 +3,7 @@
 #define MOUSE_H
 
 #include "input.h"
-#include "common/misc.h"
+#include "common/utility.h"
 
 class MouseAxisControl;
 class MouseButtonControl;

@@ -117,7 +117,10 @@ AxisControl::AxisControl(_SDL_Joystick* j, uint index)
 
 bool AxisControl::Pressed()
 {
-    return (abs(Delta()) > 0.0f) && (Position() > 0);
+    // We get away with this because Position() clamps low values to zero.
+    return
+        (Position() > 0) &&
+        (Position() - PeekDelta() <= 0);
 }
 
 float AxisControl::Position()
@@ -135,11 +138,6 @@ float AxisControl::Position()
 ReverseAxisControl::ReverseAxisControl(_SDL_Joystick* j, uint index)
     : AxisControl(j, index)
 {}
-
-bool ReverseAxisControl::Pressed()
-{
-    return (abs(Delta()) > 0.0f) && (Position() > 0);
-}
 
 float ReverseAxisControl::Position()
 {

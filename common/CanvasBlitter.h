@@ -4,70 +4,67 @@
 // I may run into some problems with namespaces later on; the blending modes, and the name 'CBlitter' are a bit
 // generic sounding.
 
-#include "misc.h"
 #include "types.h"
+#include "utility.h"
 
-namespace
+struct Opaque
 {
-    struct Opaque
+    static inline RGBA Blend(RGBA src, RGBA)
     {
-        static inline RGBA Blend(RGBA src, RGBA)
-        {
-            return src;
-        }
-    };
+        return src;
+    }
+};
 
-    struct Matte
+struct Matte
+{
+    static inline RGBA Blend(RGBA src, RGBA dest)
     {
-        static inline RGBA Blend(RGBA src, RGBA dest)
-        {
-            return src.a?src:dest;
-        }
-    };
+        return src.a?src:dest;
+    }
+};
 
-    struct Alpha
+struct Alpha
+{
+    static inline RGBA Blend(RGBA src, RGBA dest)
     {
-        static inline RGBA Blend(RGBA src, RGBA dest)
-        {
-            if (!src.a) return dest;
-            if (src.a==255) return src;
+        if (!src.a) return dest;
+        if (src.a==255) return src;
 
-            u8  a = src.a;
-            
-            RGBA col;
-            col.a = a;
+        u8  a = src.a;
+        
+        RGBA col;
+        col.a = a;
 
-            col.r=  ( (src.r * a) + (dest.r * (255 - a)) ) >>8;
-            col.g=  ( (src.g * a) + (dest.g * (255 - a)) ) >>8;
-            col.b=  ( (src.b * a) + (dest.b * (255 - a)) ) >>8;
+        col.r=  ( (src.r * a) + (dest.r * (255 - a)) ) >>8;
+        col.g=  ( (src.g * a) + (dest.g * (255 - a)) ) >>8;
+        col.b=  ( (src.b * a) + (dest.b * (255 - a)) ) >>8;
 
-            return col;
-        }
-    };
+        return col;
+    }
+};
 
-    struct Additive
+struct Additive
+{
+    static inline RGBA Blend(RGBA src, RGBA dest)
     {
-        static inline RGBA Blend(RGBA src, RGBA dest)
-        {
-            dest.r = min(dest.r + src.r, 255);
-            dest.g = min(dest.g + src.g, 255);
-            dest.b = min(dest.b + src.b, 255);
-            dest.a = min(dest.a + src.a, 255);
-            return dest;
-        }
-    };
+        dest.r = min<u8>(dest.r + src.r, 255);
+        dest.g = min<u8>(dest.g + src.g, 255);
+        dest.b = min<u8>(dest.b + src.b, 255);
+        dest.a = min<u8>(dest.a + src.a, 255);
+        return dest;
+    }
+};
 
-    struct Subtractive
+struct Subtractive
+{
+    static inline RGBA Blend(RGBA src, RGBA dest)
     {
-        static inline RGBA Blend(RGBA src, RGBA dest)
-        {
-            dest.r = max(dest.r - src.r, 0);
-            dest.g = max(dest.g - src.g, 0);
-            dest.b = max(dest.b - src.b, 0);
-            dest.a = max(dest.a - src.a, 0);
-            return dest;
-        }
-    };
+        dest.r = max<u8>(dest.r - src.r, 0);
+        dest.g = max<u8>(dest.g - src.g, 0);
+        dest.b = max<u8>(dest.b - src.b, 0);
+        dest.a = max<u8>(dest.a - src.a, 0);
+        return dest;
+    }
 };
 
 /*!

@@ -1,29 +1,13 @@
 /*
-    Commonly used types, enums, etc...
-*/
+ * Miscellaneous types used throughout ika.
+ */
 
-#ifndef TYPES_H
-#define TYPES_H
+#pragma once
 
-#ifdef MSVC6
-#  pragma warning (disable:4786)                      // identifier too long (stupid compiler)
-// Fix broken for loop scoping in VC6
-#  define for if (0); else for                        
-#endif
-
-#include <vector>
-#include <string>
-
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
-
-typedef unsigned int uint;
-
+#include "utility.h"
 
 /// Everybody has their own Rect struct.  This is mine.
-struct Rect
-{
+struct Rect {
     int left;
     int top;
     int right;
@@ -31,8 +15,7 @@ struct Rect
     
     inline int Width() const  { return right - left; }
     inline int Height() const { return bottom - top; }
-    void Normalize()
-    {
+    void Normalize() {
         if (left > right)
             std::swap(left, right);
         if (top > bottom)
@@ -50,8 +33,7 @@ struct Rect
 };
 
 /// Simple 2D point
-struct Point
-{
+struct Point {
     int x;
     int y;
 
@@ -61,8 +43,8 @@ struct Point
     {}
 };
 
-enum Direction											///< directions an entity can be facing
-{
+/// Directions an entity can be facing
+enum Direction {
     face_up,
     face_down,
     face_left,
@@ -76,9 +58,9 @@ enum Direction											///< directions an entity can be facing
 
 #pragma pack (push, 1)
 
-//! A color. ;)
-union RGBA
-{
+/// A color.
+union RGBA {
+    // Nonstandard, but supported by both GCC and MSVC.
     struct {
         u8 r, g, b, a;
     };
@@ -89,8 +71,7 @@ union RGBA
         : i(0)
     {}
 
-    RGBA(u8 index, u8* palette)
-    {
+    RGBA(u8 index, u8* palette) {
         int i = index * 3;
         r = palette[i++] << 2;
         g = palette[i++] << 2;
@@ -110,12 +91,3 @@ union RGBA
 };
 
 #pragma pack (pop)
-
-// Modern C++ design is so neat.
-template<typename T>
-struct Type2Type
-{
-    typedef T Type;
-};
-
-#endif

@@ -2,7 +2,7 @@
 #ifndef IMAGEBANK_H
 #define IMAGEBANK_H
 
-#include "types.h"
+#include "common/utility.h"
 #include <set>
 
 struct Image;

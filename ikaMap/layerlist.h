@@ -3,9 +3,11 @@
 #define LAYERLIST_H
 
 #include <vector>
-#include "wxinc.h"
-#include "listener.h"
+
+#include "common/utility.h"
+#include "common/listener.h"
 #include "events.h"
+#include "wxinc.h"
 
 struct Map;
 struct Executor;

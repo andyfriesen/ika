@@ -4,14 +4,14 @@
 #include "executor.h"
 #include "mapview.h"
 #include "tilesetview.h"
-#include "map.h"
+#include "common/map.h"
 #include "tileset.h"
 #include "command.h"
-#include "misc.h"
+#include "common/utility.h"
 #include "video.h"
 #include "wxinc.h"
 
-#include "log.h"
+#include "common/log.h"
 
 #undef USE_GROUP_JUJU
 

@@ -4,7 +4,7 @@
 
 #include "projectview.h"
 #include "main.h"
-#include "misc.h"
+#include "common/utility.h"
 
 struct Leaf : public wxTreeItemData
 {
@@ -428,7 +428,7 @@ void ProjectView::Load(const std::string& fname)
                 p = sLine.rfind("FOLDER");
                 if (p!=std::string::npos)
                 {
-                    std::string name = Trim(sLine.substr(0, p - 1));
+                    std::string name = trim(sLine.substr(0, p - 1));
 
                     wxTreeItemId id;
 
@@ -445,13 +445,13 @@ void ProjectView::Load(const std::string& fname)
                 p = sLine.rfind("FILE");
                 if (p!=std::string::npos)
                 {
-                    std::string name = Trim(sLine.substr(0, p - 1));
+                    std::string name = trim(sLine.substr(0, p - 1));
 
                     wxFileName fullName(name.c_str());
                     if (fullName.IsAbsolute())
                         fullName.InsertDir(0, tree->GetProjectPath().c_str());
 
-                    tree->AddItem(parentid, /*Path::Filename(name)*/ fullName.GetFullPath().c_str(), fullName.GetFullPath().c_str());
+                    tree->AddItem(parentid, /*Path::getFilename(name)*/ fullName.GetFullPath().c_str(), fullName.GetFullPath().c_str());
                 }
             }
         }

@@ -64,7 +64,7 @@ MouseAxisControl::MouseAxisControl(uint axis)
 float MouseAxisControl::Position()
 {
     int x, y;
-    int b = SDL_GetMouseState(&x, &y);
+    SDL_GetMouseState(&x, &y);
     
     // gay.
     switch (_axis)

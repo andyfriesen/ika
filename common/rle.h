@@ -7,9 +7,9 @@
    MapEd uses this stuff for compressing / uncompressing maps and VSPs.
 */
 
-#ifndef rle_h
-#define rle_h
-#include "types.h"
+#pragma once
+
+#include "common/utility.h"
 
 extern void ReadCompressedLayer1(u8 *dest, int numbytes, u8 *src);
 extern void ReadCompressedLayer2(u16 *dest, int numwords, u16 *src);
@@ -17,4 +17,4 @@ extern void ReadCompressedLayer2tou32(u32* dest, int numu32s, void* src);
 extern void WriteCompressedLayer1(u8 *dest, int numbytes, int &bufsize, u8 *src);
 extern void WriteCompressedLayer2(u16 *dest, int numwords, int &bufsize, u16 *src);
 extern void WriteCompressedLayer2fromu32(void* dest, int numu32s, int& bufsize, u32* src);
-#endif
+

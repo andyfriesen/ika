@@ -77,8 +77,7 @@
  *
  */
 
-#ifndef ARIES_H
-#define ARIES_H
+#pragma once
 
 #include <string>
 #include <vector>
@@ -189,4 +188,3 @@ namespace aries
 std::ostream& operator << (std::ostream& stream, aries::Node* node);   /// Converts the node (and its children) to a human readable format, and dumps it to the stream.
 std::istream& operator >> (std::istream& stream, aries::DataNode*& node);  /// Reads the document in from the stream, and returns the root node.  The caller assumes ownership of the pointer.
 
-#endif

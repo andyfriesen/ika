@@ -57,5 +57,5 @@ void ExportTilesDlg::SetDefaultValues()
 {
     XRCCTRL(*this, "edit_filename", wxTextCtrl)->SetValue(_fileName.c_str());
     XRCCTRL(*this, "check_pad", wxCheckBox)->SetValue(_pad);
-    XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->SetValue(ToString(_rowSize).c_str());
+    XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->SetValue(toString(_rowSize).c_str());
 }

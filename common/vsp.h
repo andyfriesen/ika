@@ -16,25 +16,21 @@
 
 // vsp.h
 
-#ifndef VSP_H
-#define VSP_H
+#pragma once
 
-#include "types.h"
+#include "common/utility.h"
 #include "Canvas.h"
 
-class VSP
-{
-public:
-    enum    // VSP animation modes
-    {
+struct VSP {
+    /// VSP animation modes
+    enum {
         linear,
         reverse,
         random,
         flip
     };
     
-    struct AnimState
-    {
+    struct AnimState {
         int start;
         int finish;
         int delay;
@@ -51,26 +47,14 @@ public:
         {}
     };
     
-private:
-    std::vector<Canvas>   tiles;     // tile images
-    
-    std::string desc;
-    std::string name;           // the VSPs filename
-    
-    std::vector<AnimState>  _vspanim;
-    
-    int _width, _height;
-    
-public:
     VSP();
     VSP(const std::string& fname);
-    ~VSP();
     
     bool Load(const std::string& fname);
     int  Save(const std::string& fname);
     void Free();
     void New(int xsize = 16, int ysize = 16, int numtiles = 100);
-    
+
     void InsertTile(uint pos);
     void DeleteTile(uint pos);
     inline void AppendTile() { AppendTiles(1); }
@@ -92,10 +76,20 @@ public:
     inline const std::string& Name() const { return name; }
     
 private:
+    VSP(VSP& v);
+    operator =(VSP& rhs);
+
     void CreateTilesFromBuffer(u8* data, u8* pal, uint numtiles, int tilex, int tiley);
     void CreateTilesFromBuffer(u16* data, uint numtiles, int tilex, int tiley);
     void CreateTilesFromBuffer(RGBA* data, uint numtiles, int tilex, int tiley);
 
+    std::vector<Canvas>   tiles;     // tile images
+    
+    std::string desc;
+    std::string name;           // the VSPs filename
+    
+    std::vector<AnimState>  _vspanim;
+    
+    int _width, _height;
 };
 
-#endif

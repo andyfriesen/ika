@@ -3,8 +3,8 @@
 #define SPRITESET_H
 
 #include "imagebank.h"
-#include "misc.h"
-#include "chr.h"
+#include "common/utility.h"
+#include "common/chr.h"
 
 //class CCHRfile;
 

@@ -3,7 +3,7 @@
 #include "executor.h"
 #include "mapview.h"
 #include "spriteset.h"
-#include "chr.h"
+#include "common/chr.h"
 
 #include "entitydlg.h"
 #include "command.h"

@@ -7,10 +7,10 @@
 #ifndef CONTROLLER_H
 #define CONTROLLER_H
 
-#include "types.h"
+#include "common/utility.h"
 #include <list>
 
-#include "log.h"
+#include "common/log.h"
 
 template <class T>
 class CController
@@ -71,7 +71,7 @@ public:
     T* Load(std::string name)
     {
 #ifdef WIN32
-        name = Upper(name);
+        name = toUpper(name);
 #endif
 
         Resource* ri = Find(name);

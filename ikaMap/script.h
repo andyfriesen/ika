@@ -81,7 +81,7 @@
 #define SCRIPT_H
 
 #include <string>
-#include "types.h"
+#include "common/utility.h"
 #include "Python.h" // I *HATE* having to put this here.  I can't just proto PyObject because of gay C.
 
 struct Script

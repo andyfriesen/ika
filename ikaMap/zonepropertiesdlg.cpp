@@ -1,9 +1,9 @@
 
 #include "wxinc.h"
 #include "zonepropertiesdlg.h"
-#include "map.h"
+#include "common/map.h"
 #include "mainwindow.h"
-#include "misc.h"
+#include "common/utility.h"
 #include "command.h"
 
 #include <wx/xrc/xmlres.h>
@@ -111,10 +111,10 @@ void ZonePropertiesDlg::UpdateDlg()
         _bluePrintList->SetStringSelection(bluePrint.label.c_str());
     }
 
-    _editX->SetValue(ToString(zone.position.left).c_str());
-    _editY->SetValue(ToString(zone.position.top).c_str());
-    _editWidth->SetValue(ToString(zone.position.Width()).c_str());
-    _editHeight->SetValue(ToString(zone.position.Height()).c_str());
+    _editX->SetValue(toString(zone.position.left).c_str());
+    _editY->SetValue(toString(zone.position.top).c_str());
+    _editWidth->SetValue(toString(zone.position.Width()).c_str());
+    _editHeight->SetValue(toString(zone.position.Height()).c_str());
 }
 
 ZonePropertiesDlg::ZonePropertiesDlg(Executor* e, uint layerIndex, uint zoneIndex)

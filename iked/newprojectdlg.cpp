@@ -3,7 +3,7 @@
 #include <wx/xrc/xmlres.h>
 
 #include "NewProjectDlg.h"
-#include "misc.h"
+#include "common/utility.h"
 
 BEGIN_EVENT_TABLE(NewProjectDlg, wxDialog)
     EVT_TEXT(-1, NewProjectDlg::UpdatePreview)
@@ -22,7 +22,7 @@ void NewProjectDlg::UpdatePreview(wxCommandEvent& event)
     name = XRCCTRL(*this, "edit_name", wxTextCtrl)->GetValue();
     path = XRCCTRL(*this, "edit_path", wxTextCtrl)->GetValue();
 
-    wxFileName fname(Trim(path).c_str(), Trim(name).c_str());
+    wxFileName fname(trim(path).c_str(), trim(name).c_str());
     XRCCTRL(*this, "label_preview", wxStaticText)->SetLabel(fname.GetFullPath() + ".ikaprj");
 }
 
@@ -51,6 +51,6 @@ void NewProjectDlg::OnOk(wxCommandEvent& event)
 
 std::string NewProjectDlg::FileName() const
 {
-    wxFileName fname(Trim(path).c_str(), Trim(name).c_str());
+    wxFileName fname(trim(path).c_str(), trim(name).c_str());
     return (fname.GetFullPath() + ".ikaprj").c_str();
 }

@@ -3,7 +3,7 @@
 #define ENTITYSTATE_H
 
 #include "editstate.h"
-#include "map.h"
+#include "common/map.h"
 
 class EntityState : public EditState
 {

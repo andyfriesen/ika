@@ -14,6 +14,11 @@ than entities[i].
 Function names should be verbs.  Accessors should use the GetXXX form.  They
 should use camel notation, with the first letter capitalized.
 
+Use 'struct', not class.  Structs default to public inheritance and visibility.  This
+is handy.
+
+Private data belongs at the end of the class.
+
 Preprocessor constants should be in all uppercase, with underscores dilineating
 words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever possbile. (they
 should follow the usual variable convention)
@@ -22,27 +27,24 @@ Braces should be on their own line.  Cheating and putting both on the same line
 is acceptable if it's a trivial operation, and it doesn't result in excessive
 line length. (more than 120 characters or so)
 
-ie.
-class MyTestClass
-{
-    bool _myProperty;
+Actually I hate this now.  K&R bracing is neat-o.
 
-public:
-    void DoSomethingInteresting(int x, int y)
-    {
+ie.
+class MyTestClass {
+    void DoSomethingInteresting(int x, int y) {
         bool mylocal;
 
         if (mylocal) { x++; y--; }
 
-        if (_myProperty)
-        {
+        if (_myProperty) {
            ...
-        }
-        else
-        {
+        } else {
            ...
         }
     }
+
+private:
+    bool _myProperty;
 };
 
 Whenever possible, wrap globals in a meaningful namespace.  The simple fact

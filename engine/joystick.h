@@ -44,7 +44,7 @@ class AxisControl : public InputControl
 {
     friend class Joystick;
 public:
-    virtual bool Pressed();
+    virtual bool  Pressed();
     virtual float Position();
 
 protected:
@@ -61,7 +61,6 @@ class ReverseAxisControl : public AxisControl
     friend class Joystick;
 
 public:
-    virtual bool Pressed();
     virtual float Position();
 
 private:

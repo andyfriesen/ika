@@ -1,6 +1,6 @@
 
 #include "graph.h"
-#include "log.h"
+#include "common/log.h"
 
 static const int nZoomscale = 16;
 

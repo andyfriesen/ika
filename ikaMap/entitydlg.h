@@ -4,7 +4,7 @@
 
 #include "wxinc.h"
 
-#include "map.h"
+#include "common/map.h"
 
 struct Executor;
 

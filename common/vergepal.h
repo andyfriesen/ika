@@ -1,6 +1,4 @@
-#ifndef VERGEPAL_H
-#define VERGEPAL_H
+#pragma once
 
 extern unsigned char cVergepal[];
 
-#endif

@@ -11,19 +11,15 @@
     - Location of data files. (could be of any extension, arranged any way)
 */
 
-#ifndef CONFIG_H
-#define CONFIG_H
-
-#pragma warning (disable:4786)
-
-#include "misc.h"
-#include "types.h"
+#pragma once
 
 #include <map>
 
+#include "common/utility.h"
+
 class CConfigFile
 {
-    typedef std::map < std::string, std::string> ConfigMap;
+    typedef std::map<std::string, std::string> ConfigMap;
     
     ConfigMap keys;
 
@@ -39,4 +35,3 @@ public:
     void        Save(const char* fname);
 };
 
-#endif

@@ -2,7 +2,7 @@
 #ifndef TEXTVIEW_H
 #define TEXTVIEW_H
 
-#include "types.h"
+#include "common/utility.h"
 #include <wx\wx.h>
 
 #ifdef WX232

@@ -1,9 +1,8 @@
 
-#ifndef MAP_H
-#define MAP_H
+#pragma once
 
+#include "common/utility.h"
 #include "types.h"
-#include "misc.h"
 #include "matrix.h"
 
 #include <string>
@@ -37,7 +36,6 @@ struct Map
     {
         int x, y;
 
-        u32 tintColour;
         std::string label;
         std::string spriteName;
         Direction direction;
@@ -54,7 +52,6 @@ struct Map
             , obstructedByEntities(true)
             , obstructedByMap(true)
             , obstructsEntities(true)
-            , tintColour(0xFFFFFFFF)
         {}
     };
 
@@ -91,8 +88,6 @@ struct Map
         int x, y;
         ParallaxInfo parallax;
 
-        u32 tintColour;
-
         bool wrapx;
         bool wrapy;
 
@@ -111,7 +106,6 @@ struct Map
             , wrapx(false)  , wrapy(false)
             , tiles(width, height)
             , obstructions(width, height)
-            , tintColour(0xFFFFFFFF)
         {}
 
         Layer(const Layer& l)
@@ -120,7 +114,6 @@ struct Map
             , wrapx(l.wrapx), wrapy(l.wrapy)
             , tiles(l.tiles)
             , obstructions(l.obstructions)
-            , tintColour(0xFFFFFFFF)
         {}
 
         // note to self: copy constructor
@@ -172,4 +165,3 @@ public:
     uint NumLayers() const;
 };
 
-#endif

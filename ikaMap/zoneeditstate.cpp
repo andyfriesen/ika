@@ -1,6 +1,6 @@
 
 #include "wxinc.h"
-#include "map.h"
+#include "common/map.h"
 #include "mapview.h"
 #include "video.h"
 #include "command.h"

@@ -2,7 +2,8 @@
 #ifndef CODEVIEW_H
 #define CODEVIEW_H
 
-#include "types.h"
+#include "common/utility.h"
+
 #include "wx\wx.h"
 #include "wx\colordlg.h"
 #include "wx\fontdlg.h"

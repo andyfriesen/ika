@@ -1,7 +1,7 @@
 #ifndef EDITSTATE_H
 #define EDITSTATE_H
 
-#include "map.h"
+#include "common/map.h"
 
 class wxWindow;
 class wxMouseEvent;

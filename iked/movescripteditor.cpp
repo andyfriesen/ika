@@ -5,7 +5,7 @@
 #include "movescripteditor.h"
 #include "spriteset.h"
 #include "spritesetview.h"
-#include "chr.h"
+#include "common/chr.h"
 
 namespace
 {
@@ -60,7 +60,7 @@ void CMovescriptEditor::UpdateDlg()
     {
         static void setInt(CMovescriptEditor* This, const char* name, int value)
         {
-            XRCCTRL(*This, name, wxTextCtrl)->SetValue(ToString(value).c_str());
+            XRCCTRL(*This, name, wxTextCtrl)->SetValue(toString(value).c_str());
         }
     };
 

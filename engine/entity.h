@@ -1,7 +1,7 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "common/types.h"
+#include "common/utility.h"
 #include "common/map.h"
 #include "scriptobject.h"
 #include "animscript.h"
@@ -84,6 +84,10 @@ struct Entity
 
 private:
     Engine&    engine;                                              ///< engine instance.  This allows the entity to gather information about its surroundings
+
+    // NO.
+    Entity(Entity&);
+    Entity& operator=(Entity&);
 };
 
 #endif

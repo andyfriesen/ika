@@ -1,7 +1,7 @@
-#ifndef PIXEL_MATRIX_H
-#define PIXEL_MATRIX_H
+#pragma once
 
-#include "types.h"
+#include "common/utility.h"
+#include "common/types.h"
 
 /*!
     Canvases are purely software representations of images.  Nothing more.
@@ -57,4 +57,3 @@ public:
 
 #include "CanvasBlitter.h"
 
-#endif

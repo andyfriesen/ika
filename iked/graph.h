@@ -5,8 +5,8 @@
 #ifndef GRAPHWIDGET_H
 #define GRAPHWIDGET_H
 
-#include "types.h"
-#include "Canvas.h"
+#include "common/utility.h"
+#include "common/Canvas.h"
 #include <set>
 #include "wx/wx.h"
 #include "wx/glcanvas.h"

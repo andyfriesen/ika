@@ -1,13 +1,11 @@
 
 #include "layerlist.h"
 #include "mainwindow.h"
-#include "map.h"
-#include "log.h"
+#include "common/map.h"
+#include "common/log.h"
 
-namespace
-{
-    enum
-    {
+namespace {
+    enum {
         id_showLayer = wxID_HIGHEST + 1,
         id_activateLayer,
         id_editLayerProperties,
@@ -41,48 +39,42 @@ LayerBox::LayerBox(wxWindow* parent, wxPoint position, wxSize size)
     sizer->Fit(this);
 }
 
-void LayerBox::SetVisibilityIcon(wxIcon& icon)
-{
+void LayerBox::SetVisibilityIcon(wxIcon& icon) {
     _visibilityIcon->SetLabel(icon);
 }
 
-void LayerBox::SetActiveIcon(wxIcon& icon)
-{
+void LayerBox::SetActiveIcon(wxIcon& icon) {
     _activeIcon->SetLabel(icon);
 }
 
-void LayerBox::DoToggleVisibility(wxCommandEvent& event)
-{
+void LayerBox::DoToggleVisibility(wxCommandEvent& event) {
     event.SetInt(GetId());
     event.Skip();
     Log::Write("Toggle! %s", _label->GetLabel().c_str());
 }
 
-void LayerBox::DoActivateLayer(wxCommandEvent& event)
-{
+void LayerBox::DoActivateLayer(wxCommandEvent& event) {
     event.SetInt(GetId());
     event.Skip();
     Log::Write("Activate! %s", _label->GetLabel().c_str());
 }
 
-void LayerBox::DoContextMenu(wxContextMenuEvent& event)
-{
+void LayerBox::DoContextMenu(wxContextMenuEvent& event) {
     // Write our layer index to the event, then skip, so the enclosing control can recieve it.
     event.SetInt(GetId());
     event.Skip();
+#ifdef DEBUG
     Log::Write("Right click %s", _label->GetLabel().c_str());
+#endif
 }
 
-void LayerBox::SetLabel(const std::string& label)
-{
+void LayerBox::SetLabel(const std::string& label) {
     _label->SetLabel(label.c_str());
     Layout();
 }
 
-namespace
-{
-    enum
-    {
+namespace {
+    enum {
         id_properties
     };
 }
@@ -115,30 +107,26 @@ LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxS
     _contextMenu->Append(id_editLayerProperties, "&Properties", "Edit the properties of this layer.");
 }
 
-void LayerList::OnMapLayersChanged(const MapEvent& event)
-{
+void LayerList::OnMapLayersChanged(const MapEvent& event) {
     // probably not a good idea.  Better to only do this when 
     // layers have been moved around, destroyed, created, etc.
     // But what the fuck.
     Update(event.map);
 }
 
-void LayerList::OnVisibilityChanged(const MapEvent& event)
-{
+void LayerList::OnVisibilityChanged(const MapEvent& event) {
     Freeze();
     UpdateIcons();
     Thaw();
 }
 
-void LayerList::OnLayerActivated(uint index)
-{
+void LayerList::OnLayerActivated(uint index) {
     Freeze();
     UpdateIcons();
     Thaw();
 }
 
-void LayerList::OnToggleVisibility(wxCommandEvent& event)
-{
+void LayerList::OnToggleVisibility(wxCommandEvent& event) {
     uint layerIndex = event.GetInt();
 
     wxASSERT(layerIndex < _executor->GetMap()->NumLayers());
@@ -147,8 +135,7 @@ void LayerList::OnToggleVisibility(wxCommandEvent& event)
     _executor->ShowLayer(layerIndex, b);
 }
 
-void LayerList::OnActivateLayer(wxCommandEvent& event)
-{
+void LayerList::OnActivateLayer(wxCommandEvent& event) {
     uint layerIndex = event.GetInt();
 
     wxASSERT(layerIndex < _executor->GetMap()->NumLayers());
@@ -156,9 +143,9 @@ void LayerList::OnActivateLayer(wxCommandEvent& event)
     _executor->SetCurrentLayer(layerIndex);
 }
 
-void LayerList::OnShowContextMenu(wxContextMenuEvent& event)
-{
+void LayerList::OnShowContextMenu(wxContextMenuEvent& event) {
     _contextMenuIndex = event.GetId();
+
     if (0 <= _contextMenuIndex && _contextMenuIndex < _boxes.size()) {
         // open the menu iff we have a valid layer index.
         PopupMenu(_contextMenu.get(), ScreenToClient(::wxGetMousePosition()));
@@ -167,50 +154,44 @@ void LayerList::OnShowContextMenu(wxContextMenuEvent& event)
     }
 }
 
-void LayerList::OnEditLayerProperties(wxCommandEvent& event)
-{
+void LayerList::OnEditLayerProperties(wxCommandEvent& event) {
     wxASSERT(_contextMenuIndex != -1);
     _executor->EditLayerProperties(_contextMenuIndex);
     _contextMenuIndex = -1;
 }
 
-void LayerList::OnShowOnly(wxCommandEvent&)
-{
+void LayerList::OnShowOnly(wxCommandEvent&) {
     wxASSERT(_contextMenuIndex != -1);
 
     const uint layerCount = _executor->GetMap()->NumLayers();
 
     _executor->SetCurrentLayer(_contextMenuIndex);
 
-    for (uint i = 0; i < layerCount; i++)
-    {
-        if (i != _contextMenuIndex)
+    for (uint i = 0; i < layerCount; i++) {
+        if (i != _contextMenuIndex) {
             _executor->ShowLayer(i, false);
+        }
     }
 
     _contextMenuIndex = -1;
 }
 
-void LayerList::OnShowAll(wxCommandEvent&)
-{
+void LayerList::OnShowAll(wxCommandEvent&) {
     const uint layerCount = _executor->GetMap()->NumLayers();
 
-    for (uint i = 0; i < layerCount; i++)
-    {
+    for (uint i = 0; i < layerCount; i++) {
         _executor->ShowLayer(i);
     }
 }
 
-void LayerList::Update(Map* map)
-{
+void LayerList::Update(Map* map) {
     // shorthand.
     const int n = map->NumLayers();
 
     Freeze();
 
     // Remove extra boxes that we don't want any more.
-    for (int i = _boxes.size() - 1; i >= n; i--)
-    {
+    for (int i = _boxes.size() - 1; i >= n; i--) {
         _sizer->Remove(i);
 
         LayerBox* box = _boxes[i];
@@ -220,8 +201,7 @@ void LayerList::Update(Map* map)
     }
 
     // Add extra boxes.
-    for (int i = _boxes.size(); i < n; i++)
-    {
+    for (int i = _boxes.size(); i < n; i++) {
         LayerBox* box = new LayerBox(this);
         _boxes.push_back(box);
         _sizer->Add(box, 0, wxEXPAND);
@@ -229,8 +209,7 @@ void LayerList::Update(Map* map)
 
     // Now we're sure we have the right number of controls,
     // we can rename them, and set properties and junk.
-    for (int i = 0; i < n; i++)
-    {
+    for (int i = 0; i < n; i++) {
         // Maybe icky.  Low id's are probably reserved by wxWindows.  Fix if it becomes an issue.
         // As it is, though, this is convenient, as each id corresponds to the index of the layer.
         _boxes[i]->SetId(i);
@@ -243,12 +222,10 @@ void LayerList::Update(Map* map)
     Thaw();
 }
 
-void LayerList::UpdateIcons()
-{
+void LayerList::UpdateIcons() {
     const uint curLayer = _executor->GetCurrentLayer();
 
-    for (uint i = 0; i < _boxes.size(); i++)
-    {
+    for (uint i = 0; i < _boxes.size(); i++) {
         _boxes[i]->SetVisibilityIcon(
             _executor->IsLayerVisible(i)
                 ? _visibleIcon

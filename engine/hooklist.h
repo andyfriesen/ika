@@ -3,7 +3,7 @@
 #define HOOKLIST_H
 
 #include <list>
-#include "common/types.h"
+#include "common/utility.h"
 #include "scriptobject.h"
 
 class HookList

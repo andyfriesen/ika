@@ -4,7 +4,7 @@
 
 #include "wxinc.h"
 #include "video.h"
-#include "map.h"
+#include "common/map.h"
 #include "editstate.h"
 #include "settilestate.h"
 #include "copypastestate.h"

@@ -5,14 +5,13 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include "types.h"
 #include "wx/wx.h"
 #include "wx/toolbar.h"
 #include "wx/bitmap.h"
 #include <set>
 
 // Resource objects
-#include "map.h"
+#include "common/map.h"
 #include "tileset.h"
 #include "spriteset.h"
 #include "controller.h"

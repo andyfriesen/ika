@@ -7,9 +7,9 @@
 
 #include "mainwindow.h"
 #include "command.h"
-#include "map.h"
+#include "common/map.h"
 #include "tileset.h"
-#include "misc.h"
+#include "common/utility.h"
 
 BEGIN_EVENT_TABLE(MapDlg, wxDialog)
     EVT_BUTTON(wxID_OK, MapDlg::OnOk)

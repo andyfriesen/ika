@@ -4,7 +4,7 @@
 
 #include "common/log.h"
 #include "common/chr.h"
-#include "common/misc.h"
+#include "common/utility.h"
 #include "video/Driver.h"
 #include "video/Image.h"
 

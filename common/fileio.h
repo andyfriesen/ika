@@ -1,12 +1,11 @@
-#ifndef FILEIO_H
-#define FILEIO_H
+#pragma once
 
-#include "types.h"
+#include "common/utility.h"
 #include <stdio.h>
 
 class File
 {
-    enum    FileMode
+    enum FileMode
     {
         closed,
         open_read,
@@ -47,7 +46,7 @@ public:
         void Read(T& dest)
     {   Read(&dest, sizeof dest);    }
     void ReadString(char* dest);
-    void ReadToken(char* dest);
+	void ReadToken(std::string& dest);
     void ReadCompressed(void* dest, int numbytes);
     std::string ReadAll();
     
@@ -65,4 +64,3 @@ public:
     bool eof();
 };
 
-#endif

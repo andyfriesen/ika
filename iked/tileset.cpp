@@ -1,6 +1,6 @@
 #include "tileset.h"
-#include "vsp.h"
-#include "Canvas.h"
+#include "common/vsp.h"
+#include "common/Canvas.h"
 #include "graph.h"
 
 CTileSet::CTileSet()

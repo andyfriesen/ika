@@ -1,9 +1,8 @@
 
 #include "wx/wx.h"
 
-#include "configfile.h"
-#include "types.h"
-
+#include "common/configfile.h"
+#include "common/utility.h"
 
 class CConfigDlg : public wxDialog
 {

@@ -22,15 +22,16 @@
 #include "tileanimdlg.h"
 
 // Resources
-#include "map.h"
+#include "common/map.h"
 #include "tileset.h"
 #include "spriteset.h"
-#include "Canvas.h"
+#include "common/Canvas.h"
 
 // Other stuff
 #include "command.h"
 #include "events.h"
-#include "misc.h"
+#include "common/utility.h"
+#include "common/version.h"
 
 // Scripting
 #include "scriptengine.h"
@@ -176,10 +177,10 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 {
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE));
 
-    const int widths[] = { 100, -1, 100 };
-    CreateStatusBar(lengthof(widths));
+    const int partitions[] = { 100, -1, 100 };
+    CreateStatusBar(lengthof(partitions));
     _statusBar = GetStatusBar();
-    _statusBar->SetStatusWidths(lengthof(widths), widths);
+    _statusBar->SetStatusWidths(lengthof(partitions), partitions);
 
     _sideBar = new wxSashLayoutWindow(this, id_sidebar, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
     _sideBar->SetAlignment(wxLAYOUT_LEFT);
@@ -719,9 +720,9 @@ void MainWindow::OnCloneLayer(wxCommandEvent&)
     HandleCommand(new CloneLayerCommand(curLayer));
 }
 
-void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   _mapView->IncZoom(-1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
-void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   _mapView->IncZoom(+1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
-void MainWindow::OnZoomMapNormal(wxCommandEvent&)       {   _mapView->SetZoom(16);      _mapView->Refresh();        _mapView->UpdateScrollBars();   } // 16:16 == 100%
+void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   SetZoomRelative(-1); }//{   _mapView->IncZoom(-1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
+void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   SetZoomRelative(+1); }//{   _mapView->IncZoom(+1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
+void MainWindow::OnZoomMapNormal(wxCommandEvent&)       {   SetZoom        (16); }//{   _mapView->SetZoom(16);      _mapView->Refresh();        _mapView->UpdateScrollBars();   } // 16:16 == 100%
 void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoom(-1);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTileSetNormal(wxCommandEvent&)   {   _tileSetView->SetZoom(16);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   } // 16:16 == 100%
@@ -851,14 +852,16 @@ void MainWindow::OnMoveLayerDown(wxCommandEvent&)
 
 void MainWindow::UpdateTitle()
 {
-    std::string name = 
+    const std::string name = 
         _map->title.length() ?  _map->title :
         _curMapName.length() ?  _curMapName :
                                 "Untitled Map";
 
     const char* asterisk = _changed ? "* " : "";
 
-    SetTitle(va("ikaMap %s - %s[ %s ]", IKA_VERSION, asterisk, name.c_str()));
+    const int zoomFactor = int(16.0 / _mapView->GetZoom() * 100);
+
+    SetTitle(va("ikaMap %s - %s[ %s ] %i%%", IKA_VERSION, asterisk, name.c_str(), zoomFactor));
 }
 
 void MainWindow::UpdateScriptMenu()
@@ -923,8 +926,7 @@ void MainWindow::HighlightToolButton(uint buttonId)
 MapView* MainWindow::GetMapView() const { return _mapView; }
 TileSetView* MainWindow::GetTileSetView() const { return _tileSetView; }
 
-void MainWindow::LoadMap(const std::string& fileName)
-{
+void MainWindow::LoadMap(const std::string& fileName) {
     extern Map* ImportVerge1Map(const std::string& fileName);
     extern Map* ImportVerge2Map(const std::string& fileName);
     extern Map* ImportVerge3Map(const std::string& fileName);
@@ -934,32 +936,31 @@ void MainWindow::LoadMap(const std::string& fileName)
     bool result = false;
 
     std::string s = fileName.substr(fileName.length() - 4);
-    if (::Lower(fileName.substr(fileName.length() - 4)) != ".map")
-    {
+    if (::toLower(fileName.substr(fileName.length() - 4)) != ".map") {
         newMap = new Map;
         result = newMap->Load(fileName);
-    }
-    else
-    {
+
+    } else {
         try {
             newMap = ImportVerge1Map(fileName);
         } catch (...) { newMap = 0; }
 
-        if (!newMap)
+        if (!newMap) {
             try {
                 newMap = ImportVerge2Map(fileName);
             } catch (...) { newMap = 0; }
+        }
 
-        if (!newMap)
+        if (!newMap) {
             //try {
                 newMap = ImportVerge3Map(fileName);
             //} catch (...) { newMap = 0; }
+        }
 
         result = newMap != 0;
     }
 
-    if (!result)
-    {
+    if (!result) {
         ::wxMessageBox(va("Unable to load map %s.\n"
                           "The file may be corrupted, or an unrecognized format.", fileName.c_str()), 
                        "DANGER WILL ROBINSON", 
@@ -972,8 +973,7 @@ void MainWindow::LoadMap(const std::string& fileName)
     TileSet* ts = new TileSet;
     result = ts->Load(newMap->tileSetName.c_str());
 
-    if (!result)
-    {
+    if (!result) {
         delete ts;
         ts = 0;
         try {
@@ -983,8 +983,7 @@ void MainWindow::LoadMap(const std::string& fileName)
         } catch (...) {}
     }
 
-    if (!result)
-    {
+    if (!result) {
         ::wxMessageBox(va("Unable to load tileset %s.", newMap->tileSetName.c_str()), "Error loading tileset.", wxOK | wxCENTRE | wxICON_ERROR, this);
         delete newMap;
         delete ts;
@@ -997,8 +996,9 @@ void MainWindow::LoadMap(const std::string& fileName)
     delete _tileSet;    _tileSet = ts;
 
     // Free spritesets used by the old map.
-    for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
+    for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++) {
         delete iter->second;
+    }
     _sprites.clear();
 
     ClearList(_undoList);
@@ -1092,9 +1092,7 @@ void MainWindow::EditLayerProperties(uint index)
             dlg.wrapx,
             dlg.wrapy,
             dlg.x,
-            dlg.y,
-            dlg.parallax_x,
-            dlg.parallax_y));
+            dlg.y));
     }
 }
 
@@ -1129,6 +1127,19 @@ void MainWindow::SetCurrentLayer(uint i)
 void MainWindow::SetStatusBar(const std::string& text, int field)
 {
     GetStatusBar()->SetStatusText(text.c_str(), field);
+}
+
+void MainWindow::SetZoom(uint factor)
+{
+    _mapView->SetZoom(factor);
+    _mapView->Refresh();    
+    _mapView->UpdateScrollBars();
+    UpdateTitle();
+}
+
+void MainWindow::SetZoomRelative(int factor)
+{
+    SetZoom(_mapView->GetZoom() + factor);
 }
 
 Map* MainWindow::GetMap()         { return _map; }

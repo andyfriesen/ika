@@ -1,9 +1,8 @@
 
-#ifndef CHR_H
-#define CHR_H
+#pragma once
 
 #include <map>
-#include "types.h"
+#include "common/utility.h"
 #include "Canvas.h"
 
 /**
@@ -64,4 +63,3 @@ private:
     void Loadv5CHR(class File& f);
 };
 
-#endif

@@ -11,7 +11,7 @@
 #include "graph.h"
 #include "tileset.h"
 #include "spriteset.h"
-#include "log.h"
+#include "common/log.h"
 #include "layervisibilitycontrol.h"
 #include "layerdlg.h"
 #include "entityeditor.h"
@@ -1183,7 +1183,7 @@ void MapView::OnSaveAs(wxCommandEvent& event)
 
     OnSave(event);
 
-    if (!Path::Compare(name, oldname))
+    if (!Path::equals(name, oldname))
     {
         /* This bit is important.
          * iked refcounts everything based on filename.
@@ -1280,7 +1280,7 @@ void MapView::OnShowVSP(wxCommandEvent&)
 
 void MapView::OnShowScript(wxCommandEvent&)
 {
-    pParent->Open(Path::ReplaceExtension(name, "py"));
+    pParent->Open(Path::replaceExtension(name, "py"));
 }
 
 void MapView::OnLayerMode(wxCommandEvent&)

@@ -6,7 +6,7 @@
 #include "mainwindow.h"
 #include "command.h"
 
-#include "log.h"
+#include "common/log.h"
 
 BEGIN_EVENT_TABLE(TileAnimDlg, wxDialog)
     EVT_LISTBOX(-1, TileAnimDlg::OnSelectStrand)
@@ -33,7 +33,7 @@ Command* TileAnimDlg::Execute(const std::vector<VSP::AnimState>& animData)
     _strandList->Clear();
     for (uint i = 0; i < _oldData.size(); i++)
     {
-        _strandList->Append(ToString(i).c_str());
+        _strandList->Append(toString(i).c_str());
     }
 
     if (ShowModal() != wxID_OK)
@@ -87,9 +87,9 @@ void TileAnimDlg::UpdateDlg()
         _changedStrands.count(_curStrand) ? _changedStrands[_curStrand]
                                      : _oldData[_curStrand];
 
-    XRCCTRL(*this, "edit_starttile", wxTextCtrl)->SetValue(ToString(strand.start).c_str());
-    XRCCTRL(*this, "edit_endtile", wxTextCtrl)->SetValue(ToString(strand.finish).c_str());
-    XRCCTRL(*this, "edit_delay", wxTextCtrl)->SetValue(ToString(strand.delay).c_str());
+    XRCCTRL(*this, "edit_starttile", wxTextCtrl)->SetValue(toString(strand.start).c_str());
+    XRCCTRL(*this, "edit_endtile", wxTextCtrl)->SetValue(toString(strand.finish).c_str());
+    XRCCTRL(*this, "edit_delay", wxTextCtrl)->SetValue(toString(strand.delay).c_str());
     XRCCTRL(*this, "radio_mode", wxRadioBox)->SetSelection(strand.mode);
 }
 

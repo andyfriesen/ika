@@ -1,8 +1,8 @@
 
+#include "common/utility.h"
 #include "textview.h"
-#include "types.h"
 #include "main.h"
-#include "fileio.h"
+#include "common/fileio.h"
 
 namespace
 {

@@ -3,8 +3,8 @@
 
 // Keep dependancies to an absolute bare minimum!
 // Otherwise we slaughter compile times any time this file changes.
-#include "types.h"
-#include "listener.h"
+#include "common/utility.h"
+#include "common/listener.h"
 #include "events.h"
 
 class wxWindow; // -_-.  Okay because we don't have to actually include wx stuff.

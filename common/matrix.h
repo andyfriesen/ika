@@ -1,10 +1,9 @@
-#ifndef MATRIX_H
-#define MATRIX_H
+#pragma once
 
 #include <cassert>
 #include <algorithm>
 
-#include "types.h"
+#include "common/utility.h"
 
 #define FOLLOWTHEWHITERABBIT
 
@@ -183,4 +182,3 @@ public:
     }
 };
 
-#endif

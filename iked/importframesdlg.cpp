@@ -3,7 +3,7 @@
 #include <stdexcept>
 
 #include "importframesdlg.h"
-#include "fileio.h"
+#include "common/fileio.h"
 
 BEGIN_EVENT_TABLE(ImportFramesDlg, wxDialog)
     EVT_BUTTON(wxID_OK, ImportFramesDlg::OnOk)
@@ -112,8 +112,8 @@ int ImportFramesDlg::ShowModal(int width, int height)
     wxTextCtrl* w = XRCCTRL(*this, "edit_framewidth", wxTextCtrl);
     wxTextCtrl* h = XRCCTRL(*this, "edit_frameheight", wxTextCtrl);
 
-    w->SetValue(ToString(width).c_str());   w->SetEditable(false);
-    h->SetValue(ToString(height).c_str());  h->SetEditable(false);
+    w->SetValue(toString(width).c_str());   w->SetEditable(false);
+    h->SetValue(toString(height).c_str());  h->SetEditable(false);
 
     return wxDialog::ShowModal();
 }

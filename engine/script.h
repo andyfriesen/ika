@@ -4,7 +4,7 @@
 
 #include <set>
 
-#include "common/types.h"
+#include "common/utility.h"
 
 struct Engine;                                  // proto
 class ScriptObject;

@@ -6,8 +6,8 @@
 #include <vector>
 #include <queue>
 
-#include "common/types.h"
-#include "common/misc.h"
+#include "common/utility.h"
+#include "common/utility.h"
 #include "scriptobject.h"
 
 class KeyControl;
@@ -129,6 +129,10 @@ private:
 
     // onPress/onUnpress queue.
     ScriptObject* _eventQueue;
+
+    // NO.
+    Input(Input&);
+    Input& operator=(Input&);
 };
 
 #endif

@@ -2,13 +2,13 @@
 #include "mapview.h"
 
 #include "executor.h"
-#include "map.h"
+#include "common/map.h"
 #include "spriteset.h"
-#include "chr.h"
+#include "common/chr.h"
 #include "tileset.h"
 #include "command.h"
 
-#include "log.h"
+#include "common/log.h"
 
 BEGIN_EVENT_TABLE(MapView, wxPanel)
     EVT_SIZE(MapView::OnSize)

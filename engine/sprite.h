@@ -1,8 +1,9 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "common/types.h"
 #include "common/refcount.h"
+#include "common/types.h"
+#include "common/utility.h"
 
 #include <map>
 

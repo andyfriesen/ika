@@ -5,7 +5,7 @@
 #include <string>
 #include <vector>
 
-#include "Canvas.h"
+#include "common/Canvas.h"
 
 class ImportFramesDlg : public wxDialog
 {

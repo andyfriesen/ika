@@ -1,7 +1,7 @@
 #ifndef TILESET_H
 #define TILESET_H
 
-#include "common/types.h"
+#include "common/utility.h"
 #include "common/vsp.h"
 
 namespace Video

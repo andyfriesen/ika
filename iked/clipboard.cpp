@@ -1,8 +1,8 @@
 #ifndef CLIPBOARD_H
 #define CLIPBOARD_H
 
-#include "canvas.h"
-#include "map.h"
+#include "common/Canvas.h"
+#include "common/map.h"
 
 namespace
 {

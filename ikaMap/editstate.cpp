@@ -2,7 +2,7 @@
 #include "executor.h"
 #include "mapview.h"
 #include "tilesetview.h"
-#include "map.h"
+#include "common/map.h"
 #include "tileset.h"
 #include "command.h"
 

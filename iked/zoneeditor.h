@@ -3,7 +3,7 @@
 #define ZONEEDITOR_H
 
 #include "wx/wx.h"
-#include "types.h"
+#include "common/utility.h"
 
 class MapView;
 struct Map;

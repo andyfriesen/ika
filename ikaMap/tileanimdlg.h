@@ -4,7 +4,7 @@
 #include <vector>
 #include <map>
 #include "wxinc.h"
-#include "vsp.h"
+#include "common/vsp.h"
 
 struct Command;
 

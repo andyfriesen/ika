@@ -5,7 +5,7 @@
 #ifndef IMAGEVIEW_H
 #define IMAGEVIEW_H
 
-#include "types.h"
+#include "common/utility.h"
 #include "wx\wx.h"
 #include "docview.h"
 

@@ -2,10 +2,10 @@
 #ifndef TILESET_H
 #define TILESET_H
 
-#include "types.h"
+#include "common/utility.h"
 #include <set>
 #include "imagebank.h"
-#include "vsp.h"
+#include "common/vsp.h"
 
 struct TileSet : ImageBank
 {

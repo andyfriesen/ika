@@ -4,10 +4,9 @@
     Not sure if the singleton pattern is the best way to handle this stuff.  Not an issue right now anyway. --andy
 */
 
-#ifndef LOG_H
-#define LOG_H
+#pragma once
 
-#include "types.h"
+#include "common/utility.h"
 
 //#define LOG_CALLBACK
 
@@ -17,6 +16,7 @@ namespace Log
     void Write(const char*, ...);        // writes to the log file
     void Write(const std::string& s);
     void Writen(const char*, ...);       // same, but does not append a newline
+    void Writen(const std::string& s);
 };
 
 #ifdef LOG_CALLBACK
@@ -37,4 +37,3 @@ namespace Log
 #   define CDEBUG(x)
 #endif
 
-#endif

@@ -14,8 +14,8 @@
 
 #include <map>
 
-#include "types.h"
-#include "misc.h"
+#include "common/utility.h"
+#include "common/utility.h"
 
 #include "wx\wx.h"
 

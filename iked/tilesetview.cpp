@@ -194,7 +194,7 @@ void CTileSetView::OnSaveAs(wxCommandEvent& event)
 
     OnSave(event);
 
-    if (!Path::Compare(name, oldname))
+    if (!Path::equals(name, oldname))
     {
         pTileset->Load(oldname.c_str());
         if (!pParent->vsp.Release(pTileset))

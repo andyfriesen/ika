@@ -2,13 +2,13 @@
 #include <cassert>
 #include <stdexcept>
 #include <stdio.h>
-#include "misc.h"
-#include "fileio.h"
+#include "common/utility.h"
+#include "common/fileio.h"
 #include "script/ObjectDefs.h" // for ScriptObject::Error
 
 #include "scriptengine.h" // geh
 
-#include "log.h"
+#include "common/log.h"
 
 Script::Script(const std::string& fileName)
     : module(0)

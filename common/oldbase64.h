@@ -1,5 +1,5 @@
 #include <string>
-#include "types.h"
+#include "common/utility.h"
 
 /**
  * Old shitty base64 implementation.

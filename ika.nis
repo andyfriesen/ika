@@ -1,0 +1,114 @@
+;
+; ika installer and stuff.
+;     -- khross
+;
+
+Name "ika"
+
+OutFile "ika-install-@@VERSION@@.exe"
+
+InstallDir $PROGRAMFILES\ika
+InstallDirRegKey HKLM SOFTWARE\ika "Install_Dir"
+
+ComponentText "This will install ika and any optional modules you would like on your computer."
+
+DirText "Select a directory to install to."
+
+Section "ika core files"
+        SetOutPath $INSTDIR
+        File "ika.exe"
+        File "ikamap.exe"
+        File "iked.exe"
+        File "user.cfg"
+        File "ref.html"
+        File "ikamap.html"
+        WriteRegStr HKLM SOFTWARE\ika "Install_Dir" "$INSTDIR"
+        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ika" "DisplayName" "ika (remove only)"
+        WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ika" "UninstallString" '"$INSTDIR\uninstall.exe"'
+        WriteUninstaller "uninstall.exe"
+SectionEnd
+
+Section "ika DLLs"
+        SetOutPath $INSTDIR
+        File "audiere.dll"
+        File "corona.dll"
+        File "msvcp71.dll"
+        File "msvcr71.dll"
+        File "python23.dll"
+        File "zlib.dll"
+SectionEnd
+
+Section "iked"
+        SetOutPath $INSTDIR
+        File "iked.exe"
+SectionEnd
+
+Section "ikaMap"
+        SetOutPath $INSTDIR
+        File "ikamap.exe"
+SectionEnd
+
+Section "Font Tools"
+        SetOutPath $INSTDIR
+        File "fnt2png.exe"
+        File "img2fnt.exe"
+        File "ttf2png.exe"
+SectionEnd
+
+Section "xi library"
+        CreateDirectory "$INSTDIR\xi"
+        SetOutPath $INSTDIR\xi
+        File "xi\*.py"
+SectionEnd
+
+Section "Demo library"
+        CreateDirectory "$INSTDIR\stats"
+        SetOutPath $INSTDIR\stats
+        File "stats\*.py"
+
+        CreateDirectory "$INSTDIR\menu"
+        SetOutPath $INSTDIR\menu
+        File "menu\*.py"
+SectionEnd
+
+Section "packin demo (requires xi and the Demo library)"
+        SetOutPath $INSTDIR
+        File "*.py"
+        File "*.ika-sprite"
+        File "*.png"
+        File "*.ika-map"
+        File "*.vsp"
+        File "*.fnt"
+        File "*.dat"
+
+        CreateDirectory "$INSTDIR\music"
+        SetOutPath $INSTDIR\music
+        File "music\*.*"
+
+        CreateDirectory "$INSTDIR\sound"
+        SetOutPath $INSTDIR\sound
+        File "sound\*.*"
+SectionEnd
+
+Section "Desktop shortcut"
+        CreateShortCut "$DESKTOP\ika.lnk" "$INSTDIR" "" "$INSTDIR" 0
+SectionEnd
+
+UninstallText "This will uninstall ika. Press Enter to continue."
+
+Section "Uninstall"
+        DeleteRegKey HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ika"
+        DeleteRegKey HKLM SOFTWARE\ika
+        Delete $DESKTOP\ika.lnk
+        Delete $INSTDIR\*.*
+        Delete $INSTDIR\xi\*.*
+        Delete $SMPROGRAMS\ika\*.*
+        RMDir "$SMPROGRAMS\ika"
+        RMDir "$INSTDIR\xi"
+        RMDir "$INSTDIR\cursor"
+        RMDir "$INSTDIR"
+SectionEnd
+
+;
+
+

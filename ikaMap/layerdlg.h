@@ -2,7 +2,7 @@
 #define LAYERDLG_H
 
 #include "wxinc.h"
-#include "map.h"
+#include "common/map.h"
 
 struct MainWindow;
 
@@ -25,8 +25,6 @@ public:
     bool wrapy;
     int x;
     int y;
-    float parallax_x;
-    float parallax_y;
 
     DECLARE_EVENT_TABLE()
 };
