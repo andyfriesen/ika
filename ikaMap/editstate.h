@@ -3,9 +3,10 @@
 
 #include "map.h"
 
+class wxWindow;
 class wxMouseEvent;
 class wxKeyEvent;
-struct MainWindow;
+struct Executor;
 struct MapView;
 struct TileSetView;
 struct TileSet;
@@ -22,7 +23,7 @@ struct Command;
  */
 struct EditState
 {
-    EditState(MainWindow* mw);
+    EditState(Executor* e);
     virtual ~EditState(){}
 
     virtual void OnMouseDown(wxMouseEvent&) = 0;
@@ -41,17 +42,18 @@ struct EditState
 
 protected:
     // Convenience accessors.
-    MainWindow*     GetMainWindow() const;
+    Executor*       GetExecutor() const;
     MapView*        GetMapView() const;
     TileSetView*    GetTileSetView() const;
     Map*            GetMap() const;
     Map::Layer*     GetCurLayer() const;
     uint            GetCurLayerIndex() const;
     TileSet*        GetTileSet() const;
+    wxWindow*       GetParentWindow() const;
     void            HandleCommand(::Command* cmd);
 
 private:
-    MainWindow* _mainWindow;
+    Executor*       _executor;
 };
 
 #endif

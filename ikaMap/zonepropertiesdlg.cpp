@@ -21,7 +21,7 @@ END_EVENT_TABLE()
 
 Map* ZonePropertiesDlg::GetMap() const
 {
-    return _mainWnd->GetMap();
+    return _executor->GetMap();
 }
 
 void ZonePropertiesDlg::UpdateList()
@@ -65,7 +65,14 @@ void ZonePropertiesDlg::UpdateData()
             Map::Zone bp;
             bp.label = def;
             commands.push_back(new DefineZoneBluePrintCommand(bp, 0));
-            commands.back()->Do(_mainWnd);
+
+            // EEP.  Need to do this, otherwise the dialog won't update the command.
+            // (because it hasn't been performed yet)
+            // Probably some issues with undo here, as the Do() method typically
+            // reads the current data, and stores it.  When ikaMap itself handles
+            // these commands, it will Do() them again, erasing the previous (real)
+            // values.
+            commands.back()->Do(_executor);
         }
 
         UpdateList();
@@ -89,7 +96,7 @@ void ZonePropertiesDlg::UpdateData()
     newZone.position.Normalize();   // just in case
     commands.push_back(new ChangeZoneCommand(_layerIndex, _zoneIndex, newZone));
 
-    _mainWnd->HandleCommand(new CompositeCommand(commands));
+    _executor->HandleCommand(new CompositeCommand(commands));
 }
 
 void ZonePropertiesDlg::UpdateDlg()
@@ -110,12 +117,12 @@ void ZonePropertiesDlg::UpdateDlg()
     _editHeight->SetValue(ToString(zone.position.Height()).c_str());
 }
 
-ZonePropertiesDlg::ZonePropertiesDlg(MainWindow* mainWnd, uint layerIndex, uint zoneIndex)
-    : _mainWnd(mainWnd)
+ZonePropertiesDlg::ZonePropertiesDlg(Executor* e, uint layerIndex, uint zoneIndex)
+    : _executor(e)
     , _layerIndex(layerIndex)
     , _zoneIndex(zoneIndex)
 {
-    wxXmlResource::Get()->LoadDialog(this, _mainWnd, "dialog_zone");
+    wxXmlResource::Get()->LoadDialog(this, e->GetParentWindow(), "dialog_zone");
 
     wxSizer* sizer = XRCCTRL(*this, "panel_main", wxPanel)->GetSizer();
     sizer->Fit(this);
@@ -204,7 +211,7 @@ void ZonePropertiesDlg::OnDeleteBlueprint(wxCommandEvent&)
         }
     }
 
-    _mainWnd->HandleCommand(new CompositeCommand(commands));
+    _executor->HandleCommand(new CompositeCommand(commands));
 
     UpdateDlg();
 }
@@ -248,7 +255,7 @@ void ZonePropertiesDlg::OnRenameBlueprint(wxCommandEvent&)
             }
         }
     }
-    _mainWnd->HandleCommand(new CompositeCommand(commands));
+    _executor->HandleCommand(new CompositeCommand(commands));
 
     UpdateList();
     _bluePrintList->SetStringSelection(newLabel.c_str());
@@ -258,7 +265,7 @@ void ZonePropertiesDlg::OnDeleteZone(wxCommandEvent&)
 {
     if (wxMessageBox("Are you sure you want to remove this zone?", "KILL", wxYES_NO | wxCENTER | wxICON_QUESTION, this) == wxYES)
     {
-        _mainWnd->HandleCommand(new DestroyZoneCommand(_layerIndex, _zoneIndex));
+        _executor->HandleCommand(new DestroyZoneCommand(_layerIndex, _zoneIndex));
         EndModal(wxOK);
     }
 }

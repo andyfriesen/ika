@@ -6,33 +6,22 @@
 #include "misc.h"
 
 // Shitty listeners.  Exactly one arg, though it can be parameterized.
-template <typename T, typename ArgType>
-struct Delegate
-{
-    typedef void (T::*Func)(ArgType);
-
-    Delegate(T* inst, Func func)
-        : _inst(inst)
-        , _func(func)
-    {}
-
-    void operator()(ArgType arg)
-    {
-        (_inst->*_func)(arg);
-    }
-
-private:
-    T* _inst;
-    Func _func;
-};
-
-template <typename T, typename ArgType>
-Delegate<T, ArgType> bind(T* inst, void (T::*func)(ArgType))
-{ return Delegate<T, ArgType>(inst, func); }
 
 namespace
 {
     // Opaque callable thing.  Wraps anything with an operator()(ArgType)
+    /*
+     * This is where the rubber hits the road, as it were.  If we're going
+     * to store a heterogenious collection of callable objects, we need some
+     * way to store them all in a sequence.  This is how.  We inherit 
+     * CallableBase, and store its subclasses.
+     *
+     * The Callable template below deals with most any object that has an
+     * operator(), allowing us compile time parameterization as well as
+     * runtime.  Delegate implements the same interface for efficiency
+     * reasons; it could just as easily be wrapped by a Callable, but then
+     * calling it involves three levels of virtual indirection.  blech.
+     */
     template <typename ArgType>
     struct CallableBase
     {
@@ -46,7 +35,7 @@ namespace
 };
 
 template <typename T, typename ArgType>
-struct Callable : public CallableBase<ArgType>
+struct Callable : CallableBase<ArgType>
 {
     Callable(T subject)
         : _subject(subject)
@@ -60,6 +49,30 @@ struct Callable : public CallableBase<ArgType>
 private:
     T _subject;
 };
+
+template <typename T, typename ArgType>
+struct Delegate : CallableBase<ArgType>
+{
+    typedef void (T::*Func)(ArgType);
+
+    Delegate(T* inst, Func func)
+        : _inst(inst)
+        , _func(func)
+    {}
+
+    virtual void call(ArgType arg)
+    {
+        (_inst->*_func)(arg);
+    }
+
+private:
+    T* _inst;
+    Func _func;
+};
+
+template <typename T, typename ArgType>
+Delegate<T, ArgType> bind(T* inst, void (T::*func)(ArgType))
+{ return Delegate<T, ArgType>(inst, func); }
 
 template <class ArgType>
 struct Listener
@@ -78,7 +91,7 @@ struct Listener
     template <typename T>
     void add(T* inst, void (T::*func)(ArgType))
     {
-        add(bind(inst, func));
+        _list.insert(new Delegate<T, ArgType>(inst, func));
     }
 
 #if 0

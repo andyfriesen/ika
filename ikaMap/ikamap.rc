@@ -44,6 +44,7 @@ NEWICON                 ICON                    "new.ico"
 ZOOMICON                ICON                    "zoom.ico"
 FILLICON                ICON                    "fill.ico"
 SCRIPTICON              ICON                    "py.ico"
+BLANKICON               ICON                    "blank.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //
@@ -72,7 +73,7 @@ END
 // Menu
 //
 
-WXWINDOWMENU MENU 
+WXWINDOWMENU MENU
 BEGIN
     POPUP "&Window"
     BEGIN
@@ -111,19 +112,19 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE 
+1 TEXTINCLUDE
 BEGIN
     "resrc1.h\0"
 END
 
-2 TEXTINCLUDE 
+2 TEXTINCLUDE
 BEGIN
     "#include ""resource.h""\r\n"
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE 
+3 TEXTINCLUDE
 BEGIN
     "\r\n"
     "\0"

@@ -3,10 +3,10 @@
 #include "script.h"
 #include <cassert>
 
-#include "mainwindow.h"
+#include "Executor.h"
 #include "mapview.h"
 
-ScriptState::ScriptState(MainWindow* mainWnd)
+ScriptState::ScriptState(Executor* mainWnd)
     : EditState(mainWnd)
     , _script(0)
 {
@@ -28,7 +28,7 @@ void ScriptState::OnMouseDown(wxMouseEvent& event)
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 }
 
@@ -42,7 +42,7 @@ void ScriptState::OnMouseUp(wxMouseEvent& event)
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 }
 
@@ -57,7 +57,7 @@ void ScriptState::OnMouseMove(wxMouseEvent& event)
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 }
 
@@ -71,7 +71,7 @@ void ScriptState::OnBeginState()
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 
 }
@@ -86,7 +86,7 @@ void ScriptState::OnEndState()
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 }
 
@@ -100,7 +100,7 @@ void ScriptState::OnMouseWheel(wxMouseEvent& event)
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 
 }
@@ -114,7 +114,7 @@ void ScriptState::OnRender()
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 }
 
@@ -127,7 +127,7 @@ void ScriptState::OnRenderCurrentLayer()
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 }
 
@@ -140,6 +140,6 @@ void ScriptState::OnSwitchLayers(uint oldLayer, uint newLayer)
     }
     catch (std::runtime_error err)
     {
-        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetParentWindow());
     }
 }

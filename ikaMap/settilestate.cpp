@@ -1,7 +1,7 @@
 
 #include "settilestate.h"
 #include "wxinc.h"
-#include "mainwindow.h"
+#include "executor.h"
 #include "mapview.h"
 #include "tilesetview.h"
 #include "map.h"
@@ -11,8 +11,10 @@
 #include "video.h"
 #include "wxinc.h"
 
-TileSetState::TileSetState(MainWindow* mw)
-    : EditState(mw)
+#include "log.h"
+
+TileSetState::TileSetState(Executor* e)
+    : EditState(e)
     , _oldX(-1)
     , _oldY(-1)
 {}
@@ -36,8 +38,6 @@ void TileSetState::OnMouseDown(wxMouseEvent& event)
         GetMapView()->ScreenToTile(x, y);
 
         SetCurTile(GetCurLayer()->tiles(x, y));
-        GetTileSetView()->Render();
-        GetTileSetView()->ShowPage();
     }
     else
         SetTile(event.m_x, event.m_y);
@@ -50,14 +50,8 @@ void TileSetState::OnMouseUp(wxMouseEvent& event)
 
 void TileSetState::OnMouseMove(wxMouseEvent& event)
 {
-    /*int x = event.GetX();
-    int y = event.GetY();
-    GetMapView()->ScreenToTile(x, y);
-    GetMainWindow()->GetStatusBar()->SetStatusText(va("(%i, %i)", x, y));*/
-
     if (event.LeftIsDown() && !event.ShiftDown())
         SetTile(event.m_x, event.m_y);
-	GetMapView()->Refresh();
 }
 
 void TileSetState::OnMouseWheel(wxMouseEvent& event)
@@ -91,15 +85,16 @@ void TileSetState::SetTile(int x, int y)
 
     if (GetCurLayer()->tiles(x, y) == GetCurTile()) return; // don't flood the undo buffer with commands that don't actually do anything
 
+    //Log::Write("SetTileCommand!");
     HandleCommand(new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile()));
 }
 
 uint TileSetState::GetCurTile() const
 {
-    return GetTileSetView()->GetCurTile();
+    return GetExecutor()->GetCurrentTile();
 }
 
 void TileSetState::SetCurTile(uint t)
 {
-    GetTileSetView()->SetCurTile(t);
+    GetExecutor()->SetCurrentTile(t);
 }

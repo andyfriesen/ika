@@ -25,7 +25,7 @@ private:
     Rect _selection;        // current selection rect
 
 public:
-    CopyPasteState(MainWindow* mw);
+    CopyPasteState(Executor* e);
     
     virtual void OnMouseDown(wxMouseEvent& event);
     virtual void OnMouseUp(wxMouseEvent& event);

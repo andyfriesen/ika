@@ -48,7 +48,7 @@ void SetTileCommand::Do(Executor* e)
 
     _oldTileIndex = map->GetLayer(_layerIndex)->tiles(_tileX, _tileY);
     map->GetLayer(_layerIndex)->tiles(_tileX, _tileY) = _tileIndex;
-    e->layerChanged.fire(MapEvent(map, _layerIndex));
+    e->tilesSet.fire(MapEvent(map, _layerIndex));
 }
 
 void SetTileCommand::Undo(Executor* e)
@@ -56,7 +56,7 @@ void SetTileCommand::Undo(Executor* e)
     Map* map = e->GetMap();
 
     map->GetLayer(_layerIndex)->tiles(_tileX, _tileY) = _oldTileIndex;
-    e->layerChanged.fire(MapEvent(map, _layerIndex));
+    e->tilesSet.fire(MapEvent(map, _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -84,7 +84,7 @@ void PasteTilesCommand::Do(Executor* e)
         }
     }
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->tilesSet.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 void PasteTilesCommand::Undo(Executor* e)
@@ -108,13 +108,13 @@ void SetObstructionCommand::Do(Executor* e)
 
     _oldValue = obs(_x, _y);
     obs(_x, _y) = _set;
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->tilesSet.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 void SetObstructionCommand::Undo(Executor* e)
 {
     e->GetMap()->GetLayer(_layerIndex)->obstructions(_x, _y) = _oldValue;
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->tilesSet.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -133,14 +133,14 @@ void CreateLayerCommand::Do(Executor* e)
 
     map->AddLayer(layName, 100, 100); // arbitrary initial size for now
 
-    e->mapLayersChanged.fire(MapEvent(map, _layerIndex));
+    e->layerCreated.fire(MapEvent(map, _layerIndex));
 }
 
 void CreateLayerCommand::Undo(Executor* e)
 {
     e->GetMap()->DestroyLayer(_layerIndex);
 
-    e->mapLayersChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->layerDestroyed.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -162,7 +162,7 @@ void DestroyLayerCommand::Do(Executor* e)
     _savedLayer = new Map::Layer(*map->GetLayer(_index)); // save the layer so we can restore it later
     map->DestroyLayer(_index);
 
-    e->mapLayersChanged.fire(MapEvent(map, _index));
+    e->layerDestroyed.fire(MapEvent(map, _index));
 }
 
 void DestroyLayerCommand::Undo(Executor* e)
@@ -170,7 +170,7 @@ void DestroyLayerCommand::Undo(Executor* e)
     e->GetMap()->InsertLayer(_savedLayer, _index);
     _savedLayer = 0;
 
-    e->mapLayersChanged.fire(MapEvent(e->GetMap(), _index));
+    e->layerCreated.fire(MapEvent(e->GetMap(), _index));
 }
 
 //-----------------------------------------------------------------------------
@@ -187,15 +187,15 @@ void SwapLayerCommand::Do(Executor* e)
 
     mapView->Freeze();
 
-    uint curLayer = mapView->GetCurLayer();
-    if (curLayer == _index1)        mapView->SetCurLayer(_index2);
-    else if (curLayer == _index2)   mapView->SetCurLayer(_index1);
+    uint curLayer = e->GetCurrentLayer();
+    if (curLayer == _index1)        e->SetCurrentLayer(_index2);
+    else if (curLayer == _index2)   e->SetCurrentLayer(_index1);
 
     map->SwapLayers(_index1, _index2);
     
     mapView->Thaw();
     
-    e->mapLayersChanged.fire(MapEvent(map));
+    e->layersReordered.fire(MapEvent(map));
 }
 
 void SwapLayerCommand::Undo(Executor* e)
@@ -216,14 +216,14 @@ void CloneLayerCommand::Do(Executor* e)
     Map::Layer* newLay = new Map::Layer(*map->GetLayer(_index));
     map->InsertLayer(newLay, _index + 1);
 
-    e->mapLayersChanged.fire(MapEvent(map, _index));
+    e->layerCreated.fire(MapEvent(map, _index));
 }
 
 void CloneLayerCommand::Undo(Executor* e)
 {
     e->GetMap()->DestroyLayer(_index + 1);
 
-    e->mapLayersChanged.fire(MapEvent(e->GetMap(), _index));
+    e->layerDestroyed.fire(MapEvent(e->GetMap(), _index));
 }
 
 //-----------------------------------------------------------------------------
@@ -243,7 +243,7 @@ void ResizeLayerCommand::Do(Executor* e)
         _savedLayer = new Map::Layer(*lay);
     lay->Resize(_newWidth, _newHeight);
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _index));
+    e->layerResized.fire(MapEvent(e->GetMap(), _index));
 }
 
 void ResizeLayerCommand::Undo(Executor* e)
@@ -251,7 +251,7 @@ void ResizeLayerCommand::Undo(Executor* e)
     // nontrivial.  heh.
     *e->GetMap()->GetLayer(_index) = *_savedLayer;
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _index));
+    e->layerResized.fire(MapEvent(e->GetMap(), _index));
 }
 
 //-----------------------------------------------------------------------------
@@ -278,9 +278,7 @@ void ChangeLayerPropertiesCommand::Do(Executor* e)
     _layer->x     = _newProperties.x;
     _layer->y     = _newProperties.y;
 
-    // Imprecise:
-    e->mapLayersChanged.fire(MapEvent(e->GetMap()));
-    e->layerChanged.fire(MapEvent(e->GetMap()));
+    e->layerPropertiesChanged.fire(MapEvent(e->GetMap()));
 }
 
 void ChangeLayerPropertiesCommand::Undo(Executor* e)
@@ -291,9 +289,7 @@ void ChangeLayerPropertiesCommand::Undo(Executor* e)
     _layer->x     = _oldProperties.x;
     _layer->y     = _oldProperties.y;
 
-    // Imprecise:
-    e->mapLayersChanged.fire(MapEvent(e->GetMap()));
-    e->layerChanged.fire(MapEvent(e->GetMap()));
+    e->layerPropertiesChanged.fire(MapEvent(e->GetMap()));
 }
 
 //-----------------------------------------------------------------------------
@@ -312,7 +308,7 @@ void ChangeMapPropertiesCommand::Do(Executor* e)
     _oldWidth = map->width;     map->width = _newWidth;
     _oldHeight = map->height;   map->height = _newHeight;
 
-    e->mapChanged.fire(MapEvent(e->GetMap()));
+    e->mapPropertiesChanged.fire(MapEvent(e->GetMap()));
 }
 
 void ChangeMapPropertiesCommand::Undo(Executor* e)
@@ -322,7 +318,7 @@ void ChangeMapPropertiesCommand::Undo(Executor* e)
     map->width = _oldWidth;
     map->height = _oldHeight;
 
-    e->mapChanged.fire(MapEvent(e->GetMap()));
+    e->mapPropertiesChanged.fire(MapEvent(e->GetMap()));
 }
 
 //-----------------------------------------------------------------------------
@@ -343,7 +339,7 @@ void ChangeEntityPropertiesCommand::Do(Executor* e)
 
     lay->entities[_entityIndex] = _newData;
 
-    e->layerChanged.fire(MapEvent(map, _layerIndex));
+    e->entitiesChanged.fire(MapEvent(map, _layerIndex));
 }
 
 void ChangeEntityPropertiesCommand::Undo(Executor* e)
@@ -353,7 +349,7 @@ void ChangeEntityPropertiesCommand::Undo(Executor* e)
 
     lay->entities[_entityIndex] = _oldData;
 
-    e->layerChanged.fire(MapEvent(map, _layerIndex));
+    e->entitiesChanged.fire(MapEvent(map, _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -372,7 +368,7 @@ void CreateEntityCommand::Do(Executor* e)
     lay->entities[_entityIndex].x = _x;
     lay->entities[_entityIndex].y = _y;
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->entitiesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 void CreateEntityCommand::Undo(Executor* e)
@@ -380,7 +376,7 @@ void CreateEntityCommand::Undo(Executor* e)
     Map::Layer* lay = e->GetMap()->GetLayer(_layerIndex);
     lay->entities.erase(lay->entities.begin() + _entityIndex);
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->entitiesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -398,7 +394,7 @@ void DestroyEntityCommand::Do(Executor* e)
     
     lay->entities.erase(lay->entities.begin() + _entityIndex);
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->entitiesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 void DestroyEntityCommand::Undo(Executor* e)
@@ -406,7 +402,7 @@ void DestroyEntityCommand::Undo(Executor* e)
     Map::Layer* lay = e->GetMap()->GetLayer(_layerIndex);
     lay->entities.insert(lay->entities.begin() + _entityIndex, _oldData);
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->entitiesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -455,8 +451,7 @@ void InsertTilesCommand::Do(Executor* e)
     for (uint i = 0; i < _tiles.size(); i++)
         ts->InsertTile(_startPos + i, _tiles[i]);
 
-    e->mapChanged.fire(MapEvent(e->GetMap()));
-    e->tileSetChanged.fire(0);
+    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
 }
 
 void InsertTilesCommand::Undo(Executor* e)
@@ -466,8 +461,7 @@ void InsertTilesCommand::Undo(Executor* e)
     for (uint i = 0; i < _tiles.size(); i++)
         ts->DeleteTile(ts->Count() - 1);
 
-    e->mapChanged.fire(MapEvent(e->GetMap()));
-    e->tileSetChanged.fire(0);
+    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
 }
 
 //-----------------------------------------------------------------------------
@@ -491,8 +485,7 @@ void DeleteTilesCommand::Do(Executor* e)
         ts->DeleteTile(_firstTile);                     // then nuke it
     }
 
-    e->mapChanged.fire(MapEvent(e->GetMap()));
-    e->tileSetChanged.fire(0);
+    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
 }
 
 void DeleteTilesCommand::Undo(Executor* e)
@@ -504,8 +497,7 @@ void DeleteTilesCommand::Undo(Executor* e)
         ts->InsertTile(i, _savedTiles[i]);
     }
 
-    e->mapChanged.fire(MapEvent(e->GetMap()));
-    e->tileSetChanged.fire(0);
+    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
 }
 
 //-----------------------------------------------------------------------------
@@ -531,7 +523,7 @@ void ResizeTileSetCommand::Do(Executor* e)
 
     ts->New(_newWidth, _newHeight);
 
-    e->tileSetChanged.fire(0);
+    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
 }
 
 void ResizeTileSetCommand::Undo(Executor* e)
@@ -544,7 +536,7 @@ void ResizeTileSetCommand::Undo(Executor* e)
 
     _savedTiles.clear();    // free up all that memory.  We don't need it anymore anyway.
 
-    e->tileSetChanged.fire(0);
+    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
 }
 
 //-----------------------------------------------------------------------------
@@ -600,14 +592,14 @@ void PlaceZoneCommand::Do(Executor* e)
 
     e->GetMap()->GetLayer(_layerIndex)->zones.push_back(z);
     
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->zonesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 void PlaceZoneCommand::Undo(Executor* e)
 {
     e->GetMap()->GetLayer(_layerIndex)->zones.pop_back();
 
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->zonesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -623,13 +615,13 @@ void ChangeZoneCommand::Do(Executor* e)
     Map::Layer* layer = e->GetMap()->GetLayer(_layerIndex);
     _oldZone = layer->zones[_zoneIndex];
     layer->zones[_zoneIndex] = _newZone;
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->zonesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 void ChangeZoneCommand::Undo(Executor* e)
 {
     e->GetMap()->GetLayer(_layerIndex)->zones[_zoneIndex] = _oldZone;
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->zonesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 //-----------------------------------------------------------------------------
@@ -645,7 +637,7 @@ void DestroyZoneCommand::Do(Executor* e)
 
     _oldZone = layer->zones[_zoneIndex];
     layer->zones.erase(layer->zones.begin() + _zoneIndex);
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->zonesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 void DestroyZoneCommand::Undo(Executor* e)
@@ -653,7 +645,7 @@ void DestroyZoneCommand::Undo(Executor* e)
     Map::Layer* layer = e->GetMap()->GetLayer(_layerIndex);
 
     layer->zones.insert(layer->zones.begin() + _zoneIndex, _oldZone);
-    e->layerChanged.fire(MapEvent(e->GetMap(), _layerIndex));
+    e->zonesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 
 //-----------------------------------------------------------------------------

@@ -12,7 +12,7 @@ private:
     uint _entIndex;         // the index of the current entity
 
 public:
-    EntityState(MainWindow* mw);
+    EntityState(Executor* e);
 
     virtual void OnMouseDown(wxMouseEvent& event);
     virtual void OnMouseUp(wxMouseEvent& event);

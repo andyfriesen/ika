@@ -7,10 +7,13 @@
 #include "listener.h"
 #include "events.h"
 
+class wxWindow; // -_-.  Okay because we don't have to actually include wx stuff.
+
 struct Command;
 
 struct Map;
 struct TileSet;
+struct SpriteSet;
 
 struct MapView;
 struct TileSetView;
@@ -46,12 +49,16 @@ struct Executor
     virtual uint GetCurrentLayer() = 0;
     virtual void SetCurrentLayer(uint i) = 0;
 
+    virtual void SetStatusBar(const std::string& text, int field = 1) = 0;
+
     // Mustn't use these to mutate!!  Send a command!
     virtual Map* GetMap() = 0;
     virtual TileSet* GetTileSet() = 0;
+    virtual SpriteSet* GetSpriteSet(const std::string& filename) = 0;
 
     virtual MapView* GetMapView() = 0;
     virtual TileSetView* GetTileSetView() = 0;
+    virtual wxWindow* GetParentWindow() = 0;
 
     // ---------- ASSUMES THAT THE CALLER WILL CLEAN UP THE OLD TILESET ------------
     // (this is because it is not always desirable to delete the old tileset; we may
@@ -66,20 +73,28 @@ struct Executor
      * could simple subscribe to mapChanged, and be notified when any change at all occurs.
      * Other controls could subscribe to more specific events.
      */
+
+    Listener<const MapEvent&>  tilesSet;
+    Listener<const MapEvent&>  obsSet;
+    Listener<const MapEvent&>  zonesChanged;
+
+    Listener<const MapEvent&>  layerCreated;            // arg is the index of the new layer
+    Listener<const MapEvent&>  layerDestroyed;          // arg is the index of the layer that was destroyed
+    Listener<const MapEvent&>  layersReordered;
+    Listener<const MapEvent&>  layerPropertiesChanged;  // arg is the layer index
+    Listener<const MapEvent&>  layerResized;            // ditto
+
+    Listener<const MapEvent&>  entitiesChanged;
+    Listener<const MapEvent&>  mapPropertiesChanged;
+
+    Listener<const TileSetEvent&>  tilesImported;
+    Listener<const TileSetEvent&>  tileSetChanged;
+
+    Listener<const MapTileSetEvent&> mapLoaded;
     
-    // Map events
-    Listener<const MapEvent&>  mapChanged;             // Global map properties have changed. (the argument is a dummy)
-    Listener<const MapEvent&>  layerChanged;           // The contents of a layer has changed.
-    Listener<const MapEvent&>  mapLayersChanged;       // The layer list has changed in some way. (rename, remove, clone, etc)
-    Listener<const MapEvent&>  mapVisibilityChanged;   // A layer has been hidden, or unhidden, or something.
-    Listener<const MapEvent&>  curLayerChanged;        // The current layer has changed.
-
-    // Tileset events
-    Listener<uint>  tileSetChanged;
-    Listener<uint>  curTileChanged;
-
-    // Other events
-    Listener<Executor*> scriptsChanged;
+    Listener<const MapEvent&>  mapVisibilityChanged;    // A layer has been hidden, or unhidden, or something.
+    Listener<uint>             curLayerChanged;         // The current layer has changed.
+    Listener<uint>             curTileChanged;
 };
 
 #endif

@@ -8,8 +8,8 @@
 
 #include "zoneeditstate.h"
 
-ZoneEditState::ZoneEditState(MainWindow* mw)
-    : EditState(mw)
+ZoneEditState::ZoneEditState(Executor* e)
+    : EditState(e)
     , _curZoneIndex(-1)
     , _dragging(false)
 {}
@@ -29,7 +29,7 @@ void ZoneEditState::OnMouseDown(wxMouseEvent& event)
     else if (event.LeftDClick() && zoneIndex != -1)
     {
         _curZoneIndex = zoneIndex;
-        ZonePropertiesDlg dlg(GetMainWindow(), GetCurLayerIndex(), _curZoneIndex);
+        ZonePropertiesDlg dlg(GetExecutor(), GetCurLayerIndex(), _curZoneIndex);
         
         // Show the zone properties dialog
         int result = dlg.ShowModal();

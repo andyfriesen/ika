@@ -13,7 +13,7 @@
 #include "zoneeditstate.h"
 #include "scriptstate.h"
 
-struct MainWindow;
+struct Executor;
 struct SpriteSet;
 struct Script;
 
@@ -28,30 +28,7 @@ struct MapEvent;
  */
 struct MapView : public wxPanel
 {
-private:
-    MainWindow* _mainWnd;
-    VideoFrame* _video;
-
-    int _xwin, _ywin;
-    uint _curLayer;
-
-    // used for middlemouse-button scrolling.
-    int _scrollX, _scrollY;
-
-    // The current state
-    EditState* _editState;
-
-    // Instances of the various edit states.  We only ever create one of each.
-    TileSetState _tileSetState;
-    CopyPasteState _copyPasteState;
-    ObstructionState _obstructionState;
-    EntityState _entityState;
-    ZoneEditState _zoneEditState;
-    ScriptState _scriptState;
-    //-
-
-public:
-    MapView(MainWindow* mw, wxWindow* parent);
+    MapView(Executor* executor, wxWindow* parent);
     ~MapView();
 
     void OnPaint(wxPaintEvent& event);
@@ -67,6 +44,7 @@ public:
     void OnKeyPress(wxKeyEvent& event);
 
     void OnMapChange(const MapEvent& event);
+    void OnCurLayerChange(uint index);
 
     void Render();
     void ShowPage();
@@ -103,8 +81,6 @@ public:
     void TileToMap(int& x, int& y) const;
     void TileToMap(int& x, int& y, uint layer) const;
 
-    uint GetCurLayer() const { return _curLayer; }
-    void SetCurLayer(uint i);
     int  GetXWin() const { return _xwin; }
     int  GetYWin() const { return _ywin; }
 
@@ -140,6 +116,28 @@ public:
     void SetScriptTool(Script* script);
 
     DECLARE_EVENT_TABLE()
+
+private:
+    // It'd be great if we could eradicate the need for this.
+    Executor*   _executor;
+    VideoFrame* _video;
+
+    int _xwin, _ywin;
+
+    // used for middlemouse-button scrolling.
+    int _scrollX, _scrollY;
+
+    // The current state
+    EditState* _editState;
+
+    // Instances of the various edit states.  We only ever create one of each.
+    TileSetState _tileSetState;
+    CopyPasteState _copyPasteState;
+    ObstructionState _obstructionState;
+    EntityState _entityState;
+    ZoneEditState _zoneEditState;
+    ScriptState _scriptState;
+    //-
 };
 
 #endif

@@ -312,13 +312,13 @@
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe">
 			<File
+				RelativePath=".\blank.ico">
+			</File>
+			<File
 				RelativePath="brush.bmp">
 			</File>
 			<File
 				RelativePath="brush.ico">
-			</File>
-			<File
-				RelativePath="brush_selected.ico">
 			</File>
 			<File
 				RelativePath="colours.bmp">
@@ -333,16 +333,10 @@
 				RelativePath="entity.ico">
 			</File>
 			<File
-				RelativePath="entity_selected.ico">
-			</File>
-			<File
 				RelativePath="eraser.ico">
 			</File>
 			<File
 				RelativePath="fill.ico">
-			</File>
-			<File
-				RelativePath="fill_selected.ico">
 			</File>
 			<File
 				RelativePath="ikamap.ico">
@@ -351,25 +345,16 @@
 				RelativePath="ikamap.rc">
 			</File>
 			<File
-				RelativePath="iked.ico">
-			</File>
-			<File
 				RelativePath="new.ico">
 			</File>
 			<File
 				RelativePath="obstruction.ico">
 			</File>
 			<File
-				RelativePath="obstruction_selected.ico">
-			</File>
-			<File
 				RelativePath="py.ico">
 			</File>
 			<File
 				RelativePath="select.ico">
-			</File>
-			<File
-				RelativePath="select_selected.ico">
 			</File>
 			<File
 				RelativePath="trash.ico">
@@ -381,13 +366,7 @@
 				RelativePath="waypoint.ico">
 			</File>
 			<File
-				RelativePath="waypoint_selected.ico">
-			</File>
-			<File
 				RelativePath="zone.ico">
-			</File>
-			<File
-				RelativePath="zone_selected.ico">
 			</File>
 			<File
 				RelativePath="zoom.ico">
@@ -455,12 +434,6 @@
 			</File>
 			<File
 				RelativePath="..\common\matrix.h">
-			</File>
-			<File
-				RelativePath="..\common\mem.cpp">
-			</File>
-			<File
-				RelativePath="..\common\mem.h">
 			</File>
 			<File
 				RelativePath="..\common\misc.cpp">

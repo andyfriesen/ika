@@ -1,36 +1,34 @@
 #include "editstate.h"
-#include "mainwindow.h"
+#include "executor.h"
 #include "mapview.h"
 #include "tilesetview.h"
 #include "map.h"
 #include "tileset.h"
 #include "command.h"
 
-EditState::EditState(MainWindow* mw)
-    : _mainWindow(mw)
+EditState::EditState(Executor* e)
+    : _executor(e)
 {
 }
 
-MainWindow* EditState::GetMainWindow() const { return _mainWindow; }
-MapView* EditState::GetMapView() const { return _mainWindow->GetMapView(); }
-TileSetView* EditState::GetTileSetView() const { return _mainWindow->GetTileSetView(); }
-Map* EditState::GetMap() const { return _mainWindow->GetMap(); }
-Map::Layer* EditState::GetCurLayer() const
+Executor*    EditState::GetExecutor()       const { return _executor; }
+MapView*     EditState::GetMapView()        const { return _executor->GetMapView(); }
+TileSetView* EditState::GetTileSetView()    const { return _executor->GetTileSetView(); }
+Map*         EditState::GetMap()            const { return _executor->GetMap(); }
+
+Map::Layer*  EditState::GetCurLayer() const
 { 
-    if (_mainWindow->GetMap()->NumLayers() == 0)
+    if (_executor->GetMap()->NumLayers() == 0)
         return 0;
     else
-        return _mainWindow->GetMap()->GetLayer(_mainWindow->GetMapView()->GetCurLayer());
+        return _executor->GetMap()->GetLayer(_executor->GetCurrentLayer());
 }
 
-uint EditState::GetCurLayerIndex() const
-{
-    return _mainWindow->GetMapView()->GetCurLayer();
-}
-
-TileSet* EditState::GetTileSet() const { return _mainWindow->GetTileSet(); }
+uint      EditState::GetCurLayerIndex()     const { return _executor->GetCurrentLayer(); }
+TileSet*  EditState::GetTileSet()           const { return _executor->GetTileSet(); }
+wxWindow* EditState::GetParentWindow()      const { return _executor->GetParentWindow(); }
 
 void EditState::HandleCommand(::Command* cmd)
 {
-    _mainWindow->HandleCommand(cmd);
+    _executor->HandleCommand(cmd);
 }

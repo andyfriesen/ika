@@ -9,7 +9,7 @@ class ObstructionState : public EditState
     int _oldX;
     int _oldY;
 public:
-    ObstructionState(MainWindow* mw);
+    ObstructionState(Executor* e);
 
     virtual void OnMouseDown(wxMouseEvent& event);
     virtual void OnMouseUp(wxMouseEvent& event);

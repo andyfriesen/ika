@@ -47,12 +47,12 @@ namespace ScriptObject
         //SET(XWin)   
         GET(YWin)           {   return PyInt_FromLong(self->mainWnd->GetMapView()->GetYWin());  }
         //SET(YWin)
-        GET(CurLayer)   {   return PyInt_FromLong(self->mainWnd->GetMapView()->GetCurLayer());          }
-        SET(CurLayer)   {   self->mainWnd->GetMapView()->SetCurLayer(PyInt_AsLong(value));  return 0;   }
-        GET(CurTile)    {   return PyInt_FromLong(self->mainWnd->GetTileSetView()->GetCurTile());       }
+        GET(CurLayer)   {   return PyInt_FromLong(self->mainWnd->GetCurrentLayer());          }
+        SET(CurLayer)   {   self->mainWnd->SetCurrentLayer(PyInt_AsLong(value));  return 0;   }
+        GET(CurTile)    {   return PyInt_FromLong(self->mainWnd->GetCurrentTile());       }
         SET(CurTile)
         {   
-            self->mainWnd->GetTileSetView()->SetCurTile(PyInt_AsLong(value));   
+            self->mainWnd->SetCurrentTile(PyInt_AsLong(value));   
             return 0;
         }
         
@@ -112,7 +112,7 @@ namespace ScriptObject
                 return 0;
 
             if (layer >= self->mainWnd->GetMap()->NumLayers()) 
-                layer = self->mainWnd->GetMapView()->GetCurLayer();
+                layer = self->mainWnd->GetCurrentLayer();
 
             self->mainWnd->GetMapView()->MapToTile(x, y, layer);
 
@@ -128,7 +128,7 @@ namespace ScriptObject
                 return 0;
 
             if (layer >= self->mainWnd->GetMap()->NumLayers()) 
-                layer = self->mainWnd->GetMapView()->GetCurLayer();
+                layer = self->mainWnd->GetCurrentLayer();
 
             self->mainWnd->GetMapView()->TileToMap(x, y, layer);
 

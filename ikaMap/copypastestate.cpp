@@ -5,8 +5,8 @@
 #include "map.h"
 #include "tileset.h"
 
-CopyPasteState::CopyPasteState(MainWindow* mw)
-    : EditState(mw)
+CopyPasteState::CopyPasteState(Executor* e)
+    : EditState(e)
     , _dragging(false)
     , _selX(0)
     , _selY(0)

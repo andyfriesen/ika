@@ -110,8 +110,6 @@ struct MainWindow : public wxFrame, Executor
 
     void LoadMap(const std::string& fileName);
 
-    SpriteSet* GetSprite(const std::string& fileName);
-
     // Executor:
     virtual void HandleCommand(::Command* cmd);
     virtual bool IsLayerVisible(uint index);
@@ -123,11 +121,15 @@ struct MainWindow : public wxFrame, Executor
     virtual uint GetCurrentLayer();
     virtual void SetCurrentLayer(uint i);
 
+    virtual void SetStatusBar(const std::string& text, int field);
+
     virtual Map* GetMap();
     virtual TileSet* GetTileSet();
+    virtual SpriteSet* GetSpriteSet(const std::string& fileName);
 
     virtual MapView* GetMapView();
     virtual TileSetView* GetTileSetView();
+    virtual wxWindow* GetParentWindow();
 
     virtual void SwitchTileSet(TileSet* ts);
 

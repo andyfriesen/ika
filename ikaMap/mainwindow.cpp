@@ -166,6 +166,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _map(0)
     , _tileSet(0)
     , _curScript(0)
+    , _curLayer(0)
+    , _curTile(0)
     , _changed(false)
     , _layerVisibility(20)
 {
@@ -231,9 +233,9 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
     _layerList = new LayerList(this, sidePanel);
     sizer->Add(_layerList, 1, wxEXPAND);
-    //sizer->Add(_layerList = new wxCheckListBox(sidePanel, id_layerlist), 1, wxEXPAND);
     sidePanel->SetSizer(sizer);
 
+    // GAY.  TODO: make things floatable, so this can vanish.
     _topBar = new wxSashLayoutWindow(this, id_topbar);
 #ifdef VERTICAL_FUN
     _topBar->SetAlignment(wxLAYOUT_LEFT);
@@ -262,55 +264,95 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     _tileSet = new TileSet;
     _tileSet->New(16, 16);
 
-    mapChanged.add(_mapView, MapView::OnMapChange);
-    layerChanged.add(_mapView, MapView::OnMapChange);
-    mapLayersChanged.add(_mapView, MapView::OnMapChange);
-    mapVisibilityChanged.add(_mapView, MapView::OnMapChange);
-    curLayerChanged.add(_mapView, MapView::OnMapChange);
+    /*
+     * Time to bind components to events:
+     * Basically, we're just hooking render/refresh methods up
+     * to everything. :P
+     * The event granularity is mainly so that actions that alter
+     * more than one thing fire exactly one event.
+     */
+    {
+        tilesSet.add            (_mapView, MapView::OnMapChange);
+        obsSet.add              (_mapView, MapView::OnMapChange);
+        zonesChanged.add        (_mapView, MapView::OnMapChange);
 
-    mapLayersChanged.add(_layerList, LayerList::OnMapChange);
+        layerCreated.add        (_mapView, MapView::OnMapChange);
+        layerCreated.add        (_layerList, LayerList::OnMapLayersChanged);
+        
+        layerDestroyed.add      (_mapView, MapView::OnMapChange);
+        layerDestroyed.add      (_layerList, LayerList::OnMapLayersChanged);
 
-    wxMenu* fileMenu = new wxMenu;
-    fileMenu->Append(id_filenew, "&New Map\tCtrl-N", "Open a fresh, blank map.");
-    fileMenu->Append(id_fileopen, "&Open Map\tCtrl-O", "Open an existing map.");
-    fileMenu->Append(id_filesave, "&Save\tCtrl-S", "Save the current map and tileset to disk.");
-    fileMenu->Append(id_filesavemapas, "Save Map &As...", "Save the current map under a new filename.");
-    fileMenu->AppendSeparator();
-    fileMenu->Append(id_fileloadtileset, "&Load Tileset...", "Replace the map's tileset with a different, pre-existing tileset.");
-    fileMenu->Append(id_filesavetilesetas, "Save &Tileset As...", "Save the current tileset under a new name.");
-    fileMenu->AppendSeparator();
-    fileMenu->Append(id_fileexit, "E&xit\tCtrl-Alt-Del", "Quit ikaMap");
+        layersReordered.add     (_mapView, MapView::OnMapChange);
+        layersReordered.add     (_layerList, LayerList::OnMapLayersChanged);
 
-    wxMenu* editMenu = new wxMenu;
-    editMenu->Append(id_editundo, "&Undo\tCtrl-Z", "Undo the last action.");
-    editMenu->Append(id_editredo, "&Redo\tCtrl-Y", "Redo the last undone action.");
-    editMenu->AppendSeparator();
-    editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
-    editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
-    editMenu->Append(id_edittileanim, "Edit Tile &Animations...", "");
-    editMenu->AppendSeparator();
-    editMenu->Append(id_clonelayer, "Clone Layer", "Create a copy of the current layer.");
+        layerPropertiesChanged.add(_mapView, MapView::OnMapChange);
+        layerPropertiesChanged.add(_layerList, LayerList::OnMapLayersChanged);
 
-    wxMenu* viewMenu = new wxMenu;
-    viewMenu->Append(id_zoommapin, "Zoom Map In\t+");
-    viewMenu->Append(id_zoommapout, "Zoom Map Out\t-");
-    viewMenu->Append(id_zoommapnormal, "Zoom Map to 100%\t=", "Stop zooming the map.");
-    viewMenu->AppendSeparator();
-    viewMenu->Append(id_zoomtilesetin, "Zoom Tileset In\tNumpad 8");
-    viewMenu->Append(id_zoomtilesetout, "Zoom Tileset Out\tNumpad 2");
-    viewMenu->Append(id_zoomtilesetnormal, "Zoom Tileset to 100%\tNumpad 5", "Stop zooming on the tileset.");
+        layerResized.add        (_mapView, MapView::OnMapChange);
 
-    wxMenu* toolMenu = new wxMenu;
-    toolMenu->Append(id_configurescripts, "Configure Plugin &Scripts...", "Load and unload Python scripts");
-    wxMenu* scriptMenu = new wxMenu;
-    toolMenu->Append(id_scriptlist, "Scripts", scriptMenu);    // we fill this submenu later
+        entitiesChanged.add     (_mapView, MapView::OnMapChange);
+        mapPropertiesChanged.add(_mapView, MapView::OnMapChange);
 
-    wxMenuBar* menuBar = new wxMenuBar;
-    menuBar->Append(fileMenu, "&File");
-    menuBar->Append(editMenu, "&Edit");
-    menuBar->Append(viewMenu, "&View");
-    menuBar->Append(toolMenu, "&Tools");
-    SetMenuBar(menuBar);
+        tilesImported.add       (_tileSetView, TileSetView::OnTileSetChange);
+        tileSetChanged.add      (_tileSetView, TileSetView::OnTileSetChange);
+
+        mapLoaded.add           (bind(_mapView, MapView::OnMapChange));
+        mapLoaded.add           (bind(_tileSetView, TileSetView::OnTileSetChange));
+        mapLoaded.add           (bind(_layerList, LayerList::OnMapLayersChanged));
+
+        mapVisibilityChanged.add(_mapView, MapView::OnMapChange);
+        mapVisibilityChanged.add(_layerList, LayerList::OnVisibilityChanged);
+
+        curLayerChanged.add     (_mapView, MapView::OnCurLayerChange);
+        curLayerChanged.add     (_layerList, LayerList::OnLayerActivated);
+
+        curTileChanged.add      (_tileSetView, TileSetView::OnCurrentTileChange);
+    }
+
+    // Create the menu.
+    {
+        wxMenu* fileMenu = new wxMenu;
+        fileMenu->Append(id_filenew, "&New Map\tCtrl-N", "Open a fresh, blank map.");
+        fileMenu->Append(id_fileopen, "&Open Map\tCtrl-O", "Open an existing map.");
+        fileMenu->Append(id_filesave, "&Save\tCtrl-S", "Save the current map and tileset to disk.");
+        fileMenu->Append(id_filesavemapas, "Save Map &As...", "Save the current map under a new filename.");
+        fileMenu->AppendSeparator();
+        fileMenu->Append(id_fileloadtileset, "&Load Tileset...", "Replace the map's tileset with a different, pre-existing tileset.");
+        fileMenu->Append(id_filesavetilesetas, "Save &Tileset As...", "Save the current tileset under a new name.");
+        fileMenu->AppendSeparator();
+        fileMenu->Append(id_fileexit, "E&xit\tCtrl-Alt-Del", "Quit ikaMap");
+
+        wxMenu* editMenu = new wxMenu;
+        editMenu->Append(id_editundo, "&Undo\tCtrl-Z", "Undo the last action.");
+        editMenu->Append(id_editredo, "&Redo\tCtrl-Y", "Redo the last undone action.");
+        editMenu->AppendSeparator();
+        editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
+        editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
+        editMenu->Append(id_edittileanim, "Edit Tile &Animations...", "");
+        editMenu->AppendSeparator();
+        editMenu->Append(id_clonelayer, "Clone Layer", "Create a copy of the current layer.");
+
+        wxMenu* viewMenu = new wxMenu;
+        viewMenu->Append(id_zoommapin, "Zoom Map In\t+");
+        viewMenu->Append(id_zoommapout, "Zoom Map Out\t-");
+        viewMenu->Append(id_zoommapnormal, "Zoom Map to 100%\t=", "Stop zooming the map.");
+        viewMenu->AppendSeparator();
+        viewMenu->Append(id_zoomtilesetin, "Zoom Tileset In\tNumpad 8");
+        viewMenu->Append(id_zoomtilesetout, "Zoom Tileset Out\tNumpad 2");
+        viewMenu->Append(id_zoomtilesetnormal, "Zoom Tileset to 100%\tNumpad 5", "Stop zooming on the tileset.");
+
+        wxMenu* toolMenu = new wxMenu;
+        toolMenu->Append(id_configurescripts, "Configure Plugin &Scripts...", "Load and unload Python scripts");
+        wxMenu* scriptMenu = new wxMenu;
+        toolMenu->Append(id_scriptlist, "Scripts", scriptMenu);    // we fill this submenu later
+
+        wxMenuBar* menuBar = new wxMenuBar;
+        menuBar->Append(fileMenu, "&File");
+        menuBar->Append(editMenu, "&Edit");
+        menuBar->Append(viewMenu, "&View");
+        menuBar->Append(toolMenu, "&Tools");
+        SetMenuBar(menuBar);
+    }
 
     // Set up hotkey stuff.
     const int tableSize = 15;
@@ -673,7 +715,7 @@ void MainWindow::OnCloneLayer(wxCommandEvent&)
     if (!_map->NumLayers())
         return;
 
-    uint curLayer = _mapView->GetCurLayer();
+    uint curLayer = GetCurrentLayer();
     wxASSERT(curLayer < _map->NumLayers());
 
     HandleCommand(new CloneLayerCommand(curLayer));
@@ -682,7 +724,7 @@ void MainWindow::OnCloneLayer(wxCommandEvent&)
 void MainWindow::OnChangeCurrentLayer(wxCommandEvent& event)
 {
     wxASSERT(_map != 0 && (uint)event.GetInt() < _map->NumLayers());
-    _mapView->SetCurLayer(event.GetInt());
+    SetCurrentLayer(event.GetInt());
     //_layerList->Check(event.GetInt());
 
     _mapView->Render();
@@ -698,7 +740,7 @@ void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
     if (result == wxID_OK)
     {
         HandleCommand(new ChangeLayerPropertiesCommand(
-            _map->GetLayer(_mapView->GetCurLayer()),
+            _map->GetLayer(GetCurrentLayer()),
             dlg.label,
             dlg.wrapx,
             dlg.wrapy,
@@ -822,16 +864,16 @@ void MainWindow::OnNewLayer(wxCommandEvent&)
 
 void MainWindow::OnDestroyLayer(wxCommandEvent&)
 {
-    if (_mapView->GetCurLayer() < _map->NumLayers())
-        HandleCommand(new DestroyLayerCommand(_mapView->GetCurLayer()));
+    if (GetCurrentLayer() < _map->NumLayers())
+        HandleCommand(new DestroyLayerCommand(GetCurrentLayer()));
 
-    if (_mapView->GetCurLayer() >= _map->NumLayers())
-        _mapView->SetCurLayer(_map->NumLayers() - 1);
+    if (GetCurrentLayer() >= _map->NumLayers())
+        SetCurrentLayer(_map->NumLayers() - 1);
 }
 
 void MainWindow::OnMoveLayerUp(wxCommandEvent&)
 {
-    uint curLay = _mapView->GetCurLayer();
+    uint curLay = GetCurrentLayer();
 
     if (curLay != 0 && curLay < _map->NumLayers())
         HandleCommand(new SwapLayerCommand(curLay, curLay - 1));
@@ -839,7 +881,7 @@ void MainWindow::OnMoveLayerUp(wxCommandEvent&)
 
 void MainWindow::OnMoveLayerDown(wxCommandEvent&)
 {
-    const uint curLay = _mapView->GetCurLayer();
+    const uint curLay = GetCurrentLayer();
 
     if (curLay < _map->NumLayers() - 1)
         HandleCommand(new SwapLayerCommand(curLay, curLay + 1));
@@ -986,33 +1028,15 @@ void MainWindow::LoadMap(const std::string& fileName)
 
     // Not firing events here because several components listen to more than one
     // event.  This would cause things to redraw themselves more than is sane.
-    _mapView->UpdateScrollBars();
+    /*_mapView->UpdateScrollBars();
     _tileSetView->UpdateScrollBars();
     _mapView->Refresh();
     _tileSetView->Refresh();
-    _layerList->Update(_map);
+    _layerList->Update(_map);*/
+    mapLoaded.fire(MapTileSetEvent(_map, _tileSet));
 
     _changed = false;
     UpdateTitle();
-}
-
-SpriteSet* MainWindow::GetSprite(const std::string& fileName)
-{
-    if (_sprites.count(fileName))
-        return _sprites[fileName];
-    else
-    {
-        SpriteSet* ss = new SpriteSet();
-        bool result = ss->Load(fileName);
-
-        if (!result)
-        {
-            delete ss;
-            ss = 0; // put this away in the cache, so that we know that we tried to load it.
-        }
-        _sprites[fileName] = ss;
-        return ss;
-    }
 }
 
 std::vector<Script*>& MainWindow::GetScripts()
@@ -1069,11 +1093,35 @@ void MainWindow::SetCurrentLayer(uint i)
     wxASSERT(i < _map->NumLayers());
 
     _curLayer = i;
-    curLayerChanged.fire(MapEvent(_map, i));
+    curLayerChanged.fire(i);
+}
+
+void MainWindow::SetStatusBar(const std::string& text, int field)
+{
+    GetStatusBar()->SetStatusText(text.c_str(), field);
 }
 
 Map* MainWindow::GetMap()         { return _map; }
 TileSet* MainWindow::GetTileSet() { return _tileSet; }
+
+SpriteSet* MainWindow::GetSpriteSet(const std::string& fileName)
+{
+    if (_sprites.count(fileName))
+        return _sprites[fileName];
+    else
+    {
+        SpriteSet* ss = new SpriteSet();
+        bool result = ss->Load(fileName);
+
+        if (!result)
+        {
+            delete ss;
+            ss = 0; // put this away in the cache, so that we know that we tried to load it.
+        }
+        _sprites[fileName] = ss;
+        return ss;
+    }
+}
 
 MapView* MainWindow::GetMapView()
 {
@@ -1085,9 +1133,13 @@ TileSetView* MainWindow::GetTileSetView()
     return _tileSetView;
 }
 
+wxWindow* MainWindow::GetParentWindow()
+{
+    return this;
+}
+
 void MainWindow::SwitchTileSet(TileSet* ts)
 {
     _tileSet = ts;
-    layerChanged.fire(MapEvent(_map));
-    tileSetChanged.fire(0);
+    tileSetChanged.fire(MapTileSetEvent(_map, _tileSet));
 }

@@ -8,7 +8,7 @@
 struct TileSetState : EditState
 {
 public:
-    TileSetState(MainWindow* mw);
+    TileSetState(Executor* e);
 
     virtual void OnMouseDown(wxMouseEvent& event);
     virtual void OnMouseUp(wxMouseEvent& event);

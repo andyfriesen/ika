@@ -1,6 +1,6 @@
 
 #include "entitystate.h"
-#include "mainwindow.h"
+#include "executor.h"
 #include "mapview.h"
 #include "spriteset.h"
 #include "chr.h"
@@ -8,8 +8,8 @@
 #include "entitydlg.h"
 #include "command.h"
 
-EntityState::EntityState(MainWindow* mw)
-    : EditState(mw)
+EntityState::EntityState(Executor* e)
+    : EditState(e)
     , _entLayerIndex(0)
     , _entIndex(-1)
 {}
@@ -32,7 +32,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
         if (event.ButtonDClick())
         {
 
-            EntityDlg dlg(GetMainWindow(), _entLayerIndex, _entIndex);
+            EntityDlg dlg(GetExecutor(), _entLayerIndex, _entIndex);
             int result = dlg.ShowModal();
 
             if (result == wxID_OK)
@@ -43,7 +43,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
     }
     else if (event.LeftDown() && event.ShiftDown())
     {
-        if (wxMessageBox("Create a new entity here?", "", wxYES_NO, GetMainWindow()) == wxYES)
+        if (wxMessageBox("Create a new entity here?", "", wxYES_NO, GetParentWindow()) == wxYES)
         {
             HandleCommand(new CreateEntityCommand(GetCurLayerIndex(), x, y));
         }
@@ -71,7 +71,7 @@ void EntityState::OnKeyPress(wxKeyEvent& event)
 {
     if (event.GetKeyCode() == WXK_DELETE && _entIndex != -1)
     {
-        int result = ::wxMessageBox("Are you sure you want to destroy this entity?", "KILL", wxYES_NO | wxCENTER, GetMainWindow());
+        int result = ::wxMessageBox("Are you sure you want to destroy this entity?", "KILL", wxYES_NO | wxCENTER, GetParentWindow());
         if (result == wxYES)
         {
             HandleCommand(new DestroyEntityCommand(_entLayerIndex, _entIndex));
@@ -100,7 +100,7 @@ void EntityState::OnRenderCurrentLayer()
         int width = 16;
         int height = 16;
 
-        ss = GetMainWindow()->GetSprite(iter->spriteName);
+        ss = GetExecutor()->GetSpriteSet(iter->spriteName);
 
         if (ss != 0)
         {

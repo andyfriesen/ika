@@ -6,11 +6,11 @@
 
 #include "map.h"
 
-struct MainWindow;
+struct Executor;
 
 struct EntityDlg : public wxDialog
 {
-    MainWindow* _mainWnd;
+    Executor* _executor;
     uint _layer;
     uint _index;
 
@@ -24,7 +24,7 @@ private:
     }
 
 public:
-    EntityDlg(MainWindow* mw, uint layer, uint index);
+    EntityDlg(Executor* e, uint layer, uint index);
 
     void UpdateData();
     void UpdateDlg();

@@ -5,13 +5,13 @@
 #include "wx/wx.h"
 #include "types.h"
 
-struct MainWindow;
+struct Executor;
 struct Map;
 
 struct ZonePropertiesDlg : public wxDialog
 {
 private:
-    MainWindow* _mainWnd;
+    Executor*   _executor;
     uint        _layerIndex;
     uint        _zoneIndex;
 
@@ -37,7 +37,7 @@ private:
     void OnOk(wxCommandEvent&);
 
 public:
-    ZonePropertiesDlg(MainWindow* mainWnd, uint layerIndex, uint zoneIndex);
+    ZonePropertiesDlg(Executor* e, uint layerIndex, uint zoneIndex);
 
     DECLARE_EVENT_TABLE()
 };

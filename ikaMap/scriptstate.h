@@ -16,7 +16,7 @@ private:
     Script* _script;
 
 public:
-    ScriptState(MainWindow* mainWnd);
+    ScriptState(Executor* e);
 
     void SetScript(Script* script);
     

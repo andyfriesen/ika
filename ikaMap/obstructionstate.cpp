@@ -5,8 +5,8 @@
 #include "mapview.h"
 #include "command.h"
 
-ObstructionState::ObstructionState(MainWindow* mw)
-    : EditState(mw)
+ObstructionState::ObstructionState(Executor* e)
+    : EditState(e)
     , _oldX(-1)
     , _oldY(-1)
 {}

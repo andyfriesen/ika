@@ -5,20 +5,20 @@
 #include "wxinc.h"
 #include "video.h"
 
-struct MainWindow;
+struct Executor;
 struct TileSet;
+struct TileSetEvent;
+struct MapTileSetEvent;
 
 struct TileSetView : VideoFrame
 {
 private:
-    MainWindow* _mainWnd;
+    Executor* _executor;
     int  _ywin;  // scroll position, in pixels.
     bool _pad;
 
-    uint  _curTile;  // The current tile.
-
 public:
-    TileSetView(MainWindow* mw, wxWindow* parent);
+    TileSetView(Executor* e, wxWindow* parent);
     ~TileSetView();
 
     void OnSize(wxSizeEvent& event);
@@ -28,10 +28,10 @@ public:
 
     void Render();
 
-    uint GetCurTile() const;
-    void SetCurTile(uint t);
-
     void UpdateScrollBars();
+
+    void OnTileSetChange(const TileSetEvent& event);
+    void OnCurrentTileChange(uint newTile);
 
     uint PointToTile(int x, int y) const;   // returns the tile under coordinates (x,y)
     void TileToPoint(uint index, int& x, int& y) const;   // returns the position of the tile in (x,y)

@@ -1,5 +1,5 @@
 #include "entitydlg.h"
-#include "mainwindow.h"
+#include "executor.h"
 #include "misc.h"
 #include "command.h"
 
@@ -10,18 +10,18 @@ BEGIN_EVENT_TABLE(EntityDlg, wxDialog)
     EVT_BUTTON(XRCID("button_delete"), EntityDlg::OnDelete)
 END_EVENT_TABLE()
 
-EntityDlg::EntityDlg(MainWindow* mw, uint layer, uint index)
-    : _mainWnd(mw)
+EntityDlg::EntityDlg(Executor* e, uint layer, uint index)
+    : _executor(e)
     , _layer(layer)
     , _index(index)
 {
-    wxXmlResource::Get()->LoadDialog(this, mw, wxT("dialog_entity"));
+    wxXmlResource::Get()->LoadDialog(this, e->GetParentWindow(), wxT("dialog_entity"));
     
     wxSizer* s = get<wxPanel>("panel_main")->GetSizer();
     wxASSERT(s);
     s->Fit(this);
 
-    Map* map = mw->GetMap();
+    Map* map = e->GetMap();
 
     newData = map->GetLayer(layer)->entities[index];
 
@@ -68,7 +68,7 @@ void EntityDlg::OnDelete(wxCommandEvent& event)
 {
     if (wxMessageBox("Are you sure you want to destroy this entity?", "DESTRUCTOMATIC CONFIRMATION CODE REQUIRED", wxYES_NO, this))
     {
-        _mainWnd->HandleCommand(new DestroyEntityCommand(_layer, _index));
+        _executor->HandleCommand(new DestroyEntityCommand(_layer, _index));
         EndModal(wxID_CANCEL);
     }
 }
