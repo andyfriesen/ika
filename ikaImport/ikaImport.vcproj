@@ -235,6 +235,9 @@
 					RelativePath="..\common\pixel_matrix_blitter.h">
 				</File>
 				<File
+					RelativePath="..\common\types.h">
+				</File>
+				<File
 					RelativePath="..\common\vergepal.h">
 				</File>
 				<File

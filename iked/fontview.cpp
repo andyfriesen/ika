@@ -1,4 +1,6 @@
 
+#include <wx/event.h>
+
 #include "fontview.h"
 #include "main.h"
 

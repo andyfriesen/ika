@@ -63,12 +63,6 @@ void SynchTexture(handle img)
 
 void RenderTexture(handle img,int x,int y,bool transparent)
 {
-    if (img->nWidth==32 && img->nHeight==32)
-    {
-        int a=5;
-        a++;
-    }
-
     // texX/1 = width/img->width
     GLfloat nTexendx=1.0f*img->nWidth/img->nTexwidth;
     GLfloat nTexendy=1.0f*img->nHeight/img->nTexheight;

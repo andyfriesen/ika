@@ -3,7 +3,19 @@ Microsoft Developer Studio Workspace File, Format Version 6.00
 
 ###############################################################################
 
-Project: "gfx_opengl"=.\gfx_opengl\gfx_opengl.dsp - Package Owner=<4>
+Project: "WinMapEd1"=.\winmaped\WinMapEd1.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
+Project: "gfx_opengl1"=.\gfx_opengl\gfx_opengl1.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -51,7 +63,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "iked"=.\iked\iked.dsp - Package Owner=<4>
+Project: "iked1"=.\iked\iked1.dsp - Package Owner=<4>
 
 Package=<5>
 {{{
@@ -63,19 +75,7 @@ Package=<4>
 
 ###############################################################################
 
-Project: "sfx_mikmod"=.\sfx_mikmod\sfx_mikmod.dsp - Package Owner=<4>
-
-Package=<5>
-{{{
-}}}
-
-Package=<4>
-{{{
-}}}
-
-###############################################################################
-
-Project: "winmaped"=.\WinMapEd\WinMapEd.dsp - Package Owner=<4>
+Project: "sfx_mikmod1"=.\sfx_mikmod\sfx_mikmod1.dsp - Package Owner=<4>
 
 Package=<5>
 {{{

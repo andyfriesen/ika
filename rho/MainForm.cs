@@ -2,9 +2,10 @@
 using System;
 using System.Windows.Forms;
 
+using Import.ika;
+
 namespace rho
 {
-
     class MainForm : Form
     {
         public TileSetController tilesets=new TileSetController();
@@ -23,6 +24,7 @@ namespace rho
                                     new MenuItem("&New",new MenuItem[]
                                     {
                                         new MenuItem("&Map",new EventHandler(NewMap)),
+                                        new MenuItem("&Script",new EventHandler(NewScript)),
                                 }),
                                     new MenuItem("&Open",new MenuItem[]
                                     {
@@ -55,6 +57,13 @@ namespace rho
             MapView mapview=new MapView(this);
             mapview.MdiParent=this;
             mapview.Show();
+        }
+
+        void NewScript(object o,EventArgs e)
+        {
+            CodeView codeview=new CodeView(this,new PythonHighlightStyle());
+            codeview.MdiParent=this;
+            codeview.Show();
         }
 
         void OpenMap(object o,EventArgs e)

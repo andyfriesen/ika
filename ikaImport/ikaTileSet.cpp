@@ -54,14 +54,21 @@ namespace Import
 
             CPixelMatrix& tile=vsp->GetTile(idx);
 
-            u32* src= (u32*)bd->Scan0.ToPointer();
-            u32* dest=(u32*)tile.GetPixelData();
+            BGRA* src= (BGRA*)bd->Scan0.ToPointer();
+            RGBA* dest=(RGBA*)tile.GetPixelData();
 
-            // Then copy the bitmap into the pixel matrix.
+            // Then copy the bitmap into the pixel matrix. (taking pixel format differences into account)
             int y=tile.Height();
             while (y--)
             {
-                memcpy(dest,src,tile.Width()*sizeof(u32));
+                for (int x=0; x<tile.Width(); x++)
+                {
+                    dest[x].r=src[x].r;
+                    dest[x].g=src[x].g;
+                    dest[x].b=src[x].b;
+                    dest[x].a=src[x].a;
+                }
+                
                 dest+=tile.Width();
                 src+=bd->Stride/sizeof(u32);
             }
@@ -83,6 +90,10 @@ namespace Import
 
         Bitmap* TileSet::get_Item(int idx)
         {
+            // make sure the ArrayList is long enough
+            while (bitmaps->Count<vsp->NumTiles())
+                bitmaps->Add(0);
+
             // Get the existing bitmap if there is one
             Bitmap* bmp=__try_cast<Bitmap*>(bitmaps->get_Item(idx));
 
@@ -92,13 +103,15 @@ namespace Import
 
                 BitmapData* bd=bmp->LockBits(Rectangle(0,0,vsp->Width(),vsp->Height()),ImageLockMode::WriteOnly,PixelFormat::Format32bppArgb);
 
-                u32* dest=(u32*)bd->Scan0.ToPointer();
-                u32* src=(u32*)vsp->GetTile(idx).GetPixelData();
+                BGRA* dest=(BGRA*)bd->Scan0.ToPointer();
+                RGBA* src =(RGBA*)vsp->GetTile(idx).GetPixelData();
 
                 int y=vsp->Height();
                 while (y--)
                 {
-                    memcpy(dest,src,vsp->Width()*sizeof(u32));
+                    for (int x=0; x<vsp->Width(); x++)
+                        dest[x]=src[x];
+
                     dest+=bd->Stride/sizeof(u32);
                     src+=vsp->Width();
                 }

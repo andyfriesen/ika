@@ -57,9 +57,7 @@ char* GetCurrentDirectory()
 
 const string Trim(string s)
 {
-    int i;
-
-    for (i=0; i<s.length(); i++)
+    for (unsigned int i=0; i<s.length(); i++)
     {
         if (s[i]!=' ')
         {
@@ -68,11 +66,11 @@ const string Trim(string s)
         }
     }
 
-    for (i=s.length()-1; i; i--)
+    for (unsigned int j=s.length()-1; j; j--)
     {
-        if (s[i]!=' ')
+        if (s[j]!=' ')
         {
-            s=s.substr(0,i+1);
+            s=s.substr(0,j+1);
             break;
         }
     }
@@ -84,7 +82,7 @@ string Upper(const string& s)
 {
     string t=s;
 
-    for (int i=0; i<s.length(); i++)
+    for (unsigned int i=0; i<s.length(); i++)
         if (t[i]>='a' && t[i]<='z')
             t[i]^=32;
 
@@ -103,11 +101,11 @@ string ToString(int i)
 
 string Path::Directory(const string& s,const string& relativeto)
 {
-    struct Local
+/*    struct Local
     {
-        static inline string Next(const string& s,int& pos)
+        static inline string Next(const string& s,unsigned int& pos)
         {
-            int startpos=pos;
+            unsigned int startpos=pos;
             for (; pos<s.length(); pos++)
             {
                 if (s[pos]==Path::cDelimiter)
@@ -116,7 +114,7 @@ string Path::Directory(const string& s,const string& relativeto)
             return s;
         }
     };
-
+*/
 
     int p=s.rfind(Path::cDelimiter);
     if (p==string::npos) return s;
@@ -125,7 +123,7 @@ string Path::Directory(const string& s,const string& relativeto)
 
     // FIXME?  This assumes that relativeto and s are both absolute paths.
     // Or, at the least, that the two paths have the same reference point.
-    int i=0;
+    unsigned int i=0;
     for (; i<sPath.length(); i++)
         if (i>=relativeto.length() || sPath[i]!=relativeto[i])
             break;        

@@ -87,6 +87,11 @@
                     AssemblyName = "sci.NET"
                     HintPath = "..\..\src\scintilla.NET\sci.NET.DLL"
                 />
+                <Reference
+                    Name = "ikaImport"
+                    Project = "{E522652F-513B-4694-9518-8760F2F17F4C}"
+                    Package = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
+                />
             </References>
         </Build>
         <Files>
@@ -141,39 +146,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Import\ikaTileSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Import\Map.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Import\TileSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Import\v2Map.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Import\v2rle.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Import\v2TileSet.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "Import\vergepal.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
+                    RelPath = "Controls\ScrollWindow.resx"
+                    DependentUpon = "ScrollWindow.cs"
+                    BuildAction = "EmbeddedResource"
                 />
             </Include>
         </Files>

@@ -4,12 +4,12 @@
 // It's conveniant for now.
 //  --khross
 
+#include <wx/event.h>
 
 #include "spritesetview.h"
 #include "imageview.h"
 #include "main.h"
 #include "movescripteditor.h"
-
 
 namespace
 {

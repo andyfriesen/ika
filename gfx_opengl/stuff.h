@@ -32,6 +32,8 @@ void SizeWindow(int xsize,int ysize)
     glLoadIdentity();
 }
 
+// "Borrowed" from Sphere's OpenGL code.
+// Credit goes to Chad "aegisknight" Auston
 bool ExtensionSupported(const char *extension)
 {
     const GLubyte *extensions = NULL;

@@ -19,7 +19,7 @@ string File::GetRealPath(const string& fname)
     string sExtension=fname;
     string sResult=fname;
     
-    int i=sExtension.length()-1;
+    unsigned int i=sExtension.length()-1;
     do
     {
         if (sExtension[i]=='.')
@@ -62,7 +62,7 @@ void File::AddPath(string sExtension,string sPath)
     if (sPath[sPath.length()-1]!='\\')
         sPath+="\\";
     
-    for (int i=0; i<directoryinfo.size(); i++)
+    for (unsigned int i=0; i<directoryinfo.size(); i++)
         if (directoryinfo[i].sExtension==sExtension)
         {
             directoryinfo[i].sPath=sPath;

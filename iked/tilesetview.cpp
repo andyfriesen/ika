@@ -4,6 +4,8 @@
 
 #include "ImageView.h"
 
+#include <wx/event.h>
+
 namespace
 {
     enum

@@ -41,20 +41,22 @@ namespace rho.Controls
 
             // disable alpha blending; we're doing that offscreen
             e.Graphics.CompositingMode=CompositingMode.SourceCopy;
-		
+	
             Rectangle r=e.ClipRectangle;
 		
             int startx=e.ClipRectangle.X/buffersize;
-            int endx=e.ClipRectangle.Right/buffersize;
+            int endx=e.ClipRectangle.Right/buffersize+1;
             int starty=e.ClipRectangle.Y/buffersize;
-            int endy=e.ClipRectangle.Bottom/buffersize;
+            int endy=e.ClipRectangle.Bottom/buffersize+1;
 		
             r.Width=buffersize;
             r.Height=buffersize;
-            for (int y=starty; y<=endy; y++)
+            for (int y=starty; y<endy; y++)
             {
-                for (int x=startx; x<=endx; x++)
+                for (int x=startx; x<endx; x++)
                 {
+                    graphics.Clear(Color.Black);
+
                     Redraw(this,new PaintEventArgs(graphics,r));
                     e.Graphics.DrawImage(buffer,r.X,r.Y);
 				

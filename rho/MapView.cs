@@ -3,7 +3,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using Import;
+using Import.ika;
 
 using rho.Controls;
 
@@ -63,20 +63,26 @@ namespace rho
         {
             Map m=new Map(100,100);
             m.AddLayer();
-            m.renderstring="1";
+            m.RenderString="1";
 
             TileSet t=new TileSet();
-            t.AppendTile();
+            //t.AppendTile();
 
             Init(p,m,t);
+
+            Text="Untitled map";
         }
 	
         public MapView(MainForm p,string filename) : base()
         {
+            string path=System.IO.Path.GetDirectoryName(filename);
+
             Map m=(Map)p.maps.Load(filename);
-            TileSet t=(TileSet)p.tilesets.Load(m.vspname);
+            TileSet t=(TileSet)p.tilesets.Load(path+"/"+m.TileSetName);
 
             Init(p,m,t);
+
+            Text=filename;
         }
 	
         void UpdateScrollBars()
@@ -120,13 +126,13 @@ namespace rho
 		
             int n=0;
 		
-            foreach (char c in map.renderstring)
+            foreach (char c in map.RenderString)
             {
                 int i=(int)c-'1';
 			
                 if (i>=0 && i<map.NumLayers)
                 {
-                    DrawLayer(map[i],e,n!=0);
+                    DrawLayer(i,e,n!=0);
 
                     if (n==0)
                         // ... and enable it for all subsequent layers
@@ -137,11 +143,13 @@ namespace rho
             }
         }
 	
-        void DrawLayer(Map.Layer layer,PaintEventArgs e,bool trans)
+        void DrawLayer(int layer,PaintEventArgs e,bool trans)
         {
+            LayerInfo li=map.get_LayerInfo(layer);
+
             // parallax
-            int xw=(int)(xwin*layer.parx);
-            int yw=(int)(ywin*layer.pary);				
+            int xw=(int)(1.0 * xwin * li.pmulx / li.pdivx);
+            int yw=(int)(1.0 * ywin * li.pmuly / li.pdivy);				
 		
             // Only drawing the specified rect.  Dirty rectangles are fast. :D
             xw+=e.ClipRectangle.Left;
@@ -160,8 +168,8 @@ namespace rho
             int ylen = e.ClipRectangle.Height/ tiles.Height + 2;
 		
             // Clip
-            if (xtile+xlen>layer.Width)		xlen=layer.Width-xtile;
-            if (ytile+ylen>layer.Height)	ylen=layer.Height-ytile;
+            if (xtile+xlen>map.Width)		xlen=map.Width-xtile;
+            if (ytile+ylen>map.Height)	ylen=map.Height-ytile;
 		
             // now we loop, and draw
             int xt=xtile;	// need this later
@@ -169,7 +177,7 @@ namespace rho
             {
                 for (int x=0; x<xlen; x++)
                 {
-                    int t=layer[xtile,ytile];
+                    int t=map.get_Tile(xtile,ytile,layer);
 				
                     if (trans && t==0)
                     {
@@ -184,6 +192,14 @@ namespace rho
                 ytile++;
                 xtile=xt;
             }
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            parent.maps.Free(map);
+            parent.tilesets.Free(tiles);
+
+            base.OnClosed(e);
         }
 
         int XWin

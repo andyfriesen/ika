@@ -1,5 +1,6 @@
 using System;
 using System.Windows.Forms;
+using System.IO;
 
 using Scintilla;
 
@@ -21,7 +22,7 @@ namespace rho
             c.SetStyleFore(5,0x00FF0000);	// kewords
             c.SetStyleBold(5,true);
             c.SetStyleFore(6,0x00FF8888);	// string literal
-            c.SetStyleFore(7,7);
+            c.SetStyleFore(7,0);
             c.SetStyleFore(10,0x00008800);
             c.SetStyleItalic(2,true);
             c.SetStyleBold(10,true);
@@ -55,12 +56,12 @@ namespace rho
         {
             c.SetStyleFore(0,  0x00808080);  // whitespace
             c.SetStyleFore(1,  0x00007F00);  // code comments
-            c.SetStyleFore(2,  0x00007F00);  // numeric constants
-            c.SetStyleFore(3,  0x007F7F7F);  // " style string literals
-            c.SetStyleFore(4,  0x00007F7F);  // ' style string literals
-            c.SetStyleFore(5,  0x0000007F);  // keyword
-            c.SetStyleFore(6,  0x007F007F);  // ''' strings
-            c.SetStyleFore(7,  0x007F007F);  // """ strings
+            c.SetStyleFore(2,  0x000000FF);  // numeric constants
+            c.SetStyleFore(3,  0x00000080);  // " style string literals
+            c.SetStyleFore(4,  0x00000080);  // ' style string literals
+            c.SetStyleFore(5,  0x00800000);  // keyword
+            c.SetStyleFore(6,  0x007F0000);  // ''' strings
+            c.SetStyleFore(7,  0x007F0000);  // """ strings
             c.SetStyleFore(8,  0x00007F7F);  // class declaration name
             c.SetStyleFore(9,  0x00007F7F);  // function declarations
             c.SetStyleFore(10, 0x007F007F);  // operators
@@ -85,15 +86,31 @@ namespace rho
 	{
         ScintillaText text;
 
-		public CodeView(MainForm f,string fname,IHighlightStyle style) : base()
-		{
+        void Init(MainForm f)
+        {
             text=new ScintillaText();
             text.Dock=DockStyle.Fill;
             Controls.Add(text);
             text.Show();
+        }
 
-            if (style!=null)
-                style.SetStyle(text);
+        public CodeView(MainForm f,IHighlightStyle style) : base()
+        {
+            Init(f);
+            style.SetStyle(text);
+            Text="Untitled Script";
+        }
+
+		public CodeView(MainForm f,string fname,IHighlightStyle style) : base()
+		{
+            Init(f);
+
+            style.SetStyle(text);
+
+            using (StreamReader txt=new StreamReader(fname))
+                text.Text=txt.ReadToEnd();
+
+            Text=fname;
 		}
 	}
 }

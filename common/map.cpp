@@ -700,7 +700,7 @@ bool Map::Load(const char* fname)
 
 bool Map::Save(const char* fname)
 {
-    int i;
+    unsigned int i;
     
     File f;
     
