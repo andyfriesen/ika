@@ -28,7 +28,7 @@ public:
     static void ClearPaths();
 
     // Misc handy file stuff
-    static bool Exists(const char* fname);
+    static bool Exists(const std::string& fname);
 
     // Actual file junk
 private:

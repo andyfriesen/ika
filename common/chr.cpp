@@ -4,12 +4,14 @@
 #include "rle.h"
 #include "misc.h"
 
-CCHRfile::CCHRfile()
+CCHRfile::CCHRfile(int width, int height)
 {
     nHotx = nHoty = 0;
     nHotw = nHoth = 16;
-    nWidth = nHeight = 16;
+    nWidth = width;
+    nHeight = height;
     frame.clear();
+    sMovescript.resize(16); // egh
     AppendFrame();
 }
 
@@ -89,6 +91,18 @@ void CCHRfile::UnpackData(u8* data, int size)
 {
 }
 
+void CCHRfile::Resize(int width, int height)
+{
+    if (width < 0 || height < 0)
+        throw std::runtime_error(va("CHRfile::Resize: Invalid dimensions %i,%i", width, height));
+
+    for (int i = 0; i < frame.size(); i++)
+        frame[i].Resize(width, height);
+
+    nWidth = width;
+    nHeight = height;
+}
+
 void CCHRfile::New(int framex, int framey)
 {
     nWidth = framex;
@@ -137,9 +151,11 @@ bool CCHRfile::Load(const char* fname)
     int nScripts;
     
     f.Read(nScripts);
+
+    sMovescript.clear();
+    sMovescript.reserve(nScripts);
     
-    int i;
-    for (i = 0; i < nScripts; i++)
+    for (int i = 0; i < nScripts; i++)
     {
         int nLen;
         f.Read(nLen);
@@ -155,7 +171,7 @@ bool CCHRfile::Load(const char* fname)
     int nFrames;
     f.Read(nFrames);
     frame.clear();
-    for (i = 0; i < nFrames; i++)
+    for (int i = 0; i < nFrames; i++)
     {
         int x, y;
         f.Read(x);
@@ -172,6 +188,7 @@ bool CCHRfile::Load(const char* fname)
         
         delete[] pTemp;
     }
+
     f.Close();
     return true;
 }

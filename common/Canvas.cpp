@@ -33,31 +33,32 @@ Canvas::Canvas()
 }
 
 Canvas::Canvas(int width, int height)
+    : _width(width)
+    , _height(height)
+    , _pixels(new RGBA[width * height])
+    , _cliprect(0, 0, width, height)
 {
-    _width = width;
-    _height = height;
-    
-    _pixels = new RGBA[_width*_height];
-    _cliprect = Rect(0, 0, _width, _height);
+    std::fill(_pixels, _pixels + _width * _height, RGBA(0,0,0,0));
 }
 
 Canvas::Canvas(RGBA* pSrc, int width, int height)
+    : _width(width)
+    , _height(height)
+    , _pixels(new RGBA[width * height])
+    , _cliprect(0, 0, width, height)
 {
-    _width = width;
-    _height = height;
-    _pixels = new RGBA[width * height];
     memcpy(_pixels, pSrc, width * height * sizeof(RGBA));
-    _cliprect = Rect(0, 0, _width, _height);
 }
 
 Canvas::Canvas(u8* data, int width, int height, u8* pal)
+    : _width(width)
+    , _height(height)
+    , _pixels(new RGBA[width * height])
+    , _cliprect(0, 0, width, height)
 {
-    _width = width;
-    _height = height;
     _pixels = new RGBA[_width*_height];
     for (int i = 0; i < width * height; i++)
         _pixels[i]=RGBA(data[i], pal);
-    _cliprect = Rect(0, 0, _width, _height);
 }
 
 Canvas::Canvas(const Canvas& src)

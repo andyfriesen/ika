@@ -260,7 +260,8 @@ void CGraphView::Stipple(int sx,int sy,int w,int h,u32 colour)
 
 void CGraphView::Clear()
 {
-    ZeroMemory(pDib->GetPixels(),pDib->Width()*pDib->Height()*sizeof(u32));
+    int s = pDib->Width() * pDib->Height() * sizeof(u32);
+    memset(pDib->GetPixels(), 0, s);
 }
 
 void CGraphView::ShowPage()

@@ -79,10 +79,10 @@ void File::ClearPaths()
     directoryinfo.clear();
 }
 
-bool File::Exists(const char* fname)
+bool File::Exists(const std::string& fname)
 {
     File f;
-    if (!f.OpenRead(fname))
+    if (!f.OpenRead(fname.c_str()))
         return false;
     
     f.Close();

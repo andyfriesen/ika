@@ -89,6 +89,8 @@ void CMovescriptEditor::UpdateDlg()
     for (uint i = 0; i < s; i++)
     {
         wxTextCtrl* p = movescript[i];
+
+        const char* c = chr.sMovescript[i].c_str();
         
         p->SetValue(chr.sMovescript[i].c_str());
     }

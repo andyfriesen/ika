@@ -16,10 +16,9 @@ CMapView::CMapView(HWND hWndparent,HINSTANCE hinst,Engine* pengine,Map* pmap,VSP
     xwin=ywin=0;
     
     hWnd=CreateWnd(hWndparent);                        // create the window
+    bLayertoggle.resize(10);                        // TEMP HACK
     
     pGraph=new CGraphView(hWnd,RenderCallback,(void*)this);
-    
-    bLayertoggle.resize(10);                        // TEMP HACK
 }
 
 CMapView::~CMapView()

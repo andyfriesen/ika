@@ -9,7 +9,6 @@ namespace
 
 void CDIB::CreateDIB(int width,int height)
 {
-    
     if (hDC)		DeleteDC(hDC);
     if (hBitmap)	DeleteObject(hBitmap);
     
@@ -26,12 +25,12 @@ void CDIB::CreateDIB(int width,int height)
     bmih.biBitCount    = bpp*8;											// bytes per pixel --> bits per pixel
     bmih.biCompression = BI_RGB;
     
-    hBitmap=CreateDIBSection(hDC,&bmi,DIB_RGB_COLORS,(void**)&pPixels,NULL,0);
+    hBitmap=CreateDIBSection(hDC,&bmi,DIB_RGB_COLORS,(void**)&_pixels,NULL,0);
     
     SelectObject(hDC,hBitmap);
     
-    nWidth=width;
-    nHeight=height;
+    _width=width;
+    _height=height;
 }
 
 CDIB::CDIB(int width,int height)
@@ -46,9 +45,9 @@ CDIB::CDIB(const CDIB& s)
     hDC=0;
     hBitmap=0;
     
-    CreateDIB(s.nWidth,s.nHeight);
+    CreateDIB(s._width,s._height);
     
-    memcpy(pPixels,s.pPixels,nWidth*nHeight*bpp);
+    memcpy(_pixels,s._pixels,_width*_height*bpp);
 }
 
 CDIB::CDIB(const Canvas& s)
@@ -65,6 +64,7 @@ CDIB::~CDIB()
 {
     if (hDC)		DeleteDC(hDC);
     if (hBitmap)	DeleteObject(hBitmap);
+    _pixels = 0;
 }
 
 CDIB& CDIB::operator = (const Canvas& s)
@@ -73,8 +73,8 @@ CDIB& CDIB::operator = (const Canvas& s)
 
     RGBA* pSrc=s.GetPixels();
     
-    for (int i=0; i<nWidth*nHeight; i++)
-        pPixels[i]=*pSrc++;
+    for (int i=0; i<_width*_height; i++)
+        _pixels[i]=*pSrc++;
 
     return *this;
 }
@@ -82,9 +82,9 @@ CDIB& CDIB::operator = (const Canvas& s)
 void CDIB::SetPixel(int x,int y,RGBA colour)
 {
     if (x<0 || y<0) return;
-    if (x>=nWidth || y>=nHeight) return;
+    if (x>=_width || y>=_height) return;
     
-    pPixels[y*nWidth+x]=colour;
+    _pixels[y*_width+x]=colour;
 }
 
 void CDIB::CopyPixelData(RGBA* pixels,int width,int height)
@@ -92,10 +92,10 @@ void CDIB::CopyPixelData(RGBA* pixels,int width,int height)
     CreateDIB(width,height);
     
     if (bpp==1)
-        memcpy(pPixels,pixels,width*height*bpp);
+        memcpy(_pixels,pixels,width*height*bpp);
     else
     {
         for (int i=0; i<width*height; i++)
-            pPixels[i]=pixels[i];
+            _pixels[i]=pixels[i];
     }
 }

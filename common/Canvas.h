@@ -13,7 +13,7 @@
 */
 class Canvas
 {
-private:
+protected:
     RGBA* _pixels;                                              ///< Pointer to raw pixel data
     int   _width, _height;                                      ///< Dimensions
     
