@@ -13,7 +13,7 @@ class File;
 /*!
     Hardware - independant representation of a bitmap font.
 */
-class CFontFile
+class FontFile
 {
 public:
     // ------------------ Types --------------------
@@ -36,7 +36,7 @@ private:
     
     // ----------------- Methods -------------------
 public:
-    ~CFontFile();
+    ~FontFile();
     
     bool Load(const char* fname);                           //!< Reads data from the specified filename.
     void Save(const char* fname);                           //!< Writes data to the specified filename, destroying any data that was there.

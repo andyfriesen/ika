@@ -6,14 +6,14 @@
 
 namespace
 {
-    class CFontFrame : public CGraphFrame
+    class FontFrame : public CGraphFrame
     {
         DECLARE_EVENT_TABLE()
 
-        CFontView* pFontview;
+        FontView* pFontview;
 
     public:
-        CFontFrame(wxWindow* parent, CFontView* fontview)
+        FontFrame(wxWindow* parent, FontView* fontview)
             : CGraphFrame(parent)
             , pFontview(fontview)
         {}
@@ -26,27 +26,27 @@ namespace
         }
     };
 
-    BEGIN_EVENT_TABLE(CFontFrame, CGraphFrame)
-        EVT_PAINT(CFontFrame::OnPaint)
+    BEGIN_EVENT_TABLE(FontFrame, CGraphFrame)
+        EVT_PAINT(FontFrame::OnPaint)
     END_EVENT_TABLE()
 }
 
-BEGIN_EVENT_TABLE(CFontView, IDocView)
+BEGIN_EVENT_TABLE(FontView, IDocView)
 
-    EVT_SCROLLWIN(CFontView::OnScroll)
-    EVT_CLOSE(CFontView::OnClose)
-    EVT_ERASE_BACKGROUND(CFontView::OnEraseBackground)
+    EVT_SCROLLWIN(FontView::OnScroll)
+    EVT_CLOSE(FontView::OnClose)
+    EVT_ERASE_BACKGROUND(FontView::OnEraseBackground)
 
-    EVT_LEFT_DOWN(CFontView::OnLeftClick)
-    EVT_RIGHT_DOWN(CFontView::OnRightClick)
+    EVT_LEFT_DOWN(FontView::OnLeftClick)
+    EVT_RIGHT_DOWN(FontView::OnRightClick)
 
-    EVT_MENU(CFontView::id_filesave, CFontView::OnSave)
-    EVT_MENU(CFontView::id_filesaveas, CFontView::OnSaveAs)
-    EVT_MENU(CFontView::id_optionscolor, CFontView::OnChangeBackgroundColor)
+    EVT_MENU(FontView::id_filesave, FontView::OnSave)
+    EVT_MENU(FontView::id_filesaveas, FontView::OnSaveAs)
+    EVT_MENU(FontView::id_optionscolor, FontView::OnChangeBackgroundColor)
 
 END_EVENT_TABLE()
 
-CFontView::CFontView(CMainWnd* parentwnd, const std::string& fname)
+FontView::FontView(CMainWnd* parentwnd, const std::string& fname)
     : IDocView(parentwnd, fname)
     , pParent(parentwnd)
     , sFilename(fname)
@@ -54,10 +54,10 @@ CFontView::CFontView(CMainWnd* parentwnd, const std::string& fname)
     , ywin(0)
 {
 
-    pGraph = new CFontFrame(this, this);
+    pGraph = new FontFrame(this, this);
     pGraph->SetSize(GetClientSize());
 
-    pFontfile = new CFontFile();
+    pFontfile = new FontFile();
     pFontfile->Load(sFilename.c_str());
 
     wxMenuBar* menubar = pParent->CreateBasicMenu();
@@ -75,16 +75,16 @@ CFontView::CFontView(CMainWnd* parentwnd, const std::string& fname)
     SetMenuBar(menubar);
 }
 
-CFontView::~CFontView()
+FontView::~FontView()
 {
 //    pParent->font.Release(pFontfile);
     delete pFontfile;
 }
-void CFontView::OnRightClick(wxMouseEvent& event)
+void FontView::OnRightClick(wxMouseEvent& event)
 {
 }
 
-void CFontView::OnLeftClick(wxMouseEvent& event)
+void FontView::OnLeftClick(wxMouseEvent& event)
 {
     int x, y;
     event.GetPosition(&x, &y);
@@ -94,7 +94,7 @@ void CFontView::OnLeftClick(wxMouseEvent& event)
 }
 
 
-void CFontView::Render()
+void FontView::Render()
 {
 
     int tx = 0, ty = 0;
@@ -148,7 +148,7 @@ nomoredrawing:
     pGraph->ShowPage();
 }
 
-void CFontView::FontPos(int fontidx, int& x, int& y) const
+void FontView::FontPos(int fontidx, int& x, int& y) const
 {
     int nFontwidth = GetClientSize().GetWidth()/pFontfile->Width();
     
@@ -160,7 +160,7 @@ void CFontView::FontPos(int fontidx, int& x, int& y) const
     y *= pFontfile->Height();
 }
 
-int CFontView::FontAt(int x, int y) const
+int FontView::FontAt(int x, int y) const
 {
     const int tx = pFontfile->Width();
     const int ty = pFontfile->Height();
@@ -176,7 +176,7 @@ int CFontView::FontAt(int x, int y) const
     return t;
 }
 
-void CFontView::Paint()
+void FontView::Paint()
 {
     if (!pFontfile)
         return; // Can't be too careful with these wacky paint messages. -- khross
@@ -184,13 +184,13 @@ void CFontView::Paint()
     Render();
 }
 
-void CFontView::OnSave(wxCommandEvent& event)
+void FontView::OnSave(wxCommandEvent& event)
 {
-    // FIXME: CFontFile::Save isn't implemented. :x
+    // FIXME: FontFile::Save isn't implemented. :x
     pFontfile->Save(sFilename.c_str());
 }
 
-void CFontView::OnSaveAs(wxCommandEvent& event)
+void FontView::OnSaveAs(wxCommandEvent& event)
 {
     wxFileDialog dlg
     (
@@ -213,23 +213,23 @@ void CFontView::OnSaveAs(wxCommandEvent& event)
     OnSave(event);
 }
 
-const void* CFontView::GetResource() const
+const void* FontView::GetResource() const
 {
     return pFontfile;
 }
 
-void CFontView::OnClose()
+void FontView::OnClose()
 {
     Destroy();
 }
 
-void CFontView::OnSize(wxSizeEvent& event)
+void FontView::OnSize(wxSizeEvent& event)
 {
     pGraph->SetSize(GetClientSize());
     UpdateScrollbar();
 }
 
-void CFontView::OnScroll(wxScrollWinEvent& event)
+void FontView::OnScroll(wxScrollWinEvent& event)
 {
     if (event.m_eventType == wxEVT_SCROLLWIN_TOP)           ywin = 0;
     else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM)   ywin = pFontfile->NumGlyphs();
@@ -243,7 +243,7 @@ void CFontView::OnScroll(wxScrollWinEvent& event)
     Render();
 }
 
-void CFontView::UpdateScrollbar()
+void FontView::UpdateScrollbar()
 {
     Canvas& rGlyph = pFontfile->GetGlyph(nCurfont);
     int nWidth, nHeight;
@@ -263,7 +263,7 @@ void CFontView::UpdateScrollbar()
     SetScrollbar(wxVERTICAL, ywin, nFontheight, nTotalheight, true);
 }
 
-void CFontView::OnChangeBackgroundColor(wxCommandEvent& event)
+void FontView::OnChangeBackgroundColor(wxCommandEvent& event)
 {
         wxColour nColor;
         nColor = GetBackgroundColour();

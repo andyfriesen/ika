@@ -9,7 +9,7 @@
 #include "Python.h"
 
 // Rain of prototypes
-class CFont;
+class Font;
 struct Entity;
 class Engine;
 class Canvas;
@@ -149,7 +149,7 @@ namespace Script
         struct FontObject
         {
             PyObject_HEAD
-            CFont* font;
+            ::Font* font;
         };
 
         // Methods

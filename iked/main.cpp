@@ -263,7 +263,7 @@ void CMainWnd::Open(const std::string& fname)
         case t_script:      wnd = new CCodeView     (this, fname);          break;
         //case t_map:         wnd = new MapView      (this, fname.c_str());  break;
         case t_vsp:         wnd = new CTileSetView  (this, fname.c_str());  break;
-        case t_font:        wnd = new CFontView     (this, fname.c_str());  break;
+        case t_font:        wnd = new FontView     (this, fname.c_str());  break;
         case t_text:
         case t_dat:         wnd = new CTextView     (this, fname.c_str());  break;
         case t_chr:         wnd = new CSpriteSetView(this, fname.c_str());  break;

@@ -87,7 +87,7 @@ namespace Script
 
             try
             {
-                font->font = new CFont(filename, engine->video);
+                font->font = new ::Font(filename, engine->video);
             }
             catch (FontException)
             {
@@ -129,7 +129,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iis:Font.CenterPrint", &x, &y, &message))
                 return 0;
 
-            CFont* f=self->font;
+            ::Font* f=self->font;
             f->PrintString(x - f->StringWidth(message) / 2 , y, message);
 
             Py_INCREF(Py_None);
@@ -144,7 +144,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iis:Font.RightPrint", &x, &y, &message))
                 return 0;
 
-            CFont* f = self->font;
+            ::Font* f = self->font;
             f->PrintString(x - f->StringWidth(message) , y, message);
 
             Py_INCREF(Py_None);

@@ -4,12 +4,12 @@
 #include "vergepal.h"
 #include "misc.h"
 
-CFontFile::~CFontFile()
+FontFile::~FontFile()
 {
     glyph.clear();
 }
 
-bool CFontFile::Load8bppFont(File& f)
+bool FontFile::Load8bppFont(File& f)
 {
     short int width, height, subsetcount;
     f.Read(&width, 2);
@@ -59,7 +59,7 @@ bool CFontFile::Load8bppFont(File& f)
     return true;
 }
 
-bool CFontFile::Load16bppFont(File& f)
+bool FontFile::Load16bppFont(File& f)
 {
     short int width, height, subsetcount;
     f.Read(&width, 2);
@@ -113,7 +113,7 @@ bool CFontFile::Load16bppFont(File& f)
     return true;
 }
 
-bool CFontFile::Load32bppFont(File& f)
+bool FontFile::Load32bppFont(File& f)
 {
     f.Seek(0);
     
@@ -171,7 +171,7 @@ bool CFontFile::Load32bppFont(File& f)
     return true;
 }
 
-bool CFontFile::Load(const char* fname)
+bool FontFile::Load(const char* fname)
 {
     File f;
     bool bResult;
@@ -194,6 +194,6 @@ bool CFontFile::Load(const char* fname)
     return bResult;     
 }
 
-void CFontFile::Save(const char* fname)
+void FontFile::Save(const char* fname)
 {
 }

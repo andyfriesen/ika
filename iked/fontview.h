@@ -10,7 +10,7 @@
 #include "graph.h"
 #include "fontfile.h"
 
-class CFontView : public IDocView
+class FontView : public IDocView
 {
     enum
     {
@@ -23,8 +23,8 @@ class CFontView : public IDocView
 
     public:
 
-        CFontView(CMainWnd* parentwnd, const std::string& fname);
-        ~CFontView();
+        FontView(CMainWnd* parentwnd, const std::string& fname);
+        ~FontView();
 
         void Paint();
 
@@ -44,7 +44,7 @@ class CFontView : public IDocView
 
         CMainWnd* pParent;
         CGraphFrame* pGraph;
-        CFontFile* pFontfile;
+        FontFile* pFontfile;
 
         int ywin;
         int nCurfont;

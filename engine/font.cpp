@@ -17,7 +17,7 @@
 
 static const char subsetmarker = '~';
 
-CFont::CFont(const char* filename, Video::Driver* v)
+Font::Font(const char* filename, Video::Driver* v)
     : _video(v)
     , _width(0)
     , _height(0)
@@ -38,7 +38,7 @@ CFont::CFont(const char* filename, Video::Driver* v)
     }
 }
 
-CFont::~CFont()
+Font::~Font()
 {
     for (uint i = 0; i < _glyphs.size(); i++)
     {
@@ -48,18 +48,20 @@ CFont::~CFont()
     _glyphs.clear();
 }
 
-int CFont::GetGlyphIndex(char c, uint subset) const
+int Font::GetGlyphIndex(char c, uint subset) const
 {
-    assert(subset >= 0 && subset < _fontFile.NumSubSets());
-
-    return _fontFile.GetSubSet(subset).glyphIndex[c];
+    if (subset >= 0 && subset < _fontFile.NumSubSets())
+        return _fontFile.GetSubSet(subset).glyphIndex[c];
+    else
+        return 0;
 }
 
-Video::Image* CFont::GetGlyphImage(char c, uint subset)
+Video::Image* Font::GetGlyphImage(char c, uint subset)
 {
     uint glyphIndex = GetGlyphIndex(c, subset);
 
-    assert(glyphIndex <= _glyphs.size()); // :x
+    if (glyphIndex >= _glyphs.size())
+        return 0;
 
     Video::Image* img = _glyphs[glyphIndex];
 
@@ -72,12 +74,12 @@ Video::Image* CFont::GetGlyphImage(char c, uint subset)
     return img;
 }
 
-Canvas& CFont::GetGlyphCanvas(char c, uint subset) const
+Canvas& Font::GetGlyphCanvas(char c, uint subset) const
 {
     return _fontFile.GetGlyph(GetGlyphIndex(c, subset));
 }
 
-void CFont::PrintChar(int& x, int y, uint subset, char c)
+void Font::PrintChar(int& x, int y, uint subset, char c)
 {
     Video::Image* img = GetGlyphImage(c, subset);
 
@@ -87,7 +89,7 @@ void CFont::PrintChar(int& x, int y, uint subset, char c)
     x += img->Width();
 }
 
-void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::BlendMode blendMode)
+void Font::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::BlendMode blendMode)
 {
     //if (c < 0 || c > 96)
     //    return;
@@ -110,7 +112,7 @@ void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::B
 }
 
 template <class Printer>
-void CFont::PaintString(int startx, int starty, const char* s, Printer& print)
+void Font::PaintString(int startx, int starty, const char* s, Printer& print)
 {
     int cursubset = 0;
     int x = startx;
@@ -154,7 +156,7 @@ namespace
 {
     struct PrintToVideo
     {
-        inline void operator ()(int& x, int y, int subset, char c, CFont* font)
+        inline void operator ()(int& x, int y, int subset, char c, Font* font)
         {
             font->PrintChar(x, y, subset, c);
         }
@@ -170,26 +172,26 @@ namespace
             , _blendMode(blendMode)
         {}
 
-        inline void operator ()(int& x, int y, int subset, char c, CFont* font)
+        inline void operator ()(int& x, int y, int subset, char c, Font* font)
         {
             font->PrintChar(x, y, subset, c, _dest, _blendMode);
         }
     };
 };
 
-void CFont::PrintString(int x, int y, const char* s)
+void Font::PrintString(int x, int y, const char* s)
 {
     PrintToVideo printer;
     PaintString(x, y, s, printer);
 }
 
-void CFont::PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode)
+void Font::PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode)
 {
     PrintToCanvas printer(dest, blendMode);
     PaintString(x, y, s, printer);
 }
 
-int CFont::StringWidth(const char* s) const
+int Font::StringWidth(const char* s) const
 {
     int _width = 0;
     int currentSubSet = 0;

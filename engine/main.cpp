@@ -106,10 +106,10 @@ void Engine::MainLoop()
     CDEBUG("mainloop");
     static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
 
-    ScopedPtr<CFont> font;
+    ScopedPtr<Font> font;
     try
     {
-        font = new CFont("system.fnt", video);
+        font = new Font("system.fnt", video);
     }
     catch (FontException)
     {

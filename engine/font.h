@@ -10,13 +10,16 @@ class File;
 
 struct FontException{};
 
-/*!
-    Encapsulates a hardware dependant copy of a bitmap font.
-*/
-class CFont
+/**
+ * Encapsulates a hardware dependant copy of a bitmap font.
+ *
+ * I don't really like how fonts have to store a copy of the Video interface.
+ * It's dirty.
+ */
+class Font
 {
 private:
-    CFontFile _fontFile;
+    FontFile _fontFile;
     
     Video::Driver*  _video;
     std::vector<Video::Image*> _glyphs;
@@ -25,8 +28,8 @@ private:
     int _tabSize;                                               ///< tab granularity, in pixels
 
 public:
-    CFont(const char* filename, Video::Driver* v);
-    ~CFont();
+    Font(const char* filename, Video::Driver* v);
+    ~Font();
 
     int GetGlyphIndex(char c, uint subset) const;
 
@@ -39,7 +42,7 @@ public:
     template <class Printer>
     void PaintString(int x, int y, const char* s, Printer& print);  ///< Draws the string somewhere.
 
-    void PrintString(int x, int y, const char* s);
+    void PrintString(int x, int y, const char* s);                  ///< Draws the string to the screen
     void PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode);    ///< Draws the string on a canvas.
     
     int StringWidth(const char* s) const;                       ///< Returns the width, in pixels, of the string, if printed in this font.
