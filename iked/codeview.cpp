@@ -468,13 +468,25 @@ void CCodeView::OnSave(wxCommandEvent& event)
     if (!f.OpenWrite(sName.c_str()))
         return;
 
-    int nSize=pTextctrl->GetLength();
+    int nSize=pTextctrl->GetTextLength();
 
     if (nSize)
     {
         // FIXME: pTextctrl->GetText() truncates the last character. ;P
+
+        int start=pTextctrl->GetSelectionStart();
+        int end=pTextctrl->GetSelectionEnd();
+
+        pTextctrl->InsertText(nSize," ");    // hack, so GetText massacres this, and not something the user wrote.
+
         wxString s=pTextctrl->GetText();
         f.Write(s.c_str(),nSize);
+
+        // now to nuke the char we added on the end
+        pTextctrl->SetSelection(nSize,nSize+1);
+        pTextctrl->Clear();
+
+        pTextctrl->SetSelection(start,end);
     }
     
     f.Close();
@@ -511,7 +523,7 @@ void CCodeView::OnSaveAs(wxCommandEvent& event)
 // Trivial stuff
 void CCodeView::OnClose(wxCommandEvent& event)
 {      
-    if (bChanged || pTextctrl->GetLength())
+    if (bChanged)
     {
         wxMessageDialog msgdlg
             (
