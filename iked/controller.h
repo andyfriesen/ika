@@ -128,7 +128,7 @@ namespace iked {
         }
 
     private:
-        friend class ScopedPtr<Controller>;
+        friend struct ScopedPtr<Controller>;
         static ScopedPtr<Controller > instance;
 
         explicit Controller()

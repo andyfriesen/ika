@@ -201,6 +201,7 @@ namespace Script {
         METHOD(Entity_IsMoving, EntityObject);
         METHOD(Entity_DetectCollision, EntityObject);
         METHOD(Entity_Touches, EntityObject);
+        METHOD(Entity_Render, EntityObject);
         METHOD(Entity_Draw, EntityObject);
         METHOD(Entity_GetAnimScript, EntityObject);
         METHOD(Entity_GetAllAnimScripts, EntityObject);

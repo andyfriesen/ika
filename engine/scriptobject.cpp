@@ -23,30 +23,27 @@ ScriptObject::ScriptObject(const ScriptObject& rhs)
     _instances.insert(this);
 }
 
-ScriptObject::~ScriptObject()
-{
+ScriptObject::~ScriptObject() {
     release();
 
     _instances.erase(this);
 }
 
-void* ScriptObject::get() const
-{
+void* ScriptObject::get() const {
     return _object;
 }
 
-void ScriptObject::set(void* o)
-{
-    if (o == Py_None)
+void ScriptObject::set(void* o) {
+    if (o == Py_None) {
         o = 0;
+    }
 
     Py_XDECREF((PyObject*)_object);
     _object = o;
     Py_XINCREF((PyObject*)o);
 }
 
-ScriptObject& ScriptObject::operator = (const ScriptObject& so)
-{
+ScriptObject& ScriptObject::operator = (const ScriptObject& so) {
     Py_XDECREF((PyObject*)_object);
     _object = so._object;
     Py_XINCREF((PyObject*)_object);
@@ -54,8 +51,7 @@ ScriptObject& ScriptObject::operator = (const ScriptObject& so)
     return *this;
 }
 
-void ScriptObject::release()
-{
+void ScriptObject::release() {
     Py_XDECREF((PyObject*)_object);
     _object = 0;
 }

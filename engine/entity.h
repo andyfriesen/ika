@@ -26,10 +26,6 @@ struct Entity {
     AnimScript  specAnim;                                           ///< "special" animation script (set from python)
     bool        useSpecAnim;                                        ///< true if specAnim should be used instead of defaultAnim
 
-    //std::string curanimscript;                                      ///< a copy of the last frame animation script assigned to this entity
-    //uint        animscriptofs;                                      ///< current offset in the current anim script
-    //uint        animscriptct;                                       ///< delay counter
-
     int         x, y;                                               ///< coordinates of the entity
     uint        layerIndex;                                         ///< layer the entity inhabits
     Point       destVector;                                         ///< Direction the entity is going.

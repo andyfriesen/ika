@@ -273,26 +273,46 @@ void Engine::Shutdown() {
 }
 
 
-void Engine::RenderEntity(const Entity* e) {
-    const Sprite* const s = e->sprite;
-    const Map::Layer* layer = map.GetLayer(e->layerIndex);
+void Engine::RenderEntity(const Entity* ent) {
+    if (ent->renderScript.get() == 0) {
+        DrawEntity(ent);
+    } else {
+        const Sprite* const s = ent->sprite;
+        const Map::Layer* const layer = map.GetLayer(ent->layerIndex);
+
+        int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
+        int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
+
+        int x = ent->x - xw - s->nHotx + layer->x;
+        int y = ent->y - yw - s->nHoty + layer->y;
+
+        uint frameIndex = (ent->specFrame != -1) ? ent->specFrame : ent->curFrame;
+
+        script.ExecObject(ent->renderScript, ent, x, y, frameIndex);
+    }
+}
+
+void Engine::DrawEntity(const Entity* ent) {
+    const Sprite* const s = ent->sprite;
+    const Map::Layer* const layer = map.GetLayer(ent->layerIndex);
 
     int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
     int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
 
-    int x = e->x - xw - s->nHotx + layer->x;
-    int y = e->y - yw - s->nHoty + layer->y;
+    int x = ent->x - xw - s->nHotx + layer->x;
+    int y = ent->y - yw - s->nHoty + layer->y;
 
-    RenderEntity(e, x, y);
+    uint frameIndex = (ent->specFrame != -1) ? ent->specFrame : ent->curFrame;
+
+    DrawEntity(ent, x, y, frameIndex);
 }
 
-void Engine::RenderEntity(const Entity* e, int x, int y) {
-    const Sprite* s = e->sprite;
+void Engine::DrawEntity(const Entity* ent, int x, int y, uint frameIndex) {
+    const Sprite* s = ent->sprite;
 
-    uint frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
-    if (frame >= s->Count()) frame = 0;
+    if (frameIndex >= s->Count()) frameIndex = 0;
 
-    video->BlitImage(s->GetFrame(frame), x, y);
+    video->BlitImage(s->GetFrame(frameIndex), x, y);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -341,8 +361,10 @@ void Engine::RenderEntities(uint layerIndex) {
 
         if (x + width > 0 && y + height > 0 &&
             x < res.x     && y < res.y      &&
-            e->isVisible)
+            e->isVisible
+        ) {
             drawlist.push_back(e);                                                          // the entity is onscreen, tag it.
+        }
     }
 
     if (!drawlist.empty()) {
@@ -351,12 +373,16 @@ void Engine::RenderEntities(uint layerIndex) {
 
         video->SetBlendMode(Video::Normal);
         for (std::vector<Entity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++) {
+#if 0
             const Entity* e = *j;
             const Sprite* s = e->sprite;
             int x = e->x - xwin - s->nHotx + layer->x;
             int y = e->y - ywin - s->nHoty + layer->y;
 
-            RenderEntity(e, x, y);
+            DrawEntity(e, x, y);
+#else
+            RenderEntity(*j);
+#endif
         }
     }
 }

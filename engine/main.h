@@ -90,8 +90,9 @@ public:
     Entity*   SpawnEntity();                                                        ///< Creates an entity, and returns it
     void      DestroyEntity(Entity* e);                                             ///< Annihilates the entity
 
-    void      RenderEntity(const Entity* e);
-    void      RenderEntity(const Entity* e, int x, int y);
+    void      RenderEntity(const Entity* ent);                                      ///< Renders an entity
+    void      DrawEntity(const Entity* ent);                                        ///< Default way to render an entity (current frame, at x,y taking xwin/ywin into account etc etc)
+    void      DrawEntity(const Entity* ent, int x, int y, uint frameIndex);
     void      RenderEntities(uint layerIndex);                                      ///< Draws entities
     void      RenderLayer(uint layerIndex);                                         ///< renders a single layer
     void      Render();                                                             ///< renders everything

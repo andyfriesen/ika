@@ -58,11 +58,21 @@ namespace Script {
                 "Returns true if the entity is touching entity ent, else False."
             },
 
+            {   "Render", (PyCFunction)Entity_Render,                         METH_VARARGS,
+                "Entity.Render()\n\n"
+                "Draws the entity at the position specified.  Unlike Entity.Draw,\n"
+                "Entity.Render() will call a render script if one is set.\n\n"
+                "For this reason, *DO NOT CALL THIS IN A RENDER SCRIPT*.  Puppies\n"
+                "will explode, and you will be very sad."
+            },
+
             {   "Draw", (PyCFunction)Entity_Draw,                           METH_VARARGS,
-                "Entity.Draw([x[, y]])\n\n"
+                "Entity.Draw([x[, y[, frame]]])\n\n"
                 "Draws the entity at the position specified.  x and y default to\n"
                 "the position where they would normally draw, given the window position\n"
-                "and the entity position."
+                "and the entity position.\n\n"
+                "Render scripts are ignored by this method, and can easily be used within\n"
+                "them without hassle."
             },
 
             {   "GetAnimScript",    (PyCFunction)Entity_GetAnimScript,      METH_VARARGS,
@@ -107,6 +117,13 @@ namespace Script {
                 if (!o) {
                     o = Py_None;
                 }
+                Py_INCREF(o);
+                return o;
+            }
+
+            GET(RenderScript) {
+                PyObject* o = (PyObject*)self->ent->renderScript.get();
+                if (o == 0) o = Py_None;
                 Py_INCREF(o);
                 return o;
             }
@@ -189,6 +206,11 @@ namespace Script {
                 return 0;
             }
 
+            SET(RenderScript) {
+                self->ent->renderScript.set(value);
+                return 0;
+            }
+
             SET(ActScript) {
                 self->ent->activateScript.set(value);
                 return 0;
@@ -232,8 +254,16 @@ namespace Script {
             {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
             {   "movescript",       (getter)getMoveScript,          (setter)setMoveScript,      "Gets or sets the entity's current move script."    },
             {   "actscript",        (getter)getActScript,           (setter)setActScript,       "Gets or sets the object called when the entity is activated."    },
-            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "Gets or sets the object called when the entity touches the player. (not implemented)" },
-//            {   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated."  },
+            {   "renderscript",     (getter)getRenderScript,        (setter)setRenderScript,    "Gets or sets a script to be called when the entity is drawn.\n"
+                                                                                                "If None, the default behaviour is performed. (ie to draw the\n"
+                                                                                                "current frame at the current position)\n"
+                                                                                                "The function should be of the form myscript(entity, x, y, frame),\n"
+                                                                                                "where x and y are the screen coordinates where the entity\n"
+                                                                                                "would normally be drawn, and frame is the frame that would\n"
+                                                                                                "be displayed." 
+            },
+            //{   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "Gets or sets the object called when the entity touches the player. (not implemented)" },
+            //{   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated. (not implemented)"  },
             {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
             {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
             {   "entobs",           (getter)getEntObs,              (setter)setEntObs,          "If nonzero, the entity is unable to walk through entities whose isobs property is set."    },
@@ -433,20 +463,34 @@ namespace Script {
             }
         }
 
+        METHOD(Entity_Render) {
+            if (!PyArg_ParseTuple(args, ":Render")) {
+                return 0;
+            }
+
+            engine->RenderEntity(self->ent);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
         METHOD(Entity_Draw) {
             const int MAGIC_DEFAULT_VALUE = 0x0FFFFFFF; // biggest possible 32 bit value
-            int x = MAGIC_DEFAULT_VALUE;
-            int y = MAGIC_DEFAULT_VALUE;
+
             const ::Entity* ent = self->ent;
 
-            if (!PyArg_ParseTuple(args, "|ii:Draw", &x, &y)) {
+            int x = MAGIC_DEFAULT_VALUE;
+            int y = MAGIC_DEFAULT_VALUE;
+            int frame = ent->specFrame == -1 ? ent->curFrame : ent->specFrame;
+
+            if (!PyArg_ParseTuple(args, "|iii:Draw", &x, &y, &frame)) {
                 return 0;
             }
 
             if (x == MAGIC_DEFAULT_VALUE && y == MAGIC_DEFAULT_VALUE) {
-                engine->RenderEntity(ent);
+                engine->DrawEntity(ent);
             } else {
-                engine->RenderEntity(ent, x, y);
+                engine->DrawEntity(ent, x, y, frame);
             }
 
             Py_INCREF(Py_None);

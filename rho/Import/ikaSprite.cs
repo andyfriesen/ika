@@ -10,6 +10,8 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 namespace rho.Import {
 
     public class ikaSprite {
+        const string SPRITE_VER = "1.2";
+
         public ikaSprite()
         : this(16, 16) {
         }
@@ -127,7 +129,7 @@ namespace rho.Import {
 
         public unsafe void Save(System.IO.TextWriter stream) {
             DataNode rootNode = new DataNode("ika-sprite");
-            rootNode.AddChild(new DataNode("version").AddChild("1.1"));
+            rootNode.AddChild(new DataNode("version").AddChild(SPRITE_VER));
 
             DataNode infoNode = new DataNode("information");
             rootNode.AddChild(infoNode);
