@@ -609,30 +609,23 @@ void CEngine::TestActivate(const Entity* player)
     int tx = (player->x + sprite->nHotw / 2) / tiles->Width();
     int ty = (player->y + sprite->nHoth / 2) / tiles->Height();
 
-    Map::Layer::Zone* zone = TestZoneCollision(player);
-    if (zone)
+    if (player->isMoving)
     {
-        if (map.zones.count(zone->label))
+        Map::Layer::Zone* zone = TestZoneCollision(player);
+        if (zone)
         {
-            Map::Zone& bluePrint = map.zones[zone->label];
-            if (!bluePrint.scriptName.empty())
-                script.CallScript(bluePrint.scriptName);
-        }
-        else
-        {
-            Log::Write("No blueprint %s exists!", zone->label.c_str());
+            if (map.zones.count(zone->label))
+            {
+                Map::Zone& bluePrint = map.zones[zone->label];
+                if (!bluePrint.scriptName.empty())
+                    script.CallScript(bluePrint.scriptName);
+            }
+            else
+            {
+                Log::Write("No blueprint %s exists!", zone->label.c_str());
+            }
         }
     }
-    
-    /*int n = map.GetZone(tx, ty);
-    // stepping on a zone?
-    if ((tx != nOldtx || ty != nOldty) && n)                        // the player is not on the same zone it was before, check for activation
-    {
-        nOldtx = tx; nOldty = ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
-        const SMapZone& zone = map.GetZoneInfo(map.GetZone(tx, ty));
-        if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
-            script.CallScript(zone.sActscript.c_str());
-    }*/
     
     // adjacent activation
     
@@ -682,19 +675,8 @@ void CEngine::DestroyEntity(Entity* e)
             sprite.Free(e->sprite);
             
             // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
-            if (cameraTarget == e)   cameraTarget = 0;
-            if (pPlayer == e)         pPlayer = 0;
-            
-            /*// O(n**2) I think.  Gay.
-            for (EntityList::iterator ii = entities.begin(); ii != entities.end(); ii++)
-            {
-                Entity& e=*(*ii);
-                
-                if (e.pChasetarget == (*i))
-                    e.pChasetarget = 0, e.movecode = mc_nothing;
-                
-                // TODO: add others, if needed
-            }*/
+            if (cameraTarget == e)  cameraTarget = 0;
+            if (pPlayer == e)       pPlayer = 0;
             
             // actually nuke it
             entities.remove(e);
@@ -724,7 +706,7 @@ void CEngine::LoadMap(const std::string& filename)
         
         script.ClearEntityList();                                       // DEI
 
-        std::map<const Map::Entity*, Entity*> entMap;                         // used so we know which is related to which, so we can properly gather objects from the map script. (once it's loaded)
+        std::map<const Map::Entity*, Entity*> entMap;                   // used so we know which is related to which, so we can properly gather objects from the map script. (once it's loaded)
 
         // for each layer, create entities
         for (uint curLayer = 0; curLayer < map.NumLayers(); curLayer++)
@@ -749,13 +731,14 @@ void CEngine::LoadMap(const std::string& filename)
         if (!script.LoadMapScripts(filename))
             Script_Error();
 
-        // Now that the scripts have been loaded, it's time to get the activation scripts for the entities
+        // Now that the scripts have been loaded, it's time to get the movement and activation scripts for the entities
         for (std::map<const Map::Entity*, Entity*>::iterator
             iter = entMap.begin();
             iter != entMap.end();
             iter++)
         {
             Entity* ent = iter->second;
+            iter->second->moveScript = script.GetObjectFromMapScript(iter->first->moveScript);
             iter->second->activateScript = script.GetObjectFromMapScript(iter->first->activateScript);
             iter->second->adjActivateScript = script.GetObjectFromMapScript(iter->first->adjActivateScript);
         }

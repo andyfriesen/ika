@@ -76,7 +76,7 @@ void CMovescriptEditor::UpdateDlg()
         // Update the animation script table.
         wxASSERT(animScriptGrid != 0);
         animScriptGrid->BeginBatch();
-        int delta = animScriptGrid->GetRows() - (chr.moveScripts.size() + 1); // we want one row per script, plus one at the end.
+        int delta = animScriptGrid->GetRows() - (chr.moveScripts.size()); // we want one row per script
         if (delta > 0)          animScriptGrid->DeleteRows(delta);
         else if (delta < 0)     animScriptGrid->AppendRows(-delta);
 
@@ -161,30 +161,31 @@ void CMovescriptEditor::EditCell(wxGridEvent& event)
 
 void CMovescriptEditor::EditAnimScript(wxGridEvent& event)
 {
+    CCHRfile::StringMap& scripts = pSprite->GetCHR().moveScripts;
+
     int row = event.GetRow();
     int col = event.GetCol();
     const wxString cell = animScriptGrid->GetCellValue(row, col);
 
-    if (cell.empty())
+    if (col == 0) // renaming the script
     {
-        event.veto();
-        //animScriptGrid->DeleteRows(row);
-        //UpdateData();
-        //pSprite->GetCHR().moveScripts.erase(pSprite->GetCHR().moveScripts.begin() + row);
-        //animScriptGrid->DeleteRows(row);
+        if (!scripts.count(cell.c_str()))
+        {
+            std::string oldName = oldValue;
+            std::string script = scripts[oldValue];
+            scripts.erase(oldValue);
+            scripts[cell.c_str()] = script;
+        }
+        else
+        {
+            ::wxMessageBox("A script with this name already exists.", "oops", wxOK | wxCENTER, this);
+            animScriptGrid->SetCellValue(oldValue.c_str(), row, col);
+        }
     }
-    else
+    else // editing the actual script
     {
-        if (col == 1) // editing the actual script
-        {
-            std::string name = animScriptGrid->GetCellValue(row, 0).c_str();
-            pSprite->GetCHR().moveScripts[name] = cell.c_str();
-        }
-        // else rename the script (NYI.  Scripts are still ordinal)
-        {
-            // it'd be awful nice if we could know what was in the cell before it was changed.
-            UpdateData();   // -_-
-        }
+        std::string name = animScriptGrid->GetCellValue(row, 0).c_str();
+        scripts[name] = cell.c_str();
     }
 }
 

@@ -27,6 +27,7 @@ public:
     bool LoadMapScripts(const std::string& fname);
 
     void ExecObject(const ScriptObject& func);
+    void ExecObject(const ScriptObject& func, const Entity* ent);       // needed for entity movescripts.  Passes the entity as an argument to the function object.
 
     ScriptObject GetObjectFromMapScript(const std::string& name);       // a bit verbose, but it says what it does.
 

@@ -28,6 +28,7 @@ Entity::Entity(CEngine* njin)
     , curFrame            (0)
     , specFrame           (-1)
 
+    , moveScript(0)
     , activateScript(0)
     , adjActivateScript(0)
 {}
@@ -36,7 +37,6 @@ Entity::Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex)
     : engine(*njin)
     , animscriptofs       (0)
     , animscriptct        (0)
-    , moveScript          (e.moveScript)
     , delayCount          (0)
     , x                   (e.x)
     , y                   (e.y)
@@ -60,10 +60,9 @@ Entity::Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex)
     , obstructedByEntities(e.obstructedByEntities)
 
     // These can't be set here, because the entities are created before the script is loaded
+    , moveScript(0)
     , activateScript(0)
     , adjActivateScript(0)
-    //, adjActivateScript   (e.adjActivateScript)
-    //, activateScript      (e.activateScript)
 {}
 
 static uint get_int(const std::string& s, uint& offset)
@@ -133,11 +132,6 @@ void Entity::SetAnimScript(const std::string& newscript)
     UpdateAnimation();                                                                  // and immediately update the frame
 }
 
-void Entity::SetMoveScript(const std::string& newScript)
-{
-    moveScript = newScript;
-}
-
 void Entity::SetFace(Direction d)
 {
     direction = d;
@@ -150,7 +144,7 @@ void Entity::Stop()
         return;
 
     isMoving = false;
-    SetAnimScript(sprite->Script((int)direction + 8));
+    SetAnimScript(sprite->GetIdleScript(direction));
     destLocation.x = x;
     destLocation.y = y;
 }
@@ -179,7 +173,7 @@ Direction Entity::MoveDiagonally(Direction d)
     if (obstructedByMap && engine.DetectMapCollision(x, newy, sprite->nHotw, sprite->nHoth, layerIndex))
          d1=face_nothing;
     else if (obstructedByEntities && engine.DetectEntityCollision(this, x, newy, sprite->nHotw, sprite->nHoth, layerIndex, true))
-            d1=face_nothing;
+         d1=face_nothing;
 
     if (obstructedByMap && engine.DetectMapCollision(newx, y, sprite->nHotw, sprite->nHoth, layerIndex))
          d2=face_nothing;
@@ -216,8 +210,8 @@ void Entity::Move(Direction d)
 
     if (direction != olddir || !isMoving)
     {
-        isMoving=true;
-        SetAnimScript(sprite->Script((int)direction));
+        isMoving = true;
+        SetAnimScript(sprite->GetWalkScript(direction));
     }
 
     int newx=x, newy=y;
@@ -244,7 +238,7 @@ void Entity::Move(Direction d)
         Entity* pEnt = engine.DetectEntityCollision(this, newx, newy, sprite->nHotw, sprite->nHoth, layerIndex, true);
         if (pEnt && pEnt->obstructsEntities)
         {
-            if (this == engine.pPlayer && pEnt->adjActivateScript) //pEnt->adjActivateScript.length() != 0)                                    // Adjacent activation
+            if (this == engine.pPlayer && pEnt->adjActivateScript)  // Adjacent activation
                 engine.script.ExecObject(pEnt->adjActivateScript);
         
             Stop(); 
@@ -257,8 +251,8 @@ void Entity::Move(Direction d)
 
 void Entity::GetMoveScriptCommand()
 {
-    if (moveScript.length())
-        engine.script.CallScript(moveScript, this);
+    if (moveScript)
+        engine.script.ExecObject(moveScript, this);
     else
         delayCount = 1000000;   // whatever.  The idea here is that the entity does nothing.  (so, we delay for a little under 3 hours before checking again, by default)
 }

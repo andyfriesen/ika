@@ -20,10 +20,23 @@ Sprite::Sprite(const std::string& fname, Video::Driver* v)
     nHoty = chr.HotY();
     nHotw = chr.HotW();
     nHoth = chr.HotH();
+
+    _scripts = chr.moveScripts;
     
-    sScript.resize(chr.moveScripts.size());
-    for (uint s = 0; s < chr.moveScripts.size(); s++)
-        sScript[s] = chr.moveScripts[s];
+    // Get a list of idle and move scripts.  Since we'll be needing these quite often, it's useful to have them arranged in such a format
+    // It's also faster, if that actually matters any.
+    const char* dirNames[] = {
+        "up", "down", "left", "right",
+        "upleft", "upright", "downleft", "downright"
+    };
+    const int numDirs = sizeof dirNames / sizeof dirNames[0];
+    for (uint i = 0; i < numDirs; i++)
+    {
+        std::string s;
+        
+        s = "idle_";    s += dirNames[i];   _idleScripts[i] = _scripts[s];
+        s = "walk_";    s += dirNames[i];   _walkScripts[i] = _scripts[s];
+    }
     
     _frames.resize(chr.NumFrames());
     for (uint i = 0; i < chr.NumFrames(); i++)
@@ -38,14 +51,28 @@ Sprite::~Sprite()
         video->FreeImage(_frames[i]);
 }
 
-const std::string& Sprite::Script(uint s) const
+const std::string& Sprite::Script(const std::string& name)
 {
     static std::string dummy;
 
-    if (s >= sScript.size())
+    if (!_scripts.count(name))
         return dummy;
 
-    return sScript[s];
+    return _scripts[name];
+}
+
+const std::string& Sprite::GetIdleScript(Direction dir)
+{
+    assert(int(dir) >= 0 && int(dir) < 8);
+
+    return _idleScripts[int(dir)];
+}
+
+const std::string& Sprite::GetWalkScript(Direction dir)
+{
+    assert(int(dir) >= 0 && int(dir) < 8);
+
+    return _walkScripts[int(dir)];
 }
 
 Video::Image* Sprite::GetFrame(uint frame)

@@ -160,6 +160,32 @@ void ScriptEngine::ExecObject(const ScriptObject& func)
     Py_DECREF(result);
 }
 
+void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent)
+{
+    CDEBUG("ScriptEngine::ExecObject");
+
+    Script::Entity::EntityObject* entObject = Script::Entity::instances[const_cast<::Entity*>(ent)];
+    assert(entObject);
+
+    if (!func.get())
+    {
+        Log::Write("Attempt to call null object");
+        return;
+    }
+    
+    PyObject* args = Py_BuildValue("(O)", entObject);
+    PyObject* result = PyEval_CallObject((PyObject*)func.get(), args); 
+    Py_DECREF(args);
+
+    if (!result)
+    {
+        PyErr_Print();
+        engine->Script_Error();
+    }
+    
+    Py_DECREF(result);
+}
+
 ScriptObject ScriptEngine::GetObjectFromMapScript(const std::string& name)
 {
     assert(mapModule != 0);

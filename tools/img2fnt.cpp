@@ -21,7 +21,6 @@ int main(int c, char **args) {
         exit(1);
     }
 
-    char numSubsets = 1; // read me from command line or file
     int imgw = image->Width(), imgh = image->Height();
 
     RGBA *pixels = image->GetPixels();
@@ -33,6 +32,7 @@ int main(int c, char **args) {
     std::vector<RGBA> glyphData;
     int width = 0, height = 0, glyphX, rowHeight;
     u16 numGlyphs = 0;
+    char numSubsets = 0;
 
     // find all rows of glyphs
     while(y < imgh) {
@@ -53,7 +53,7 @@ int main(int c, char **args) {
             glyphW.push_back(w = x - glyphX);
             // find height
             h = 0;
-            while((u32)*pixel2 != surround) {
+            while((u32)*pixel2 != surround && y + h < imgh) {
                 //std::raw_storage_iterator<RGBA*, int> mem(pixel2), mem2(pixel2 + glyphW.back());
                 //glyphData.insert(glyphData.size(), mem, mem2);  ???
                 RGBA* p = pixel2;
@@ -78,17 +78,27 @@ int main(int c, char **args) {
         }
     }
 
+    std::vector<u16*> subsets;
     u16 *stdSubset = new u16[256];
     memset(stdSubset, 0, 256 * sizeof(u16));
-    for (int j = 0; j < 96; j++)
-        stdSubset[j + 32] = j; // + (nCurset * 96);
+    for(int i = 0; i < 96; i++)
+        stdSubset[i + 32] = i;
+    numSubsets = numGlyphs / 96;
+    for(int j = 0; j < numSubsets; j++) {
+        // subsets could be a whole lot more configurable than this.
+        u16 *newSubset = new u16[256];
+        for(int i = 0; i < 256; i++)
+            newSubset[i] = stdSubset[i] + j*96;
+        subsets.push_back(newSubset);
+    }
 
     File f;
     f.OpenWrite(args[2], 1);
     f.Write("FONT27");
     f.Write(numSubsets);
     f.Write(numGlyphs);
-    f.Write(stdSubset, 256 * sizeof(u16));
+    for(std::vector<u16*>::iterator s = subsets.begin(); s != subsets.end(); s++)
+        f.Write(*s, 256 * sizeof(u16));
     for(int i=0; i < numGlyphs; i++) {
         f.Write(glyphW[i]);
         f.Write(glyphH[i]);
@@ -103,6 +113,6 @@ int main(int c, char **args) {
     f.WriteCompressed(pBuffer, glyphData.size() * sizeof(RGBA));
     f.Close();
 
-    std::cout << "Wrote " << (int)numSubsets << " subset(s)." << std::endl;
-    std::cout << numGlyphs << " glyphs." << std::endl;
+    std::cout << "Wrote " << args[2] << "." << std::endl;
+    std::cout << (int)numSubsets << " subset(s), " << numGlyphs << " glyphs." << std::endl;
 }

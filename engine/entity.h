@@ -11,14 +11,14 @@ const int entspeed_normal = 100;
 class CEngine;
 struct Sprite;
 
-/*!
-  Entity stuff.
-
-  AI is done here.  Every entity has a pointer to the engine from which it was spawned, so it has
-  access to the engine's state.
-
-  I'm not sure if I like this, but it's better than it was before.
-*/
+/**
+ * Entity stuff.
+ *
+ * AI is done here.  Every entity has a pointer to the engine from which it was spawned, so it has
+ * access to the engine's state.
+ *
+ * I'm not sure if I like this, but it's better than it was before.
+ */
 
 struct Entity
 {
@@ -26,7 +26,6 @@ struct Entity
     uint        animscriptofs;                                      //!< current offset in the current anim script
     uint        animscriptct;                                       //!< delay counter
     
-    std::string moveScript;                                         //!< Movement script assigned to this entity.
     
     int         x, y;                                               //!< coordinates of the entity
     uint        layerIndex;                                         //!< layer the entity inhabits
@@ -50,6 +49,7 @@ struct Entity
     
     std::string name;                                               //!< the entity's name
     
+    ScriptObject moveScript;                                        //!< Movement script assigned to this entity.
     ScriptObject activateScript;                                    //!< event to be called when the entity is activated
     ScriptObject adjActivateScript;                                 //!< event to be called when the entity touches the player
     
@@ -61,7 +61,6 @@ struct Entity
     
     void        UpdateAnimation();                                  //!< update the entity's frame based on its active animation script
     void        SetAnimScript(const std::string& newScript);        //!< makes the entity animate according to the specified script
-    void        SetMoveScript(const std::string& newScript);        //!< makes the entity move according to the specified script
 
     void        SetFace(Direction d);                               //!< Makes the entity face the specified direction. (and stop)
 

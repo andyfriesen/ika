@@ -15,8 +15,8 @@ namespace Video
 struct SpriteException{};
 
 /**
-    A hardware dependant representation of a spriteset file.
-*/
+ *  A hardware dependant representation of a spriteset file.
+ */
 struct Sprite : RefCounted
 {
     std::string _fileName;
@@ -34,10 +34,14 @@ struct Sprite : RefCounted
     inline uint Width()  const { return nFramex; }
     inline uint Height() const { return nFramey; }
 
-    const std::string& Script(uint s) const;
+    const std::string& Script(const std::string& name);
+    const std::string& GetIdleScript(Direction dir);
+    const std::string& GetWalkScript(Direction dir);
 
 private:
-    std::vector<std::string>  sScript;                      ///< move scripts
+    std::map<std::string, std::string> _scripts;            ///< all move scripts
+    std::string _walkScripts[8];                            ///< walking scripts
+    std::string _idleScripts[8];                            ///< idle(standing) scripts
     Video::Driver* video;
 
     uint nFramex, nFramey;                                  ///< frame size
@@ -46,10 +50,10 @@ private:
 };
 
 /**
-    Responsible for handling sprite allocation and deallocation.
-    CSpriteController also keeps tabs on redundant requests for the same sprite, and
-    refcounts accordingly.
-*/
+ *  Responsible for handling sprite allocation and deallocation.
+ *  CSpriteController also keeps tabs on redundant requests for the same sprite, and
+ *  refcounts accordingly.
+ */
 class CSpriteController
 {
     typedef std::map<std::string, Sprite*> SpriteMap;

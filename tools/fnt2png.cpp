@@ -18,33 +18,49 @@ int main(int c, char **args) {
 
     CFontFile font;
     font.Load(args[1]);
-    int fntw = font.Width(), fnth = font.Height();
+    int fntw = font.Width() + 1, fnth = font.Height() + 1; // adjusted for spacer
     uint numGlyphs = font.NumGlyphs();
+    int numSubsets = font.NumSubSets();
 
-    int numDown = (int)((double)numGlyphs / numAcross + 0.5);
-    int imgw = (fntw + 1) * numAcross + 1;
-    int imgh = (fnth + 1) * numDown + 1;
+    // debug: check font subset data
+    /*int ns = font.NumSubSets();
+    for(int j = 0; j < ns; j++) {
+        CFontFile::SSubSet &s = font.GetSubSet(j);
+        for(int i = 0; i < 256; i++)
+            std::cout << s.glyphIndex[i] << ", ";
+        std::cout << std::endl << std::endl;
+    }*/
+
+    // assumes all subsets have the same size (likely 96).
+    // not perfect but it'll have to do for now.
+    int perSubset = (int)((double)numGlyphs / numSubsets + 0.5);
+    int numDown = (int)((double)perSubset / numAcross + 0.5) * numSubsets;
+    int imgw = fntw * numAcross + 1;
+    int imgh = fnth * numDown + numSubsets;
     Canvas image(imgw, imgh);
     image.Clear(RGBA(0,255,255,255));
 
-    int x=1, y=1, w, h;
-    for(int i=0; i < numGlyphs; i++) {
-        Canvas &glyph = font.GetGlyph(i);
-        w = glyph.Width();
-        if(x+w >= imgw) {
-            x = 1;
-            y += fnth + 1;
+    int x=0, y=1, w, h;
+    for(int i=0, j=0; i < numGlyphs; i++, j++, x++) {
+        if(j >= perSubset) {
+            j = 0;
+            if(x > 0) {
+                x = 0;
+                y += fnth;
+            }
+            ++y; // 2 pixel spacer between subsets
         }
-        CBlitter<Opaque>::Blit(glyph, image, x, y);
-        x += w + 1;
+        if(x >= numAcross) {
+            x = 0;
+            y += fnth;
+        }
+        Canvas &glyph = font.GetGlyph(i);
+        CBlitter<Opaque>::Blit(glyph, image, x*fntw+1, y);
     }
     image.Save(args[2]);
 
     std::cout << "Wrote " << args[2] << "." << std::endl;
-    std::cout << "Max glyph size " << fntw << "x" << fnth << "." << std::endl;
+    std::cout << "Max glyph size " << (fntw-1) << "x" << (fnth-1) << "." << std::endl;
     std::cout << font.NumSubSets() << " subset(s), " << numGlyphs << " glyphs." << std::endl;
-    //CFontFile::SSubSet &s = font.GetSubSet(0);
-    //for(int i = 0; i < 256; i++)
-        //std::cout << s.glyphIndex[i] << std::endl;
     exit(0);
 }

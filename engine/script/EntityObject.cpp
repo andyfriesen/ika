@@ -1,11 +1,11 @@
 /*
-Python entity interface.
-
-I'm not sure if I'm %100 happy with this setup.  Entities are *only* destroyed through Python's GC, which means that
-entities can be made "persistent" simply by holding on to a reference to them.  Additionally, there is an implicitly
-defined dictionary that holds all the map-defined entities. (and serves as their "life line", to keep them from
-being garbage collected)    
-*/
+ * Python entity interface.
+ * 
+ * I'm not sure if I'm %100 happy with this setup.  Entities are *only* destroyed through Python's GC, which means that
+ * entities can be made "persistent" simply by holding on to a reference to them.  Additionally, there is an implicitly
+ * defined dictionary that holds all the map-defined entities. (and serves as their "life line", to keep them from
+ * being garbage collected)    
+ */
 
 #include <set>
 
@@ -63,6 +63,14 @@ namespace Script
             GET(SpecFrame)          { return PyInt_FromLong(self->ent->specFrame); }
             GET(Visible)            { return PyInt_FromLong(self->ent->isVisible ? 1 : 0); }
             GET(Name)               { return PyString_FromString(self->ent->name.c_str()); }
+            GET(MoveScript)
+            {
+                PyObject* o = (PyObject*)self->ent->moveScript.get();
+                if (!o) o = Py_None;
+                Py_INCREF(o);
+                return o;
+            }
+
             GET(ActScript)          
             { 
                 PyObject* o = (PyObject*)self->ent->activateScript.get();
@@ -106,9 +114,11 @@ namespace Script
             {
                 self->ent->direction = (Direction)PyInt_AsLong(value);
 
-                int i = (int)self->ent->direction;
-                if (!self->ent->isMoving) i += 8;
-                self->ent->SetAnimScript(self->ent->sprite->Script(i));
+                Direction dir = self->ent->direction;
+                if (!self->ent->isMoving)
+                    self->ent->SetAnimScript(self->ent->sprite->GetWalkScript(dir));
+                else
+                    self->ent->SetAnimScript(self->ent->sprite->GetIdleScript(dir));
 
                 self->ent->UpdateAnimation();
                 return 0;
@@ -117,6 +127,12 @@ namespace Script
             SET(SpecFrame)          { self->ent->specFrame = PyInt_AsLong(value); return 0; }
             SET(Visible)            { self->ent->isVisible = PyInt_AsLong(value)!=0 ; return 0; }
             SET(Name)               { self->ent->name = PyString_AsString(value); return 0; }
+            SET(MoveScript)
+            {
+                self->ent->moveScript.set(value);
+                return 0;
+            }
+
             SET(ActScript)
             {
                 self->ent->activateScript.set(value);
@@ -138,9 +154,11 @@ namespace Script
                 engine->sprite.Free(self->ent->sprite);
                 self->ent->sprite = engine->sprite.Load(PyString_AsString(value), engine->video);
 
-                int i = (int)self->ent->direction;
-                if (!self->ent->isMoving) i += 8;
-                self->ent->SetAnimScript(self->ent->sprite->Script(i));
+                Direction dir = self->ent->direction;
+                if (!self->ent->isMoving)
+                    self->ent->SetAnimScript(self->ent->sprite->GetWalkScript(dir));
+                else
+                    self->ent->SetAnimScript(self->ent->sprite->GetIdleScript(dir));
                 self->ent->UpdateAnimation();
                 return 0;
             }
@@ -158,6 +176,7 @@ namespace Script
             {   "specframe",        (getter)getSpecFrame,           (setter)setSpecFrame,       "If nonzeno, this frame is displayed instead of the normal animation" },
             {   "visible",          (getter)getVisible,             (setter)setVisible,         "If nonzero, the entity is drawn when onscreen" },
             {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
+            {   "movescript",       (getter)getMoveScript,          (setter)setMoveScript,      "Gets or sets the entity's current move script."    },
             {   "actscript",        (getter)getActScript,           (setter)setActScript,       "Gets or sets the object called when the entity is activated."    },
             {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "Gets or sets the object called when the entity touches the player. (not implemented)" },
 //            {   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated."  },
