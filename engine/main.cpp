@@ -54,7 +54,6 @@ void CEngine::Script_Error()
     printf("%s", err.c_str());
 #endif
 
-    Shutdown();
     exit(-1);
 }
 
@@ -212,11 +211,8 @@ void CEngine::Startup()
         }
 #endif
 
-        if (!cfg.Int("nosound"))
-        {
-            Log::Write("Initializing sound");
-            Sound::Init();
-        }
+        Log::Write("Initializing sound");
+        Sound::Init(cfg.Int("nosound") != 0);
     }
     catch (Video::Exception)
     {

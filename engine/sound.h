@@ -8,7 +8,7 @@ namespace Sound
 {
     struct Exception{};
 
-    void Init();
+    void Init(bool nullAudio = false);
     void Shutdown();
 
     audiere::OutputStream* OpenSound(const char* fname);
