@@ -76,6 +76,7 @@ void CGraphFrame::OnMouseEvent(wxMouseEvent& event)
 void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
 {
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
+    glBindTexture(GL_TEXTURE_2D,0);
 
     glBegin(GL_LINE_LOOP);
 

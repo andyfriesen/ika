@@ -257,7 +257,7 @@ void CMapView::HandleLayerEdit(wxMouseEvent& event)
     switch (csrmode)
     {
     case mode_normal:
-        pMap->SetTile(tilex,tiley,nCurlayer,pTileset->GetCurTile());
+        pMap->SetTile(tilex,tiley,nCurlayer,pTileset->CurTile());
         break;
     }
 

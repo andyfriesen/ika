@@ -75,7 +75,8 @@ void CTileSetView::OnLeftClick(wxMouseEvent& event)
     int x,y;
     event.GetPosition(&x,&y);
 
-    pTileset->SetCurTile(TileAt(x,y));  
+    pTileset->SetCurTile(TileAt(x,y));
+    Render();
 }
 
 void CTileSetView::OnRightClick(wxMouseEvent& event)
@@ -109,6 +110,14 @@ void CTileSetView::Render()
         }
     }
 
+    int x;
+#ifndef MSVC
+    int y;          // VC6 is retarded.  It doesn't handle for loop scoping right.
+#endif
+
+    TilePos(pTileset->CurTile(),x,y);
+    pGraph->Rect(x-1,y-1,tx+1,ty+1,RGBA(255,255,255));
+
     pGraph->ShowPage();
 }
 
@@ -141,4 +150,16 @@ int CTileSetView::TileAt(int x,int y) const
 
     if (t>pTileset->NumTiles()) return 0;
     return t;
+}
+
+// Returns the position at which the tile is drawn at
+void CTileSetView::TilePos(int tileidx,int& x,int& y) const
+{
+    int nTilewidth=GetClientSize().GetWidth()/pTileset->Width();
+
+    x=tileidx%nTilewidth;
+    y=tileidx/nTilewidth-ywin;
+
+    x*=pTileset->Width();
+    y*=pTileset->Height();
 }

@@ -24,7 +24,7 @@ class CTileSet
 
     VSP*                pVsp;
     vector<CTile>       bitmaps;    // hardware dependant copies of the tiles
-    public:    
+public:    
     void Sync();                    // updates bitmaps to mirror the VSP
     void SyncAll();                 // Deallocates the bitmaps, then reconstructs them all.
     void FreeBitmaps();             // Deallocates the bitmaps vector
@@ -54,7 +54,7 @@ public:
     // Use the CTileSet interface instead, as it will keep things synch'd.
     VSP& GetVSP() { return *pVsp; }
 
-    inline int GetCurTile() const { return nCurtile; }
+    inline int CurTile() const { return nCurtile; }
     void SetCurTile(int t);
 
     // TODO: methods for inserting/deleting tiles, and moving them around
