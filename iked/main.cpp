@@ -1,4 +1,3 @@
-#include "configdlg.h"
 #include "main.h"
 
 #include "resource.h"
@@ -7,8 +6,10 @@
 #include "mapview.h"
 #include "projectview.h"
 #include "codeview.h"
+#include "configdlg.h"
 
 #include <wx\resource.h>
+#include "controller.h"
 
 
 #include "dlg.wxr"
@@ -60,6 +61,12 @@ CMainWnd::CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
     wxMenuBar* menu=CreateBasicMenu();
     SetMenuBar(menu);
 
+    CreateStatusBar();
+
+    int nWidths[]={ -3,-1 };
+
+    GetStatusBar()->SetFieldsCount(2);
+    GetStatusBar()->SetStatusWidths(2,nWidths);
 }
 
 // creates the base menu items that apply to all app windows.

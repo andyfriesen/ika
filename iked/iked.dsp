@@ -138,6 +138,10 @@ SOURCE=.\configdlg.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\controller.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\graph.h
 # End Source File
 # Begin Source File

@@ -44,4 +44,5 @@ void CMapView::OnPaint()
 
 void CMapView::OnSize(wxSizeEvent& event)
 {
+    pGraph->SetSize(event.GetSize());
 }

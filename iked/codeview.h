@@ -2,7 +2,7 @@
 #ifndef CODEVIEW_H
 #define CODEVIEW_H
 
-#include <string>
+#include "types.h"
 #include <wx\wx.h>
 #include <wx\fontdlg.h>
 #include <wx\stc\stc.h>

@@ -1,7 +1,7 @@
 #ifndef PROJECTVIEW_H
 #define PROJECTVIEW_H
 
-#include <string>
+#include "types.h"
 #include <wx\wx.h>
 #include <wx\treectrl.h>
 #include <wx\imaglist.h>

@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <string>
+#include "types.h"
 #include <wx/wx.h>
 #include <wx/toolbar.h>
 #include <wx/bitmap.h>
