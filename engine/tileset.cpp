@@ -55,7 +55,7 @@ CTileSet::~CTileSet()
         video->FreeImage(hFrame[i]);
 }
 
-Video::Image* CTileSet::GetTile(int index)
+Video::Image* CTileSet::GetTile(uint index)
 {
     if (index < 0 || index >= nTileidx.size())
         index = 0;
@@ -82,7 +82,6 @@ void CTileSet::UpdateAnimation(int time)
                 AnimateStrand(animstate[j]);
     }
 }
-
 
 void CTileSet::AnimateStrand(VSP::AnimState& anim)
 {

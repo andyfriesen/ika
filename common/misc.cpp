@@ -8,7 +8,7 @@ look at misc.h :P
 #include <time.h>
 #include "misc.h"
 
-const char* IKA_VERSION = "0.57";
+const char* IKA_VERSION = "0.58 uber-beta";
 
 bool IsPowerOf2(uint i)
 {
@@ -111,6 +111,23 @@ std::string ToString(int i)
     std::stringstream s;
     s << i << '\0';
     return s.str();
+}
+
+uint hexToInt(const std::string& s)
+{
+    const std::string digits = "0123456789ABCDEF";
+    std::string t = Upper(s);
+
+    uint value = 0;
+    for (uint i = 0; i < t.length(); i++)
+    {
+        int digit = digits.find(t[i]);
+        if (digit == std::string::npos)
+            return value;
+
+        value = (value << 4) | digit;
+    }
+    return value;
 }
 
 //---------------------------------------

@@ -9,7 +9,7 @@
 #include "Python.h"
 
 // Rain of prototypes
-class Font;
+struct Font;
 struct Entity;
 class Engine;
 class Canvas;

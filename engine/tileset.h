@@ -35,7 +35,7 @@ public:
     CTileSet(const std::string& fname, Video::Driver* v);
     ~CTileSet();
 
-    Video::Image* GetTile(int index);
+    Video::Image* GetTile(uint index);
     inline Video::Image* operator[](int index) { return GetTile(index); }
 
     inline int NumTiles() const { return nFrames; }     ///< Returns the number of tiles in the tileset. ;)

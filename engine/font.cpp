@@ -15,9 +15,10 @@
 
 #include <cassert>
 
-static const char subsetmarker = '~';
+static const char subsetMarker = '~';
+static const char colourMarker = '#';
 
-Font::Font(const char* filename, Video::Driver* v)
+Font::Font(const std::string& filename, Video::Driver* v)
     : _video(v)
     , _width(0)
     , _height(0)
@@ -25,7 +26,7 @@ Font::Font(const char* filename, Video::Driver* v)
 {
     CDEBUG("cfont::loadfnt");
 
-    if (!_fontFile.Load(filename))
+    if (!_fontFile.Load(filename.c_str()))
         throw FontException();
 
     _glyphs.resize(_fontFile.NumGlyphs());
@@ -79,17 +80,18 @@ Canvas& Font::GetGlyphCanvas(char c, uint subset) const
     return _fontFile.GetGlyph(GetGlyphIndex(c, subset));
 }
 
-void Font::PrintChar(int& x, int y, uint subset, char c)
+void Font::PrintChar(int& x, int y, uint subset, char c, RGBA colour)
 {
     Video::Image* img = GetGlyphImage(c, subset);
 
     if (!img) return;
 
-    _video->BlitImage(img, x, y);
+    //_video->BlitImage(img, x, y);
+    _video->TintBlitImage(img, x, y, colour.i);
     x += img->Width();
 }
 
-void Font::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::BlendMode blendMode)
+void Font::PrintChar(int& x, int y, uint subset, char c, RGBA colour, Canvas& dest, Video::BlendMode blendMode)
 {
     //if (c < 0 || c > 96)
     //    return;
@@ -112,43 +114,73 @@ void Font::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::Bl
 }
 
 template <class Printer>
-void Font::PaintString(int startx, int starty, const char* s, Printer& print)
+void Font::PaintString(int startx, int starty, const std::string& s, Printer& print)
 {
     int cursubset = 0;
     int x = startx;
     int y = starty;
+    uint len = s.length();
+    RGBA colour(255, 255, 255);
 
     _video->SetBlendMode(Video::Normal);
-    for (uint i=0; i < strlen(s); i++)
+    for (uint i=0; i < len; i++)
     {
         switch (s[i])
         {
         case '\n':          // newline
             y += _height;
             x = startx;
-            break;
+            continue;
 
         case '\t':          // tab
             x += _tabSize - (x - startx) % _tabSize;
-            break;
+            continue;
 
-        case subsetmarker:
+        case subsetMarker:
             i++;
 
-            if (i >= strlen(s))
-                return; // subset marker at end of string.  bjork.
+            if (i >= len)
+                break; // subset marker at end of string.  just print it
 
-            if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets()))                    // number?  switch the subset. (also make sure that it's a valid subset index
+            if (i < len && s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets()))
+            {
+                // ~ followed by a digit is not printed.  the subset is instead changed.
                 cursubset=s[i] - '0';
-            else if (s[i] == subsetmarker)
-                //PrintChar(x, y, cursubset, s[i]);
-                print(x, y, cursubset, s[i], this);
-            break;
+                continue;
+            }
+            else
+            {
+                // ~ followed by anything else (or nothing at all) is printed like any other character.
+                i--;
+                break;
+            }
 
-        default:
-            //PrintChar(x, y, cursubset, s[i]);
-            print(x, y, cursubset, s[i], this);
-        }
+        case colourMarker:
+            {
+                i++;
+                int pos = s.find(']', i);
+                if (i >= len || s[i] != '[' || pos == std::string::npos)
+                {
+                    i--;
+                    break;
+                }
+                std::string t(s.substr(i + 1, pos - i - 1));
+                
+                // #[123] becomes #[112233]
+                // #[1234] becomes #[11223344]
+                // #[123456] becomes #[123456]
+                if (t.length() == 3 || t.length() == 4)
+                    t = std::string() + t[0] + t[0] + t[1] + t[1] + t[2] + t[2];
+                if (t.length() == 6)
+                    t = std::string("FF") + t;
+
+                colour = hexToInt(t);
+                i = pos + 1;
+            }
+        };
+
+        // if execution gets here, we found no control character
+        print(x, y, cursubset, s[i], colour, this);
     }
 }
 
@@ -156,9 +188,9 @@ namespace
 {
     struct PrintToVideo
     {
-        inline void operator ()(int& x, int y, int subset, char c, Font* font)
+        inline void operator ()(int& x, int y, int subset, char c, RGBA colour, Font* font)
         {
-            font->PrintChar(x, y, subset, c);
+            font->PrintChar(x, y, subset, c, colour);
         }
     };
 
@@ -172,57 +204,69 @@ namespace
             , _blendMode(blendMode)
         {}
 
-        inline void operator ()(int& x, int y, int subset, char c, Font* font)
+        inline void operator ()(int& x, int y, int subset, char c, RGBA colour, Font* font)
         {
-            font->PrintChar(x, y, subset, c, _dest, _blendMode);
+            font->PrintChar(x, y, subset, c, colour, _dest, _blendMode);
         }
     };
 };
 
-void Font::PrintString(int x, int y, const char* s)
+void Font::PrintString(int x, int y, const std::string& s)
 {
     PrintToVideo printer;
     PaintString(x, y, s, printer);
 }
 
-void Font::PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode)
+void Font::PrintString(int x, int y, const std::string& s, Canvas& dest, Video::BlendMode blendMode)
 {
     PrintToCanvas printer(dest, blendMode);
     PaintString(x, y, s, printer);
 }
 
-int Font::StringWidth(const char* s) const
+int Font::StringWidth(const std::string& s) const
 {
     int _width = 0;
     int currentSubSet = 0;
-    uint len = strlen(s);
+    uint len = s.length();
 
     for (uint i = 0; i < len; i++)
     {
-        unsigned char c = s[i];
+        u8 c = s[i];
 
         switch (c)
         {
         case '\n':
-            return _width;                                                          // um.. @_x
+            //return _width;                                                          // um.. @_x
+            return max(_width, StringWidth(s.substr(i + 1)));
 
         case '\t':                                                                  // tab
             _width += _tabSize - _width % _tabSize;
-            break;
+            continue;
 
-        case subsetmarker:
+        case subsetMarker:
             i++;
-            if (s[i] == subsetmarker)
-                _width += GetGlyphCanvas(subsetmarker, currentSubSet).Width();
+            if (s[i] == subsetMarker)
+                _width += GetGlyphCanvas(subsetMarker, currentSubSet).Width();
             else if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets()))                       // valid subset number?
                 currentSubSet = s[i] - '0';
-            break;
+            continue;
 
-        default:
-            if (c < 32 || c > 32 + 96)
-                continue;                                                           // invalid char, skip it.
-            _width += GetGlyphCanvas(c, currentSubSet).Width();
-        }
+        case colourMarker:
+            {
+                if (i + 1 > len || s[i + 1] != '[')
+                    break;
+                int pos = s.find(']', i + 1);
+                if (pos == std::string::npos)
+                    break;
+
+                i = pos + 1;
+                continue;
+            }
+        };
+
+        if (c < 32 || c > 32 + 96)
+            continue;                                                           // invalid char, skip it.
+        _width += GetGlyphCanvas(c, currentSubSet).Width();
     }
     return _width;
 }
