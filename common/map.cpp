@@ -75,7 +75,7 @@ bool Map::Load(const std::string& filename)
     layers.clear();
     zones.clear();
     wayPoints.clear();
-
+    metaData.clear();
 
     std::ifstream file(filename.c_str());
     DataNode* rootNode;
