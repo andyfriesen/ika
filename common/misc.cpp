@@ -16,7 +16,7 @@ uint NextPowerOf2(uint i)
 {
     if (IsPowerOf2(i)) return i;
     
-    int j = 1;
+    uint j = 1;
     while ((j <<= 1) < i);
     return j;
 }

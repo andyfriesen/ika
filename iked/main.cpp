@@ -203,7 +203,7 @@ void CMainWnd::OnSize(wxSizeEvent& event)
 
 void CMainWnd::OnQuit(wxCloseEvent& event)
 {
-    for (std::set<IDocView*>::iterator i = pDocuments.begin(); i!=pDocuments.end(); i++)
+    for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
     {
         IDocView* pDoc=*i;
         pDoc->Close();

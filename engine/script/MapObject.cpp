@@ -32,40 +32,40 @@ namespace Script
 
             {   "GetTile",      (PyCFunction)Map_GetTile,       METH_VARARGS,
                 "Map.GetTile(x, y, layer) -> int\n\n"
-                "Returns the index of the tile at (x,y) on the layer specified."
+                "Returns the index of the tile at (x, y) on the layer specified."
             },
 
             {   "SetTile",      (PyCFunction)Map_SetTile,       METH_VARARGS,
                 "Map.SetTile(x, y, layer, tile)\n\n"
-                "Sets the tile at (x,y) of the layer specified."
+                "Sets the tile at (x, y) of the layer specified."
             },
 
             {   "GetObs",       (PyCFunction)Map_GetObs,        METH_VARARGS,
                 "Map.GetObs(x, y) -> int\n\n"
-                "Returns 1 if the tile at (x,y) is obstructed, or 0 if not."
+                "Returns 1 if the tile at (x, y) is obstructed, or 0 if not."
             },
 
             {   "SetObs",       (PyCFunction)Map_SetObs,        METH_VARARGS,
                 "Map.SetObs(x, y, obs)\n\n"
-                "If obs is nonzero, the tile at (x,y) is obstructed, else it is\n"
+                "If obs is nonzero, the tile at (x, y) is obstructed, else it is\n"
                 "unobstructed."
             },
 
             {   "GetZone",      (PyCFunction)Map_GetZone,       METH_VARARGS,
                 "Map.GetZone(x, y) -> int\n\n"
-                "Returns the id number of the zone at (x,y)"
+                "Returns the id number of the zone at (x, y)"
             },
             {   "SetZone",      (PyCFunction)Map_SetZone,       METH_VARARGS,
                 "Map.SetZone(x, y, zone)\n\n"
-                "Sets the zone id number at (x,y)."
+                "Sets the zone id number at (x, y)."
             },
             {   "GetParallax",  (PyCFunction)Map_GetParallax,   METH_VARARGS,
                 "Map.GetParallax(layer) -> (int, int, int, int)\n\n"
                 "Returns a 4-tuple containing parallax settings for the layer specified.\n"
                 "Its contents are as follows:\n"
-                "( parallax X multiplier,\n"
-                "  parallax X divisor,\n"
-                "  parallax Y multiplier,\n"
+                "( parallax X multiplier, \n"
+                "  parallax X divisor, \n"
+                "  parallax Y multiplier, \n"
                 "  parallax Y divisor )"
             },
             {   "SetParallax",  (PyCFunction)Map_SetParallax,   METH_VARARGS,
@@ -133,7 +133,7 @@ namespace Script
 
         PyObject* New()
         {
-            PyObject* map=PyObject_New(PyObject,&type);
+            PyObject* map=PyObject_New(PyObject, &type);
 
             if (!map)
                 return NULL;
@@ -152,12 +152,12 @@ namespace Script
         {
             char* filename;
 
-            if (!PyArg_ParseTuple(args,"s:MapSwitch",&filename))
+            if (!PyArg_ParseTuple(args, "s:MapSwitch", &filename))
                 return NULL;
 
             if (!File::Exists(filename))
             {
-                PyErr_SetString(PyExc_OSError,va("Unable to load %s",filename));
+                PyErr_SetString(PyExc_OSError, va("Unable to load %s", filename));
                 return NULL;
             }
 
@@ -171,7 +171,7 @@ namespace Script
         {
             char* rstring=NULL;
 
-            if (!PyArg_ParseTuple(args,"|s:RenderMap",&rstring))
+            if (!PyArg_ParseTuple(args, "|s:RenderMap", &rstring))
                 return NULL;
 
             if (rstring)
@@ -185,22 +185,22 @@ namespace Script
 
         METHOD(Map_GetTile)
         {
-            int x,y,lay;
+            int x, y, lay;
 
-            if (!PyArg_ParseTuple(args,"iii:Map.GetTile",&x,&y,&lay))
+            if (!PyArg_ParseTuple(args, "iii:Map.GetTile", &x, &y, &lay))
                 return NULL;
 
-            return PyInt_FromLong(engine->map.GetTile(x,y,lay));
+            return PyInt_FromLong(engine->map.GetTile(x, y, lay));
         }
 
         METHOD(Map_SetTile)
         {
-            int x,y,lay,tile;
+            int x, y, lay, tile;
 
-            if (!PyArg_ParseTuple(args,"iiii:Map.SetTile",&x,&y,&lay,&tile))
+            if (!PyArg_ParseTuple(args, "iiii:Map.SetTile", &x, &y, &lay, &tile))
                 return NULL;
 
-            engine->map.SetTile(x,y,lay,tile);
+            engine->map.SetTile(x, y, lay, tile);
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -208,22 +208,22 @@ namespace Script
 
         METHOD(Map_GetObs)
         {
-            int x,y;
+            int x, y;
 
-            if (!PyArg_ParseTuple(args,"ii:Map.GetObs",&x,&y))
+            if (!PyArg_ParseTuple(args, "ii:Map.GetObs", &x, &y))
                 return NULL;
 
-            return PyInt_FromLong(engine->map.IsObs(x,y));
+            return PyInt_FromLong(engine->map.IsObs(x, y));
         }
 
         METHOD(Map_SetObs)
         {
-            int x,y,bSet;
+            int x, y, bSet;
 
-            if (!PyArg_ParseTuple(args,"iii:Map.SetObs",&x,&y,&bSet))
+            if (!PyArg_ParseTuple(args, "iii:Map.SetObs", &x, &y, &bSet))
                 return NULL;
 
-            engine->map.SetObs(x,y,bSet!=0);
+            engine->map.SetObs(x, y, bSet!=0);
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -231,22 +231,22 @@ namespace Script
 
         METHOD(Map_GetZone)
         {
-            int x,y;
+            int x, y;
 
-            if (!PyArg_ParseTuple(args,"ii:Map.GetZone",&x,&y))
+            if (!PyArg_ParseTuple(args, "ii:Map.GetZone", &x, &y))
                 return NULL;
 
-            return PyInt_FromLong(engine->map.GetZone(x,y));
+            return PyInt_FromLong(engine->map.GetZone(x, y));
         }
 
         METHOD(Map_SetZone)
         {
-            int x,y,z;
+            int x, y, z;
 
-            if (!PyArg_ParseTuple(args,"iii:Map.SetZone",&x,&y,&z))
+            if (!PyArg_ParseTuple(args, "iii:Map.SetZone", &x, &y, &z))
                 return NULL;
 
-            engine->map.SetZone(x,y,z);
+            engine->map.SetZone(x, y, z);
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -257,11 +257,11 @@ namespace Script
         {
             int lay;
 
-            if (!PyArg_ParseTuple(args,"i:Map.GetParallax",&lay))
+            if (!PyArg_ParseTuple(args, "i:Map.GetParallax", &lay))
                 return NULL;
 
             SMapLayerInfo layerinfo;
-            engine->map.GetLayerInfo(layerinfo,lay);
+            engine->map.GetLayerInfo(layerinfo, lay);
 
             return Py_BuildValue("(iiii)",
                 layerinfo.pmulx,

@@ -159,7 +159,7 @@ namespace Script
             {   "visible",          (getter)getVisible,             (setter)setVisible,         "If nonzero, the entity is drawn when onscreen" },
             {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
             {   "actscript",        (getter)getActScript,           (setter)setActScript,       "Gets or sets the name of the function called when the entity is activated."    },
-            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate,"If nonzero, the entity will activate when it touches the player entity. (not implemented)" },
+            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "If nonzero, the entity will activate when it touches the player entity. (not implemented)" },
 //            {   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated."  },
             {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
             {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
@@ -199,7 +199,7 @@ namespace Script
 
         PyObject* New(CEntity* e)
         {
-            EntityObject* ent=PyObject_New(EntityObject,&type);
+            EntityObject* ent=PyObject_New(EntityObject, &type);
             if (!ent)
                 return NULL;
 
@@ -258,7 +258,7 @@ namespace Script
         {
             char* sPattern;
 
-            if (!PyArg_ParseTuple(args,"s:Entity.Move",&sPattern))
+            if (!PyArg_ParseTuple(args, "s:Entity.Move", &sPattern))
                 return NULL;
 
             CEntity& ent=*self->ent;
@@ -274,7 +274,7 @@ namespace Script
             int nDistance=0;
             EntityObject* pChasetarget;
 
-            if (!PyArg_ParseTuple(args,"O!|i:Entity.Chase",&type,&pChasetarget,&nDistance))
+            if (!PyArg_ParseTuple(args, "O!|i:Entity.Chase", &type, &pChasetarget, &nDistance))
                 return NULL;
 
             CEntity& ent=*self->ent;
@@ -288,10 +288,10 @@ namespace Script
 
         METHOD(Entity_Wander)
         {
-            int nSteps,nDelay;
-            int x1=-1,y1=-1,x2=-1,y2=-1;
+            int nSteps, nDelay;
+            int x1=-1, y1=-1, x2=-1, y2=-1;
 
-            if (!PyArg_ParseTuple(args,"ii|iiii:Entity.Wander",&nSteps,&nDelay,&x1,&y1,&x2,&y2))
+            if (!PyArg_ParseTuple(args, "ii|iiii:Entity.Wander", &nSteps, &nDelay, &x1, &y1, &x2, &y2))
                 return NULL;
 
             CEntity& ent=*self->ent;
@@ -315,10 +315,10 @@ namespace Script
 
         METHOD(Entity_Wanderzone)
         {
-            int nSteps,nDelay;
+            int nSteps, nDelay;
             int nZone;
 
-            if (!PyArg_ParseTuple(args,"iii:Entity.Wander",&nSteps,&nDelay,&nZone))
+            if (!PyArg_ParseTuple(args, "iii:Entity.Wander", &nSteps, &nDelay, &nZone))
                 return NULL;
 
             CEntity& ent=*self->ent;
@@ -332,7 +332,7 @@ namespace Script
 
         METHOD(Entity_Stop)
         {
-            if (!PyArg_ParseTuple(args,""))
+            if (!PyArg_ParseTuple(args, ""))
                 return NULL;
 
             self->ent->movecode=mc_nothing;
@@ -343,7 +343,7 @@ namespace Script
 
         METHOD(Entity_IsMoving)
         {
-            if (!PyArg_ParseTuple(args,""))
+            if (!PyArg_ParseTuple(args, ""))
                 return NULL;
 
             CEntity& ent=*self->ent;    
@@ -353,7 +353,7 @@ namespace Script
 
         METHOD(Entity_DetectCollision)
         {
-            if (!PyArg_ParseTuple(args,""))
+            if (!PyArg_ParseTuple(args, ""))
                 return NULL;
 
             const CEntity& e1=*self->ent;

@@ -63,10 +63,10 @@ void CScriptEngine::Init(CEngine* p)
     PyModule_AddIntConstant(module, "chase", mc_chase);
 
     Py_INCREF(&Script::Image::type);    PyModule_AddObject(module, "Image", (PyObject*)&Script::Image::type);
-    Py_INCREF(&Script::Entity::type);   PyModule_AddObject(module, "Entity",(PyObject*)&Script::Entity::type);
+    Py_INCREF(&Script::Entity::type);   PyModule_AddObject(module, "Entity", (PyObject*)&Script::Entity::type);
     Py_INCREF(&Script::Sound::type);    PyModule_AddObject(module, "Sound", (PyObject*)&Script::Sound::type);
     Py_INCREF(&Script::Font::type);     PyModule_AddObject(module, "Font",  (PyObject*)&Script::Font::type);
-    Py_INCREF(&Script::Canvas::type);   PyModule_AddObject(module, "Canvas",(PyObject*)&Script::Canvas::type);
+    Py_INCREF(&Script::Canvas::type);   PyModule_AddObject(module, "Canvas", (PyObject*)&Script::Canvas::type);
     
     // Create entity dictionary
     entitydict=PyDict_New();

@@ -19,15 +19,15 @@ namespace
         RGBA* pTemp=new RGBA[16*16];
         memset(pTemp, 0, 16*16*sizeof(RGBA));
 
-        handle img=gfxCreateImage(16,16);
-        gfxCopyPixelData(img,(u32*)pTemp,16,16);
+        handle img=gfxCreateImage(16, 16);
+        gfxCopyPixelData(img, (u32*)pTemp, 16, 16);
 
         int t = timeGetTime();
         int count=0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
-            gfxBlitImage(img,0,0,true);
+            gfxBlitImage(img, 0, 0, true);
         }
 
         return count;
@@ -36,17 +36,17 @@ namespace
     int testBlitImageFilled()
     {
         RGBA* pTemp=new RGBA[16*16];
-        memset(pTemp,255,16*16*sizeof(RGBA));
+        memset(pTemp, 255, 16*16*sizeof(RGBA));
 
-        handle img=gfxCreateImage(16,16);
-        gfxCopyPixelData(img,(u32*)pTemp,16,16);
+        handle img=gfxCreateImage(16, 16);
+        gfxCopyPixelData(img, (u32*)pTemp, 16, 16);
 
         int t = timeGetTime();
         int count=0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
-            gfxBlitImage(img,0,0,true);
+            gfxBlitImage(img, 0, 0, true);
         }
 
         return count;
@@ -56,17 +56,17 @@ namespace
     {
         RGBA* pTemp=new RGBA[16*16];
         for (int i=0; i<16*16; i++)
-            pTemp[i]=RGBA(Random(0,255),Random(0,255),Random(0,255),Random(0,255));
+            pTemp[i]=RGBA(Random(0, 255), Random(0, 255), Random(0, 255), Random(0, 255));
 
-        handle img=gfxCreateImage(16,16);
-        gfxCopyPixelData(img,(u32*)pTemp,16,16);
+        handle img=gfxCreateImage(16, 16);
+        gfxCopyPixelData(img, (u32*)pTemp, 16, 16);
 
         int t = timeGetTime();
         int count=0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
-            gfxBlitImage(img,0,0,true);
+            gfxBlitImage(img, 0, 0, true);
         }
 
         return count;
@@ -79,14 +79,14 @@ namespace
     int testPoints()
     {
         handle scr=gfxGetScreenImage();
-        RGBA c(255,255,255,128);
+        RGBA c(255, 255, 255, 128);
 
         int t = timeGetTime();
         int count=0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
-            gfxSetPixel(scr,0,0,(u32)c);
+            gfxSetPixel(scr, 0, 0, (u32)c);
         }
 
         return count;
@@ -94,16 +94,16 @@ namespace
     int testLines()
     {
         handle scr=gfxGetScreenImage();
-        RGBA c(255,255,255,128);
-        int x1=0    ,y1=0;
-        int x2=319  ,y2=239;
+        RGBA c(255, 255, 255, 128);
+        int x1=0    , y1=0;
+        int x2=319  , y2=239;
 
         int t = timeGetTime();
         int count=0;
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
-            gfxLine(scr,x1,y1,x2,y2,(u32)c);
+            gfxLine(scr, x1, y1, x2, y2, (u32)c);
         }
 
         return count;
@@ -112,13 +112,13 @@ namespace
 //    int testTriangles();
     int testGradientTriangles()
     {
-        int x[] = { 0,32,32 };
-        int y[] = { 16,0,32 };
+        int x[] = { 0, 32, 32 };
+        int y[] = { 16, 0, 32 };
         int c[] =
         {
-            (u32)RGBA(255,0,0,128),
-            (u32)RGBA(0,255,0,192),
-            (u32)RGBA(0,0,255,255)
+            (u32)RGBA(255, 0, 0, 128),
+            (u32)RGBA(0, 255, 0, 192),
+            (u32)RGBA(0, 0, 255, 255)
         };
 
         handle scr=gfxGetScreenImage();
@@ -128,7 +128,7 @@ namespace
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
-            gfxFlatPoly(scr,x,y,c);
+            gfxFlatPoly(scr, x, y, c);
         }
 
         return count;
@@ -136,7 +136,7 @@ namespace
 
     int testRectangles()
     {
-        RGBA c(128,128,128,128);
+        RGBA c(128, 128, 128, 128);
         handle scr=gfxGetScreenImage();
 
         int t = timeGetTime();
@@ -144,7 +144,7 @@ namespace
         while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
-            gfxRect(scr,0,0,32,32,(u32)c,true);
+            gfxRect(scr, 0, 0, 32, 32, (u32)c, true);
         }
 
         return count;
@@ -202,7 +202,7 @@ void Benchmark(HWND hwnd)
 
     SetUpGraphics(cfg["graphdriver"].c_str());
 
-    gfxInit(hwnd,320,240,32,false);
+    gfxInit(hwnd, 320, 240, 32, false);
 
     int i;
     for (i=0; i<nTests; i++)
@@ -212,7 +212,7 @@ void Benchmark(HWND hwnd)
 
     Log::Init("benchmark.log");
     for (i=0; i<nTests; i++)
-        Log::Write("%20s\t%ims",tests[i].name,tests[i].result);
+        Log::Write("%20s\t%ims", tests[i].name, tests[i].result);
 
     exit(-1);
 }

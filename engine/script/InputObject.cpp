@@ -77,7 +77,7 @@ namespace Script
         }
         PyObject* New(::Input& i)
         {
-            InputObject* input=PyObject_New(InputObject,&type);
+            InputObject* input=PyObject_New(InputObject, &type);
 
             if (!input)
                 return NULL;

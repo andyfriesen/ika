@@ -24,10 +24,10 @@ namespace Soft32
 
         SDL_SetClipRect(_screen, NULL);
 
-        _rmask = RGBA(255,0,0,0).i;
-        _gmask = RGBA(0,255,0,0).i;
-        _bmask = RGBA(0,0,255,0).i;
-        _amask = RGBA(0,0,0,255).i;
+        _rmask = RGBA(255, 0, 0, 0).i;
+        _gmask = RGBA(0, 255, 0, 0).i;
+        _bmask = RGBA(0, 0, 255, 0).i;
+        _amask = RGBA(0, 0, 0, 255).i;
     }
 
     Driver::~Driver()
@@ -209,29 +209,29 @@ namespace Soft32
                 case Video::Normal:
                     int ydir=y1<y2?1:-1;
                     for (int y=y1; y!=y2; y+=ydir)
-                        this->HLine(x1,x2,y,colour);
+                        this->HLine(x1, x2, y, colour);
                     break;
             }
         } else {
             if (abs(y1-y2)>1)
             {
-                this->VLine(x1,y1+1,y2-1,colour);
-                this->VLine(x2,y1+1,y2-1,colour);
+                this->VLine(x1, y1+1, y2-1, colour);
+                this->VLine(x2, y1+1, y2-1, colour);
             }
             else
             {
-                this->HLine(x1,x2,y1,colour);
+                this->HLine(x1, x2, y1, colour);
                 return;
             }
         
             if (abs(x1-x2)>1)
             {
-                this->HLine(x1,x2,y1,colour);
-                this->HLine(x1,x2,y2,colour);
+                this->HLine(x1, x2, y1, colour);
+                this->HLine(x1, x2, y2, colour);
             }
             else
             {
-                this->VLine(x1,y1,y2,colour);
+                this->VLine(x1, y1, y2, colour);
                 return;
             }
         }
@@ -239,7 +239,7 @@ namespace Soft32
         return;
     }
 
-    void Driver::HLine(int x1,int x2,int y,u32 colour)
+    void Driver::HLine(int x1, int x2, int y, u32 colour)
     {
         if (x1 == x2) {
             this->DrawPixel(x1, y, colour);
@@ -247,7 +247,7 @@ namespace Soft32
         }
 
         if (x1>x2)
-            swap(x1,x2);	
+            swap(x1, x2);	
     
         if (ClipCoordinate(_screen, x1, y) && ClipCoordinate(_screen, x2, y))
         {
@@ -266,7 +266,7 @@ namespace Soft32
                     int xlen=x2-x1;
                     do
                     {
-                        *p=Alpha::Blend(colour,*p);
+                        *p=Alpha::Blend(colour, *p);
                         p++;
                     }
                     while (xlen--);
@@ -277,7 +277,7 @@ namespace Soft32
         }
     }
 
-    void Driver::VLine(int x,int y1,int y2,u32 colour)
+    void Driver::VLine(int x, int y1, int y2, u32 colour)
     {
         
         if (y1 == y2) {
@@ -286,7 +286,7 @@ namespace Soft32
         }
 
         if (y1>y2)
-            swap(y1,y2);
+            swap(y1, y2);
     
         if (ClipCoordinate(_screen, x, y1) && ClipCoordinate(_screen, x, y2))
         {
@@ -309,7 +309,7 @@ namespace Soft32
     
                     do
                     {
-                        *p=Alpha::Blend(colour,*p);
+                        *p=Alpha::Blend(colour, *p);
                         p+=yinc;
                     }
                     while (ylen--);
@@ -320,13 +320,13 @@ namespace Soft32
     }
 
     
-    void Driver::DrawEllipse(int cx,int cy,int radx,int rady,u32 colour,bool fill)
+    void Driver::DrawEllipse(int cx, int cy, int radx, int rady, u32 colour, bool fill)
     {
         // fear this algorithm, for 'twas spawned in the very depths of hell itself
-        int mx1,my1,mx2,my2;
-        int aq,bq;
-        int dx,dy;
-        int r,rx,ry;
+        int mx1, my1, mx2, my2;
+        int aq, bq;
+        int dx, dy;
+        int r, rx, ry;
         int x;
         scanspan *rc;
         int scans, maxscans, endscan, scanoffset, prevscan, startscan;
@@ -338,7 +338,7 @@ namespace Soft32
         // storage array for scanline start/end values
         rc = new scanspan[(rady*2)+1];
         // clear the scanline array
-        memset((void*)rc,0,(rady*2*sizeof(scanspan))+1);
+        memset((void*)rc, 0, (rady*2*sizeof(scanspan))+1);
 
         // offset value for quick access to scanline array
         scanoffset = -cy+(rady);
@@ -460,7 +460,7 @@ namespace Soft32
             }
         }
         // finish off our ellipse with a nice flat bottom
-        this->HLine(rc[endscan].s,rc[endscan].e, endscan +scanoffset, colour);    
+        this->HLine(rc[endscan].s, rc[endscan].e, endscan +scanoffset, colour);    
 
         // delete the lookup table, we don't need it anymore
         delete rc;
@@ -469,8 +469,8 @@ namespace Soft32
     }
 
     /*
-    //bool gfxFlatPoly(handle img,int x[3],int y[3],u32 colour[3])
-    bool gfxFlatPoly(handle,int[3],int[3],u32[3])
+    //bool gfxFlatPoly(handle img, int x[3], int y[3], u32 colour[3])
+    bool gfxFlatPoly(handle, int[3], int[3], u32[3])
     {
         return false;
     }
@@ -482,17 +482,17 @@ namespace Soft32
         //we can do those faster through other means
         if(y1==y2&&x1==x2)
         {
-            this->DrawPixel(x1,y1,colour);
+            this->DrawPixel(x1, y1, colour);
             return;
         }
         if(y1==y2)
         {
-            this->HLine(x1,x2,y1,colour);
+            this->HLine(x1, x2, y1, colour);
             return;
         }
         if(x1==x2)
         {
-            this->VLine(x1,y1,y2,colour);
+            this->VLine(x1, y1, y2, colour);
             return;
         }
 
@@ -503,7 +503,7 @@ namespace Soft32
         int cy2=(_screen->clip_rect.y + _screen->h) - 1;
     
         //variables for the clipping code
-        int v1=0,v2=0;
+        int v1=0, v2=0;
         //	int diff;
         //	int j;
     
@@ -585,23 +585,23 @@ namespace Soft32
         //make these checks again
         if(y1==y2&&x1==x2)
         {
-            this->DrawPixel(x1,y1,colour);
+            this->DrawPixel(x1, y1, colour);
             return;
         }
         if(y1==y2)
         {
-            this->HLine(x1,x2,y1,colour);
+            this->HLine(x1, x2, y1, colour);
             return;
         }
         if(x1==x2)
         {
-            this->VLine(x1,y1,y2,colour);
+            this->VLine(x1, y1, y2, colour);
             return;
         }
     
         //for the line renderer
-        int xi,yi,xyi;
-        int d,dir,diu,dx,dy;
+        int xi, yi, xyi;
+        int d, dir, diu, dx, dy;
     
         //two pointers because we render the line from both ends
         u32* w1=&((u32*)_screen->pixels)[_screen->w*y1+x1];
@@ -708,16 +708,16 @@ namespace Soft32
     
                     while(true)
                     {
-                        *w1=Alpha::Blend(colour,*w1);
-                        *w2=Alpha::Blend(colour,*w2);
+                        *w1=Alpha::Blend(colour, *w1);
+                        *w2=Alpha::Blend(colour, *w2);
                         if((d+=dir)<=0)
                         {
                             w1+=xi;
                             w2-=xi;
                             if((--dy)>0) continue;
-                            *w1=Alpha::Blend(colour,*w1);
+                            *w1=Alpha::Blend(colour, *w1);
                             if((dx&1)==0) break;
-                            *w2=Alpha::Blend(colour,*w2);
+                            *w2=Alpha::Blend(colour, *w2);
                             break;
                         }
                         else
@@ -726,9 +726,9 @@ namespace Soft32
                             w2-=xyi;
                             d+=diu;
                             if((--dy)>0) continue;
-                            *w1=Alpha::Blend(colour,*w1);
+                            *w1=Alpha::Blend(colour, *w1);
                             if((dx&1)==0) break;
-                            *w2=Alpha::Blend(colour,*w2);
+                            *w2=Alpha::Blend(colour, *w2);
                             break;
                         }
                     }
@@ -741,16 +741,16 @@ namespace Soft32
                     dx=dy/2;
                     while(true)
                     {
-                        *w1=Alpha::Blend(colour,*w1);
-                        *w2=Alpha::Blend(colour,*w2);
+                        *w1=Alpha::Blend(colour, *w1);
+                        *w2=Alpha::Blend(colour, *w2);
                         if((d+=dir)<=0)
                         {
                             w1+=yi;
                             w2-=yi;
                             if((--dx)>0) continue;
-                            *w1=Alpha::Blend(colour,*w1);
+                            *w1=Alpha::Blend(colour, *w1);
                             if((dy&1)==0) break;
-                            *w2=Alpha::Blend(colour,*w2);
+                            *w2=Alpha::Blend(colour, *w2);
                             break;
                         }
                         else
@@ -759,9 +759,9 @@ namespace Soft32
                             w2-=xyi;
                             d+=diu;
                             if((--dx)>0) continue;
-                            *w1=Alpha::Blend(colour,*w1);
+                            *w1=Alpha::Blend(colour, *w1);
                             if((dy&1)==0) break;
-                            *w2=Alpha::Blend(colour,*w2);
+                            *w2=Alpha::Blend(colour, *w2);
                             break;
                         }
                     }

@@ -116,6 +116,7 @@ namespace Script
         METHOD(Canvas_SetPixel, CanvasObject);
         METHOD(Canvas_Clear, CanvasObject);
         METHOD(Canvas_Resize, CanvasObject);
+        METHOD(Canvas_Clip, CanvasObject);
         METHOD1(Canvas_Rotate, CanvasObject);
         METHOD1(Canvas_Flip, CanvasObject);
         METHOD1(Canvas_Mirror, CanvasObject);

@@ -28,11 +28,11 @@ public:
     
     CCHRfile(int width = 16, int height = 16);
 
-    Canvas& GetFrame(int frame) const;
-    void UpdateFrame(const Canvas& newdata, int nFrame);
+    Canvas& GetFrame(uint frame) const;
+    void UpdateFrame(const Canvas& newdata, uint nFrame);
     inline int Width(int nFrame = 0)  const   {   return nWidth;  }
     inline int Height(int nFrame = 0) const   {   return nHeight; }
-    inline int NumFrames()            const   {   return frame.size();            }
+    inline uint NumFrames()           const   {   return frame.size();            }
     
     inline int& HotX(int frame = 0)           {   return nHotx;   }       
     inline int& HotY(int frame = 0)           {   return nHoty;   }     ///< Hotspot position
@@ -40,9 +40,9 @@ public:
     inline int& HotH(int frame = 0)           {   return nHoth;   }     ///< Hotspot size
 
     void AppendFrame();                                                 ///< Adds a new, empty frame.
-    void InsertFrame(int i);                                            ///< Inserts a new, empty frame at the specified position.
-    void InsertFrame(int i, Canvas& p);                                 ///< Inserts the image as a new frame at the specified position.
-    void DeleteFrame(int i);                                            ///< Removes the specified frame.
+    void InsertFrame(uint i);                                           ///< Inserts a new, empty frame at the specified position.
+    void InsertFrame(uint i, Canvas& p);                                ///< Inserts the image as a new frame at the specified position.
+    void DeleteFrame(uint i);                                           ///< Removes the specified frame.
 
     void Resize(int width, int height);                                 ///< Resize all the frames.
 

@@ -13,7 +13,7 @@ namespace Script
         {
             {   "Blit",         (PyCFunction)Video_Blit,        METH_VARARGS,
                 "Video.Blit(image, x, y[, blendmode])\n\n"
-                "Draws the image at (x,y) at its original size.\n"
+                "Draws the image at (x, y) at its original size.\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
                 "The default is ika.Alphablend."
@@ -21,7 +21,7 @@ namespace Script
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
                 "Video.ScaleBlit(image, x, y, width, height[, blendmode])\n\n"
-                "Draws the image at (x,y), stretching it out to the size given.\n"
+                "Draws the image at (x, y), stretching it out to the size given.\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
                 "The default is ika.Alphablend."
@@ -47,7 +47,7 @@ namespace Script
             // TODO: more blits.  I want a wrapblit, tintblit, and others
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   METH_VARARGS,
                 "Video.DrawPixel(x, y, colour)\n\n"
-                "Draws a dot at (x,y) with the colour specified."
+                "Draws a dot at (x, y) with the colour specified."
             },
 
             {   "DrawLine",     (PyCFunction)Video_DrawLine,    METH_VARARGS,
@@ -68,7 +68,7 @@ namespace Script
                 "else it is drawn as an outline."
             },
             
-            {   "DrawTriangle", (PyCFunction)Video_DrawTriangle,METH_VARARGS,
+            {   "DrawTriangle", (PyCFunction)Video_DrawTriangle, METH_VARARGS,
                 "Video.DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))\n\n"
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
@@ -135,7 +135,7 @@ namespace Script
             PyObject_Del(self);
         }
 
-#define METHOD(x) PyObject* x(VideoObject* self,PyObject* args)
+#define METHOD(x) PyObject* x(VideoObject* self, PyObject* args)
 #define METHOD1(x) PyObject* x(VideoObject* self)
 
         METHOD(Video_Blit)

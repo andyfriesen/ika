@@ -98,7 +98,7 @@ void CFont::PrintString(int startx, int starty, const char* s)
             if (i >= strlen(s))
                 return; // subset marker at end of string.  bjork.
             
-            if (s[i] >= '0' && s[i] <= '0' + set.size())                    // number?  switch the subset. (also make sure that it's a valid subset index
+            if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(set.size()))                    // number?  switch the subset. (also make sure that it's a valid subset index
                 cursubset=s[i] - '0';
             else if (s[i] == subsetmarker)
                 PrintChar(x, y, cursubset, s[i]);
@@ -133,7 +133,7 @@ int CFont::StringWidth(const char* s) const
             i++;
             if (s[i] == subsetmarker)
                 nWidth += set[nCursubset].glyph[subsetmarker - 32]->Width();
-            else if (s[i] >= '0' && s[i] <= '0' + set.size())                       // valid subset number?
+            else if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(set.size()))                       // valid subset number?
                 nCursubset = s[i] - '0';
             break;
             

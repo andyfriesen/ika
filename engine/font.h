@@ -28,16 +28,16 @@ private:
     Video::Driver*  video;
     vector <SubSet> set;
     
-    int nWidth,nHeight;                                         ///< width/height of the widest/highest character in the whole font
+    int nWidth, nHeight;                                         ///< width/height of the widest/highest character in the whole font
     int nTabsize;                                               ///< tab granularity, in pixels
     
-    void PrintChar(int& x,int y,int cursubset,char c);
+    void PrintChar(int& x, int y, int cursubset, char c);
     
 public:
     CFont(const char* filename, Video::Driver* v);
     ~CFont();
 
-    void PrintString(int x,int y,const char* s);                ///< Draws the string
+    void PrintString(int x, int y, const char* s);                ///< Draws the string
     
     int StringWidth(const char* s) const;                       ///< Returns the width, in pixels, of the string, if printed in this font.
     

@@ -115,6 +115,8 @@ void CEngine::CheckMessages()
            
         case SDL_QUIT:
             bKillFlag = true;
+            Shutdown();
+            exit(0);
             break;
         }
     }
@@ -341,7 +343,7 @@ void CEngine::RenderEntities()
     }
 }
 
-void CEngine::RenderLayer(int lay, bool transparent)
+void CEngine::RenderLayer(uint lay, bool transparent)
 {
     CDEBUG("renderlayer");
     int        xl, yl;        // x/y run length
@@ -641,7 +643,7 @@ void CEngine::TestActivate(const CEntity& player)
     }
     
     // Activating a zone?
-    int z = map.GetZone(tx / tiles->Width(), ty / tiles->Height());
+    uint z = map.GetZone(tx / tiles->Width(), ty / tiles->Height());
     
     if (z >= map.NumZones())
         return; // invalid zone
@@ -716,7 +718,7 @@ void CEngine::LoadMap(const char* filename)
         
         script.ClearEntityList();                                       // DEI
         
-        for (int i = 0; i < map.NumEnts(); i++)
+        for (uint i = 0; i < map.NumEnts(); i++)
         {
             const SMapEntity& ent = map.GetEntity(i);
             

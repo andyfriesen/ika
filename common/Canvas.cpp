@@ -38,7 +38,7 @@ Canvas::Canvas(int width, int height)
     , _pixels(new RGBA[width * height])
     , _cliprect(0, 0, width, height)
 {
-    std::fill(_pixels, _pixels + _width * _height, RGBA(0,0,0,0));
+    std::fill(_pixels, _pixels + _width * _height, RGBA(0, 0, 0, 0));
 }
 
 Canvas::Canvas(RGBA* pSrc, int width, int height)

@@ -43,7 +43,7 @@ void MapClip::Free()
     bMegaclip = false;
 }
 
-void Map::Copy(MapClip &mc, Rect r, int layer)const 
+void Map::Copy(MapClip &mc, Rect r, uint layer)const 
 // copies a single map layer to the clip
 {
     int xl, yl;    // x, y length
@@ -76,7 +76,7 @@ void Map::Copy(MapClip &mc, Rect r, int layer)const
             mc.pData[0][ay * xl + ax]=pData[layer][(ay + r.top)*nWidth + ax + r.left];    // buah... I'm not concerned with speed.  Not here.
 }
 
-void Map::Copy(MapClip &mc, Rect r)const 
+void Map::Copy(MapClip &mc, Rect r) const 
 // mass copier.  Copies all layers at once.
 {
     int xl, yl;    // x / y length
@@ -101,7 +101,7 @@ void Map::Copy(MapClip &mc, Rect r)const
     mc.pData.resize(NumLayers());
     mc.bUsed.resize(NumLayers());
     
-    for (int curlayer = 0; curlayer < NumLayers(); curlayer++)
+    for (uint curlayer = 0; curlayer < NumLayers(); curlayer++)
     {
         mc.bUsed[curlayer]=true;
         mc.pData[curlayer]=new u32[yl * xl];
@@ -112,7 +112,7 @@ void Map::Copy(MapClip &mc, Rect r)const
     }
 }
 
-void Map::Paste(const MapClip &mc, int xs, int ys, int sourcelayer, int destlayer, bool transparent)
+void Map::Paste(const MapClip &mc, int xs, int ys, uint sourcelayer, uint destlayer, bool transparent)
 // pastes one layer from the clip to a layer on the map (don't call this directly)
 {
     int xl, yl;
@@ -133,7 +133,7 @@ void Map::Paste(const MapClip &mc, int xs, int ys, int sourcelayer, int destlaye
         }
 }
 
-void Map::Paste(const MapClip &mc, int x, int y, int destlayer)
+void Map::Paste(const MapClip &mc, int x, int y, uint destlayer)
 {
     if (!mc.bMegaclip)    // only one layer here?
     {
@@ -171,7 +171,7 @@ Map::~Map()
 
 // Interface
 
-u32 Map::GetTile(int x, int y, int layer) const
+u32 Map::GetTile(int x, int y, uint layer) const
 {
     if (layer > NumLayers()) return 0;
     if (x < 0 || y < 0) return 0;
@@ -181,7 +181,7 @@ u32 Map::GetTile(int x, int y, int layer) const
     return pData[layer][y * nWidth + x];
 }
 
-void Map::SetTile(int x, int y, int layer, u32 tile)
+void Map::SetTile(int x, int y, uint layer, u32 tile)
 {
     if (layer < 0 || layer > NumLayers()) return;
     if (x < 0 || y < 0) return;
@@ -191,7 +191,7 @@ void Map::SetTile(int x, int y, int layer, u32 tile)
     pData[layer][y * nWidth + x]=tile;
 }
 
-u32* Map::GetDataPtr(int layer) const
+u32* Map::GetDataPtr(uint layer) const
 {
     if (layer < 0 || layer > NumLayers()) return NULL;
     return pData[layer];
@@ -227,10 +227,8 @@ void Map::New()
 
 void Map::Free()
 {
-    for (int i = 0; i < NumLayers(); i++)
-    {
+    for (uint i = 0; i < NumLayers(); i++)
         delete[] pData[i];
-    }
     pData.clear();
     
     delete[] pObstruct;
@@ -676,7 +674,7 @@ bool Map::Save(const char* fname)
     f.Write(bWrap);
 
     f.Write(NumLayers());
-    for (int i = 0; i < NumLayers(); i++)
+    for (uint i = 0; i < NumLayers(); i++)
     {
         f.Write(info[i].pmulx);
         f.Write(info[i].pdivx);
@@ -684,7 +682,7 @@ bool Map::Save(const char* fname)
         f.Write(info[i].pdivy);
     }
     
-    for (int i = 0; i < NumLayers(); i++)
+    for (uint i = 0; i < NumLayers(); i++)
         f.WriteCompressed(pData[i], nWidth * nHeight * sizeof(u32));
     
     f.WriteCompressed(pObstruct, nWidth * nHeight * sizeof(u8));
@@ -692,7 +690,7 @@ bool Map::Save(const char* fname)
     
     f.Write(zoneinfo.size());
     
-    for (int i = 0; i < zoneinfo.size(); i++)
+    for (uint i = 0; i < zoneinfo.size(); i++)
     {
         f.WriteString(zoneinfo[i].name.c_str());
         f.WriteString(zoneinfo[i].sDescription.c_str());
@@ -705,7 +703,7 @@ bool Map::Save(const char* fname)
     
     f.Write(entity.size());
     
-    for (u32 i = 0; i < entity.size(); i++)
+    for (uint i = 0; i < entity.size(); i++)
     {
         
         f.WriteString(entity[i].name.c_str());
@@ -782,7 +780,7 @@ void Map::Resize(int newx, int newy)
     pObstruct = pcTemp;
     
     
-    for (int curlayer = 0; curlayer < NumLayers(); curlayer++)          // and finally, the tile layers
+    for (uint curlayer = 0; curlayer < NumLayers(); curlayer++)          // and finally, the tile layers
     {
         
         u32* pTemp = new u32[newx * newy];
@@ -798,12 +796,12 @@ void Map::Resize(int newx, int newy)
     this->nWidth = newx; this->nHeight = newy;                          // whoops, one must be careful to not clog one's namespace up. >_<
 }
 
-int Map::NumLayers() const
+uint Map::NumLayers() const
 {
     return pData.size();
 }
 
-void Map::AddLayer(int pos)
+void Map::AddLayer(uint pos)
 {
     // TODO: make this actually use the pos variable. :P
     //    if (nLayerss) return;                                     // TODO: Remove this
@@ -819,7 +817,7 @@ void Map::AddLayer(int pos)
     pData.push_back(pTemp);
 }
 
-void Map::DeleteLayer(int pos)
+void Map::DeleteLayer(uint pos)
 {
     if (pos < 0 || pos >= NumLayers())
         return;
@@ -829,13 +827,13 @@ void Map::DeleteLayer(int pos)
     pData.erase(pData.begin() + pos);
 }
 
-void Map::GetLayerInfo(SMapLayerInfo& nfo, int layidx)
+void Map::GetLayerInfo(SMapLayerInfo& nfo, uint layidx)
 {
     if (layidx >= 0 && layidx < NumLayers())
         nfo = info[layidx];
 }
 
-void Map::SetLayerInfo(const SMapLayerInfo& nfo, int layidx)
+void Map::SetLayerInfo(const SMapLayerInfo& nfo, uint layidx)
 {
     if (layidx >= 0 && layidx < NumLayers())
     {
@@ -888,7 +886,7 @@ void Map::SetZone(int x, int y, int z)
     pZone[y * nWidth + x]=z;
 }
 
-int  Map::GetZone(int x, int y)
+uint  Map::GetZone(int x, int y)
 {
     if (x < 0 || x >= nWidth) return false;
     if (y < 0 || y >= nHeight) return false; // bounds checking
@@ -896,7 +894,7 @@ int  Map::GetZone(int x, int y)
     return pZone[y * nWidth + x];
 }
 
-SMapZone& Map::GetZoneInfo(int zonenum)
+SMapZone& Map::GetZoneInfo(uint zonenum)
 {
     if (zonenum >= 0 && zonenum < zoneinfo.size())
         return zoneinfo[zonenum];
@@ -907,7 +905,7 @@ SMapZone& Map::GetZoneInfo(int zonenum)
     }
 }
 
-const SMapZone& Map::GetZoneInfo(int zonenum) const
+const SMapZone& Map::GetZoneInfo(uint zonenum) const
 {
     return const_cast<Map*>(this)->GetZoneInfo(zonenum);
 }
@@ -918,7 +916,7 @@ SMapZone& Map::AddZone()
     return zoneinfo.front();
 }
 
-void Map::DeleteZone(int index)
+void Map::DeleteZone(uint index)
 {
     if (index >= 0 && index < zoneinfo.size())
         zoneinfo.erase(zoneinfo.begin() + index);
@@ -929,16 +927,15 @@ int Map::EntityAt(int x, int y)
     // Temp, make this handle hotspots later?
     const int nHotx = 16;
     const int nHoty = 16;
-    int i;
     
-    for (i = 0; i < entity.size(); i++)
+    for (uint i = 0; i < entity.size(); i++)
         if (x >= entity[i].x && y >= entity[i].y &&
             x <= entity[i].x + nHotx && y <= entity[i].y + nHoty)
             return i;
     return -1;
 }
 
-SMapEntity& Map::GetEntity(int idx) const
+SMapEntity& Map::GetEntity(uint idx) const
 {
     static SMapEntity dummy;
 
@@ -948,7 +945,7 @@ SMapEntity& Map::GetEntity(int idx) const
     return const_cast < SMapEntity&>(entity[idx]);
 }
 
-void Map::SetEntity(SMapEntity& e, int idx)
+void Map::SetEntity(SMapEntity& e, uint idx)
 {
     if (idx < 0 || idx >= entity.size())
         return;
@@ -966,15 +963,15 @@ int Map::CreateEntity(int x, int y)
     return entity.size()-1;
 }
 
-void Map::DestroyEntity(int entidx)
+void Map::DestroyEntity(uint entidx)
 {
-    for (int i = entidx; i < entity.size()-1; i++)
+    for (uint i = entidx; i < entity.size()-1; i++)
         entity[i]=entity[i + 1];
     
     entity.pop_back();
 }
 
-int Map::NumEnts() const
+uint Map::NumEnts() const
 {
     return entity.size();
 }

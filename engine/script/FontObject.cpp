@@ -16,22 +16,22 @@ namespace Script
         {
             {   "Print",        (PyCFunction)Font_Print,        METH_VARARGS,
                  "font.Print(x, y, text)\n\n"
-                 "Prints a string of text on screen at (x,y)."
+                 "Prints a string of text on screen at (x, y)."
             },
             {   "CenterPrint",  (PyCFunction)Font_CenterPrint,  METH_VARARGS,
                 "font.CenterPrint(x, y, text)\n\n"
-                "Prints a string of text on screen,\n"
+                "Prints a string of text on screen, \n"
                 "with x as the center point rather than the leftmost point."
 
             },
             {   "RightPrint",   (PyCFunction)Font_RightPrint,   METH_VARARGS,
                 "font.RightPrint(x, y, text)\n\n"
-                "Prints a string of text on screen,\n"
+                "Prints a string of text on screen, \n"
                 "with x as the center point rather than the rightmost point."
             },
             {   "StringWidth",  (PyCFunction)Font_StringWidth,  METH_VARARGS,
                 "font.StringWidth(text) -> int\n\n"
-                "Returns how many pixels in width the passed string would be,\n"
+                "Returns how many pixels in width the passed string would be, \n"
                 "if printed in this font."
             },
             {   NULL,           NULL    }

@@ -30,30 +30,30 @@ namespace Script
 
             {   "Blit",     (PyCFunction)Canvas_Blit,       METH_VARARGS,
                 "Canvas.Blit(destcanvas, x, y, blendmode)\n\n"
-                "Draws the image on destcanvas, at position (x,y)\n"
+                "Draws the image on destcanvas, at position (x, y)\n"
                 "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
             },
 
-            {   "ScaleBlit",(PyCFunction)Canvas_ScaleBlit,  METH_VARARGS,
+            {   "ScaleBlit", (PyCFunction)Canvas_ScaleBlit,  METH_VARARGS,
                 "Canvas.ScaleBlit(destcanvas, x, y, width, height, blendmode)\n\n"
-                "Draws the image on destcanvas, at position (x,y), scaled to (width, height) pixels in size.\n"
+                "Draws the image on destcanvas, at position (x, y), scaled to (width, height) pixels in size.\n"
                 "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
             },
 
             {   "GetPixel", (PyCFunction)Canvas_GetPixel,   METH_VARARGS,
                 "Canvas.GetPixel(x, y)\n\n"
-                "Returns the pixel at position (x,y) on the canvas, as a packed 32bpp RGBA colour."
+                "Returns the pixel at position (x, y) on the canvas, as a packed 32bpp RGBA colour."
             },
 
             {   "SetPixel", (PyCFunction)Canvas_SetPixel,   METH_VARARGS,
                 "Canvas.SetPixel(x, y, colour)\n\n"
-                "Sets the pixel at (x,y) on the canvas to the colour specified.  This function\n"
+                "Sets the pixel at (x, y) on the canvas to the colour specified.  This function\n"
                 "totally disregards alpha.  It *sets* the pixel, in the truest sense of the word."
             },
 
             {   "Clear",    (PyCFunction)Canvas_Clear,      METH_VARARGS,
                 "Canvas.Clear([colour])\n\n"
-                "Sets every pixel on the canvas to the colour given.  If colour is omitted,\n"
+                "Sets every pixel on the canvas to the colour given.  If colour is omitted, \n"
                 "flat black is used."
             },
 
@@ -62,6 +62,13 @@ namespace Script
                 "Resizes the canvas to the size specified.  No scaling takes place; if the dimensions\n"
                 "given are smaller than the existing image, it is cropped.  Blank, transparent space is\n"
                 "added when the canvas is enlarged."
+            },
+
+            {   "Clip",     (PyCFunction)Canvas_Clip,       METH_VARARGS,
+                "Canvas.Clip([x, y, width, height])\n\n"
+                "Sets the clipping rectangle of the canvas.  Blitting to the canvas will be confined to\n"
+                "the clip rectangle; blitting the canvas on others will only blit the clipped region.\n\n"
+                "If no arguments are specified, the clip rectangle is reset to cover the whole canvas."
             },
 
             {   "Rotate",   (PyCFunction)Canvas_Rotate,     METH_NOARGS,
@@ -89,7 +96,7 @@ namespace Script
         PyGetSetDef properties[] =
         {
             {   "width",    (getter)getWidth, 0, "Gets the width of the canvas" },
-            {   "height",   (getter)getHeight,0, "Gets the height of the canvas" },
+            {   "height",   (getter)getHeight, 0, "Gets the height of the canvas" },
             {   0  },
         };
 
@@ -195,11 +202,11 @@ namespace Script
 
             switch (mode)
             {
-            case 0: CBlitter<Opaque>::Blit(*self->canvas,*dest->canvas, x, y);  break;
-            case 1: CBlitter<Matte> ::Blit(*self->canvas,*dest->canvas, x, y);  break;
-            case 2: CBlitter<Alpha> ::Blit(*self->canvas,*dest->canvas, x, y);  break;
-            case 3: CBlitter<Additive>::Blit(*self->canvas,*dest->canvas, x, y);  break;
-            case 4: CBlitter<Subtractive>::Blit(*self->canvas,*dest->canvas, x, y);  break;
+            case 0: CBlitter<Opaque>::Blit(*self->canvas, *dest->canvas, x, y);  break;
+            case 1: CBlitter<Matte> ::Blit(*self->canvas, *dest->canvas, x, y);  break;
+            case 2: CBlitter<Alpha> ::Blit(*self->canvas, *dest->canvas, x, y);  break;
+            case 3: CBlitter<Additive>::Blit(*self->canvas, *dest->canvas, x, y);  break;
+            case 4: CBlitter<Subtractive>::Blit(*self->canvas, *dest->canvas, x, y);  break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
@@ -223,11 +230,11 @@ namespace Script
 
             switch (mode)
             {
-            case 0: CBlitter<Opaque>::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
-            case 1: CBlitter<Matte> ::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
-            case 2: CBlitter<Alpha> ::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
-            case 3: CBlitter<Additive>::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
-            case 4: CBlitter<Subtractive>::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
+            case 0: CBlitter<Opaque>::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
+            case 1: CBlitter<Matte> ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
+            case 2: CBlitter<Alpha> ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
+            case 3: CBlitter<Additive>::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
+            case 4: CBlitter<Subtractive>::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
@@ -283,6 +290,22 @@ namespace Script
                 return 0;
 
             self->canvas->Resize(x, y);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Canvas_Clip)
+        {
+            int x = 0;
+            int y = 0;
+            int w = self->canvas->Width();
+            int h = self->canvas->Height();
+
+            if (!PyArg_ParseTuple(args, "|iiii:Clip", &x, &y, &w, &h))
+                return 0;
+
+            self->canvas->SetClipRect(Rect(x, y, x + w, y + h));
 
             Py_INCREF(Py_None);
             return Py_None;

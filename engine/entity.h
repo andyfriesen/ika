@@ -24,14 +24,14 @@ class CEntity
     CEngine&    engine;                                             //!< engine instance.  This allows the entity to gather information about its surroundings
 public: // AVERT YOUR EYES
     std::string curanimscript;                                      //!< a copy of the last frame animation script assigned to this entity
-    int         animscriptofs;                                      //!< current offset in the current anim script
-    int         animscriptct;                                       //!< delay counter
+    uint         animscriptofs;                                      //!< current offset in the current anim script
+    uint         animscriptct;                                       //!< delay counter
     
     string      curmovescript;                                      //!< a copy of the last movement script assigned to this entity
-    int         movescriptofs;                                      //!< the current position within the script.
-    int         movescriptct;                                       //!< delay counter for move scripts
+    uint         movescriptofs;                                      //!< the current position within the script.
+    uint         movescriptct;                                       //!< delay counter for move scripts
     
-    int         x,y;                                                //!< world coordinates of the entity
+    int         x, y;                                               //!< world coordinates of the entity
     int         nSpeed;                                             //!< Speed of the entity (Number of ticks of AI per second.  100 is the default)
     int         nSpeedcount;                                        //!< Speed counter.
     
@@ -39,8 +39,8 @@ public: // AVERT YOUR EYES
     
     Direction   direction;                                          //!< the direction the entity is facing (and moving in, if applicable)
     bool        bMoving;                                            //!< true if the entity is moving
-    int         nCurframe;                                          //!< the frame that the engine should render
-    int         nSpecframe;                                         //!< 0 if the engine should use normal frame progression, the frame that should be drawn otherwise
+    uint         nCurframe;                                         //!< the frame that the engine should render
+    uint         nSpecframe;                                        //!< 0 if the engine should use normal frame progression, the frame that should be drawn otherwise
     bool        bVisible;                                           //!< true if the entity should be rendered
     bool        bMapobs;                                            //!< if true, the entity cannot walk on obstructed map tiles
     bool        bEntobs;                                            //!< if true, the entity cannot walk on entities whose bIsobs flag is set
@@ -61,7 +61,7 @@ public: // AVERT YOUR EYES
     std::string sActscript;                                         //!< event to be called when the entity is activated
     
     CEntity(CEngine* njin);                                         //!< Default constructor
-    CEntity(CEngine* njin,const SMapEntity& e);                     //!< Converts a map entity
+    CEntity(CEngine* njin, const SMapEntity& e);                     //!< Converts a map entity
     
     void        Init();                                             //!< does any setup type thingies that need to be done
     void        Free();                                             //!< cleanup

@@ -107,7 +107,7 @@ void CTileSet::AnimateStrand(VSP::AnimState& anim)
         break;
     case VSP::random:
         for (i=anim.nStart; i<anim.nFinish; i++)
-            nTileidx[i]=Random(anim.nStart,anim.nFinish);
+            nTileidx[i]=Random(anim.nStart, anim.nFinish);
         break;
     case VSP::  flip:
         for (i=anim.nStart; i<anim.nFinish; i++)

@@ -95,8 +95,8 @@ namespace Soft32
 
         Video::BlendMode _blendMode;
 
-        void Driver::HLine(int x1,int x2,int y,u32 colour);
-        void Driver::VLine(int x,int y1,int y2,u32 colour);
+        void Driver::HLine(int x1, int x2, int y, u32 colour);
+        void Driver::VLine(int x, int y1, int y2, u32 colour);
 
     };
 };

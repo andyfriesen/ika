@@ -27,7 +27,7 @@ CCHRfile::CCHRfile(int width, int height)
     AppendFrame();
 }
 
-Canvas& CCHRfile::GetFrame(int nFrame) const
+Canvas& CCHRfile::GetFrame(uint nFrame) const
 {
     static Canvas dummy;
     
@@ -37,7 +37,7 @@ Canvas& CCHRfile::GetFrame(int nFrame) const
     return (Canvas&)frame[nFrame];
 }
 
-void CCHRfile::UpdateFrame(const Canvas& newdata, int nFrame)
+void CCHRfile::UpdateFrame(const Canvas& newdata, uint nFrame)
 {
     if (nFrame < 0 || nFrame >= frame.size())
         return;
@@ -50,7 +50,7 @@ void CCHRfile::AppendFrame()
     frame.push_back(Canvas(nWidth, nHeight));
 }
 
-void CCHRfile::InsertFrame(int idx)
+void CCHRfile::InsertFrame(uint idx)
 {
     if (idx >= frame.size() || !frame.size())
     {
@@ -63,13 +63,13 @@ void CCHRfile::InsertFrame(int idx)
     
     Canvas p(frame[frame.size()-1]);        // copy the last frame
     
-    for (int i = idx; i < frame.size(); i++)
+    for (uint i = idx; i < frame.size(); i++)
         frame[i + 1]=frame[i];
     
     InsertFrame(frame.size(), p);                    // and tack it on the end.
 }
 
-void CCHRfile::InsertFrame(int idx, Canvas& p)
+void CCHRfile::InsertFrame(uint idx, Canvas& p)
 {
     if (idx < 0)
         idx = 0;
@@ -84,12 +84,12 @@ void CCHRfile::InsertFrame(int idx, Canvas& p)
     frame[idx]=p;
 }
 
-void CCHRfile::DeleteFrame(int idx)
+void CCHRfile::DeleteFrame(uint idx)
 {
     if (idx < 0 || idx >= frame.size())
         return;
     
-    for (int i = idx; i < frame.size(); i++)
+    for (uint i = idx; i < frame.size(); i++)
         frame[i]=frame[i + 1];
     
     frame.resize(frame.size()-1);
@@ -106,9 +106,9 @@ void CCHRfile::UnpackData(u8* data, int size)
 void CCHRfile::Resize(int width, int height)
 {
     if (width < 0 || height < 0)
-        throw std::runtime_error(va("CHRfile::Resize: Invalid dimensions %i,%i", width, height));
+        throw std::runtime_error(va("CHRfile::Resize: Invalid dimensions %i, %i", width, height));
 
-    for (int i = 0; i < frame.size(); i++)
+    for (uint i = 0; i < frame.size(); i++)
         frame[i].Resize(width, height);
 
     nWidth = width;
@@ -496,11 +496,9 @@ void CCHRfile::Save(const char* fname)
     
     f.Write(sDescription.c_str(), 64);                               // desc    - 64 byte string
     
-    int i;
-    
     f.Write(sMovescript.size());                                    // write the number of scripts
     
-    for (i = 0; i < sMovescript.size(); i++)
+    for (uint i = 0; i < sMovescript.size(); i++)
     {
         f.Write(sMovescript[i].length());                           // write the length
         f.Write(sMovescript[i].c_str(), sMovescript[i].length());    // write the actual script
@@ -508,7 +506,7 @@ void CCHRfile::Save(const char* fname)
     
     // Write the frame data
     f.Write((int)frame.size());
-    for (i = 0; i < frame.size(); i++)
+    for (uint i = 0; i < frame.size(); i++)
     {
         f.Write(frame[i].Width());
         f.Write(frame[i].Height());

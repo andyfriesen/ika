@@ -33,11 +33,11 @@ CSprite::CSprite(const char* fname, Video::Driver* v)
 
 CSprite::~CSprite()
 {
-    for (int i=0; i<hFrame.size(); i++)
+    for (uint i=0; i<hFrame.size(); i++)
         delete hFrame[i];
 }
 
-string& CSprite::Script(int s)
+string& CSprite::Script(uint s)
 {
     static string dummy;
 
@@ -47,7 +47,7 @@ string& CSprite::Script(int s)
     return sScript[s];
 }
 
-Video::Image* CSprite::GetFrame(int frame)
+Video::Image* CSprite::GetFrame(uint frame)
 {
     if (frame<0 || frame>hFrame.size())
         return 0;

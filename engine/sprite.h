@@ -23,24 +23,24 @@ class CSprite
     vector<string>  sScript;                        ///< move scripts
     Video::Driver* video;
 
-    int nFramex,nFramey;                            ///< frame size
+    int nFramex, nFramey;                            ///< frame size
 
 public:
     string sFilename;
 
-    short int	nHotx,nHoty;		                ///< hotspot position
-    short int	nHotw,nHoth;		                ///< hotspot size
+    short int	nHotx, nHoty;		                ///< hotspot position
+    short int	nHotw, nHoth;		                ///< hotspot size
 
     vector<Video::Image*> hFrame;                   ///< array of frame images
 
     CSprite(const char* fname, Video::Driver* v);
     virtual ~CSprite();
 
-    Video::Image* GetFrame(int frame);              ///< Returns the frame image
+    Video::Image* GetFrame(uint frame);              ///< Returns the frame image
   
     inline int Width() const { return nFramex; }
     inline int Height() const { return nFramey; }
-    string& Script(int s);
+    string& Script(uint s);
 };
 
 /**

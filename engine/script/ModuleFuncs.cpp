@@ -483,8 +483,8 @@ namespace Script
 
         { "SetCameraTarget", (PyCFunction)std_setcameratarget,  METH_VARARGS,
             "SetCameraTarget(entity)\n\n"
-            "Sets the camera target to the entity specified.  If None is passed instead,\n"
-            "the camera remains stationary, and can be altered with the Map.xwin and map.ywin\n"
+            "Sets the camera target to the entity specified.  If None is passed instead, \n"
+            "the camera remains stationary, and can be altered with the Map.xwin and Map.ywin\n"
             "properties."
         },
 
@@ -512,7 +512,7 @@ namespace Script
 
         { "HookRetrace",    (PyCFunction)std_hookretrace,       METH_VARARGS,
             "HookRetrace(function)\n\n"
-            "Adds the function to the retrace queue. (it will be called whenever the map is drawn,\n"
+            "Adds the function to the retrace queue. (it will be called whenever the map is drawn, \n"
             "whether by Map.Render or by other means)"
         },
 

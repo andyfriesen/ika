@@ -16,7 +16,7 @@ namespace Script
         {
             {   "Blit",         (PyCFunction)Image_Blit,         METH_VARARGS,
                 "Image.Blit(x, y[, transparent])\n\n"
-                "Draws the image at (x,y).\n"
+                "Draws the image at (x, y).\n"
                 "If transparent is specified and 0 the image is opaque.\n"
                 "Otherwise, alpha blending is enabled."
 
@@ -25,7 +25,7 @@ namespace Script
             {   "ScaleBlit",    (PyCFunction)Image_ScaleBlit,    METH_VARARGS,
                 "Image.ScaleBlit(x, y, width, height[, transparent])\n\n"
                 "Blits the image, but stretches it out to the dimensions\n"
-                "specified in (width,height)."
+                "specified in (width, height)."
             },
 
             {   "DistortBlit",  (PyCFunction)Image_DistortBlit,  METH_VARARGS,
@@ -37,7 +37,7 @@ namespace Script
                 "Image.Clip(x, y, x2, y2)\n\n"
                 "Sets the dimensions of the image's clipping rectangle.\n"
                 "When images are drawn they will only be drawn in this area."
-            },*/ // NYI
+            }, */ // NYI
             
             {   NULL,    NULL }
         };
@@ -137,10 +137,10 @@ namespace Script
 
         PyObject* Image_Blit(ImageObject* self, PyObject* args)
         {
-            int x,y;
+            int x, y;
             int trans = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args,"ii|i:Image.Blit",&x,&y, &trans))
+            if (!PyArg_ParseTuple(args, "ii|i:Image.Blit", &x, &y, &trans))
                 return 0;
 
             engine->video->SetBlendMode((::Video::BlendMode)trans);
@@ -150,7 +150,7 @@ namespace Script
             return Py_None;
         }
 
-        PyObject* Image_ScaleBlit(ImageObject* self,PyObject* args)
+        PyObject* Image_ScaleBlit(ImageObject* self, PyObject* args)
         {
             int x, y, w, h;
             int trans = ::Video::Normal;
@@ -165,7 +165,7 @@ namespace Script
             return Py_None;
         }
 
-        PyObject* Image_DistortBlit(ImageObject* self,PyObject* args)
+        PyObject* Image_DistortBlit(ImageObject* self, PyObject* args)
         {
             int x[4], y[4];
             int trans = ::Video::Normal;
@@ -180,7 +180,7 @@ namespace Script
             return Py_None;
         };
 
-        PyObject* Image_Clip(ImageObject* self,PyObject* args)
+        PyObject* Image_Clip(ImageObject* self, PyObject* args)
         {
            
             Py_INCREF(Py_None);
