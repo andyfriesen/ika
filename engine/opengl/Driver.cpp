@@ -40,7 +40,6 @@ namespace OpenGL
         {
             xres += xres;
             yres += yres;
-            glGenTextures(1, &_bufferTex);
         }
 
         // from this point, xres and yres are the physical resulotion,
@@ -89,6 +88,11 @@ namespace OpenGL
         {
             Log::Write("glBlendEquationEXT not found.  Colour subtraction disabled.");
             glBlendEquationEXT = &glBlendEquationStub;
+        }
+
+        if (_doubleSize)
+        {
+            glGenTextures(1, &_bufferTex);
         }
     }
 
@@ -321,6 +325,7 @@ namespace OpenGL
             // Most notably, the allocation of a temporary image, and a lot of
             // pixel/screen space arithmatic that isn't needed.
 
+            glDisable(GL_BLEND);
             uint texW = NextPowerOf2(_xres);
             uint texH = NextPowerOf2(_yres);
             SwitchTexture(_bufferTex);
@@ -340,7 +345,6 @@ namespace OpenGL
             _xres <<= 1;    _yres <<= 1;
             glPushAttrib(GL_SCISSOR_BIT);
             glScissor(0, 0, _xres, _yres);
-            glDisable(GL_BLEND);
 
             glBegin(GL_QUADS);
             glTexCoord2f(0,    endY); glVertex2i(0,         0);

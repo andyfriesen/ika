@@ -57,6 +57,8 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         mkdir ika
         cd ika
         cvs -z3 -d:pserver:anonymous@cvs.ika.sourceforge.net:/cvsroot/ika export -D today common engine iked ikaMap xi
+        # hack, since cvs won't pull it in on its own:
+        cp SConstruct ika
         cd ..
         tar cjf ika-src-$version.tar.bz2 ika
         #rm -rf ika
