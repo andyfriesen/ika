@@ -18,18 +18,18 @@ class CController
 private:
     struct Resource
     {
-        string  sFilename;
+        std::string  sFilename;
         int     nRefcount;
         T*      pData;
 
-        Resource(const string& s="", T* d = 0) : sFilename(s), nRefcount(1), pData(d) {}
+        Resource(const std::string& s="", T* d = 0) : sFilename(s), nRefcount(1), pData(d) {}
     };
 
     typedef std::list <Resource> ResourceList;
 
     ResourceList    rsrc;
 
-    Resource* Find(const string& name)
+    Resource* Find(const std::string& name)
     {
         for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
         {
@@ -52,7 +52,7 @@ private:
     }
 
     // Specialize this if T doesn't have a bool Load(const char* s) method.
-    bool LoadFromFile(T* p, const string& name)
+    bool LoadFromFile(T* p, const std::string& name)
     {
         Log::Write("Loading      %s", name.c_str());
         try
@@ -68,7 +68,7 @@ private:
 
 public:
 
-    T* Load(string name)
+    T* Load(std::string name)
     {
 #ifdef WIN32
         name = Upper(name);

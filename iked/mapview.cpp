@@ -888,7 +888,7 @@ MapView::MapView(CMainWnd* parent, int width, int height, const std::string& til
     Init();
 }
 
-MapView::MapView(CMainWnd* parent, const string& name)
+MapView::MapView(CMainWnd* parent, const std::string& name)
     : IDocView(parent, name)
     , pParentwnd(parent)
     , _curZone(0)
@@ -899,7 +899,7 @@ MapView::MapView(CMainWnd* parent, const string& name)
 
 void MapView::InitAccelerators()
 {
-    vector<wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
+    std::vector<wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
     accel.resize(accel.size()+6);

@@ -90,7 +90,7 @@ BEGIN_EVENT_TABLE(CSpriteSetView, IDocView)
 
 END_EVENT_TABLE()
 
-CSpriteSetView::CSpriteSetView(CMainWnd* parentwnd, const string& fname)
+CSpriteSetView::CSpriteSetView(CMainWnd* parentwnd, const std::string& fname)
     : IDocView(parentwnd, fname)
     , _parent(parentwnd)
     , _curFrame(0)
@@ -401,7 +401,7 @@ void CSpriteSetView::InitMenu()
 
 void CSpriteSetView::InitAccelerators()
 {
-    vector<wxAcceleratorEntry> accel = _parent->CreateBasicAcceleratorTable();
+    std::vector<wxAcceleratorEntry> accel = _parent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
     accel.resize(accel.size()+4);

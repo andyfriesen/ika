@@ -140,8 +140,8 @@ protected:
     SpriteMap _sprites;
 
 public:
-    MapView(CMainWnd* parent, int width, int height, const string& tilesetname);
-    MapView(CMainWnd* parent, const string& fname);
+    MapView(CMainWnd* parent, int width, int height, const std::string& tilesetname);
+    MapView(CMainWnd* parent, const std::string& fname);
 
     void InitAccelerators();
     void InitMenu();

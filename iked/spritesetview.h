@@ -14,7 +14,7 @@ class CSpriteSetView : public IDocView
 {
 public:
 
-    CSpriteSetView(CMainWnd* parentwnd, const string& fname);
+    CSpriteSetView(CMainWnd* parentwnd, const std::string& fname);
     CSpriteSetView(CMainWnd* parentwnd, int width, int height);
     ~CSpriteSetView();
 

@@ -412,7 +412,10 @@ void CCHRfile::Save(const std::string& fname)
         for (uint i = 0; i < moveScripts.size(); i++)
         {
             scriptNode->addChild(
-                newNode(va("script%i", i))->addChild(moveScripts[i])
+                newNode("script")->addChild(
+                    newNode("label")->addChild(va("script%i", i))
+                    )
+                    ->addChild(moveScripts[i])
                 );
         }
     }

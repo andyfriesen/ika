@@ -111,7 +111,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     GetStatusBar()->SetFieldsCount(2);
     GetStatusBar()->SetStatusWidths(2, widths);
 
-    vector<wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
+    std::vector<wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
     wxAcceleratorTable table(accel.size(), &*accel.begin());
 
     SetAcceleratorTable(table);
@@ -359,9 +359,9 @@ wxMenuBar* CMainWnd::CreateBasicMenu()
     return menu;
 }
 
-vector<wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
+std::vector<wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
 {
-    vector<wxAcceleratorEntry> accel;
+    std::vector<wxAcceleratorEntry> accel;
     accel.resize(2);
     accel[0].Set(wxACCEL_CTRL, (int)'O', id_fileopen);
     accel[1].Set(wxACCEL_CTRL, (int)'Q', id_filequit);

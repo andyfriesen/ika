@@ -148,9 +148,9 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
     return true;
 }
 
-bool ScriptEngine::ExecFunction(const ScriptObject& func)
+bool ScriptEngine::ExecObject(const ScriptObject& func)
 {
-    CDEBUG("ScriptEngine::ExecFunction");
+    CDEBUG("ScriptEngine::ExecObject");
     
     if (!func.get())
         return false;
@@ -190,9 +190,9 @@ void ScriptEngine::AddEntityToList(::Entity* e)
     Py_DECREF(pEnt);
 }
 
-void ScriptEngine::CallEvent(const std::string& sName)
+void ScriptEngine::CallScript(const std::string& name)
 {
-    CDEBUG("ScriptEngine::CallEvent");
+    CDEBUG("ScriptEngine::CallScript");
     
     if (!mapModule)
         return;                                                                // no module loaded == no event
@@ -200,14 +200,14 @@ void ScriptEngine::CallEvent(const std::string& sName)
     engine->input.Unpress();
     
     PyObject* pDict=PyModule_GetDict(mapModule);
-    PyObject* pFunc=PyDict_GetItemString(pDict, const_cast<char*>(sName.c_str()));
+    PyObject* pFunc=PyDict_GetItemString(pDict, const_cast<char*>(name.c_str()));
     
     if (!pFunc)
     {
-        Log::Write("CallEvent, no such event \"%s\"", sName);
+        Log::Write("CallScript, no such event \"%s\"", name);
         return;                                                                // no such event
     }
-        
+
     PyObject* result=PyEval_CallObject(pFunc, 0);
     
     if (!result)
@@ -216,6 +216,36 @@ void ScriptEngine::CallEvent(const std::string& sName)
         engine->Script_Error();
     }
     
+    Py_XDECREF(result);
+}
+
+void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
+{
+    if (!Script::Entity::instances.count(const_cast<::Entity*>(ent)))
+    {
+        Log::Write("ScriptEngine::CallScript(name, ent) weirdness. (this should never actually happen)");
+        return;
+    }
+
+    Script::Entity::EntityObject* entObject = Script::Entity::instances[const_cast<::Entity*>(ent)];
+
+    PyObject* dict = PyModule_GetDict(mapModule);
+    PyObject* func = PyDict_GetItemString(dict, const_cast<char*>(name.c_str()));
+
+    if (!func)
+    {
+        Log::Write("CallScript:  No event '%s'", name.c_str());
+        return;
+    }
+
+    PyObject* result = PyObject_CallObject(func, Py_BuildValue("(O)", entObject));
+
+    if (!result)
+    {
+        PyErr_Print();
+        engine->Script_Error();
+    }
+
     Py_XDECREF(result);
 }
 

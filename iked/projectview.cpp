@@ -20,7 +20,7 @@ struct Leaf : public wxTreeItemData
     {
     }
     
-    Leaf(const string& n, FileType t)
+    Leaf(const std::string& n, FileType t)
         : name(n)
         , type(t)
     {
@@ -324,7 +324,7 @@ wxTreeItemId ProjectView::AddFolder(const wxTreeItemId& parentid, const char* na
     return AppendItem(parentid, name, 1, 2, new Leaf( name, t_folder));
 }
 
-void ProjectView::AddItem(const wxTreeItemId& parentid, const string& name, const string& fname)
+void ProjectView::AddItem(const wxTreeItemId& parentid, const std::string& name, const std::string& fname)
 {
     Leaf* leaf = FindItem(fname);
     if (leaf != 0)
@@ -445,7 +445,7 @@ void ProjectView::Load(const std::string& fname)
                 p = sLine.rfind("FILE");
                 if (p!=std::string::npos)
                 {
-                    string name = Trim(sLine.substr(0, p - 1));
+                    std::string name = Trim(sLine.substr(0, p - 1));
 
                     wxFileName fullName(name.c_str());
                     if (fullName.IsAbsolute())

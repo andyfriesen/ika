@@ -15,18 +15,18 @@ class IDocView : public wxMDIChildFrame
 {
 protected:
     CMainWnd* pParent;
-    string name;
+    std::string name;
 
     bool bChanged;
 
 public:
-    IDocView(CMainWnd* parent, const string& fname);
+    IDocView(CMainWnd* parent, const std::string& fname);
     virtual ~IDocView();
 
     virtual void OnClose(wxCloseEvent& event);
     virtual void OnSave(wxCommandEvent& event) = 0;
 
-    const string& GetFileName() { return name; }
+    const std::string& GetFileName() { return name; }
 
     virtual const void* GetResource() const = 0;        // Returns a pointer to the data that this document is editing.  Some windows just return a unique ID.
 

@@ -23,7 +23,7 @@ class CFontView : public IDocView
 
     public:
 
-        CFontView(CMainWnd* parentwnd, const string& fname);
+        CFontView(CMainWnd* parentwnd, const std::string& fname);
         ~CFontView();
 
         void Paint();
@@ -48,7 +48,7 @@ class CFontView : public IDocView
 
         int ywin;
         int nCurfont;
-        string sFilename;
+        std::string sFilename;
 
         void FontPos(int fontidx, int& x, int& y) const;
         int FontAt(int x, int y) const;

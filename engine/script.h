@@ -25,12 +25,13 @@ public:
     bool LoadSystemScripts(const std::string& fname);
     bool LoadMapScripts(const std::string& fname);
 
-    bool ExecFunction(const ScriptObject& func);
+    bool ExecObject(const ScriptObject& func);
 
     void ClearEntityList();
     void AddEntityToList(class Entity* e);
 
-    void CallEvent(const std::string& sName);
+    void CallScript(const std::string& sName);
+    void CallScript(const std::string& name, const Entity* ent);        // Calls the function, passing the equivalent Python Entity object as an argument.
 };
 
 /// Smart pointer for holding a Python object.  I don't want the rest

@@ -6,7 +6,7 @@ BEGIN_EVENT_TABLE(IDocView, wxMDIChildFrame)
     EVT_CLOSE(IDocView::OnClose)
 END_EVENT_TABLE()
 
-IDocView::IDocView(CMainWnd* parent, const string& fname)
+IDocView::IDocView(CMainWnd* parent, const std::string& fname)
     :   wxMDIChildFrame(parent, -1, fname.c_str(), wxDefaultPosition, wxDefaultSize),
         pParent(parent),    name(fname),   bChanged(false)
 {

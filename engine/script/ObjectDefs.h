@@ -165,11 +165,11 @@ namespace Script
             ::Entity* ent;
         };
 
+        extern std::map<::Entity*, EntityObject*> instances;
+
         // Methods
-        METHOD(Entity_Move, EntityObject);
-        METHOD(Entity_Chase, EntityObject);
-        METHOD(Entity_Wander, EntityObject);
-        METHOD(Entity_Wanderzone, EntityObject);
+        METHOD(Entity_MoveTo, EntityObject);
+        METHOD(Entity_Wait, EntityObject);
         METHOD(Entity_Stop, EntityObject);
         METHOD(Entity_IsMoving, EntityObject);
         METHOD(Entity_DetectCollision, EntityObject);

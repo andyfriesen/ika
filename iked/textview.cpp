@@ -38,7 +38,7 @@ BEGIN_EVENT_TABLE(CTextView, IDocView)
 END_EVENT_TABLE()
 
 
-CTextView::CTextView(CMainWnd* parent, const string& name):IDocView(parent, name)
+CTextView::CTextView(CMainWnd* parent, const std::string& name):IDocView(parent, name)
 {
     wxMenuBar* menubar = parent->CreateBasicMenu();
 
@@ -128,7 +128,7 @@ void CTextView::InitTextControl()
 
 void CTextView::InitAccelerators()
 {
-    vector<wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
+    std::vector<wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
 
     int p = accel.size();                 // where we start appending to the table
     accel.resize(accel.size()+2);

@@ -42,7 +42,7 @@ public:
         id_viewws,
     };
 
-    CCodeView(CMainWnd* parent, const string& name);
+    CCodeView(CMainWnd* parent, const std::string& name);
 
     void OnStyleNeeded(wxStyledTextEvent& event);
     void OnCharAdded(wxStyledTextEvent& event);

@@ -18,7 +18,7 @@ class CTextView : public IDocView
 {
     public:
 
-        CTextView(CMainWnd* parent, const string& name);
+        CTextView(CMainWnd* parent, const std::string& name);
 
         void OnStyleNeeded(wxStyledTextEvent& event);
         void OnCharAdded(wxStyledTextEvent& event);

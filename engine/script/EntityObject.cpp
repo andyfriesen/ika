@@ -13,55 +13,38 @@ being garbage collected)
 #include "main.h"
 #include "entity.h"
 
-namespace
-{
-    std::set<Script::Entity::EntityObject*> _entInstances;
-}
-
 namespace Script
 {
     namespace Entity
     {
+        std::map<::Entity*, Script::Entity::EntityObject*> instances;
+
         PyTypeObject type; 
         
         PyMethodDef methods [] =
         {
-            /*{    "Move",            (PyCFunction)Entity_Move,             METH_VARARGS,
-                "Entity.Move(movepattern)\n\n"
-                "Directs the entity to move in the pattern specified."
+            {   "MoveTo",           (PyCFunction)Entity_MoveTo,            METH_VARARGS,
+                "Entity.MoveTo(x, y)\n\n"
+                "Directs the entity to move towards the position specified."
             },
 
-            {    "Chase",           (PyCFunction)Entity_Chase,            METH_VARARGS,    
-                "Entity.Chase(entity, distance)\n\n"
-                "Directs the entity to chase the entity specified.  It will attempt to close\n"
-                "within the specified distance (in pixels) before it stops."
+            {   "Wait",            (PyCFunction)Entity_Wait,               METH_VARARGS,
+                "Entity.Wait(time)\n\n"
+                "Causes the entity to halt for the given interval before\n"
+                "resuming motion."
             },
 
-            {    "Wander",          (PyCFunction)Entity_Wander,           METH_VARARGS,    
-                "Entity.Wander(pixels, delay)\n\n"
-                "Directs the entity to wander around randomly.  It will move the specified\n"
-                "number of pixels in one direction, then delay for the specified amount of\n"
-                "time."
-            },
-
-            {    "WanderZone",      (PyCFunction)Entity_Wanderzone,       METH_VARARGS,    
-                "Entity.WanderZone(pixels, delay, zone)\n\n"
-                "Directs the entity to wander around randomly.  Unlike Entity.Wander, however\n"
-                "the entity will not wander off the specified zone.  This is a good way to confine\n"
-                "an entity to an irregular region of the map."
-            },*/
-
-            {    "Stop",            (PyCFunction)Entity_Stop,             METH_VARARGS,    
+            {   "Stop",            (PyCFunction)Entity_Stop,               METH_VARARGS,    
                 "Entity.Stop()\n\n"
                 "Directs the entity to stop whatever it is doing."
             },
 
-            {    "IsMoving",        (PyCFunction)Entity_IsMoving,         METH_VARARGS,    
+            {   "IsMoving",        (PyCFunction)Entity_IsMoving,           METH_VARARGS,    
                 "Entity.IsMoving() -> int\n\n"
                 "If the entity is moving, the result is 1.  If not, it is 0."
             },
 
-            {    "DetectCollision", (PyCFunction)Entity_DetectCollision,  METH_VARARGS,    
+            {    "DetectCollision", (PyCFunction)Entity_DetectCollision,    METH_VARARGS,    
                 "Entity.DetectCollision() -> Entity\n\n"
                 "If an entity is touching the entity, then it is returned.\n"
                 "None is returned if there is no entity touching it."
@@ -73,6 +56,7 @@ namespace Script
 #define SET(x) PyObject* set ## x(EntityObject* self, PyObject* value)
             GET(X)                  { return PyInt_FromLong(self->ent->x); }
             GET(Y)                  { return PyInt_FromLong(self->ent->y); }
+            GET(Layer)              { return PyInt_FromLong(self->ent->layerIndex); }
             GET(Speed)              { return PyInt_FromLong(self->ent->speed); }
             GET(Direction)          { return PyInt_FromLong(self->ent->direction); }
             GET(CurFrame)           { return PyInt_FromLong(self->ent->curFrame); }
@@ -90,28 +74,19 @@ namespace Script
             GET(HotY)               { return PyInt_FromLong(self->ent->sprite->nHoty); }
             GET(HotWidth)           { return PyInt_FromLong(self->ent->sprite->nHotw); }
             GET(HotHeight)          { return PyInt_FromLong(self->ent->sprite->nHoth); }
-            //GET(MovePattern)        { return PyInt_FromLong(self->ent->movecode);   }
-            /*GET(ChaseTarget)
-            {
-                if (!self->ent->pChasetarget || self->ent->movecode != mc_chase)
-                {
-                    Py_INCREF(Py_None); return Py_None;
-                }
-
-                for (std::set<EntityObject*>::iterator i = _entInstances.begin(); i != _entInstances.end(); i++)
-                {
-                    if ((*i)->ent == self->ent->pChasetarget)
-                    {
-                        Py_INCREF(*i);  return (PyObject*)*i;
-                    }
-                }
-
-                PyErr_SetString(PyExc_RuntimeError, "Internal error: chasetarget points to something wacky.  Bug andy if you see this!");
-                return 0;
-            }*/
 
             SET(X)                  { self->ent->x = PyInt_AsLong(value); return 0; }
             SET(Y)                  { self->ent->y = PyInt_AsLong(value); return 0; }
+            SET(Layer)              
+            {
+                uint i = (uint)PyInt_AsLong(value);
+                if (i >= engine->map.NumLayers())
+                    PyErr_SetString(PyExc_RuntimeError, va("Cannot put entity on layer %i.  The map only has %i layers.", i, engine->map.NumLayers()));
+                else
+                    self->ent->layerIndex = i;
+                return 0;
+            }
+
             SET(Speed)              { self->ent->speed = PyInt_AsLong(value); return 0; }
             SET(Direction)
             {
@@ -152,6 +127,7 @@ namespace Script
         {
             {   "x",                (getter)getX,                   (setter)setX,               "Gets or sets the entity's X position. (in pixels)" },
             {   "y",                (getter)getY,                   (setter)setY,               "Gets or sets the entity's Y position. (in pixels)" },
+            {   "layer",            (getter)getLayer,               (setter)setLayer,           "Gets or sets the index of the layer that the entity exists on."    },
             {   "speed",            (getter)getSpeed,               (setter)setSpeed,           "Gets or sets the entity's speed, in pixels/second" },
             {   "direction",        (getter)getDirection,           (setter)setDirection,       "Gets or sets the entity's direction"   },
             {   "curframe",         (getter)getCurFrame,            0,                          "Gets the entity's currently displayed frame"   },
@@ -184,14 +160,18 @@ namespace Script
         {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt=1;
-            type.ob_type=&PyType_Type;
-            type.tp_name="Entity";
-            type.tp_basicsize=sizeof(EntityObject);
-            type.tp_dealloc=(destructor)Destroy;
+            type.ob_refcnt = 1;
+            type.ob_type = &PyType_Type;
+            type.tp_name = "Entity";
+            type.tp_basicsize = sizeof(EntityObject);
+            type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;
-            type.tp_doc="Represents an entity in the ika game engine.";
+            type.tp_doc = "Entity(x, y, layer, spritename) -> Entity\n\n"
+                          "Creates a new entity at pixel coordinates (x,y) on the\n"
+                          "layer index specified.  The new entity uses the sprite\n"
+                          "indicated.";
+
             type.tp_new = New;
 
             PyType_Ready(&type);
@@ -201,11 +181,11 @@ namespace Script
         {
             EntityObject* ent=PyObject_New(EntityObject, &type);
             if (!ent)
-                return NULL;
+                return 0;
 
             ent->ent=e;
 
-            _entInstances.insert(ent);
+            instances[ent->ent] = ent;
 
             return (PyObject*)ent;
         }
@@ -213,13 +193,20 @@ namespace Script
         // This is much more complicated than it should be.
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
-            static char* keywords[] = { "x", "y", "spritename", 0 };
+            static char* keywords[] = { "x", "y", "layer", "spritename", 0 };
 
             int x, y;
+            uint layer;
             char* spritename;
 
-            if (!PyArg_ParseTupleAndKeywords(args, kw, "iis:Entity", keywords, &x, &y, &spritename))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "iiis:Entity", keywords, &x, &y, &layer, &spritename))
                 return 0;
+
+            if (layer >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Map only has %i layers.  Cannot put an entity on layer %i", engine->map.NumLayers(), layer));
+                return 0;
+            }
 
             CSprite* sprite = engine->sprite.Load(spritename, engine->video);
             if (!sprite)
@@ -228,16 +215,13 @@ namespace Script
                 return 0;
             }
 
-            EntityObject* ent = PyObject_New(EntityObject, type);
+            ::Entity* e = engine->SpawnEntity();
+            e->x = x;
+            e->y = y;
+            e->layerIndex = layer;
+            e->sprite = sprite;
 
-            ent->ent = engine->SpawnEntity();
-            ent->ent->x = x;
-            ent->ent->y = y;
-            ent->ent->sprite = sprite;
-
-            _entInstances.insert(ent);
-
-            return (PyObject*)ent;
+            return New(e);
         }
 
         void Destroy(EntityObject* self)
@@ -247,95 +231,44 @@ namespace Script
             else
                 Log::Write("Entity_Destroy weirdness");
 
-            _entInstances.erase(self);
+            instances.erase(self->ent);
 
             PyObject_Del(self);
         }
 
 #define METHOD(x) PyObject* x(EntityObject* self, PyObject* args)
 
-        METHOD(Entity_Move)
+        METHOD(Entity_MoveTo)
         {
-            /*char* sPattern;
+            int x, y;
 
-            if (!PyArg_ParseTuple(args, "s:Entity.Move", &sPattern))
-                return NULL;
+            if (!PyArg_ParseTuple(args, "ii:Entity.MoveTo", &x, &y))
+                return 0;
 
-            ::Entity* ent = self->ent;
-            ent->movecode = mc_script;
-            ent->SetMoveScript(sPattern);*/
+            self->ent->MoveTo(x, y);
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        /*METHOD(Entity_Chase)
+        METHOD(Entity_Wait)
         {
-            int nDistance=0;
-            EntityObject* pChasetarget;
+            int time;
 
-            if (!PyArg_ParseTuple(args, "O!|i:Entity.Chase", &type, &pChasetarget, &nDistance))
-                return NULL;
+            if (!PyArg_ParseTuple(args, "i:Entity.Wait", &time))
+                return 0;
 
-            Entity& ent=*self->ent;
-            ent.movecode=mc_chase;
-            ent.pChasetarget=pChasetarget->ent;
-            ent.nMinchasedist=nDistance;
+            self->ent->Wait(time);
 
             Py_INCREF(Py_None);
             return Py_None;
         }
-
-        METHOD(Entity_Wander)
-        {
-            int nSteps, nDelay;
-            int x1=-1, y1=-1, x2=-1, y2=-1;
-
-            if (!PyArg_ParseTuple(args, "ii|iiii:Entity.Wander", &nSteps, &nDelay, &x1, &y1, &x2, &y2))
-                return NULL;
-
-            Entity& ent=*self->ent;
-            ent.nWandersteps=nSteps;
-            ent.nWanderdelay=nDelay;
-
-            if (x1==-1 || y1==-1 || x2==-1 || y2==-1)
-                ent.movecode=mc_wander;
-            else
-            {
-                ent.movecode=mc_wanderrect;
-                ent.wanderrect.left=x1;
-                ent.wanderrect.top=y1;
-                ent.wanderrect.right=x2;
-                ent.wanderrect.bottom=y2;
-            }
-
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-
-        METHOD(Entity_Wanderzone)
-        {
-            int nSteps, nDelay;
-            int nZone;
-
-            if (!PyArg_ParseTuple(args, "iii:Entity.Wander", &nSteps, &nDelay, &nZone))
-                return NULL;
-
-            Entity& ent=*self->ent;
-            ent.nWandersteps=nSteps;
-            ent.nWanderdelay=nDelay;
-            ent.nWanderzone=nZone;
-
-            Py_INCREF(Py_None);
-            return Py_None;
-        }*/
 
         METHOD(Entity_Stop)
         {
             if (!PyArg_ParseTuple(args, ""))
-                return NULL;
+                return 0;
 
-            //self->ent->movecode=mc_nothing;
             self->ent->Stop();
 
             Py_INCREF(Py_None);
@@ -345,7 +278,7 @@ namespace Script
         METHOD(Entity_IsMoving)
         {
             if (!PyArg_ParseTuple(args, ""))
-                return NULL;
+                return 0;
 
             return PyInt_FromLong(self->ent->isMoving ? 1 : 0);
         }
@@ -353,30 +286,30 @@ namespace Script
         METHOD(Entity_DetectCollision)
         {
             if (!PyArg_ParseTuple(args, ""))
-                return NULL;
+                return 0;
 
             const ::Entity* e1 = self->ent;
 
-            int x1=e1->x;
-            int y1=e1->y;
-            int x2=x1+e1->sprite->nHotw;
-            int y2=y1+e1->sprite->nHoth;
+            int x1 = e1->x;
+            int y1 = e1->y;
+            int x2 = x1 + e1->sprite->nHotw;
+            int y2 = y1 + e1->sprite->nHoth;
 
-            int nCount=0;
-            PyObject* pKey=NULL;
-            PyObject* pValue=NULL;
-            while (PyDict_Next(entityDict, &nCount, &pKey, &pValue))
+            int count = 0;
+            PyObject* key = 0;
+            PyObject* value = 0;
+            while (PyDict_Next(entityDict, &count, &key, &value))
             {
-                ::Entity* e2 = ((EntityObject*)pValue)->ent;
+                const ::Entity* e2 = ((EntityObject*)value)->ent;
                 if (e1 == e2)   continue;
 
-                if (x1>e2->x+e2->sprite->nHotw)    continue;
-                if (y1>e2->y+e2->sprite->nHoth)    continue;
-                if (x2<e2->x)    continue;
-                if (y2<e2->y)    continue;
+                if (x1 > e2->x + e2->sprite->nHotw)    continue;
+                if (y1 > e2->y + e2->sprite->nHoth)    continue;
+                if (x2 < e2->x)    continue;
+                if (y2 < e2->y)    continue;
 
-                Py_INCREF(pValue);
-                return pValue;
+                Py_INCREF(value);
+                return value;
             }
 
             Py_INCREF(Py_None);

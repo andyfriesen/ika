@@ -14,8 +14,8 @@ class CConfigDlg : public wxDialog
     wxListBox*  pGraphdriverselector;        
 
     void Update();
-    void Load(const string& fname);
-    void Save(const string& fname);
+    void Load(const std::string& fname);
+    void Save(const std::string& fname);
 
     CConfigFile cfg;
     std::string sFilename;
@@ -23,7 +23,7 @@ class CConfigDlg : public wxDialog
 public:
     CConfigDlg(wxWindow* parent,
                wxWindowID id,
-               const string& name="");
+               const std::string& name="");
 
     void OnOK(wxCommandEvent&);
     void OnCancel(wxCommandEvent&);

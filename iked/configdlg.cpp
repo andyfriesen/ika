@@ -62,13 +62,13 @@ CConfigDlg::CConfigDlg(wxWindow* parent,
     Update();
 }
 
-void CConfigDlg::Load(const string& fname)
+void CConfigDlg::Load(const std::string& fname)
 {
     cfg.Load(fname.c_str());
     Update();
 }
 
-void CConfigDlg::Save(const string& fname)
+void CConfigDlg::Save(const std::string& fname)
 {
     cfg.Add("graphdriver", pGraphdriverselector->GetStringSelection().c_str());
     cfg.Add("fullscreen", pFullscreenbox->GetValue() ? "1" : "0");

@@ -27,14 +27,15 @@ public: // AVERT YOUR EYES
     uint        animscriptofs;                                      //!< current offset in the current anim script
     uint        animscriptct;                                       //!< delay counter
     
-    std::string  moveScript;                                        //!< Movement script assigned to this entity.
+    std::string moveScript;                                         //!< Movement script assigned to this entity.
     
     int         x, y;                                               //!< coordinates of the entity
     uint        layerIndex;                                         //!< layer the entity inhabits
-    Vertex      destVector;                                         //!< Direction the entity is going.
-    Vertex      destLocation;                                       //!< coordinates the entity is walking towards.
+    Point       destVector;                                         //!< Direction the entity is going.
+    Point       destLocation;                                       //!< coordinates the entity is walking towards.
     int         speed;                                              //!< Speed of the entity (Number of ticks of AI per second.  100 is the default)
     int         speedCount;                                         //!< Speed counter.
+    uint        delayCount;                                         //!< Delay counter. (der)
     
     CSprite*    sprite;                                             //!< the sprite this entity uses
     std::string spriteName;                                         //!< filename of the sprite this entity uses.
@@ -60,20 +61,21 @@ public: // AVERT YOUR EYES
     void        Free();                                             //!< cleanup
     
     void        UpdateAnimation();                                  //!< update the entity's frame based on its active animation script
-    void        SetAnimScript(const std::string& newscript);             //!< makes the entity animate according to the specified script (if animscriptidx!=idx)
-    void        SetMoveScript(const std::string& newscript);             //!< makes the entity move according to the specified script
+    void        SetAnimScript(const std::string& newScript);        //!< makes the entity animate according to the specified script
+    void        SetMoveScript(const std::string& newScript);        //!< makes the entity move according to the specified script
 
-    void        SetFace(Direction d);                               //!< Makes the entity face the specified direction. (if it's currently moving, then it'll start moving in that direction)
+    void        SetFace(Direction d);                               //!< Makes the entity face the specified direction. (and stop)
 
-    void        Stop();                                             //!< the entity stops moving, and stands still
+    void        Stop();                                             //!< the entity stops what it's doing, and stands still
     Direction   MoveDiagonally(Direction d);                        //!< Cheezy hack to handle the extra complications involved in moving entities diagonally.
     void        Move(Direction d);                                  //!< Cause the entity to try to move one pixel in a given direction
 
     //----------------------------------------- AI -----------------------------------------------------
     Direction   HandlePlayer();                                     //!< Gets the next command from the user input
-    Direction   GetMoveScriptCommand();                             //!< Gets the next command from the move script
-    Direction   Wander();                                           //!< Gets the next command from the random number generator. :)
-    Direction   Chase();                                            //!< Gets the next command based on the position relative to the chase target.
+    void        GetMoveScriptCommand();                             //!< Gets the next command from the move script
+
+    void        MoveTo(int x, int y);                               //!< Commands the entity to walk to the given point.
+    void        Wait(uint time);                                    //!< Commands the entity to stop what it's doing for the given time period.
 
     void        Update();                                           //!< Performs one tick of AI
 };

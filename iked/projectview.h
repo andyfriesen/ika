@@ -56,7 +56,7 @@ public:
     struct Leaf* FindItem(const std::string& fileName);
     void MoveItem(const wxTreeItemId& id, const wxTreeItemId& newparent);
     wxTreeItemId AddFolder(const wxTreeItemId& parentid, const char* name);
-    void AddItem(const wxTreeItemId& parentid, const string& name, const string& fname);
+    void AddItem(const wxTreeItemId& parentid, const std::string& name, const std::string& fname);
 
     // I/O
     void Save(const std::string& fname = "");

@@ -24,7 +24,7 @@ class CTileSetView : public IDocView
     int nTile;                                      // used for the context menu; the tile index of the tile that was right - clicked
 
 public:
-    CTileSetView(CMainWnd* parentwnd, const string& fname);
+    CTileSetView(CMainWnd* parentwnd, const std::string& fname);
     CTileSetView(CMainWnd* parentwnd, int width, int height);
     ~CTileSetView();
 

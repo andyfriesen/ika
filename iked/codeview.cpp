@@ -116,7 +116,7 @@ void CCodeView::InitTextControl()
 
 void CCodeView::InitAccelerators()
 {
-    vector<wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
+    std::vector<wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
 
     int p = accel.size();                 // where we start appending to the table
     accel.resize(accel.size()+2);
@@ -130,7 +130,7 @@ void CCodeView::InitAccelerators()
 }
 
 CCodeView::CCodeView(CMainWnd* parent,
-                   const string& name)
+                   const std::string& name)
                    : IDocView(parent, name)
 {
     // --- Set up the menu ---

@@ -90,7 +90,7 @@ BEGIN_EVENT_TABLE(CTileSetView, IDocView)
 
 END_EVENT_TABLE()
 
-CTileSetView::CTileSetView(CMainWnd* parentwnd, const string& fname)
+CTileSetView::CTileSetView(CMainWnd* parentwnd, const std::string& fname)
     : IDocView(parentwnd, fname)
     , pParent(parentwnd)
     , ywin(0)

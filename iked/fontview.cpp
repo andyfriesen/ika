@@ -46,7 +46,7 @@ BEGIN_EVENT_TABLE(CFontView, IDocView)
 
 END_EVENT_TABLE()
 
-CFontView::CFontView(CMainWnd* parentwnd, const string& fname)
+CFontView::CFontView(CMainWnd* parentwnd, const std::string& fname)
     : IDocView(parentwnd, fname)
     , pParent(parentwnd)
     , sFilename(fname)

@@ -420,7 +420,7 @@ void CEngine::DoHook(HookList& hooklist)
 
     for (HookList::List::iterator i = hooklist.begin(); i != hooklist.end(); i++)
     {
-        result = script.ExecFunction(*i);
+        result = script.ExecObject(*i);
 
         if (!result)
             Script_Error();
@@ -449,7 +449,7 @@ void CEngine::CheckKeyBindings()
         // I don't like this, but if I don't, then the key triggerings start to do weird things.
         // Like, the key that triggered the hook will always initially be pressed. (not useful behaviour)
         input.Unpress();
-        script.ExecFunction(func);
+        script.ExecObject(func);
         input.ClearEventQueue();
     }
 }
@@ -541,7 +541,7 @@ void CEngine::TestActivate(const Entity* player)
         nOldtx = tx; nOldty = ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
         const SMapZone& zone = map.GetZoneInfo(map.GetZone(tx, ty));
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
-            script.CallEvent(zone.sActscript.c_str());
+            script.CallScript(zone.sActscript.c_str());
     }*/
     
     nOldtx = tx; nOldty = ty;
@@ -571,7 +571,7 @@ void CEngine::TestActivate(const Entity* player)
     {
         if (!pEnt->activateScript.length() != 0)
         {
-            script.CallEvent(pEnt->activateScript.c_str());
+            script.CallScript(pEnt->activateScript.c_str());
             input.Flush();
             return;
         }
@@ -587,7 +587,7 @@ void CEngine::TestActivate(const Entity* player)
     
     if (zone.bAdjacentactivation)
     {
-        script.CallEvent(zone.sActscript.c_str());
+        script.CallScript(zone.sActscript.c_str());
         input.Flush();
     }*/
 }

@@ -14,6 +14,7 @@ Entity::Entity(CEngine* njin)
     , layerIndex          (0)
     , animscriptofs       (0)
     , animscriptct        (0)
+    , delayCount          (0)
     , speed               (entspeed_normal)
     , speedCount          (0)
     , sprite              (0)
@@ -29,9 +30,13 @@ Entity::Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex)
     : engine(*njin)
     , animscriptofs       (0)
     , animscriptct        (0)
+    , moveScript          (e.moveScript)
+    , delayCount          (0)
     , x                   (e.x)
     , y                   (e.y)
     , layerIndex          (_layerIndex) // :x
+    , destLocation        (e.x, e.y)
+    , destVector          (0, 0)
     , name                (e.label)
     , speed               (e.speed)
     , speedCount          (0)
@@ -56,57 +61,67 @@ static uint get_int(const std::string& s, uint& offset)
 // Grabs the next howevermany numerical characters from s, starting at offset.  On exit, offset is equal 
 // to the next non-numeric character in the string.
 {
-    int start;
-    start=offset;
-    while (1)
+    int start = offset;
+
+    while (s[offset] >= '0' && s[offset] <= '9' && offset < s.length())
+        offset++;
+
+    return atoi(s.substr(start, offset).c_str());
+
+    /*while (1)
     {
         if (s[offset]>='0' && s[offset]<='9')
             offset++;
         else
             return atoi(s.substr(start).c_str());
-    }
+    }*/
 }
 
 void Entity::UpdateAnimation()
 {
-    if (animscriptct<1)
+    if (animscriptct > 1)
+        animscriptct--;
+
+    else
     {
         char c;
-        if (curanimscript.length())											// is there a script at all?
+        if (curanimscript.length())                                     // is there a script at all?
         {
             do
             {
-                c=curanimscript[animscriptofs++];							// get the next char
+                c=curanimscript[animscriptofs++];                       // get the next char
                 if (animscriptofs >= curanimscript.length()) 
                 {
-                    animscriptofs = 0;	// wrap around					
+                    animscriptofs = 0;  // wrap around                                  
                     c = curanimscript[animscriptofs++];
                 }
-            } while (c==' ');												// skip whitespace
+            } while (c == ' ');                                         // skip whitespace
             
-            if (c>='a' && c<='z')	c^=32;									// force uppercase
+            if (c >= 'a' && c <= 'z')       c ^= 32;                    // force uppercase
             
             switch(c)
             {
             case 'F': 
-                curFrame		 =get_int(curanimscript, animscriptofs);		// tee hee.  get_int also updates animscriptofs for us. :D
+                curFrame = get_int(curanimscript, animscriptofs);       // tee hee.  get_int also updates animscriptofs for us. :D
                 break;
             case 'W': 
-                animscriptct	+=get_int(curanimscript, animscriptofs);
+                animscriptct += get_int(curanimscript, animscriptofs);
+                break;
+
+            default:
+                Log::Write("Entity::UpdateAnimation: unknown animation script command '%c'", c);
                 break;
             }
         }
     }
-    else
-        animscriptct--;
 }
 
 void Entity::SetAnimScript(const std::string& newscript)
 {
-    curanimscript=newscript;
-    animscriptofs=0;
-    animscriptct=0;
-    UpdateAnimation();									// and immediately update the frame
+    curanimscript = newscript;
+    animscriptofs = 0;
+    animscriptct = 0;
+    UpdateAnimation();                                                                  // and immediately update the frame
 }
 
 void Entity::SetMoveScript(const std::string& newScript)
@@ -116,8 +131,8 @@ void Entity::SetMoveScript(const std::string& newScript)
 
 void Entity::SetFace(Direction d)
 {
-    if (d==direction)
-        return;
+    direction = d;
+    Stop();
 }
 
 void Entity::Stop()
@@ -125,11 +140,12 @@ void Entity::Stop()
     if (!isMoving)
         return;
 
-    isMoving=false;
-    SetAnimScript(sprite->Script((int)direction+8));
+    isMoving = false;
+    SetAnimScript(sprite->Script((int)direction + 8));
 }
 
 // Handles all the nasty stuff required to make entities "slide" along a surface if they walk diagonally into it.
+// Returns the direction the entity should move in as a result of obstructions.
 Direction Entity::MoveDiagonally(Direction d)
 {
     Direction d1, d2;
@@ -218,7 +234,7 @@ void Entity::Move(Direction d)
         if (pEnt && pEnt->obstructsEntities)
         {
             if (this==engine.pPlayer && pEnt->adjActivateScript.length() != 0)                                    // Adjacent activation
-                engine.script.CallEvent(pEnt->adjActivateScript.c_str());
+                engine.script.CallScript(pEnt->adjActivateScript.c_str());
         
             Stop(); 
             return;
@@ -228,50 +244,132 @@ void Entity::Move(Direction d)
     x=newx; y=newy;
 }
 
-Direction Entity::GetMoveScriptCommand()
+void Entity::GetMoveScriptCommand()
 {
-    //engine.script.CallEvent(moveScript); // not quite.  I want to pass the entity as an argument.
-    return face_nothing;
+    if (moveScript.length())
+        engine.script.CallScript(moveScript, this);
+    else
+        delayCount = 1000000;   // whatever.  The idea here is that the entity does nothing.  (so, we delay for a little under 3 hours before checking again, by default)
 }
 
 Direction Entity::HandlePlayer()
 {
     engine.TestActivate(this);
     
-    Input& input=engine.input;
+    Input& input = engine.input;
 
     if (input.Up())
     {
-        if (input.Left())	return face_upleft;
-        if (input.Right())	return face_upright;
+        if (input.Left())       return face_upleft;
+        if (input.Right())      return face_upright;
         return face_up;
     }
     if (input.Down())
     {
-        if (input.Left())	return face_downleft;
-        if (input.Right())	return face_downright;
+        if (input.Left())       return face_downleft;
+        if (input.Right())      return face_downright;
         return face_down;
     }
-    if (input.Left())       return face_left;					// by this point, the diagonal possibilities are already taken care of
+    if (input.Left())       return face_left;                                   // by this point, the diagonal possibilities are already taken care of
     if (input.Right())      return face_right;
 
     return face_nothing;
 }
 
+void Entity::MoveTo(int mx, int my)
+{
+    destLocation.x = mx;
+    destLocation.y = my;
+    destVector.x = mx - x;
+    destVector.y = my - y;
+    delayCount = 0;
+}
+
+void Entity::Wait(uint time)
+{
+    Stop();
+    delayCount = time;
+}
+
 void Entity::Update()
 {
-    Direction newDir;
+    Direction newDir = face_nothing;;
 
     UpdateAnimation();
-
     if (this == engine.pPlayer)
         newDir = HandlePlayer();
-    else if (x == destLocation.x && y == destLocation.y)
-        newDir = GetMoveScriptCommand();
-    else
+
+    if (delayCount == 0 && (x == destLocation.x && y == destLocation.y)) // Nothing to do?
+        GetMoveScriptCommand();                                          // ask the script what we should do
+
+    if (delayCount > 0)
     {
-        // move towards destLocation, on heading destVector. (oooo math)
-        newDir = face_nothing;
+        delayCount--;
+    }
+    else if (destVector.x != 0 || destVector.y != 0)
+    {
+        // move towards destLocation, on heading destVector. (oooo math.  scary)
+
+        int startX = destLocation.x - destVector.x;
+        int startY = destLocation.y - destVector.y;
+
+        int dx = x - destLocation.x;
+        int dy = y - destLocation.y;
+
+        // Trivial cases: Motion in the four cardinal directions
+        if (dx == 0)
+        {
+            newDir =
+                (y > destLocation.y) ? face_up :
+                (y < destLocation.y) ? face_down :
+                face_nothing;
+        }
+        else if (dy == 0)
+        {
+            newDir =
+                (x > destLocation.x) ? face_left :
+                (x < destLocation.x) ? face_right :
+                face_nothing;
+        }
+        else
+        {
+            // General case: arbitrary direction (full 360 degrees)
+
+            double m = (double)(destVector.y) / destVector.x;
+
+            // typical y=mx+b BS
+            // targetY is where the entity "should" be on the Y axis, given its current X coordinate.
+            int targetY = (int)((x - startX) * m) + startY;
+            // deltaY is simply how many pixels up or down the entity must move this tick. (quantity, not direction, as we take the absolute value)
+            int deltaY = abs(y - targetY);
+            
+            // If deltaY is exactly one pixel (+/-), then we go diagonally.
+            // If deltaY is zero, then we go left/right.
+            // If deltaY is greater than one pixel, we go up/down
+
+            if (deltaY == 0)
+            {
+                newDir = (x > destLocation.x) ? face_left 
+                                            : face_right;
+            }
+            else if (deltaY == 1)
+            {
+                // ternary p1mpin
+                newDir =
+                    (y > destLocation.y) ?
+                        ((x > destLocation.x) ? face_upleft
+                                              : face_upright)
+                    :
+                        ((x > destLocation.x) ? face_downleft
+                                              : face_downright);
+            }
+            else
+            {
+                newDir =
+                    (y > destLocation.y) ? face_up
+                                         : face_down;
+            }
+        }
     }
 
     if (newDir == face_nothing)
