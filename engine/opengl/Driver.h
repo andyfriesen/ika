@@ -8,6 +8,7 @@
 
 #include "FPSCounter.h"
 
+/// OpenGL video driver implementation
 namespace OpenGL
 {
     struct NotYetImplementedException{};
@@ -15,6 +16,7 @@ namespace OpenGL
 
     class Image;
 
+    /// The driver itself.
     class Driver : public Video::Driver
     {
     public:

@@ -501,6 +501,7 @@ namespace Script
         FUNCTION("Sound",               Script::Sound::New),
         FUNCTION("Font",                Script::Font::New),
         FUNCTION("Entity",              Script::Entity::New),
+        FUNCTION("Canvas",              Script::Canvas::New),
         {    NULL,    NULL    }                        // sentinel?  (end of list marker, I think)
     };
 

@@ -6,6 +6,8 @@
 
 namespace OpenGL
 {
+    /// Encapsulates an image by putting it on a texture.
+    /// Most of the work is actually done in the driver.  This is little more than a container.
     class Image : public Video::Image
     {
         friend class OpenGL::Driver;

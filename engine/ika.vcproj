@@ -295,6 +295,9 @@
 			Name="Script"
 			Filter="py*.*">
 			<File
+				RelativePath="script\CanvasObject.cpp">
+			</File>
+			<File
 				RelativePath="script\ControlObject.cpp">
 			</File>
 			<File

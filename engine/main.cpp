@@ -180,7 +180,7 @@ void CEngine::Startup()
     {
         Sys_Error("An unknown error occurred during initialization.");
     }
-       
+
     srand(GetTime());
     
     Log::Write("Initing Python");

@@ -25,6 +25,41 @@ namespace Script
             {   NULL,       NULL    }   // end of list
         };
 
+#define GET(x) PyObject* get ## x(PyObject* self)
+#define SET(x) PyObject* set ## x(PyObject* self, PyObject* value)
+
+        GET(XWin)       { return PyInt_FromLong(engine->GetCamera().x); }
+        SET(XWin)       { engine->SetCamera(Point(PyInt_AsLong(value), engine->GetCamera().y)); return 0; }
+        GET(YWin)       { return PyInt_FromLong(engine->GetCamera().y); }
+        SET(YWin)       { engine->SetCamera(Point(engine->GetCamera().x, PyInt_AsLong(value)));  return 0;}
+        GET(NumTiles)   { return PyInt_FromLong(engine->tiles->NumTiles()); }
+        GET(TileWidth)  { return PyInt_FromLong(engine->tiles->Width()); }
+        GET(TileHeight) { return PyInt_FromLong(engine->tiles->Height()); }
+        GET(Width)      { return PyInt_FromLong(engine->map.Width()); }
+        GET(Height)     { return PyInt_FromLong(engine->map.Height()); }
+        GET(RString)    { return PyString_FromString(engine->map.GetRString().c_str()); }
+        SET(RString)    { engine->map.SetRString(PyString_AsString(value));     return 0;   }
+        GET(VSPName)    { return PyString_FromString(engine->map.GetVSPName().c_str()); }
+        SET(VSPName)    { engine->map.SetVSPName(PyString_AsString(value));     return 0;   }
+        GET(Music)      { return PyString_FromString(engine->map.GetMusic().c_str()); }
+        SET(Music)      { engine->map.SetMusic(PyString_AsString(value));       return 0;   }
+        GET(Entities)   { Py_INCREF(entitydict); return entitydict; }
+
+        PyGetSetDef properties[] =
+        {
+            {   "xwin",         (getter)getXWin,            (setter)setXWin,    "Gets or sets the X coordinate of the camera"   },
+            {   "ywin",         (getter)getYWin,            (setter)setYWin,    "Gets or sets the Y coordinate of the camera"   },
+            {   "numtiles",     (getter)getNumTiles,        0,                  "Gets the number of tiles in the current tileset"   },
+            {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset"         },
+            {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset"        },
+            {   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in tiles"   },
+            {   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in tiles"  },
+            {   "rstring",      (getter)getRString,         (setter)setRString, "Gets or sets the current render string of the map" },
+            {   "vspname",      (getter)getVSPName,         (setter)setVSPName, "Gets or sets the name of the current tileset"  },
+            {   "defaultmusic", (getter)getMusic,           (setter)setMusic,   "Gets or sets the default music of the current map" },
+            {   "entities",     (getter)getEntities,        0,                  "Gets a dictionary of entities currently tied to the map"   },
+        };
+
         void Init()
         {
             memset(&type, 0, sizeof type);
@@ -34,9 +69,11 @@ namespace Script
             type.tp_name="Map";
             type.tp_basicsize=sizeof type;
             type.tp_dealloc=(destructor)Destroy;
-            type.tp_getattr=(getattrfunc)GetAttr;
-            type.tp_setattr=(setattrfunc)SetAttr;
-            type.tp_doc="Represents the currently executing map.";
+            type.tp_methods = methods;
+            type.tp_getset  = properties;
+            type.tp_doc="Represents the current map";
+
+            PyType_Ready(&type);
         }
 
         PyObject* New()
@@ -52,89 +89,6 @@ namespace Script
         void Destroy(PyObject* self)
         {
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(PyObject* self,char* name)
-        {
-            if (!strcmp(name,"xwin"))
-                return PyInt_FromLong(engine->GetCamera().x);
-            if (!strcmp(name,"ywin"))
-                return PyInt_FromLong(engine->GetCamera().y);
-            if (!strcmp(name,"numtiles"))
-                return PyInt_FromLong(engine->tiles->NumTiles());
-            if (!strcmp(name,"tilewidth"))
-                return PyInt_FromLong(engine->tiles->Width());
-            if (!strcmp(name,"tileheight"))
-                return PyInt_FromLong(engine->tiles->Height());
-            if (!strcmp(name,"width"))
-                return PyInt_FromLong(engine->map.Width());
-            if (!strcmp(name,"height"))
-                return PyInt_FromLong(engine->map.Height());
-            if (!strcmp(name,"rstring"))
-                return PyString_FromString(engine->map.GetRString().c_str());
-            if (!strcmp(name,"vspname"))
-                return PyString_FromString(engine->map.GetVSPName().c_str());
-            if (!strcmp(name,"defaultmusic"))
-                return PyString_FromString(engine->map.GetMusic().c_str());
-            if (!strcmp(name,"entities"))
-            {
-                Py_INCREF(entitydict);
-                return entitydict;
-            }
-            return Py_FindMethod(methods, self, name);
-        }
-
-        int SetAttr(PyObject* self,char* name,PyObject* value)
-        {
-            if (!strcmp(name,"xwin"))
-            {
-                int x = PyInt_AsLong(value);
-                engine->SetCamera(Point(x, engine->GetCamera().y));
-            }
-            if (!strcmp(name,"ywin"))
-            {
-                int y = PyInt_AsLong(value);
-                engine->SetCamera(Point(engine->GetCamera().x, y));
-            }
-
-            if (!strcmp(name,"numtiles"))
-            {
-                PyErr_SetString(PyExc_SyntaxError,"map.numtiles is read only");
-                return -1;
-            }
-            if (!strcmp(name,"tilewidth"))
-            {
-                PyErr_SetString(PyExc_SyntaxError,"map.tilewidth is read only");
-                return -1;
-            }
-            if (!strcmp(name,"tileheight"))
-            {
-                PyErr_SetString(PyExc_SyntaxError,"map.tileheight is read only");
-                return -1;
-            }
-            if (!strcmp(name,"width"))
-            {
-                PyErr_SetString(PyExc_SyntaxError,"map.width is read only");
-                return -1;
-            }
-            if (!strcmp(name,"height"))
-            {
-                PyErr_SetString(PyExc_SyntaxError,"map.height is read only");
-                return -1;
-            }
-            if (!strcmp(name,"rstring"))
-                engine->map.SetRString(PyString_AsString(value));
-            if (!strcmp(name,"vspname"))
-                engine->map.SetVSPName(PyString_AsString(value));
-            if (!strcmp(name,"defaultmusic"))
-                engine->map.SetMusic(PyString_AsString(value));
-            if (!strcmp(name,"entities"))
-            {
-                PyErr_SetString(PyExc_SyntaxError,"map.entities is read only");
-                return -1;
-            }
-
-            return 0;
         }
 
 #define METHOD(x) PyObject* x(PyObject* self, PyObject* args)

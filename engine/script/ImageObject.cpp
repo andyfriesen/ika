@@ -58,7 +58,7 @@ namespace Script
 
             try
             {
-                Canvas img(filename);
+                ::Canvas img(filename);
 
                 ImageObject* image=PyObject_New(ImageObject,&type);
                 if (!image)

@@ -1,8 +1,3 @@
-/** Video::Driver
-* This class defines the base interface for all ika
-* video drivers.
-*/
-
 #ifndef VIDEO_DRIVER_H
 #define VIDEO_DRIVER_H
 
@@ -11,23 +6,20 @@
 #include "common/types.h"
 #include "common/Canvas.h"
 
+/// The video driver interface lives here.
 namespace Video
 {
+    /// Thrown when something in the video system screws up. ;)
     class Exception{};
 
+    /**
+    * This class defines the base interface for all ika
+    * video drivers.
+    */
     class Driver
     {
     public:
         virtual ~Driver(){}
-
-        /// Returns the version of the video driver.
-        //virtual int GetVersion() = 0;
-
-        /// Initializes the video subsystem and prepares to draw.
-        //virtual void Init(int x, int y, int bpp, bool fullscreen) = 0;
-
-        /// Shuts down the video subsystem and frees resources.
-        //virtual void Shutdown() = 0;
 
         /// Switches the driver to display fullscreen.
         virtual void SwitchToFullScreen() = 0;

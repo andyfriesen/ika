@@ -10,6 +10,7 @@
 class CFont;
 class CEntity;
 class CEngine;
+class Canvas;
 namespace audiere   {   class OutputStream; }
 namespace Video
 {
@@ -17,9 +18,11 @@ namespace Video
     class Image;
 }
 
+/// Contains implementations of Python binding things.
 namespace Script
 {
     // Hardware interfaces
+    /// Reflects an image.
     namespace Image
     {
         // object type
@@ -44,6 +47,7 @@ namespace Script
         extern PyMethodDef methods[];
     }
 
+    /// Reflects a sound stream.
     namespace Sound
     {
         // Object type
@@ -67,6 +71,7 @@ namespace Script
         extern PyMethodDef methods[];
     }
 
+    /// Reflects an input control.
     namespace Control
     {
         // Object type
@@ -92,6 +97,35 @@ namespace Script
     }
 
     // Engine resources
+    /// Reflects a canvas. (software image surface thingie)
+    namespace Canvas
+    {
+        // Object type
+        struct CanvasObject
+        {
+            PyObject_HEAD
+            bool ref;
+            ::Canvas* canvas;
+        };
+        extern PyTypeObject type;
+        extern PyMethodDef methods[];
+        
+        // Methods
+        METHOD(Canvas_GetPixel, CanvasObject);
+        METHOD(Canvas_SetPixel, CanvasObject);
+        METHOD(Canvas_Clear, CanvasObject);
+        METHOD(Canvas_Resize, CanvasObject);
+        METHOD1(Canvas_Rotate, CanvasObject);
+        METHOD1(Canvas_Flip, CanvasObject);
+        METHOD1(Canvas_Mirror, CanvasObject);
+
+        void Init();
+        PyObject* New(PyObject* self, PyObject* args);
+        void Destroy(CanvasObject* self);
+        PyObject* GetAttr(CanvasObject* self, char* name);
+    }
+
+    /// Reflects a bitmap font. (maybe a vector font later on)
     namespace Font
     {
         // Object type
@@ -117,6 +151,7 @@ namespace Script
         extern PyMethodDef methods[];
     }
 
+    /// Reflects a map entity.
     namespace Entity
     {
         extern PyTypeObject type;
@@ -149,6 +184,7 @@ namespace Script
     }
 
     // Singletons
+    /// Reflects the input core.
     namespace Input
     {
         // Object type
@@ -170,6 +206,7 @@ namespace Script
         extern PyMethodDef methods[];
     }
 
+    /// Reflects the video driver.
     namespace Video
     {
         // Object type
@@ -197,6 +234,7 @@ namespace Script
         extern PyMethodDef methods[];
     }
 
+    /// Reflects the current map, and some aspects of the engine.
     namespace Map
     {
         // Object type
@@ -223,6 +261,7 @@ namespace Script
         extern PyMethodDef methods[];
     }
 
+    /// lil' Python object used to redirect error messages to pyout.log
     namespace Error
     {
         // Object type

@@ -177,7 +177,7 @@ public:
     }
 
     virtual float Position()    {   return _down ? 1.0f : 0.0f; }
-    virtual float Delta()       {   return _down ? 1.0f : 0.0f; }
+    virtual float Delta()       {   return Pressed() ? 1.0f : 0.0f; }
 };
 
 /*class CompositeControl : public Control

@@ -19,11 +19,13 @@ typedef unsigned int u32;
 
 typedef unsigned int uint;
 
+// Kudos to kepler and aegis for this trick.
+// Fix VC6 for loop scoping.
 #ifdef MSVC6
 #  define for if (0); else for
 #endif
 
-//! Everybody has their own Rect struct.  This is mine.
+/// Everybody has their own Rect struct.  This is mine.
 struct Rect
 {
     int left;
@@ -38,6 +40,7 @@ struct Rect
     Rect() : left(0),right(0),top(0),bottom(0) {}
 };
 
+/// Simple 2D point
 struct Point
 {
     int x;
@@ -49,7 +52,7 @@ struct Point
     {}
 };
 
-enum Direction											// directions an entity can be facing
+enum Direction											///< directions an entity can be facing
 {
     face_up,
     face_down,
@@ -59,17 +62,17 @@ enum Direction											// directions an entity can be facing
     face_upright,
     face_downleft,
     face_downright,
-    face_nothing,										// a special case, entity::getcommand returns this if the entity in question isn't walking
+    face_nothing,										///< a special case, entity::getcommand returns this if the entity in question isn't walking
 };
 
-enum MoveCode											// entity movecodes
+enum MoveCode											///< entity movecodes
 {
-    mc_nothing=0,										// entity just stands there
-    mc_wander,											// entity wanders around like an idiot
-    mc_wanderrect,										// ditto, but the entity is restricted to a rectangular region
-    mc_wanderzone,										// ditto again, but the entity is restricted to a particular zone
-    mc_script,											// entity follows its script
-    mc_chase,											// the entity is following another entity
+    mc_nothing=0,										///< entity just stands there
+    mc_wander,											///< entity wanders around like an idiot
+    mc_wanderrect,										///< ditto, but the entity is restricted to a rectangular region
+    mc_wanderzone,										///< ditto again, but the entity is restricted to a particular zone
+    mc_script,											///< entity follows its script
+    mc_chase,											///< the entity is following another entity
 };
 
 #pragma pack (push,1)
@@ -107,56 +110,6 @@ union RGBA
     operator u32() { return i; }
 };
 
-//! Also a colour.
-struct BGRA
-{
-    u8 b,g,r,a;
-    
-    BGRA()
-        : b(0),g(0),r(0),a(0)	{}
-    BGRA(u8 ab,u8 ag,u8 ar,u8 aa)
-        : b(ab),g(ag),r(ar),a(aa)	{}
-    BGRA(u32 c)
-    {
-        a=c>>24;
-        b=(c>>16)&255;
-        g=(c>>8)&255;
-        r=c&255;
-    }
-
-    BGRA(const RGBA& c)
-    {	r=c.r; g=c.g; b=c.b; a=c.a;	}
-
-    inline operator u32() const
-    {
-        return *(u32*)this;
-    }
-};
-
-// win32 ;P
-#undef RGB
-
-//! A colour, but without any alpha information.
-struct RGB
-{
-    u8 r,g,b;
-    
-    RGB(const RGBA& c)
-        : r(c.r),g(c.g),b(c.b)
-    {}
-
-    RGB(u8 R,u8 G,u8 B,u8 A=0)
-        : r(R),g(G),b(B)
-    {}
-};
-
-//inline RGBA::RGBA(const BGRA& c) {	r=c.r; g=c.g; b=c.b; a=c.a;	}
 #pragma pack (pop)
-
-// kudos to kepler and aegis for this trick
-// fixes gay for scoping in VC6
-#ifdef MSVC
-//#   define for if (0); else for
-#endif
 
 #endif
