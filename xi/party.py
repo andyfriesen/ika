@@ -70,8 +70,8 @@ def RemoveChar(name):
         return
 
     if len(party) > 0:
+        del party[0].ent        		# kill off the entity
         if party[0] == chars[name]:   		# are we killing off the leader?
-            del party[0].ent        		# kill off the player
             party[1].Spawn(player.x,player.y) 	# create the new leader
             player = party[1].ent
 
@@ -86,10 +86,7 @@ def IsCharInParty(name):
     if name not in chars:
         return False
 
-    if chars[name] in party:
-        return True
-    else:
-        return False
+    return chars[name] in party
 
 #------------------------------------------------------------------------------
 

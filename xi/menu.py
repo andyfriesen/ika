@@ -19,78 +19,91 @@ CURSOR_WIDTH=20
 defaultcursor = cursor.Cursor(widget.defaultfont)
 
 def SetDefaultCursor(csr):
-	global defaultcursor
-	
-	defaultcursor = csr
+    global defaultcursor
+    
+    defaultcursor = csr
 
 class Menu(widget.Frame):
-	"A menu window.  Has a list of items that the user can select."
-	def __init__(self, x = 0 , y = 0, cursor = None, textcontrol = None):
-		global defaultcursor
+    "A menu window.  Has a list of items that the user can select."
+    def __init__(self, x = 0 , y = 0, cursor = None, textcontrol = None):
+        global defaultcursor
 
-		widget.Frame.__init__(self)
-		self.menuitems = textcontrol or widget.TextLabel()
+        widget.Frame.__init__(self)
+        self.menuitems = textcontrol or widget.TextLabel()
 
-		self.menuitems.x = CURSOR_WIDTH
-		self.widgets.append(self.menuitems)
-		self.cursor = cursor or defaultcursor
+        self.menuitems.x = CURSOR_WIDTH
+        self.widgets.append(self.menuitems)
+        self.cursor = cursor or defaultcursor
 
-		self.Position = (x, y)
-		self.Size = self.menuitems.Size
-		self.width += CURSOR_WIDTH
+        self.Position = (x, y)
+        self.Size = self.menuitems.Size
+        self.width += CURSOR_WIDTH
 
-		self.cursory = 0
-		self.active = 1
+	self.pagesize = self.height / self.menuitems.font.height        	# The number of menu items that fit in the window at one time
 
-	def Draw(self):
-		widget.Frame.Draw(self)
+        self.ypos = 0								# The position of the cursor, on the menu
+        self.active = True
 
-		if self.active:
-			self.cursor.Draw(self.x + CURSOR_WIDTH, self.y + (self.cursory + 0.5) * self.menuitems.font.height)
+    def set_YPage(self, value):
+        self.menuitems.YPage = value
 
-	def Clear(self):
-		self.menuitems.Clear()
+    CursorPos = property(lambda self: self.ypos + self.YPage)
+    YPage = property(lambda self: self.menuitems.YPage, set_YPage)
 
-	def AddText(self,*args):
-		self.menuitems.AddText(*args)
-		self.AutoSize()
+    def Draw(self):
+        widget.Frame.Draw(self)
 
-	def AutoSize(self):
-		self.menuitems.AutoSize()
-		widget.Frame.AutoSize(self)
+        if self.active:
+            self.cursor.Draw(self.x + CURSOR_WIDTH, self.y + (self.ypos + 0.5) * self.menuitems.font.height)
 
-	def Update(self):
-		input.Update()
-		if input.up:
-			input.up=0
-			if self.cursory>0:
-				self.cursory-=1
+    def Clear(self):
+        self.menuitems.Clear()
 
-		if input.down:
-			input.down=0
-			if self.cursory<len(self.menuitems)-1:
-				self.cursory+=1
+    def AddText(self,*args):
+        self.menuitems.AddText(*args)
+        self.AutoSize()
 
-		if input.enter:
-			input.enter=0
-			return self.cursory
+    def AutoSize(self):
+        self.menuitems.AutoSize()
+        widget.Frame.AutoSize(self)
+        self.pagesize = self.height / self.menuitems.font.height
 
-		if input.cancel:
-			input.cancel=0
-			return -1
+    def Update(self):
+        input.Update()
+        if input.up:
+            input.up=0
+            if self.ypos > 0:
+                self.ypos -= 1
+            elif self.YPage > 0:
+                self.YPage -= 1
+            
+        if input.down:
+            input.down=0
+            if self.ypos < self.pagesize - 1:
+                self.ypos += 1
+            elif self.YPage < len(self.menuitems) - self.pagesize:
+                self.YPage += 1
 
-		return None
+        if input.enter:
+            input.enter=0
+            return self.CursorPos
 
-	def Execute(self):
-		input.enter=0
-		self.cursory=0
+        if input.cancel:
+            input.cancel=0
+            return -1
 
-		while 1:
-			map.Render()
+        return None
 
-			result = self.Update()
-			if result != None:
-				return result
-				
-			self.Draw()
-			ika.ShowPage()
+    def Execute(self):
+        input.enter=0
+        self.ypos = self.YPage = 0
+
+        while 1:
+            map.Render()
+
+            result = self.Update()
+            if result != None:
+                return result
+                
+            self.Draw()
+            ika.ShowPage()

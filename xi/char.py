@@ -16,7 +16,7 @@ from itemdatabase import ItemDatabase
 
 itemdb = ItemDatabase()
 
-class Character:
+class Character(object):
     def __init__(self, datfile):
         self.datfilename = datfile
 
@@ -43,6 +43,8 @@ class Character:
         self.nwil = self.initWIL
         self.nspd = self.initSPD
         self.nluk = self.initLUK
+
+        self.ent = None        
 
         self.equip = {}
         for it in equiptypes:
@@ -209,6 +211,7 @@ class Character:
     #--------------------------------------------------------------
 
     def Spawn(self, x, y):
-        self.ent = Entity(x, y, self.chrfile)
+        if self.ent is None:
+            self.ent = Entity(x, y, self.chrfile)
 
 #------------------------------------------------------------------

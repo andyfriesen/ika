@@ -27,7 +27,8 @@ def Update(curchar):
 	equipwindow.Update(curchar)
 	portraitwindow.DockTop().DockLeft()
 	statwindow.DockLeft(portraitwindow).DockTop()
-	equipwindow.DockLeft(portraitwindow).DockTop(statwindow)
+	equipwindow.DockLeft().DockTop(statwindow)
+	equipwindow.width = statwindow.Right
 
 def Execute():
 	global portraitwindow, statwindow, equipwindow

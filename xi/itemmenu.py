@@ -34,6 +34,7 @@ class ItemMenu(object):
         self.statbar.DockTop().DockRight()
         self.menu.DockLeft().DockTop(self.description)
         self.description.width = self.statbar.x - self.description.x
+        self.menu.menuitems.YMax = 20
 
     #--------------------------------------------
 
@@ -44,14 +45,13 @@ class ItemMenu(object):
             self.menu.AddText(itm.Name, str(itm.qty) )
         self.menu.AutoSize()
 
-
     #--------------------------------------------
 
     def Execute(self):
         self.Refresh()
         
         while True:
-            self.description.text[0] = party.inv[self.menu.cursory].Description
+            self.description.text[0] = party.inv[self.menu.CursorPos].Description
 
             ika.map.Render()
             for x in (self.menu, self.statbar, self.description):

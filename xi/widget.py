@@ -26,6 +26,7 @@ defaultfont.tabsize = 64
 
 class Widget(object):
     "Basic widget interface."
+    __slots__ = ['x', 'y', 'width', 'height', 'border']
     def __init__(self, x = 0, y = 0, width = 0, height = 0):
         self.x = x
         self.y = y
@@ -74,6 +75,8 @@ class Widget(object):
 
 class Frame(Widget):
     "Base frame class.  A window, with things in it."
+    __slots__ = Widget.__slots__ + [ 'wnd', 'widgets' ]
+    
     def __init__(self, wnd = defaultwindow, x = 0, y = 0, width = 0, height = 0):
         Widget.__init__(self, x, y, width, height)
         
@@ -94,8 +97,16 @@ class Frame(Widget):
             self.width = max(self.width, w.x+w.width)
             self.height = max(self.height, w.y+w.height)
 
+    def AddChild(self, child):
+        self.widgets.append(child)
+
+    def RemoveChild(self, child):
+        self.widgets.remove(child)
+
 class TextFrame(Frame):
     "A frame with a simple text widget.  Nothing else."
+    __slots__ = Frame.__slots__ + [ '_TextFrame__text', 'text' ]
+    
     def __init__(self, wnd = defaultwindow, x = 0, y = 0, width = 0, height = 0):
         Frame.__init__(self, wnd, x, y, width, height)
         self.__text = TextLabel()
@@ -117,15 +128,17 @@ class TextFrame(Frame):
 
 class TextLabel(Widget):
     'Textlabels hold one or more lines of text.'
+    __slots__ = Widget.__slots__ + [ 'font', 'ypage', 'ymax', 'text', 'PrintString' ]
 
     def __init__(self, font = defaultfont, *text):
         Widget.__init__(self)
 
         self.font = font
-        self.ypos = 0
-        self.maxy = 0
+        self.ypage = 0
+        self.ymax = 0
 
         self.text = list(text)
+        self.PrintString = None
 
         self.LeftJustify()
 
@@ -163,11 +176,12 @@ class TextLabel(Widget):
         curx = 0
         cury = 0
 
-        for t in self.text:
-            if cury >= self.height:
-                break
-            self.PrintString(self.x + xoffset + curx, self.y + yoffset + cury, t)
-            cury+=self.font.height
+        print 'Print:\t', self.YPage
+        i = self.ypage
+        while cury < self.height and i < len(self.text):
+            self.PrintString(self.x + xoffset + curx, self.y + yoffset + cury, self.text[i])
+            i += 1
+            cury += self.font.height
 
     def AutoSize(self):
         self.Size = (0, 0)
@@ -177,25 +191,28 @@ class TextLabel(Widget):
 
         self.height = len(self.text) * self.font.height
         
-        if self.maxy != 0:
-            maxy = self.maxy
+        if self.ymax != 0:
+            maxy = self.ymax * self.font.height
         else:
             maxy = ika.GetScreenImage().height - self.y
 
         self.height = min(self.height, maxy)
 
-    def set_YPos(self, val):
-        self.ypos = min(val, maxy - self.height / self.font.height)
+    def set_YPage(self, value):
+        print value,'\t', self.ymax - self.height / self.font.height
+        self.ypage = min(value, self.height - self.height / self.font.height)
 
-    YPos = property( lambda self: self.ypos, set_YPos )
+    YPage = property( lambda self: self.ypage, set_YPage )
 
 class ColumnedTextLabel(Widget):
     'A text label that holds one or more columns of text.  Columns stay lined up.'
+    __slots__ = Widget.__slots__ + [ 'font', 'columns', 'columngap' ]
 
-    def __init__(self, x = 0, y = 0, columns = 1, font = defaultfont):
+    def __init__(self, x = 0, y = 0, columns = 1, font = defaultfont, columngap = 10):
         Widget.__init__(self, x, y)
 
         self.font = font
+        self.columngap = columngap
 
         self.columns = []
         for i in range(columns):
@@ -238,21 +255,29 @@ class ColumnedTextLabel(Widget):
         for i in range(1, len(self.columns)):
             self.columns[i].AutoSize()
             self.columns[i].DockLeft(self.columns[i - 1])
+            self.columns[i].x += self.columngap
 
         self.Size = (0, 0)
         for c in self.columns:
             self.width = max(self.width, c.Right)
             self.height = max(self.height, c.Bottom)
 
-    def set_YPos(self,val):
+    def set_YPage(self, value):
         for c in self.columns:
-            c.YPos = value
+            c.YPage = value
 
-    YPos = property( lambda self: self.columns[0].YPos, set_YPos )
+    def set_YMax(self, value):
+        for c in self.columns:
+            c.ymax = value
+
+    YPage = property( lambda self: self.columns[0].YPage, set_YPage )
+    YMax = property( lambda self: self.columns[0].maxy, set_YMax )
     
 
 class Bitmap(Widget):
     "Bitmap widgets are images."
+    __slots__ = Widget.__slots__ + [ 'img' ]
+    
     def __init__(self, img = None):
         Widget.__init__(self)
 

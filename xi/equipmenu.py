@@ -50,7 +50,8 @@ class EquipMenu(object):
         # Layout
         self.portraitwindow.DockLeft().DockTop()
         self.statwindow.DockLeft(self.portraitwindow).DockTop()
-        self.equipwindow.DockLeft(self.portraitwindow).DockTop(self.statwindow)
+        self.equipwindow.DockLeft().DockTop(self.statwindow)
+        self.equipwindow.width = self.statwindow.Right
         self.itemlist.DockLeft()
         self.itemlist.y = max(self.equipwindow.Bottom, self.portraitwindow.Bottom) + self.itemlist.border
 

@@ -52,14 +52,19 @@ class PortraitWindow(widget.Frame):
         
         self.AutoSize()
 
-class StatusWindow(widget.TextFrame):
+class StatusWindow(widget.Frame):
     "Displays a character's stats in a frame."
 
+    def __init__(self):
+        widget.Frame.__init__(self)
+        self.__text = widget.ColumnedTextLabel(columns = 3)
+        self.AddChild(self.__text)
+
     def Update(self,char):
-        self.Clear()
+        self.__text.Clear()
 
         def add(n, a):
-            self.AddText( '%s\t%i' % (n, a) )
+            self.__text.AddText(n, str(a))
 
         add('Attack', char.atk)
         add('Defend', char.Def)
@@ -67,15 +72,16 @@ class StatusWindow(widget.TextFrame):
         add('Evade %', char.eva)
 
         def add(n, a, b):
-            self.AddText( '%s\t%i\t~2%i' % (n, a, b) )
+            self.__text.AddText(n, str(a), '~2' + str(b) )
 
-        self.AddText( '' )
+        self.__text.AddText( '' )
         add('Strength', char.str, char.nstr)
         add('Vitality', char.vit, char.nvit)
         add('Magic', char.mag, char.nmag)
         add('Will', char.wil, char.nwil)
         add('Speed', char.spd, char.nspd)
         add('Luck', char.luk, char.nluk)
+        self.AutoSize()
 
 class EquipWindow(widget.TextFrame):
     "Displays a character's current equipment."
