@@ -483,9 +483,9 @@ void MainWindow::OnOpenMap(wxCommandEvent&)
         "Open File",
         "",
         "",
-        //"All known (*.ika-map;*.map)|*.ika-map;*.map|"
+        "All known (*.ika-map;*.map)|*.ika-map;*.map|"
         "Maps (*.ika-map)|*.ika-map|"
-        "VERGE v1 Maps (*.map)|*.map|"
+        "VERGE Maps (*.map)|*.map|"
         "All files (*.*)|*.*",
         wxOPEN | wxCHANGE_DIR | wxFILE_MUST_EXIST
         );
@@ -926,6 +926,7 @@ TileSetView* MainWindow::GetTileSetView() const { return _tileSetView; }
 void MainWindow::LoadMap(const std::string& fileName)
 {
     extern Map* ImportVerge1Map(const std::string& fileName);
+    extern Map* ImportVerge2Map(const std::string& fileName);
 
     Map* newMap = 0;
     bool result = false;
@@ -938,7 +939,12 @@ void MainWindow::LoadMap(const std::string& fileName)
     }
     else
     {
-        newMap = ImportVerge1Map(fileName);
+        try {
+            newMap = ImportVerge1Map(fileName);
+        } catch (...) { newMap = 0; }
+        if (!newMap) {
+            newMap = ImportVerge2Map(fileName);
+        }
         result = newMap != 0;
     }
 

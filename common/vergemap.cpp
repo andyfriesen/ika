@@ -4,6 +4,7 @@
 #include <stdio.h>
 
 #include "map.h"
+#include "rle.h"
 #include "misc.h"
 
 static u16 fgetw(FILE* f)
@@ -168,6 +169,188 @@ Map* ImportVerge1Map(const std::string& fileName)
         int thingie = fgetq(f);
         fseek(f, numMoveScripts, SEEK_CUR); // skip movescripts
         fseek(f, thingie, SEEK_CUR);    // and other shit (who knows what the hell it is)
+
+        fclose(f);
+        return map;
+    }
+    catch (...)
+    {
+        fclose(f);
+        throw;
+    }
+}
+
+Map* ImportVerge2Map(const std::string& fileName)
+{
+    FILE* f = fopen(fileName.c_str(), "rb");
+    if (!f)
+        return 0;
+
+    Map* map = new Map;
+
+    try
+    {
+        const char* mapsig="MAPù5";
+        char buffer[256];
+
+        std::fill(buffer, buffer + 256, 0);
+
+        fread(buffer, 1, 6, f);
+        if (std::string(buffer) != mapsig)
+            throw "Bogus map file";
+
+        fseek(f, 4, SEEK_CUR);
+
+        fread(buffer, 1, 60, f);    map->tileSetName = buffer;
+        fread(buffer, 1, 60, f);    map->metaData["music"] = buffer;
+        fread(buffer, 1, 20, f);    map->metaData["rstring"] = buffer;
+
+        fseek(f, 55, SEEK_CUR);
+
+        int numLayers = fgetc(f);
+        int width = 0;
+        int height = 0;
+
+        std::vector<int> pmulx(numLayers), pmuly(numLayers);
+        std::vector<int> pdivx(numLayers), pdivy(numLayers);
+
+        for (int i = 0; i < numLayers; i++)
+        {
+            pmulx.push_back(fgetc(f));
+            pdivx.push_back(fgetc(f));
+            pmuly.push_back(fgetc(f));
+            pdivy.push_back(fgetc(f));
+            width = fgetw(f);
+            height = fgetw(f);
+            fgetc(f); // trans
+            fgetc(f); // hline
+            fgetw(f); // skip two
+        }
+
+        map->width = width * 16;
+        map->height = height * 16;
+
+        for (int i = 0; i < numLayers; i++)
+        {
+            u32 bufSize = fgetq(f);
+            ScopedArray<u16> buffer = new u16[bufSize];
+            ScopedArray<u32> data = new u32[width * height];
+            fread(buffer.get(), 1, bufSize, f);
+            ReadCompressedLayer2tou32(data.get(), width * height, buffer.get());
+            Map::Layer* lay = new Map::Layer(va("Layer%i", i), width, height);
+
+            lay->tiles = Matrix<uint>(width, height, data.get());
+            lay->parallax.mulx = pmulx[i];
+            lay->parallax.muly = pmuly[i];
+            lay->parallax.divx = pdivx[i];
+            lay->parallax.divy = pdivy[i];
+
+            if (lay->parallax.divx == 0)
+            {
+                lay->parallax.mulx = 1;
+                lay->parallax.divx = 1;
+            }
+
+            if (lay->parallax.divy == 0)
+            {
+                lay->parallax.muly = 1;
+                lay->parallax.divy = 1;
+            }
+
+            map->AddLayer(lay);
+        }
+
+        // obstructions
+        uint bufSize = fgetq(f);
+        ScopedArray<u8> rleBuffer = new u8[bufSize];
+        ScopedArray<u8> obsData = new u8[width * height];
+        fread(rleBuffer.get(), 1, bufSize, f);
+        ReadCompressedLayer1(obsData.get(), width * height, rleBuffer.get());
+        if (map->NumLayers())
+            map->GetLayer(0)->obstructions = Matrix<u8>(width, height, obsData.get());
+
+        // zones
+        bufSize = fgetq(f);
+        fseek(f, bufSize, SEEK_CUR); // TODO: use this data
+
+        struct Verge2Zone
+        {
+            char name[40];       
+            u16 scriptIndex;          
+            u16 chance;         
+            u16 delay;           
+            u16 adjacentActivate;             
+            u16 entityScript;    
+        };
+
+        uint numZones = fgetq(f);
+        fseek(f, numZones * sizeof(Verge2Zone), SEEK_CUR); // TODO: use this too
+
+        std::fill(buffer, buffer + 255, 0);
+        int numSprites = fgetc(f);
+        std::vector<std::string> chrList(numSprites);
+        for (int i = 0; i < numSprites; i++)
+        {
+            fread(buffer, 1, 60, f);
+            chrList.push_back(buffer);
+        }
+
+        int numEntities = fgetc(f);
+        for (int i = 0; i < numEntities; i++)
+        {
+            Map::Entity ent;
+
+            ent.x = fgetq(f) * 16;
+            ent.y = fgetq(f) * 16;
+            fgetq(f); // toss tile x/y
+
+            fgetc(f); // toss move direction
+            ent.direction = (Direction)fgetc(f);
+            fgetc(f); // movecount
+            fgetc(f); // curframe
+            fgetc(f); // specframe
+            int chrIndex = fgetc(f);
+            ent.spriteName = chrList[chrIndex];
+
+            fgetc(f); // reset?
+
+            ent.obstructedByEntities = ent.obstructedByMap = fgetc(f) != 0;
+            ent.obstructsEntities = fgetc(f) != 0;
+
+            const int speedxlat[] =
+            { 100, 12, 25, 50, 100, 200, 400, 800, 800, 800, 800, 800 };
+            ent.speed = speedxlat[fgetc(f)];
+
+            fgetc(f); // speedcount
+            fgetc(f); // animation frame delay?
+            fgetq(f); // anim script index
+            fgetq(f); // move script index
+            fgetc(f); // autoface
+            fgetc(f); // adjacent activation
+            fgetc(f); // move code
+            fgetc(f); // move script
+            fgetc(f); // subtile move count? :P
+            fgetc(f); // more runtime internal junk
+
+            fgetw(f); // wander step count
+            fgetw(f); // wander delay
+            fgetw(f); // ???
+            fgetw(f); // @_@;
+
+            fseek(f, 14, SEEK_CUR); // skip wander rect and some other stuff
+
+            ent.activateScript = va("Event%i", fgetw(f));
+
+            fseek(f, 18, SEEK_CUR); // ???
+
+            fread(buffer, 1, 20, f);
+            ent.label = buffer; // what the hell
+
+            map->GetLayer(0)->entities.push_back(ent);
+
+        }
+
+        // skip move scripts and "things" (which were never implemented anyway)
 
         fclose(f);
         return map;
