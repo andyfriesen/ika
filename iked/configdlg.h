@@ -10,8 +10,8 @@ class CConfigDlg : public wxDialog
     wxCheckBox* pFullscreenbox;
     wxCheckBox* pSoundbox;
     wxCheckBox* pLogbox;
-    wxWindow*   pPixeldepthselector;
-    wxWindow*   pGraphdriverselector;        
+    wxRadioBox* pPixeldepthselector;
+    wxListBox*  pGraphdriverselector;        
 
     void Update();
     void Load(const string& fname);
@@ -25,7 +25,7 @@ public:
                wxWindowID id,
                const string& name="");
 
-    void OnOk(wxCommandEvent&);
+    void OnOK(wxCommandEvent&);
     void OnCancel(wxCommandEvent&);
 
     DECLARE_EVENT_TABLE()
