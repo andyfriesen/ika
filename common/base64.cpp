@@ -58,22 +58,22 @@ DESCRIPTION:
                 table has been created to avoid string scans.
 
 DESIGN GOALS:	Specifically:
-		Code is a stand-alone utility to perform base64 
-		encoding/decoding. It should be genuinely useful 
-		when the need arises and it meets a need that is 
-		likely to occur for some users.  
-		Code acts as sample code to show the author's 
-		design and coding style.  
+		Code is a stand-alone utility to perform base64
+		encoding/decoding. It should be genuinely useful
+		when the need arises and it meets a need that is
+		likely to occur for some users.
+		Code acts as sample code to show the author's
+		design and coding style.
 
-		Generally: 
+		Generally:
 		This program is designed to survive:
 		Everything you need is in a single source file.
 		It compiles cleanly using a vanilla ANSI C compiler.
-		It does its job correctly with a minimum of fuss.  
-		The code is not overly clever, not overly simplistic 
-		and not overly verbose. 
-		Access is 'cut and paste' from a web page.  
-		Terms of use are reasonable.  
+		It does its job correctly with a minimum of fuss.
+		The code is not overly clever, not overly simplistic
+		and not overly verbose.
+		Access is 'cut and paste' from a web page.
+		Terms of use are reasonable.
 
 VALIDATION:     Non-trivial code is never without errors.  This
                 file likely has some problems, since it has only
@@ -247,7 +247,7 @@ namespace base64
     ** decode 4 '6-bit' characters into 3 8-bit binary bytes
     */
     void decodeblock(unsigned char in[4], unsigned char out[3])
-    {   
+    {
         out[ 0 ] = (unsigned char ) (in[0] << 2 | in[1] >> 4);
         out[ 1 ] = (unsigned char ) (in[1] << 4 | in[2] >> 2);
         out[ 2 ] = (unsigned char ) (((in[2] << 6) & 0xc0) | in[3]);
@@ -266,7 +266,7 @@ namespace base64
 
         std::string outstream;
         outstream.reserve(size * 4 / 3);
-        
+
         u8 in[3], out[4];
 
         while (pos < size)
@@ -286,7 +286,7 @@ namespace base64
             {
                 blocksOut++;
                 encodeblock(in, out, len);
-                
+
                 //for (int i = 0; i < 4; i++)
                     outstream.append(out, out + 4);
             }

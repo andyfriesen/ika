@@ -75,7 +75,7 @@ const std::string& Sprite::GetWalkScript(Direction dir)
     return _walkScripts[int(dir)];
 }
 
-Video::Image* Sprite::GetFrame(uint frame)
+Video::Image* Sprite::GetFrame(uint frame) const
 {
     if (frame < 0 || frame > _frames.size())
         return 0;

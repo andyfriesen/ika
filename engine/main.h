@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "0.51"
+#define VERSION "0.52"
 
 // low level components/containers/etc..
 #include <list>
@@ -90,6 +90,8 @@ public:
     Entity*   SpawnEntity();                                                        ///< Creates an entity, and returns it
     void      DestroyEntity(Entity* e);                                             ///< Annihilates the entity
 
+    void      RenderEntity(const Entity* e);
+    void      RenderEntity(const Entity* e, int x, int y);
     void      RenderEntities(uint layerIndex);                                      ///< Draws entities
     void      RenderLayer(uint layerIndex);                                         ///< renders a single layer
     void      Render();                                                             ///< renders everything

@@ -147,9 +147,6 @@ void CEngine::Startup()
 
     CConfigFile cfg("user.cfg");
 
-    if (!cfg.Good())
-        Sys_Error("No user.cfg found.");
-
     // init a few values
     _showFramerate  = cfg.Int("showfps") != 0;
     nFrameskip      = cfg.Int("frameskip");
@@ -179,14 +176,14 @@ void CEngine::Startup()
 #if 0
         if (driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
         {
-            Log::Write("Using SDL video driver");
-            video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+            Log::Write("Starting SDL video driver");
+            video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bitdepth"), cfg.Int("fullscreen") != 0);
         }
         else if (driver == "opengl")
 #endif
         {
-            Log::Write("Using OpenGL video driver");
-            video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+            Log::Write("Starting OpenGL video driver");
+            video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bitdepth"), cfg.Int("fullscreen") != 0);
         }
 
 #if (!defined _DEBUG)
@@ -254,12 +251,34 @@ void CEngine::Shutdown()
 #endif
 
     Log::Write("---- shutdown ----");
-    entities.clear();
     Sound::Shutdown();
     script.Shutdown();
+    entities.clear();
     SDL_Quit();
 
     delete video;
+}
+
+
+void CEngine::RenderEntity(const Entity* e)
+{
+    const Sprite* const s = e->sprite;
+    const Map::Layer* layer = map.GetLayer(e->layerIndex);
+
+    int x = e->x - xwin - s->nHotx + layer->x;
+    int y = e->y - ywin - s->nHoty + layer->y;
+
+    RenderEntity(e, x, y);
+}
+
+void CEngine::RenderEntity(const Entity* e, int x, int y)
+{
+    const Sprite* s = e->sprite;
+
+    uint frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
+    if (frame >= s->Count()) frame = 0;
+
+    video->BlitImage(s->GetFrame(frame), x, y);
 }
 
 // ------------------------------------------------------------------------------------------
@@ -317,15 +336,11 @@ void CEngine::RenderEntities(uint layerIndex)
     for (std::vector<Entity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++)
     {
         const Entity* e = *j;
-        Sprite* s = e->sprite;
-
-        uint frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
-        if (frame >= s->Count()) frame = 0;
-
+        const Sprite* s = e->sprite;
         int x = e->x - xwin - s->nHotx + layer->x;
         int y = e->y - ywin - s->nHoty + layer->y;
 
-        video->BlitImage(s->GetFrame(frame), x, y);
+        RenderEntity(e, x, y);
     }
 }
 

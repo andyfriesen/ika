@@ -31,6 +31,8 @@ namespace OpenGL
         : _lasttex(0)
         , _xres(xres)
         , _yres(yres)
+        , _bpp(bpp)
+        , _fullScreen(fullscreen)
     {
         _screen = SDL_SetVideoMode(xres, yres, bpp, SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0));
         if (!_screen)
@@ -80,6 +82,35 @@ namespace OpenGL
 
     Driver::~Driver()
     {
+    }
+
+    // Trouble is, SDL nukes the GL context when it switches modes.
+    // Which means that our textures go down the crapper. ;_;
+    bool Driver::SwitchResolution(int x, int y)
+    {
+#if 1
+        return false;
+#else
+        if (!SDL_VideoModeOK(x, y, _bpp, SDL_OPENGL | (_fullScreen ? SDL_FULLSCREEN : 0)))
+            return false;
+
+        _screen = SDL_SetVideoMode(x, y, _bpp, SDL_OPENGL | (_fullScreen ? SDL_FULLSCREEN : 0));
+        if (!_screen)
+            throw std::runtime_error("OpenGL Video panic.  No video display!!");
+
+        _xres = x;
+        _yres = y;
+
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glScalef(2.0f / (float)_xres, -2.0f / (float)_yres, 1.0f);
+        glTranslatef(-((float)_xres / 2.0f), -((float)_yres / 2.0f), 0.0f);
+        glViewport(0, 0, _xres, _yres);
+
+        return true;
+#endif
     }
 
     // This is far, far too long.  Refactor.

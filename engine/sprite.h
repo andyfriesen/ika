@@ -28,7 +28,7 @@ struct Sprite : RefCounted
     Sprite(const std::string& fname, Video::Driver* v);
     virtual ~Sprite();
 
-    Video::Image* GetFrame(uint frame);                     ///< Returns the frame image
+    Video::Image* GetFrame(uint frame) const;               ///< Returns the frame image
 
     inline uint Count()  const { return _frames.size(); }
     inline uint Width()  const { return nFramex; }

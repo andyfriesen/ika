@@ -21,16 +21,23 @@ def Alert(msg):
 include('.', '..')
 if sys.platform == 'win32':
     include('../3rdparty/include')
-    #include('d:/cygwin/usr/include/python2.3')  # should not be necessary
+    libs('mingw32', 'opengl32', 'SDLmain')
+    libpath('../3rdparty/lib')
+    if 'msvc' in env['TOOLS']:
+        env.Append(CXXFLAGS = '/EHsc /MD')
+        env.Append(LINKFLAGS = ' /SUBSYSTEM:CONSOLE')
+    elif 'mingw' in env['TOOLS']:
+        env.Append(LINKFLAGS = ' -mwindows')
+else:
+    libs('GL', 'GLU')
 
 libs(Split('''
-    GL
-    GLU
     SDL
     audiere
     corona
     z
 '''))
+
 if sys.platform != 'win32': # ???
     libs('util')
 
@@ -51,7 +58,7 @@ env.Alias('common', libcommon)
 import distutils.sysconfig as sc
 PY_INC = sc.get_python_inc()
 PY_LIB = sc.get_config_var('LIBDEST')
-PY_VER = sc.get_config_var('VERSION')
+PY_VER = '23'#sc.get_config_var('VERSION')
 include(PY_INC)
 libs('m', 'python%s' % PY_VER)
 libpath(PY_LIB + '/config')

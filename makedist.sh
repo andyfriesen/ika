@@ -1,3 +1,5 @@
+#!/usr/bin/bash
+
 if [ -z $1 ]
     then
         echo "Gimme a version number, dork."
@@ -13,23 +15,24 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         cp engine/Release/ika.exe tempdist
         cp iked/Release/iked.exe tempdist
         cp ikamap/Release/ikamap.exe tempdist
+        cp tools/*.exe tempdist
         cd tempdist
         upx *.exe
         zip ../ika-core-$version.zip *
         cd ..
-        rm -rf tempdist
+        #rm -rf tempdist
         echo Done.
 
         echo Assembling the main dist zip...
-        mkdir tempdist
+        #mkdir tempdist
         mkdir tempdist/xi
         cp -R dist/* tempdist
         cp xi/* tempdist/xi
-        cp 3rdparty/dlls/*.dll tempdist
-        cp engine/Release/ika.exe tempdist
-        cp iked/Release/iked.exe tempdist
-        cp ikamap/Release/ikamap.exe tempdist
-        cp tools/*.exe tempdist
+        cp 3rdparty/dlls/{audiere,corona,msvc*71,python23,sdl,zlib}.dll tempdist
+        #cp engine/Release/ika.exe tempdist
+        #cp iked/Release/iked.exe tempdist
+        #cp ikamap/Release/ikamap.exe tempdist
+        #cp tools/*.exe tempdist
         cd tempdist
         zip -r ../ika-win-$version.zip *
         cd ..
@@ -37,7 +40,9 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
         echo Creating NSIS installer.
         cd tempdist
-        /cygdrive/d/Program\ Files/NSIS/makensis.exe ../ika.nis && mv ika-install-$version.exe ..
+        cp ../ika.nis .
+        /cygdrive/d/Program\ Files/NSIS/makensis.exe ika.nis && mv ika-install-$version.exe ..
+        rm ika.nis
         cd ..
         echo Done.
         rm -rf tempdist

@@ -158,14 +158,14 @@ namespace aries
         DataNode* getChild(const std::string& name, DataNode* defaultValue) const;
                                                                 ///< Returns the first data node with the specified name, or defaultValue if the node cannot be found.
 
-        bool hasChild(const std::string& name) const;                 ///< Returns true if the node has a child by this name.
+        bool hasChild(const std::string& name) const;           ///< Returns true if the node has a child by this name.
 
         std::string getName() const;                            ///< Returns the name of the node
 
         DataNode* addChild(const std::string& str);             ///< Creates a StringNode and adds it as a new child
         DataNode* addChild(int i);
         //DataNode* addChild(double d);
-        DataNode* addChild(const Node& n);                            ///< Adds a copy of the node as a child
+        DataNode* addChild(const Node& n);                      ///< Adds a copy of the node as a child
         DataNode* addChild(Node* n);                            ///< Adds the node as a child.  The node assumes ownership of the pointer. (so don't delete it yourself)
 
         virtual std::ostream& write(std::ostream& stream) const;

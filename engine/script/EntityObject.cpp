@@ -44,11 +44,19 @@ namespace Script
                 "If the entity is moving, the result is 1.  If not, it is 0."
             },
 
-            {    "DetectCollision", (PyCFunction)Entity_DetectCollision,    METH_VARARGS,    
+            {   "DetectCollision", (PyCFunction)Entity_DetectCollision,    METH_VARARGS,    
                 "Entity.DetectCollision() -> Entity\n\n"
                 "If an entity is touching the entity, then it is returned.\n"
                 "None is returned if there is no entity touching it."
             },
+
+            {   "Draw", (PyCFunction)Entity_Draw,                           METH_VARARGS,
+                "Entity.Draw([x[, y]])\n\n"
+                "Draws the entity at the position specified.  x and y default to\n"
+                "the position where they would normally draw, given the window position\n"
+                "and the entity position."
+            },
+
             {    0    },                        // end of list
         };
 
@@ -345,22 +353,24 @@ namespace Script
                 }
             }
 
-            /*int count = 0;
-            PyObject* key = 0;
-            PyObject* value = 0;
-            while (PyDict_Next(entityDict, &count, &key, &value))
-            {
-                const ::Entity* e2 = ((EntityObject*)value)->ent;
-                if (e1 == e2)   continue;
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
 
-                if (x1 > e2->x + e2->sprite->nHotw)    continue;
-                if (y1 > e2->y + e2->sprite->nHoth)    continue;
-                if (x2 < e2->x)    continue;
-                if (y2 < e2->y)    continue;
+        METHOD(Entity_Draw)
+        {
+            const int MAGIC_DEFAULT_VALUE = 0x0FFFFFFF; // biggest possible 32 bit value
+            int x = MAGIC_DEFAULT_VALUE;
+            int y = MAGIC_DEFAULT_VALUE;
+            const ::Entity* ent = self->ent;
 
-                Py_INCREF(value);
-                return value;
-            }*/
+            if (!PyArg_ParseTuple(args, "|ii:Draw", &x, &y))
+                return 0;
+
+            if (x == MAGIC_DEFAULT_VALUE || y == MAGIC_DEFAULT_VALUE)
+                engine->RenderEntity(ent);
+            else
+                engine->RenderEntity(ent, x, y);
 
             Py_INCREF(Py_None);
             return Py_None;

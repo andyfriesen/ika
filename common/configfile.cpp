@@ -3,12 +3,24 @@
 #include "fileio.h"
 
 CConfigFile::CConfigFile()
-    : _good(false)
-{}
+{
+    // Set some defaults
+    keys["xres"] = "640";
+    keys["yres"] = "480";
+    keys["bitdepth"] = "32";
+    keys["frameskip"] = "10";
+    keys["videodriver"] = "opengl";
+}
 
 CConfigFile::CConfigFile(const char* fname)
-    : _good(false)
 {
+    // Set some defaults (constructors can't call each other.  GAY GAY GA YGAY GAY AGY AGYGA YGAGY AGYA)
+    keys["xres"] = "640";
+    keys["yres"] = "480";
+    keys["bitdepth"] = "32";
+    keys["frameskip"] = "10";
+    keys["videodriver"] = "opengl";
+
     Load(fname);
 }
 
@@ -41,10 +53,7 @@ void CConfigFile::Load(const char* fname)
 
     bool result = f.OpenRead(fname);
     if (!result)    
-    {
-        _good = false;
         return;
-    }
 
     char key[1024], value[1024];
     while (!f.eof())
@@ -60,7 +69,6 @@ void CConfigFile::Load(const char* fname)
     }
 
     f.Close();
-    _good = true;
 }
 
 void CConfigFile::Save(const char* fname)

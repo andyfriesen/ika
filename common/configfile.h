@@ -26,7 +26,6 @@ class CConfigFile
     typedef std::map < std::string, std::string> ConfigMap;
     
     ConfigMap keys;
-    bool _good;
 
 public:
     CConfigFile();
@@ -38,8 +37,6 @@ public:
 
     void        Load(const char* fname);
     void        Save(const char* fname);
-
-    bool Good() const { return _good; }
 };
 
 #endif

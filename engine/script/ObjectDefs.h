@@ -178,6 +178,7 @@ namespace Script
         METHOD(Entity_Stop, EntityObject);
         METHOD(Entity_IsMoving, EntityObject);
         METHOD(Entity_DetectCollision, EntityObject);
+        METHOD(Entity_Draw, EntityObject);
 
         void Init();
         PyObject* New(::Entity* ent);
@@ -242,6 +243,7 @@ namespace Script
         METHOD(Video_GrabImage, VideoObject);
         METHOD(Video_GrabCanvas, VideoObject);
         METHOD1(Video_ShowPage, VideoObject);
+        METHOD(Video_SetResolution, VideoObject);
 
         void Init();
         PyObject* New(::Video::Driver* v);

@@ -142,7 +142,9 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
     if (!pFunc)
         return true; // No AutoExec?  No problem!
 
-    PyObject* result = PyEval_CallObject(pFunc, 0);
+    PyObject* args = PyTuple_New(0);
+    PyObject* result = PyEval_CallObject(pFunc, args);
+    Py_DECREF(args);
 
     if (!result)
         Log::Write("Warning: Module %s had an AutoExec event, but it failed to execute.", sTemp.c_str());

@@ -39,8 +39,8 @@ namespace Video
         /// Switches the driver to display in a window.
         virtual void SwitchToWindowed() = 0;
 
-        /// Changes the resolution of the output.
-        virtual void SwitchResolution(int x, int y) = 0;
+        /// Changes the resolution of the output.  Returns true on success.
+        virtual bool SwitchResolution(int x, int y) = 0;
 
         /// Creates a new image from the provided pixel buffer.
         virtual Image* CreateImage(Canvas &pm) = 0;

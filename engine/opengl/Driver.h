@@ -56,8 +56,8 @@ namespace OpenGL
         /// Switches the driver to display in a window.
         virtual void SwitchToWindowed() NYI
 
-        /// Changes the resolution of the output.
-        virtual void SwitchResolution(int x, int y) NYI
+        /// Changes the resolution of the output.  Returns true on success.
+        virtual bool SwitchResolution(int x, int y);
 
         /// Creates a new image from the provided pixel buffer.
         virtual Video::Image* CreateImage(Canvas &pm);
@@ -128,6 +128,8 @@ namespace OpenGL
         SDL_Surface* _screen;
         int _xres;
         int _yres;
+        int _bpp;
+        bool _fullScreen;
 
         uint _lasttex;
         void SwitchTexture(uint tex);

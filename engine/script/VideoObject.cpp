@@ -121,6 +121,13 @@ namespace Script
                 "advised to redraw the entire screen, instead of incrementally drawing."
             },
 
+            /** Disabled due to limitations inherent in SDL. (switching video modes causes all textures to be erased)
+            {   "SetResolution",   (PyCFunction)Video_SetResolution, METH_VARARGS,
+                "Video.SetResolution(xres, yres)\n\n"
+                "Changes the current video mode to (xres, yres).  If the video mode cannot be set,\n"
+                "ika will raise a RuntimeError exception."
+            },*/
+
             {   0   }
         };
 
@@ -414,6 +421,25 @@ namespace Script
         METHOD1(Video_ShowPage)
         {
             self->video->ShowPage();
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Video_SetResolution)
+        {
+            int x;
+            int y;
+
+            if (!PyArg_ParseTuple(args, "ii:SetResolution", &x, &y))
+                return 0;
+
+            bool result = self->video->SwitchResolution(x, y);
+            if (!result)
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Unable to set video mode %i x %i", x, y));
+                return 0;
+            }
 
             Py_INCREF(Py_None);
             return Py_None;
