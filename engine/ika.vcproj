@@ -22,7 +22,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\common,..\3rdparty\include;..\3rdparty\include\python"
+				AdditionalIncludeDirectories=".,..,..\3rdparty\include,..\3rdparty\include\python"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -295,34 +295,37 @@
 			Name="Script"
 			Filter="py*.*">
 			<File
-				RelativePath="py_control.h">
+				RelativePath="script\ControlObject.cpp">
 			</File>
 			<File
-				RelativePath=".\py_entity.h">
+				RelativePath="script\EntityObject.cpp">
 			</File>
 			<File
-				RelativePath=".\py_error.h">
+				RelativePath="script\ErrorObject.cpp">
 			</File>
 			<File
-				RelativePath=".\py_font.h">
+				RelativePath="script\FontObject.cpp">
 			</File>
 			<File
-				RelativePath=".\py_image.h">
+				RelativePath="script\ImageObject.cpp">
 			</File>
 			<File
-				RelativePath=".\py_input.h">
+				RelativePath="script\InputObject.cpp">
 			</File>
 			<File
-				RelativePath=".\py_map.h">
+				RelativePath="script\MapObject.cpp">
 			</File>
 			<File
-				RelativePath=".\py_sound.h">
+				RelativePath="script\ModuleFuncs.cpp">
 			</File>
 			<File
-				RelativePath="py_video.h">
+				RelativePath="script\ObjectDefs.h">
 			</File>
 			<File
-				RelativePath=".\python_stdlib.h">
+				RelativePath="script\SoundObject.cpp">
+			</File>
+			<File
+				RelativePath="script\VideoObject.cpp">
 			</File>
 		</Filter>
 		<Filter

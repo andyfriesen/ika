@@ -3,27 +3,10 @@
 #include "common/fileio.h"
 #include "common/log.h"
 
-#include "python_stdlib.h"
-#include "py_image.h"
-#include "py_entity.h"
-#include "py_sound.h"
-#include "py_font.h"
-#include "py_video.h"
-#include "py_control.h"
-#include "py_map.h"
-#include "py_input.h"
-#include "py_error.h"
-
 #include "main.h"
+#include "script/ObjectDefs.h"
 
-CEngine* CScriptEngine::pEngine = 0;
-PyObject* CScriptEngine::pEntitydict = 0;
-PyObject* CScriptEngine::pPlayerent = 0;
-PyObject* CScriptEngine::pCameratarget = 0;
-PyObject* CScriptEngine::pErrorhandler = 0;
-
-PyObject* CScriptEngine::pSysmodule = 0;
-PyObject* CScriptEngine::pMapmodule = 0;
+using namespace Script;
 
 void CScriptEngine::Init(CEngine* p)
 {
@@ -36,44 +19,44 @@ void CScriptEngine::Init(CEngine* p)
     PySys_SetPath((char*)s.c_str());
     
     PyImport_AddModule("ika");
-    PyObject* module=Py_InitModule3("ika", standard_methods,
+    PyObject* module=Py_InitModule3("ika", Script::standard_methods,
         "ika standard module. \n"
         "\n"
         "Contains functions and crap for manipulating the ika game engine at runtime.\n"
         );
     PyObject* dict  =PyModule_GetDict(module);
     
-    pEngine=p;                                                  // urk
+    engine=p;   // I cannot express the sheer gayness behind this.
     
     // Initialize objects
-    Init_Image();
-    Init_Entity();
-    Init_Sound();
-    Init_Font();
+    Script::Image::Init();
+    Script::Entity::Init();
+    Script::Sound::Init();
+    Script::Font::Init();
     // singletons
-    Init_Video();
-    Init_Map();
-    Script::Input::Init_Input();
-    Script::Control::Init_Control();
-    Init_Error();
+    Script::Video::Init();
+    Script::Map::Init();
+    Script::Input::Init();
+    Script::Control::Init();
+    Script::Error::Init();
     
     // Create singletons
-    PyObject* input=Script::Input::Input_New(pEngine->input);
+    PyObject* input = Script::Input::New(engine->input);
     PyDict_SetItemString(dict, "Input", input);
     Py_DECREF(input);
     
-    PyObject* map=Map_New();
+    PyObject* map = Script::Map::New();
     PyDict_SetItemString(dict, "Map", map);
     Py_DECREF(map);
 
-    PyObject* video = Video_New();
+    PyObject* video = Script::Video::New(engine->video);
     PyDict_SetItemString(dict, "Video", video);
     Py_DECREF(video);
     
     // Create entity dictionary
-    pEntitydict=PyDict_New();
-    if (!pEntitydict)
-        Log::Write("!pEntitydict");
+    entitydict=PyDict_New();
+    if (!entitydict)
+        Log::Write("!entitydict");
 }
 
 void CScriptEngine::Shutdown()
@@ -83,30 +66,30 @@ void CScriptEngine::Shutdown()
     
     // Clear hooks
     std::list<void*>::iterator i;
-    for (i=pEngine->pHookretrace.begin(); i!=pEngine->pHookretrace.end(); i++)
+    for (i=engine->pHookretrace.begin(); i!=engine->pHookretrace.end(); i++)
         Py_XDECREF((PyObject*)*i);
-    pEngine->pHookretrace.Clear();
+    engine->pHookretrace.Clear();
     
-    for (i=pEngine->pHooktimer.begin(); i!=pEngine->pHooktimer.end(); i++)
+    for (i=engine->pHooktimer.begin(); i!=engine->pHooktimer.end(); i++)
         Py_XDECREF((PyObject*)*i);
-    pEngine->pHooktimer.Clear();
+    engine->pHooktimer.Clear();
     
-    Py_XDECREF(pEntitydict);
-    Py_XDECREF(pCameratarget);
+    Py_XDECREF(entitydict);
+    Py_XDECREF(cameratarget);
     
-    Py_XDECREF(pErrorhandler);
-    Py_XDECREF(pSysmodule);
-    Py_XDECREF(pMapmodule);
+    Py_XDECREF(errorhandler);
+    Py_XDECREF(sysmodule);
+    Py_XDECREF(mapmodule);
     
     Py_Finalize();
 }
 
 bool CScriptEngine::LoadSystemScripts(char* fname)
 {
-    Py_XDECREF(pSysmodule);                                            // free it if it's already allocated
+    Py_XDECREF(sysmodule);                                            // free it if it's already allocated
     
-    pSysmodule=PyImport_ImportModule("system");
-    if (!pSysmodule)
+    sysmodule=PyImport_ImportModule("system");
+    if (!sysmodule)
     {
         PyErr_Print();
         return false;
@@ -117,23 +100,23 @@ bool CScriptEngine::LoadSystemScripts(char* fname)
 
 bool CScriptEngine::LoadMapScripts(const char* fname)
 {
-    Py_XDECREF(pMapmodule);
+    Py_XDECREF(mapmodule);
     
     string sTemp=fname;
     
     int nExtension=sTemp.find_last_of(".", sTemp.length());
     sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
     
-    pMapmodule=PyImport_ImportModule((char*)sTemp.c_str());
+    mapmodule=PyImport_ImportModule((char*)sTemp.c_str());
     
-    if (!pMapmodule)
+    if (!mapmodule)
     {
         PyErr_Print();
         return false;
     }
 
     // Now to execute an AutoExec function, if one exists
-    PyObject* pDict=PyModule_GetDict(pMapmodule);
+    PyObject* pDict=PyModule_GetDict(mapmodule);
     PyObject* pFunc=PyDict_GetItemString(pDict, "AutoExec");
 
     if (!pFunc)
@@ -170,26 +153,23 @@ bool CScriptEngine::ExecFunction(void* pFunc)
 
 void CScriptEngine::ClearEntityList()
 {
-    if (!pEntitydict)
+    if (!Script::entitydict)
         return;
     
     // Wipe the entity list clean
-    PyObject* pKeys=PyDict_Keys(pEntitydict);
+    PyObject* pKeys=PyDict_Keys(Script::entitydict);
     
-    for (int i = 0; i<PyDict_Size(pEntitydict); i++)
-        PyDict_DelItem(pEntitydict, PyList_GetItem(pKeys, i));
+    for (int i = 0; i<PyDict_Size(Script::entitydict); i++)
+        PyDict_DelItem(Script::entitydict, PyList_GetItem(pKeys, i));
     
     Py_DECREF(pKeys);
 }
 
 void CScriptEngine::AddEntityToList(CEntity* e)
 {
-    PyObject* pEnt=Entity_New(e);                // make an object for the entity
+    PyObject* pEnt = Script::Entity::New(e);                // make an object for the entity
 
-    char c[1024];
-    strcpy(c, e->sName.c_str());
-  
-    PyDict_SetItemString(pEntitydict, c, pEnt);
+    PyDict_SetItemString(Script::entitydict, e->sName.c_str(), pEnt);
     
     Py_DECREF(pEnt);
 }
@@ -198,10 +178,10 @@ void CScriptEngine::CallEvent(const char* sName)
 {
     CDEBUG("CScriptEngine::CallEvent");
     
-    if (!pMapmodule)
+    if (!mapmodule)
         return;                                                                // no module loaded == no event
     
-    PyObject* pDict=PyModule_GetDict(pMapmodule);
+    PyObject* pDict=PyModule_GetDict(mapmodule);
     PyObject* pFunc=PyDict_GetItemString(pDict, (char*)sName);
     
     if (!pFunc)
@@ -215,7 +195,7 @@ void CScriptEngine::CallEvent(const char* sName)
     if (!result)
     {
         PyErr_Print();
-        pEngine->Script_Error();
+        engine->Script_Error();
     }
     
     Py_XDECREF(result);

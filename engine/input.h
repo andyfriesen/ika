@@ -21,28 +21,20 @@ public:
     class Control
     {
     private:
-        int _refcount;
         Input* _parent;
 
     protected:
         Control(Input* p) 
-            : _refcount(0)
-            , _parent(p)
+            : _parent(p)
             , onPress(0)
             , onUnpress(0)
         {}
-
-        void UnregisterControl(int k);
-        void UnregisterControl(const std::string& name);
 
     public:
         virtual bool  Pressed()  = 0;
         virtual float Position() = 0;
         virtual float Delta()    = 0;
         virtual ~Control(){}
-
-        void AddRef();
-        void Release();
 
     public:
         // event thingies.  Python objects go here.
@@ -68,9 +60,6 @@ private:
 protected:
     std::map<std::string, Control*> _controls;  // nonkeyboard stuff is accessed by name.
     std::map<int, KeyControl*> _keys;           // keyboard things go here.  They can be handled efficiently if we can get them efficiently through their keysym.
-
-    void Unregister(int keycode);
-    void Unregister(const std::string& name);
 
 public: 
     Input();

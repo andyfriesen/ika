@@ -158,11 +158,6 @@ public:
         , _code(code)
     {}
 
-    ~KeyControl()
-    {
-        UnregisterControl(_code);
-    }
-
     void Press()
     {
         _pressed = true;
@@ -190,28 +185,6 @@ public:
     // NYI
 };*/
 
-void Input::Control::AddRef()
-{
-    _refcount++;
-}
-
-void Input::Control::Release()
-{
-    _refcount--;
-    if (_refcount == 0)
-        delete this;
-}
-
-void Input::Control::UnregisterControl(const std::string& name)
-{
-    _parent->Unregister(name);
-}
-
-void Input::Control::UnregisterControl(int k)
-{
-    _parent->Unregister(k);
-}
-
 Input::Input()
 {
     if (!_keymapinitted)
@@ -224,37 +197,27 @@ Input::Input()
     }
 
     // hurk.  Gay.
-    _up     = GetControl("UP");     _up->AddRef();
-    _down   = GetControl("DOWN");   _down->AddRef();
-    _left   = GetControl("LEFT");   _left->AddRef();
-    _right  = GetControl("RIGHT");  _right->AddRef();
-    _enter  = GetControl("RETURN"); _enter->AddRef();
-    _cancel = GetControl("ESCAPE"); _cancel->AddRef();
+    _up     = GetControl("UP");
+    _down   = GetControl("DOWN");
+    _left   = GetControl("LEFT");
+    _right  = GetControl("RIGHT");
+    _enter  = GetControl("RETURN");
+    _cancel = GetControl("ESCAPE");
 }
 
 Input::~Input()
 {
-    _up->Release();
-    _down->Release();
-    _left->Release();
-    _right->Release();
-    _enter->Release();
-    _cancel->Release();
-    assert(_controls.size() == 0);
-}
+    for (std::map<int, KeyControl*>::iterator i = _keys.begin(); i != _keys.end(); i++)
+    {
+        KeyControl* kc = i->second;
+        delete kc;
+    }
 
-void Input::Unregister(int keycode)
-{
-    assert(_keys.count(keycode));
-
-    _keys.erase(keycode);
-}
-
-void Input::Unregister(const std::string& name)
-{
-    assert(_controls.count(name));
-
-    _controls.erase(name);
+    for (std::map<std::string, Control*>::iterator i = _controls.begin(); i != _controls.end(); i++)
+    {
+        Control* c = i->second;
+        delete c;
+    }
 }
 
 void Input::KeyDown(int key)
@@ -288,7 +251,6 @@ Input::Control* Input::GetControl(const std::string& name)
     {
         KeyControl* c = new KeyControl(this, i);
         _keys[i] = c;
-        c->AddRef();
         return c;
     }
 
