@@ -15,8 +15,6 @@ namespace rho.Import {
         }
 
         public ikaSprite(int width, int height) {
-            Size.Width = width;
-            Size.Height = height;
             HotSpot = Rectangle.FromLTRB(0, 0, 0, 0);
             frames = new ImageArray(width, height);
         }
@@ -45,7 +43,7 @@ namespace rho.Import {
             int frameCount = Convert.ToInt32(framesNode.GetChild("count").GetString());
 
             DataNode dimNode = framesNode.GetChild("dimensions");
-            Size = new Size(
+            Size size = new Size(
                 Convert.ToInt32(dimNode.GetChild("width").GetString()),
                 Convert.ToInt32(dimNode.GetChild("height").GetString())
                 );
@@ -77,8 +75,8 @@ namespace rho.Import {
             byte[] cdata = Convert.FromBase64String(data64);
 
             // shorthand
-            int width = Size.Width;
-            int height = Size.Height;
+            int width = size.Width;
+            int height = size.Height;
 
             MemoryStream compressed = new MemoryStream(cdata);
             InflaterInputStream iis = new InflaterInputStream(compressed);
@@ -217,7 +215,7 @@ namespace rho.Import {
             rootNode.Write(stream);
         }
     
-        public IList Frames {
+        public ImageArray Frames {
             get { return frames; }
         }
 
@@ -228,7 +226,13 @@ namespace rho.Import {
         }
 
         string title;
-        public Size Size;
+        
+        public Size Size {
+            get {
+                return frames.Size;
+            }
+        }
+
         public Rectangle HotSpot;
         public readonly StringDictionary Scripts = new StringDictionary();
         public readonly StringDictionary Metadata = new StringDictionary();

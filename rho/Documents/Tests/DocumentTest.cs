@@ -78,7 +78,7 @@ namespace rho.Documents.Tests {
             Assert.IsTrue(document.wasSaved);
         }
 
-        [Test, Ignore("NYI")]
+        //[Test, Ignore("NYI")]
         public void TestSaveWithNewName() {
             Assert.IsFalse(document.wasSaved);
             document.Save("saved");

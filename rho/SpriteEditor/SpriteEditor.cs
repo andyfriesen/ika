@@ -28,7 +28,9 @@ namespace rho.SpriteEditor {
             splitter.Dock = DockStyle.Left;
             splitter.SplitPosition = 256;
 
+            scrollPanel.BackColor = Color.Black;
             scrollPanel.AutoScroll = true;
+            
             scrollPanel.Controls.Add(framePanel);
 
             Controls.AddRange(new Control[] { splitter, detailPanel, scrollPanel });
@@ -37,6 +39,7 @@ namespace rho.SpriteEditor {
 
             framePanel.FrameSelected += new FrameEventHandler(FrameSelected);
             framePanel.FrameRightClicked += new FrameEventHandler(FrameRightClicked);
+            framePanel.Location = new Point(0, 0);
 
             contextMenu = new ContextMenu(
                 new MenuItem[] {
@@ -58,14 +61,15 @@ namespace rho.SpriteEditor {
             fileMenu.MergeOrder = 1;
 
             MenuItem editMenu = new MenuItem("&Edit", new MenuItem[] {
-                    MenuBuilder.menu("&Undo", null, Shortcut.CtrlZ),
-                    MenuBuilder.menu("&Redo", null, Shortcut.CtrlY),
+                    MenuBuilder.menu("&Undo", new EventHandler(Undo), Shortcut.CtrlZ),
+                    MenuBuilder.menu("&Redo", new EventHandler(Redo), Shortcut.CtrlY),
                     MenuBuilder.separator(),
                     MenuBuilder.menu("Cu&t", new EventHandler(CutFrame), Shortcut.CtrlX),
                     MenuBuilder.menu("&Copy", new EventHandler(CopyFrame), Shortcut.CtrlC),
                     MenuBuilder.menu("&Paste over", new EventHandler(PasteOverFrame), Shortcut.CtrlShiftV),
                     MenuBuilder.menu("Insert and p&aste", new EventHandler(InsertAndPasteFrame), Shortcut.CtrlV),
                     MenuBuilder.separator(),
+                    MenuBuilder.menu("Re&size...", new EventHandler(SpriteResized)),
                     MenuBuilder.menu("&Import frames from image...", new EventHandler(ImportFramesFromImage)),
                 }
             );
@@ -106,9 +110,19 @@ namespace rho.SpriteEditor {
                 if (fd.ShowDialog(this) == DialogResult.OK) {
                     Save(fd.FileName);
                 }
+
+                Text = fd.FileName;
             }        
         }
         
+        void Undo(object o, EventArgs e) {
+            document.Undo();
+        }
+
+        void Redo(object o, EventArgs e) {
+            document.Redo();
+        }
+
         void FrameSelected(FrameEventArgs e) {
             framePanel.SelectedFrame = e.Index;
         }
@@ -187,45 +201,39 @@ namespace rho.SpriteEditor {
             }
         }
 
+        void SpriteResized(object o, EventArgs e) {
+            using (ResizeDialog dlg = new ResizeDialog()) {
+                
+                DialogResult result = dlg.ShowDialog();
+                
+                if (result == DialogResult.OK) {
+                    document.SendCommand(new ResizeSpriteCommand(dlg.NewSize));
+                }
+            }
+        }
+
         void HotSpotChanged(Rectangle newHotSpot) {
             document.SendCommand(new ChangeHotSpotCommand(newHotSpot));
         }
 
         void AnimScriptChanged(string oldName, string newName, string newValue) {
-            Console.WriteLine("Anim Script {0} changed: {1} <- {2}", oldName, newName, newValue);
             document.SendCommand(new UpdateAnimScriptCommand(oldName, newName, newValue));
         }
 
         void AnimScriptsRemoved(string[] names) {
-            Console.WriteLine("Anim Script {0} removed", names[0]);
             document.SendCommand(new DeleteAnimScriptCommand(names));
         }
 
         void MetadataChanged(string oldName, string newName, string newValue) {
-            Console.WriteLine("Metadata {0} changed: {1} <- {2}", oldName, newName, newValue);
             document.SendCommand(new UpdateMetadataCommand(oldName, newName, newValue));
         }
 
         void MetadataRemoved(string[] names) {
-            Console.WriteLine("Metadata {0} removed", names[0]);
             document.SendCommand(new DeleteMetadataCommand(names));
         }
 
-        void ResizeFramePanel() {
-            int frameWidth = (document.Size.Width * 256 / zoom) + pad;
-            int frameHeight = (document.Size.Height * 256 / zoom) + pad;
-            
-            framePanel.Width = scrollPanel.ClientSize.Width;
-            int cols = framePanel.Width / frameWidth;
-
-            if (cols > 0) {
-                int rows = (document.Frames.Count + cols - 1) / cols;
-                if (rows == 0) {
-                    rows = 1;
-                }
-
-                framePanel.Height = rows * frameHeight;
-            }
+        void SpriteChanged() {
+            Refresh();
         }
 
         protected override void OnLayout(LayoutEventArgs e) {
@@ -233,15 +241,10 @@ namespace rho.SpriteEditor {
             // Ugly hack to work around the lack of good sizer logic. :P
             if (scrollPanel != null && detailPanel != null) {
                 scrollPanel.Location = new System.Drawing.Point(detailPanel.Right, 0);
-                scrollPanel.Size = new Size(Width - detailPanel.Width, Height);
-                ResizeFramePanel();
+                scrollPanel.Size = new Size(Width - detailPanel.Right, ClientSize.Height);
+                framePanel.Width = scrollPanel.ClientSize.Width;
             }
         }
-
-        // zoom factor is 256::zoom
-        int zoom = 128; // 256::128 == 2::1 == 200% magnification
-        // pixels of padding between each frame
-        int pad = 1;
 
         SpriteDocument document;
         readonly ScrollableControl scrollPanel; // contains the framePanel

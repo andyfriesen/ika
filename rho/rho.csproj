@@ -134,11 +134,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MainForm.resx"
-                    DependentUpon = "MainForm.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "MenuBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -230,6 +225,11 @@
                 />
                 <File
                     RelPath = "Dialogs\ImportFramesDialog.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Dialogs\ResizeDialog.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
                 />
@@ -380,7 +380,7 @@
                 />
                 <File
                     RelPath = "SpriteEditor\SpriteEditor.cs"
-                    SubType = "Code"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File

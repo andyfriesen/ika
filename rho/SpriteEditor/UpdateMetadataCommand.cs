@@ -36,6 +36,7 @@ namespace rho.SpriteEditor {
             if (oldName != null && oldName != newName) {
                 scripts.Remove(oldName);
             }
+            sprite.FireChanged();
         }
 
         public void Undo(Document doc) {
@@ -46,6 +47,7 @@ namespace rho.SpriteEditor {
             if (oldName != null) {
                 scripts[oldName] = oldValue;
             }
+            sprite.FireChanged();
         }
 
         string oldName;

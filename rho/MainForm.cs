@@ -4,6 +4,7 @@ using System;
 using System.Windows.Forms;
 using System.IO;
 using WeifenLuo.WinFormsUI;
+using rho.Dialogs;
 
 #if false
 using Import.ika;
@@ -38,6 +39,7 @@ namespace rho {
         readonly DockPanel dockManager = new DockPanel();
 
         #region Stupid convenience functions that make me REALLY wish Python was faster and ran on .NET better
+
         static string CreateFilter(FileType[] types) {
             System.Text.StringBuilder sb1 = new System.Text.StringBuilder();
             foreach (FileType ft in types) {
@@ -80,7 +82,8 @@ namespace rho {
             MenuItem file = 
                 MenuBuilder.menu("&File",
                     MenuBuilder.menu(0, "&New",
-                        MenuBuilder.menu("&Script", new EventHandler(NewScript))
+                        MenuBuilder.menu("&Script", new EventHandler(NewScript)),
+                        MenuBuilder.menu("S&prite", new EventHandler(NewSprite))
                     ),
                     MenuBuilder.menu(1, "&Open", new EventHandler(OpenFile), Shortcut.CtrlO),
                     MenuBuilder.menu(998, "-"),
@@ -148,6 +151,18 @@ namespace rho {
             TextEditor.CodeView codeview = new TextEditor.CodeView(this, new TextEditor.PythonHighlightStyle());
             codeview.MdiParent = this;
             codeview.Show();
+        }
+
+        void NewSprite(object o, EventArgs e) {
+            using (ResizeDialog dlg = new ResizeDialog()) {
+                if (dlg.ShowDialog() == DialogResult.OK) {
+
+                    SpriteEditor.SpriteDocument sprite = new rho.SpriteEditor.SpriteDocument(dlg.NewSize.Width, dlg.NewSize.Height);
+                    DockContent content = new SpriteEditor.SpriteEditor(sprite);
+                    content.Text = "Untitled sprite";
+                    content.Show(dockManager);
+                }
+            }
         }
 
         void OpenFile(object o, EventArgs e) {

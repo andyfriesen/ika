@@ -52,7 +52,7 @@ namespace rho.Import {
             width = newWidth;
             height = newHeight;
 
-            Size newSize = new Size(newWidth, newHeight);
+            Size newSize = this.Size;
             for (int i = 0; i < Count; i++) {
                 this[i] = new Bitmap(this[i], newSize);
             }

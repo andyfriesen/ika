@@ -21,6 +21,7 @@ namespace rho.SpriteEditor {
                 oldValues[i] = scripts[names[i]];
                 scripts.Remove(names[i]);
             }
+            sprite.FireChanged();
         }
 
         public void Undo(Document doc) {
@@ -30,6 +31,7 @@ namespace rho.SpriteEditor {
             for (int i = 0; i < names.Length; i++) {
                 scripts[names[i]] = oldValues[i];
             }
+            sprite.FireChanged();
         }
 
         string[] names;

@@ -227,25 +227,25 @@ KeyControl::KeyControl()
 }
 
 void KeyControl::KeyDown() {
-    _pressed = true;
+    _position = _pressed = true;
     if (onPress) {
         the< ::Input>()->QueueEvent(&onPress);
     }
 }
 
 void KeyControl::KeyUp() {
-    _pressed = false;
+    _position = _pressed = false;
     if (onUnpress) {
         the< ::Input>()->QueueEvent(&onUnpress);
     }
 }
 
 float KeyControl::GetPosition() {
-    return _pressed ? 1.0f : 0.0f;
+    return _position ? 1.0f : 0.0f;
 }
 
 bool KeyControl::GetPressed() {
-    bool pressed = _pressed;
+    bool result = _pressed;
     _pressed = false;
-    return pressed;
+    return result;
 }

@@ -3,7 +3,7 @@ using System.Collections;
 
 namespace rho.Documents {
     public abstract class AbstractDocument : Document {
-        protected AbstractDocument(string name) {
+        public AbstractDocument(string name) {
             fileName = name;
         }
 
@@ -23,18 +23,8 @@ namespace rho.Documents {
             undoList.Push(cmd);
         }
 
-        protected abstract void DoSave(string name);
-
         public void Save(string name) {
             DoSave(name);
-
-#if false
-            if (name != fileName) {
-                // raise event indicating that the name of the document has been changed.
-                throw new NotImplementedException("Document renaming is not yet implemented!");
-            }
-#endif
-
             fileName = name;
         }
 
@@ -75,6 +65,8 @@ namespace rho.Documents {
         }
 
         public event ChangeEventHandler Changed;
+
+        protected abstract void DoSave(string name);
 
         string fileName;
         readonly CommandStack undoList = new CommandStack();

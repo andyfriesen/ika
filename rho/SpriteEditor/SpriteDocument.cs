@@ -8,11 +8,16 @@ using rho.Import;
 namespace rho.SpriteEditor {
     public class SpriteDocument : AbstractDocument {
         public SpriteDocument()
-        : base("") {
-            sprite = new ikaSprite(16, 32);
+        : this(16, 32) {
         }
 
-        public SpriteDocument(string name) : base(name) {
+        public SpriteDocument(int width, int height)
+        : base("") {
+            sprite = new ikaSprite(width, height);
+        }
+
+        public SpriteDocument(string name)
+        : base(name) {
             sprite = new ikaSprite(name);
         }
 
@@ -20,7 +25,7 @@ namespace rho.SpriteEditor {
             sprite.Save(name);
         }
 
-        public IList Frames {
+        public ImageArray Frames {
             get { 
                 return sprite.Frames; 
             }

@@ -1,6 +1,7 @@
 using System;
 using System.Drawing;
 using rho.Documents;
+using rho.Import;
 
 namespace rho.SpriteEditor {
     public class ResizeSpriteCommand : Command {
@@ -19,11 +20,18 @@ namespace rho.SpriteEditor {
                 oldFrames[i] = new Bitmap(frame);
             }
 
-            ((rho.Import.ImageArray)sprite.Frames).Resize(newSize.Width, newSize.Height);
+            sprite.Frames.Resize(newSize.Width, newSize.Height);
+            sprite.FireChanged();
         }
 
         public void Undo(Document doc) {
-            
+            SpriteDocument sprite = (SpriteDocument)doc;
+
+            ImageArray frames = (ImageArray)sprite.Frames;
+            frames.Clear();
+            frames.Resize(oldSize.Width, oldSize.Height);
+            frames.AddRange(oldFrames);
+            sprite.FireChanged();
         }
 
         Size newSize;

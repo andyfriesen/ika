@@ -106,7 +106,7 @@ namespace rho.Controls {
             }
         }
 
-        private void RowDeleted(object sender, DataRowChangeEventArgs e) {
+        void RowDeleted(object sender, DataRowChangeEventArgs e) {
             OnValueDeleted((string)e.Row["Name"]);
         }
         

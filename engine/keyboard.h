@@ -45,6 +45,7 @@ protected:
     virtual float GetPosition();
 
 private:
+    bool _position;
     bool _pressed;
 };
 

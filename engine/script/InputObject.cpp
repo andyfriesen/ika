@@ -7,15 +7,11 @@ Python interface for input.
 #include "input.h"
 #include "main.h"
 
-namespace Script
-{
-    namespace Input
-    {
+namespace Script {
+    namespace Input {
         PyTypeObject type;
-        //PyMappingMethods mappingmethods;
 
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Update",           (PyCFunction)Input_Update,      METH_NOARGS,
                 "Update()\n\n"
                 "Updates the state of the mouse, and any attached input devices.\n"
@@ -59,9 +55,6 @@ namespace Script
             {   0   }
         };
 
-        // proto
-        //PyObject* Input_Subscript(InputObject* self, PyObject* key);
-
 #define GET(x) PyObject* get ## x(InputObject* self)
 #define SET(x) PyObject* set ## x(InputObject* self, PyObject* value)
 
@@ -75,8 +68,7 @@ namespace Script
         GET(Mouse)      { Py_INCREF(self->mouse); return self->mouse;           }
         GET(Joysticks)  { Py_INCREF(self->joysticks); return self->joysticks;   }
 
-        SET(Up)         
-        {
+        SET(Up) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
             if (o->ob_type != &Script::Control::type) {
@@ -87,66 +79,65 @@ namespace Script
             return 0;
         }
 
-        SET(Down)         
-        {
+        SET(Down) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type)
+            if (o->ob_type != &Script::Control::type) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
-            else
+            } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->down, o->control);
+            }
             return 0;
         }
 
-        SET(Left)         
-        {
+        SET(Left) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type)
+            if (o->ob_type != &Script::Control::type) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
-            else
+            } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->left, o->control);
+            }
             return 0;
         }
 
-        SET(Right)
-        {
+        SET(Right) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type)
+            if (o->ob_type != &Script::Control::type) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
-            else
+            } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->right, o->control);
+            }
             return 0;
         }
 
-        SET(Enter)
-        {
+        SET(Enter) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type)
+            if (o->ob_type != &Script::Control::type) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
-            else
+            } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->enter, o->control);
+            }
             return 0;
         }
 
-        SET(Cancel)         
-        {
+        SET(Cancel) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type)
+            if (o->ob_type != &Script::Control::type) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
-            else
+            } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->cancel, o->control);
+            }
             return 0;
         }
 
 #undef GET
 #undef SET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "up",       (getter)getUp,          (setter)setUp,      "Gets the standard \"Up\" control."     },
             {   "down",     (getter)getDown,        (setter)setDown,    "Gets the standard \"Down\" control."   },
             {   "left",     (getter)getLeft,        (setter)setLeft,    "Gets the standard \"Left\" control."   },
@@ -159,8 +150,7 @@ namespace Script
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             //mappingmethods.mp_length = 0;
@@ -180,20 +170,19 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New()
-        {
+        PyObject* New() {
             InputObject* input = PyObject_New(InputObject, &type);
 
-            if (!input)
+            if (!input) {
                 return 0;
+            }
 
             input->keyboard = Script::Keyboard::New();
             input->mouse = Script::Mouse::New();
 
             const uint numJoy = the< ::Input>()->NumJoysticks();
             input->joysticks = PyTuple_New(numJoy);
-            for (uint i = 0; i < numJoy; i++)
-            {
+            for (uint i = 0; i < numJoy; i++) {
                 PyObject* stick = Script::Joystick::New(the< ::Input>()->GetJoystick(i));
                 PyTuple_SET_ITEM(input->joysticks, i, stick);
             }
@@ -201,24 +190,21 @@ namespace Script
             return (PyObject*)input;
         }
 
-        void Destroy(InputObject* self)
-        {
+        void Destroy(InputObject* self) {
             PyObject_Del(self);
         }
 
 #define METHOD(x)  PyObject* x(InputObject* self, PyObject* args)
 #define METHOD1(x) PyObject* x(InputObject* self)
 
-        METHOD1(Input_Update)
-        {
+        METHOD1(Input_Update) {
             engine->CheckMessages();
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD1(Input_Unpress)
-        {
+        METHOD1(Input_Unpress) {
             the< ::Input>()->Unpress();
 
             Py_INCREF(Py_None);
@@ -228,7 +214,7 @@ namespace Script
         /*METHOD(Input_GetControl)
         {
             PyObject* obj;
-            if (!PyArg_ParseTuple(args, "O:Input.GetControl", &obj))
+            if (!PyArg_ParseTuple(args, "O:Input.GetControl", &obj) {
                 return 0;
 
             return Input_Subscript(self, obj);
@@ -238,47 +224,41 @@ namespace Script
         {
             char c = self->input->GetKey();
 
-            if (c)
+            if (c {
                 return PyString_FromStringAndSize(&c, 1);   // wtf.  No PyString_FromChar
-            else
-            {
+            } else {
                 Py_INCREF(Py_None);
                 return Py_None;
             }
         }
 
-        METHOD1(Input_ClearKeyQueue)
-        {
+        METHOD1(Input_ClearKeyQueue) {
             self->input->ClearKeyQueue();
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD1(Input_WasKeyPressed)
-        {
+        METHOD1(Input_WasKeyPressed) {
             return PyInt_FromLong(self->input->WasKeyPressed() ? 1 : 0);
         }*/
 
 #undef METHOD
 #undef METHOD1
 
-        /*PyObject* Input_Subscript(InputObject* self, PyObject* key)
-        {
-            try
-            {
+        /*PyObject* Input_Subscript(InputObject* self, PyObject* key) {
+            try {
                 const char* name = PyString_AsString(key);
-                if (!name)
+                if (!name {
                     throw "Non-string passed as input control name.";
 
                 PyObject* obj = Script::Control::New(*self->input, name);
 
-                if (!obj)
+                if (!obj {
                     throw va("%s is not a valid input control name.", name);
 
                 return obj;
             }
-            catch (const char* s)
-            {
+            catch (const char* s) {
                 PyErr_SetString(PyExc_SyntaxError, s);
                 return 0;
             }

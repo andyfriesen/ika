@@ -89,12 +89,39 @@ namespace rho.SpriteEditor {
             if (backBuffer == null) {
                 backBuffer = new Bitmap(Width, Height);
             } else if (Width > backBuffer.Width || Height > backBuffer.Height) {
+                int w = Width > backBuffer.Width ? Width : backBuffer.Width;
+                int h = Height > backBuffer.Height ? Height : backBuffer.Height;
+
                 backBuffer.Dispose();
-                backBuffer = new Bitmap(Width, Height);
+                backBuffer = new Bitmap(w, h);
             }
 
             Invalidate();
+
+            base.OnResize(e);
         }
+
+        protected override void OnLayout(LayoutEventArgs levent) {
+            Console.WriteLine("{0},{1}  {2},{3}", Location.X, Location.Y, Width, Height);
+            int frameWidth = (document.Size.Width * 256 / zoom) + pad;
+            int frameHeight = (document.Size.Height * 256 / zoom) + pad;
+            
+            // cols = max(1, Width / frameWidth); // :(
+            int cols = Width / frameWidth;
+            if (cols < 1) {
+                cols = 1;
+            }
+
+            int rows = (document.Frames.Count + cols - 1) / cols;
+            if (rows < 1) {
+                rows = 1;
+            }
+
+            Height = rows * frameHeight;
+
+            base.OnLayout (levent);
+        }
+
 
         protected override void OnClick(EventArgs e) {
             base.OnClick(e);

@@ -13,7 +13,7 @@ namespace rho.Import.Tests {
 
         [SetUp]
         public void SetUp() {
-            sprite = new ikaSprite();
+            sprite = new ikaSprite(width, height);
         }
 
         [Test]
