@@ -4,6 +4,17 @@
 #include <wx\utils.h>
 #include "configfile.h"
 
+enum
+{
+    ID_FULLSCREEN=20001,
+    ID_ENABLESOUND,
+    ID_ENABLELOGGING,
+    ID_PIXELDEPTH,
+    ID_GRAPHDRIVER,
+    ID_OK,
+    ID_CANCEL,
+};
+
 BEGIN_EVENT_TABLE(CConfigDlg,wxDialog)
     EVT_BUTTON(ID_OK,CConfigDlg::OnOK)
     EVT_BUTTON(ID_CANCEL,CConfigDlg::OnCancel)
@@ -35,19 +46,19 @@ CConfigDlg::CConfigDlg(wxWindow* parent,
     Destroy();
 }
 
-void CConfigDlg::Load(const std::string& fname)
+void CConfigDlg::Load(const string& fname)
 {
-    cfg.Load(fname);
+    cfg.Load(fname.c_str());
     Update();
 }
 
-void CConfigDlg::Save(const std::string& fname)
+void CConfigDlg::Save(const string& fname)
 {
     cfg.Add("fullscreen",pFullscreenbox->GetValue()?"1":"0");
     cfg.Add("sounddriver",pSoundbox->GetValue()?"sys\\sfx_mikmod.dll":"");
     cfg.Add("log",pLogbox->GetValue()?"1":"0");
 
-    cfg.Save(fname);
+    cfg.Save(fname.c_str());
 }
 
 void CConfigDlg::Update()

@@ -1,7 +1,8 @@
 
 #include "configfile.h"
+#include "types.h"
 #include <wx\wx.h>
-#include <string>
+
 
 class CConfigDlg : public wxDialog
 {
@@ -12,8 +13,8 @@ class CConfigDlg : public wxDialog
     wxWindow*   pGraphdriverselector;        
 
     void Update();
-    void Load(const std::string& fname);
-    void Save(const std::string& fname);
+    void Load(const string& fname);
+    void Save(const string& fname);
 
     CConfigFile cfg;
     std::string sFilename;
@@ -21,7 +22,7 @@ class CConfigDlg : public wxDialog
 public:
     CConfigDlg(wxWindow* parent,
                wxWindowID id,
-               const std::string& name="");
+               const string& name="");
 
     void OnOk(wxCommandEvent&);
     void OnCancel(wxCommandEvent&);

@@ -338,14 +338,6 @@ SOURCE=..\common\rle.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\common\strk.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\strk.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\common\types.h
 # End Source File
 # Begin Source File

@@ -174,14 +174,6 @@ SOURCE=..\..\ika\common\misc.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\strk.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\..\ika\common\strk.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\..\ika\common\types.h
 # End Source File
 # End Group

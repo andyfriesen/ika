@@ -9,15 +9,15 @@ static char *ConfigDlg = "dialog(name = 'ConfigDlg',\
   font = [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg'],\
   control = [102, wxStaticBox, 'Graphics Driver', '0', 'Resolution', 0, 0, 113, 85,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
-  control = [20001, wxListBox, '', 'wxLB_EXTENDED', 'graphdriver', 1, 8, 108, 75, [],\
+  control = [20005, wxListBox, '', 'wxLB_EXTENDED', 'graphdriver', 1, 8, 108, 75, [],\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
-  control = [20002, wxCheckBox, 'Run &Fullscreen', '0', 'fullscreen', 116, 9, 64, 8, 1,\
+  control = [20005, wxCheckBox, 'Run &Fullscreen', '0', 'fullscreen', 116, 9, 64, 8, 1,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
-  control = [20003, wxRadioBox, 'Pixel Depth', 'wxBORDER | wxSIMPLE_BORDER | wxRA_SPECIFY_ROWS', 'pixeldepth', 116, 33, 56, 28, ['16bpp', '32bpp'], 0,\
+  control = [20004, wxRadioBox, 'Pixel Depth', 'wxBORDER | wxSIMPLE_BORDER | wxRA_SPECIFY_ROWS', 'pixeldepth', 116, 33, 56, 28, ['16bpp', '32bpp'], 0,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
-  control = [20004, wxCheckBox, 'Enable &Sound', '0', 'enablesound', 116, 17, 64, 8, 1,\
+  control = [20002, wxCheckBox, 'Enable &Sound', '0', 'enablesound', 116, 17, 64, 8, 1,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
-  control = [20005, wxCheckBox, 'Enable &Logging', '0', 'enablelogging', 116, 25, 64, 8, 1,\
+  control = [20004, wxCheckBox, 'Enable &Logging', '0', 'enablelogging', 116, 25, 64, 8, 1,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
   control = [20006, wxButton, 'OK', '0', 'ok', 116, 72, 40, 11, '',\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
