@@ -178,7 +178,7 @@ public:
     {
         bool a = _pressed;
         _pressed = false;
-        return _pressed;
+        return a;
     }
 
     virtual float Position()    {   return _down ? 1.0f : 0.0f; }
