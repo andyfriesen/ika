@@ -165,7 +165,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _changed(false)
     , _layerVisibility(20)
 {
-    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
+    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE));
 
     const int widths[] = { 100, -1, 100 };
     CreateStatusBar(lengthof(widths));

@@ -275,6 +275,9 @@
 				RelativePath="resource.h">
 			</File>
 			<File
+				RelativePath=".\resrc1.h">
+			</File>
+			<File
 				RelativePath="script.h">
 			</File>
 			<File
@@ -340,6 +343,9 @@
 			</File>
 			<File
 				RelativePath="eraser.ico">
+			</File>
+			<File
+				RelativePath=".\eye.ico">
 			</File>
 			<File
 				RelativePath="fill.ico">

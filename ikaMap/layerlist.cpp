@@ -99,7 +99,7 @@ END_EVENT_TABLE()
 LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxSize size)
     : wxScrolledWindow(parent, -1, position, size)
     , _executor(executor)
-    , _visibleIcon("zoomicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16)
+    , _visibleIcon("eyeicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16)
     , _activeIcon("brushicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16)
     , _blankIcon("blankicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16)
 {
