@@ -29,7 +29,9 @@ namespace Script
                 "Draws the map and entities.  layerList is a sequence of integers;\n"
                 "ika will only draw these layers (in the order given).  If layerList\n"
                 "is omitted, all layers will be drawn, in their predefined order (set\n"
-                "in the editor)"
+                "in the editor)\n\n"
+                "If layerList is omitted, the screen is cleared to black before rendering\n"
+                "begins."
             },
 
             {   "GetTile",      (PyCFunction)Map_GetTile,       METH_VARARGS,

@@ -17,17 +17,17 @@ class CFontFile
 {
 public:
     // ------------------ Types --------------------
-    struct SSubSet                                          //!< glyph -> character table
+    struct SSubSet                                  ///< glyph -> character table
     {
-        int nGlyphtbl[256];
+        uint glyphIndex[256];
     };
     
 private:
     // ------------------ Data ---------------------
-    std::vector<SSubSet>    set;                            //!< font subsets.
-    std::vector<Canvas>       glyph;                  //!< Actual font glyphs.
+    std::vector<SSubSet>    set;                    ///< font subsets.
+    std::vector<Canvas>     glyph;                  ///< Actual font glyphs.
 
-    int nWidth, nHeight;                                     //!< For convenience only.  The width and height of the largest characters in the font.
+    int width, height;                            ///< The width and height of the largest characters in the font.
     
     // ---------- Implementation Details -----------
     bool Load8bppFont(File& f);
@@ -42,13 +42,13 @@ public:
     void Save(const char* fname);                           //!< Writes data to the specified filename, destroying any data that was there.
     
     // ---------------- Accessors ------------------
-    int           NumSubSets()           const { return set.size();                     }   //!< Returns the number of subsets.
+    uint          NumSubSets()           const { return set.size();                     }   //!< Returns the number of subsets.
     SSubSet&      GetSubSet(int subset)  const { return (SSubSet&)set[subset];          }   //!< Returns the specified subset table.
     Canvas& GetGlyph(int glyphidx) const { return (Canvas&)glyph[glyphidx]; }   //!< Returns the specified glyph.
-    int           NumGlyphs()            const { return glyph.size();                   }   //!< Returns the number of glyphs in the font.
+    uint          NumGlyphs()            const { return glyph.size();                   }   //!< Returns the number of glyphs in the font.
 
-    int           Width()                const { return nWidth;                         }   //!< Returns the width of the widest character in the font
-    int           Height()               const { return nHeight;                        }   //!< Returns the height of the highest character in the font
+    int           Width()                const { return width;                         }   //!< Returns the width of the widest character in the font
+    int           Height()               const { return height;                        }   //!< Returns the height of the highest character in the font
 };
 
 #endif

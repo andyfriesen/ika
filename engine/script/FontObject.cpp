@@ -34,7 +34,7 @@ namespace Script
                 "Returns how many pixels in width the passed string would be, \n"
                 "if printed in this font."
             },
-            {   NULL,           NULL    }
+            {   0,           0    }
         };
 
 #define GET(x) PyObject* get ## x(FontObject* self)
@@ -77,20 +77,20 @@ namespace Script
             char* filename;
 
             if (!PyArg_ParseTupleAndKeywords(args, kw, "s:Font", keywords, &filename))
-                return NULL;
+                return 0;
 
             FontObject* font=PyObject_New(FontObject, type);
             if (!font)
-                return NULL;
+                return 0;
 
             try
             {
-                font->font=new CFont(filename, engine->video);
+                font->font = new CFont(filename, engine->video);
             }
             catch (FontException)
             {
                 PyErr_SetString(PyExc_OSError, va("Failed to load %s", filename));
-                return NULL;
+                return 0;
             }
 
             return (PyObject*)font;
@@ -111,7 +111,7 @@ namespace Script
             char* message;
 
             if (!PyArg_ParseTuple(args, "iis:Font.Print", &x, &y, &message))
-                return NULL;
+                return 0;
 
             self->font->PrintString(x, y, message);
 
@@ -125,10 +125,10 @@ namespace Script
             char* message;
 
             if (!PyArg_ParseTuple(args, "iis:Font.CenterPrint", &x, &y, &message))
-                return NULL;
+                return 0;
 
             CFont* f=self->font;
-            f->PrintString(x- f->StringWidth(message)/2 , y, message);
+            f->PrintString(x - f->StringWidth(message) / 2 , y, message);
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -140,10 +140,10 @@ namespace Script
             char* message;
 
             if (!PyArg_ParseTuple(args, "iis:Font.RightPrint", &x, &y, &message))
-                return NULL;
+                return 0;
 
-            CFont* f=self->font;
-            f->PrintString(x- f->StringWidth(message) , y, message);
+            CFont* f = self->font;
+            f->PrintString(x - f->StringWidth(message) , y, message);
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -154,7 +154,7 @@ namespace Script
             char* message;
 
             if (!PyArg_ParseTuple(args, "s:Font.Width", &message))
-                return NULL;
+                return 0;
 
             return PyInt_FromLong(self->font->StringWidth(message));
         }

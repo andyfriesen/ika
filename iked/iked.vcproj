@@ -399,12 +399,6 @@
 			<File
 				RelativePath="..\common\vsp.h">
 			</File>
-			<File
-				RelativePath="..\common\xmlutil.cpp">
-			</File>
-			<File
-				RelativePath="..\common\xmlutil.h">
-			</File>
 		</Filter>
 		<Filter
 			Name="Resources"

@@ -3,6 +3,7 @@
 #include "ObjectDefs.h"
 #include "common/Canvas.h"
 #include "common/log.h"
+#include "font.h"
 
 namespace Script
 {
@@ -56,6 +57,11 @@ namespace Script
                 "Canvas.SetPixel(x, y, colour)\n\n"
                 "Sets the pixel at (x, y) on the canvas to the colour specified.  This function\n"
                 "totally disregards alpha.  It *sets* the pixel, in the truest sense of the word."
+            },
+
+            {   "DrawText", (PyCFunction)Canvas_DrawText,   METH_VARARGS,
+                "Canvas.DrawText(font, x, y, text)\n\n"
+                "Draws a string starting at (x,y) with the font.  No word wrapping is done."
             },
 
             {   "Clear",    (PyCFunction)Canvas_Clear,      METH_VARARGS,
@@ -301,6 +307,21 @@ namespace Script
                 return 0;
 
             self->canvas->SetPixel(x, y, colour);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Canvas_DrawText)
+        {
+            Script::Font::FontObject* font;
+            int x, y;
+            char* text;
+
+            if (!PyArg_ParseTuple(args, "O!iis:DrawText", &Script::Font::type, &font, &x, &y, &text))
+                return 0;
+
+            font->font->PrintString(x, y, text, *self->canvas);
 
             Py_INCREF(Py_None);
             return Py_None;

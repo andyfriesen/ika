@@ -7,26 +7,40 @@ You know the drill. --tSB
 #include "common/fileio.h"
 #include "common/rle.h"
 #include "common/log.h"
+#include "common/canvas.h"
 #include "video/Driver.h"
 #include "video/Image.h"
 
 #include "font.h"
 
-static const char subsetmarker='~';
+#include <cassert>
+
+static const char subsetmarker = '~';
 
 CFont::CFont(const char* filename, Video::Driver* v)
-    : video(v)
+    : _video(v)
+    , _width(0)
+    , _height(0)
+    , _tabSize(30)
 {
     CDEBUG("cfont::loadfnt");
     
-    CFontFile f;
-    if (!f.Load(filename))
+    if (!_fontFile.Load(filename))
         throw FontException();
+
+    _glyphs.resize(_fontFile.NumGlyphs());
+
+    for (uint i = 0; i < _fontFile.NumGlyphs(); i++)
+    {
+        Canvas& glyph = _fontFile.GetGlyph(i);
+        _width = max<uint>(_width, glyph.Width());
+        _height = max<uint>(_height, glyph.Height());
+    }
     
-    set.resize(f.NumSubSets());
+    /*set.resize(f.NumSubSets());
     
-    nWidth = nHeight = 0;
-    nTabsize = 30;
+    _width = _height = 0;
+    _tabSize = 30;
     
     // eep @_@
     for (int nSet = 0; nSet < f.NumSubSets(); nSet++)
@@ -39,58 +53,95 @@ CFont::CFont(const char* filename, Video::Driver* v)
             
             Canvas& glyph = f.GetGlyph(nGlyphidx);
 
-            set[nSet].glyph[nGlyph] = video->CreateImage(glyph);
+            set[nSet].glyph[nGlyph] = _video->CreateImage(glyph);
             
-            if (nWidth < glyph.Width())     nWidth = glyph.Width();
-            if (nHeight < glyph.Height())   nHeight = glyph.Height();
+            if (_width < glyph.Width())     _width = glyph.Width();
+            if (_height < glyph.Height())   _height = glyph.Height();
         }
-    }
+    }*/
 }
 
 CFont::~CFont()
 {
-    int nSetsize = set.size();
-    for (int nSet = 0; nSet < nSetsize; nSet++)
+    for (uint i = 0; i < _glyphs.size(); i++)
     {
-        for (int nGlyph = 0; nGlyph < 96; nGlyph++)
-            video->FreeImage(set[nSet].glyph[nGlyph]);
-            //delete set[nSet].glyph[nGlyph];
+        _video->FreeImage(_glyphs[i]);
     }
         
-    set.clear();
+    _glyphs.clear();
 }
 
-
-void CFont::PrintChar(int& x, int y, int subset, char c)
+int CFont::GetGlyphIndex(char c, uint subset) const
 {
-    c -= 32;
+    assert(subset >= 0 && subset < _fontFile.NumSubSets());
+
+    return _fontFile.GetSubSet(subset).glyphIndex[c];
+}
+
+Video::Image* CFont::GetGlyphImage(char c, uint subset)
+{
+    uint glyphIndex = GetGlyphIndex(c, subset);
+
+    assert(glyphIndex <= _glyphs.size()); // :x
     
-    if (c < 0 || c > 96)
-        return;
-    
-    Video::Image* img = set[subset].glyph[c];
-    video->BlitImage(img, x, y);
+    Video::Image* img = _glyphs[glyphIndex];
+
+    if (!img)
+    {
+        img = _video->CreateImage(_fontFile.GetGlyph(glyphIndex));
+        _glyphs[glyphIndex] = img;
+    }
+
+    return img;
+}
+
+Canvas& CFont::GetGlyphCanvas(char c, uint subset) const
+{
+    return _fontFile.GetGlyph(GetGlyphIndex(c, subset));
+}
+
+void CFont::PrintChar(int& x, int y, uint subset, char c)
+{
+    Video::Image* img = GetGlyphImage(c, subset);
+
+    if (!img) return;
+
+    _video->BlitImage(img, x, y);
     x += img->Width();
 }
 
-void CFont::PrintString(int startx, int starty, const char* s)
+void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest)
+{
+    //if (c < 0 || c > 96)
+    //    return;
+
+    assert((uint)GetGlyphIndex(c, subset) >= _fontFile.NumGlyphs()); // paranoia check
+
+    Canvas& glyph = GetGlyphCanvas(c, subset);
+
+    CBlitter<Alpha>::Blit(glyph, dest, x, y);
+    x += glyph.Width();
+}
+
+template <class Printer>
+void CFont::PaintString(int startx, int starty, const char* s, Printer& print)
 {   
-    int cursubset=0;
-    int x=startx;
-    int y=starty;
+    int cursubset = 0;
+    int x = startx;
+    int y = starty;
     
-    video->SetBlendMode(Video::Normal);
+    _video->SetBlendMode(Video::Normal);
     for (uint i=0; i < strlen(s); i++)
     {
         switch (s[i])
         {
         case '\n':          // newline
-            y += nHeight;
+            y += _height;
             x = startx;
             break;
             
         case '\t':          // tab
-            x += nTabsize - (x - startx) % nTabsize;
+            x += _tabSize - (x - startx) % _tabSize;
             break;
             
         case subsetmarker:
@@ -99,22 +150,59 @@ void CFont::PrintString(int startx, int starty, const char* s)
             if (i >= strlen(s))
                 return; // subset marker at end of string.  bjork.
             
-            if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(set.size()))                    // number?  switch the subset. (also make sure that it's a valid subset index
+            if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets()))                    // number?  switch the subset. (also make sure that it's a valid subset index
                 cursubset=s[i] - '0';
             else if (s[i] == subsetmarker)
-                PrintChar(x, y, cursubset, s[i]);
+                //PrintChar(x, y, cursubset, s[i]);
+                print(x, y, cursubset, s[i], this);
             break;
             
         default:
-            PrintChar(x, y, cursubset, s[i]);
+            //PrintChar(x, y, cursubset, s[i]);
+            print(x, y, cursubset, s[i], this);
         }
     }
 }
 
+namespace
+{
+    struct PrintToVideo
+    {
+        inline void operator ()(int& x, int y, int subset, char c, CFont* font)
+        {
+            font->PrintChar(x, y, subset, c);
+        }
+    };
+
+    struct PrintToCanvas
+    {
+        Canvas& _dest;
+
+        PrintToCanvas(Canvas& dest)
+            : _dest(dest)
+        {}
+
+        inline void operator ()(int& x, int y, int subset, char c, CFont* font)
+        {
+            font->PrintChar(x, y, subset, c, _dest);
+        }
+    };
+};
+
+void CFont::PrintString(int x, int y, const char* s)
+{
+    PaintString(x, y, s, PrintToVideo());
+}
+
+void CFont::PrintString(int x, int y, const char* s, Canvas& dest)
+{
+    PaintString(x, y, s, PrintToCanvas(dest));
+}
+
 int CFont::StringWidth(const char* s) const
 {
-    int nWidth = 0;
-    int nCursubset = 0;
+    int _width = 0;
+    int currentSubSet = 0;
     uint len = strlen(s);
     
     for (uint i = 0; i < len; i++)
@@ -124,25 +212,25 @@ int CFont::StringWidth(const char* s) const
         switch (c)
         {
         case '\n':
-            return nWidth;                                                          // um.. @_x
+            return _width;                                                          // um.. @_x
             
         case '\t':                                                                  // tab
-            nWidth += nTabsize - nWidth % nTabsize;
+            _width += _tabSize - _width % _tabSize;
             break;
             
         case subsetmarker:
             i++;
             if (s[i] == subsetmarker)
-                nWidth += set[nCursubset].glyph[subsetmarker - 32]->Width();
-            else if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(set.size()))                       // valid subset number?
-                nCursubset = s[i] - '0';
+                _width += GetGlyphCanvas(subsetmarker, currentSubSet).Width();
+            else if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets()))                       // valid subset number?
+                currentSubSet = s[i] - '0';
             break;
             
         default:
             if (c < 32 || c > 32 + 96)
                 continue;                                                           // invalid char, skip it.
-            nWidth += set[nCursubset].glyph[c - 32]->Width();
+            _width += GetGlyphCanvas(c, currentSubSet).Width();
         }
     }
-    return nWidth;
+    return _width;
 }

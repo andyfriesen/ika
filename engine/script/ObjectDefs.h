@@ -115,6 +115,7 @@ namespace Script
         METHOD(Canvas_WrapBlit, CanvasObject);
         METHOD(Canvas_GetPixel, CanvasObject);
         METHOD(Canvas_SetPixel, CanvasObject);
+        METHOD(Canvas_DrawText, CanvasObject);
         METHOD(Canvas_Clear, CanvasObject);
         METHOD(Canvas_Resize, CanvasObject);
         METHOD(Canvas_Clip, CanvasObject);

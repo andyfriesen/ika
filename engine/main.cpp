@@ -137,7 +137,7 @@ void CEngine::MainLoop()
 
         if (_showFramerate)
         {
-            font->PrintString(0, 0, va("FPS: %i", video->GetFrameRate()));
+            font->PrintString(0, 0, va("FFF: %i", video->GetFrameRate()));
         }
 
         video->ShowPage();
@@ -419,6 +419,8 @@ void CEngine::Render()
             cameraTarget->y - res.y / 2 + layer->y));
     }
     
+    video->DrawRect(0, 0, res.x, res.y, RGBA(0, 0, 0), true);
+
     for (uint i = 0; i < map.NumLayers(); i++)
     {
         RenderLayer(i);

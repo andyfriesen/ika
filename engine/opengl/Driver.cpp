@@ -256,11 +256,17 @@ namespace OpenGL
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
         if (filled)
+        {
+            x2++;
             glBegin(GL_QUADS);
+        }
         else
+        {
+            y1++;
             glBegin(GL_LINE_LOOP);
-
-        x2++; y2++;
+        }
+        
+        y2++;
 
         glVertex2i(x1, y1);
         glVertex2i(x2, y1);

@@ -67,6 +67,14 @@ bool Map::Load(const std::string& filename)
         }
     };
 
+    // First, clean up:
+    for (uint i = 0; i < layers.size(); i++)
+        delete layers[i];
+    layers.clear();
+    zones.clear();
+    wayPoints.clear();
+
+
     std::ifstream file(filename.c_str());
     DataNode* rootNode;
     file >> rootNode;

@@ -2,6 +2,7 @@
 #define FONT_H
 
 #include "common/types.h"
+#include "common/fontfile.h"
 #include "tileset.h"
 
 class File;
@@ -20,31 +21,38 @@ struct FontException{};
 class CFont
 {
 private:
-    struct SubSet
-    {
-        Video::Image* glyph[96];
-    };
+    CFontFile _fontFile;
     
-    Video::Driver*  video;
-    std::vector <SubSet> set;
+    Video::Driver*  _video;
+    std::vector<Video::Image*> _glyphs;
     
-    int nWidth, nHeight;                                         ///< width/height of the widest/highest character in the whole font
-    int nTabsize;                                               ///< tab granularity, in pixels
-    
-    void PrintChar(int& x, int y, int cursubset, char c);
-    
+    int _width, _height;                                        ///< width/height of the widest/highest character in the whole font
+    int _tabSize;                                               ///< tab granularity, in pixels
+
 public:
     CFont(const char* filename, Video::Driver* v);
     ~CFont();
 
-    void PrintString(int x, int y, const char* s);                ///< Draws the string
+    int GetGlyphIndex(char c, uint subset) const;
+
+    Video::Image* GetGlyphImage(char c, uint subset);
+    Canvas& GetGlyphCanvas(char c, uint subset) const;
+
+    void PrintChar(int& x, int y, uint subset, char c);
+    void PrintChar(int& x, int y, uint subset, char c, Canvas& dest);
+
+    template <class Printer>
+    void PaintString(int x, int y, const char* s, Printer& print);  ///< Draws the string somewhere.
+
+    void PrintString(int x, int y, const char* s);
+    void PrintString(int x, int y, const char* s, Canvas& dest);    ///< Draws the string on a canvas.
     
     int StringWidth(const char* s) const;                       ///< Returns the width, in pixels, of the string, if printed in this font.
     
-    int Width() const   {   return nWidth;  }                   ///< Returns the width of the widest char in the font.
-    int Height() const  {   return nHeight; }                   ///< Returns the height of the highest char in the font.
-    int TabSize() const {   return nTabsize;    }               ///< Returns the tab granularity.
-    void SetTabSize(int tabsize)    {   nTabsize=tabsize;   }   ///< Sets the tab granularity.
+    int Width()   const {   return _width;      }               ///< Returns the width of the widest char in the font.
+    int Height()  const {   return _height;     }               ///< Returns the height of the highest char in the font.
+    int TabSize() const {   return _tabSize;     }              ///< Returns the tab granularity.
+    void SetTabSize(int tabsize)    {   _tabSize = tabsize;   } ///< Sets the tab granularity.
 };
 
 #endif
