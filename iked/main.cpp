@@ -16,6 +16,8 @@
 #include "spritesetview.h"
 
 #include "wx\resource.h"
+#include "wx/laywin.h"
+#include "wx/sashwin.h"
 #include "controller.h"
 
 IMPLEMENT_APP(CApp);

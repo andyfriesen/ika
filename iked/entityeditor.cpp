@@ -113,7 +113,8 @@ void CEntityEditor::UpdateList()
         pEntlist->Append(e.sName.c_str());
     }
 
-    pEntlist->SetSelection(nCurrent);
+    if (nCurrent != -1)
+        pEntlist->SetSelection(nCurrent);
     nCurentidx=-1;
     UpdateDlg();
 }

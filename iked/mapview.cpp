@@ -17,7 +17,7 @@
 #include "wx\laywin.h"
 #include "wx\sashwin.h"
 #include "wx\checklst.h"
-#include "wx\minifram.h"
+//#include "wx\minifram.h"
 
 /*
 
@@ -182,10 +182,10 @@ CMapView::CMapView(CMainWnd* parent, const string& name)
     pGraph = new CMapFrame(pRightbar, this);
 
     // Get resources
-    pMap = pParentwnd->map.Load(name);                                    // load the map
+    pMap = pParentwnd->map.Load(name);                                  // load the map
         
     string sTilesetname = Path::Directory(name) + pMap->GetVSPName();   // get the absolute path to the map, and add it to the tileset filename
-    pTileset = pParentwnd->vsp.Load(sTilesetname);                        // load the VSP
+    pTileset = pParentwnd->vsp.Load(sTilesetname);                      // load the VSP
 
     // Load CHRs
 
@@ -207,7 +207,9 @@ CMapView::CMapView(CMainWnd* parent, const string& name)
     InitMenu();
 
     nCurlayer = 0;
+    //csrmode = mode_select;
     csrmode = mode_normal;
+    _selection = Rect(5,2,8,12);
 
     pEntityeditor = new CEntityEditor(this, pMap);
 
@@ -412,7 +414,6 @@ void CMapView::OnZoomIn2x(wxCommandEvent& event)  { Zoom(2);  }
 void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
 void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
 void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
-
 void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(16-nZoom); }  // >:D
 
 void CMapView::OnShowEntityEditor(wxCommandEvent& event)
@@ -455,19 +456,22 @@ void CMapView::LayerEdit(wxMouseEvent& event)
     int tilex =(x * l.pmulx / l.pdivx) / pTileset->Width();
     int tiley =(y * l.pmuly / l.pdivy) / pTileset->Height();
 
-    switch (csrmode)
+    switch (nCurlayer)
     {
-    case mode_normal:
-        if (event.ShiftDown())
-            pTileset->SetCurTile(pMap->GetTile(tilex, tiley, nCurlayer));
-        else
-            pMap->SetTile(tilex, tiley, nCurlayer, pTileset->CurTile());
-        break;
+    case lay_zone:      break;
+    case lay_entity:    break;
     case lay_obstruction:
         {
             bool set = event.LeftIsDown() && !event.RightIsDown();      // Boolean logic is so neat.
             pMap->SetObs(tilex, tiley, set);
         }
+        break;
+
+    default:
+        if (event.ShiftDown())
+            pTileset->SetCurTile(pMap->GetTile(tilex, tiley, nCurlayer));
+        else
+            pMap->SetTile(tilex, tiley, nCurlayer, pTileset->CurTile());
         break;
     }
 
@@ -479,14 +483,24 @@ void CMapView::HandleMouse(wxMouseEvent& event)
 {
     switch (csrmode)
     {
-    case lay_entity: break;
-    case lay_zone: break;
-    //case lay_obstruction: break;
+    case mode_normal:
+        LayerEdit(event);
+        break;
 
     case mode_select:
+        {
+            _selection.right = event.GetPosition().x;
+            _selection.bottom = event.GetPosition().y;
+            ScreenToMap(_selection.right, _selection.bottom);
+            _selection.right /= pTileset->Width();
+            _selection.bottom /= pTileset->Height();
+            Render();
+            pGraph->ShowPage();
+            break;
+        }
 
     default:
-        HandleLayerEdit(event);
+        wxASSERT(0);
         break;
     }
 }
@@ -501,10 +515,6 @@ void CMapView::OnLayerChange(int lay)
         pGraph->ShowPage();
         pLayerlist->CheckItem(lay);
     }
-    if (lay == lay_obstruction)
-        csrmode = lay_obstruction;
-    else
-        csrmode = mode_normal;
 }
 
 void CMapView::OnLayerToggleVisibility(int lay, int newstate)
@@ -560,7 +570,8 @@ void CMapView::Render()
         RenderInfoLayer(lay_obstruction);
     if (nLayertoggle[lay_zone])
         RenderInfoLayer(lay_zone);
-
+ 
+    RenderSelectionRect();
 }
 
 typedef std::pair<SMapEntity*, CSpriteSet*> EntSpritePair;
@@ -705,4 +716,30 @@ void CMapView::RenderLayer(int lay)
                     true);
         }
     }
+}
+
+void CMapView::RenderSelectionRect()
+{
+    /* 
+     * All 4 sides of the rect are inclusive, so we just swap so that the lesser coords are top and left,
+     * then multiply by the tile size, and add the tile size to the right and bottom edges, so the rect
+     * draws properly.  Then we draw.
+     */
+
+    Rect r = _selection;
+    if (r.left > r.right)
+    {
+        swap(r.left, r.right);
+    }
+    if (r.top > r.bottom)
+    {
+        swap(r.bottom, r.top);
+    }
+
+    r.top *= pTileset->Height();
+    r.left *= pTileset->Width();
+    r.bottom = (r.bottom + 1) * pTileset->Height();
+    r.right = (r.right + 1) * pTileset->Width();
+
+    pGraph->Rect(r.left - xwin, r.top - ywin, r.Width(), r.Height(), RGBA(255, 255, 255));
 }

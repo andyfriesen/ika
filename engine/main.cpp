@@ -146,14 +146,9 @@ void CEngine::Startup()
     // Now the tricky stuff.
     try
     {
-#ifdef _DEBUG
-        if (cfg.Int("log"))
-            Log::Init("ikadebug.log");
-#else
         if (cfg.Int("log"))
             Log::Init("ika.log");
-#endif
-        
+       
         Log::Write("ika " VERSION " startup");
         Log::Write("Built on " __DATE__);
         Log::Write("--------------------------");

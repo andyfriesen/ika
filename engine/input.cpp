@@ -224,6 +224,9 @@ void Input::KeyDown(int key)
         if (c->onPress)
             _hookqueue.push(c->onPress);
     }
+
+    if (key == SDLK_UP)
+        Log::Write("%f", _up->Position());
 }
 
 void Input::KeyUp(int key)
@@ -243,9 +246,13 @@ Input::Control* Input::GetControl(const std::string& name)
     int i = _keymap[name];
     if (i)
     {
-        KeyControl* c = new KeyControl(this, i);
-        _keys[i] = c;
-        _controls[name] = c;
+        KeyControl* c = _keys[i];
+        if (!c)
+        {
+            c = new KeyControl(this, i);
+            _keys[i] = c;
+            _controls[name] = c;
+        }
         return c;
     }
 

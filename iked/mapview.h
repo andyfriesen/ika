@@ -58,7 +58,7 @@ class CMapView : public IDocView
     {
         lay_entity=-10,
         lay_zone,
-        //lay_obstruction
+        lay_obstruction
     };
 
     enum
@@ -71,7 +71,6 @@ class CMapView : public IDocView
     enum CursorMode
     {
         mode_normal,
-        lay_obstruction=-12
         mode_select,
         // copy/paste/etc...
     };
@@ -97,7 +96,7 @@ private:
 
     int  nZoom;                                                     // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
 
-    Rect selection;
+    Rect _selection;
 
 public:
     CMapView(CMainWnd* parent,const string& fname);
@@ -157,6 +156,8 @@ private:
     void RenderEntities();
     void RenderInfoLayer(int lay);
     void RenderLayer(int lay);
+    void RenderSelectionRect();
+
     void Zoom(int nZoomscale);
 
     bool Save(const char* fname);

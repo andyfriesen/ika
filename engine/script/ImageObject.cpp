@@ -73,7 +73,10 @@ namespace Script
 
                     ImageObject* image=PyObject_New(ImageObject,&type);
                     if (!image)
+                    {
+                        PyErr_SetString(PyExc_MemoryError, "newimage: This should never happen. :o");
                         return 0;
+                    }
 
                     image->img = engine->video->CreateImage(img);
 
@@ -81,7 +84,7 @@ namespace Script
                 }
                 catch (std::runtime_error e)
                 {
-                    Log::Write(e.what());
+                    PyErr_SetString(PyExc_RuntimeError, e.what());
                     return 0;
                 }
             }
