@@ -135,9 +135,7 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     pMap=pParentwnd->map.Load(name);                                    // load the map
     
     // get the absolute path to the map, and add it to the tileset filename
-    string sTilesetname=pMap->GetVSPName();
-    int p=name.rfind('\\');
-    sTilesetname=string(name.substr(0,p+1))+sTilesetname;
+    string sTilesetname = Path::Directory(name) + pMap->GetVSPName();
     
     pTileset=pParentwnd->vsp.Load(sTilesetname);                        // load the VSP
 
