@@ -24,11 +24,20 @@ Script::Script(const std::string& fileName)
     , onSwitchLayers(0)
     , onActivated(0)
 
-    , _name(fileName)
+    , _fileName(fileName)
 {
     ScriptEngine::Init(); // init python, if it hasn't already been initted.
 
     Reload();
+
+    // Get the module name from the filename
+    // blech
+    const uint s = max<int>(fileName.rfind('/'), fileName.rfind('\\')) + 1;
+    const uint e = fileName.rfind('.');
+    if (e == std::string::npos)
+        _name = fileName.substr(s);
+    else
+        _name = fileName.substr(s, e - s);
 }
 
 Script::~Script()
@@ -226,7 +235,7 @@ void Script::Reload()
     };
 
     Deallocate();
-
+/*
     // All this trouble just to import something from an arbitrary file.
     // Christ.
     uint s = max<int>(_name.rfind('/'), _name.rfind('\\')) + 1;
@@ -248,18 +257,18 @@ void Script::Reload()
 
     if (name.empty())
         throw std::runtime_error(va("Could not parse module name from %s", _name.c_str()));
-
+*/
     // Got a name for the module now.  woo.
 
     File sourceFile;
-    sourceFile.OpenRead(_name.c_str(), false);
+    sourceFile.OpenRead(_fileName.c_str(), false);
     std::string source = sourceFile.ReadAll();
     sourceFile.Close();
 
     PyObject* code = Py_CompileString(const_cast<char*>(source.c_str()), _name.c_str(), Py_file_input);
     if (!code)  ReportError();
 
-    module = PyImport_ExecCodeModule(const_cast<char*>(name.c_str()), code);
+    module = PyImport_ExecCodeModule(const_cast<char*>(_name.c_str()), code);
     Py_DECREF(code);
     if (!module) ReportError();
 
@@ -281,7 +290,7 @@ void Script::Reload()
     //Local::GetSymbol(dict, onKeyPress,    "OnKeyPress");
 
     // Meta!
-    _name = name;
+    //_name = name;
     PyObject* docString = PyDict_GetItemString(dict, "__doc__");
     if (docString != Py_None)
         _desc = PyString_AsString(docString);

@@ -103,7 +103,8 @@ private:
     //PyObject* onKeyPress;
 
     // Metadata!!
-    std::string _name; // filename, I guess
+    std::string _name; // module name, I guess
+    std::string _fileName;
     std::string _desc; // __doc__
 
 public:
