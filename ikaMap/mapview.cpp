@@ -356,7 +356,7 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
         for (int x = 0; x < lenX; x++)
         {
             if (lay->obstructions(x + firstX, y + firstY))
-                _video->RectFill(x * tileX - adjustX, y * tileY - adjustY, tileX, tileY, RGBA(0, 0, 0, 128));
+                _video->RectFill(x * tileX - adjustX, y * tileY - adjustY, tileX, tileY, RGBA(128, 128, 128, 128));
         }
     }
 }
