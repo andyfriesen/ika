@@ -81,6 +81,9 @@ namespace OpenGL
 
         /// Blits an image to the screen.
         virtual void BlitImage(Video::Image* img, int x, int y);
+        
+        /// Blits a rectangular piece of an image to the screen.
+        virtual void ClipBlitImage(Video::Image* i, int x, int y, int ix, int iy, int iw, int ih);
 
         /// Blits a scaled version of the provided image to the screen.
         virtual void ScaleBlitImage(Video::Image* img, int x, int y, int w, int h);

@@ -307,6 +307,7 @@ namespace Script
 
         // Methods
         METHOD(Video_Blit, VideoObject);
+        METHOD(Video_ClipBlit, VideoObject);
         METHOD(Video_ScaleBlit, VideoObject);
         METHOD(Video_DistortBlit, VideoObject);
         METHOD(Video_TileBlit, VideoObject);

@@ -424,6 +424,38 @@ namespace OpenGL
         glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + h);
         glEnd();
     }
+    
+    void Driver::ClipBlitImage(Video::Image* i, int x, int y, int ix, int iy, int iw, int ih)
+    {
+        OpenGL::Image* img = static_cast<Image*>(i);
+        // VC7 won't inline these, because they're virtual.
+        static int w, h;
+        w = img->_width;//Width();
+        h = img->_height;//Height();
+
+        static float texCoords[4] = {0,0,0,0};
+        memcpy(texCoords, img->_texCoords, sizeof(float) * 4);
+        if(ix > w || ix < 0) ix = 0;
+        if(iy > w || iy < 0) iy = 0;
+        if(iw > w || iw < 0) iw = w;
+        if(ih > h || ih < 0) ih = h;
+
+        static float cw, ch;
+        cw = texCoords[2] - texCoords[0];
+        ch = texCoords[3] - texCoords[1];
+        texCoords[0] += cw * ix / w;
+        texCoords[1] += ch * iy / h;
+        texCoords[2] = texCoords[0] + cw * iw / w;
+        texCoords[3] = texCoords[1] + ch * ih / h;
+
+        SwitchTexture(img->_texture->handle);
+        glBegin(GL_QUADS);
+        glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2i(x, y);
+        glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2i(x + iw, y);
+        glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2i(x + iw, y + ih);
+        glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + ih);
+        glEnd();
+    }
 
     void Driver::ScaleBlitImage(Video::Image* i, int x, int y, int w, int h)
     {

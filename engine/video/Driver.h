@@ -63,6 +63,9 @@ namespace Video
 
         /// Blits an image to the screen.
         virtual void BlitImage(Image* img, int x, int y) = 0;
+        
+        /// Blits a rectangular piece of an image to the screen.
+        virtual void ClipBlitImage(Video::Image* i, int x, int y, int ix, int iy, int iw, int ih) = 0;
 
         /// Blits a scaled version of the provided image to the screen.
         virtual void ScaleBlitImage(Image* img, int x, int y, int w, int h) = 0;

@@ -18,6 +18,14 @@ namespace Script
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
                 "The default is ika.Alphablend."
             },
+            
+            {   "ClipBlit",         (PyCFunction)Video_ClipBlit,   METH_VARARGS,
+                "ClipBlit(image, x, y, ix, iy, iw, ih[, blendmode])\n\n"
+                "Draws a portion of the image defined by the coordinates (ix, iy, iw, ih)\n" "at screen coordinates (x, y).\n"
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
+            },
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
                 "ScaleBlit(image, x, y, width, height[, blendmode])\n\n"
@@ -191,6 +199,22 @@ namespace Script
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->BlitImage(image->img, x, y);
+            
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        
+        METHOD(Video_ClipBlit)
+        {
+            Script::Image::ImageObject* image;
+            int x, y, ix, iy, iw, ih;
+            int trans = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "O!iiiiii|i:Video.ClipBlit", &Script::Image::type, &image, &x, &y, &ix, &iy, &iw, &ih, &trans))
+                return 0;
+
+            self->video->SetBlendMode((::Video::BlendMode)trans);
+            self->video->ClipBlitImage(image->img, x, y, ix, iy, iw, ih);
             
             Py_INCREF(Py_None);
             return Py_None;
