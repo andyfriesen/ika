@@ -195,7 +195,7 @@ void Keyboard::KeyDown(uint keyCode)
     if (iter != _keys.end())
         iter->second->KeyDown();
 
-    if (keyCode > 256)
+    if (keyCode < 256)
         _keyQueue.push(keyCode);
 }
 
