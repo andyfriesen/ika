@@ -37,8 +37,8 @@ void CMapView::OnPaint()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    for (int x=0; x<20; x++)
-        pTileset->DrawTile(x*16,0,x,*pGraph);
+    xwin=ywin=0;
+    RenderLayer(0);
 
     glFlush();
     pGraph->ShowPage();
@@ -53,4 +53,35 @@ void CMapView::OnClose()
 {
     pParentwnd->map.Release(pMap);
     pParentwnd->vsp.Release(pTileset);
+}
+
+// ------------------------------ Core logic -------------------------
+
+void CMapView::RenderLayer(int lay)
+{
+    int nWidth,nHeight;
+
+    GetClientSize(&nWidth,&nHeight);
+
+    int tx=pTileset->Width();
+    int ty=pTileset->Height();
+
+    int nFirstx=xwin/tx;
+    int nFirsty=ywin/ty;
+    
+    int nLenx=nWidth/tx+1;
+    int nLeny=nHeight/ty+1;
+
+    int nAdjx=xwin%tx;
+    int nAdjy=ywin%ty;
+
+    for (int y=0; y<nLeny; y++)
+    {
+        for (int x=0; x<nLenx; x++)
+        {
+            int t=pMap->GetTile(x+nFirstx, y+nFirsty, lay);
+
+            pTileset->DrawTile(x*tx+nAdjx, y*ty+nAdjy, t, *pGraph);
+        }
+    }
 }

@@ -39,6 +39,8 @@ public:
 
     const CPixelMatrix&   GetTile(int tileidx);                 // returns the pixel data for the tile
     void SetTile(int tileidx,const CPixelMatrix& newtile);      // assigns the pixel data for the tile
+    int  Width() const;
+    int  Height() const;
 
     void DrawTile(int x,int y,int tileidx,CGraphFrame& dest);   // draws the tile on the frame, updating the copy as needed
 

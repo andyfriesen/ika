@@ -29,6 +29,13 @@ public:
     void OnClose();
 
     DECLARE_EVENT_TABLE()
+
+
+private:
+
+    int xwin,ywin;
+
+    void RenderLayer(int lay);
 };
 
 #endif
