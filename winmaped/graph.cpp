@@ -8,7 +8,7 @@ CGraphView::CGraphView(HWND hwnd,renderfunc pRenderfunc,void* pthis)
     Render=pRenderfunc;
     pThis=pthis;
     
-    pDib=new CDIB(nDIBsize,nDIBsize,4);
+    pDib=new CDIB(nDIBsize,nDIBsize);
 }
 
 CGraphView::~CGraphView()

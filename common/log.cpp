@@ -14,27 +14,25 @@
 int logging=0;
 
 #ifdef _CALLBACK
-char CDebuggingthing::callback[1024];
+std::string CDebuggingthing::callback;
 
-void callback_log(const char* s,...)
+CDebuggingthing::CDebuggingthing(const char* s)
 {
-#ifdef LOG_ENABLE
-	if (!logging) return;
+    len=callback.length();
+    callback=callback+"->"+s;
+    
+    FILE* f=fopen("callback.log","a");
+    fprintf(f,"  %s\n",callback.c_str());
+    fclose(f);
+}
 
-	char tempbuf[1024];
-	va_list lst;
-	
-	va_start(lst,s);
-	vsprintf(tempbuf,s,lst);
-	va_end(lst);
-	
-	FILE *logfile;
-	
-	logfile=fopen("callback.log","a");
-	fprintf(logfile,"%s\n",tempbuf);
-	fflush(logfile);
-	fclose(logfile);
-#endif
+CDebuggingthing::~CDebuggingthing()
+{
+    callback.erase(len);
+
+    FILE* f=fopen("callback.log","a");
+    fprintf(f,"\t\t%s\n",callback.c_str());
+    fclose(f);
 }
 
 #endif

@@ -1,6 +1,5 @@
 #include <windows.h>
 #include "pixel_matrix.h"
-#include "importpng.h"
 
 static inline void DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen,const Rect& rClip)
 {
@@ -97,33 +96,6 @@ bool CPixelMatrix::operator == (const CPixelMatrix& rhs)
     return !memcmp(pData,rhs.pData,nWidth*nHeight*sizeof(RGBA));
 }
 
-bool CPixelMatrix::LoadFromPNG(const char* fname)
-{
-    png_image* png=Import_PNG(fname);
-    if (!png)
-        return false;
-    
-    delete[] pData;
-    nWidth=png->width;
-    nHeight=png->height;
-    
-    pData=new RGBA[nWidth*nHeight];
-    memcpy(pData,png->pixels,nWidth*nHeight*sizeof(RGBA));
-    
-    delete[] png->pixels;
-    delete png;
-    return true;
-}
-
-bool CPixelMatrix::WriteToPNG(const char* fname)
-{
-    png_image png;
-    
-    png.width=nWidth;
-    png.height=nHeight;
-    png.pixels=pData;
-    return Export_PNG(&png,fname);
-}
 
 void CPixelMatrix::CopyPixelData(RGBA* data,int width,int height)
 {
@@ -401,4 +373,31 @@ skipalpha:
     }
 #endif
     
+}
+
+void CPixelMatrix::OpaqueBlit(CPixelMatrix& dest,int x,int y)
+{
+    int xstart=cliprect.left;
+    int ystart=cliprect.top;
+    int xlen=cliprect.right-cliprect.left;
+    int ylen=cliprect.bottom-cliprect.top;
+    
+    DoClipping(x,y,xstart,xlen,ystart,ylen,dest.cliprect);
+    if (xlen<1 || ylen<1)	return;                         // offscreen
+    
+    u32* pSrc  = ((u32*)pData) +(ystart*nWidth)+xstart;
+    u32* pDest = ((u32*)dest.pData) +(y*dest.nWidth)+x;
+//    int  srcinc= nWidth-xlen;
+//    int  destinc=dest.nWidth-xlen;
+    
+    y=ylen;
+    x=xlen;
+    
+    while (ylen)
+    {
+        memcpy(pDest,pSrc,xlen * sizeof(RGBA));
+        pDest+=dest.Width();
+        pSrc+=Width();
+        ylen--;
+    }
 }

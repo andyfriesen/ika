@@ -402,7 +402,9 @@ CPixelMatrix& VSP::GetTile(int tileidx)
     static CPixelMatrix dummy;
 
     if (tileidx<0 || tileidx>tiles.size())
+    {
         return dummy;
+    }
 
     return tiles[tileidx];
 }

@@ -44,8 +44,8 @@ PyObject* CScriptEngine::Music_New(PyObject* self,PyObject* args)
 	if (!music)
 		return NULL;
 
-	bool bResult=sfxLoadMusic(&music->pMusic,filename);
-	if (!bResult)
+	music->pMusic=sfxLoadMusic(filename);
+	if (music->pMusic==0)
 	{
 		PyErr_SetString(PyExc_OSError,va("Failed to load %s",filename));
 		return NULL;

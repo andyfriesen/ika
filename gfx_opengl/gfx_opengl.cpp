@@ -7,17 +7,23 @@ OpenGL rendering engine
 #include <gl\glaux.h>
 #include <gl\glu.h>
 #include <math.h>
+#include "log.h"
+#include "pixel_matrix.h"
+#include "types.h"
 
-#define EXPORT __cdecl
-typedef unsigned int u32;
+#ifdef WIN32
+#  define EXPORT __cdecl
+#else
+#  define EXPORT
+#endif
 typedef struct SImage* handle;
 
 struct SImage
 {
-    int nWidth,nHeight;
-    u32* pData;
-    
-    RECT rClip;
+    CPixelMatrix pixels;
+    const int& nWidth;
+    const int& nHeight;
+    Rect& cliprect;
     
     GLuint	hTex;
     int nTexwidth,nTexheight;
@@ -26,11 +32,18 @@ struct SImage
     bool bIsscreen;
     
     SImage():
-    nWidth(0),nHeight(0),
-	pData(NULL),hTex(0),
+	hTex(0),
 	nTexwidth(0),nTexheight(0),
-	bAltered(false),bIsscreen(false)
+	bAltered(false),bIsscreen(false),
+        nWidth(pixels.Width()), nHeight(pixels.Height()),
+        cliprect(pixels.GetClipRect())
     {}
+
+    ~SImage()
+    {
+        if (hTex)
+            glDeleteTextures(1,&hTex);
+    }
 };
 
 //------------------------------------- Prototypes --------------------------------------
@@ -38,6 +51,7 @@ struct SImage
 bool EXPORT gfxShutdown();
 handle EXPORT gfxCreateImage(int x,int y);
 void MakeClientFit();
+
 //-------------------------------------- Globals ----------------------------------------
 
 HWND hGLWnd;
@@ -64,9 +78,10 @@ int EXPORT gfxGetVersion()
 
 bool EXPORT gfxInit(HWND hWnd,int x,int y,int bpp,bool fullscreen)
 {
+    // TODO: replace with SDL?
     GLuint nPixelformat;
     RECT   rClient;
-    
+
     hGLWnd=hWnd;
     
     xres=x;  yres=y;
@@ -174,11 +189,7 @@ bool EXPORT gfxShutdown()
 	hRC=0;
     }
     
-    if (hDC)
-    {
-	ReleaseDC(hGLWnd,hDC);
-	hDC=0;
-    }
+    if (hDC)    ReleaseDC(hGLWnd,hDC);      hDC=0;
     
     if (nImages!=0)
     {
@@ -200,17 +211,14 @@ bool EXPORT gfxSwitchToFullScreen()
 
 handle EXPORT gfxCreateImage(int x,int y)
 {
-    handle i;
-    
     nImages++;
     
-    i=new SImage;
-    ZeroMemory(i,sizeof i);
-    
-    i->nWidth=x;
-    i->nHeight=y;
-    i->pData=new u32[x*y];
-    ZeroMemory(i->pData,x*y);
+    SImage* i=new SImage;
+
+    i->pixels.Resize(x,y);
+    i->cliprect=Rect(0,0,x,y);
+
+    SynchTexture(i);
     
     return i;
 }
@@ -219,10 +227,6 @@ bool EXPORT gfxFreeImage(handle img)
 {
     if (img)
     {
-	if (img->pData)
-	    delete[] img->pData;
-	if (img->hTex)
-	    glDeleteTextures(1,&img->hTex);
 	nImages--;
 	delete img;
 	return true;
@@ -235,7 +239,7 @@ handle EXPORT gfxCopyImage(handle img)
     bool EXPORT gfxCopyPixelData(handle,u32*,int,int);
     
     handle i=gfxCreateImage(img->nWidth,img->nHeight);
-    gfxCopyPixelData(i,img->pData,img->nWidth,img->nHeight);
+    gfxCopyPixelData(i,(u32*)img->pixels.GetPixelData(),img->nWidth,img->nHeight);
     
     nImages++;
     
@@ -244,57 +248,22 @@ handle EXPORT gfxCopyImage(handle img)
 
 bool EXPORT gfxCopyPixelData(handle img,u32* data,int width,int height)
 {
-    if (img->pData)
-	delete[] img->pData;
-    
-    img->nWidth=width;
-    img->nHeight=height;
-    img->pData=new u32[width*height];
-    memcpy(img->pData,data,width*height*sizeof(u32));
-    
-    int nTexwidth=1<<(int(ceil(log(width)/log(2))));
-    int nTexheight=1<<(int(ceil(log(height)/log(2))));
-    
-    if (width>nMaxtexsize || height>nMaxtexsize)
+    img->pixels.CopyPixelData((RGBA*)data,width,height);
+    if (img->hTex)
     {
-	if (img->hTex)
-	    glDeleteTextures(1,&img->hTex);
-	img->hTex=0;
-	return true;		// :\  No textures for this image, it's too big.
+        glDeleteTextures(1,&img->hTex);
+        img->hTex=0;
     }
-    
-    img->nTexwidth=nTexwidth;
-    img->nTexheight=nTexheight;
-    
-    if (!img->hTex)
-	glGenTextures(1,&img->hTex);
-    
-    u32* pTemp;
-    if (nTexwidth==width && nTexheight==height)
-	pTemp=data;
-    else
-    {
-	pTemp=new u32[nTexwidth*nTexheight];
-	ZeroMemory(pTemp,nTexwidth*nTexheight*sizeof(u32));
-	
-	for (int y=0; y<height; y++)
-	    memcpy(pTemp+y*nTexwidth,data+y*width,width*sizeof(u32));
-    }
-    
-    glBindTexture(GL_TEXTURE_2D,img->hTex);
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,pTemp);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
-    
-    if (nTexwidth!=width || nTexheight!=height)
-	delete[] pTemp;
-    
+
+    img->cliprect=Rect(0,0,img->nWidth,img->nHeight);
+
+    SynchTexture(img);    
     return true;
 }
 
-bool EXPORT gfxClipImage(handle img,RECT r)
+bool EXPORT gfxClipImage(handle img,Rect r)
 {
-    img->rClip=r;
+    img->cliprect=r;
     if(img->bIsscreen) 
 	glScissor(r.left,yres-r.top,r.right-r.left,yres-(r.top-r.bottom));
     return true;
@@ -353,15 +322,41 @@ bool EXPORT gfxPaletteMorph(int r,int g,int b)
 
 bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
 {
+
     if (img->hTex && hRenderdest==hScreen)
-	RenderTexture(img,x,y,transparent);
+    {
+        if (img->bAltered)
+        {
+            SynchTexture(img);
+            img->bAltered=false;
+        }
+
+        RenderTexture(img,x,y,transparent);
+    }
+    else if (img!=hScreen)
+    {
+        if (transparent)
+            img->pixels.Blit(hRenderdest->pixels,x,y);
+        else
+            img->pixels.OpaqueBlit(hRenderdest->pixels,x,y);
+        hRenderdest->bAltered=true;
+    }
+
     return true;
 }
 
 bool EXPORT gfxScaleBlitImage(handle img,int x,int y,int w,int h,bool transparent)
 {
     if (img->hTex && hRenderdest==hScreen)
-	ScaleRenderTexture(img,x,y,w,h,transparent);
+    {
+        if (img->bAltered)
+        {
+            SynchTexture(img);
+            img->bAltered=false;
+        }
+
+        ScaleRenderTexture(img,x,y,w,h,transparent);
+    }
     return true;
 }
 

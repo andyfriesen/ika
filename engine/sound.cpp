@@ -4,7 +4,7 @@
 bool (*sfxInit)();		// inits the whole thing, returns true on success
 void (*sfxShutdown)();	// shuts everything down
 
-bool (*sfxLoadMusic)(SMusic* m,const char* fname);	// Loads the music into m
+SMusic (*sfxLoadMusic)(const char* fname);	// Loads the music into m
 bool (*sfxFreeMusic)(SMusic m);						// stops playing and deallocates the music file
 bool (*sfxPlayMusic)(SMusic m);						// plays the music file
 void (*sfxStopMusic)(SMusic m);						// stops playback. (play can be called again to resume playback)
@@ -13,7 +13,7 @@ void (*sfxSetMusicPos)(SMusic m,long newpos);
 int  (*sfxGetMusicVolume)(SMusic m);
 void (*sfxSetMusicVolume)(SMusic m,int newvol);		// sets the volume.  0-255
 
-bool (*sfxLoadEffect)(Ssfx* s,const char* fname);		// loads the .wav file into s
+Ssfx (*sfxLoadEffect)(const char* fname);		// loads the .wav file into s
 bool (*sfxFreeEffect)(Ssfx s);
 
 bool (*sfxPlayEffect)(Ssfx* s,int vol,int pan);		// vol is 0-255, pan is 0 (left) - 255 (right)

@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "fileio.h"
 #include "pixel_matrix.h"
+#include "importpng.h"
 
 void CImportCHRDlg::Execute(HINSTANCE hinst,HWND hwndparent,CCHRfile* chr)
 {
@@ -71,7 +72,7 @@ void CImportCHRDlg::ImportImage(int nFrames,int nFramex,int nFramey,int nFramesp
 	const int bpp=4;
 
 	CPixelMatrix bigimage;
-	bigimage.LoadFromPNG(fname);
+        PNG::Load(bigimage,fname);
 
 	if (append)
 	{

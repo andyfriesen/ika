@@ -8,7 +8,7 @@ typedef void* Ssfx;
 extern bool (*sfxInit)();		// inits the whole thing, returns true on success
 extern void (*sfxShutdown)();	// shuts everything down
 
-extern bool (*sfxLoadMusic)(SMusic* m,const char* fname);	// Loads the music into m
+extern SMusic (*sfxLoadMusic)(const char* fname);	// Loads the music into m
 extern bool (*sfxFreeMusic)(SMusic m);						// stops playing and deallocates the music file
 extern bool (*sfxPlayMusic)(SMusic m);						// plays the music file
 extern void (*sfxStopMusic)(SMusic m);						// stops playback. (play can be called again to resume playback)
@@ -18,7 +18,7 @@ extern int  (*sfxGetMusicVolume)(SMusic m);
 extern void (*sfxSetMusicVolume)(SMusic m,int newvol);		// sets the volume.  0-255
 
 
-extern bool (*sfxLoadEffect)(Ssfx* s,const char* fname);		// loads the .wav file into s
+extern Ssfx (*sfxLoadEffect)(const char* fname);		// loads the .wav file into s
 extern bool (*sfxFreeEffect)(Ssfx s);
 
 extern bool (*sfxPlayEffect)(Ssfx s,int vol,int pan);		// vol is 0-255, pan is 0 (left) - 255 (right)

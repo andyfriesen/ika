@@ -2,6 +2,7 @@
 #include "resource.h"
 #include "fileio.h"
 #include "pixel_matrix.h"
+#include "importpng.h"
 #include "log.h"
 
 void CImportVSPDlg::Execute(HINSTANCE hinst,HWND hwndparent,VSP* vsp)
@@ -83,36 +84,42 @@ void CImportVSPDlg::ImportImage(int tilex,int tiley,bool pad,bool append,const c
     const int bpp=4;
     
     CPixelMatrix bigimage;
-    bigimage.LoadFromPNG(fname);
-    
-    if (append)
-    {
-	tilex=pVsp->Width();
-	tiley=pVsp->Height();
-	nCurtile=pVsp->NumTiles();
-    }
-    else
-	pVsp->New(tilex,tiley);
+    PNG::Load(bigimage,fname);
+    // TODO: error checking
     
     int tx=tilex+(pad?1:0);
     int ty=tiley+(pad?1:0);
     
     int nTilewidth=bigimage.Width()/tx;
     int nTileheight=bigimage.Height()/ty;
+    int nTiles=nTilewidth*nTileheight;
+
+    if (append)
+    {
+	tilex=pVsp->Width();
+	tiley=pVsp->Height();
+	nCurtile=pVsp->NumTiles();
+        pVsp->AppendTiles(nTiles);
+    }
+    else
+    {
+	pVsp->New(tilex,tiley);
+
+        if (nTiles>100)
+            pVsp->AppendTiles(nTiles-100);
+    }
+    
     
     CPixelMatrix lilimage;
     lilimage.Resize(tilex,tiley);
-
-    pVsp->AppendTiles(nTileheight*nTilewidth);
     
     for (int y=0; y<nTileheight; y++)
     {
 	for (int x=0; x<nTilewidth; x++)
 	{
 	    // nasty hack to make it work like I want it to.
-	    bigimage.Blit(lilimage, (pad?-1:0) - (x*tx) , (pad?-1:0) - (y*ty) );
+            bigimage.Blit(lilimage, (pad?-1:0) -(x*tx) , (pad?-1:0) -(y*ty) );
 	    pVsp->GetTile(nCurtile)=lilimage;
-//            memcpy(pVsp->GetPixelData(nCurtile-1),lilimage.GetPixelData(),tilex*tiley*bpp);
 	    nCurtile++;
 	}
     }

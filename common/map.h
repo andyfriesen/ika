@@ -23,6 +23,7 @@ struct layer_r
     u16             sizex, sizey;                   // layer dimensions.
     u8              trans;                          // transparency flag
     u8              hline;                          // hline (raster fx) (never actually implemented)
+    char            filler[2];                      // make it 12 bytes, so bleh
 };
 
 struct zoneinfo_r
@@ -124,6 +125,15 @@ struct SMapLayerInfo
     int            pmulx,pdivx;
     int            pmuly,pdivy;
     int            nTransmode;                      // for v2 maps
+
+    SMapLayerInfo() {}
+    SMapLayerInfo(const layer_r& l)
+    :   pmulx(l.pmultx),
+        pmuly(l.pmulty),
+        pdivx(l.pdivx),
+        pdivy(l.pdivy),
+        nTransmode(l.trans)
+    {}
 };
 
 // blah
@@ -179,7 +189,7 @@ private:
     
     void Paste(MapClip &mc,int xs,int ys,int sourcelayer,int destlayer,bool transparent);
     
-    bool LoadOld(File& f);                          // Loads an old v2 VSP.
+    bool Importv2Map(File& f);                              // Loads an old v2 VSP.
 public:
     Map();
     Map(const char* fname);
@@ -193,6 +203,7 @@ public:
     void New();                                             // creates a new 100x100, 1 layer map
     bool Load(const char *fname);                           // loads the specified .MAP file.
     bool Save(const char *fname);                           // saves it (der)
+    bool Exportv2Map(const char* fname);
     
     // layer manipulation
     void Resize(int newx,int newy);                         // resizes all layers and all that
@@ -204,11 +215,11 @@ public:
     
     // General map properties
     const string_k& GetRString(void);                       // returns the render string
-    void        SetRString(const string_k& s);              // sets the render string
+    void            SetRString(const string_k& s);          // sets the render string
     const string_k& GetMusic(void);                         // returns the music played on this map
-    void        SetMusic(const string_k& s);                // sets the music file used
+    void            SetMusic(const string_k& s);            // sets the music file used
     const string_k& GetVSPName(void);                       // returns the name of the VSP used on this map
-    void        SetVSPName(const string_k& s);              // sets the VSP file used
+    void            SetVSPName(const string_k& s);          // sets the VSP file used
     
     // CHR list
     int      CountCHRs(void);

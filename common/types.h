@@ -98,6 +98,7 @@ struct BGRA
     {	r=c.r; g=c.g; b=c.b; a=c.a;	}
 };
 
+// win32 ;P
 #undef RGB
 
 struct RGB

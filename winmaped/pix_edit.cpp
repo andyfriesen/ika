@@ -24,11 +24,11 @@ void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src)
     
     curimage    =src;
 
-    iCurrent    =new CDIB(src.Width(),src.Height(),4);
-    iSwatch     =new CDIB(nSwatchsize,nSwatchsize,4);
-    iBackbuffer =new CDIB(410,410,4);                       // gah, magic numbers
+    iCurrent    =new CDIB(src);//.Width(),src.Height());
+    iSwatch     =new CDIB(nSwatchsize,nSwatchsize);
+    iBackbuffer =new CDIB(410,410);                       // gah, magic numbers
 
-    iCurrent->CopyPixelData(curimage.GetPixelData(),curimage.Width(),curimage.Height(),4,0);
+//    iCurrent->CopyPixelData(curimage.GetPixelData(),curimage.Width(),curimage.Height());
     // TODO: make this depend on the size of the client, then everything will scale all superhappy and stuff when the client window is resized
     rBigimage=Rect(20,20,430,430);
     rSmallimage=Rect(500-(curimage.Width()/2), 400-(curimage.Height()/2), 500+(curimage.Width()/2), 400+(curimage.Height()/2));

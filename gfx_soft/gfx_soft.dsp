@@ -98,11 +98,11 @@ SOURCE=.\blits.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\gfx_soft.cpp
+SOURCE=..\common\gfx_driver.def
 # End Source File
 # Begin Source File
 
-SOURCE=.\gfx_soft.def
+SOURCE=.\gfx_soft.cpp
 # End Source File
 # End Group
 # Begin Group "Header Files"

@@ -291,7 +291,7 @@ void Map::Free()
 }
 
 // Good Lord, do not judge me by this code when I pass on!
-bool Map::LoadOld(File& f)
+bool Map::Importv2Map(File& f)
 {
     int i;
     u8    cTemp;
@@ -313,18 +313,15 @@ bool Map::LoadOld(File& f)
     for (i=0; i<nLayers; i++)
     {
         layer_r templay;
-        
+       
         f.Read(&templay,12);            // WHAT THE BLOODY FUCK
         
         // If any maps exist which have different layer sizes, this could cause problems.
-        nWidth=templay.sizex;
-        nHeight=templay.sizey;
+        nWidth=templay.sizex;   nHeight=templay.sizey;
         
         SMapLayerInfo l;
-        l.pmulx=templay.pmultx;
-        l.pdivx=templay.pdivx;
-        l.pmuly=templay.pmulty;
-        l.pdivy=templay.pdivy;
+        l.pmulx=templay.pmultx; l.pdivx=templay.pdivx;
+        l.pmuly=templay.pmulty; l.pdivy=templay.pdivy;
         l.nTransmode=templay.trans;
         
         info.push_back(l);
@@ -335,9 +332,9 @@ bool Map::LoadOld(File& f)
     for (i=0; i<nLayers; i++)
     {
         u32 nBufsize;
-        u32* pTemp=new u32[nWidth*nHeight];
-        
         f.Read(nBufsize);
+
+        u32* pTemp=new u32[nWidth*nHeight];
         u8* pBuffer=new u8[nBufsize];
         
         f.Read(pBuffer,nBufsize);
@@ -387,11 +384,11 @@ bool Map::LoadOld(File& f)
         zoneinfo[i].sName=va("Zone%i",i);
         zoneinfo[i].sDescription=z.name;
         
-        if (z.script)                zoneinfo[i].sActscript=va("event%i",(int)z.script);
-        else                        zoneinfo[i].sActscript="";
+        if (z.script)       zoneinfo[i].sActscript=va("event%i",(int)z.script);
+        else                zoneinfo[i].sActscript="";
         
-        if (z.entityscript)            zoneinfo[i].sEntactscript=va("event%i",(int)z.entityscript);
-        else                        zoneinfo[i].sEntactscript="";
+        if (z.entityscript) zoneinfo[i].sEntactscript=va("event%i",(int)z.entityscript);
+        else                zoneinfo[i].sEntactscript="";
         
         zoneinfo[i].nActchance=z.percent;
         zoneinfo[i].nActdelay=z.delay;
@@ -486,6 +483,107 @@ bool Map::LoadOld(File& f)
     return true;
 }
 
+bool Map::Exportv2Map(const char* fname)
+{
+/*    File f;
+    int i, ofstbl[200],ct,t;
+    char strbuf[255];
+    
+    int numzones,numchr,numms;
+    
+    f.OpenWrite(fname);
+    f.Write("MAPù5",6);
+    f.Write("    ",4);
+    strcpy(strbuf,sVSPname.c_str());        f.Write(strbuf,60);
+    strcpy(strbuf,sMusicname.c_str());      f.Write(strbuf,60);
+    strcpy(strbuf,sRenderstring.c_str());   f.Write(strbuf,20);
+    f.Write(&nStartx,2);
+    f.Write(&nStarty,2);
+    f.Write(&bWrap,1);
+    f.Write(strbuf,50);
+    f.Write(&nLayers,1);
+
+    for (i=0; i<nLayers; i++)
+    {
+        layer_r l =
+        { 
+            info[i].pmulx,  info[i].pdivx,
+            info[i].pmuly,  info[i].pdivy,
+            nWidth,         nHeight,
+            info[i].nTransmode
+        };
+
+        f.Write(&l,12);
+    }
+
+    for (i=0; i<nLayers; i++)
+    {        
+        u16* pBuffer=new u16[nWidth*nHeight];
+        int nBuffersize;
+
+
+//        WriteCompressedLayer2(pBuffer,nWidth*nHeight,nBuffersize,pData[i]);   
+        
+        f.Write(&nBuffersize,4);
+        f.Write(pBuffer,bufsize);
+        delete[] cb;
+    }
+
+    int nBuffersize;
+    u8* cb=new byte[nWidth*nHeight];
+    WriteCompressedLayer1(cb,nWidth*nHeight,nBuffersize,obstruct);
+    f.Write(&nBuffersize,4);
+    f.Write(cb,nBuffersize);
+    
+    WriteCompressedLayer1(cb,nWidth*nHeight,nBuffersize,zone);
+    f.Write(&nBuffersize,4);
+    f.Write(pBuffer,nBuffersize);
+    delete[] pBuffer;
+    
+    numzones=CountUsedZones();
+    f.Write(&numzones,4);
+    f.Write(&zoneinfo,numzones*50);
+    numchr=CountCHRs();
+    f.Write(&numchr,1);
+    f.Write(&chrlist,numchr*60);
+    
+    f.Write(&entities,1);
+    for (i=0; i<entities; i++)
+    {
+        entity[i].x=entity[i].tx;
+        entity[i].y=entity[i].ty;
+    }
+    f.Write(&entity,sizeof(entity)/256*entities);
+    numms=CountMoveScripts();
+    f.Write(&numms,1);
+    ct=0;
+    for (i=0; i<numms; i++)
+    {
+        ofstbl[i]=ct;
+        t=strlen((char*)(&movescript[i].t))+1;
+        ct+=t;
+    }
+    f.Write(&ct,4);
+    f.Write(&ofstbl,numms*4);
+    for (i=0; i<numms; i++)
+        f.Write((char*)(&movescript[i].t),strlen((char*)(&movescript[i].t))+1);
+    
+    ct=0;
+    f.Write(&ct,4);
+    ct=f.Pos();
+    
+    i=1; f.Write(&i,4);
+    i=0; f.Write(&i,4);
+    i=1; f.Write(&i,4);
+    i=9; f.Write(&i,1);
+    
+    f.Seek(6);
+    f.Write(&ct,4);
+    f.Close();
+    */
+    return false;
+}
+
 bool Map::Load(const char* fname)
 {
     int i;
@@ -501,7 +599,7 @@ bool Map::Load(const char* fname)
     f.Read(c,6);
     c[6]=0;    // just in case?
     if (!strcmp(c,sOldmapsig))
-        return LoadOld(f);
+        return Importv2Map(f);
     else if (strcmp(c,sNewmapsig)!=0)
         return false;    // unrecognized map signature
     

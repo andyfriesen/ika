@@ -26,6 +26,8 @@ CMapView::~CMapView()
 {
     delete pGraph;
     pGraph=0;
+
+    DestroyWindow(hWnd);
 }
 
 HWND CMapView::CreateWnd(HWND hWndparent)
@@ -710,28 +712,33 @@ LRESULT CMapView::MsgProc(UINT msg,WPARAM wParam,LPARAM lParam)
         }
         break;
         
-        case WM_HSCROLL: 
-            switch (LOWORD(wParam))
-            {
-            case SB_BOTTOM:        ScrollWin(pMap->Width()*pVsp->Width(),ywin);		return 0;
-            case SB_TOP:           ScrollWin(0,ywin);					return 0;                      
-            case SB_LINEDOWN:      ScrollWin(xwin+1,ywin);				return 0;
-            case SB_LINEUP:        ScrollWin(xwin-1,ywin);				return 0;
-            case SB_PAGEDOWN:      ScrollWin(xwin+clientrect.right,ywin);	        return 0;
-            case SB_PAGEUP:        ScrollWin(xwin-clientrect.right,ywin);	        return 0;
-            case SB_THUMBTRACK:
-            case SB_THUMBPOSITION: ScrollWin(HIWORD(wParam),ywin);			return 0;                    
-            }
-            break;
-            
-            case WM_MOUSEWHEEL:  
-            case WM_PAINT:
-                {
-                    PAINTSTRUCT ps;
-                    BeginPaint(hWnd,&ps);
-                    pGraph->ForceShowPage();
-                    EndPaint(hWnd,&ps);
-                }
+    case WM_HSCROLL: 
+        switch (LOWORD(wParam))
+        {
+        case SB_BOTTOM:        ScrollWin(pMap->Width()*pVsp->Width(),ywin);		return 0;
+        case SB_TOP:           ScrollWin(0,ywin);					return 0;                      
+        case SB_LINEDOWN:      ScrollWin(xwin+1,ywin);				return 0;
+        case SB_LINEUP:        ScrollWin(xwin-1,ywin);				return 0;
+        case SB_PAGEDOWN:      ScrollWin(xwin+clientrect.right,ywin);	        return 0;
+        case SB_PAGEUP:        ScrollWin(xwin-clientrect.right,ywin);	        return 0;
+        case SB_THUMBTRACK:
+        case SB_THUMBPOSITION: ScrollWin(HIWORD(wParam),ywin);			return 0;                    
+        }
+        break;
+        
+    case WM_MOUSEWHEEL:  
+    case WM_PAINT:
+        {
+            PAINTSTRUCT ps;
+            BeginPaint(hWnd,&ps);
+            pGraph->ForceShowPage();
+            EndPaint(hWnd,&ps);
+        }
+
+    case WM_CLOSE:
+        return 0;
+    case WM_DESTROY:
+        return 0;
     }
     return DefWindowProc(hWnd,msg,wParam,lParam);
 }

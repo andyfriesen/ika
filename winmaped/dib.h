@@ -12,30 +12,19 @@ I get the feeling that I've got a million different abstractions for images. -_-
 #include "types.h"
 #include "pixel_matrix.h"
 
-class CDIB
+class CDIB : public CPixelMatrix
 {
 private:
     HBITMAP hBitmap;														// Object handle, not used for much, but still important
-    u32*	pPixels;														// pointer to actual pixel data
+    BGRA*	pPixels;														// pointer to actual pixel data
     HDC		hDC;															// Device context -- used when blitting to/from this DIB
-    u8		pPal[768];														// palette, 24bpp RGB
     
     int nWidth,nHeight;														// Dimensions
-    int		bpp;															// bytes per pixel (I find that storing bits per pixel is pointless)
     
-    void CreateDIB(int width,int height,int bpp,u8* pal=0);
-    
-    inline static u32 SwapBR(u32 c)											// converts RGBA to BGRA and back
-    {
-        u32 r=c&0x00FF0000;
-        u32 b=c&0x000000FF;
-        c&=0xFF00FF00;
-        r>>=16;  b<<=16;
-        return c|r|b;
-    }
+    void CreateDIB(int width,int height);
     
 public:
-    CDIB(int width,int height,int bpp,u8* pal=0);
+    CDIB(int width,int height);
     CDIB(const CDIB& s);
     CDIB(const CPixelMatrix& s);
     ~CDIB();
@@ -47,12 +36,9 @@ public:
     
     operator = (const CPixelMatrix& s);										// more efficient than using the constructor implicitly
     
-    const u8* GetPalette() const { return pPal; }
-    void  SetPalette(u8* newpal);
+    void SetPixel(int x,int y,RGBA colour);
     
-    void SetPixel(int x,int y,u32 colour);
-    
-    void CopyPixelData(void* pixels,int width,int height,int bpp,u8* pal);
+    void CopyPixelData(RGBA* pixels,int width,int height);
 };
 
 #endif

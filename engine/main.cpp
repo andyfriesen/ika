@@ -170,6 +170,8 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     }
     logok();
     
+    pPlayer=0;
+    pCameratarget=0;
     
     bMaploaded=false;
     hRenderdest=gfxGetScreenImage();
@@ -374,6 +376,9 @@ void CEngine::Render(const char* sTemprstring)
         strcpy(rstring,map.GetRString().c_str());
     else
         strcpy(rstring,sTemprstring);
+
+    if (!strlen(rstring))
+        return;
     
     p=rstring;
     numlayers=0;

@@ -15,41 +15,41 @@ bool CFontFile::Load8bppFont(File& f)
     f.Read(&nHeight,2);
     f.Read(&subsetcount,2);
     const int nGlyphs=subsetcount*96;
-	
+    
     u8* buffer8=new u8[nWidth*nHeight*nGlyphs];
     RGBA* pPixels=new RGBA[nWidth*nHeight*nGlyphs];
-	
+    
     f.Read(buffer8,nWidth*nHeight*nGlyphs*sizeof(u8));
-	
+    
     // convert 8bpp to 32bpp
-	
+    
     for (int i=0; i<nWidth*nHeight*nGlyphs; i++)
     {
-		char c=buffer8[i];
-		
-		pPixels[i]=RGBA(c,cVergepal);
+        char c=buffer8[i];
+        
+        pPixels[i]=RGBA(c,cVergepal);
     }
-	
+    
     glyph.resize(nGlyphs);
     RGBA* p=pPixels;
-	
+    
     for (int nGlyph=0; nGlyph<nGlyphs; nGlyph++)
     {
-		glyph[nGlyph].CopyPixelData(p,nWidth,nHeight);
-		p+=nWidth*nHeight;
+        glyph[nGlyph].CopyPixelData(p,nWidth,nHeight);
+        p+=nWidth*nHeight;
     }
-	
+    
     set.resize(subsetcount);						// not very readable :(  Allocates the needed number of subsets.	
     for (int nCurset=0; nCurset<subsetcount; nCurset++)
     {
-		memset(set[nCurset].nGlyphtbl,0,256*sizeof(int));
-		for (int j=0; j<96; j++)
-			set[nCurset].nGlyphtbl[j+32]=j+(nCurset*96);
+        memset(set[nCurset].nGlyphtbl,0,256*sizeof(int));
+        for (int j=0; j<96; j++)
+            set[nCurset].nGlyphtbl[j+32]=j+(nCurset*96);
     }
     
     delete[] buffer8;
     delete[] pPixels;
-	
+    
     return true;
 }
 
@@ -70,13 +70,13 @@ bool CFontFile::Load16bppFont(File& f)
     
     for (int i=0; i<nWidth*nHeight*nGlyphs; i++)
     {
-		u16 c=buffer16[i];
-
-		pPixels[i]=RGBA(
-			(c&31)<<3,
-			((c>>5)<<3)&0xFF,
-			((c>>10)<<3)&0xFF,
-			c?255:0);
+        u16 c=buffer16[i];
+        
+        pPixels[i]=RGBA(
+            (c&31)<<3,
+            ((c>>5)<<3)&0xFF,
+            ((c>>10)<<3)&0xFF,
+            c?255:0);
     }
     
     glyph.resize(nGlyphs);
@@ -85,16 +85,16 @@ bool CFontFile::Load16bppFont(File& f)
     
     for (int nGlyph=0; nGlyph<nGlyphs; nGlyph++)
     {
-		glyph[nGlyph].CopyPixelData(p,nWidth,nHeight);
-		p+=nWidth*nHeight;
+        glyph[nGlyph].CopyPixelData(p,nWidth,nHeight);
+        p+=nWidth*nHeight;
     }
     
     set.resize(subsetcount);						// not very readable :(  Allocates the needed number of subsets.	
     for (int nCurset=0; nCurset<subsetcount; nCurset++)
     {
-		memset(set[nCurset].nGlyphtbl,0,256*sizeof(int));
-		for (int j=0; j<96; j++)
-			set[nCurset].nGlyphtbl[j+32]=j+(nCurset*96);
+        memset(set[nCurset].nGlyphtbl,0,256*sizeof(int));
+        for (int j=0; j<96; j++)
+            set[nCurset].nGlyphtbl[j+32]=j+(nCurset*96);
     }
     
     delete[] buffer16;
@@ -110,7 +110,7 @@ bool CFontFile::Load32bppFont(File& f)
     char sSig[6];
     f.Read(sSig,6);
     if (memcmp(sSig,"FONT27",6)!=0)
-		return false;
+        return false;
     
     char nSubsets;
     u16  nGlyphs;
@@ -121,11 +121,11 @@ bool CFontFile::Load32bppFont(File& f)
     set.resize(nSubsets);
     for (int nSet=0; nSet<nSubsets; nSet++)
     {
-		u16 i[256];
-		f.Read(i,256*sizeof(u16));
-		
-		for (int j=0; j<256; j++)
-			set[nSet].nGlyphtbl[j]=i[j];
+        u16 i[256];
+        f.Read(i,256*sizeof(u16));
+        
+        for (int j=0; j<256; j++)
+            set[nSet].nGlyphtbl[j]=i[j];
     }
     
     std::vector<int>	nGlyphwidth;
@@ -134,11 +134,11 @@ bool CFontFile::Load32bppFont(File& f)
     
     for (int i=0; i<nGlyphs; i++)
     {
-		u16 w,h;
-		f.Read(w);	f.Read(h);
-		nGlyphwidth.push_back(w);
-		nGlyphheight.push_back(h);
-		nGlyphdatasize+=w*h;
+        u16 w,h;
+        f.Read(w);	f.Read(h);
+        nGlyphwidth.push_back(w);
+        nGlyphheight.push_back(h);
+        nGlyphdatasize+=w*h;
     }
     
     RGBA* pBuffer=new RGBA[nGlyphdatasize];
@@ -148,8 +148,8 @@ bool CFontFile::Load32bppFont(File& f)
     RGBA* p=pBuffer;
     for (int nGlyph=0; nGlyph<nGlyphs; nGlyph++)
     {
-		glyph[nGlyph].CopyPixelData(p,nGlyphwidth[nGlyph],nGlyphheight[nGlyph]);
-		p+=nGlyphwidth[nGlyph]*nGlyphheight[nGlyph];
+        glyph[nGlyph].CopyPixelData(p,nGlyphwidth[nGlyph],nGlyphheight[nGlyph]);
+        p+=nGlyphwidth[nGlyph]*nGlyphheight[nGlyph];
     }
     
     f.Close();
@@ -163,7 +163,7 @@ bool CFontFile::Load(const char* fname)
     
     bResult=f.OpenRead(fname);
     if (!bResult)
-		return false;
+        return false;
     
     char magic;
     f.Read(magic);

@@ -9,6 +9,7 @@ Tile selector
 #include "log.h"
 #include "resource.h"
 #include "importvspdlg.h"
+#include "importpng.h"
 #include "miscdlg.h"
 
 const int nGayarbitraryconstant=0;//32;
@@ -163,10 +164,6 @@ void CTileSel::Render(const RECT& r)
                 y*ty-r.top,
                 false);
         }
-        
-        
-        
-        //Zoom(z);*/
 }
 
 void CTileSel::RenderCallback(void* pThis,const RECT& r)
@@ -234,7 +231,8 @@ bool CTileSel::ExportPNG(const char* fname)
         }
     }
     
-    bigImage.WriteToPNG(fname);
+    PNG::Save(bigImage,fname);
+    // TODO: error checking
     return true;
 }
 

@@ -1,5 +1,5 @@
 /*
-	This also comprises of some handy dandy debugging tricks I've accumulated.
+This also comprises of some handy dandy debugging tricks I've accumulated.
 */
 
 #ifndef LOG_H
@@ -7,9 +7,9 @@
 
 #include <windows.h>
 
-#ifdef _DEBUG
+//#ifdef _DEBUG
 //#define _CALLBACK
-#endif
+//#endif
 
 extern void log(const char *s,...);
 #ifdef WIN32
@@ -20,25 +20,16 @@ extern void logok(void);
 extern void initlog(const char* s);
 
 #ifdef _CALLBACK
+#include <string>
 extern void callback_log(const char* s,...);
 
 class CDebuggingthing
 {
-	static char callback[1024];
+    static std::string callback;
+    int len;
 public:
-	int len;
-	CDebuggingthing(const char* s)
-	{
-		len=strlen(s);
-		strcat(callback,"->");
-		strcat(callback,s);
-		callback_log("  %s",callback);
-	}
-	~CDebuggingthing()
-	{
-		callback[strlen(callback)-len-2]=0;
-		callback_log("\t\t%s",callback);
-	}
+    CDebuggingthing(const char* s);
+    ~CDebuggingthing();
 };
 
 #define CDEBUG(x) CDebuggingthing __debugthing(x)
