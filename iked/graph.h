@@ -34,6 +34,10 @@ public:
     void ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans);
 
     void ShowPage();
+
+    void OnErase(wxEraseEvent&) {}
+
+    DECLARE_EVENT_TABLE()
 };
 
 class CImage

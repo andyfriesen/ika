@@ -11,6 +11,12 @@ CImage* CGraphFactory::CreateImage(const CPixelMatrix& src)
     return new CImage(src);
 }
 
+//-------------------------------------------------------
+
+BEGIN_EVENT_TABLE(CGraphFrame,wxGLCanvas)
+    EVT_ERASE_BACKGROUND(CGraphFrame::OnErase)
+END_EVENT_TABLE()
+
 CGraphFrame::CGraphFrame(wxWindow* parent)
 :   wxGLCanvas(parent,(wxGLCanvas*)0)
 {
@@ -26,14 +32,18 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 
- //   glEnable(GL_SCISSOR_TEST);
-   // glScissor(0,0,w,h);
+    glClearColor(0,0,0,0);
+    glClearDepth(1);
+
+//    glEnable(GL_SCISSOR_TEST);
+//    glScissor(0,0,w,h);
+    glDisable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-    glViewport(0,0,w,h);
+//    glViewport(0,0,w,h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0f,w,h,0.0f,-1.0f,1.0f);

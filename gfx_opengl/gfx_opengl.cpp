@@ -32,13 +32,13 @@ struct SImage
     bool bIsscreen;
     
     SImage():
-	hTex(0),
-	nTexwidth(0),nTexheight(0),
-	bAltered(false),bIsscreen(false),
+    hTex(0),
+        nTexwidth(0),nTexheight(0),
+        bAltered(false),bIsscreen(false),
         nWidth(pixels.Width()), nHeight(pixels.Height()),
         cliprect(pixels.GetClipRect())
     {}
-
+    
     ~SImage()
     {
         if (hTex)
@@ -82,7 +82,7 @@ bool EXPORT gfxInit(HWND hWnd,int x,int y,int bpp,bool fullscreen)
     // TODO: replace with SDL?
     GLuint nPixelformat;
     RECT   rClient;
-
+    
     hGLWnd=hWnd;
     
     xres=x;  yres=y;
@@ -95,75 +95,75 @@ bool EXPORT gfxInit(HWND hWnd,int x,int y,int bpp,bool fullscreen)
     
     try
     {
-	if (fullscreen)
-	{
-	    DEVMODE mode;
-	    ZeroMemory(&mode,sizeof mode);
-	    mode.dmSize=sizeof mode;
-	    mode.dmPelsWidth=xres;
-	    mode.dmPelsHeight=yres;
-	    mode.dmBitsPerPel=bpp;
-	    mode.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
-	    
-	    int result=ChangeDisplaySettings(&mode,CDS_FULLSCREEN);
-	    if (result!=DISP_CHANGE_SUCCESSFUL)
-		throw "ChangeDisplaySettings failed";
-	    
-	    SetWindowLong(hWnd,GWL_STYLE,WS_POPUP);
-	    SetWindowLong(hWnd,GWL_EXSTYLE,WS_EX_APPWINDOW);
-	    SetWindowPos(hWnd,HWND_TOPMOST,0,0,xres,yres,SWP_SHOWWINDOW);
-	}
-	else
-	{
-	    MoveWindow(hWnd,0,0,xres,yres,true);
-	    MakeClientFit();
-	}
-	
-	PIXELFORMATDESCRIPTOR pfd;
-	int result;		
-	
-	ZeroMemory( &pfd, sizeof( pfd ) );
-	pfd.nSize = sizeof( pfd );
-	pfd.nVersion = 1;
-	pfd.dwFlags = PFD_DRAW_TO_WINDOW |
-	    PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
-	pfd.iPixelType = PFD_TYPE_RGBA;
-	pfd.cColorBits = bpp;
-	pfd.cDepthBits = 16;
-	pfd.iLayerType = PFD_MAIN_PLANE;		
-	
-	hDC=GetDC(hWnd);
-	if (!hDC) throw "GetDC failed";
-	
-	nPixelformat=ChoosePixelFormat(hDC,&pfd);
-	if (!nPixelformat) throw "ChoosePixelFormat failed";
-	
-	result=SetPixelFormat(hDC,nPixelformat,&pfd);
-	if (!result) throw "SetPixelFormat failed";
-	
-	hRC=wglCreateContext(hDC);
-	if (!hRC) throw "CreateContect failed";
-	
-	result=wglMakeCurrent(hDC,hRC);
-	if (!result) throw "wglMakeCurrent failed";
-	
-	ShowWindow(hWnd,SW_SHOW);
-	SetForegroundWindow(hWnd);
-	SetFocus(hWnd);
-	SizeWindow(xres,yres);
-	
-	hScreen=gfxCreateImage(xres,yres);
-	hScreen->bIsscreen=true;
-
+        if (fullscreen)
+        {
+            DEVMODE mode;
+            ZeroMemory(&mode,sizeof mode);
+            mode.dmSize=sizeof mode;
+            mode.dmPelsWidth=xres;
+            mode.dmPelsHeight=yres;
+            mode.dmBitsPerPel=bpp;
+            mode.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+            
+            int result=ChangeDisplaySettings(&mode,CDS_FULLSCREEN);
+            if (result!=DISP_CHANGE_SUCCESSFUL)
+                throw "ChangeDisplaySettings failed";
+            
+            SetWindowLong(hWnd,GWL_STYLE,WS_POPUP);
+            SetWindowLong(hWnd,GWL_EXSTYLE,WS_EX_APPWINDOW);
+            SetWindowPos(hWnd,HWND_TOPMOST,0,0,xres,yres,SWP_SHOWWINDOW);
+        }
+        else
+        {
+            MoveWindow(hWnd,0,0,xres,yres,true);
+            MakeClientFit();
+        }
+        
+        PIXELFORMATDESCRIPTOR pfd;
+        int result;		
+        
+        ZeroMemory( &pfd, sizeof( pfd ) );
+        pfd.nSize = sizeof( pfd );
+        pfd.nVersion = 1;
+        pfd.dwFlags = PFD_DRAW_TO_WINDOW |
+            PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+        pfd.iPixelType = PFD_TYPE_RGBA;
+        pfd.cColorBits = bpp;
+        pfd.cDepthBits = 16;
+        pfd.iLayerType = PFD_MAIN_PLANE;		
+        
+        hDC=GetDC(hWnd);
+        if (!hDC) throw "GetDC failed";
+        
+        nPixelformat=ChoosePixelFormat(hDC,&pfd);
+        if (!nPixelformat) throw "ChoosePixelFormat failed";
+        
+        result=SetPixelFormat(hDC,nPixelformat,&pfd);
+        if (!result) throw "SetPixelFormat failed";
+        
+        hRC=wglCreateContext(hDC);
+        if (!hRC) throw "CreateContect failed";
+        
+        result=wglMakeCurrent(hDC,hRC);
+        if (!result) throw "wglMakeCurrent failed";
+        
+        ShowWindow(hWnd,SW_SHOW);
+        SetForegroundWindow(hWnd);
+        SetFocus(hWnd);
+        SizeWindow(xres,yres);
+        
+        hScreen=gfxCreateImage(xres,yres);
+        hScreen->bIsscreen=true;
+        
         gfxSetRenderDest(hScreen);
-	
-	InitGL();
+        
+        InitGL();
     }
     catch (const char* s)
     {
-	gfxShutdown();
-	MessageBox(hWnd,s,"OpenGL error",0);
-	return false;
+        gfxShutdown();
+        MessageBox(hWnd,s,"OpenGL error",0);
+        return false;
     }
     
     // Get the max texture size.
@@ -176,27 +176,27 @@ bool EXPORT gfxShutdown()
 {
     if (bFullscreen)
     {
-	DEVMODE dm;
-	
-	EnumDisplaySettings(NULL,ENUM_REGISTRY_SETTINGS,&dm);
-	dm.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
-	ChangeDisplaySettings(&dm,0);
-	ShowCursor(TRUE);
+        DEVMODE dm;
+        
+        EnumDisplaySettings(NULL,ENUM_REGISTRY_SETTINGS,&dm);
+        dm.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
+        ChangeDisplaySettings(&dm,0);
+        ShowCursor(TRUE);
     }
     
     if (hRC)
     {
-	wglMakeCurrent(NULL,NULL);
-	
-	wglDeleteContext(hRC);
-	hRC=0;
+        wglMakeCurrent(NULL,NULL);
+        
+        wglDeleteContext(hRC);
+        hRC=0;
     }
     
     if (hDC)    ReleaseDC(hGLWnd,hDC);      hDC=0;
     
     if (nImages!=0)
     {
-	// asdjfa;sldkfjas;dlf WTF?
+        // asdjfa;sldkfjas;dlf WTF?
     }
     
     return true;
@@ -217,9 +217,9 @@ handle EXPORT gfxCreateImage(int x,int y)
     nImages++;
     
     SImage* i=new SImage;
-
+    
     i->pixels.Resize(x,y);
-
+    
     SynchTexture(i);
     
     return i;
@@ -229,9 +229,9 @@ bool EXPORT gfxFreeImage(handle img)
 {
     if (img)
     {
-	nImages--;
-	delete img;
-	return true;
+        nImages--;
+        delete img;
+        return true;
     }
     return false;
 }
@@ -256,9 +256,9 @@ bool EXPORT gfxCopyPixelData(handle img,u32* data,int width,int height)
         glDeleteTextures(1,&img->hTex);
         img->hTex=0;
     }
-
+    
     img->pixels.SetClipRect(Rect(0,0,img->nWidth,img->nHeight));
-
+    
     SynchTexture(img);    
     return true;
 }
@@ -267,8 +267,8 @@ bool EXPORT gfxClipImage(handle img,Rect& r)
 {
     img->pixels.SetClipRect(r);
     if(img->bIsscreen) 
-	glScissor(r.left,yres-r.top,r.right-r.left,yres-(r.top-r.bottom));
-   
+        glScissor(r.left,yres-r.top,r.right-r.left,yres-(r.top-r.bottom));
+    
     return true;
 }
 
@@ -286,26 +286,26 @@ bool EXPORT gfxSwitchResolution(int x,int y)
 {
     if (bFullscreen)
     {
-	DEVMODE dm;
-	
-	EnumDisplaySettings(NULL,ENUM_REGISTRY_SETTINGS,&dm);
-	dm.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
-	ChangeDisplaySettings(&dm,0);
-	ShowCursor(TRUE);
+        DEVMODE dm;
+        
+        EnumDisplaySettings(NULL,ENUM_REGISTRY_SETTINGS,&dm);
+        dm.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
+        ChangeDisplaySettings(&dm,0);
+        ShowCursor(TRUE);
     }
     
     if (hRC)
     {
-	wglMakeCurrent(NULL,NULL);
-	
-	wglDeleteContext(hRC);
-	hRC=0;
+        wglMakeCurrent(NULL,NULL);
+        
+        wglDeleteContext(hRC);
+        hRC=0;
     }
     
     if (hDC)
     {
-	ReleaseDC(hGLWnd,hDC);
-	hDC=0;
+        ReleaseDC(hGLWnd,hDC);
+        hDC=0;
     }
     
     gfxInit( hGLWnd,xres,yres,gbpp,bFullscreen);
@@ -325,7 +325,7 @@ bool EXPORT gfxPaletteMorph(int r,int g,int b)
 
 bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
 {
-
+    
     if (img->hTex && hRenderdest==hScreen)
     {
         if (img->bAltered)
@@ -333,7 +333,7 @@ bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
             SynchTexture(img);
             img->bAltered=false;
         }
-
+        
         RenderTexture(img,x,y,transparent);
     }
     else if (img!=hScreen)
@@ -344,7 +344,7 @@ bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
             CBlitter<Opaque>::Blit(img->pixels, hRenderdest->pixels, x, y);
         hRenderdest->bAltered=true;
     }
-
+    
     return true;
 }
 
@@ -357,7 +357,7 @@ bool EXPORT gfxScaleBlitImage(handle img,int x,int y,int w,int h,bool transparen
             SynchTexture(img);
             img->bAltered=false;
         }
-
+        
         ScaleRenderTexture(img,x,y,w,h,transparent);
     }
     return true;
@@ -366,7 +366,7 @@ bool EXPORT gfxScaleBlitImage(handle img,int x,int y,int w,int h,bool transparen
 bool EXPORT gfxDistortBlitImage(handle img,int x[4],int y[4],bool transparent)
 {
     if (img->hTex && hRenderdest==hScreen)
-	DistortRenderTexture(img,x,y,transparent);
+        DistortRenderTexture(img,x,y,transparent);
     return true;
 }
 
@@ -378,7 +378,7 @@ bool EXPORT gfxCopyChan(handle,int,handle,int)
 bool EXPORT gfxSetPixel(handle img,int x,int y,u32 colour)
 {
     if (hRenderdest==hScreen)
-	HardPoint(img,x,y,colour);
+        HardPoint(img,x,y,colour);
     return false;
 }
 
@@ -397,7 +397,7 @@ int EXPORT gfxGetPixel(handle img,int x,int y)
 bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
 {
     if (img==hScreen)
-	HardLine(x1,y1,x2,y2,colour);
+        HardLine(x1,y1,x2,y2,colour);
     else
     {
         CBlitter<Alpha>::Line(img->pixels,x1,y1,x2,y2,RGBA(colour));
@@ -409,11 +409,11 @@ bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
 bool EXPORT gfxRect(handle img,int x1,int y1,int x2,int y2,u32 colour,bool filled)
 {
     if (img==hScreen)
-	HardRect(x1,y1,x2,y2,colour,filled);
+        HardRect(x1,y1,x2,y2,colour,filled);
     else
     {
         RGBA c(colour);
-
+        
         if (!c.a)   return true;
         if (c.a==255)
             CBlitter<Opaque>::DrawRect(img->pixels,x1,y1,x2,y2,c,filled);
@@ -432,7 +432,7 @@ bool EXPORT gfxEllipse(handle img,int cx,int cy,int rx,int ry,u32 colour,bool fi
 bool EXPORT gfxFlatPoly(handle img,int x[3],int y[3],u32 colour[3])
 {
     if (img==hScreen)
-	HardPoly(img,x,y,colour);
+        HardPoly(img,x,y,colour);
     return true;
 }
 
@@ -450,13 +450,13 @@ handle EXPORT gfxGetRenderDest()
 int EXPORT gfxImageWidth(handle img)
 {
     if (img)
-	return img->nWidth;
+        return img->nWidth;
     return 0;
 }
 
 int EXPORT gfxImageHeight(handle img)
 {
     if (img)
-	return img->nHeight;
+        return img->nHeight;
     return 0;
 }	

@@ -28,14 +28,15 @@ void CMapView::OnPaint()
 
     pGraph->SetCurrent();
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-    pGraph->RectFill(0,0,100,100,RGBA(255,0,0));
+    glLoadIdentity();
+    glTranslatef(0,0,-10);
 
-    glTranslatef(0,0,4);
+    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
     glBegin(GL_TRIANGLES);
-    glVertex2f(0,-50);
-    glVertex2f(-50,50);
-    glVertex2f(50,50);
+    glColor3f(1,1,1);    glVertex3f(0,-50,400);
+    glColor3f(0,0,0);    glVertex3f(-50,50,-400);
+    glColor3f(1,1,1);    glVertex3f(50,50,0);
     glEnd();
 
     pGraph->ShowPage();
