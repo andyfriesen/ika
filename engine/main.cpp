@@ -11,7 +11,7 @@
 #include "input.h"
 #include "opengl/Driver.h"
 //#include "soft32/Driver.h"
-
+#include "keyboard.h"
 void Engine::Sys_Error(const char* errmsg)
 {
     CDEBUG("sys_error");
@@ -540,6 +540,7 @@ void Engine::CheckKeyBindings()
         // This is not useful behaviour.
         the<Input>()->Unpress();
         script.ExecObject(*func);
+        the<Input>()->Flush();
     }
 }
 

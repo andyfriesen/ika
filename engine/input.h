@@ -43,7 +43,10 @@ public:
     virtual float PeekDelta();
 
     // Pretty looking method for 'unpressing'.
-    inline  void  Unpress() { Position(); }
+    inline  void  Unpress() 
+    {
+        Pressed(); 
+    }
 
     // event thingies.  Python objects go here.
     ScriptObject onPress;

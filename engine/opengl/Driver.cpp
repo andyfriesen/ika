@@ -94,6 +94,7 @@ namespace OpenGL
 
     Driver::~Driver()
     {
+        glDeleteTextures(1, &_bufferTex);
     }
 
     // Trouble is, SDL nukes the GL context when it switches modes.
@@ -291,7 +292,10 @@ namespace OpenGL
         int width = right - left;
         int height = bottom - top;
 
-        top = min(_yres, _yres - top) - height;
+        if (_doubleSize)
+            top = min(_yres * 2, _yres * 2 - top) - height;
+        else
+            top = min(_yres, _yres - top) - height;
 
         glScissor(
             left, top,
@@ -334,6 +338,9 @@ namespace OpenGL
             // typing. (pay no attention to the fact that it would
             // require less typing than this comment did)
             _xres <<= 1;    _yres <<= 1;
+            glPushAttrib(GL_SCISSOR_BIT);
+            glScissor(0, 0, _xres, _yres);
+            glDisable(GL_BLEND);
 
             glBegin(GL_QUADS);
             glTexCoord2f(0,    endY); glVertex2i(0,         0);
@@ -343,6 +350,8 @@ namespace OpenGL
             glEnd();
 
             _xres >>= 1;    _yres >>= 1;
+            glPopAttrib();
+            glEnable(GL_BLEND);
 #endif
         }
 
