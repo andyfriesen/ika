@@ -51,6 +51,7 @@ BEGIN_EVENT_TABLE(CTileSetView,IDocView)
 
     EVT_LEFT_DOWN(CTileSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CTileSetView::OnRightClick)
+    EVT_MOUSEWHEEL(CTileSetView::OnMouseWheel)
 
     EVT_MENU(id_edittile,CTileSetView::OnEditTile)
 END_EVENT_TABLE()
@@ -143,6 +144,12 @@ void CTileSetView::OnRightClick(wxMouseEvent& event)
     nTile=TileAt(event.GetX(),event.GetY());
 }
 
+void CTileSetView::OnMouseWheel(wxMouseEvent& event)
+{
+    int i = event.m_wheelRotation / event.m_wheelDelta;
+    pTileset->SetCurTile(pTileset->CurTile() + i);
+}
+
 //---------------------------
 
 void CTileSetView::OnEditTile(wxCommandEvent& event)
@@ -155,7 +162,6 @@ void CTileSetView::OnEditTile(wxCommandEvent& event)
 
 void CTileSetView::Render()
 {
-    Log::Write("   Render");
     int w,h;
     GetClientSize(&w,&h);
 

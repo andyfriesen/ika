@@ -36,6 +36,7 @@ public:
 
     void OnLeftClick(wxMouseEvent& event);
     void OnRightClick(wxMouseEvent& event);
+    void OnMouseWheel(wxMouseEvent& event);
 
     void OnEraseBackground(wxEraseEvent&) {}
 

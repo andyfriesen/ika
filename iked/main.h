@@ -90,11 +90,8 @@ public:
     wxMenuBar*  CreateBasicMenu();
 /*
 
-    This isn't quite as "correct" as it should be.
-    Instead of using a C array, I stuff it in a std::vector, and assume that vectors store things
-    in a sequential, continuous stream.  (which is part of the standard, as I understand it)
-    Should be okay, provided that the accelerator entry is copy safe. ^_^  Personally, I think
-    it's quite elegant, but it is skirting the rules a bit.
+    This is technically wrong, as std::vector doesn't stipulate that the entries be sequential.
+    It merely promises random access at O(1).  Fix if it becomes an issue. (unlikely)
 
 */
     vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 

@@ -4,11 +4,36 @@
 #include "fontview.h"
 #include "main.h"
 
+namespace
+{
+    class CFontFrame : public CGraphFrame
+    {
+        DECLARE_EVENT_TABLE()
+
+        CFontView* pFontview;
+
+    public:
+        CFontFrame(wxWindow* parent, CFontView* fontview)
+            : CGraphFrame(parent)
+            , pFontview(fontview)
+        {}
+
+        void OnPaint(wxPaintEvent& event)
+        {
+            wxPaintDC dc(this);
+
+            pFontview->Paint();
+        }
+    };
+
+    BEGIN_EVENT_TABLE(CFontFrame, CGraphFrame)
+        EVT_PAINT(CFontFrame::OnPaint)
+    END_EVENT_TABLE()
+}
+
 BEGIN_EVENT_TABLE(CFontView,IDocView)
 
     EVT_SCROLLWIN(CFontView::OnScroll)
-    EVT_SIZE(CFontView::OnSize)
-    EVT_PAINT(CFontView::OnPaint)
     EVT_CLOSE(CFontView::OnClose)
     EVT_ERASE_BACKGROUND(CFontView::OnEraseBackground)
 
@@ -21,20 +46,19 @@ BEGIN_EVENT_TABLE(CFontView,IDocView)
 
 END_EVENT_TABLE()
 
-CFontView::CFontView(CMainWnd* parentwnd,const string& fname):
-IDocView(parentwnd,fname),
-pParent(parentwnd),
-sFilename(fname),
-nCurfont(0)
+CFontView::CFontView(CMainWnd* parentwnd,const string& fname)
+    : IDocView(parentwnd,fname)
+    , pParent(parentwnd)
+    , sFilename(fname)
+    , nCurfont(0)
+    , ywin(0)
 {
 
-    pGraph = new CGraphFrame(this);
+    pGraph = new CFontFrame(this, this);
     pGraph->SetSize(GetClientSize());
 
     pFontfile = new CFontFile();
     pFontfile->Load(sFilename.c_str());
-
-    ywin=0;
 
     wxMenuBar* menubar=pParent->CreateBasicMenu();
     wxMenu* filemenu=menubar->Remove(0);
@@ -48,11 +72,13 @@ nCurfont(0)
     optionsmenu->Append(id_optionscolor,"Change background color...","");
 
     SetMenuBar(menubar);
-
-
-
 }
 
+CFontView::~CFontView()
+{
+//    pParent->font.Release(pFontfile);
+    delete pFontfile;
+}
 void CFontView::OnRightClick(wxMouseEvent& event)
 {
 }
@@ -70,7 +96,7 @@ void CFontView::OnLeftClick(wxMouseEvent& event)
 void CFontView::Render()
 {
 
-    int tx=0, ty=0;
+    int tx = 0, ty = 0;
     int nWidth, nHeight;
 
     GetClientSize(&nWidth, &nHeight);
@@ -78,49 +104,46 @@ void CFontView::Render()
     tx=pFontfile->Width();
     ty=pFontfile->Height();
 
-    int nFontwidth=nWidth/tx;
-    int nFontheight=(nHeight/ty)+1;
-    int nFont=ywin*nFontwidth;
+    int nFontwidth = nWidth / tx;
+    int nFontheight = (nHeight / ty) + 1;
+    int nFont=ywin * nFontwidth;
 
     pGraph->SetCurrent();
     pGraph->Clear();     
 
-    for(int y=0; y<nFontheight; y++)
+    for(int y = 0; y < nFontheight; y++)
     {
-        for(int x=0; x<nFontwidth; x++)
+        for(int x = 0; x < nFontwidth; x++)
         {
             // Grab the font bitmap, blit, and move right along.
             //  -- khross
 
-            // I am amazed that this allocation/deallocation is not slow. --andy
-            CPixelMatrix& rBitmap=pFontfile->GetGlyph(nFont);
+            // Too slow. -- andy
+            CPixelMatrix& rBitmap = pFontfile->GetGlyph(nFont);
             CImage rImage(rBitmap);
-            pGraph->ScaleBlit(rImage,x*tx+1,y*ty+1,
+            pGraph->ScaleBlit(rImage, x * tx + 1, y * ty + 1,
                 rBitmap.Width(), rBitmap.Height(), true);
 
             // TODO: add zooming.
 
             nFont++;
 
-            if (nFont>=pFontfile->NumGlyphs()) 
-            {
-                y=nFontheight+1;    // bomb out of both loops
-                break;
-            }
+            if (nFont >= pFontfile->NumGlyphs()) 
+                goto nomoredrawing; // abort the loop
 
-            nFontwidth=nWidth/tx;
-            nFontheight=(nHeight/ty)+1;
+            nFontwidth = nWidth / tx;
+            nFontheight = (nHeight / ty) + 1;
 
         }
-        
     }
+nomoredrawing:
 
     int x2, y2;
-    tx=pFontfile->Width();
-    ty=pFontfile->Height();
+    tx = pFontfile->Width();
+    ty = pFontfile->Height();
 
-    FontPos(nCurfont,x2,y2);
-    pGraph->Rect(x2-1,y2-1,tx+1,ty+1,RGBA(255,255,255));
+    FontPos(nCurfont, x2, y2);
+    pGraph->Rect(x2 - 1, y2 - 1, tx + 1, ty + 1, RGBA(255, 255, 255));
     pGraph->ShowPage();
 }
 
@@ -152,12 +175,11 @@ int CFontView::FontAt(int x,int y) const
     return t;
 }
 
-void CFontView::OnPaint()
+void CFontView::Paint()
 {
-    if (!pGraph) 
+    if (!pFontfile)
         return; // Can't be too careful with these wacky paint messages. -- khross
 
-    wxPaintDC dc(this);
     Render();
 }
 
@@ -192,9 +214,7 @@ void CFontView::OnSaveAs(wxCommandEvent& event)
 
 void CFontView::OnClose()
 {
-    
     Destroy();
-  
 }
 
 void CFontView::OnSize(wxSizeEvent& event)

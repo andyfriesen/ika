@@ -24,13 +24,14 @@ class CFontView : public IDocView
     public:
 
         CFontView(CMainWnd* parentwnd,const string& fname);
-        ~CFontView() {}
+        ~CFontView();
+
+        void Paint();
 
         void OnChangeBackgroundColor(wxCommandEvent&);
         void OnSave(wxCommandEvent&);
         void OnSaveAs(wxCommandEvent&);
         void OnSize(wxSizeEvent&);
-        void OnPaint();
         void OnEraseBackground(wxEraseEvent&) {}
         void OnScroll(wxScrollWinEvent&);
         void OnClose();
