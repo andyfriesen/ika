@@ -40,6 +40,13 @@ namespace Script
                 "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
             },
 
+            {   "WrapBlit", (PyCFunction)Canvas_WrapBlit,   METH_VARARGS,
+                "Canvas.WrapBlit(destcanvas, x, y, width, height, [offsetx, offsety, blendmode])\n\n"
+                "Tiles the image within the region specified, on destcanvas.  The tiling is offset\n"
+                "(moved) by offsetx and offsety. (both default to zero) blendmode is either ika.Opaque, ika.Matte\n"
+                "ika.AlphaBlend.  blendmode defaults to Opaque"
+            },
+
             {   "GetPixel", (PyCFunction)Canvas_GetPixel,   METH_VARARGS,
                 "Canvas.GetPixel(x, y)\n\n"
                 "Returns the pixel at position (x, y) on the canvas, as a packed 32bpp RGBA colour."
@@ -226,8 +233,6 @@ namespace Script
             if (!PyArg_ParseTuple(args, "O!iiii|i:ScaleBlit", &type, &dest, &x, &y, &w, &h, &mode))
                 return 0;
 
-            Log::Write("%i, %i  %ix%i %i", x, y, w, h, mode);
-
             switch (mode)
             {
             case 0: CBlitter<Opaque>::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
@@ -240,7 +245,33 @@ namespace Script
                 return 0;
             }
 
-            Log::Write("Blah");
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Canvas_WrapBlit)
+        {
+            CanvasObject* dest;
+            int x, y;
+            int w, h;
+            int ofsx = 0;
+            int ofsy = 0;
+            int mode = 0;
+
+            if (!PyArg_ParseTuple(args, "O!iiii|iii:WrapBlit", &type, &dest, &x, &y, &w, &h, &ofsx, &ofsy, &mode))
+                return 0;
+
+            switch (mode)
+            {
+            case 0: CBlitter<Opaque>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
+            case 1: CBlitter<Matte>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
+            case 2: CBlitter<Alpha>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
+            case 3: CBlitter<Additive>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
+            case 4: CBlitter<Subtractive>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
+            default:
+                PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", mode));
+                return 0;
+            }
 
             Py_INCREF(Py_None);
             return Py_None;

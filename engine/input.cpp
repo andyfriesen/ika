@@ -148,14 +148,12 @@ class KeyControl : public Input::Control
 {
     bool _pressed;  // true if the key was pressed lately
     bool _down;     // true if the key is down right now
-    int _code;
 
 public:
     KeyControl(Input* p, int code)
         : Control(p)
         , _pressed(false)
         , _down(false)
-        , _code(code)
     {}
 
     void Press()

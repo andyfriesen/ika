@@ -82,7 +82,7 @@ public:
     void      CheckKeyBindings();                                                   ///< checks to see if any bound keys are pressed
     
     // Entity handling
-    bool      DetectMapCollision(int x1, int y1, int w, int h);                        ///< returns true if there is a map obstruction within the passed rect
+    bool      DetectMapCollision(int x1, int y1, int w, int h);                     ///< returns true if there is a map obstruction within the passed rect
     CEntity*  DetectEntityCollision(const CEntity* ent, int x1, int y1, int w, int h, bool wantobstructable=false);  ///< if an entity is within the rect, return it, else return NULL.  If wantobstructable is true, then entities whose bIsobs attribute is unset will be ignored.
     void      ProcessEntities();                                                    ///< one tick of AI for each entity
   
@@ -92,7 +92,7 @@ public:
     void      DestroyEntity(CEntity* e);                                            ///< Annihilates the entity
 
     void      RenderEntities();                                                     ///< Draws entities
-    void      RenderLayer(uint lay, bool transparent);                               ///< renders a single layer
+    void      RenderLayer(uint lay, bool transparent);                              ///< renders a single layer
     void      Render(const char* sTemprstring=NULL);                                ///< renders everything
     
     void      LoadMap(const char* filename);                                        ///< switches maps
