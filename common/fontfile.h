@@ -40,6 +40,7 @@ public:
     int           NumSubSets()           const { return set.size();                     }
     SSubSet&      GetSubSet(int subset)  const { return (SSubSet&)set[subset];          }
     CPixelMatrix& GetGlyph(int glyphidx) const { return (CPixelMatrix&)glyph[glyphidx]; }
+    int           NumGlyphs()            const { return glyph.size();                   }
 };
 
 #endif

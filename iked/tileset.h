@@ -15,14 +15,6 @@ class VSP;
 
 class CTileSet
 {
-    /*struct CTile
-    {
-        CImage* pImg;
-        bool bAltered;
-
-        CTile() : pImg(0),bAltered(false) {}
-    };*/
-
     VSP*                pVsp;
     vector<CImage*>     bitmaps;    // hardware dependant copies of the tiles
 

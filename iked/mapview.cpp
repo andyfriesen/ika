@@ -315,13 +315,10 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
 
 void CMapView::Zoom(const int& nZoomscale)
 {
-    int nTest=nZoom;
-    nTest+=nZoomscale;
+    nZoom+=nZoomscale;
+    if (nZoom<1) nZoom=1;
+    if (nZoom>32) nZoom=32;
 
-    if (nTest>32)   nTest=32;
-    if (nTest<=0)   nTest=1;
-
-    nZoom=nTest;
     UpdateScrollbars();
     Render();   pGraph->ShowPage();
 }

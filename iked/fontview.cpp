@@ -75,9 +75,10 @@ void CFontView::Render()
             //  -- khross
             CPixelMatrix& rBitmap=pFontfile->GetGlyph(nFont);
             CImage rImage(rBitmap);
-            pGraph->ScaleBlit(rImage,x*nTx+1,y*nTy+1,
+/*            pGraph->ScaleBlit(rImage,x*nTx+1,y*nTy+1,
                 rGlyph.Width(),rGlyph.Height(),
-                true);
+                true);*/
+            pGraph->Blit(rImage,x*nTx+1,y*nTy+1,true);
             // add zooming.
 
             nFont++;

@@ -120,10 +120,10 @@ void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
 
     glBegin(GL_QUADS);
 
-    glTexCoord2f(0,0);      glVertex2i(x,y);
-    glTexCoord2f(1,0);      glVertex2i(x+w,y);
-    glTexCoord2f(1,1);      glVertex2i(x+w,y+h);
-    glTexCoord2f(0,1);      glVertex2i(x,y+h);
+    glTexCoord2f(       0,       0);      glVertex2i(x,y);
+    glTexCoord2f(nTexendx,       0);      glVertex2i(x+w,y);
+    glTexCoord2f(nTexendx,nTexendy);      glVertex2i(x+w,y+h);
+    glTexCoord2f(       0,nTexendy);      glVertex2i(x,y+h);
 
     glEnd();
 }
@@ -160,8 +160,11 @@ void CImage::Update(const CPixelMatrix& src)
     while (nTexwidth<nWidth) nTexwidth<<=1;
     while (nTexheight<nHeight) nTexheight<<=1;
 
+    CPixelMatrix tmp(src);
+    tmp.Resize(nTexwidth,nTexheight);
+
     glBindTexture(GL_TEXTURE_2D,hTex);
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)src.GetPixelData());
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)tmp.GetPixelData());
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 }
