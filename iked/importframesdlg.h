@@ -1,11 +1,11 @@
-#ifndef IMPORTFRAMESDLG_H
-#define IMPORTFRAMESDLG_H
+#if 0
+#pragma once
 
 #include <wx/dialog.h>
 #include <string>
 #include <vector>
 
-#include "common/Canvas.h"
+#include "Canvas.h"
 
 class ImportFramesDlg : public wxDialog
 {
@@ -24,5 +24,4 @@ public:
 
     DECLARE_EVENT_TABLE()
 };
-
 #endif

@@ -2,19 +2,19 @@
 #include "imageview.h"
 #include "graph.h"
 
-BEGIN_EVENT_TABLE(CImageView, IDocView)
+BEGIN_EVENT_TABLE(CImageView, DocumentPanel)
     EVT_PAINT(CImageView::OnPaint)
 END_EVENT_TABLE()
 
-CImageView::CImageView(CMainWnd* parent, Canvas* img)
-    : IDocView(parent, "image"), pData(img)
+CImageView::CImageView(MainWindow* parent, Canvas* img)
+    : DocumentPanel(parent, "image"), pData(img)
 {
     SetSize(-1, -1, 340, 340);
 
-    pGraph = new CGraphFrame(this);
+    pGraph = new GraphicsFrame(this);
     pGraph->SetSize(10, 10, 320, 320);
 
-    pImage = new CImage(*img);
+    pImage = new Image(*img);
 }
 
 CImageView::~CImageView()

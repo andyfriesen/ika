@@ -6,48 +6,35 @@
 #include "common/utility.h"
 #include "scriptobject.h"
 
-class HookList
-{
-public:
-    typedef std::list<ScriptObject> List;
-private:
-    typedef std::list<void*> VoidList;
+struct HookList {
+    typedef std::list<ScriptObject>::iterator iterator;
+    typedef std::list<ScriptObject>::const_iterator const_iterator;
 
-    List     _hooks;
-    VoidList _killList;
-    VoidList _addList;
-
-public:
-    void Add(void* p)
-    {
+    void add(void* p) {
         _addList.push_back(p);
     }
 
-    void Remove(void* p)
-    {
+    void remove(void* p) {
         _killList.push_back(p);
     }
 
-    void Flush()
-    {
-        for (VoidList::iterator i = _addList.begin(); i != _addList.end(); i++)
-        {
+    void flush() {
+        for (VoidList::iterator i = _addList.begin(); i != _addList.end(); i++) {
             void* p = *i;
             _hooks.push_back(ScriptObject(p));
         }
 
-        if (_killList.size())
-        {
-            for (VoidList::iterator j = _killList.begin(); j != _killList.end(); j++)
-            {
+        if (_killList.size()) {
+            for (VoidList::iterator j = _killList.begin(); j != _killList.end(); j++) {
                 void* p = *j;
 
-                for (List::iterator k = _hooks.begin(); k != _hooks.end();)
-                {
-                    if (k->get() == p)
+                iterator k = _hooks.begin();
+                while (k != _hooks.end()) {
+                    if (k->get() == p) {
                         _hooks.erase(k++);
-                    else
+                    } else {
                         k++;
+                    }
                 }
             }
         }
@@ -56,22 +43,36 @@ public:
         _killList.clear();
     }
 
-    inline List::iterator begin()
-    {
+    inline iterator begin() {
         return _hooks.begin();
     }
 
-    inline List::iterator end()
-    {
+    inline iterator end() {
         return _hooks.end();
     }
 
-    void Clear()
-    {
+    inline const_iterator begin()  const {
+        return _hooks.begin();
+    }
+
+    inline const_iterator end() const {
+        return _hooks.end();
+    }
+
+    void clear() {
         _hooks.clear();
         _killList.clear();
         _addList.clear();
     }
+
+private:
+    typedef std::list<ScriptObject> List;
+    typedef std::list<void*> VoidList;
+
+    List     _hooks;
+    VoidList _killList;
+    VoidList _addList;
 };
 
 #endif
+ 

@@ -1,74 +1,58 @@
 
-#ifndef SPRITESETVIEW_H
-#define SPRITESETVIEW_H
+#pragma once
 
-#include <wx\wx.h>
+#include <wx/wx.h>
+#include <wx/grid.h>
 
 #include "docview.h"
 #include "graph.h"
 #include "spriteset.h"
+#include "imagearraypanel.h"
 
-class CMovescriptEditor;
+namespace iked {
 
-class CSpriteSetView : public IDocView
-{
-public:
+    class MovescriptEditor;
 
-    CSpriteSetView(CMainWnd* parentwnd, const std::string& fname);
-    CSpriteSetView(CMainWnd* parentwnd, int width, int height);
-    ~CSpriteSetView();
+    struct SpriteSetView : DocumentPanel {
+        SpriteSetView(MainWindow* parent, Document* doc, const std::string& fileName);
+        ~SpriteSetView();
 
-    virtual void OnSave(wxCommandEvent& event);
-    void OnSaveAs(wxCommandEvent& event);
+    private:
+        void Render();  // blech
 
-    virtual const void* GetResource() const;
+        void onSave(wxCommandEvent& event);
+        void onSaveAs(wxCommandEvent& event);
+        void onRightClickFrame(wxCommandEvent& event);
+        //void onDoubleClickFrame(wxCommandEvent& event);
+        void onEditFrame(wxCommandEvent& event);
 
-private:
-    void OnPaint();
-public:
-    void Render();  // blech
-private:
-    void OnSize(wxSizeEvent& event);
-    void OnScroll(wxScrollWinEvent& event);
+        void onZoomIn(wxCommandEvent& event);
+        void onZoomOut(wxCommandEvent& event);
+        void onZoomNormal(wxCommandEvent& event);
 
-    void OnLeftClick(wxMouseEvent& event);
-    void OnRightClick(wxMouseEvent& event);
+        void onPaint(wxPaintEvent& event);
+        void onEraseBackground(wxEraseEvent&){}
 
-    void OnEditFrame(wxCommandEvent& event);
+        void onShowMovescriptEditor(wxCommandEvent& event);
+        void onImportFrames(wxCommandEvent& event);
 
-    void OnPreviousFrame(wxCommandEvent& event);
-    void OnNextFrame(wxCommandEvent& event);
+        void updateScrollbar();
 
-    void OnZoomIn(wxCommandEvent& event);
-    void OnZoomOut(wxCommandEvent& event);
-    void OnZoomNormal(wxCommandEvent& event);
+        void init();
+        void initMenu();
+        void initAccelerators();
 
-    void UpdateScrollbar();
+        SpriteSet*          getSprite();
 
-    void OnShowMovescriptEditor(wxCommandEvent& event);
-    void OnImportFrames(wxCommandEvent& event);
+        wxPanel*            mainPanel;
+        wxGrid*             animScriptGrid;
+        wxGrid*             metaDataGrid;
+        ImageArrayPanel*    imagePanel;
+        
+        wxMenu*             contextMenu;
+        //MovescriptEditor*  moveScriptEditor;
 
-    void Init();
-    void InitMenu();
-    void InitAccelerators();
-    void SpritePos(int idx, int& x, int& y) const;
-    int  FrameAt(int x, int y) const;
-    void Zoom(int nZoomscale);
+        DECLARE_EVENT_TABLE()
+    };
 
-    CMainWnd*           _parent;
-    CGraphFrame*        _graph;
-    CSpriteSet*         _sprite;
-    
-    int                 _curFrame;
-    int                 _ywin;
-    int                 _zoom;
-    bool                _pad;
-
-    wxMenu*             _contextMenu;
-    CMovescriptEditor*  _moveScriptEditor;
-
-    DECLARE_EVENT_TABLE()
-};
-
-#endif
-
+}

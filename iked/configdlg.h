@@ -1,8 +1,9 @@
-
+#if 0
 #include "wx/wx.h"
 
 #include "common/configfile.h"
 #include "common/utility.h"
+
 
 class CConfigDlg : public wxDialog
 {
@@ -29,3 +30,4 @@ public:
 
     DECLARE_EVENT_TABLE()
 };
+#endif

@@ -65,7 +65,7 @@ union RGBA {
         u8 r, g, b, a;
     };
 
-    uint i;
+    u32 i;
 
     RGBA()
         : i(0)
@@ -79,7 +79,7 @@ union RGBA {
         a = index ? 255 : 0;
     }
 
-    RGBA(uint bleagh) 
+    RGBA(u32 bleagh) 
         : i(bleagh)
     {}
 

@@ -1,15 +1,15 @@
 
-#include "common/utility.h"
 #include "textview.h"
+#include "common/utility.h"
 #include "main.h"
-#include "common/fileio.h"
+#include "fileio.h"
 
 namespace
 {
     enum    {   linecountmargin, foldmargin };
 };
 
-BEGIN_EVENT_TABLE(CTextView, IDocView)
+BEGIN_EVENT_TABLE(CTextView, DocumentPanel)
     EVT_STC_CHARADDED(CTextView::id_ed, CTextView::OnCharAdded)
 
     EVT_MENU(CTextView::id_filesave, CTextView::OnSave)
@@ -22,7 +22,6 @@ BEGIN_EVENT_TABLE(CTextView, IDocView)
     EVT_MENU(CTextView::id_editcut , CTextView::OnCut)
     EVT_MENU(CTextView::id_editpaste, CTextView::OnPaste)
 
-#ifdef WX232
     EVT_MENU(CTextView::id_editfind, CTextView::OnFind)
     EVT_MENU(CTextView::id_editreplace, CTextView::OnReplace)
     
@@ -31,14 +30,13 @@ BEGIN_EVENT_TABLE(CTextView, IDocView)
     EVT_FIND_REPLACE(-1, CTextView::DoFind)
     EVT_FIND_REPLACE_ALL(-1, CTextView::DoFind)
     EVT_FIND_CLOSE(-1, CTextView::DoFind)
-#endif
 
     EVT_CLOSE(CTextView::OnClose)
 
 END_EVENT_TABLE()
 
 
-CTextView::CTextView(CMainWnd* parent, const std::string& name):IDocView(parent, name)
+CTextView::CTextView(MainWindow* parent, const std::string& name):DocumentPanel(parent, name)
 {
     wxMenuBar* menubar = parent->CreateBasicMenu();
 
@@ -59,18 +57,10 @@ CTextView::CTextView(CMainWnd* parent, const std::string& name):IDocView(parent,
     editmenu->Append(id_editcut,        "C&ut\tShift + Del", "");
     editmenu->Append(id_editpaste,      "&Paste\tShift + Ins", "");
     editmenu->Append(id_editselectall,  "Select &All\tCtrl + A", "");
-#ifdef WX232
     editmenu->AppendSeparator();
     editmenu->Append(id_editfind,       "&Find...", "");
     editmenu->Append(id_editreplace,    "Replace...", "");
-#endif
     menubar->Append(editmenu, "&Edit");
-
-#ifndef WX232
-    editmenu->Enable(id_editfind, false);
-    editmenu->Enable(id_editreplace, false);
-#endif
-
 
     SetMenuBar(menubar);
     
@@ -108,11 +98,7 @@ void CTextView::InitTextControl()
 
     
     // dunno, the font sizes come out differently.  Compensating here.
-#ifdef WX232
     wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
-#else
-    wxFont font(8, wxMODERN, wxNORMAL, wxNORMAL, false);
-#endif
 
     pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     pTextctrl->StyleClearAll();
@@ -141,8 +127,6 @@ void CTextView::InitAccelerators()
     SetAcceleratorTable(table);
 }
 
-
-#ifdef WX232
 
 void CTextView::OnFind(wxCommandEvent& event)
 {
@@ -226,7 +210,6 @@ void CTextView::DoFind(wxFindDialogEvent& event)
     pDlg->Destroy();
 }
 
-#endif
 
 void CTextView::OnStyleNeeded(wxStyledTextEvent& event)
 {
@@ -267,7 +250,7 @@ void CTextView::OnCharAdded(wxStyledTextEvent& event)
 
         // autoindent after def, while, etc....
         // I have NO idea why I'm going 4 back from the end. ;P
-        s = pTextctrl->GetLine(nCurline - 1).Trim();
+        s = pTextctrl->GetLine(nCurline - 1).trim();
         if (s.Right(4).StartsWith(":"))
             strcat(linebuf, "\t");
 

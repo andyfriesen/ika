@@ -6,233 +6,223 @@ static const int nZoomscale = 16;
 
 //-------------------------------------------------------
 
-BEGIN_EVENT_TABLE(CGraphFrame, wxGLCanvas)
-    EVT_ERASE_BACKGROUND(CGraphFrame::OnErase)
-    //EVT_PAINT(CGraphFrame::OnPaint)
-    EVT_SIZE(CGraphFrame::OnSize)
+namespace iked {
 
-    // GraphFrames send all mouse events to their parent window, after adapting for zoom
-    EVT_MOUSE_EVENTS(CGraphFrame::OnMouseEvent)
-END_EVENT_TABLE()
+    BEGIN_EVENT_TABLE(GraphicsFrame, wxGLCanvas)
+	EVT_ERASE_BACKGROUND(GraphicsFrame::OnErase)
+	//EVT_PAINT(GraphicsFrame::OnPaint)
+	EVT_SIZE(GraphicsFrame::OnSize)
 
-static void SetTex(uint tex)
-{
-    static uint last = 0;
+	// GraphFrames send all mouse events to their parent window, after adapting for zoom
+	EVT_MOUSE_EVENTS(GraphicsFrame::OnMouseEvent)
+    END_EVENT_TABLE()
 
-    if (tex==last)
-        return;
-    glBindTexture(GL_TEXTURE_2D, tex);
-    last = tex;
-}
+    static void SetTex(uint tex) {
+	static uint last = 0;
 
-std::set<CGraphFrame*> CGraphFrame::pInstances;
+	if (tex==last)
+	    return;
+	glBindTexture(GL_TEXTURE_2D, tex);
+	last = tex;
+    }
 
-CGraphFrame::CGraphFrame(wxWindow* parent)
-:   wxGLCanvas(parent, pInstances.empty() ? (wxGLCanvas*)0 : *pInstances.begin()), nZoom(16)
-{
-    int w, h;
-    GetClientSize(&w, &h);
+    std::set<GraphicsFrame*> GraphicsFrame::allFrames;
 
-    Show();
+    GraphicsFrame::GraphicsFrame(wxWindow* parent)
+	// Borrow a context from an existing frame, if there is one
+	: wxGLCanvas(parent, 
+	    allFrames.empty() 
+		? 0//(wxGLCanvas*)0 
+		: *allFrames.begin())
+	, zoomFactor(16) 
+    {
+	int w, h;
+	GetClientSize(&w, &h);
 
-    SetCurrent();
-    glClearColor(0, 0, 0, 0);
-    glClearDepth(1);
+	Show();
 
-    glEnable(GL_SCISSOR_TEST);
-    glScissor(0, 0, w, h);
-    glDisable(GL_DEPTH_TEST);
-    glEnable(GL_TEXTURE_2D);
-    glEnable(GL_BLEND);
-    glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glShadeModel(GL_SMOOTH);
+	SetCurrent();
+	glClearColor(0, 0, 0, 0);
+	glClearDepth(1);
 
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
-    
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
+	glEnable(GL_SCISSOR_TEST);
+	glScissor(0, 0, w, h);
+	glDisable(GL_DEPTH_TEST);
+	glEnable(GL_TEXTURE_2D);
+	glEnable(GL_BLEND);
+	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+	glShadeModel(GL_SMOOTH);
 
-    pInstances.insert(this);
-}
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
+        
+	glMatrixMode(GL_MODELVIEW);
+	glLoadIdentity();
 
-CGraphFrame::~CGraphFrame()
-{
-    pInstances.erase(this);
-}
+	allFrames.insert(this);
+    }
 
-void CGraphFrame::OnSize(wxSizeEvent& event)
-{
-    int w = event.GetSize().GetWidth();
-    int h = event.GetSize().GetHeight();
+    GraphicsFrame::~GraphicsFrame() {
+	allFrames.erase(this);
+    }
 
-    SetSize(w, h);
-    SetCurrent();
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-    glOrtho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
+    void GraphicsFrame::OnErase(wxEraseEvent&) { }
 
-    glViewport(0, 0, w, h);
+    void GraphicsFrame::OnSize(wxSizeEvent& event) {
+	int w = event.GetSize().GetWidth();
+	int h = event.GetSize().GetHeight();
 
-    glScissor(0, 0, w, h);
-}
+	SetSize(w, h);
+	SetCurrent();
+	glMatrixMode(GL_PROJECTION);
+	glLoadIdentity();
+	glOrtho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
 
-void CGraphFrame::OnMouseEvent(wxMouseEvent& event)
-{
-    // Tweak the mouse position, so that the parent doesn't have to compensate for interacting with the frame.
-    event.m_x = event.m_x * nZoom / nZoomscale;
-    event.m_y = event.m_y * nZoom / nZoomscale;
+	glViewport(0, 0, w, h);
 
-    // Relay to the parent.
-    wxPostEvent(GetParent(), event);
-}
+	glScissor(0, 0, w, h);
+    }
 
-void CGraphFrame::OnPaint(wxPaintEvent& event)
-{
-    wxPaintDC dc(this);
-    wxPostEvent(GetParent(), event);
-}
+    void GraphicsFrame::OnMouseEvent(wxMouseEvent& event) {
+	// Tweak the mouse position, so that the parent doesn't have to compensate for interacting with the frame.
+	event.m_x = event.m_x * zoomFactor / nZoomscale;
+	event.m_y = event.m_y * zoomFactor / nZoomscale;
 
-void CGraphFrame::Rect(int x, int y, int w, int h, RGBA colour)
-{
-    x = x * nZoomscale / nZoom;
-    y = y * nZoomscale / nZoom;
-    w = w * nZoomscale / nZoom;
-    h = h * nZoomscale / nZoom;
+	// Relay to the parent.
+	wxPostEvent(GetParent(), event);
+    }
 
-    glColor4ub(colour.r, colour.g, colour.b, colour.a);
-    glDisable(GL_TEXTURE_2D);
+    void GraphicsFrame::OnPaint(wxPaintEvent& event) {
+	wxPaintDC dc(this);
+	wxPostEvent(GetParent(), event);
+    }
 
-    glBegin(GL_LINE_LOOP);
+    void GraphicsFrame::Rect(int x, int y, int w, int h, RGBA colour) {
+	x = x * nZoomscale / zoomFactor;
+	y = y * nZoomscale / zoomFactor;
+	w = w * nZoomscale / zoomFactor;
+	h = h * nZoomscale / zoomFactor;
 
-    glVertex2i(x, y);
-    glVertex2i(x + w, y);
-    glVertex2i(x + w, y + h);
-    glVertex2i(x, y + h);
+	glColor4ub(colour.r, colour.g, colour.b, colour.a);
+	glDisable(GL_TEXTURE_2D);
 
-    glEnd();
+	glBegin(GL_LINE_LOOP);
 
-    glColor4f(1, 1, 1, 1);
-    glEnable(GL_TEXTURE_2D);
-}
+	glVertex2i(x, y);
+	glVertex2i(x + w, y);
+	glVertex2i(x + w, y + h);
+	glVertex2i(x, y + h);
 
-void CGraphFrame::RectFill(int x, int y, int w, int h, RGBA colour)
-{
-    x = x * nZoomscale / nZoom;
-    y = y * nZoomscale / nZoom;
-    w = w * nZoomscale / nZoom;
-    h = h * nZoomscale / nZoom;
+	glEnd();
 
-    glDisable(GL_TEXTURE_2D);
-    glColor4ub(colour.r, colour.g, colour.b, colour.a);
+	glColor4f(1, 1, 1, 1);
+	glEnable(GL_TEXTURE_2D);
+    }
 
-    glBegin(GL_QUADS);
+    void GraphicsFrame::RectFill(int x, int y, int w, int h, RGBA colour) {
+	x = x * nZoomscale / zoomFactor;
+	y = y * nZoomscale / zoomFactor;
+	w = w * nZoomscale / zoomFactor;
+	h = h * nZoomscale / zoomFactor;
 
-    glVertex2i(x, y);
-    glVertex2i(x + w, y);
-    glVertex2i(x + w, y + h);
-    glVertex2i(x, y + h);
+	glDisable(GL_TEXTURE_2D);
+	glColor4ub(colour.r, colour.g, colour.b, colour.a);
 
-    glEnd();
+	glBegin(GL_QUADS);
 
-    glColor4f(1, 1, 1, 1);
-    glEnable(GL_TEXTURE_2D);
-}
+	glVertex2i(x, y);
+	glVertex2i(x + w, y);
+	glVertex2i(x + w, y + h);
+	glVertex2i(x, y + h);
 
-void CGraphFrame::Blit(CImage& src, int x, int y, bool trans)
-{
-    ScaleBlit(src, x, y, src.nWidth, src.nHeight, trans);
-}
+	glEnd();
 
-void CGraphFrame::ScaleBlit(CImage& src, int x, int y, int w, int h, bool trans)
-{
-    x = x * nZoomscale / nZoom;
-    y = y * nZoomscale / nZoom;
-    w = w * nZoomscale / nZoom;
-    h = h * nZoomscale / nZoom;
-    
-    if (nZoom!=nZoomscale)        w++, h++;
+	glColor4f(1, 1, 1, 1);
+	glEnable(GL_TEXTURE_2D);
+    }
 
-    GLfloat nTexendx = 1.0f * src.nWidth / src.nTexwidth;
-    GLfloat nTexendy = 1.0f * src.nHeight / src.nTexheight;
+    void GraphicsFrame::Blit(Image& src, int x, int y, bool trans) {
+	ScaleBlit(src, x, y, src.width, src.height, trans);
+    }
 
-    SetTex(src.hTex);
-    if (trans)
-        glEnable(GL_BLEND);
-    else
-        glDisable(GL_BLEND);
+    void GraphicsFrame::ScaleBlit(Image& src, int x, int y, int w, int h, bool trans) {
+	x = x * nZoomscale / zoomFactor;
+	y = y * nZoomscale / zoomFactor;
+	w = w * nZoomscale / zoomFactor;
+	h = h * nZoomscale / zoomFactor;
+        
+	if (zoomFactor!=nZoomscale)        w++, h++;
 
-    glBegin(GL_QUADS);
+	GLfloat nTexendx = 1.0f * src.width / src.texWidth;
+	GLfloat nTexendy = 1.0f * src.height / src.texHeight;
 
-    glTexCoord2f(       0,       0);    glVertex2i(x, y);
-    glTexCoord2f(nTexendx,       0);    glVertex2i(x + w, y);
-    glTexCoord2f(nTexendx, nTexendy);   glVertex2i(x + w, y + h);
-    glTexCoord2f(       0, nTexendy);   glVertex2i(x, y + h);
+	SetTex(src.hTex);
+	if (trans)
+	    glEnable(GL_BLEND);
+	else
+	    glDisable(GL_BLEND);
 
-    glEnd();
-}
+	glBegin(GL_QUADS);
 
-void CGraphFrame::Clear()
-{
-    glClear(GL_COLOR_BUFFER_BIT);
-}
+	glTexCoord2f(       0,       0);    glVertex2i(x, y);
+	glTexCoord2f(nTexendx,       0);    glVertex2i(x + w, y);
+	glTexCoord2f(nTexendx, nTexendy);   glVertex2i(x + w, y + h);
+	glTexCoord2f(       0, nTexendy);   glVertex2i(x, y + h);
 
-void CGraphFrame::ShowPage()
-{
-    SwapBuffers();
-}
+	glEnd();
+    }
 
-int CGraphFrame::LogicalWidth() const
-{
-    return GetClientSize().GetWidth() * nZoom / nZoomscale;
-}
+    void GraphicsFrame::Clear() {
+	glClear(GL_COLOR_BUFFER_BIT);
+    }
 
-int CGraphFrame::LogicalHeight() const
-{
-    return GetClientSize().GetHeight() * nZoom / nZoomscale;
-}
+    void GraphicsFrame::ShowPage() {
+	SwapBuffers();
+    }
 
-int CGraphFrame::Zoom() const
-{
-    return nZoom;
-}
+    int GraphicsFrame::LogicalWidth() const {
+	return GetClientSize().GetWidth() * zoomFactor / nZoomscale;
+    }
 
-void CGraphFrame::Zoom(int z)
-{
-    nZoom = z;
-}
+    int GraphicsFrame::LogicalHeight() const {
+	return GetClientSize().GetHeight() * zoomFactor / nZoomscale;
+    }
 
-CImage::CImage(const Canvas& src)
-{
-    glGenTextures(1, &hTex);
-    Update(src);
-}
+    int GraphicsFrame::Zoom() const {
+	return zoomFactor;
+    }
 
-CImage::~CImage()
-{
-    SetTex(0);
-    glDeleteTextures(1, &hTex);
-}
+    void GraphicsFrame::Zoom(int z) {
+	zoomFactor = z;
+    }
 
-void CImage::Update(const Canvas& src)
-{
-    nWidth = src.Width();
-    nHeight = src.Height();
+    Image::Image(const Canvas& src) {
+	glGenTextures(1, &hTex);
+	Update(src);
+    }
 
-    nTexwidth = 1;
-    nTexheight = 1;
+    Image::~Image() {
+	SetTex(0);
+	glDeleteTextures(1, &hTex);
+    }
 
-    while (nTexwidth < nWidth) nTexwidth<<=1;
-    while (nTexheight < nHeight) nTexheight<<=1;
+    void Image::Update(const Canvas& src) {
+	width = src.Width();
+	height = src.Height();
 
-    Canvas tmp(src);
-    tmp.Resize(nTexwidth, nTexheight);
+	texWidth = nextPowerOf2(width);
+	texHeight = nextPowerOf2(height);
 
-    SetTex(hTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nTexwidth, nTexheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (u32*)tmp.GetPixels());
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+	Canvas tmp(src);
+	tmp.Resize(texWidth, texHeight);
+
+	SetTex(hTex);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texWidth, texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (u32*)tmp.GetPixels());
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
+    }
+
 }

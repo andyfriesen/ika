@@ -2,7 +2,7 @@
 #include "configdlg.h"
 #include "wx/resource.h"
 #include "wx/utils.h"
-#include "common/configfile.h"
+#include "configfile.h"
 
 enum
 {

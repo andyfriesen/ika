@@ -1,36 +1,50 @@
-/*
-    Generic document class.  If something is common to all documents, then it should go here, so as to save redundancy.
-*/
 
-#ifndef DOCVIEW_H
-#define DOCVIEW_H
+#pragma once
 
 #include "common/utility.h"
 #include "wx/wx.h"
 
-class CMainWnd;
+namespace iked {
 
+    struct MainWindow;
+    struct Document;
 
-class IDocView : public wxMDIChildFrame
-{
-protected:
-    CMainWnd* pParent;
-    std::string name;
+    /**
+     * Base class for all document windows.
+     * Carries with it the notion that a document can be saved, closed, and mutated.
+     *
+     * Also undo stack etc.
+     *
+     * TODO: extend wxPanel, not MDIChildFrame
+     */
+    struct DocumentPanel : public wxMDIChildFrame {
+        DocumentPanel(MainWindow* parentWindow, Document* doc, const std::string& fname);
+        virtual ~DocumentPanel();
 
-    bool bChanged;
+        void setName(const std::string& newName);
+        const std::string& getName() const;
 
-public:
-    IDocView(CMainWnd* parent, const std::string& fname);
-    virtual ~IDocView();
+        virtual Document* getDocument();
 
-    virtual void OnClose(wxCloseEvent& event);
-    virtual void OnSave(wxCommandEvent& event) = 0;
+        virtual void saveDocument(const std::string& fileName);
+        void saveDocument() {
+            saveDocument(getName());
+        }
 
-    const std::string& GetFileName() { return name; }
+        virtual void onClose(wxCloseEvent& event);
+        virtual void onSave(wxCommandEvent& event);
 
-    virtual const void* GetResource() const = 0;        // Returns a pointer to the data that this document is editing.  Some windows just return a unique ID.
+        MainWindow* getParent() { return parent; }
 
-    DECLARE_EVENT_TABLE()
-};
+        DECLARE_EVENT_TABLE()
 
-#endif
+    private:
+        MainWindow* parent;
+        Document* document;
+        bool isChanged;
+
+        std::string name;
+    };
+
+}
+

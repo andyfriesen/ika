@@ -2,9 +2,9 @@
     Main application window.
 */
 
-#ifndef MAIN_H
-#define MAIN_H
+#pragma once
 
+#include "common/utility.h"
 #include "wx/wx.h"
 #include "wx/toolbar.h"
 #include "wx/bitmap.h"
@@ -17,93 +17,99 @@
 #include "controller.h"
 #include "fontview.h"
 
-class IDocView;
-class ProjectView;
-
 //////////////////////////////////////////
 
-// TODO: make this user configurable?
-enum FileType
-{
-    t_unknown,
-    t_folder,
-    t_project,
-    t_script,
-    t_vsp,
-    t_chr,
-    t_font,
-    t_map,
-    t_config,
-    t_text,
-    t_dat
-};
+namespace iked {
 
-//////////////////////////////////////////
+    // TODO: make this user configurable?
+    enum FileType {
+        t_unknown,
+        t_folder,
+        t_project,
+        t_script,
+        t_vsp,
+        t_chr,
+        t_font,
+        t_map,
+        t_config,
+        t_text,
+        t_dat
+    };
 
-class CApp : public wxApp
-{
-public:
-    virtual bool OnInit();
-};
+    struct DocumentPanel;
+    struct ProjectView;
+    struct TileSetPanel;
 
-class CMainWnd : public wxMDIParentFrame
-{
-    std::set<IDocView*> pDocuments;
-    ProjectView* _project;
+    //////////////////////////////////////////
 
-public:    
-    CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
-        const wxPoint& position, const wxSize& size, const long style);
-    ~CMainWnd();
-    
-    void FileQuit(wxCommandEvent& event);
-    void NewProject(wxCommandEvent& event);
-    void NewMap(wxCommandEvent& event);
-    void NewScript(wxCommandEvent& event);
-    void NewSprite(wxCommandEvent& event);
-    void NewTileSet(wxCommandEvent& event);
-    void OnOpen(wxCommandEvent& event);
-    void OnSize(wxSizeEvent& event);
-    void OnQuit(wxCloseEvent& event);
+    struct DocumentFactory {
+        virtual std::string getName() = 0;
+        virtual std::string getExtension() = 0;
+        virtual DocumentResource* createResource() = 0;
+        virtual DocumentResource* createResource(const std::string& fileName) = 0;
+        virtual DocumentPanel* createPanel(MainWindow* parent, const std::string& filename) = 0;
+    };
 
-    void Open(const std::string& fname);
-    void OpenDocument(IDocView* newwnd);
+    struct MainWindow : public wxMDIParentFrame {
+        std::set<DocumentPanel*> pDocuments;
+        ProjectView* _project;
 
-    IDocView* FindWindow(const void* rsrc) const;
-
-    void OnSaveProject(wxCommandEvent& event);
-    void OnSaveProjectAs(wxCommandEvent& event);
-
-    void OnChildClose(IDocView* child);
-
-    wxMenuBar*  CreateBasicMenu();
-
-/*
-    This is technically wrong, as std::vector doesn't stipulate that the entries be sequential.
-    It merely promises random access at O(1).  Fix if it becomes an issue. (unlikely)
-*/
-    std::vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
-
-private:
-    wxToolBar* CreateBasicToolBar();
-    
-    DECLARE_EVENT_TABLE()      
+    public:    
+        MainWindow(const std::vector<std::string>& args);
+        ~MainWindow();
         
-public:
-/*
-     public because I'm a lazy bitch and I don't feel like figuring out what classes should be friends with what other classes. ;P
-     This window owns all the maps, VSPs, CHrs, etc... that get loaded.  It doles them out to child windows when they ask,
-     and nukes things that no longer need to be in memory
-*/
+        void FileQuit(wxCommandEvent& event);
+        void FileNew(wxCommandEvent& event);
+        /*void NewProject(wxCommandEvent& event);
+        void NewMap(wxCommandEvent& event);
+        void NewScript(wxCommandEvent& event);
+        void NewSprite(wxCommandEvent& event);
+        void NewTileSet(wxCommandEvent& event);*/
+        void OnOpen(wxCommandEvent& event);
+        void OnSize(wxSizeEvent& event);
+        void OnQuit(wxCloseEvent& event);
 
-    CController<Map> map;
-    CController<CTileSet> vsp;
-    CController<CSpriteSet> spriteset;
-    // TODO: fonts, scripts, (?) anything else that comes to mind
+        void Open(const std::string& fname);
+        void OpenDocument(DocumentPanel* newwnd);
 
-public:
-    // "Helper" functions.
-    FileType GetFileType(const std::string& fname);
-};
+        DocumentPanel* FindWindow(const void* rsrc) const;
 
-#endif
+        void OnSaveProject(wxCommandEvent& event);
+        void OnSaveProjectAs(wxCommandEvent& event);
+
+        void OnChildClose(DocumentPanel* child);
+
+        wxMenuBar* CreateBasicMenu();
+
+        /*
+         * This is technically wrong, I think: std::vector doesn't stipulate that the elements
+         * be sequential.  It merely promises random access at O(1).  
+         * Fix if it becomes an issue. (unlikely)
+         */
+        std::vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
+
+    private:
+        wxToolBar* CreateBasicToolBar();
+        
+        DECLARE_EVENT_TABLE()      
+
+    public:
+        std::map<std::string, DocumentFactory*> knownDocumentTypes;
+
+        /*
+         * public because I'm a lazy bitch and I don't feel like figuring out what classes should be friends with what other classes. ;P
+         * This window owns all the maps, tilesets, sprites, etc... that get loaded.  It doles them out to child windows when they ask,
+         * and nukes things that no longer need to be in memory
+         */
+
+        //Controller<Map> map;
+        //Controller<TileSet> vsp;
+        Controller<SpriteSet> spriteset;
+        // TODO: fonts, scripts, (?) anything else that comes to mind
+
+    public:
+        // "Helper" functions.
+        FileType GetFileType(const std::string& fname);
+    };
+
+}

@@ -4,7 +4,7 @@
 
 #include "projectview.h"
 #include "main.h"
-#include "common/utility.h"
+#include "misc.h"
 
 struct Leaf : public wxTreeItemData
 {
@@ -48,7 +48,7 @@ END_EVENT_TABLE()
 
 //////////////////////////////////////////////////////////////////////
 
-ProjectView::ProjectView(CMainWnd* parent, const wxPoint& pos, const wxSize& size)
+ProjectView::ProjectView(MainWindow* parent, const wxPoint& pos, const wxSize& size)
     :   wxTreeCtrl(parent, id_treectrl, pos, size, wxTR_HAS_BUTTONS | wxTR_EDIT_LABELS)
 {
     _parent = parent;
@@ -451,7 +451,7 @@ void ProjectView::Load(const std::string& fname)
                     if (fullName.IsAbsolute())
                         fullName.InsertDir(0, tree->GetProjectPath().c_str());
 
-                    tree->AddItem(parentid, /*Path::getFilename(name)*/ fullName.GetFullPath().c_str(), fullName.GetFullPath().c_str());
+                    tree->AddItem(parentid, /*Path::getFileName(name)*/ fullName.GetFullPath().c_str(), fullName.GetFullPath().c_str());
                 }
             }
         }

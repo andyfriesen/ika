@@ -1,5 +1,5 @@
-#ifndef NEWSPRITEDLG_H
-#define NEWSPRITEDLG_H
+#if 0
+#pragma once
 
 #include <wx/dialog.h>
 
@@ -14,5 +14,4 @@ public:
 
     DECLARE_EVENT_TABLE()
 };
-
 #endif

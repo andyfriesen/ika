@@ -1,3 +1,4 @@
+#if 0
 
 #include <wx/grid.h>
 #include <wx/xrc/xmlres.h>
@@ -5,7 +6,7 @@
 #include "movescripteditor.h"
 #include "spriteset.h"
 #include "spritesetview.h"
-#include "common/chr.h"
+#include "chr.h"
 
 namespace
 {
@@ -16,16 +17,16 @@ namespace
     };
 }
 
-BEGIN_EVENT_TABLE(CMovescriptEditor, wxDialog)
-    //EVT_SIZE(CMovescriptEditor::OnSize) // Doesn't work.  Dammit.
-    EVT_BUTTON(wxID_OK, CMovescriptEditor::OnOk)
-    //EVT_CLOSE(CMovescriptEditor::OnClose)
+BEGIN_EVENT_TABLE(MoveScriptEditor, wxDialog)
+    //EVT_SIZE(MoveScriptEditor::OnSize) // Doesn't work.  Dammit.
+    EVT_BUTTON(wxID_OK, MoveScriptEditor::OnOk)
+    //EVT_CLOSE(MoveScriptEditor::OnClose)
 
-    EVT_GRID_EDITOR_SHOWN(CMovescriptEditor::BeginEdit)
-    EVT_GRID_CELL_CHANGE(CMovescriptEditor::EditCell)
+    EVT_GRID_EDITOR_SHOWN(MoveScriptEditor::BeginEdit)
+    EVT_GRID_CELL_CHANGE(MoveScriptEditor::EditCell)
 END_EVENT_TABLE()
 
-CMovescriptEditor::CMovescriptEditor(CSpriteSetView* parent, CSpriteSet* sprite, int idx)
+MoveScriptEditor::MoveScriptEditor(SpriteSetView* parent, SpriteSet* sprite, int idx)
     : pSprite(sprite)
     , pParent(parent)
     , animScriptGrid(0)
@@ -54,11 +55,11 @@ CMovescriptEditor::CMovescriptEditor(CSpriteSetView* parent, CSpriteSet* sprite,
     UpdateDlg();
 }
 
-void CMovescriptEditor::UpdateDlg()
+void MoveScriptEditor::UpdateDlg()
 {
     struct Local
     {
-        static void setInt(CMovescriptEditor* This, const char* name, int value)
+        static void setInt(MoveScriptEditor* This, const char* name, int value)
         {
             XRCCTRL(*This, name, wxTextCtrl)->SetValue(toString(value).c_str());
         }
@@ -114,7 +115,7 @@ void CMovescriptEditor::UpdateDlg()
     }
 }
 
-void CMovescriptEditor::UpdateData()
+void MoveScriptEditor::UpdateData()
 {
     CCHRfile& chr = pSprite->GetCHR();
     CCHRfile::StringMap& animScripts = chr.moveScripts;
@@ -133,7 +134,7 @@ void CMovescriptEditor::UpdateData()
     chr.HotH() = atoi(XRCCTRL(*this, "edit_hotheight", wxTextCtrl)->GetValue().c_str());
 }
 
-void CMovescriptEditor::OnSize(wxCommandEvent& event)
+void MoveScriptEditor::OnSize(wxCommandEvent& event)
 {
     // this gets called before the constructor finishes. :P
     if (!animScriptGrid || !metaDataGrid)
@@ -145,19 +146,19 @@ void CMovescriptEditor::OnSize(wxCommandEvent& event)
     XRCCTRL(*this, "panel_main", wxPanel)->GetSizer()->Layout();
 }
 
-void CMovescriptEditor::OnClose(wxCommandEvent& event)
+void MoveScriptEditor::OnClose(wxCommandEvent& event)
 {
     UpdateData();
     Show(false);
 }
 
-void CMovescriptEditor::OnOk(wxCommandEvent&)
+void MoveScriptEditor::OnOk(wxCommandEvent&)
 {
     UpdateData();
     EndModal(true);
 }
 
-void CMovescriptEditor::BeginEdit(wxGridEvent& event)
+void MoveScriptEditor::BeginEdit(wxGridEvent& event)
 {
     wxGrid* grid = wxDynamicCast(event.GetEventObject(), wxGrid);
     wxASSERT(grid);
@@ -165,7 +166,7 @@ void CMovescriptEditor::BeginEdit(wxGridEvent& event)
     oldValue = grid->GetCellValue(event.GetRow(), event.GetCol());
 }
 
-void CMovescriptEditor::EditCell(wxGridEvent& event)
+void MoveScriptEditor::EditCell(wxGridEvent& event)
 {
     wxGrid* grid = wxDynamicCast(event.GetEventObject(), wxGrid);
     wxASSERT(grid != 0);
@@ -176,7 +177,7 @@ void CMovescriptEditor::EditCell(wxGridEvent& event)
         wxASSERT(false);
 }
 
-void CMovescriptEditor::EditAnimScript(wxGridEvent& event)
+void MoveScriptEditor::EditAnimScript(wxGridEvent& event)
 {
     CCHRfile::StringMap& scripts = pSprite->GetCHR().moveScripts;
 
@@ -206,7 +207,7 @@ void CMovescriptEditor::EditAnimScript(wxGridEvent& event)
     }
 }
 
-void CMovescriptEditor::EditMetaData(wxGridEvent& event)
+void MoveScriptEditor::EditMetaData(wxGridEvent& event)
 {
     int row = event.GetRow();
     int col = event.GetCol();
@@ -237,3 +238,4 @@ void CMovescriptEditor::EditMetaData(wxGridEvent& event)
     }
 }
 
+#endif

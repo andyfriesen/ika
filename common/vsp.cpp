@@ -219,15 +219,15 @@ int VSP::Save(const std::string& fname) {
     f.Write(buffer, 64);			// description. (authoring info, whatever)
 
     z_stream stream;
-    int nDatasize = tiles.size() * _width * _height * bpp;
+    size_t nDatasize = tiles.size() * _width * _height * bpp;
 
     // Compression buffer.  11/10ths the size of the original, plus 12 bytes.
-    ScopedArray<u8> cb = new u8[(nDatasize * 11)/10 + 12];
+    ScopedArray<u8> cb = new u8[(nDatasize * 11) / 10 + 12];
 
-    stream.next_in = (Bytef*)tileBuffer.get();
+    stream.next_in = reinterpret_cast<Bytef*>(tileBuffer.get());
     stream.avail_in = nDatasize;
-    stream.next_out=(Bytef*)cb.get();
-    stream.avail_out=(nDatasize * 11)/10 + 12;	// +10% and 12 bytes
+    stream.next_out = reinterpret_cast<Bytef*>(cb.get());
+    stream.avail_out = (nDatasize * 11) / 10 + 12;    // +10% and 12 bytes
     stream.data_type = Z_BINARY;
 
     stream.zalloc = NULL;

@@ -1,23 +1,22 @@
+#if 0
 
-#ifndef MOVESCRIPTEDITOR_H
-#define MOVESCRIPTEDITOR_H
+#pragma once
 
-#include "wx\wx.h"
+#include "wx/wx.h"
 #include "common/utility.h"
 
-struct CCHRfile;
-class CSpriteSet;
-class CSpriteSetView;
+class CCHRfile;
+class SpriteSet;
+class SpriteSetView;
 
 using std::vector;
 
 class wxGridEvent;
 
-class CMovescriptEditor : public wxDialog
-{
+class MoveScriptEditor : public wxDialog {
     public:
 
-        CMovescriptEditor(CSpriteSetView* parent, CSpriteSet* sprite, int idx = 0);
+        MoveScriptEditor(SpriteSetView* parent, SpriteSet* sprite, int idx = 0);
         
         void UpdateData();
         void UpdateDlg();
@@ -35,8 +34,8 @@ class CMovescriptEditor : public wxDialog
 
         void InitControls();
 
-        CSpriteSetView*     pParent;
-        CSpriteSet*         pSprite;
+        SpriteSetView*     pParent;
+        SpriteSet*         pSprite;
         int                 nCurframe;
 
         class wxGrid*       animScriptGrid;
@@ -62,10 +61,4 @@ class CMovescriptEditor : public wxDialog
 
         DECLARE_EVENT_TABLE()
 };
-
 #endif
-        
-        
-        
-
-

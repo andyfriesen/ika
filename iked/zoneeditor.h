@@ -1,6 +1,5 @@
 
-#ifndef ZONEEDITOR_H
-#define ZONEEDITOR_H
+#pragma once
 
 #include "wx/wx.h"
 #include "common/utility.h"

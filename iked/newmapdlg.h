@@ -1,5 +1,5 @@
-#ifndef NEWMAPDLG_H
-#define NEWMAPDLG_H
+#if 0
+#pragma once
 
 #include <wx/dialog.h>
 #include <string>
@@ -18,5 +18,4 @@ public:
 
     DECLARE_EVENT_TABLE()
 };
-
 #endif

@@ -1,135 +1,148 @@
-
 /*
-    This code is a bit more complicated than I'd like.  And it searches for things the most obvious way possible. :x (optimize that
-    if it becomes an issue)
+
+Controller
+    Knows how to create documents. 
+    knows how to destroy documents
+    Knows what documents have been created.
+    can reliably be asked for a document with some name.
+    can clone a document when it is saved under a new name.
+    can handle unnamed documents as well as named.
+
+
+Problem:
+    Documents deallocate themselves with delete and not
+    the free() method of the deallocator that created them.
 */
 
-#ifndef CONTROLLER_H
-#define CONTROLLER_H
+
+/*
+ * This code is a bit more complicated than I'd like.  And it searches for 
+ * things the most obvious way possible. (optimize that if it becomes an issue)
+ */
+
+#pragma once
+
+#include <cassert>
+#include <map>
 
 #include "common/utility.h"
-#include <list>
-
 #include "common/log.h"
+#include "document.h"
 
-template <class T>
-class CController
-{
-private:
-    struct Resource
-    {
-        std::string  sFilename;
-        int     nRefcount;
-        T*      pData;
+namespace iked {
 
-        Resource(const std::string& s="", T* d = 0) : sFilename(s), nRefcount(1), pData(d) {}
+    template <typename T>
+    struct Allocator {
+        virtual ~Allocator() { }
+	virtual T* allocate(const std::string& name) = 0;
+	//virtual void free(T* t) = 0;
     };
 
-    typedef std::list <Resource> ResourceList;
+    template <class T>
+    struct DefaultAllocator : Allocator<T> {
+	virtual T* allocate(const std::string& name) {
+	    return new new T(name);
+	}
 
-    ResourceList    rsrc;
+	/*virtual void free(T* t) {
+	    delete t;
+	}*/
+    };
 
-    Resource* Find(const std::string& name)
-    {
-        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
+    /**
+     * Document controller for a set of documents which are identified by their filename.
+     */
+    template <typename T>
+    struct Controller {
+        Controller()
+            : allocator(new DefaultAllocator<T>)
         {
-            if (i->sFilename==name)
-                return &*i;
+            assert(allocator != 0);
         }
 
-        return 0;
-    }
-
-    Resource* Find(const T* data)
-    {
-        for (ResourceList::iterator i = rsrc.begin(); i != rsrc.end(); i++)
-        {
-            if (i->pData==data)
-                return &*i;
+	explicit Controller(Allocator<T>* alloc)
+	    : allocator(alloc)
+	{
+            assert(allocator != 0);
         }
 
-        return 0;
-    }
+	~Controller() {
+            foreach (Document* doc, documents ) {
+		Log::Write("Leak detected! %s", doc->getName().c_str());
+                delete doc;
+		//allocator->free(debug_cast<T*>(doc));
+	    }
+	    delete allocator;
+	}
 
-    // Specialize this if T doesn't have a bool Load(const char* s) method.
-    bool LoadFromFile(T* p, const std::string& name)
-    {
-        Log::Write("Loading      %s", name.c_str());
-        try
-        {
-            return p->Load(name.c_str());
-        }
-        catch (std::runtime_error err)
-        {
-            Log::Write("Failed to load %s: %s", name.c_str(), err.what());
-            return false;
-        }
-    }
-
-public:
-
-    T* Load(std::string name)
-    {
+	Document* get(const std::string& name) {
 #ifdef WIN32
-        name = toUpper(name);
+	    std::string fileName = toUpper(name);
+#else
+	    std::string fileName = name;
 #endif
 
-        Resource* ri = Find(name);
+	    Document* doc = find(fileName);
 
-        if (ri)
-        {
-            Log::Write("Addref       %s", name.c_str());
-            ri->nRefcount++;
-            return ri->pData;
-        }
-        else
-        {
-            T* pData = new T;
-            if (!LoadFromFile(pData, name))
-            {
-                delete pData;
-                return 0;
-            }
+	    if (doc) {
+		Log::Write("Addref       %s", name.c_str());
+		doc->ref();
+		return doc;
 
-            rsrc.push_back(Resource(name, pData));
+	    } else {
+		T* data = 0;
+		std::string errorMessage;
 
-            return pData;
-        }
-    }
+		try {
+		    data = allocator->allocate(fileName);
+		} catch (std::runtime_error& error) {
+		    errorMessage = error.what();
+		    data = 0;
+		}
 
-    bool Release(T* data)
-    {
-        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
-        {
-            if (i->pData==data)
-            {
-                i->nRefcount--;
+		if (data == 0) {
+		    Log::Write("allocate(\"%s\") failed: %s", name.c_str(), errorMessage.c_str());
+		    delete data;
+		    return 0;
+		}
 
-                if (i->nRefcount == 0)
-                {
-                    Log::Write("Deallocating %s", i->sFilename.c_str());
-                    delete i->pData;
-                    rsrc.erase(i);
-                    
-                }
-                else
-                    Log::Write("Decref       %s", i->sFilename.c_str());
+		documents.insert(data);
 
-                return true;
-            }
+		return data;
+	    }
+	}
+
+	void free(Document* doc) {
+	    assert(doc != 0);
+	    assert(doc->getRefCount() > 0);
+
+	    doc->unref();
+	}
+
+        // Test to see if we own this document.
+        bool owns(Document* doc) {
+            return documents.count(doc);
         }
 
-        return false;
-    }
-
-    ~CController()
-    {
-        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
-        {
-            Log::Write("Leak! %s", i->sFilename.c_str());
-            delete i->pData;
+        void documentDestroyed(Document* doc) {
+            assert(owns(doc));
+            documents.remove(doc);
         }
-    }
-};
 
-#endif
+    private:
+	Document* find(const std::string& name) {
+            foreach (Document* doc, documents) {
+		if (Path::equals(doc->getName(), name)) {
+		    return doc;
+		}
+	    }
+	    return 0;
+	}
+
+	typedef std::set<Document*> DocumentSet;
+	DocumentSet documents;
+
+	Allocator<T>* allocator;
+    };
+}
+

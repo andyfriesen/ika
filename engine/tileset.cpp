@@ -1,3 +1,4 @@
+#include <stdexcept>
 #include "tileset.h"
 
 #include "common/log.h"
@@ -13,23 +14,21 @@ CTileSet::CTileSet(const std::string& fname, Video::Driver* v)
     CDEBUG("ctileset::loadvsp");
     VSP vsp;
     
-    if (!vsp.Load(fname))
-        throw TileSetException();
+    if (!vsp.Load(fname)) {
+        throw std::runtime_error("Unable to load VSP file " + fname);
+    }
     
     nFrames=vsp.NumTiles();
     nFramex=vsp.Width();
     nFramey=vsp.Height();
     
-    try
-    {
+    try {
         hFrame.resize(nFrames);
-        for (int i = 0; i < nFrames; i++)
-        {
+        for (int i = 0; i < nFrames; i++) {
             hFrame[i] = video->CreateImage(vsp.GetTile(i));
         }
     }
-    catch(...)
-    {	
+    catch(...) {	
         throw TileSetException();
     }
     

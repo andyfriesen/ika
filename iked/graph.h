@@ -2,80 +2,81 @@
 // TODO: Make a second implementation of this stuff, and make these three classes into interfaces, with their existing implementation
 // moved to GLGraphFactory, GLGraphFrame, and GLImage, respectively.
 
-#ifndef GRAPHWIDGET_H
-#define GRAPHWIDGET_H
+#pragma once
 
 #include "common/utility.h"
 #include "common/Canvas.h"
 #include <set>
 #include "wx/wx.h"
 #include "wx/glcanvas.h"
-
-// win32 is retarded -- andy
-#ifdef WIN32
-#   undef FindText
+#if _WIN32
+#   include "wx/msw/winundef.h"
 #endif
 
-class CGraphFrame;
-class CImage;
+namespace iked {
 
-class CGraphFrame : public wxGLCanvas
-{
-    /*    
-        We keep a list of all open GraphFrame instances so that they can all have the same OpenGL context.
-        When creating a new instance, the constructor uses an (any, it doesn't matter which) element from
-        this set, if there is one.  If not, then it creates a new OpenGL context.
+    struct Image;
 
-        One odd point is that every Image is dependant on a GL context.  So if any CImages exist, while
-        there is no context, things might get icky.  However, this does not make sense, as Images exist
-        only so that they may be blitted on GraphFrames.  Just something to keep in mind.
-    */
-    static std::set<CGraphFrame*>  pInstances;
+    struct GraphicsFrame : public wxGLCanvas {
+        GraphicsFrame(wxWindow* parent);
+        ~GraphicsFrame();
 
-    // The GraphFrame does its own zooming.  Everything possible is done to make this invisible to the parent window.
-    int nZoom;
-public:
+        void Rect(int x, int y, int w, int h, RGBA colour);
+        void RectFill(int x, int y, int w, int h, RGBA colour);
 
-    CGraphFrame(wxWindow* parent);
-    ~CGraphFrame();
+        void Blit(Image& src, int x, int y, bool trans);
+        void ScaleBlit(Image& src, int x, int y, int w, int h, bool trans);
 
-    void Rect(int x, int y, int w, int h, RGBA colour);
-    void RectFill(int x, int y, int w, int h, RGBA colour);
+        void Clear();
 
-    void Blit(CImage& src, int x, int y, bool trans);
-    void ScaleBlit(CImage& src, int x, int y, int w, int h, bool trans);
+        void ShowPage();
 
-    void Clear();
+        void OnErase(wxEraseEvent&);
+        void OnSize(wxSizeEvent& event);
+        void OnMouseEvent(wxMouseEvent& event);
+        void OnPaint(wxPaintEvent& event);
 
-    void ShowPage();
+        int LogicalWidth() const;
+        int LogicalHeight() const;
 
-    void OnErase(wxEraseEvent&) {}
-    void OnSize(wxSizeEvent& event);
-    void OnMouseEvent(wxMouseEvent& event);
-    void OnPaint(wxPaintEvent& event);
+        int Zoom() const;
+        void Zoom(int z);
 
-    int LogicalWidth() const;
-    int LogicalHeight() const;
+        /// x and y are client window coords.
+        void getLogicalPosition(int* x, int* y);
 
-    int Zoom() const;
-    void Zoom(int z);
+        /// x and y are logical.  make them client window coords
+        void getClientPosition(int* x, int* y);
 
-    DECLARE_EVENT_TABLE()
-};
+        DECLARE_EVENT_TABLE()
+    private:
+        /**
+         * We keep a list of all open GraphFrame instances so that they can all have the same OpenGL context.
+         * When creating a new instance, the constructor uses an (any, it doesn't matter which) element from
+         * this set, if there is one.  If not, then it creates a new OpenGL context.
 
-class CImage
-{
-    friend CGraphFrame;
-protected:
-    GLuint hTex;
-    int nWidth, nHeight;
-    int nTexwidth, nTexheight;
+         * One odd point is that every Image is dependant on a GL context.  So if any CImages exist, while
+         * there is no context, things might get icky.  However, this does not make sense, as Images exist
+         * only so that they may be blitted on GraphFrames.  Just something to keep in mind.
+         */
+        static std::set<GraphicsFrame*>  allFrames;
 
-public:
-    CImage(const Canvas& src);
-    ~CImage();
+        /// The GraphFrame does its own zooming.  Everything possible is done to make this invisible to the parent window.
+        int zoomFactor;
+    };
 
-    void Update(const Canvas& src);
-};
+    struct Image {
+        friend struct GraphicsFrame;
 
-#endif
+        Image(const Canvas& src);
+        ~Image();
+
+        void Update(const Canvas& src);
+
+    private:
+        GLuint hTex;
+        int width, height;
+        int texWidth, texHeight;
+    };
+
+}

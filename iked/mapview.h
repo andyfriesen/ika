@@ -9,23 +9,22 @@
     that was done with software rendering.
 */
 
-#ifndef MAPVIEW_H
-#define MAPVIEW_H
+#pragma once
 
 #include <map>
 
 #include "common/utility.h"
-#include "common/utility.h"
+#include "misc.h"
 
-#include "wx\wx.h"
+#include "wx/wx.h"
 
 #include "docview.h"
 #include "map.h"
 
-class CMainWnd;
-class CGraphFrame;
-class CTileSet;
-class CSpriteSet;
+class MainWindow;
+class GraphicsFrame;
+class TileSet;
+class SpriteSet;
 class CLayerVisibilityControl;
 class EntityEditor;
 class ZoneEditor;
@@ -47,11 +46,11 @@ namespace MapEditState
 
         // accessors since subclasses aren't privy to the inner workings of MapView
         Map::Layer* CurLayer() const;
-        CMainWnd*   Parent() const;
-        CTileSet*   TileSet() const;
+        MainWindow*   Parent() const;
+        TileSet*   TileSet() const;
         Point       CameraPos() const;
         Map*        Map() const;
-        std::map<std::string, CSpriteSet*>& SpriteSets() const;
+        std::map<std::string, SpriteSet*>& SpriteSets() const;
         void        Render();
 
     public:
@@ -94,7 +93,7 @@ namespace MapEditState
     };*/
 }
 
-class MapView : public IDocView
+class MapView : public DocumentPanel
 {
     friend class EntityEditor;
     friend class MapEditState::IEditState;
@@ -115,12 +114,12 @@ class MapView : public IDocView
     };
 
 private:
-    CMainWnd*           pParentwnd;
+    MainWindow*           pParentwnd;
 
     wxSashLayoutWindow* pLeftbar;
     wxSashLayoutWindow* pRightbar;
     wxScrolledWindow*   pScrollwin;
-    CGraphFrame*        _graph;
+    GraphicsFrame*        _graph;
     CLayerVisibilityControl*
                         _layerList;
 
@@ -130,18 +129,18 @@ protected:
 //private:
 
     Map*                _map;
-    CTileSet*           _tileSet;
+    TileSet*           _tileSet;
     ScopedPtr<MapEditState::IEditState> _editState;
 
     // Entity spritesets needed for this map.  The key is the filename of the sprite.
     // I hope that using strings to get sprites like this isn't going to be a performance
     // liability.
-    typedef std::map<std::string, CSpriteSet*> SpriteMap;
+    typedef std::map<std::string, SpriteSet*> SpriteMap;
     SpriteMap _sprites;
 
 public:
-    MapView(CMainWnd* parent, int width, int height, const std::string& tilesetname);
-    MapView(CMainWnd* parent, const std::string& fname);
+    MapView(MainWindow* parent, int width, int height, const std::string& tilesetname);
+    MapView(MainWindow* parent, const std::string& fname);
 
     void InitAccelerators();
     void InitMenu();

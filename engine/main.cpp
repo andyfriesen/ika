@@ -14,8 +14,7 @@
 //#include "soft32/Driver.h"
 #include "keyboard.h"
 
-void Engine::Sys_Error(const char* errmsg)
-{
+void Engine::Sys_Error(const char* errmsg) {
     CDEBUG("sys_error");
 
 #if (defined WIN32)
@@ -33,16 +32,14 @@ void Engine::Sys_Error(const char* errmsg)
     exit(-1);
 }
 
-void Engine::Script_Error()
-{
+void Engine::Script_Error() {
     CDEBUG("script_error");
     Shutdown();
 
     std::string err = script.GetErrorMessage();
 
 #if (defined WIN32)
-    if (!err.empty())
-    {
+    if (!err.empty()) {
         SDL_SysWMinfo info;
         SDL_VERSION(&info.version);
         HWND hWnd = SDL_GetWMInfo(&info) ? info.window : HWND_DESKTOP;
@@ -56,64 +53,65 @@ void Engine::Script_Error()
     exit(-1);
 }
 
-void Engine::CheckMessages()
-{
+void Engine::CheckMessages() {
     CDEBUG("checkmessages");
 
     SDL_Event event;
 
-    while (SDL_PollEvent(&event))
-    {
-        switch (event.type)
-        {
-        case SDL_KEYDOWN:
-            the<Input>()->KeyDown(event.key.keysym.sym);
-            // bottom line screenshot if F11 is pressed
-//            if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
-//                ScreenShot();
+    while (SDL_PollEvent(&event)) {
+        switch (event.type) {
+            case SDL_KEYDOWN: {
+                the<Input>()->KeyDown(event.key.keysym.sym);
+                // bottom line screenshot if F11 is pressed
+                //if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
+                //    ScreenShot();
 
-            // Alt-F4.  Quit.  NOW.
-            if (event.key.keysym.sym == SDLK_F4 &&
-                (SDL_GetModState() & (KMOD_LALT | KMOD_RALT)))
-            {
+                // Alt-F4: Quit.  Now.
+                if (event.key.keysym.sym == SDLK_F4 &&
+                    (SDL_GetModState() & (KMOD_LALT | KMOD_RALT))) {
+                    Shutdown();
+                    exit(0);
+                }
+                break;
+            }
+
+            case SDL_KEYUP: {
+                the<Input>()->KeyUp(event.key.keysym.sym);
+                break;
+            }
+
+            case SDL_JOYAXISMOTION: {
+                the<Input>()->JoyAxisMove(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
+                break;
+            }
+
+            case SDL_JOYBUTTONDOWN:
+            case SDL_JOYBUTTONUP: {
+                the<Input>()->JoyButtonChange(event.jbutton.which, event.jbutton.button, event.jbutton.state == SDL_PRESSED);
+                break;
+            }
+
+            case SDL_QUIT: {
                 Shutdown();
                 exit(0);
+                break;
             }
-            break;
 
-        case SDL_KEYUP:
-            the<Input>()->KeyUp(event.key.keysym.sym);
-            break;
-
-        case SDL_JOYAXISMOTION:
-            the<Input>()->JoyAxisMove(event.jaxis.which, event.jaxis.axis, event.jaxis.value);
-            break;
-
-        case SDL_JOYBUTTONDOWN:
-        case SDL_JOYBUTTONUP:
-            the<Input>()->JoyButtonChange(event.jbutton.which, event.jbutton.button, event.jbutton.state == SDL_PRESSED);
-            break;
-
-        case SDL_QUIT:
-            Shutdown();
-            exit(0);
-            break;
+            default: {
+                break;
+            }
         }
     }
 }
 
-void Engine::MainLoop()
-{
+void Engine::MainLoop() {
     CDEBUG("mainloop");
     static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
 
     ScopedPtr<Ika::Font> font;
-    try
-    {
+    try {
         font = new Ika::Font("system.fnt", video);
-    }
-    catch (Ika::FontException)
-    {
+    } catch (Ika::FontException) {
         font = 0;
         _showFramerate = false;
     }
@@ -121,16 +119,14 @@ void Engine::MainLoop()
     int now = GetTime();
     SyncTime();
 
-    while (true)
-    {
+    while (true) {
         CheckMessages();
 
         int skipcount = 0;
 
         while (
             (_oldTime < now) && 
-            (skipcount <= _frameSkip))
-        {
+            (skipcount <= _frameSkip)) {
             GameTick();
             _oldTime++;
             skipcount++;
@@ -141,8 +137,7 @@ void Engine::MainLoop()
 
         Render();
 
-        if (_showFramerate)
-        {
+        if (_showFramerate) {
             font->PrintString(0, 0, va("Fps: %i", video->GetFrameRate()));
         }
 
@@ -150,10 +145,9 @@ void Engine::MainLoop()
     }
 }
 
-void Engine::Startup()
 // TODO: Make a nice happy GUI thingie for making a user.cfg
 // This is ugly. :(
-{
+void Engine::Startup() {
     CDEBUG("Startup");
 
     CConfigFile cfg("user.cfg");
@@ -163,8 +157,7 @@ void Engine::Startup()
     _frameSkip      = min(1, cfg.Int("frameskip"));
 
     // Now the tricky stuff.
-    try
-    {
+    try {
         if (cfg.Int("log"))
             Log::Init("ika.log");
 
@@ -192,8 +185,8 @@ void Engine::Startup()
         std::string driver = toLower(cfg["videodriver"]);
 
 #if 0
-        if (driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
-        {
+        // disabled because it's unstable and scary. 
+        if (driver == "soft" || driver == "sdl") {
             Log::Write("Starting SDL video driver");
             video = new Soft32::Driver(
                 cfg.Int("xres"), 
@@ -229,18 +222,12 @@ void Engine::Startup()
 
         Log::Write("Initializing sound");
         Sound::Init(cfg.Int("nosound") != 0);
-    }
-    catch (Video::Exception)
-    {
+    } catch (Video::Exception) {
         video = 0;
         Sys_Error("Unable to set the video mode.\nAre you sure your hardware can handle the chosen settings?");
-    }
-    catch (Sound::Exception)
-    {
+    } catch (Sound::Exception) {
         Log::Write("Sound initialization failed.  Disabling audio.");
-    }
-    catch (...)
-    {
+    } catch (...) {
         Sys_Error("An unknown error occurred during initialization.");
     }
 
@@ -259,15 +246,13 @@ void Engine::Startup()
     Log::Write("Startup complete");
 }
 
-void Engine::Shutdown()
-{
+void Engine::Shutdown() {
     CDEBUG("shutdown");
 
 #ifdef _DEBUG
     static bool blah = false;
 
-    if (blah)
-    {
+    if (blah) {
         Log::Write("REDUNDANT CALLS TO SHUTDOWN!!!!!");
         return;
     }
@@ -285,8 +270,7 @@ void Engine::Shutdown()
 }
 
 
-void Engine::RenderEntity(const Entity* e)
-{
+void Engine::RenderEntity(const Entity* e) {
     const Sprite* const s = e->sprite;
     const Map::Layer* layer = map.GetLayer(e->layerIndex);
 
@@ -299,8 +283,7 @@ void Engine::RenderEntity(const Entity* e)
     RenderEntity(e, x, y);
 }
 
-void Engine::RenderEntity(const Entity* e, int x, int y)
-{
+void Engine::RenderEntity(const Entity* e, int x, int y) {
     const Sprite* s = e->sprite;
 
     uint frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
@@ -311,13 +294,9 @@ void Engine::RenderEntity(const Entity* e, int x, int y)
 
 // ------------------------------------------------------------------------------------------
 
-namespace
-{
-    class CompareEntities
-    {
-    public:
-        inline int operator () (const Entity* a, const Entity* b) const
-        {
+namespace {
+    struct CompareEntities {
+        inline int operator () (const Entity* a, const Entity* b) const {
             return a->y < b->y;
         }
     };
@@ -329,9 +308,10 @@ namespace
  * Maybe keep the entity linked list y sorted at all times by reordering
  * whenever a y value changes.  That's only O(n) as opposed to O(nlogn) or
  * whatever unholy growth rate this is.
+ *
+ * Update: meh.  Sorting doesn't seem to be a bottleneck.
  */
-void Engine::RenderEntities(uint layerIndex)
-{
+void Engine::RenderEntities(uint layerIndex) {
     CDEBUG("renderentities");
     std::vector<Entity*>     drawlist;
     const Point res = video->GetResolution();
@@ -342,8 +322,7 @@ void Engine::RenderEntities(uint layerIndex)
 
     // first, get a list of entities onscreen
     int width, height;
-    for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
-    {
+    for (EntityList::iterator i = entities.begin(); i != entities.end(); i++) {
         Entity* e = *i;
         const Sprite* sprite = e->sprite;
 
@@ -363,26 +342,23 @@ void Engine::RenderEntities(uint layerIndex)
             drawlist.push_back(e);                                                          // the entity is onscreen, tag it.
     }
 
-    if (!drawlist.size())
-        return;                                                                             // nobody onscreen?  Easy out!
+    if (!drawlist.empty()) {
+        // Sort them by y value. (see the CompareEntity functor above)
+        std::sort(drawlist.begin(), drawlist.end(), CompareEntities());
 
-    // Sort them by y value. (see the CompareEntity functor above)
-    std::sort(drawlist.begin(), drawlist.end(), CompareEntities());
+        video->SetBlendMode(Video::Normal);
+        for (std::vector<Entity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++) {
+            const Entity* e = *j;
+            const Sprite* s = e->sprite;
+            int x = e->x - xwin - s->nHotx + layer->x;
+            int y = e->y - ywin - s->nHoty + layer->y;
 
-    video->SetBlendMode(Video::Normal);
-    for (std::vector<Entity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++)
-    {
-        const Entity* e = *j;
-        const Sprite* s = e->sprite;
-        int x = e->x - xwin - s->nHotx + layer->x;
-        int y = e->y - ywin - s->nHoty + layer->y;
-
-        RenderEntity(e, x, y);
+            RenderEntity(e, x, y);
+        }
     }
 }
 
-void Engine::RenderLayer(uint layerIndex)
-{
+void Engine::RenderLayer(uint layerIndex) {
     CDEBUG("renderlayer");
     int        lenX, lenY;        // x/y run length
     int        firstX, firstY;        // x/y start
@@ -405,15 +381,13 @@ void Engine::RenderLayer(uint layerIndex)
     lenX = res.x / tiles->Width() + 1;
     lenY = res.y / tiles->Height() + 2;
 
-    if (firstX < 0)
-    {
+    if (firstX < 0) {
         lenX -= -firstX;
         adjustX += firstX * tiles->Width();
         firstX = 0;
     }
 
-    if (firstY < 0)
-    {
+    if (firstY < 0) {
         lenY -= -firstY;
         adjustY += firstY * tiles->Height();
         firstY = 0;
@@ -431,10 +405,8 @@ void Engine::RenderLayer(uint layerIndex)
     int cury = -adjustY;
 
     video->SetBlendMode(Video::Normal);
-    for (int y = 0; y < lenY; y++)
-    {
-        for (int x = 0; x < lenX; x++)
-        {
+    for (int y = 0; y < lenY; y++) {
+        for (int x = 0; x < lenX; x++) {
             video->BlitImage(tiles->GetTile(*t), curx, cury);
 
             curx += tiles->Width();
@@ -446,22 +418,21 @@ void Engine::RenderLayer(uint layerIndex)
     }
 }
 
-void Engine::Render()
-{
+void Engine::Render() {
     Render(renderList);
 }
 
-void Engine::Render(const std::vector<uint>& list)
-{
+void Engine::Render(const std::vector<uint>& list) {
     CDEBUG("render");
     const Point res = video->GetResolution();
 
-    if (!_isMapLoaded) return;
+    if (!_isMapLoaded) {
+        return;
+    }
 
     tiles->UpdateAnimation(GetTime());
 
-    if (cameraTarget)
-    {
+    if (cameraTarget) {
         const Map::Layer* layer = map.GetLayer(cameraTarget->layerIndex);
 
         SetCamera(Point(
@@ -471,38 +442,40 @@ void Engine::Render(const std::vector<uint>& list)
 
     // Note that we do not clear the screen here.  This is intentional.
 
-    for (uint i = 0; i < list.size(); i++)
-    {
+    for (uint i = 0; i < list.size(); i++) {
         uint j = list[i];
-        if (j < map.NumLayers())
-        {
+        if (j < map.NumLayers()) {
             RenderLayer(j);
             RenderEntities(j);
         }
     }
 
-    if (!_recurseStop)
-    {
+    if (!_recurseStop) {
         _recurseStop = true;
         DoHook(_hookRetrace);
         _recurseStop = false;
     }
 }
 
-void Engine::DoHook(HookList& hooklist)
-{
-    hooklist.Flush(); // handle any pending insertions/deletions
+void Engine::DoHook(HookList& hooklist) {
+    if (!_recurseStop) {
+        try {
+            _recurseStop = true;
+            hooklist.flush(); // handle any pending insertions/deletions
 
-    for (HookList::List::iterator i = hooklist.begin(); i != hooklist.end(); i++)
-    {
-        script.ExecObject(*i);
+            for (HookList::iterator i = hooklist.begin(); i != hooklist.end(); i++) {
+                script.ExecObject(*i);
+            }
+        } catch (...) {
+            _recurseStop = false;
+            throw;
+        }
     }
 }
 
 // ----------------------------------------- AI -------------------------------------------------
 
-void Engine::GameTick()
-{
+void Engine::GameTick() {
     CDEBUG("gametick");
 
     CheckKeyBindings();
@@ -510,13 +483,11 @@ void Engine::GameTick()
     ProcessEntities();
 }
 
-void Engine::CheckKeyBindings()
-{
+void Engine::CheckKeyBindings() {
     // The "queue" is only one element big.  Unless someone hit two buttons in the same instant,
     // nobody will notice. (hopefully)
 
-    if (ScriptObject* func = the<Input>()->GetQueuedEvent())
-    {
+    if (ScriptObject* func = the<Input>()->GetQueuedEvent()) {
         // The key that triggered the event would be initially pressed if not for this.
         // This is not useful behaviour.
         the<Input>()->Unpress();
@@ -526,14 +497,11 @@ void Engine::CheckKeyBindings()
     }
 }
 
-void Engine::ProcessEntities()
-{
-    for (EntityList::iterator curEnt = entities.begin(); curEnt != entities.end(); curEnt++)
-    {
+void Engine::ProcessEntities() {
+    for (EntityList::iterator curEnt = entities.begin(); curEnt != entities.end(); curEnt++) {
         Entity* ent = *curEnt;
         ent->speedCount += ent->speed;
-        while (ent->speedCount >= timeRate)
-        {
+        while (ent->speedCount >= timeRate) {
             ent->Update();
             ent->speedCount -= timeRate;
         }
@@ -542,10 +510,9 @@ void Engine::ProcessEntities()
 
 // --------------------------------------- Entity Handling --------------------------------------
 
-bool Engine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
 // returns true if there is an obstructed map square anywhere along a specified vertical or horizontal line
 // Also TODO: think up a better obstruction system
-{
+bool Engine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex) {
     CDEBUG("detectmapcollision");
     const int tx = tiles->Width();
     const int ty = tiles->Height();
@@ -560,25 +527,28 @@ bool Engine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
     if (x < 0 || 
         y < 0 || 
         x2 >= layer->Width() ||
-        y2 >= layer->Height())
+        y2 >= layer->Height()
+    ) {
         return true;
+    }
 
-    for (int cy = y; cy <= y2; cy++)
-        for (int cx = x; cx <= x2; cx++)
-            if (layer->obstructions(cx, cy))
+    for (int cy = y; cy <= y2; cy++) {
+        for (int cx = x; cx <= x2; cx++) {
+            if (layer->obstructions(cx, cy)) {
                 return true;
+            }
+        }
+    }
 
     return false;
 }
 
-Entity* Engine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w, int h, uint layerIndex, bool wantobstructable)
 // returns the entity colliding with the specified entity, or 0 if none.
 // Note that passing 0 for ent is valid, indicating that you simply want to know if there are any entities in a given area
-{
+Entity* Engine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w, int h, uint layerIndex, bool wantobstructable) {
     CDEBUG("detectentitycollision");
 
-    for (EntityList::const_iterator i = entities.begin(); i != entities.end(); i++)
-    {
+    for (EntityList::const_iterator i = entities.begin(); i != entities.end(); i++) {
         Entity* e = *i;
         const Sprite* s = e->sprite;
 
@@ -597,8 +567,7 @@ Entity* Engine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w, 
 }
 
 // Warning: Brute force.
-Map::Layer::Zone* Engine::TestZoneCollision(const Entity* ent)
-{
+Map::Layer::Zone* Engine::TestZoneCollision(const Entity* ent) {
     Map::Layer* layer = map.GetLayer(ent->layerIndex);
 
     assert(ent);
@@ -612,8 +581,7 @@ Map::Layer::Zone* Engine::TestZoneCollision(const Entity* ent)
     for (std::vector<Map::Layer::Zone>::iterator
         iter = layer->zones.begin();
         iter != layer->zones.end();
-        iter++)
-    {
+        iter++) {
         if (!(
             x > iter->position.right ||
             y > iter->position.bottom ||
@@ -626,36 +594,30 @@ Map::Layer::Zone* Engine::TestZoneCollision(const Entity* ent)
     return 0;
 }
 
-void Engine::TestActivate(const Entity* player)
 // checks to see if we're supposed to run some a script, due to the player's actions.
 // Thus far, that's one of two things.
 // 1) the player steps on a zone, or
 // 2) the player activates to an entity.
 
-// This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
-{
+// This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things. 
+void Engine::TestActivate(const Entity* player) {
     CDEBUG("testactivate");
     Sprite* sprite = player->sprite;
 
     int tx = (player->x + sprite->nHotw / 2) / tiles->Width();
     int ty = (player->y + sprite->nHoth / 2) / tiles->Height();
 
-    if (player->isMoving)
-    {
+    if (player->isMoving) {
         Map::Layer::Zone* zone = TestZoneCollision(player);
-        if (zone)
-        {
-            if (map.zones.count(zone->label))
-            {
+        if (zone) {
+            if (map.zones.count(zone->label)) {
                 Map::Zone& bluePrint = map.zones[zone->label];
-                if (!bluePrint.scriptName.empty())
-                {
+                if (!bluePrint.scriptName.empty()) {
                     script.CallScript(bluePrint.scriptName);
                     SyncTime();
                 }
             }
-            else
-            {
+            else {
                 Log::Write("No blueprint %s exists!", zone->label.c_str());
             }
         }
@@ -667,8 +629,7 @@ void Engine::TestActivate(const Entity* player)
 
     tx = player->x; ty = player->y;
     // entity activation
-    switch(player->direction)
-    {
+    switch(player->direction) {
     case face_up:        ty -= sprite->nHoth;    break;
     case face_down:      ty += sprite->nHoth;    break;
     case face_left:      tx -= sprite->nHotw;    break;
@@ -681,10 +642,8 @@ void Engine::TestActivate(const Entity* player)
     }
 
     Entity* ent = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
-    if (ent)
-    {
-        if (ent->activateScript)
-        {
+    if (ent) {
+        if (ent->activateScript) {
             the<Input>()->Unpress();
             script.ExecObject(ent->activateScript);
             the<Input>()->Flush();
@@ -694,8 +653,7 @@ void Engine::TestActivate(const Entity* player)
     }
 }
 
-Entity* Engine::SpawnEntity()
-{
+Entity* Engine::SpawnEntity() {
     Entity* e = new Entity(this);
 
     entities.push_back(e);
@@ -703,44 +661,41 @@ Entity* Engine::SpawnEntity()
     return e;
 }
 
-void Engine::DestroyEntity(Entity* e)
-{
+void Engine::DestroyEntity(Entity* e) {
 #ifdef _DEBUG
+    bool found = false;
+
     // std::list has no search method.
     // This is just a big dumb integrity check anyway.
-    for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
-        if (e == (*i))
-        {
-#endif
-            sprite.Free(e->sprite);
-
-            // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
-            if (cameraTarget == e)  cameraTarget = 0;
-            if (player == e)       player = 0;
-
-            // actually nuke it
-            entities.remove(e);
-            delete e;
-#ifdef _DEBUG
-            return;
+    for (EntityList::iterator i = entities.begin(); i != entities.end(); i++) {
+        if (e == (*i)) {
+            found = true;
+            break;
         }
-
-    // In a Perfect World, this will never execute.
-    Log::Write("Attempt to unallocate invalid entity!!!");
+    }
+    assert(found);
 #endif
+
+    sprite.Free(e->sprite);
+
+    // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
+    if (cameraTarget == e)  cameraTarget = 0;
+    if (player == e)       player = 0;
+
+    // actually nuke it
+    entities.remove(e);
+    delete e;
 }
 
 // --------------------------------- Misc (interface with old file formats, etc...) ----------------------
 
-void Engine::LoadMap(const std::string& filename)
-// Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure.
-{
+// Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure. 
+void Engine::LoadMap(const std::string& filename) {
     CDEBUG("loadmap");
 
     int bleah = 0;
 
-    try
-    {
+    try {
         Log::Write("Loading map \"%s\"", filename.c_str());
 
         std::string oldTileSetName = map.tileSetName;
@@ -753,8 +708,7 @@ void Engine::LoadMap(const std::string& filename)
             renderList.push_back(i);
 
         // Only load the tileset if it's different
-        if (map.tileSetName != oldTileSetName)
-        {
+        if (map.tileSetName != oldTileSetName) {
             delete tiles;                                               // nuke the old tileset
             tiles = new CTileSet(map.tileSetName, video);               // load up them tiles
         }
@@ -764,14 +718,12 @@ void Engine::LoadMap(const std::string& filename)
         std::map<const Map::Entity*, Entity*> entMap;                   // used so we know which is related to which, so we can properly gather objects from the map script. (once it's loaded)
 
         // for each layer, create entities
-        for (uint curLayer = 0; curLayer < map.NumLayers(); curLayer++)
-        {
+        for (uint curLayer = 0; curLayer < map.NumLayers(); curLayer++) {
             const Map::Layer* lay = map.GetLayer(curLayer);
             const std::vector<Map::Entity>& ents = lay->entities;
             bleah += ents.size();
 
-            for (uint curEnt = 0; curEnt < ents.size(); curEnt++)
-            {
+            for (uint curEnt = 0; curEnt < ents.size(); curEnt++) {
                 Entity* ent = new Entity(this, ents[curEnt], curLayer);
                 entities.push_back(ent);
                 ent->sprite = sprite.Load(ent->spriteName, video);
@@ -791,40 +743,50 @@ void Engine::LoadMap(const std::string& filename)
         for (std::map<const Map::Entity*, Entity*>::iterator
             iter = entMap.begin();
             iter != entMap.end();
-            iter++)
+            iter++) 
         {
             // if they're already nonzero, they changed in the init code, so we shouldn't change them.
-            if (!iter->second->moveScript)
+
+            if (!iter->second->moveScript) {
                 iter->second->moveScript = script.GetObjectFromMapScript(iter->first->moveScript);
-            if (!iter->second->activateScript)
+            }
+
+            if (!iter->second->activateScript) {
                 iter->second->activateScript = script.GetObjectFromMapScript(iter->first->activateScript);
-            if (!iter->second->adjActivateScript)
+            }
+
+            if (!iter->second->adjActivateScript) {
                 iter->second->adjActivateScript = script.GetObjectFromMapScript(iter->first->adjActivateScript);
+            }
         }
 
         SyncTime();
+    } catch (std::runtime_error err) {   
+        Sys_Error(va("LoadMap(\"%s\"): %s", filename.c_str(), err.what())); 
+    } catch (TileSetException) {
+        Sys_Error(va("Unable to load tileset %s", map.tileSetName.c_str())); 
+
+#if 0 // pending removal    
+    } catch (const char* msg) {
+        Sys_Error(va("Failed to load %s", msg));                            
+    } catch (const std::string& msg)  {   
+        Sys_Error(va("Failed to load %s", msg.c_str()));                    
+#endif
+
     }
-    catch (std::runtime_error err)  {   Sys_Error(va("LoadMap(\"%s\"): %s", filename.c_str(), err.what())); }
-    catch (TileSetException)        {   Sys_Error(va("Unable to load tileset %s", map.tileSetName.c_str())); }
-    catch (const char* msg)         {   Sys_Error(va("Failed to load %s", msg));                            }
-    catch (const std::string& msg)  {   Sys_Error(va("Failed to load %s", msg.c_str()));                    }
-    //catch (...)                     {   Sys_Error(va("Unknown error loading map %s", filename.c_str()));    }
 }
 
-Point Engine::GetCamera()
-{
+Point Engine::GetCamera() {
     return Point(xwin, ywin);
 }
 
-void Engine::SetCamera(Point p)
-{
+void Engine::SetCamera(Point p) {
     Point res = video->GetResolution();
     xwin = max<int>(0, min<int>(p.x, map.width - res.x - 1));
     ywin = max<int>(0, min<int>(p.y, map.height - res.y - 1));
 }
 
-void Engine::SyncTime()
-{
+void Engine::SyncTime() {
     _oldTime = GetTime();
 }
 
@@ -836,11 +798,9 @@ Engine::Engine()
     , ywin(0)
     , cameraTarget(0)
     , _isMapLoaded(false)
-    , _recurseStop(false)
-{}
+    , _recurseStop(false) {}
 
-int main(int argc, char* args[])
-{
+int main(int argc, char* args[]) {
     Engine engine;
     engine.Startup();
     engine.MainLoop();

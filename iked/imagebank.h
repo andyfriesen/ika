@@ -1,36 +1,80 @@
 
-#ifndef IMAGEBANK_H
-#define IMAGEBANK_H
+#pragma once
 
-#include "common/utility.h"
 #include <set>
 
-class CImage;
+#include "common/utility.h"
+#include "document.h"
+
 struct Canvas;
 
-// abstract image bank class.
-// Subclassed for VSPs, fonts and such, so they can have hardware - specific copies
-// that stay sync'd.
-class CImageBank
-{
-protected:
-    std::vector<CImage*> bitmaps;
-    std::set<int> altered;
+namespace iked {
 
-    virtual void SetImage(const Canvas& img, int idx)=0;
-public:
-    virtual ~CImageBank();
+    struct Image;
 
-    void Sync();
-    void SyncAll();
-    void FreeBitmaps();
+    /**
+     * A document that is an array of images.
+     * Handles image generation, and updating of those images
+     * when changes to the underlying canvases occurs.
+     *
+     * Width and height should return the width/height of the 
+     * biggest image in the array. (easy most of the time, when
+     * all the images are of the same size)
+     *
+     * IMPORTANT: call flush() at the end of the base class constructor.
+     */
+    struct ImageArrayDocument : AbstractDocument {
+        ImageArrayDocument(const std::string& fileName);
+        virtual ~ImageArrayDocument();
 
-    virtual Canvas& Get(int idx)=0;
-    void Set(const Canvas& img, int idx);
+        int getCount();
+        int getWidth();
+        int getHeight();
+        const Canvas& getCanvas(int idx);
+#if 0
+        void setCanvas(const Canvas& img, int idx);
+        void insert(const Canvas& canvas, int position);
+        void remove(int position);
 
-    virtual int Count() const = 0;
-
-    CImage& GetImage(int idx);
-};
-
+        void append(const Canvas& canvas) {
+            insert(canvas, getCount());
+        }
 #endif
+
+        Image& getImage(int idx);
+
+    protected:
+        // Call this when the actual ordering of the images has changed.
+        void flush();
+
+        // Abstract part that must be implemented by subclasses.
+        virtual int doGetCount() = 0;
+        virtual int doGetWidth() = 0;
+        virtual int doGetHeight() = 0;
+        virtual const Canvas& doGetCanvas(int index) = 0;
+        virtual void doSetCanvas(const Canvas& canvas, int index) = 0;
+        virtual void doInsert(const Canvas& canvas, int position) = 0;
+        virtual void doRemove(int position) = 0;
+        // --
+
+    private:
+        bool isDirty(int index);
+        void makeDirty(int index);
+
+        void sync(int index);
+        void syncAll();
+        void free();
+
+        typedef std::vector<Image*> ImageList;
+        typedef std::set<int> DirtyList;
+            
+        ImageList images;
+        DirtyList dirty;
+
+#ifdef DEBUG
+        void invariant();
+#else
+        inline void invariant() {}
+#endif
+    };
+}

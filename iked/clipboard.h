@@ -1,8 +1,7 @@
-#ifndef CLIPBOARD_H
-#define CLIPBOARD_H
+#pragma once
 
-#include "common/Canvas.h"
-#include "common/map.h"
+#include "canvas.h"
+#include "map.h"
 
 /**
  * Functions to simulate a clipboard, because wx's clipboard interface
@@ -17,5 +16,3 @@ namespace Clipboard
 //    const MapClip& GetMap();
 
 };
-
-#endif

@@ -1,105 +1,90 @@
+
+#include <cassert>
 #include "tileset.h"
 #include "common/vsp.h"
 #include "common/Canvas.h"
 #include "graph.h"
 
-CTileSet::CTileSet()
-: pVsp(0), nCurtile(0)
-{
-}
+namespace iked {
 
-bool CTileSet::Load(const char* fname)
-{
-    VSP* pNewvsp = new VSP;
-
-    if(!pNewvsp->Load(fname))
+    TileSet::TileSet(int width, int height, int numTiles)
+        : curTile(0)
     {
-        delete pNewvsp;
-        return false;
+        vsp = new VSP;
+        vsp->New(width, height, numTiles);
+        invariant();
     }
 
-    delete pVsp;
-    pVsp = pNewvsp;
+    TileSet::TileSet(VSP* v) 
+        : curTile(0)
+        , vsp(v)
+    {
+        invariant();
+    }
 
-    SyncAll();
+    TileSet::~TileSet() {
+        invariant();
+        delete vsp;
+    }
 
-    return true;
-}
+    TileSet* TileSet::clone() {
+        invariant();
+	throw std::runtime_error("TileSet::clone Not yet implemented");
+    }
 
-bool CTileSet::Save(const char* fname)
-{
-    pVsp->Save(fname);
-    return true;
-}
+    int TileSet::doGetCount() {
+        invariant();
+        return vsp->NumTiles();
+    }
 
-void CTileSet::New(int width, int height)
-{
-    if (!pVsp)
-        pVsp = new VSP;
+    int TileSet::doGetWidth() {
+        invariant();
+        return vsp->Width();
+    }
 
-    pVsp->New(width, height, 0);
-    SyncAll();
-}
+    int TileSet::doGetHeight() {
+        invariant();
+        return vsp->Height();
+    }
 
-Canvas& CTileSet::Get(int tileidx)
-{
-    return pVsp->GetTile(tileidx);
-}
+    const Canvas& TileSet::doGetCanvas(int tileidx) {
+        invariant();
+        return vsp->GetTile(tileidx);
+    }
 
-void CTileSet::SetImage(const Canvas& newtile, int tileidx)
-{
-    pVsp->GetTile(tileidx)=newtile;
-}
+    void TileSet::doSetCanvas(const Canvas& newtile, int tileidx) {
+        vsp->GetTile(tileidx) = newtile;
+        invariant();
+    }
 
-int CTileSet::Count() const
-{
-    return pVsp?pVsp->NumTiles() : 0;
-}
+    void TileSet::doInsert(const Canvas& canvas, int position) {
+        vsp->InsertTile(position);
+        vsp->PasteTile(canvas, position);
+        invariant();
+    }
 
-int CTileSet::Width() const
-{
-    return pVsp?pVsp->Width() : 0;
-}
+    void TileSet::doRemove(int pos) {
+        vsp->DeleteTile(pos);
+        pos = max(pos, getCount() - 1);
+        invariant();
+    }
 
-int CTileSet::Height() const
-{
-    return pVsp?pVsp->Height():0;
-}
+    void TileSet::save(const std::string& fname) {
+        invariant();
+        vsp->Save(fname);
+    }
 
-void CTileSet::AppendTile()
-{
-    pVsp->AppendTile();
-    SyncAll();
-}
+    void TileSet::setCurTile(int t) {
+        if (0 <= t && t < getCount()) {
+            curTile = t;
+        }
+    }
 
-void CTileSet::AppendTile(Canvas& c)
-{
-    pVsp->AppendTile();
-    pVsp->PasteTile(c, pVsp->NumTiles() - 1);
-    SyncAll();
-}
+    DEBUG_BLOCK(
+        void TileSet::invariant() {
+            assert(vsp != 0);
+            assert(0 <= curTile && curTile < getCount());
+        }
+    )
 
-void CTileSet::InsertTile(uint pos)
-{
-    pVsp->InsertTile(pos);
-    SyncAll();
-}
-
-void CTileSet::InsertTile(uint pos, Canvas& c)
-{
-    pVsp->InsertTile(pos);
-    pVsp->PasteTile(c, pos);
-    SyncAll();
-}
-
-void CTileSet::DeleteTile(uint pos)
-{
-    pVsp->DeleteTile(pos);
-    SyncAll();
-}
-
-void CTileSet::SetCurTile(uint t)
-{
-    if (t < 0 || t >= pVsp->NumTiles()) return;
-    nCurtile = t;
 }

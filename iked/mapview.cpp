@@ -11,7 +11,7 @@
 #include "graph.h"
 #include "tileset.h"
 #include "spriteset.h"
-#include "common/log.h"
+#include "log.h"
 #include "layervisibilitycontrol.h"
 #include "layerdlg.h"
 #include "entityeditor.h"
@@ -156,14 +156,14 @@ namespace
         EVT_COMMAND_RANGE(id_filler, id_filler + 100, wxEVT_COMMAND_BUTTON_CLICKED, MapSash::OnCommand)
     END_EVENT_TABLE()
 
-    class MapFrame : public CGraphFrame
+    class MapFrame : public GraphicsFrame
     {
         DECLARE_EVENT_TABLE();
         
         MapView* pMapview;
     public:
         MapFrame(wxWindow* parent, MapView* mapview)
-            : CGraphFrame(parent)
+            : GraphicsFrame(parent)
             , pMapview(mapview)
         {}
 
@@ -178,7 +178,7 @@ namespace
         }
     };
 
-    BEGIN_EVENT_TABLE(MapFrame, CGraphFrame)
+    BEGIN_EVENT_TABLE(MapFrame, GraphicsFrame)
         EVT_PAINT(MapFrame::OnPaint)
         EVT_KEY_DOWN(MapFrame::OnKeyEvent)
     END_EVENT_TABLE()
@@ -235,8 +235,8 @@ namespace
 namespace MapEditState
 {
     Map::Layer* IEditState::CurLayer() const { return This->_curLayer; }
-    CMainWnd* IEditState::Parent() const { return This->pParent; }
-    CTileSet* IEditState::TileSet() const { return This->_tileSet; }
+    MainWindow* IEditState::Parent() const { return This->pParent; }
+    TileSet* IEditState::TileSet() const { return This->_tileSet; }
     Point IEditState::CameraPos() const
     {
         return Point(This->xwin, This->ywin);
@@ -247,7 +247,7 @@ namespace MapEditState
         return This->_map;
     }
 
-    std::map<std::string, CSpriteSet*>& IEditState::SpriteSets() const
+    std::map<std::string, SpriteSet*>& IEditState::SpriteSets() const
     {
         return This->_sprites;
     }
@@ -538,7 +538,7 @@ namespace MapEditState
             if (Map()->entities.count(e->bluePrint))
             {
                 Map::Entity& ent = Map()->entities[e->bluePrint];
-                CSpriteSet* sprite = SpriteSets()[ent.spriteName];
+                SpriteSet* sprite = SpriteSets()[ent.spriteName];
 
                 if (sprite)
                 {
@@ -685,7 +685,7 @@ loopBack:
                 if (Map()->entities.count(e.bluePrint))
                 {
                     const Map::Entity& ent = Map()->entities[e.bluePrint];
-                    const CSpriteSet* sprite = SpriteSets()[ent.spriteName];
+                    const SpriteSet* sprite = SpriteSets()[ent.spriteName];
 
                     if (sprite)
                     {
@@ -876,8 +876,8 @@ BEGIN_EVENT_TABLE(MapView, wxMDIChildFrame)
     EVT_MOUSE_EVENTS(MapView::HandleMouse)
 END_EVENT_TABLE()
 
-MapView::MapView(CMainWnd* parent, int width, int height, const std::string& tilesetname)
-    : IDocView(parent, "")
+MapView::MapView(MainWindow* parent, int width, int height, const std::string& tilesetname)
+    : DocumentPanel(parent, "")
     , pParentwnd(parent)
     , _curZone(0)
 {
@@ -888,8 +888,8 @@ MapView::MapView(CMainWnd* parent, int width, int height, const std::string& til
     Init();
 }
 
-MapView::MapView(CMainWnd* parent, const std::string& name)
-    : IDocView(parent, name)
+MapView::MapView(MainWindow* parent, const std::string& name)
+    : DocumentPanel(parent, name)
     , pParentwnd(parent)
     , _curZone(0)
 {
@@ -1505,8 +1505,8 @@ namespace
     struct DrawEntry
     {
         int x, y;
-        CSpriteSet* sprite;
-        DrawEntry(int _x, int _y, CSpriteSet* s)
+        SpriteSet* sprite;
+        DrawEntry(int _x, int _y, SpriteSet* s)
             : x(_x)
             , y(_y)
             , sprite(s)
@@ -1533,7 +1533,7 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
         if (e.x < xoffset || e.y < yoffset)   continue;
         if (e.x > x2   || e.y > y2)     continue;
 
-        CSpriteSet* ss = 0;
+        SpriteSet* ss = 0;
         if (_map->entities.count(e.bluePrint))
         {
             Map::Entity& bluePrint = _map->entities[e.bluePrint];

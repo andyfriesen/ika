@@ -261,7 +261,7 @@ Map* ImportVerge2Map(const std::string& fileName) {
         }
 
         // obstructions
-        uint bufSize = fgetq(f);
+        u32 bufSize = fgetq(f);
         ScopedArray<u8> rleBuffer(new u8[bufSize]);
         ScopedArray<u8> obsData(new u8[width * height]);
         fread(rleBuffer.get(), 1, bufSize, f);

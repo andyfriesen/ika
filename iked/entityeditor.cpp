@@ -78,7 +78,7 @@ void EntityEditor::UpdateDlg()
         Map::Entity& ent = _map->entities[_curEnt->bluePrint];
         get<wxTextCtrl>("edit_label")->SetValue(                _curEnt->label.c_str());
         get<wxTextCtrl>("edit_sprite")->SetValue(               ent.spriteName.c_str());
-        get<wxTextCtrl>("edit_speed")->SetValue(                ToString(ent.speed).c_str());
+        get<wxTextCtrl>("edit_speed")->SetValue(                toString(ent.speed).c_str());
         get<wxTextCtrl>("edit_movescript")->SetValue(           ent.moveScript.c_str());
         get<wxTextCtrl>("edit_script")->SetValue(               ent.activateScript.c_str());
         get<wxCheckBox>("check_obstructs")->SetValue(           ent.obstructsEntities);
@@ -86,8 +86,8 @@ void EntityEditor::UpdateDlg()
         get<wxCheckBox>("check_obstructedbymap")->SetValue(     ent.obstructedByEntities);
     }
 
-    get<wxTextCtrl>("edit_x")->SetValue(            ToString(_curEnt->x).c_str());
-    get<wxTextCtrl>("edit_y")->SetValue(            ToString(_curEnt->y).c_str());
+    get<wxTextCtrl>("edit_x")->SetValue(            toString(_curEnt->x).c_str());
+    get<wxTextCtrl>("edit_y")->SetValue(            toString(_curEnt->y).c_str());
 }
 
 void EntityEditor::OnSelectEntity(wxCommandEvent& event)
@@ -109,4 +109,5 @@ void EntityEditor::Show(Map::Layer::Entity* ent)
     UpdateDlg();
     wxDialog::Show(true);
 }
+
 #endif

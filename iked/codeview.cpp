@@ -3,16 +3,17 @@
 #include <cassert>
 
 #include "common/utility.h"
+
 #include "main.h"
 #include "codeview.h"
-#include "common/fileio.h"
+#include "fileio.h"
 
 namespace
 {
     enum    {   linecountmargin, foldmargin };
 };
 
-BEGIN_EVENT_TABLE(CCodeView, IDocView)
+BEGIN_EVENT_TABLE(CCodeView, DocumentPanel)
     EVT_STC_CHARADDED(CCodeView::id_ed, CCodeView::OnCharAdded)
 
     EVT_MENU(CCodeView::id_filesave, CCodeView::OnSave)
@@ -128,9 +129,9 @@ void CCodeView::InitAccelerators()
     SetAcceleratorTable(table);
 }
 
-CCodeView::CCodeView(CMainWnd* parent,
+CCodeView::CCodeView(MainWindow* parent,
                    const std::string& name)
-                   : IDocView(parent, name)
+                   : DocumentPanel(parent, name)
 {
     // --- Set up the menu ---
     // Basically, it takes the existing menu, and adds a few commands to it here and there.
@@ -260,16 +261,12 @@ void CCodeView::SetSyntax(int nWhich, wxCommandEvent& event)
         pTextctrl->StyleSetForeground(nWhich, color);
         
         pTextctrl->StyleSetFontAttr(nWhich,         
-#ifndef WX232
-            // Compensate for wx2.2.9's fruity way of messing up the point sizes.
-            font.GetPointSize()-2,
-#else
             font.GetPointSize(),
-#endif
             font.GetFaceName(),
             font.GetWeight()==wxBOLD,
             font.GetStyle()==wxITALIC,
-            font.GetUnderlined());
+            font.GetUnderlined()
+	);
               
         pTextctrl->Show(true);
         pTextctrl->SetFocus();
@@ -454,7 +451,7 @@ void CCodeView::OnCharAdded(wxStyledTextEvent& event)
 
         // autoindent after def, while, etc....
         // I have NO idea why I'm going 4 back from the end. ;P
-        s = pTextctrl->GetLine(nCurline - 1).Trim();
+        s = pTextctrl->GetLine(nCurline - 1).trim();
         if (s.Right(4).StartsWith(":"))
             strcat(linebuf, "\t");
 

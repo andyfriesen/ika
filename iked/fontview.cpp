@@ -6,7 +6,7 @@
 
 namespace
 {
-    class FontFrame : public CGraphFrame
+    class FontFrame : public GraphicsFrame
     {
         DECLARE_EVENT_TABLE()
 
@@ -14,7 +14,7 @@ namespace
 
     public:
         FontFrame(wxWindow* parent, FontView* fontview)
-            : CGraphFrame(parent)
+            : GraphicsFrame(parent)
             , pFontview(fontview)
         {}
 
@@ -26,12 +26,12 @@ namespace
         }
     };
 
-    BEGIN_EVENT_TABLE(FontFrame, CGraphFrame)
+    BEGIN_EVENT_TABLE(FontFrame, GraphicsFrame)
         EVT_PAINT(FontFrame::OnPaint)
     END_EVENT_TABLE()
 }
 
-BEGIN_EVENT_TABLE(FontView, IDocView)
+BEGIN_EVENT_TABLE(FontView, DocumentPanel)
 
     EVT_SCROLLWIN(FontView::OnScroll)
     EVT_CLOSE(FontView::OnClose)
@@ -46,8 +46,8 @@ BEGIN_EVENT_TABLE(FontView, IDocView)
 
 END_EVENT_TABLE()
 
-FontView::FontView(CMainWnd* parentwnd, const std::string& fname)
-    : IDocView(parentwnd, fname)
+FontView::FontView(MainWindow* parentwnd, const std::string& fname)
+    : DocumentPanel(parentwnd, fname)
     , pParent(parentwnd)
     , sFilename(fname)
     , nCurfont(0)
@@ -121,7 +121,7 @@ void FontView::Render()
 
             // Too slow. -- andy
             Canvas& rBitmap = pFontfile->GetGlyph(nFont);
-            CImage rImage(rBitmap);
+            Image rImage(rBitmap);
             pGraph->ScaleBlit(rImage, x * tx + 1, y * ty + 1,
                 rBitmap.Width(), rBitmap.Height(), true);
 
@@ -129,9 +129,8 @@ void FontView::Render()
 
             nFont++;
 
-            if (nFont >= pFontfile->NumGlyphs()) {
+            if (nFont >= pFontfile->NumGlyphs()) 
                 goto nomoredrawing; // abort the loop
-            }
 
             nFontwidth = nWidth / tx;
             nFontheight = (nHeight / ty) + 1;

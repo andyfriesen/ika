@@ -1,106 +1,96 @@
 
+#include <cassert>
 #include "spriteset.h"
 #include "common/chr.h"
 #include "common/log.h"
 
-CSpriteSet::CSpriteSet() : pCHR(0)
-{
-}
+namespace iked {
 
-void CSpriteSet::New(int width, int height)
-{
-    pCHR = new CCHRfile;
-    pCHR->New(width, height);
-}
-
-bool CSpriteSet::Load(const char* fname)
-{
-    CCHRfile* pNewchr = new CCHRfile;
-
-    try
-    {   pNewchr->Load(fname);   }
-    catch (std::runtime_error err)
+    SpriteSet::SpriteSet(int width, int height, int numFrames) 
+        : ImageArrayDocument("")
     {
-        Log::Write(va("CCHRfile: %s", err.what()));
-        return false;
+        chr = new CCHRfile(width, height);
+        flush();
+        invariant();
     }
 
-    delete pCHR;
-    pCHR = pNewchr;
+    SpriteSet::SpriteSet(CCHRfile* c, const std::string& fileName)
+        : ImageArrayDocument(fileName)
+        , chr(c)
+    {
+        flush();
+        invariant();
+    }
 
-    SyncAll();
-    return true;
-}
+    SpriteSet::~SpriteSet() {
+        invariant();
+        delete chr;
+    }
 
-bool CSpriteSet::Save(const char* fname)
-{
-    std::string fileName(fname);
-    int pos = fileName.rfind('.');
-    
-    // If the extension is CHR, then export to the old format.
-    if (pos != std::string::npos && Path::equals("chr", fileName.substr(pos)) == true)
-        pCHR->SaveOld(fileName);
-    else
-        pCHR->Save(fname);
+    void SpriteSet::save(const std::string& fileName) {
+        invariant();
+        int pos = fileName.rfind('.');
+        
+        // If the extension is CHR, then export to the old format.
+        if (Path::equals(
+            Path::getExtension(fileName), "chr"))
+        {
+            chr->SaveOld(fileName);
+        } else {
+            chr->Save(fileName);
+        }
+    }
 
-    return true;
-}
+    void SpriteSet::sendCommand(commands::Command* cmd) {
+        delete cmd;
+    }
 
-void CSpriteSet::SetImage(const Canvas& img, int idx)
-{
-    pCHR->GetFrame(idx)=img;
-}
+    void SpriteSet::resize(int width, int height) {
+        chr->Resize(width, height);
+        invariant();
+    }
 
-Canvas& CSpriteSet::Get(int idx)
-{
-    return pCHR->GetFrame(idx);
-}
+    SpriteSet* SpriteSet::asSpriteSet() {
+        return this;
+    }
 
-int CSpriteSet::Count() const
-{
-    return pCHR->NumFrames();
-}
+    const Canvas& SpriteSet::doGetCanvas(int idx) {
+        invariant();
+        return chr->GetFrame(idx);
+    }
 
-int CSpriteSet::Width() const
-{
-    return pCHR?pCHR->Width():0;
-}
+    void SpriteSet::doSetCanvas(const Canvas& img, int idx) {
+        chr->GetFrame(idx)=img;
+        invariant();
+    }
 
-int CSpriteSet::Height() const
-{
-    return pCHR?pCHR->Height():0;
-}
+    int SpriteSet::doGetCount() {
+        invariant();
+        return chr->NumFrames();
+    }
 
-void CSpriteSet::AppendFrame()
-{
-    InsertFrame(Count());
-}
+    int SpriteSet::doGetWidth() {
+        invariant();
+        return chr->Width();
+    }
 
-void CSpriteSet::AppendFrame(Canvas& p)
-{
-    InsertFrame(Count(), p);
-}
+    int SpriteSet::doGetHeight() {
+        return chr->Height();
+    }
 
-void CSpriteSet::InsertFrame(int i)
-{
-    pCHR->InsertFrame(i);
-    SyncAll();
-}
+    void SpriteSet::doInsert(const Canvas& canvas, int position) {
+        chr->InsertFrame(position, const_cast<Canvas&>(canvas));
+        invariant();
+    }
 
-void CSpriteSet::InsertFrame(int i, Canvas& p)
-{
-    pCHR->InsertFrame(i, p);
-    SyncAll();
-}
+    void SpriteSet::doRemove(int position) {
+        chr->DeleteFrame(position);
+        invariant();
+    }
 
-void CSpriteSet::DeleteFrame(int i)
-{
-    pCHR->DeleteFrame(i);
-    SyncAll();
-}
-
-void CSpriteSet::Resize(int width, int height)
-{
-    pCHR->Resize(width, height);
-    SyncAll();
+    DEBUG_BLOCK(
+        void SpriteSet::invariant() {
+            assert(chr != 0);
+        }
+    )
 }

@@ -7,8 +7,7 @@
 #define METHOD(x)  PyObject* x(PyObject* self, PyObject* args)
 #define METHOD1(x) PyObject* x(PyObject*)
 
-namespace Script
-{
+namespace Script {
     Engine*    engine;
 
     PyObject*   entityDict;
@@ -39,8 +38,7 @@ namespace Script
         return Py_None;                                    // returning void :)
     }
 
-    METHOD(ika_exit)
-    {
+    METHOD(ika_exit) {
         char* message="";
 
         if (!PyArg_ParseTuple(args, "|s:exit", &message))
@@ -53,16 +51,14 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(ika_getcaption)
-    {
+    METHOD1(ika_getcaption) {
         char* s;
         SDL_WM_GetCaption(&s, 0);
 
         return PyString_FromString(s);
     }
 
-    METHOD(ika_setcaption)
-    {
+    METHOD(ika_setcaption) {
         char* s = "";
 
         if (!PyArg_ParseTuple(args, "|s:SetCaption", &s))
@@ -74,13 +70,11 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(ika_getframerate)
-    {
+    METHOD1(ika_getframerate) {
         return PyInt_FromLong(engine->video->GetFrameRate());
     }
 
-    METHOD(ika_delay)
-    {
+    METHOD(ika_delay) {
         int ticks;
 
         if (!PyArg_ParseTuple(args, "i:delay", &ticks))
@@ -89,8 +83,7 @@ namespace Script
         int endtime = ticks + GetTime();
 
         // Always check messages at least once.
-        do
-        {
+        do {
             engine->CheckMessages();
         }
         while (endtime > GetTime());
@@ -99,8 +92,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(ika_wait)
-    {
+    METHOD(ika_wait) {
         int ticks;    
         if (!PyArg_ParseTuple(args, "i:wait", &ticks))
             return 0;
@@ -111,12 +103,10 @@ namespace Script
         int t = GetTime();
         int endtime = ticks + t;
 
-        while (endtime > GetTime())
-        {
+        while (endtime > GetTime()) {
             engine->CheckMessages();
 
-            while (t < GetTime())
-            {
+            while (t < GetTime()) {
                 t++;
                 engine->GameTick();
             }
@@ -130,13 +120,11 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(ika_gettime)
-    {
+    METHOD1(ika_gettime) {
         return PyInt_FromLong((long)GetTime());
     }
 
-    METHOD(ika_random)
-    {
+    METHOD(ika_random) {
         int min, max;
 
         if (!PyArg_ParseTuple(args, "ii:Random", &min, &max))
@@ -147,8 +135,7 @@ namespace Script
 
     // video
 
-    METHOD(ika_getrgb)
-    {
+    METHOD(ika_getrgb) {
         RGBA colour;
 
         if (!PyArg_ParseTuple(args, "i:GetRGB", &colour.i))
@@ -157,8 +144,7 @@ namespace Script
         return Py_BuildValue("iiii", colour.r, colour.g, colour.b, colour.a);
     }
 
-    METHOD(ika_rgb)
-    {
+    METHOD(ika_rgb) {
         int r, g, b, a=255;
 
         if (!PyArg_ParseTuple(args, "iii|i:RGB", &r, &g, &b, &a))
@@ -167,8 +153,7 @@ namespace Script
         return PyInt_FromLong(RGBA(r, g, b, a).i);
     }
 
-    METHOD(ika_processentities)
-    {
+    METHOD(ika_processentities) {
         if (!PyArg_ParseTuple(args, ""))
             return 0;
 
@@ -178,23 +163,18 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(ika_setcameraTarget)
-    {
+    METHOD(ika_setcameraTarget) {
         Script::Entity::EntityObject* ent;
 
         if (!PyArg_ParseTuple(args, "O:SetcameraTarget", &ent))
             return 0;
 
-        if ((PyObject*)ent == Py_None)
-        {
+        if ((PyObject*)ent == Py_None) {
             engine->cameraTarget = 0;
             Py_XDECREF(cameraTarget);
             cameraTarget = 0;
-        }
-        else
-        {
-            if (ent->ob_type != &Script::Entity::type)
-            {
+        } else {
+            if (ent->ob_type != &Script::Entity::type) {
                 PyErr_SetString(PyExc_TypeError, "SetcameraTarget not called with entity/None object");
                 return 0;
             }
@@ -210,31 +190,26 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(ika_getcameraTarget)
-    {
+    METHOD1(ika_getcameraTarget) {
         PyObject* result = cameraTarget ? cameraTarget : Py_None;
 
         Py_INCREF(result);
         return result;
     }
 
-    METHOD(ika_setplayer)                                            // FIXME?  Is there a more intuitive way to do this?
-    {
+    // FIXME?  Is there a more intuitive way to do this?
+    METHOD(ika_setplayer) {
         Script::Entity::EntityObject* ent;
 
         if (!PyArg_ParseTuple(args, "O:SetPlayerEntity", &ent))
             return 0;
 
-        if ((PyObject*)ent == Py_None)
-        {
+        if ((PyObject*)ent == Py_None) {
             Py_XDECREF(playerent);
             playerent = 0;
             engine->player = 0;
-        }
-        else
-        {
-            if (ent->ob_type != &Script::Entity::type)
-            {
+        } else {
+            if (ent->ob_type != &Script::Entity::type) {
                 PyErr_SetString(PyExc_TypeError, "SetPlayerEntity not called with entity object or None.");
                 return 0;
             }
@@ -253,15 +228,13 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(ika_getplayer)
-    {
+    METHOD1(ika_getplayer) {
         PyObject* result = playerent ? playerent : Py_None;
         Py_INCREF(result);
         return result;
     }
 
-    METHOD(ika_entitiesat)
-    {
+    METHOD(ika_entitiesat) {
         int x, y, width, height, layer;
         if (!PyArg_ParseTuple(args, "iiiii|EntitiesAt", &x, &y, &width, &height, &layer))
             return 0;
@@ -274,8 +247,7 @@ namespace Script
         for (std::map< ::Entity*, ::Script::Entity::EntityObject*>::iterator 
             iter = ::Script::Entity::instances.begin(); 
             iter != ::Script::Entity::instances.end(); 
-            iter++)
-        {
+            iter++) {
             ::Entity* ent = iter->first;
 
             if (ent->layerIndex != layer)         continue;
@@ -289,8 +261,7 @@ namespace Script
 
         PyObject* list = PyList_New(ents.size());
 
-        for (uint i = 0; i < ents.size(); i++)
-        {
+        for (uint i = 0; i < ents.size(); i++) {
             Py_INCREF(ents[i]);
             PyList_SET_ITEM(list, i, reinterpret_cast<PyObject*>(ents[i]));
         }
@@ -298,46 +269,36 @@ namespace Script
         return list;
     }
 
-    METHOD(ika_hookretrace)
-    {
+    METHOD(ika_hookretrace) {
         PyObject*    pFunc;
 
         if (!PyArg_ParseTuple(args, "O:HookRetrace", &pFunc))
             return 0;
 
-        if (!PyCallable_Check(pFunc))
-        {
+        if (!PyCallable_Check(pFunc)) {
             PyErr_SetString(PyExc_TypeError, "HookRetrace requires a function as a parameter");
             return 0;
         }
 
         Py_INCREF(pFunc);
-        engine->_hookRetrace.Add(pFunc);
+        engine->_hookRetrace.add(pFunc);
 
         Py_INCREF(Py_None);
         return Py_None;
     }
 
-    METHOD(ika_unhookretrace)
-    {
-        PyObject* pFunc = 0;
+    METHOD(ika_unhookretrace) {
+        PyObject* func = 0;
 
-        if (!PyArg_ParseTuple(args, "|O:UnhookRetrace", &pFunc))
+        if (!PyArg_ParseTuple(args, "|O:UnhookRetrace", &func))
             return 0;
 
-        if (!pFunc)
-        {
-            engine->_hookRetrace.Clear();
-        }
-        else
-        {
-            HookList::List::iterator i;
-
-            for (i = engine->_hookRetrace.begin(); i != engine->_hookRetrace.end();)
-            {
-                if (i->get() == pFunc)
-                {
-                    engine->_hookRetrace.Remove(i->get());
+        if (!func) {
+            engine->_hookRetrace.clear();
+        } else {
+            foreach (ScriptObject iter, engine->_hookRetrace) {
+                if (iter.get() == func) {
+                    engine->_hookRetrace.remove(iter.get());
                     break;
                 }
             }
@@ -347,21 +308,19 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(ika_hooktimer)
-    {
+    METHOD(ika_hooktimer) {
         PyObject*    pFunc;
 
         if (!PyArg_ParseTuple(args, "O:HookTimer", &pFunc))
             return 0;
 
-        if (!PyCallable_Check(pFunc))
-        {
+        if (!PyCallable_Check(pFunc)) {
             PyErr_SetString(PyExc_TypeError, "HookTimer requires a function as a parameter");
             return 0;
         }
 
         Py_INCREF(pFunc);
-        engine->_hookTimer.Add(pFunc);
+        engine->_hookTimer.add(pFunc);
 
         Py_INCREF(Py_None);
         return Py_None;
@@ -369,30 +328,21 @@ namespace Script
 
 
     // GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY
-    METHOD(ika_unhooktimer)
-    {
-        PyObject* pFunc = 0;
+    METHOD(ika_unhooktimer) {
+        PyObject* func = 0;
 
-        if (!PyArg_ParseTuple(args, "|O:UnhookTimer", &pFunc))
+        if (!PyArg_ParseTuple(args, "|O:UnhookTimer", &func)) {
             return 0;
-
-        if (!pFunc)
-        {
-            std::list<void*>::iterator i;
-
-            engine->_hookTimer.Clear();
         }
-        else
-        {
-            HookList::List::iterator i;
 
-            for (i = engine->_hookTimer.begin(); i != engine->_hookTimer.end(); i++)
-            {
-                if (*i == pFunc)
-                {
-                    Py_DECREF(pFunc);
-                    //engine->_hookTimer.remove(*i);
-                    engine->_hookTimer.Remove(i->get());
+        if (!func) {
+            engine->_hookTimer.clear();
+
+        } else {
+            foreach (ScriptObject iter, engine->_hookTimer) {
+                if (iter.get() == func) {
+                    Py_DECREF(func);
+                    engine->_hookTimer.remove(iter.get());
                     break;
                 }
             }
@@ -401,23 +351,19 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(ika_setrenderlist)
-    {
+    METHOD(ika_setrenderlist) {
         // Compile the arguments into a vector.
         std::vector<uint> renderList(PyTuple_Size(args));
         
-        for (uint i = 0; i < renderList.size(); i++)
-        {
+        for (uint i = 0; i < renderList.size(); i++) {
             PyObject* item = PyTuple_GetItem(args, i);
-            if (!PyInt_Check(item))
-            {
+            if (!PyInt_Check(item)) {
                 PyErr_SetString(PyExc_SyntaxError, "SetRenderList needs INTEGERS.");  return 0;
             }
 
             uint layerIndex = (uint)PyInt_AsLong(item);
 
-            if (layerIndex >= engine->map.NumLayers())
-            {   
+            if (layerIndex >= engine->map.NumLayers()) {   
                 PyErr_SetString(PyExc_RuntimeError, 
                     va("SetRenderList: asked to render layer %i.  The map only has %i layers!", 
                         layerIndex, engine->map.NumLayers())
@@ -427,6 +373,7 @@ namespace Script
 
             renderList[i] = layerIndex;
         }
+
         engine->renderList = renderList;
         Py_INCREF(Py_None);
         return Py_None;
@@ -435,12 +382,12 @@ namespace Script
     METHOD(ika_render) {
         if (PyTuple_Size(args) == 0) {
             engine->Render();
+
         } else {
             // Compile the arguments into a vector.
             std::vector<uint> renderList(PyTuple_Size(args));
             
-            for (uint i = 0; i < renderList.size(); i++)
-            {
+            for (uint i = 0; i < renderList.size(); i++) {
                 PyObject* item = PyTuple_GetItem(args, i);
                 if (!PyInt_Check(item)) {
                     PyErr_SetString(PyExc_SyntaxError, "Map.Render needs INTEGERS.");  return 0;
@@ -467,8 +414,7 @@ namespace Script
         return Py_None;
     }
 
-    PyMethodDef standard_methods[] =
-    {
+    PyMethodDef standard_methods[] = {
         //  name  | function
 
         // Misc

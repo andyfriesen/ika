@@ -50,8 +50,8 @@ void ZoneEditor::UpdateDlg()
     _nameedit->SetValue(zone.name.c_str());
     _descedit->SetValue(zone.sDescription.c_str());
     _scriptedit->SetValue(zone.sActscript.c_str());
-    _chanceedit->SetValue(ToString(zone.nActchance).c_str());
-    _delayedit->SetValue(ToString(zone.nActdelay).c_str());
+    _chanceedit->SetValue(toString(zone.nActchance).c_str());
+    _delayedit->SetValue(toString(zone.nActdelay).c_str());
     _adjacentactivate->SetValue(zone.bAdjacentactivation);
 }
 

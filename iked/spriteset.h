@@ -1,40 +1,42 @@
 
-#ifndef SPRITESET_H
-#define SPRITESET_H
+#pragma once
 
+#include "debug.h"
 #include "imagebank.h"
+#include "document.h"
 
 struct CCHRfile;
 
-class CSpriteSet : public CImageBank
-{
-    virtual void SetImage(const Canvas& img, int idx);
+namespace iked {
 
-    CCHRfile* pCHR;
+    struct SpriteSet : ImageArrayDocument {
+        SpriteSet(int width, int height, int numFrames);
+        SpriteSet(CCHRfile* c, const std::string& fileName);
+        ~SpriteSet();
 
-public:
+        virtual void save(const std::string& fileName);
+        virtual void sendCommand(commands::Command* cmd);
 
-    CSpriteSet();
+        virtual SpriteSet* asSpriteSet();
 
-    void New(int width, int height);
-    bool Load(const char* fname);
-    bool Save(const char* fname);
+        void resize(int width, int height);
 
-    virtual Canvas& Get(int idx);
-    virtual int Count() const;   
-    int Width() const;
-    int Height() const;
+        CCHRfile& GetCHR() { return *chr; }
+    protected:
+        // ImageDocumentResource
+        virtual int doGetCount();
+        virtual int doGetWidth();
+        virtual int doGetHeight();
+        virtual const Canvas& doGetCanvas(int index);
+        virtual void doSetCanvas(const Canvas& canvas, int index);
+        virtual void doInsert(const Canvas& canvas, int position);
+        virtual void doRemove(int position);
+        // --
 
-    void AppendFrame();
-    void AppendFrame(Canvas& p);
-    void InsertFrame(int i);
-    void InsertFrame(int i, Canvas& p);
-    void DeleteFrame(int i);
+    private:
+        DECLARE_INVARIANT();
 
-    void Resize(int width, int height);
+        CCHRfile* chr;
+    };
 
-    inline CCHRfile& GetCHR() const { return *pCHR; }    
-
-};
-
-#endif
+}

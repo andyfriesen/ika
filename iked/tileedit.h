@@ -1,20 +1,18 @@
-
-#ifndef TILEEDIT_H
-#define TILEEDIT_H
+#if 0
+#pragma once
 
 #include "imageview.h"
 
-class CMainWnd;
-class CTileSet;
+class MainWindow;
+class TileSet;
 
 class CTileEdit : CImageView
 {
-    CMainWnd* pParent;
-    CTileSet* pTileset;
+    MainWindow* pParent;
+    TileSet* pTileset;
     int nTile;
 
 public:
-    CTileEdit(CMainWnd* parent, CTileSet* tileset, int tileidx);
+    CTileEdit(MainWindow* parent, TileSet* tileset, int tileidx);
 };
-
 #endif

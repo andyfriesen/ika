@@ -1,3 +1,4 @@
+#if 0
 
 #include <wx/wx.h>
 #include <wx/xrc/xmlres.h>
@@ -24,3 +25,4 @@ void NewSpriteDlg::OnOk(wxCommandEvent& event)
     else
         wxDialog::OnOK(event);
 }
+#endif

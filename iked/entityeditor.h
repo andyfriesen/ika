@@ -1,8 +1,7 @@
 
-#ifndef ENTITYEDITOR_H
-#define ENTITYEDITOR_H
+#pragma once
 
-#include "wx\wx.h"
+#include "wx/wx.h"
 
 class MapView;
 struct Map;

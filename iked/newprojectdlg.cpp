@@ -1,9 +1,9 @@
-
+#if 0
 #include <wx/wx.h>
 #include <wx/xrc/xmlres.h>
 
 #include "NewProjectDlg.h"
-#include "common/utility.h"
+#include "misc.h"
 
 BEGIN_EVENT_TABLE(NewProjectDlg, wxDialog)
     EVT_TEXT(-1, NewProjectDlg::UpdatePreview)
@@ -54,3 +54,4 @@ std::string NewProjectDlg::FileName() const
     wxFileName fname(trim(path).c_str(), trim(name).c_str());
     return (fname.GetFullPath() + ".ikaprj").c_str();
 }
+#endif

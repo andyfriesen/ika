@@ -1,20 +1,18 @@
-#ifndef PROJECTVIEW_H
-#define PROJECTVIEW_H
+#pragma once
 
 #include "common/utility.h"
 #include <wx\treectrl.h>
 #include "docview.h"
 
-class CMainWnd; // in main.cpp / h
+class MainWindow; // in main.cpp / h
 
-class ProjectView : public wxTreeCtrl
-{
+class ProjectView : public wxTreeCtrl {
 private:
     wxMenu*      _fileMenu;
     wxMenu*      _folderMenu;
     wxMenu*      _rootMenu;
 
-    CMainWnd*    _parent;
+    MainWindow*    _parent;
 
     wxImageList* _imageList;
     struct Leaf* _selected;  // The context menus use this. 
@@ -24,8 +22,7 @@ private:
 
 public:
 
-    enum
-    {
+    enum {
         id_filler = 100,
         id_treectrl,
 
@@ -36,7 +33,7 @@ public:
         id_createsubfolder,
     };
 
-    ProjectView(CMainWnd* parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);
+    ProjectView(MainWindow* parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);
     ~ProjectView();
 
     void OnDoubleClick(wxMouseEvent& event);
@@ -68,5 +65,3 @@ public:
 
     DECLARE_EVENT_TABLE()
 };
-
-#endif

@@ -1,8 +1,7 @@
 
-#ifndef FONTVIEW_H
-#define FONTVIEW_H
+#pragma once
 
-#include "wx\wx.h"
+#include "wx/wx.h"
 #include "wx\colordlg.h"
 
 #include "common/utility.h"
@@ -10,8 +9,8 @@
 #include "graph.h"
 #include "common/fontfile.h"
 
-class FontView : public IDocView
-{
+#if 0
+class FontView : public DocumentPanel {
     enum
     {
         id_font = 300,
@@ -23,7 +22,7 @@ class FontView : public IDocView
 
     public:
 
-        FontView(CMainWnd* parentwnd, const std::string& fname);
+        FontView(MainWindow* parentwnd, const std::string& fname);
         ~FontView();
 
         void Paint();
@@ -42,8 +41,8 @@ class FontView : public IDocView
 
     private:
 
-        CMainWnd* pParent;
-        CGraphFrame* pGraph;
+        MainWindow* pParent;
+        GraphicsFrame* pGraph;
         FontFile* pFontfile;
 
         int ywin;
@@ -58,6 +57,4 @@ class FontView : public IDocView
         DECLARE_EVENT_TABLE()
 
 };
-
-#endif // FONTVIEW_H
-        
+#endif

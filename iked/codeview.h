@@ -1,20 +1,17 @@
-
-#ifndef CODEVIEW_H
-#define CODEVIEW_H
+#if 0
+#pragma once
 
 #include "common/utility.h"
-
-#include "wx\wx.h"
+#include "wx/wx.h"
 #include "wx\colordlg.h"
 #include "wx\fontdlg.h"
 #include "wx\fdrepdlg.h"
 #include "wx\stc\stc.h"
 #include "docview.h"
 
-class CMainWnd;
+class MainWindow;
 
-class CCodeView : public IDocView
-{
+class CCodeView : public DocumentPanel {
     wxStyledTextCtrl*   pTextctrl;
 
     void InitTextControl();
@@ -43,7 +40,7 @@ public:
         id_viewws,
     };
 
-    CCodeView(CMainWnd* parent, const std::string& name);
+    CCodeView(MainWindow* parent, const std::string& name);
 
     void OnStyleNeeded(wxStyledTextEvent& event);
     void OnCharAdded(wxStyledTextEvent& event);
@@ -75,5 +72,4 @@ public:
 
     DECLARE_EVENT_TABLE()
 };
-
 #endif

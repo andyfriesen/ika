@@ -1,80 +1,81 @@
 
-#ifndef TILESETVIEW_H
-#define TILESETVIEW_H
+#pragma once
 
 #include "docview.h"
 #include "graph.h"
 
-class CMainWnd;
-class CTileSet;
 class wxMenu;
 
-class CTileSetView : public IDocView
-{
-    CMainWnd*       pParent;
-    CGraphFrame*    pGraph;
+namespace iked {
+    struct MainWindow;
+    struct TileSet;
+    struct ImageBank;
 
-    CTileSet*       pTileset;
+    struct TileSetPanel : DocumentPanel {
+        TileSetPanel(MainWindow* parentwnd, const std::string& fname);
+        TileSetPanel(MainWindow* parentwnd, int width, int height);
+        ~TileSetPanel();
 
-    wxMenu*         pContextmenu;
+        void init();
 
-    int ywin;                                       // scrollbar position
-    bool bPad;                                      // pixel padding on / off
+        virtual void onSave(wxCommandEvent& event);
+        void onSaveAs(wxCommandEvent& event);
 
-    int nTile;                                      // used for the context menu; the tile index of the tile that was right - clicked
+        void onPaint();
+        void onSize(wxSizeEvent& event);
+        void onScroll(wxScrollWinEvent& event);
 
-public:
-    CTileSetView(CMainWnd* parentwnd, const std::string& fname);
-    CTileSetView(CMainWnd* parentwnd, int width, int height);
-    ~CTileSetView();
+        void onLeftClick(wxMouseEvent& event);
+        void onRightClick(wxMouseEvent& event);
+        void onMouseWheel(wxMouseEvent& event);
 
-    void Init();
+        void onEraseBackground(wxEraseEvent&) {}
 
-    virtual void OnSave(wxCommandEvent& event);
-    void OnSaveAs(wxCommandEvent& event);
+        //-----------------------------------
 
-    void Paint();
-    void OnSize(wxSizeEvent& event);
-    void OnScroll(wxScrollWinEvent& event);
+        void onImportTiles(wxCommandEvent&);
 
-    virtual void OnClose(wxCommandEvent& event);
+        void setZoomFactor(int factor);
+        void onCutTile(wxCommandEvent&);
+        void onCopyTile(wxCommandEvent&);
+        void onInsertTile(wxCommandEvent&);
+        void onPasteOver(wxCommandEvent&);
+        void onInsertAndPaste(wxCommandEvent&);
+        void onEditTile(wxCommandEvent&);
+        void onZoomNormal(wxCommandEvent&);
+        void onZoomIn(wxCommandEvent&);
+        void onZoomOut(wxCommandEvent&);
+        void onZoomIn2x(wxCommandEvent&);
+        void onZoomOut2x(wxCommandEvent&);
+        void onZoomIn4x(wxCommandEvent&);
+        void onZoomOut4x(wxCommandEvent&);
 
-    virtual const void* GetResource() const;
+        //-----------------------------------
 
-    void OnLeftClick(wxMouseEvent& event);
-    void OnRightClick(wxMouseEvent& event);
-    void OnMouseWheel(wxMouseEvent& event);
+        void render();
+        void updateScrollbar();
 
-    void OnEraseBackground(wxEraseEvent&) {}
+        /// returns the tile under the specified client coordinates
+        int  getTileAt(int x, int y) const;                 
 
-    //-----------------------------------
+        /// x and y recieve the position at which the specified tile is 
+        /// rendered at
+        void getTilePos(int t, int& x, int& y) const;        
 
-    void OnImportTiles(wxCommandEvent&);
+        DECLARE_EVENT_TABLE()
 
-    void Zoom(int factor);
-    void OnCutTile(wxCommandEvent&);
-    void OnCopyTile(wxCommandEvent&);
-    void OnInsertTile(wxCommandEvent&);
-    void OnPasteOver(wxCommandEvent&);
-    void OnInsertAndPaste(wxCommandEvent&);
-    void OnEditTile(wxCommandEvent&);
-    void OnZoomNormal(wxCommandEvent&);
-    void OnZoomIn(wxCommandEvent&);
-    void OnZoomOut(wxCommandEvent&);
-    void OnZoomIn2x(wxCommandEvent&);
-    void OnZoomOut2x(wxCommandEvent&);
-    void OnZoomIn4x(wxCommandEvent&);
-    void OnZoomOut4x(wxCommandEvent&);
+    private:
+        MainWindow*       parent;
+        GraphicsFrame*    graph;
 
-    //-----------------------------------
+        TileSet*        tileSet;
 
-    void Render();
-    void UpdateScrollbar();
+        wxMenu*         contextMenu;
 
-    int  TileAt(int x, int y) const;                 // returns the tile under the specified client coordinates
-    void TilePos(int t, int& x, int& y) const;        // x and y are set to the position at which the specified tile is rendered at
+        int ywin;                       // scrollbar position
+        bool pad;                       // pixel padding on / off
 
-    DECLARE_EVENT_TABLE()
-};
+        int tileIndex;                  // used for the context menu; the tile index of the tile that was right - clicked
+    };
 
-#endif
+}

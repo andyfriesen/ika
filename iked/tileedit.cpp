@@ -5,7 +5,7 @@
 
 #include "tileset.h"
 
-CTileEdit::CTileEdit(CMainWnd* parent, CTileSet* tileset, int tileidx)
+CTileEdit::CTileEdit(MainWindow* parent, TileSet* tileset, int tileidx)
 :   CImageView(parent, &tileset->Get(tileidx)),           // base class constructor
     pParent(parent), pTileset(tileset), nTile(tileidx)
 {

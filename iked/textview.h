@@ -1,24 +1,20 @@
-
-#ifndef TEXTVIEW_H
-#define TEXTVIEW_H
+#if 0
+#pragma once
 
 #include "common/utility.h"
-#include <wx\wx.h>
-
-#ifdef WX232
-    #include <wx\fdrepdlg.h>
-#endif
+#include <wx/wx.h>
+#include <wx\fdrepdlg.h>
 
 #include <wx\stc\stc.h>
 #include "docview.h"
 
-class CMainWnd;
+class MainWindow;
 
-class CTextView : public IDocView
+class CTextView : public DocumentPanel
 {
     public:
 
-        CTextView(CMainWnd* parent, const std::string& name);
+        CTextView(MainWindow* parent, const std::string& name);
 
         void OnStyleNeeded(wxStyledTextEvent& event);
         void OnCharAdded(wxStyledTextEvent& event);
@@ -34,16 +30,13 @@ class CTextView : public IDocView
         void OnCut (wxCommandEvent& event);
         void OnPaste(wxCommandEvent& event);
         void OnSelectAll(wxCommandEvent& event);
-#ifdef WX232
         void OnFind(wxCommandEvent& event);
         void OnReplace(wxCommandEvent& event);
-#endif
 
     private:
 
-#ifdef WX232
         void DoFind(wxFindDialogEvent& event);
-#endif
+
         enum
         {
             id_ed = 100,
@@ -68,5 +61,4 @@ class CTextView : public IDocView
 
         DECLARE_EVENT_TABLE()
 };
-
-#endif // TEXTVIEW_H
+#endif

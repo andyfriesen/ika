@@ -480,60 +480,53 @@
     <size>220,100</size>
   </object>
   <object class="wxDialog" name="dialog_spriteproperties">
+    <size>640,480</size>
+    <title>Sprite Properties</title>
+    <style>wxDEFAULT_DIALOG_STYLE|wxTHICK_FRAME</style>
     <object class="wxPanel" name="panel_main">
       <object class="wxBoxSizer">
-        <object class="sizeritem">
-          <object class="wxGridSizer">
-            <cols>2</cols>
-            <object class="sizeritem">
-              <object class="wxStaticText">
-                <label>HotX</label>
-              </object>
-            </object>
-            <object class="sizeritem">
-              <object class="wxTextCtrl" name="edit_hotx"/>
-            </object>
-            <object class="sizeritem">
-              <object class="wxStaticText">
-                <label>Hotspot Y</label>
-              </object>
-            </object>
-            <object class="sizeritem">
-              <object class="wxTextCtrl" name="edit_hoty"/>
-            </object>
-            <object class="sizeritem">
-              <object class="wxStaticText">
-                <label>Hotspot Width</label>
-              </object>
-            </object>
-            <object class="sizeritem">
-              <object class="wxTextCtrl" name="edit_hotwidth"/>
-            </object>
-            <object class="sizeritem">
-              <object class="wxStaticText">
-                <label>Hotspot Height</label>
-              </object>
-            </object>
-            <object class="sizeritem">
-              <object class="wxTextCtrl" name="edit_hotheight"/>
-            </object>
-            <object class="sizeritem">
-              <object class="wxButton" name="wxID_OK">
-                <label>Ok</label>
-                <default>1</default>
-              </object>
-            </object>
-            <object class="sizeritem">
-              <object class="wxButton" name="wxID_CANCEL">
-                <label>Cancel</label>
-                <default>0</default>
-              </object>
-            </object>
-          </object>
-        </object>
         <orient>wxHORIZONTAL</orient>
         <object class="sizeritem">
           <object class="wxBoxSizer">
+            <object class="sizeritem">
+              <object class="wxGridSizer">
+                <cols>2</cols>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>HotX</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_hotx"/>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Hotspot Y</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_hoty"/>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Hotspot Width</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_hotwidth"/>
+                  <flag>wxEXPAND</flag>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxStaticText">
+                    <label>Hotspot Height</label>
+                  </object>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_hotheight"/>
+                  <flag>wxEXPAND</flag>
+                </object>
+              </object>
+            </object>
             <orient>wxVERTICAL</orient>
             <object class="sizeritem">
               <object class="wxStaticText">
@@ -556,13 +549,19 @@
               </object>
             </object>
           </object>
+        </object>
+        <object class="spacer">
+          <size>10,10</size>
+        </object>
+        <object class="sizeritem">
+          <object class="unknown" name="unknown_frames">
+            <size>100,100</size>
+          </object>
+          <flag>wxEXPAND</flag>
           <option>1</option>
         </object>
       </object>
     </object>
-    <size>640,480</size>
-    <title>Sprite Properties</title>
-    <style>wxDEFAULT_DIALOG_STYLE|wxTHICK_FRAME</style>
   </object>
   <object class="wxDialog" name="dialog_layer">
     <object class="wxPanel" name="panel_main">
@@ -687,5 +686,85 @@
     <size>400,500</size>
     <title>Layer properties</title>
     <style>wxDEFAULT_DIALOG_STYLE|wxDIALOG_MODAL</style>
+  </object>
+  <object class="wxPanel" name="panel_spriteset">
+    <object class="wxBoxSizer">
+      <orient>wxHORIZONTAL</orient>
+      <object class="sizeritem">
+        <object class="wxBoxSizer">
+          <object class="sizeritem">
+            <object class="wxGridSizer">
+              <cols>2</cols>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>HotX</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxTextCtrl" name="edit_hotx"/>
+              </object>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>Hotspot Y</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxTextCtrl" name="edit_hoty"/>
+              </object>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>Hotspot Width</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxTextCtrl" name="edit_hotwidth"/>
+                <flag>wxEXPAND</flag>
+              </object>
+              <object class="sizeritem">
+                <object class="wxStaticText">
+                  <label>Hotspot Height</label>
+                </object>
+              </object>
+              <object class="sizeritem">
+                <object class="wxTextCtrl" name="edit_hotheight"/>
+                <flag>wxEXPAND</flag>
+              </object>
+            </object>
+          </object>
+          <orient>wxVERTICAL</orient>
+          <object class="sizeritem">
+            <object class="wxStaticText">
+              <label>Animation Scripts</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="unknown" name="unknown_animscript">
+              <size>200,150</size>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="wxStaticText">
+              <label>Metadata</label>
+            </object>
+          </object>
+          <object class="sizeritem">
+            <object class="unknown" name="unknown_metadata">
+              <size>200,150</size>
+            </object>
+          </object>
+        </object>
+      </object>
+      <object class="spacer">
+        <size>10,10</size>
+      </object>
+      <object class="sizeritem">
+        <object class="unknown" name="unknown_frames">
+          <size>400,100</size>
+        </object>
+        <flag>wxEXPAND</flag>
+        <option>1</option>
+      </object>
+    </object>
+    <style>wxNO_3D</style>
   </object>
 </resource>

@@ -5,7 +5,7 @@
 
 #include "layervisibilitycontrol.h"
 #include "mapview.h"
-#include "common/log.h"
+#include "log.h"
 
 BEGIN_EVENT_TABLE(CLayerVisibilityControl, wxCheckListBox)
     EVT_LISTBOX(-1, CLayerVisibilityControl::OnItemSelected)
@@ -70,5 +70,4 @@ void CLayerVisibilityControl::OnItemChecked(wxCommandEvent& event)
 
     pMapview->OnLayerToggleVisibility(lay, IsChecked( event.GetInt() ));
 }
-
 #endif

@@ -1,9 +1,10 @@
+#if 0
 #include <wx/wx.h>
 #include <wx/xrc/xmlres.h>
 
 #include "newmapdlg.h"
-#include "common/fileio.h"
-#include "common/utility.h"
+#include "fileio.h"
+#include "misc.h"
 
 BEGIN_EVENT_TABLE(NewMapDlg, wxDialog)
     EVT_BUTTON(wxID_OK, NewMapDlg::OnOK)
@@ -46,3 +47,4 @@ void NewMapDlg::OnBrowse(wxCommandEvent& event)
     if (result == wxID_OK)
         XRCCTRL(*this, "edit_tileset", wxTextCtrl)->SetValue(dlg.GetPath());
 }
+#endif
