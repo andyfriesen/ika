@@ -163,7 +163,7 @@ class CBlitter : public Blender
 public:
 
     //! Renders an image on another image.
-    static void Blit(CPixelMatrix& src,CPixelMatrix& dest,int x,int y)
+    static void Blit(Canvas& src,Canvas& dest,int x,int y)
     {
         const Rect& r=src.GetClipRect();
 
@@ -175,8 +175,8 @@ public:
         DoClipping(x,y,xstart,xlen,ystart,ylen,dest.GetClipRect());
         if (xlen<1 || ylen<1)	return;                         // offscreen
         
-        RGBA* pSrc  = src.GetPixelData() +(ystart*src.Width())+xstart;
-        RGBA* pDest = dest.GetPixelData() +(y*dest.Width())+x;
+        RGBA* pSrc  = src.GetPixels() +(ystart*src.Width())+xstart;
+        RGBA* pDest = dest.GetPixels() +(y*dest.Width())+x;
         int  srcinc= src.Width()-xlen;
         int  destinc=dest.Width()-xlen;
 
@@ -197,7 +197,7 @@ public:
     }
 
     //! Renders an image on another image, stretching as necessary.
-    static void ScaleBlit(CPixelMatrix& src,CPixelMatrix& dest,int cx,int cy,int w,int h)
+    static void ScaleBlit(Canvas& src,Canvas& dest,int cx,int cy,int w,int h)
     {
         int	x,y;		// current pixel position
         int ix,iy;		// current image location (fixed point 16.16)
@@ -230,8 +230,8 @@ public:
         ix=xs;
         iy=ys&0xFFFF;
         
-        RGBA* pSrc  =src.GetPixelData()+((ys>>16)*src.Width());
-        RGBA* pDest =dest.GetPixelData()+(y*dest.Width())+x;
+        RGBA* pSrc  =src.GetPixels()+((ys>>16)*src.Width());
+        RGBA* pDest =dest.GetPixels()+(y*dest.Width())+x;
         
         x=0;
         y=h;
@@ -260,15 +260,15 @@ public:
     // ------------------------------------ Primatives ------------------------------------
 
     //! Draws a dot on the image.
-    static inline void SetPixel(CPixelMatrix& img,int x,int y,RGBA colour)
+    static inline void SetPixel(Canvas& img,int x,int y,RGBA colour)
     {
-        RGBA* p=img.GetPixelData()+(y*img.Width() + x);
+        RGBA* p=img.GetPixels()+(y*img.Width() + x);
 
         *p=Blend(colour,*p);
     }
 
     //! Draws a horizontal line on the image.
-    static inline void HLine(CPixelMatrix& img,int x1,int x2,int y,RGBA colour)
+    static inline void HLine(Canvas& img,int x1,int x2,int y,RGBA colour)
     {
         const Rect& r=img.GetClipRect();
 
@@ -281,7 +281,7 @@ public:
         keepinrange(x1,r.left,r.right-1);
         keepinrange(x2,r.left,r.right-1);
         
-        RGBA* p=img.GetPixelData()+(y*img.Width())+x1;
+        RGBA* p=img.GetPixels()+(y*img.Width())+x1;
         
         int xlen=x2-x1;
         
@@ -294,7 +294,7 @@ public:
     }
 
     //! Draws a vertical line on the image.
-    static inline void VLine(CPixelMatrix& img,int x,int y1,int y2,RGBA colour)
+    static inline void VLine(Canvas& img,int x,int y1,int y2,RGBA colour)
     {
         const Rect& r=img.GetClipRect();
         
@@ -306,7 +306,7 @@ public:
         keepinrange(y1,r.top,r.bottom-1);
         keepinrange(y2,r.top,r.bottom-1);
         
-        RGBA* p=img.GetPixelData()+(y1*img.Width())+x;
+        RGBA* p=img.GetPixels()+(y1*img.Width())+x;
         
         int yinc=img.Width();
         
@@ -320,7 +320,7 @@ public:
     }
 
     //! Draws a rectangle (outline or filled) on the image.
-    static void DrawRect(CPixelMatrix& img,int x1,int y1,int x2,int y2,RGBA colour,bool filled)
+    static void DrawRect(Canvas& img,int x1,int y1,int x2,int y2,RGBA colour,bool filled)
     {
         if (filled)
         {
@@ -358,7 +358,7 @@ public:
         Draws an arbitrary line on the image.
         Kudos to zeromus for the algorithm.
     */
-    static void Line(CPixelMatrix& img,int x1, int y1, int x2, int y2, u32 colour)
+    static void Line(Canvas& img,int x1, int y1, int x2, int y2, u32 colour)
     {
         // check for the cases in which the line is vertical or horizontal or only one pixel big
         // we can do those faster through other means
@@ -486,10 +486,10 @@ public:
         int d,dir,diu,dx,dy;
         
         //two pointers because we render the line from both ends
-        /*RGBA* w1=&(img.GetPixelData())[img.Width()*y1+x1];
-        RGBA* w2=&(img.GetPixelData())[img.Width()*y2+x2];*/
-        RGBA* w1=img.GetPixelData() + (img.Width()*y1+x1);
-        RGBA* w2=img.GetPixelData() + (img.Width()*y2+x2);
+        /*RGBA* w1=&(img.GetPixels())[img.Width()*y1+x1];
+        RGBA* w2=&(img.GetPixels())[img.Width()*y2+x2];*/
+        RGBA* w1=img.GetPixels() + (img.Width()*y1+x1);
+        RGBA* w2=img.GetPixels() + (img.Width()*y2+x2);
 
         //start algorithm presently.
         xi=1;
