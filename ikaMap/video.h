@@ -52,8 +52,9 @@ public:
     int LogicalWidth() const;
     int LogicalHeight() const;
 
-    int Zoom() const;
-    void Zoom(int z);
+    int GetZoom() const;
+    void SetZoom(int z);
+    void IncZoom(int amt);
 
     DECLARE_EVENT_TABLE()
 };

@@ -75,6 +75,13 @@ public:
     void OnImportTiles(wxCommandEvent&);
     void OnChangeCurrentLayer(wxCommandEvent& event);
     void OnShowLayerProperties(wxCommandEvent& event);
+    void OnZoomMapIn(wxCommandEvent&);
+    void OnZoomMapOut(wxCommandEvent&);
+    void OnZoomMapNormal(wxCommandEvent&);
+    void OnZoomTileSetIn(wxCommandEvent&);
+    void OnZoomTileSetOut(wxCommandEvent&);
+    void OnZoomTileSetNormal(wxCommandEvent&);
+
     void OnToggleLayer(wxCommandEvent& event);
     void OnSetTilePaintState(wxCommandEvent&);
     void OnSetObstructionState(wxCommandEvent&);

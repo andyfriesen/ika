@@ -192,14 +192,22 @@ int VideoFrame::LogicalHeight() const
     return GetClientSize().GetHeight() * _curZoom / nZoomscale;
 }
 
-int VideoFrame::Zoom() const
+int VideoFrame::GetZoom() const
 {
     return _curZoom;
 }
 
-void VideoFrame::Zoom(int z)
+void VideoFrame::SetZoom(int z)
 {
-    _curZoom = z;
+    _curZoom = (z > 0) ? z : 1;
+}
+
+void VideoFrame::IncZoom(int amt)
+{
+    if (_curZoom + amt < 0)
+        _curZoom = 1;
+    else
+        _curZoom += amt;
 }
 
 Image::Image(const Canvas& src)

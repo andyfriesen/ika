@@ -179,10 +179,10 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
     int firstY = yoffset / tileY;
     
     int lenX = width  / tileX + 2;
-    int lenY = height / tileY + 3;
+    int lenY = height / tileY + 2;
 
-    int adjustX = (xoffset % tileX);
-    int adjustY = (yoffset % tileY);
+    int adjustX = -(xoffset % tileX);
+    int adjustY = -(yoffset % tileY);
 
     if (firstX + lenX > lay->Width())  lenX = lay->Width()  - firstX;
     if (firstY + lenY > lay->Height()) lenY = lay->Height() - firstY;
@@ -200,6 +200,8 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
         firstY = 0;
     }
 
+    int curX = adjustX;
+    int curY = adjustY;
     for (int y = 0; y < lenY; y++)
     {
         for (int x = 0; x < lenX; x++)
@@ -208,9 +210,13 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
 
             _video->Blit(
                 ts->GetImage(t),
-                x * tileX - adjustX, y * tileY - adjustY,
+                curX, curY,
                 true);
+
+            curX += tileX;
         }
+        curY += tileY;
+        curX = adjustX;
     }
 }
 
@@ -310,6 +316,21 @@ void MapView::UpdateScrollBars()
 
     SetScrollbar(wxHORIZONTAL, _xwin, _video->LogicalWidth(),  map->width);
     SetScrollbar(wxVERTICAL,   _ywin, _video->LogicalHeight(), map->height);
+}
+
+uint MapView::GetZoom() const
+{
+    return _video->GetZoom();
+}
+
+void MapView::SetZoom(uint z)
+{
+    _video->SetZoom(z);
+}
+
+void MapView::IncZoom(int amt)
+{
+    _video->IncZoom(amt);
 }
 
 void MapView::ScreenToMap(int& x, int& y)

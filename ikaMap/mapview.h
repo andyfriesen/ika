@@ -65,6 +65,10 @@ public:
 
     void UpdateScrollBars();
 
+    uint GetZoom() const;
+    void SetZoom(uint z);
+    void IncZoom(int amt);
+
     void ScreenToMap(int& x, int& y);
     void ScreenToMap(int& x, int& y, uint layer);
 

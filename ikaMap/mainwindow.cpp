@@ -21,6 +21,8 @@
 #include "tileset.h"
 #include "command.h"
 
+#define VERTICAL_FUN
+
 //
 const float MainWindow::_version = 0.1f;
 //
@@ -41,6 +43,13 @@ namespace
         id_editredo,
         id_editmapproperties,
         id_importtiles,
+
+        id_zoommapin,
+        id_zoommapout,
+        id_zoommapnormal,
+        id_zoomtilesetin,
+        id_zoomtilesetout,
+        id_zoomtilesetnormal,
 
         id_tilepaint,
         id_selecttiles,
@@ -78,6 +87,13 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_editredo, MainWindow::OnRedo)
     EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
     EVT_MENU(id_importtiles, MainWindow::OnImportTiles)
+
+    EVT_MENU(id_zoommapin, MainWindow::OnZoomMapIn)
+    EVT_MENU(id_zoommapout, MainWindow::OnZoomMapOut)
+    EVT_MENU(id_zoommapnormal, MainWindow::OnZoomMapNormal)
+    EVT_MENU(id_zoomtilesetin, MainWindow::OnZoomTileSetIn)
+    EVT_MENU(id_zoomtilesetout, MainWindow::OnZoomTileSetOut)
+    EVT_MENU(id_zoomtilesetnormal, MainWindow::OnZoomTileSetNormal)
 
     EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
@@ -165,14 +181,25 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     sidePanel->SetSizer(sizer);
 
     _topBar = new wxSashLayoutWindow(this, id_topbar);
+#ifdef VERTICAL_FUN
     _topBar->SetAlignment(wxLAYOUT_RIGHT);
     _topBar->SetOrientation(wxLAYOUT_VERTICAL);
+#else
+    _topBar->SetAlignment(wxLAYOUT_TOP);
+    _topBar->SetOrientation(wxLAYOUT_HORIZONTAL);
+#endif
 
     _bottomBar = new wxSashLayoutWindow(this, id_bottombar);
     _bottomBar->SetDefaultSize(wxSize(330, 100));
+#ifdef VERTICAL_FUN
     _bottomBar->SetAlignment(wxLAYOUT_LEFT);
     _bottomBar->SetOrientation(wxLAYOUT_VERTICAL);
     _bottomBar->SetSashVisible(wxSASH_RIGHT, true);
+#else
+    _bottomBar->SetAlignment(wxLAYOUT_BOTTOM);
+    _bottomBar->SetOrientation(wxLAYOUT_HORIZONTAL);
+    _bottomBar->SetSashVisible(wxSASH_TOP, true);
+#endif
 
     _mapView = new MapView(this, _topBar);
     _tileSetView = new TileSetView(this, _bottomBar);
@@ -199,13 +226,23 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
     editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
 
+    wxMenu* viewMenu = new wxMenu;
+    viewMenu->Append(id_zoommapin, "Zoom Map In\t+");
+    viewMenu->Append(id_zoommapout, "Zoom Map Out\t-");
+    viewMenu->Append(id_zoommapnormal, "Zoom Map to 100%\t=", "Stop zooming the map.");
+    viewMenu->AppendSeparator();
+    viewMenu->Append(id_zoomtilesetin, "Zoom Tileset In\tCtrl-plus");
+    viewMenu->Append(id_zoomtilesetout, "Zoom Tileset Out\tCtrl-minus");
+    viewMenu->Append(id_zoomtilesetnormal, "Zoom Tileset to 100%\tCtrl-equals", "Stop zooming on the tileset.");
+
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(fileMenu, "&File");
     menuBar->Append(editMenu, "&Edit");
+    menuBar->Append(viewMenu, "&View");
     SetMenuBar(menuBar);
 
     // Set up hotkey stuff.
-    const int tableSize = 5;
+    const int tableSize = 11;
     int i = 0;
     wxAcceleratorEntry entries[tableSize]; // bleh
     entries[i++].Set(wxACCEL_CTRL, (int)'N', id_filenew);
@@ -213,6 +250,12 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     entries[i++].Set(wxACCEL_CTRL, (int)'S', id_filesave);
     entries[i++].Set(wxACCEL_CTRL, (int)'Z', id_editundo);
     entries[i++].Set(wxACCEL_CTRL, (int)'Y', id_editredo);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_ADD, id_zoommapin);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_SUBTRACT, id_zoommapout);
+    entries[i++].Set(wxACCEL_NORMAL, (int)'=', id_zoommapnormal);
+    entries[i++].Set(wxACCEL_CTRL, WXK_ADD, id_zoomtilesetin);
+    entries[i++].Set(wxACCEL_CTRL, WXK_SUBTRACT, id_zoomtilesetout);
+    entries[i++].Set(wxACCEL_CTRL, (int)'=', id_zoomtilesetnormal);
     wxAcceleratorTable table(tableSize, entries);
     SetAcceleratorTable(table);
 
@@ -498,6 +541,13 @@ void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
             dlg.y));
     }
 }
+
+void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   _mapView->IncZoom(+1);      _mapView->Refresh();        }
+void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   _mapView->IncZoom(-1);      _mapView->Refresh();        }
+void MainWindow::OnZoomMapNormal(wxCommandEvent&)       {   _mapView->SetZoom(16);      _mapView->Refresh();        } // 16:16 == 100%
+void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    }
+void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(-1);  _tileSetView->Refresh();    }
+void MainWindow::OnZoomTileSetNormal(wxCommandEvent&)   {   _tileSetView->SetZoom(16);  _tileSetView->Refresh();    } // 16:16 == 100%
 
 void MainWindow::OnToggleLayer(wxCommandEvent& event)
 {

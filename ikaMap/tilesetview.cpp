@@ -77,6 +77,8 @@ void TileSetView::OnPaint(wxPaintEvent&)
 
 void TileSetView::OnLeftClick(wxMouseEvent& event)
 {
+    VideoFrame::OnMouseEvent(event);    // compensate for zoom.
+
     SetCurTile(PointToTile(event.m_x, event.m_y + _ywin));
     Render();
     ShowPage();

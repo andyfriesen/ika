@@ -346,8 +346,8 @@ void CEngine::RenderLayer(uint lay, bool transparent)
     xs = xw / tiles->Width();
     ys = yw / tiles->Height();
     
-    xofs =- (xw % tiles->Width());
-    yofs =- (yw % tiles->Height());
+    xofs = -(xw % tiles->Width());
+    yofs = -(yw % tiles->Height());
     
     const Point res = video->GetResolution();
     xl = res.x / tiles->Width() + 1;
