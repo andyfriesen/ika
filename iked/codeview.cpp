@@ -41,6 +41,8 @@ BEGIN_EVENT_TABLE(CCodeView,IDocView)
     EVT_FIND_CLOSE(-1,CCodeView::DoFind)
 #endif
 
+    EVT_CLOSE(CCodeView::OnClose)
+
     EVT_STC_MARGINCLICK(id_ed,CCodeView::OnMarginClick)
 
 END_EVENT_TABLE()

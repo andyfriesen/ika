@@ -62,7 +62,6 @@ class CTextView : public IDocView
         };
 
         wxStyledTextCtrl*   pTextctrl;
-        bool                bChanged;
 
         void InitTextControl();
         void InitAccelerators();

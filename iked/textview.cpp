@@ -33,6 +33,8 @@ BEGIN_EVENT_TABLE(CTextView,IDocView)
     EVT_FIND_CLOSE(-1,CTextView::DoFind)
 #endif
 
+    EVT_CLOSE(CTextView::OnClose)
+
 END_EVENT_TABLE()
 
 
