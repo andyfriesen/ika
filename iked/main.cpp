@@ -22,6 +22,14 @@
 
 #include "controller.h"
 
+// HACK
+#ifndef DEBUG
+void __cdecl wxAssert(int, char const*, int, char const*, char const*)
+{
+    exit(-1);
+}
+#endif
+
 IMPLEMENT_APP(CApp);
 
 bool CApp::OnInit()
@@ -59,14 +67,12 @@ BEGIN_EVENT_TABLE(CMainWnd, wxMDIParentFrame)
     EVT_TOOL(CMainWnd::id_toolopen, CMainWnd::OnToolBarOpen)
     EVT_TOOL(CMainWnd::id_toolnewscript, CMainWnd::OnToolBarNewScript)
     EVT_TOOL(CMainWnd::id_toolnewmap, CMainWnd::OnToolBarNewMap)
-    
 END_EVENT_TABLE()
 
 CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
                    const wxPoint& position, const wxSize& size, const long style)
                    : wxMDIParentFrame(parent, id, title, position, size, style)
 {
-
     wxToolBar* toolbar = CreateBasicToolBar();
     SetToolBar(toolbar);
     toolbar->Realize();
@@ -76,10 +82,10 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
 
     CreateStatusBar();
 
-    int nWidths[]={ -3, -1 };
+    int widths[] = { -3, -1 };
 
     GetStatusBar()->SetFieldsCount(2);
-    GetStatusBar()->SetStatusWidths(2, nWidths);
+    GetStatusBar()->SetStatusWidths(2, widths);
 
     vector<wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
     wxAcceleratorTable table(accel.size(), &*accel.begin());
@@ -155,15 +161,23 @@ void CMainWnd::NewMap(wxCommandEvent& event)
     NewMapDlg dlg(this);
 
     int result = dlg.ShowModal();
-    if (result == wxID_OK)
+    if (result != wxID_OK)
+        return;
+
+    // Sanity check
+    if (dlg.width < 1 || dlg.height < 1)
     {
-        Log::Write("New map!  %ix%i.", dlg.width, dlg.height);
-        Log::Write("Loading %s as a tileset", dlg.tilesetname.c_str());
-        CMapView* mapview=new CMapView(this, dlg.width, dlg.height, dlg.tilesetname);
-        if (!File::Exists(dlg.tilesetname.c_str()))
-            Log::Write("fuck");
-        OpenDocument(mapview);
+        wxMessageBox("Maps need to be at least one tile wide, and one tile high.", "", wxOK | wxCENTRE, this);
+        return;
     }
+
+    if (!File::Exists(dlg.tilesetname.c_str()))
+    {
+        wxMessageBox(va("%s does not exist.", dlg.tilesetname.c_str()), "", wxOK | wxCENTER, this);
+        return;
+    }
+
+    OpenDocument(new CMapView(this, dlg.width, dlg.height, dlg.tilesetname));
 }
 
 void CMainWnd::NewScript(wxCommandEvent& event)

@@ -135,7 +135,7 @@ CCodeView::CCodeView(CMainWnd* parent,
 {
     // --- Set up the menu ---
     // Basically, it takes the existing menu, and adds a few commands to it here and there.
-    wxMenuBar* menubar=parent->CreateBasicMenu();
+    wxMenuBar* menubar = parent->CreateBasicMenu();
 
     // Extra file menu options
     // the debug build generates a runtime warning from wx.  Ignore it.
