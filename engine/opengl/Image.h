@@ -1,12 +1,12 @@
 #ifndef OPENGL_IMAGE_H
 #define OPENGL_IMAGE_H
 
-#include "Driver.h"
 #include "video/Image.h"
 
 namespace OpenGL
 {
     class Driver;
+    struct Texture;
 
     /// Encapsulates an image by putting it on a texture.
     /// Most of the work is actually done in the driver.  This is little more than a container.

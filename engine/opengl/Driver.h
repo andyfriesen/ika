@@ -15,6 +15,8 @@
 
 #include "../FPSCounter.h"
 
+#include "Image.h"
+
 /// OpenGL video driver implementation
 namespace OpenGL
 {
@@ -47,7 +49,7 @@ namespace OpenGL
     class Driver : public Video::Driver
     {
     public:
-        Driver(int xres, int yres, int bpp, bool fullscreen);
+        Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize);
         ~Driver();
 
         /// Switches the driver to display fullscreen.
@@ -60,7 +62,7 @@ namespace OpenGL
         virtual bool SwitchResolution(int x, int y);
 
         /// Creates a new image from the provided pixel buffer.
-        virtual Video::Image* CreateImage(Canvas &pm);
+        virtual Image* CreateImage(Canvas &pm);
 
         /// Frees the previously created image.
         virtual void FreeImage(Video::Image* img);
@@ -112,7 +114,7 @@ namespace OpenGL
         virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]);
 
         /// Grabs a rect from the screen, constructs an image from it, and returns it
-        virtual ::Video::Image* GrabImage(int x1, int y1, int x2, int y2);
+        virtual Image* GrabImage(int x1, int y1, int x2, int y2);
 
         /// Like GrabImage, but stores the contents on a canvas, not an image
         virtual Canvas* GrabCanvas(int x1, int y1, int x2, int y2);
@@ -130,6 +132,12 @@ namespace OpenGL
         int _yres;
         int _bpp;
         bool _fullScreen;
+
+        // If true, we make the real resolution twice normal, and let
+        // OpenGL scale it (bilinear filtering!) when we ShowPage
+        // _bufferTex is used to do the scaling.
+        bool _doubleSize;
+        uint _bufferTex;
 
         uint _lasttex;
         void SwitchTexture(uint tex);

@@ -27,21 +27,19 @@ float InputControl::PeekDelta()
     return Position() - _oldPos;
 }
 
-Input* Input::_theInstance = 0;
+ScopedPtr<Input> Input::_theInstance = 0;
 
 Input* Input::GetInstance()
 {
-    if (_theInstance == 0)
+    if (!_theInstance)
         _theInstance = new Input;
-    return _theInstance;
+    return _theInstance.get();
 }
 
 void Input::Destroy()
 {
-    assert(_theInstance);
-
-    delete _theInstance;
-    _theInstance = 0;
+    if (_theInstance)
+        _theInstance = 0;
 }
 
 Keyboard* Input::GetKeyboard() const
@@ -109,13 +107,14 @@ void Input::JoyButtonChange(uint stick, uint index, bool value)
 
 void Input::Update()
 {
-    _keyboard->Update();
+    // All of the current devices update themselves.  Fuckit for now.
+    /*_keyboard->Update();
     _mouse->Update();
     for (uint i = 0; i < _joysticks.size(); i++)
     {
         if (_joysticks[i])
             _joysticks[i]->Update();
-    }
+    }*/
 }
 
 void Input::Flush()

@@ -9,6 +9,7 @@
 #include "Image.h"
 
 #include "common/types.h"
+#include "common/misc.h"
 #include "common/Canvas.h"
 #include "common/log.h"
 
@@ -27,14 +28,25 @@ namespace OpenGL
     const uint GL_FUNC_ADD_EXT = 0x8006;
 #endif
 
-    Driver::Driver(int xres, int yres, int bpp, bool fullscreen)
+    Driver::Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize)
         : _lasttex(0)
         , _xres(xres)
         , _yres(yres)
         , _bpp(bpp)
-        , _fullScreen(fullscreen)
+        , _fullScreen(fullScreen)
+        , _doubleSize(doubleSize) // TEST CODE
     {
-        _screen = SDL_SetVideoMode(xres, yres, bpp, SDL_OPENGL | (fullscreen ? SDL_FULLSCREEN : 0));
+        if (_doubleSize)
+        {
+            xres += xres;
+            yres += yres;
+            glGenTextures(1, &_bufferTex);
+        }
+
+        // from this point, xres and yres are the physical resulotion,
+        // _xres and _yres are the virtual resolution
+
+        _screen = SDL_SetVideoMode(xres, yres, bpp, SDL_OPENGL | (fullScreen ? SDL_FULLSCREEN : 0));
         if (!_screen)
             throw Video::Exception();
 
@@ -44,7 +56,7 @@ namespace OpenGL
         glEnable(GL_BLEND);
 
 #if 0
-        gluOrtho2D(0, _xres, _yres, 0);
+        gluOrtho2D(0, xres, yres, 0);
 #else
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
@@ -60,7 +72,7 @@ namespace OpenGL
 
         glDisable(GL_DEPTH_TEST);
 
-        glScissor(0, 0, _xres, _yres);
+        glScissor(0, 0, xres, yres);
         glEnable(GL_SCISSOR_TEST);
 
         glEnable(GL_TEXTURE_2D);
@@ -114,7 +126,7 @@ namespace OpenGL
     }
 
     // This is far, far too long.  Refactor.
-    Video::Image* Driver::CreateImage(Canvas& src)
+    Image* Driver::CreateImage(Canvas& src)
     {
         /*
             First, if src is 16x16, we figure out if we have a texture that can fit it.
@@ -289,6 +301,45 @@ namespace OpenGL
 
     void Driver::ShowPage()
     {
+        if (_doubleSize)
+        {
+#if 0
+            // The easy way
+            _xres <<= 1;    _yres <<= 1;                            // Fool the driver for a moment.
+            Image* tempImage = GrabImage(0, 0, _xres, _yres);       // Grab a hunk o screen
+            ScaleBlitImage(tempImage, 0, 0, _xres * 2, _yres * 2);  // Draw it
+            _xres >>= 1;    _yres >>= 1;                            // Restore xres and yres
+
+            FreeImage(tempImage);                                   // Clean up
+#else
+            // The fast way
+            // It's much faster because it bypasses all my gay abstraction crap.
+            // Most notably, the allocation of a temporary image, and a lot of
+            // pixel/screen space arithmatic that isn't needed.
+
+            uint texW = NextPowerOf2(_xres);
+            uint texH = NextPowerOf2(_yres);
+            SwitchTexture(_bufferTex);
+            glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, _yres, texW, texH, 0);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+            float endX = float(_xres) / texW;
+            float endY = float(_yres) / texH;
+
+            _xres <<= 1;    _yres <<= 1;
+
+            glBegin(GL_QUADS);
+            glTexCoord2f(0, endY); glVertex2i(0, 0);
+            glTexCoord2f(endX, endY); glVertex2i(_xres, 0);
+            glTexCoord2f(endX, 0); glVertex2i(_xres, _yres);
+            glTexCoord2f(0, 0); glVertex2i(0, _yres);
+            glEnd();
+
+            _xres >>= 1;    _yres >>= 1;
+#endif
+        }
+
         fps.Update();
         SDL_GL_SwapBuffers();
     }
@@ -657,14 +708,8 @@ namespace OpenGL
         glEnable(GL_TEXTURE_2D);
     }
 
-    ::Video::Image* Driver::GrabImage(int x1, int y1, int x2, int y2)
+    Image* Driver::GrabImage(int x1, int y1, int x2, int y2)
     {
-#if 0
-        ScopedPtr<Canvas> c(GrabCanvas(x1, y1, x2, y2));
-        if (!c.get()) return 0;
-
-        return CreateImage(*c);
-#else
         // Way fast, since there are no pixels going from the video card to system memory.
         // They just get copied from the screen to a texture (which also video memory)
 
@@ -674,8 +719,8 @@ namespace OpenGL
         // clip
         if (x1 > x2) swap(x1, x2);
         if (y1 > y2) swap(y1, y2);
-        x1 = clamp(x1, 0, _xres);        x2 = clamp(x2, 0, _xres);
-        y1 = clamp(y1, 0, _yres);        y2 = clamp(y2, 0, _yres);
+        //x1 = clamp(x1, 0, _xres);        x2 = clamp(x2, 0, _xres);
+        //y1 = clamp(y1, 0, _yres);        y2 = clamp(y2, 0, _yres);
         int w = x2 - x1;
         int h = y2 - y1;
         if (w < 0 || h < 0) return 0;
@@ -693,7 +738,6 @@ namespace OpenGL
         Texture* tex = new Texture(handle, texwidth, texheight);
         tex->refCount++;
         return new Image(tex, texCoords, w, h);
-#endif
     }
 
     Canvas* Driver::GrabCanvas(int x1, int y1, int x2, int y2)

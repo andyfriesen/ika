@@ -187,13 +187,22 @@ void Engine::Startup()
         if (driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
         {
             Log::Write("Starting SDL video driver");
-            video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bitdepth"), cfg.Int("fullscreen") != 0);
+            video = new Soft32::Driver(
+                cfg.Int("xres"), 
+                cfg.Int("yres"), 
+                cfg.Int("bitdepth"), 
+                cfg.Int("fullscreen") != 0);
         }
         else if (driver == "opengl")
 #endif
         {
             Log::Write("Starting OpenGL video driver");
-            video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bitdepth"), cfg.Int("fullscreen") != 0);
+            video = new OpenGL::Driver(
+                cfg.Int("xres"), 
+                cfg.Int("yres"), 
+                cfg.Int("bitdepth"), 
+                cfg.Int("fullscreen") != 0,
+                cfg.Int("doublesize") != 0);
         }
 
 #if (!defined _DEBUG)
@@ -268,9 +277,9 @@ void Engine::Shutdown()
     Sound::Shutdown();
     script.Shutdown();
     entities.clear();
-    SDL_Quit();
-
+    Input::Destroy();
     delete video;
+    SDL_Quit();
 }
 
 

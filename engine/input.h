@@ -63,6 +63,7 @@ class Input
 {
     friend class InputDevice;
     friend class InputControl;
+    friend class ScopedPtr<Input>;
 
 public:
     static Input* GetInstance();
@@ -79,6 +80,8 @@ public:
     void KeyUp(uint key);
     void JoyAxisMove(uint stick, uint axis, uint value);
     void JoyButtonChange(uint stick, uint button, bool value);
+    void MouseMoved(int x, int y);
+    void MouseButtonChange(uint button, bool value);
 
     // Poll all connected devices
     void Update();
@@ -107,7 +110,7 @@ private:
     Input();
     ~Input();
 
-    static Input* _theInstance;
+    static ScopedPtr<Input> _theInstance;
 
     ScopedPtr<Keyboard> _keyboard;
     ScopedPtr<Mouse>    _mouse;

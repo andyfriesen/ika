@@ -1,8 +1,6 @@
 //#include "SDL/SDL_opengl.h"
 #include "Image.h"
-#include "common/log.h"
-
-#include <algorithm>
+#include "Driver.h"
 
 namespace OpenGL
 {

@@ -109,11 +109,10 @@ void CSpriteController::Free(Sprite* s)
 {
     if (sprite.count(s->_fileName))
     {
+        assert(s->getRefCount() > 0);
+
         if (s->getRefCount() == 1)
-        {
-            Log::Write("Deallocating %s", s->_fileName.c_str());
             sprite.erase(s->_fileName);
-        }
 
         s->unref();
     }
