@@ -7,7 +7,7 @@ You know the drill. --tSB
 #include "common/fileio.h"
 #include "common/rle.h"
 #include "common/log.h"
-#include "common/canvas.h"
+#include "common/Canvas.h"
 #include "video/Driver.h"
 #include "video/Image.h"
 
@@ -36,29 +36,6 @@ CFont::CFont(const char* filename, Video::Driver* v)
         _width = max<uint>(_width, glyph.Width());
         _height = max<uint>(_height, glyph.Height());
     }
-    
-    /*set.resize(f.NumSubSets());
-    
-    _width = _height = 0;
-    _tabSize = 30;
-    
-    // eep @_@
-    for (int nSet = 0; nSet < f.NumSubSets(); nSet++)
-    {
-        for (int nGlyph = 0; nGlyph < 96; nGlyph++)
-        {
-            CFontFile::SSubSet& s = f.GetSubSet(nSet);
-            
-            int nGlyphidx = s.nGlyphtbl[nGlyph + 32];
-            
-            Canvas& glyph = f.GetGlyph(nGlyphidx);
-
-            set[nSet].glyph[nGlyph] = _video->CreateImage(glyph);
-            
-            if (_width < glyph.Width())     _width = glyph.Width();
-            if (_height < glyph.Height())   _height = glyph.Height();
-        }
-    }*/
 }
 
 CFont::~CFont()
@@ -201,13 +178,15 @@ namespace
 };
 
 void CFont::PrintString(int x, int y, const char* s)
-{
-    PaintString(x, y, s, PrintToVideo());
+{   
+	PrintToVideo printer;
+    PaintString(x, y, s, printer);
 }
 
 void CFont::PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode)
 {
-    PaintString(x, y, s, PrintToCanvas(dest, blendMode));
+	PrintToCanvas printer(dest, blendMode);
+    PaintString(x, y, s, printer);
 }
 
 int CFont::StringWidth(const char* s) const

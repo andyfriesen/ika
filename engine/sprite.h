@@ -29,7 +29,7 @@ struct Sprite : RefCounted
     virtual ~Sprite();
 
     Video::Image* GetFrame(uint frame);                     ///< Returns the frame image
-  
+
     inline uint Count()  const { return _frames.size(); }
     inline uint Width()  const { return nFramex; }
     inline uint Height() const { return nFramey; }

@@ -167,7 +167,7 @@ float Input::Control::Delta()
     float pos = Position();
     float delta = pos - _oldPos;
     _oldPos = pos;
-    
+
     return delta;
 }
 
@@ -294,7 +294,7 @@ Input::Input()
 Input::~Input()
 {
     for (ControlMap::iterator
-        iter  = _controls.begin(); 
+        iter  = _controls.begin();
         iter != _controls.end();
         iter++)
     {
@@ -306,7 +306,7 @@ void Input::KeyDown(int key)
 {
     if (key >= 32 && key <= 126)    // only printable characters go to the keyqueue
         _keyQueue.push(key);
-    
+
     if (_keys.count(key))
     {
         KeyControl* c = _keys[key];
@@ -336,7 +336,7 @@ Input::Control* Input::GetControl(const std::string& name)
     if (_controls.count(name)) // control exist already?
         return _controls[name];
     // key controls are created on demand, so it's possible that the name is valid, yet the control not be created yet
-    else if (_keyTable.count(name)) 
+    else if (_keyTable.count(name))
     {
         int index = _keyTable[name];
         KeyControl* c = new KeyControl(this, index);

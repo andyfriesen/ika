@@ -7,7 +7,6 @@
 #include "matrix.h"
 
 #include <string>
-#include <hash_map>
 #include <map>
 
 // Partial tile obstruction stuff.
@@ -88,7 +87,7 @@ struct Map
 
         std::string label;
         int x, y;
-        ParallaxInfo parallax;        
+        ParallaxInfo parallax;
 
         bool wrapx;
         bool wrapy;
@@ -98,7 +97,7 @@ struct Map
 
         // TODO:
         // std::vector<LineSegments> obstructionVectors;
-        
+
         Matrix<u8> obstructions;
         Matrix<uint> tiles;
 
@@ -124,7 +123,7 @@ struct Map
 
     typedef std::map<std::string, Zone> ZoneMap;
     typedef std::map<std::string, WayPoint> WayPointMap;
-    
+
     ZoneMap             zones;
     WayPointMap         wayPoints;
 private:
@@ -138,9 +137,9 @@ public:
     Map(const std::string& filename);
     ~Map();
 
-    // bool to make iked's template controller thing happy.  always returns 
+    // bool to make iked's template controller thing happy.  always returns
     // true.  Throws an exception if something went wrong.
-    bool Load(const std::string& filename); 
+    bool Load(const std::string& filename);
     void Save(const std::string& filename);
 
     Layer* GetLayer(uint index);

@@ -5,7 +5,7 @@
 #define METHOD1(x, type) PyObject* x(type* self)
 
 #include <sstream>
-#include <Python.h>
+#include "Python.h"
 #include "input.h"
 
 // Rain of prototypes
@@ -110,7 +110,7 @@ namespace Script
         };
         extern PyTypeObject type;
         extern PyMethodDef methods[];
-        
+
         // Methods
         METHOD(Canvas_Save, CanvasObject);
         METHOD(Canvas_Blit, CanvasObject);

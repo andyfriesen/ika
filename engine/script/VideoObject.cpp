@@ -118,7 +118,7 @@ namespace Script
                 "Flips the back and front video buffers.  This must be called after the screen\n"
                 "has been completely drawn, or the scene will never be presented to the player.\n"
                 "This method is not guaranteed to preserve the contents of the screen, so it is\n"
-                "advised to dedraw the entire screen, instead of incrementally drawing."
+                "advised to redraw the entire screen, instead of incrementally drawing."
             },
 
             {   0   }

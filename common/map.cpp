@@ -7,6 +7,7 @@
 
 #include "aries.h"
 #include <fstream>
+#include <stdexcept>
 
 using aries::newNode;
 using aries::Node;
@@ -153,7 +154,7 @@ bool Map::Load(const std::string& filename)
                 DataNode* n;
 
                 lay->label = Local::getStringNode(*iter, "label");
-                
+
                 n = (*iter)->getChild("dimensions");
                 int width = Local::getIntNode(n, "width");
                 int height = Local::getIntNode(n, "height");
@@ -223,7 +224,7 @@ bool Map::Load(const std::string& filename)
                         e.obstructedByMap = Local::getStringNode(*iter, "obstructed_by_map") == "true";
                         e.adjActivateScript = Local::getStringNode(*iter, "adj_activate_script");
                         e.activateScript = Local::getStringNode(*iter, "activate_script");
-                        
+
                         lay->entities.push_back(e);
                     }
                 }
@@ -279,7 +280,7 @@ void Map::Save(const std::string& filename)
                 );
 
         rootNode->addChild(infoNode);
-        
+
         DataNode* metaNode = newNode("meta");
         infoNode->addChild(metaNode);
         for (std::map<std::string, std::string>::iterator iter = metaData.begin(); iter != metaData.end(); iter++)
@@ -368,9 +369,9 @@ void Map::Save(const std::string& filename)
                 const int dataSize = lay->Width() * lay->Height() * sizeof(uint);
                 ScopedArray<u8> compressed(new u8[dataSize]);
                 int compressSize = Compression::compress(
-                    reinterpret_cast<const u8*>(lay->tiles.GetPointer(0, 0)), 
+                    reinterpret_cast<const u8*>(lay->tiles.GetPointer(0, 0)),
                     dataSize,
-                    compressed.get(), 
+                    compressed.get(),
                     dataSize);
 
                 std::string d64 = base64::encode(reinterpret_cast<u8*>(compressed.get()), compressSize);
@@ -384,9 +385,9 @@ void Map::Save(const std::string& filename)
             {
                 ScopedArray<u8> compressed(new u8[lay->Width() * lay->Height() * sizeof(uint)]);
                 int compressSize = Compression::compress(
-                    lay->obstructions.GetPointer(0, 0), 
-                    lay->Width() * lay->Height(), 
-                    compressed.get(), 
+                    lay->obstructions.GetPointer(0, 0),
+                    lay->Width() * lay->Height(),
+                    compressed.get(),
                     lay->Width() * lay->Height());
 
                 std::string d64 = base64::encode(compressed.get(), compressSize);
@@ -461,7 +462,7 @@ uint Map::LayerIndex(Map::Layer* lay) const
         if (lay == layers[i])
             return i;
     }
-    return -1;
+    return (uint)-1;
 }
 
 uint Map::LayerIndex(const std::string& label) const
@@ -471,7 +472,7 @@ uint Map::LayerIndex(const std::string& label) const
         if (layers[i]->label == label)
             return i;
     }
-    return -1;
+    return (uint)-1;
 }
 
 Map::Layer* Map::AddLayer(const std::string& name, uint width, uint height)

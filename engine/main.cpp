@@ -9,12 +9,12 @@
 #include "common/fileio.h"
 
 #include "opengl/Driver.h"
-#include "soft32/Driver.h"
+//#include "soft32/Driver.h"
 
 void CEngine::Sys_Error(const char* errmsg)
 {
     CDEBUG("sys_error");
-    
+
 #if (defined WIN32)
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
@@ -36,7 +36,7 @@ void CEngine::Script_Error()
     Shutdown();
 
     std::string err = script.GetErrorMessage();
-    
+
     /*File f;
     if (f.OpenRead("pyout.log"))
         err = f.ReadAll();
@@ -49,7 +49,7 @@ void CEngine::Script_Error()
         SDL_SysWMinfo info;
         SDL_VERSION(&info.version);
         HWND hWnd = SDL_GetWMInfo(&info) ? info.window : HWND_DESKTOP;
-   
+
         MessageBox(hWnd, err.c_str(), "Script Error", 0);
     }
 #else
@@ -76,7 +76,7 @@ void CEngine::CheckMessages()
 //                ScreenShot();
 
             // Alt-F4.  Quit.  NOW.
-            if (event.key.keysym.sym == SDLK_F4 && 
+            if (event.key.keysym.sym == SDLK_F4 &&
                 (SDL_GetModState() & (KMOD_LALT | KMOD_RALT)))
             {
                 Shutdown();
@@ -87,7 +87,7 @@ void CEngine::CheckMessages()
         case SDL_KEYUP:
             input.KeyUp(event.key.keysym.sym);
             break;
-           
+
         case SDL_QUIT:
             bKillFlag = true;
             Shutdown();
@@ -101,7 +101,7 @@ void CEngine::MainLoop()
 {
     CDEBUG("mainloop");
     static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
-    
+
     CFont* font;
     try
     {
@@ -119,7 +119,7 @@ void CEngine::MainLoop()
     while (true)
     {
         CheckMessages();
-        
+
         int skipcount = 0;
 
         for (int i = 0; (i < now - lasttick) && (++skipcount <= nFrameskip); i++)
@@ -154,7 +154,7 @@ void CEngine::Startup()
 // This is ugly. :(
 {
     CDEBUG("Startup");
-    
+
     CConfigFile cfg("user.cfg");
 
     if (!cfg.Good())
@@ -169,7 +169,7 @@ void CEngine::Startup()
     {
         if (cfg.Int("log"))
             Log::Init("ika.log");
-       
+
         Log::Write("ika " VERSION " startup");
         Log::Write("Built on " __DATE__);
         Log::Write("--------------------------");
@@ -182,7 +182,7 @@ void CEngine::Startup()
             );
 
         atexit(SDL_Quit);
-          
+
         Log::Write("Initializing Video");
         std::string driver = Lower(cfg["videodriver"]);
 
@@ -233,36 +233,36 @@ void CEngine::Startup()
     }
 
     srand(GetTime());
-    
+
     Log::Write("Initing Python");
     script.Init(this);
     Log::Write("Executing system.py");
     bool result = script.LoadSystemScripts("system.py");
     if (!result)
         Script_Error();
-    
+
     if (!bMaploaded)
         Sys_Error("");
-    
+
     Log::Write("Startup complete");
 }
 
 void CEngine::Shutdown()
 {
     CDEBUG("shutdown");
-    
+
 #ifdef _DEBUG
     static bool blah = false;
-    
+
     if (blah)
     {
         Log::Write("REDUNDANT CALLS TO SHUTDOWN!!!!!");
         return;
     }
-    
+
     blah = true;
 #endif
-    
+
     Log::Write("---- shutdown ----");
     entities.clear();
     Sound::Shutdown();
@@ -292,30 +292,30 @@ void CEngine::RenderEntities(uint layerIndex)
     std::vector<Entity*>     drawlist;
     const Point res = video->GetResolution();
     const Map::Layer* layer = map.GetLayer(layerIndex);
-   
+
     // first, get a list of entities onscreen
     int width, height;
     for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
-    {    
+    {
         Entity* e = *i;
         const Sprite* sprite = e->sprite;
 
         if (e->layerIndex != layerIndex)    continue;   // wrong layer
         if (!sprite)                        continue;   // no sprite? @_x
-        
+
         width = sprite->Width();
         height = sprite->Height();
-        
+
         // get the coodinates at which the sprite would be drawn
         int x = e->x - sprite->nHotx + layer->x - xwin;
         int y = e->y - sprite->nHoty + layer->y - ywin;
-        
+
         if (x + width > 0 && y + height > 0 &&
             x < res.x     && y < res.y      &&
             e->isVisible)
             drawlist.push_back(e);                                                          // the entity is onscreen, tag it.
     }
-    
+
     if (!drawlist.size())
         return;                                                                             // nobody onscreen?  Easy out!
 
@@ -327,13 +327,13 @@ void CEngine::RenderEntities(uint layerIndex)
     {
         const Entity* e = *j;
         Sprite* s = e->sprite;
-        
+
         uint frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
         if (frame >= s->Count()) frame = 0;
 
         int x = e->x - xwin - s->nHotx + layer->x;
         int y = e->y - ywin - s->nHoty + layer->y;
-       
+
         video->BlitImage(s->GetFrame(frame), x, y);
     }
 }
@@ -349,20 +349,20 @@ void CEngine::RenderLayer(uint layerIndex)
 
     int layerWidth = layer->Width() * tiles->Width();
     int layerHeight = layer->Height() * tiles->Height();
-   
+
     xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
     yw = (ywin * layer->parallax.mulx / layer->parallax.divy) - layer->y;
-    
+
     firstX = xw / tiles->Width();
     firstY = yw / tiles->Height();
-    
+
     adjustX = xw % tiles->Width();
     adjustY = yw % tiles->Height();
-    
+
     const Point res = video->GetResolution();
     lenX = res.x / tiles->Width() + 1;
     lenY = res.y / tiles->Height() + 2;
-    
+
     if (firstX < 0)
     {
         lenX -= -firstX;
@@ -381,10 +381,10 @@ void CEngine::RenderLayer(uint layerIndex)
     if ((uint)(firstY + lenY) > layer->Height()) lenY = layer->Height() - firstY;
 
     if (lenX < 1 || lenY < 1) return;   // not visible
-    
+
     const uint*  t = layer->tiles.GetPointer(firstX, firstY);
     int xinc = layer->Width() - lenX;
-    
+
     int curx = -adjustX;
     int cury = -adjustY;
 
@@ -409,20 +409,20 @@ void CEngine::Render()
 {
     CDEBUG("render");
     const Point res = video->GetResolution();
-    
+
     if (!bMaploaded)    return;
-    
+
     tiles->UpdateAnimation(GetTime());
-    
+
     if (cameraTarget)
-    {        
+    {
         const Map::Layer* layer = map.GetLayer(cameraTarget->layerIndex);
 
         SetCamera(Point(
             cameraTarget->x - res.x / 2 + layer->x,
             cameraTarget->y - res.y / 2 + layer->y));
     }
-    
+
     video->DrawRect(0, 0, res.x, res.y, RGBA(0, 0, 0), true);
 
     for (uint i = 0; i < map.NumLayers(); i++)
@@ -438,13 +438,13 @@ void CEngine::Render(const std::vector<uint>& list)
 {
     CDEBUG("render");
     const Point res = video->GetResolution();
-    
+
     if (!bMaploaded)    return;
-    
+
     tiles->UpdateAnimation(GetTime());
-    
+
     if (cameraTarget)
-    {        
+    {
         const Map::Layer* layer = map.GetLayer(cameraTarget->layerIndex);
 
         SetCamera(Point(
@@ -482,7 +482,7 @@ void CEngine::DoHook(HookList& hooklist)
 void CEngine::GameTick()
 {
     CDEBUG("gametick");
-    
+
     CheckKeyBindings();
     DoHook(_hookTimer);
     ProcessEntities();
@@ -493,7 +493,7 @@ void CEngine::CheckKeyBindings()
     // This isn't really optimal, but I dunno if anybody will notice.
     // Pop whatever's on the top of the queue, and just handle that one.
     // Flush the rest of the queue.
-    
+
     if (void* func = input.GetNextControlEvent())
     {
         // I don't like this, but if I don't, then the key triggerings start to do weird things.
@@ -528,7 +528,7 @@ bool CEngine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
     int tx = tiles->Width();
     int ty = tiles->Height();
     Map::Layer* layer = map.GetLayer(layerIndex);
-    
+
     int y2 = (y + h - 1) / ty;
     int x2 = (x + w - 1) / tx;
     x /= tiles->Width();
@@ -538,7 +538,7 @@ bool CEngine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
         for(int cx = x; cx <= x2; cx++)
             if (layer->obstructions(cx, cy))
                 return true;
-    
+
     return false;
 }
 
@@ -556,12 +556,12 @@ Entity* CEngine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w,
         if ((e->layerIndex != layerIndex) ||                    // wrong layer
             (wantobstructable && !e->obstructsEntities) ||      // obstructable entities only?
             (e == ent))                         continue;       // self collision isn't all that useful.
-        
+
         if (x1              >= e->x+s->nHotw)    continue;
         if (y1              >= e->y+s->nHoth)    continue;
         if (x1 + w          <= e->x)            continue;
         if (y1 + h          <= e->y)            continue;
-        
+
         return e;
     }
     return 0;
@@ -605,7 +605,7 @@ void CEngine::TestActivate(const Entity* player)
 {
     CDEBUG("testactivate");
     Sprite* sprite = player->sprite;
-    
+
     int tx = (player->x + sprite->nHotw / 2) / tiles->Width();
     int ty = (player->y + sprite->nHoth / 2) / tiles->Height();
 
@@ -626,11 +626,11 @@ void CEngine::TestActivate(const Entity* player)
             }
         }
     }
-    
+
     // adjacent activation
-    
+
     if (!input.Enter().Pressed()) return;                           // From this point on, the only time we'd have to check this crap is if enter was pressed.
-    
+
     tx = player->x; ty = player->y;
     // entity activation
     switch(player->direction)
@@ -639,13 +639,13 @@ void CEngine::TestActivate(const Entity* player)
     case face_down:      ty += sprite->nHoth;    break;
     case face_left:      tx -= sprite->nHotw;    break;
     case face_right:     tx += sprite->nHotw;    break;
-        
+
     case face_upleft:    tx -= sprite->nHotw;    ty -= sprite->nHoth;    break;
     case face_upright:   tx += sprite->nHotw;    ty -= sprite->nHoth;    break;
     case face_downleft:  tx -= sprite->nHotw;    ty += sprite->nHoth;    break;
     case face_downright: tx += sprite->nHotw;    ty += sprite->nHoth;    break;
     }
-    
+
     Entity* ent = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
     if (ent)
     {
@@ -661,9 +661,9 @@ void CEngine::TestActivate(const Entity* player)
 Entity* CEngine::SpawnEntity()
 {
     Entity* e = new Entity(this);
-    
+
     entities.push_back(e);
-    
+
     return e;
 }
 
@@ -673,17 +673,17 @@ void CEngine::DestroyEntity(Entity* e)
         if (e == (*i))
         {
             sprite.Free(e->sprite);
-            
+
             // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
             if (cameraTarget == e)  cameraTarget = 0;
             if (pPlayer == e)       pPlayer = 0;
-            
+
             // actually nuke it
             entities.remove(e);
             delete e;
             return;
         }
-        
+
     // In a Perfect World, this will never execute.
     Log::Write("Attempt to unallocate invalid entity!!!");
 }
@@ -694,16 +694,16 @@ void CEngine::LoadMap(const std::string& filename)
 // Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure.
 {
     CDEBUG("loadmap");
-    
+
     try
     {
         Log::Write("Loading map \"%s\"", filename.c_str());
-        
+
         if (!map.Load(filename)) throw filename;                        // actually load the map
-        
+
         delete tiles;                                                   // nuke the old tileset
         tiles = new CTileSet(map.tileSetName, video);                   // load up them tiles
-        
+
         script.ClearEntityList();                                       // DEI
 
         std::map<const Map::Entity*, Entity*> entMap;                   // used so we know which is related to which, so we can properly gather objects from the map script. (once it's loaded)
@@ -724,10 +724,10 @@ void CEngine::LoadMap(const std::string& filename)
                 entMap[&ents[curEnt]] = ent;
             }
         }
-        
+
         xwin = ywin = 0;                                                // just in case
         bMaploaded = true;
-        
+
         if (!script.LoadMapScripts(filename))
             Script_Error();
 
@@ -777,7 +777,6 @@ int main(int argc, char* args[])
     engine.Startup();
     engine.MainLoop();
     engine.Shutdown();
-    
+
     return 0;
 }
-

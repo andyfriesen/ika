@@ -7,11 +7,11 @@
 
 #include "SDL/SDL.h"
 
-#include "video/Driver.h"
-#include "common/Canvas.h"
-#include "common/types.h"
+#include "../video/Driver.h"
+#include "../../common/Canvas.h"
+#include "../../common/types.h"
 
-#include "FPSCounter.h"
+#include "../FPSCounter.h"
 
 /// OpenGL video driver implementation
 namespace OpenGL

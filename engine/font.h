@@ -1,7 +1,7 @@
 #ifndef FONT_H
 #define FONT_H
 
-#include "video/driver.h"
+#include "video/Driver.h"
 #include "common/types.h"
 #include "common/fontfile.h"
 #include "tileset.h"

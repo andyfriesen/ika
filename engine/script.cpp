@@ -1,5 +1,5 @@
 #include <cassert>
-#include <Python.h>
+#include "Python.h"
 
 #include "script.h"
 
@@ -17,19 +17,19 @@ void ScriptEngine::Init(CEngine* njin)
 {
     assert(!_inited);
     _inited = true;
-    
+
     Py_Initialize();
     PyRun_SimpleString("import sys; sys.path.insert(0, '.')");  // :x
-    
+
     PyImport_AddModule("ika");
     PyObject* module = Py_InitModule3("ika", Script::standard_methods,
         "ika standard module. \n"
         "\n"
         "Contains functions and crap for manipulating the ika game engine at runtime.\n"
         );
-    
+
     engine = njin;
-    
+
     // Initialize objects
     Script::Image::Init();
     Script::Entity::Init();
@@ -42,9 +42,9 @@ void ScriptEngine::Init(CEngine* njin)
     Script::Map::Init();
     Script::Input::Init();
     Script::Error::Init();
-    
+
     // Create singletons
-    PyObject* input = Script::Input::New(engine->input);    
+    PyObject* input = Script::Input::New(engine->input);
     PyObject* map = Script::Map::New();
     PyObject* video = Script::Video::New(engine->video);
 
@@ -65,7 +65,7 @@ void ScriptEngine::Init(CEngine* njin)
     Py_INCREF(&Script::Sound::type);    PyModule_AddObject(module, "Sound", (PyObject*)&Script::Sound::type);
     Py_INCREF(&Script::Font::type);     PyModule_AddObject(module, "Font",  (PyObject*)&Script::Font::type);
     Py_INCREF(&Script::Canvas::type);   PyModule_AddObject(module, "Canvas", (PyObject*)&Script::Canvas::type);
-    
+
     // Create entity dictionary
     entityDict = PyDict_New();
     assert(entityDict != 0);
@@ -81,42 +81,42 @@ void ScriptEngine::Shutdown()
         ScriptObject::_instances.erase(o);
         o->release();
     }
-    
+
     Py_XDECREF(entityDict);
     Py_XDECREF(cameraTarget);
-    
+
     Py_XDECREF(sysModule);
     Py_XDECREF(mapModule);
-    
+
     Py_Finalize();
 }
 
 bool ScriptEngine::LoadSystemScripts(const std::string& fname)
 {
     Py_XDECREF(sysModule);                                              // free it if it's already allocated
-    
+
     sysModule = PyImport_ImportModule("system");
     if (!sysModule)
     {
         PyErr_Print();
         return false;
     }
-    
+
     return true;
 }
 
 bool ScriptEngine::LoadMapScripts(const std::string& fname)
 {
     Py_XDECREF(mapModule);
-    
+
     std::string sTemp = fname;
-    
+
     int nExtension = sTemp.find_last_of(".", sTemp.length());
     sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
     // TODO: replace / and \ with dots, so python will search for a package with the correct path.
-    
+
     mapModule = PyImport_ImportModule((char*)sTemp.c_str());
-    
+
     if (!mapModule)
     {
         PyErr_Print();
@@ -136,27 +136,27 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
         Log::Write("Warning: Module %s had an AutoExec event, but it failed to execute.", sTemp.c_str());
 
     Py_XDECREF(result);
-    
+
     return true;
 }
 
 void ScriptEngine::ExecObject(const ScriptObject& func)
 {
     CDEBUG("ScriptEngine::ExecObject");
-    
+
     if (!func.get())
     {
         Log::Write("Attempt to call null object");
         return;
     }
-    
-    PyObject* result = PyEval_CallObject((PyObject*)func.get(), 0); 
+
+    PyObject* result = PyEval_CallObject((PyObject*)func.get(), 0);
     if (!result)
     {
         PyErr_Print();
         engine->Script_Error();
     }
-    
+
     Py_DECREF(result);
 }
 
@@ -164,7 +164,8 @@ void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent)
 {
     CDEBUG("ScriptEngine::ExecObject");
 
-    Script::Entity::EntityObject* entObject = Script::Entity::instances[const_cast<::Entity*>(ent)];
+    Script::Entity::EntityObject* entObject =
+		Script::Entity::instances[const_cast< ::Entity*>(ent)];
     assert(entObject);
 
     if (!func.get())
@@ -172,9 +173,9 @@ void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent)
         Log::Write("Attempt to call null object");
         return;
     }
-    
+
     PyObject* args = Py_BuildValue("(O)", entObject);
-    PyObject* result = PyEval_CallObject((PyObject*)func.get(), args); 
+    PyObject* result = PyEval_CallObject((PyObject*)func.get(), args);
     Py_DECREF(args);
 
     if (!result)
@@ -182,7 +183,7 @@ void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent)
         PyErr_Print();
         engine->Script_Error();
     }
-    
+
     Py_DECREF(result);
 }
 
@@ -212,22 +213,22 @@ void ScriptEngine::AddEntityToList(::Entity* e)
     PyObject* pEnt = Script::Entity::New(e);                // make an object for the entity
 
     PyDict_SetItemString(Script::entityDict, const_cast<char*>(e->name.c_str()), pEnt);
-    
+
     Py_DECREF(pEnt);
 }
 
 void ScriptEngine::CallScript(const std::string& name)
 {
     CDEBUG("ScriptEngine::CallScript");
-    
+
     if (!mapModule)
         return;                                                                // no module loaded == no event
 
     engine->input.Unpress();
-    
+
     PyObject* dict = PyModule_GetDict(mapModule);
     PyObject* func = PyDict_GetItemString(dict, const_cast<char*>(name.c_str()));
-    
+
     if (!func)
     {
         Log::Write("CallScript, no such event \"%s\"", name);
@@ -235,21 +236,22 @@ void ScriptEngine::CallScript(const std::string& name)
     }
 
     PyObject* result = PyEval_CallObject(func, 0);
-    
+
     if (!result)
     {
         PyErr_Print();
         engine->Script_Error();
     }
-    
+
     Py_XDECREF(result);
 }
 
 void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
 {
-    assert(Script::Entity::instances.count(const_cast<::Entity*>(ent)));
+    assert(Script::Entity::instances.count(const_cast< ::Entity*>(ent)));
 
-    Script::Entity::EntityObject* entObject = Script::Entity::instances[const_cast<::Entity*>(ent)];
+    Script::Entity::EntityObject* entObject =
+		Script::Entity::instances[const_cast< ::Entity*>(ent)];
 
     PyObject* dict = PyModule_GetDict(mapModule);
     PyObject* func = PyDict_GetItemString(dict, const_cast<char*>(name.c_str()));

@@ -29,7 +29,7 @@ namespace aries
             if (isWhiteSpace(c) ||
                 !stream.good())
                 break;
-            
+
             stream.get();
             ss << c;
         } while (true);
@@ -39,7 +39,7 @@ namespace aries
 
     void eatWhiteSpace(std::istream& stream)
     {
-        // C++ badly needs a 
+        // C++ badly needs a
         // do { ... } while (condition) { ... }
         // construct.
         do
@@ -92,7 +92,7 @@ namespace aries
             }
             else if (c == ')')
             {
-                // the root node is 1, and you may not actually terminate that node, as it is implicit, and not part 
+                // the root node is 1, and you may not actually terminate that node, as it is implicit, and not part
                 // of the document itself.
                 if (docStack.size() < 2)
                     throw std::runtime_error("Malformed markup document");
@@ -126,7 +126,7 @@ namespace aries
     {}
 
     bool StringNode::isString() const
-    { 
+    {
         return true;
     }
 
@@ -290,7 +290,7 @@ namespace aries
         return this;
     }
 
-    DataNode* DataNode::addChild(Node& n)
+    DataNode* DataNode::addChild(const Node& n)
     {
         _children.push_back(n.clone());
         return this;

@@ -8,7 +8,7 @@
  *
  * Look like lisp?  Guess what inspired it.
  * Extremely easy to parse, extremely easy to read.
- * Much less verbose than XML as well, though the lack of an analogue to 
+ * Much less verbose than XML as well, though the lack of an analogue to
  * attributes makes automated conversion more or less impossible.
  *
  * Text is brought into the markup literally, with only leading and trailing
@@ -24,14 +24,14 @@
  *     (title tSBUPoNiP)
  *   )
  *   (body
- *     (font (size 3)(bold (underline 
+ *     (font (size 3)(bold (underline
  *       News
- *       (-- Note that this markup has no comment system.  Thus, we agree to 
+ *       (-- Note that this markup has no comment system.  Thus, we agree to
  *           ignore all nodes that are named "--".  Voila.  Comments. ^_^
- *       
- *           Note that comments can nest, due to the fact that they're not 
- *           really comments at all.  I do have misgivings about forcing 
- *           comments to balance parenths,  though.  Maybe comments should be 
+ *
+ *           Note that comments can nest, due to the fact that they're not
+ *           really comments at all.  I do have misgivings about forcing
+ *           comments to balance parenths,  though.  Maybe comments should be
  *           added to the spec.
  *       )
  *     )))
@@ -39,13 +39,13 @@
  *       (bold (underline October 20))
  *       (br) Minor update.
  *       (ul
- *         (li v2 8 bit fonts added.  v2.7 will (italics always) assume they 
- *             use v2's default palette; if they do not, you will have to 
+ *         (li v2 8 bit fonts added.  v2.7 will (italics always) assume they
+ *             use v2's default palette; if they do not, you will have to
  *             convert them to something else first. )
  *         (li major optimization concerning WinMapEd's image import feature.
  *             The speed increase should be considerable. )
- *         (li v2.7 now uses (a (href http://www.python.org) Python 2.2).  This 
- *             has a number of exceptional new language features.  I highly 
+ *         (li v2.7 now uses (a (href http://www.python.org) Python 2.2).  This
+ *             has a number of exceptional new language features.  I highly
  *             reccomend that you check the official site to see what's new. )
  *       )
  *   )
@@ -56,25 +56,25 @@
  * Legal garbage:
  *
  * Copyright (c) 2003 Andy Friesen
- * 
- * This software is provided 'as-is', without any express or implied warranty. 
- * In no event will the authors be held liable for any damages arising from 
+ *
+ * This software is provided 'as-is', without any express or implied warranty.
+ * In no event will the authors be held liable for any damages arising from
  * the use of this software.
- * 
- * Permission is granted to anyone to use this software for any purpose, 
- * including commercial applications, and to alter it and redistribute it 
+ *
+ * Permission is granted to anyone to use this software for any purpose,
+ * including commercial applications, and to alter it and redistribute it
  * freely, subject to the following restrictions:
- * 
- *     1. The origin of this software must not be misrepresented; you must not 
- *        claim that you wrote the original software. If you use this software 
- *        in a product, an acknowledgment in the product documentation would be 
+ *
+ *     1. The origin of this software must not be misrepresented; you must not
+ *        claim that you wrote the original software. If you use this software
+ *        in a product, an acknowledgment in the product documentation would be
  *        appreciated but is not required.
- * 
- *     2. Altered source versions must be plainly marked as such, and must not 
+ *
+ *     2. Altered source versions must be plainly marked as such, and must not
  *        be misrepresented as being the original software.
- * 
+ *
  *     3. This notice may not be removed or altered from any source distribution.
- * 
+ *
  */
 
 #ifndef ARIES_H
@@ -111,7 +111,7 @@ namespace aries
         /**
          * Creates a clone of the node, and returns it.  The caller assumes ownership of the new node.
          */
-        virtual Node*       clone() const = 0; 
+        virtual Node*       clone() const = 0;
 
         /**
          * Writes the node to the stream.
@@ -165,7 +165,7 @@ namespace aries
         DataNode* addChild(const std::string& str);             ///< Creates a StringNode and adds it as a new child
         DataNode* addChild(int i);
         //DataNode* addChild(double d);
-        DataNode* addChild(Node& n);                            ///< Adds a copy of the node as a child
+        DataNode* addChild(const Node& n);                            ///< Adds a copy of the node as a child
         DataNode* addChild(Node* n);                            ///< Adds the node as a child.  The node assumes ownership of the pointer. (so don't delete it yourself)
 
         virtual std::ostream& write(std::ostream& stream) const;
