@@ -210,7 +210,18 @@ namespace OpenGL
         if (top > bottom)
             swap(top, bottom);
 
-        glScissor(max(0, left), max(0, top), min(_xres, right), min(_yres, bottom));
+        // gah.
+        // Convert x1,y1-x2,y2 to left,bottom/width,height.
+
+        int width = right - left;
+        int height = bottom - top;
+
+        top = min(_yres, _yres - top) - height;
+
+        glScissor(
+            max(0, left), top,
+            width, height
+            );
     }
 
     void Driver::ShowPage()
