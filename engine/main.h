@@ -33,7 +33,7 @@
 class CEngine
 {
     // This sucks.
-    friend class CScriptEngine;
+    friend class ScriptEngine;
 
     typedef std::list<CEntity*>     EntityList;
     typedef EntityList::iterator    EntityIterator;
@@ -42,7 +42,7 @@ public:                                                                         
     
     Map                             map;                                            ///< tile placement and stuff
     CTileSet*                       tiles;                                          ///< Images.  Of Tiles.
-    CScriptEngine                   script;                                         ///< c0de
+    ScriptEngine                   script;                                         ///< c0de
     
     CSpriteController               sprite;                                         ///< CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
     EntityList                      entities;                                       ///< entities ;P
@@ -60,11 +60,11 @@ private:
     int                             xwin, ywin;                                      ///< world coordinates of the viewport
 public:
     CEntity*                        pPlayer;                                        ///< Points to the current player entity
-    CEntity*                        pCameratarget;                                  ///< Points to the current camera target
+    CEntity*                        pcameraTarget;                                  ///< Points to the current camera target
     
     // Odds and ends
-    HookList                        pHookretrace;
-    HookList                        pHooktimer;
+    HookList                        _hookRetrace;
+    HookList                        _hookTimer;
     int                             nFrameskip;                                     ///< the map engine will skip no more than this amount of ticks per retrace
     
     // interface

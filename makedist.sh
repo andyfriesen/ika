@@ -40,7 +40,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         /cygdrive/c/Program\ Files/NSIS/makensis.exe ../ika.nis && mv ika-install-$version.exe ..
         cd ..
         echo Done.
-        rm -rf tempdist
+        #rm -rf tempdist
 
         echo Assembling source archive...
         mkdir ika

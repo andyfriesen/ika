@@ -28,8 +28,8 @@ namespace Script
         GET(OnPress)
         {
             PyObject* o;
-            if (self->control->onPress)
-                o = (PyObject*)self->control->onPress;
+            if (self->control->onPress.get())
+                o = (PyObject*)self->control->onPress.get();
             else
                 o = Py_None;
         
@@ -40,8 +40,8 @@ namespace Script
         GET(OnUnpress)
         {
             PyObject* o;
-            if (self->control->onUnpress)
-                o = (PyObject*)self->control->onUnpress;
+            if (self->control->onUnpress.get())
+                o = (PyObject*)self->control->onUnpress.get();
             else
                 o = Py_None;
         
@@ -51,28 +51,16 @@ namespace Script
 
         SET(OnPress)
         {
-            Py_XDECREF((PyObject*)self->control->onPress);
-            if (value != Py_None)
-            {
-                Py_INCREF(value);
-                self->control->onPress = value;
-            }
-            else
-                self->control->onPress = 0;
+            self->control->onPress.set(value != Py_None ? value : 0);
             return 0;
         }
+
         SET(OnUnpress)
         {
-            Py_XDECREF((PyObject*)self->control->onUnpress);
-            if (value != Py_None)
-            {
-                Py_INCREF(value);
-                self->control->onUnpress = value;
-            }
-            else
-                self->control->onUnpress = 0;
+            self->control->onUnpress.set(value != Py_None ? value : 0);
             return 0;
         }
+
 #undef GET
 #undef SET
 

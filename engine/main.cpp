@@ -409,11 +409,11 @@ void CEngine::Render(const char* sTemprstring)
     
     tiles->UpdateAnimation(GetTime());
     
-    if (pCameratarget)
+    if (pcameraTarget)
     {        
         SetCamera(Point(
-            pCameratarget->x - res.x / 2,
-            pCameratarget->y - res.y / 2));
+            pcameraTarget->x - res.x / 2,
+            pcameraTarget->y - res.y / 2));
         
         int maxx=(map.Width()  * tiles->Width() ) - res.x;   // and make sure it's still in range
         int maxy=(map.Height() * tiles->Height()) - res.y;
@@ -454,7 +454,7 @@ void CEngine::Render(const char* sTemprstring)
             RenderEntities();
             break;
         case 'R':
-            DoHook(pHookretrace);
+            DoHook(_hookRetrace);
             break;
         }
         p++;
@@ -466,7 +466,7 @@ void CEngine::DoHook(HookList& hooklist)
     bool result;
     hooklist.Flush(); // handle any pending insertions/deletions
 
-    for (std::list <void*>::iterator i = hooklist.begin(); i != hooklist.end(); i++)
+    for (HookList::List::iterator i = hooklist.begin(); i != hooklist.end(); i++)
     {
         result = script.ExecFunction(*i);
 
@@ -482,7 +482,7 @@ void CEngine::GameTick()
     CDEBUG("gametick");
     
     CheckKeyBindings();
-    DoHook(pHooktimer);
+    DoHook(_hookTimer);
     ProcessEntities();
 }
 
@@ -656,7 +656,7 @@ void CEngine::DestroyEntity(CEntity* e)
             sprite.Free(e->pSprite);
             
             // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
-            if (pCameratarget == e)   pCameratarget = 0;
+            if (pcameraTarget == e)   pcameraTarget = 0;
             if (pPlayer == e)         pPlayer = 0;
             
             // O(n**2) I think.  Gay.
@@ -740,7 +740,7 @@ CEngine::CEngine()
     : tiles(0)
     , video(0)
     , pPlayer(0)
-    , pCameratarget(0)
+    , pcameraTarget(0)
     , bMaploaded(false)
     , bKillFlag(false)
 {}

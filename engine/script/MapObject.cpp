@@ -94,7 +94,7 @@ namespace Script
         SET(VSPName)    { engine->map.SetVSPName(PyString_AsString(value));     return 0;   }
         GET(Music)      { return PyString_FromString(engine->map.GetMusic().c_str()); }
         SET(Music)      { engine->map.SetMusic(PyString_AsString(value));       return 0;   }
-        GET(Entities)   { Py_INCREF(entitydict); return entitydict; }
+        GET(Entities)   { Py_INCREF(entityDict); return entityDict; }
 
 #undef GET
 #undef SET

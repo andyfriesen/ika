@@ -11,13 +11,13 @@ namespace Script
 {
     CEngine*    engine;
 
-    PyObject*   entitydict;
+    PyObject*   entityDict;
     PyObject*   playerent;
-    PyObject*   cameratarget;
-    PyObject*   errorhandler;
+    PyObject*   cameraTarget;
+    PyObject*   errorHandler;
 
-    PyObject*   sysmodule;                         // the system scripts (system.py)
-    PyObject*   mapmodule;                         // scripts for the currently loaded map
+    PyObject*   sysModule;                         // the system scripts (system.py)
+    PyObject*   mapModule;                         // scripts for the currently loaded map
 
     METHOD(std_log)
     {
@@ -176,41 +176,41 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(std_setcameratarget)
+    METHOD(std_setcameraTarget)
     {
         Script::Entity::EntityObject* ent;
 
-        if (!PyArg_ParseTuple(args, "O:SetCameraTarget", &ent))
+        if (!PyArg_ParseTuple(args, "O:SetcameraTarget", &ent))
             return NULL;
 
         if ((PyObject*)ent==Py_None)
         {
-            engine->pCameratarget=0;
-            Py_XDECREF(cameratarget);
-            cameratarget=0;
+            engine->pcameraTarget=0;
+            Py_XDECREF(cameraTarget);
+            cameraTarget=0;
         }
         else
         {
             if (ent->ob_type!=&Script::Entity::type)
             {
-                PyErr_SetString(PyExc_TypeError, "SetCameraTarget not called with entity/None object");
+                PyErr_SetString(PyExc_TypeError, "SetcameraTarget not called with entity/None object");
                 return NULL;
             }
 
-            engine->pCameratarget = ent->ent;  // oops
+            engine->pcameraTarget = ent->ent;  // oops
 
             Py_INCREF(ent);
-            Py_XDECREF(cameratarget);
-            cameratarget=(PyObject*)ent;
+            Py_XDECREF(cameraTarget);
+            cameraTarget=(PyObject*)ent;
         }
 
         Py_INCREF(Py_None);
         return Py_None;
     }
 
-    METHOD1(std_getcameratarget)
+    METHOD1(std_getcameraTarget)
     {
-        PyObject* result = cameratarget ? cameratarget : Py_None;
+        PyObject* result = cameraTarget ? cameraTarget : Py_None;
 
         Py_INCREF(result);
         return result;
@@ -245,7 +245,7 @@ namespace Script
             ent->ent->movecode=mc_nothing;
         }
 
-        PyObject* result = std_setcameratarget(self, args);
+        PyObject* result = std_setcameraTarget(self, args);
         Py_XDECREF(result);
 
         Py_INCREF(Py_None);
@@ -271,7 +271,7 @@ namespace Script
         int count=0;
         PyObject* pKey=0;
         PyObject* pValue=0;
-        while (PyDict_Next(entitydict, &count, &pKey, &pValue))
+        while (PyDict_Next(entityDict, &count, &pKey, &pValue))
         {
             if (pValue->ob_type != &Script::Entity::type)
             {
@@ -307,7 +307,7 @@ namespace Script
         }
 
         Py_INCREF(pFunc);
-        engine->pHookretrace.Add(pFunc);
+        engine->_hookRetrace.Add(pFunc);
 
         Py_INCREF(Py_None);
         return Py_None;
@@ -322,23 +322,22 @@ namespace Script
 
         if (!pFunc)
         {
-            std::list<void*>::iterator i;
+            /*std::list<ScriptObject>::iterator i;
 
-            for (i=engine->pHookretrace.begin(); i!=engine->pHookretrace.end(); i++)
-                Py_XDECREF((PyObject*)*i);                                        // dereference
+            for (i=engine->_hookRetrace.begin(); i!=engine->_hookRetrace.end(); i++)
+                Py_XDECREF((PyObject*)*i);                                        // dereference*/
 
-            engine->pHookretrace.Clear();
+            engine->_hookRetrace.Clear();
         }
         else
         {
-            std::list<void*>::iterator i;
+            HookList::List::iterator i;
 
-            for (i=engine->pHookretrace.begin(); i!=engine->pHookretrace.end(); i++)
+            for (i = engine->_hookRetrace.begin(); i != engine->_hookRetrace.end();)
             {
-                if (*i==pFunc)
+                if (i->get() == pFunc)
                 {
-                    Py_DECREF(pFunc);
-                    engine->pHookretrace.Remove(*i);
+                    engine->_hookRetrace.Remove(i->get());
                     break;
                 }
             }
@@ -362,8 +361,8 @@ namespace Script
         }
 
         Py_INCREF(pFunc);
-        //    engine->pHooktimer.push_back(pFunc);
-        engine->pHooktimer.Add(pFunc);
+        //    engine->_hookTimer.push_back(pFunc);
+        engine->_hookTimer.Add(pFunc);
 
         Py_INCREF(Py_None);
         return Py_None;
@@ -382,22 +381,22 @@ namespace Script
         {
             std::list<void*>::iterator i;
 
-            for (i=engine->pHooktimer.begin(); i!=engine->pHooktimer.end(); i++)
-                Py_DECREF((PyObject*)*i);                                    // dereference
+            /*for (i=engine->_hookTimer.begin(); i!=engine->_hookTimer.end(); i++)
+                Py_DECREF((PyObject*)*i);                                    // dereference*/
 
-            engine->pHooktimer.Clear();
+            engine->_hookTimer.Clear();
         }
         else
         {
-            std::list<void*>::iterator i;
+            HookList::List::iterator i;
 
-            for (i=engine->pHooktimer.begin(); i!=engine->pHooktimer.end(); i++)
+            for (i=engine->_hookTimer.begin(); i!=engine->_hookTimer.end(); i++)
             {
                 if (*i==pFunc)
                 {
                     Py_DECREF(pFunc);
-                    //engine->pHooktimer.remove(*i);
-                    engine->pHooktimer.Remove(*i);
+                    //engine->_hookTimer.remove(*i);
+                    engine->_hookTimer.Remove(i->get());
                     break;
                 }
             }
@@ -481,15 +480,15 @@ namespace Script
             "will cause entities to move around as if the engine was in control."
         },
 
-        { "SetCameraTarget", (PyCFunction)std_setcameratarget,  METH_VARARGS,
-            "SetCameraTarget(entity)\n\n"
+        { "SetcameraTarget", (PyCFunction)std_setcameraTarget,  METH_VARARGS,
+            "SetcameraTarget(entity)\n\n"
             "Sets the camera target to the entity specified.  If None is passed instead, \n"
             "the camera remains stationary, and can be altered with the Map.xwin and Map.ywin\n"
             "properties."
         },
 
-        { "GetCameraTarget", (PyCFunction)std_getcameratarget,  METH_NOARGS,
-            "GetCameraTarget() -> Entity\n\n"
+        { "GetcameraTarget", (PyCFunction)std_getcameraTarget,  METH_NOARGS,
+            "GetcameraTarget() -> Entity\n\n"
             "Returns the entity that the camera is following, or None if it is free."
         },
 

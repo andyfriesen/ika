@@ -26,7 +26,8 @@ namespace Script
 
         PyGetSetDef properties[] =
         {
-            { "softspace", (getter)getSoftSpace, (setter)setSoftSpace, "blah." }
+            { "softspace", (getter)getSoftSpace, (setter)setSoftSpace, "blah." },
+            {   0   }
         };
 
         void Init()
@@ -51,9 +52,9 @@ namespace Script
             PyObject* pSysdict=PyModule_GetDict(pSysmodule);
             if (!pSysdict)      {   Log::Write("Could not init sys module.");   return; }
 
-            errorhandler = New();
-            PyDict_SetItemString(pSysdict, "stdout", errorhandler);
-            PyDict_SetItemString(pSysdict, "stderr", errorhandler);
+            errorHandler = New();
+            PyDict_SetItemString(pSysdict, "stdout", errorHandler);
+            PyDict_SetItemString(pSysdict, "stderr", errorHandler);
 
             Py_DECREF(pSysmodule);
         }

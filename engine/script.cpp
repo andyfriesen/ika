@@ -1,3 +1,6 @@
+#include <cassert>
+#include <Python.h>
+
 #include "script.h"
 
 #include "common/fileio.h"
@@ -8,13 +11,16 @@
 
 using namespace Script;
 
-void CScriptEngine::Init(CEngine* p)
+bool ScriptEngine::_inited = false;
+
+void ScriptEngine::Init(CEngine* p)
 {
-    bInited=true;
+    assert(!_inited);
+    _inited=true;
     
     Py_Initialize();
-    
     PyRun_SimpleString("import sys; sys.path.insert(0, '.')");
+    
 
     PyImport_AddModule("ika");
     PyObject* module=Py_InitModule3("ika", Script::standard_methods,
@@ -55,12 +61,12 @@ void CScriptEngine::Init(CEngine* p)
     PyModule_AddIntConstant(module, "AddBlend", 3);
     PyModule_AddIntConstant(module, "SubtractBlend", 4);
 
-    PyModule_AddIntConstant(module, "nothing", mc_nothing);
-    PyModule_AddIntConstant(module, "wander", mc_wander);
-    PyModule_AddIntConstant(module, "wanderrect", mc_wanderrect);
-    PyModule_AddIntConstant(module, "wanderzone", mc_wanderzone);
-    PyModule_AddIntConstant(module, "scripted", mc_script);
-    PyModule_AddIntConstant(module, "chase", mc_chase);
+    PyModule_AddIntConstant(module, "Nothing", mc_nothing);
+    PyModule_AddIntConstant(module, "Wander", mc_wander);
+    PyModule_AddIntConstant(module, "WanderRect", mc_wanderrect);
+    PyModule_AddIntConstant(module, "WanderZone", mc_wanderzone);
+    PyModule_AddIntConstant(module, "Scripted", mc_script);
+    PyModule_AddIntConstant(module, "Chase", mc_chase);
 
     Py_INCREF(&Script::Image::type);    PyModule_AddObject(module, "Image", (PyObject*)&Script::Image::type);
     Py_INCREF(&Script::Entity::type);   PyModule_AddObject(module, "Entity", (PyObject*)&Script::Entity::type);
@@ -69,49 +75,37 @@ void CScriptEngine::Init(CEngine* p)
     Py_INCREF(&Script::Canvas::type);   PyModule_AddObject(module, "Canvas", (PyObject*)&Script::Canvas::type);
     
     // Create entity dictionary
-    entitydict=PyDict_New();
-    if (!entitydict)
-        Log::Write("!entitydict");
+    entityDict=PyDict_New();
+    assert(entityDict != 0);
 }
 
-void CScriptEngine::Shutdown()
+void ScriptEngine::Shutdown()
 {
-    if (!bInited)
-        return;
-    
-    // Clear hooks
-    std::list<void*>::iterator i;
-    for (i = engine->pHookretrace.begin(); i != engine->pHookretrace.end(); i++)
-        Py_XDECREF((PyObject*)*i);
-    engine->pHookretrace.Clear();
-    
-    for (i = engine->pHooktimer.begin(); i != engine->pHooktimer.end(); i++)
-        Py_XDECREF((PyObject*)*i);
-    engine->pHooktimer.Clear();
+    assert(_inited);
 
-    // Clear key bindings
-    for (::Input::iterator i = engine->input.begin(); i != engine->input.end(); i++)
+    while (!ScriptObject::_instances.empty())
     {
-        Py_XDECREF((PyObject*)i->second->onPress);
-        Py_XDECREF((PyObject*)i->second->onUnpress);
+        ScriptObject* o = *ScriptObject::_instances.begin();
+        ScriptObject::_instances.erase(o);
+        o->release();
     }
     
-    Py_XDECREF(entitydict);
-    Py_XDECREF(cameratarget);
+    Py_XDECREF(entityDict);
+    Py_XDECREF(cameraTarget);
     
-    Py_XDECREF(errorhandler);
-    Py_XDECREF(sysmodule);
-    Py_XDECREF(mapmodule);
+    Py_XDECREF(errorHandler);
+    Py_XDECREF(sysModule);
+    Py_XDECREF(mapModule);
     
     Py_Finalize();
 }
 
-bool CScriptEngine::LoadSystemScripts(char* fname)
+bool ScriptEngine::LoadSystemScripts(char* fname)
 {
-    Py_XDECREF(sysmodule);                                            // free it if it's already allocated
+    Py_XDECREF(sysModule);                                            // free it if it's already allocated
     
-    sysmodule = PyImport_ImportModule("system");
-    if (!sysmodule)
+    sysModule = PyImport_ImportModule("system");
+    if (!sysModule)
     {
         PyErr_Print();
         return false;
@@ -120,25 +114,25 @@ bool CScriptEngine::LoadSystemScripts(char* fname)
     return true;
 }
 
-bool CScriptEngine::LoadMapScripts(const char* fname)
+bool ScriptEngine::LoadMapScripts(const char* fname)
 {
-    Py_XDECREF(mapmodule);
+    Py_XDECREF(mapModule);
     
     string sTemp = fname;
     
     int nExtension = sTemp.find_last_of(".", sTemp.length());
     sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
     
-    mapmodule = PyImport_ImportModule((char*)sTemp.c_str());
+    mapModule = PyImport_ImportModule((char*)sTemp.c_str());
     
-    if (!mapmodule)
+    if (!mapModule)
     {
         PyErr_Print();
         return false;
     }
 
     // Now to execute an AutoExec function, if one exists
-    PyObject* pDict = PyModule_GetDict(mapmodule);
+    PyObject* pDict = PyModule_GetDict(mapModule);
     PyObject* pFunc = PyDict_GetItemString(pDict, "AutoExec");
 
     if (!pFunc)
@@ -147,21 +141,21 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
     PyObject* result=PyEval_CallObject(pFunc, 0);
 
     if (!result)
-        Log::Write("Warning: Module %s had an AutoExec event, but it could not execute.", sTemp.c_str());
+        Log::Write("Warning: Module %s had an AutoExec event, but it failed to execute.", sTemp.c_str());
 
     Py_XDECREF(result);
     
     return true;
 }
 
-bool CScriptEngine::ExecFunction(void* pFunc)
+bool ScriptEngine::ExecFunction(const ScriptObject& func)
 {
-    CDEBUG("CScriptEngine::ExecFunction");
+    CDEBUG("ScriptEngine::ExecFunction");
     
-    if (!pFunc)
+    if (!func.get())
         return false;
     
-    PyObject* result=PyEval_CallObject((PyObject*)pFunc, 0);
+    PyObject* result = PyEval_CallObject((PyObject*)func.get(), 0); 
     if (!result)
     {
         PyErr_Print();
@@ -173,39 +167,39 @@ bool CScriptEngine::ExecFunction(void* pFunc)
     return true;
 }
 
-void CScriptEngine::ClearEntityList()
+void ScriptEngine::ClearEntityList()
 {
-    if (!Script::entitydict)
+    if (!Script::entityDict)
         return;
     
     // Wipe the entity list clean
-    PyObject* pKeys=PyDict_Keys(Script::entitydict);
+    PyObject* pKeys=PyDict_Keys(Script::entityDict);
     
-    for (int i = 0; i<PyDict_Size(Script::entitydict); i++)
-        PyDict_DelItem(Script::entitydict, PyList_GetItem(pKeys, i));
+    for (int i = 0; i<PyDict_Size(Script::entityDict); i++)
+        PyDict_DelItem(Script::entityDict, PyList_GetItem(pKeys, i));
     
     Py_DECREF(pKeys);
 }
 
-void CScriptEngine::AddEntityToList(CEntity* e)
+void ScriptEngine::AddEntityToList(CEntity* e)
 {
     PyObject* pEnt = Script::Entity::New(e);                // make an object for the entity
 
-    PyDict_SetItemString(Script::entitydict, const_cast<char*>(e->sName.c_str()), pEnt);
+    PyDict_SetItemString(Script::entityDict, const_cast<char*>(e->sName.c_str()), pEnt);
     
     Py_DECREF(pEnt);
 }
 
-void CScriptEngine::CallEvent(const char* sName)
+void ScriptEngine::CallEvent(const char* sName)
 {
-    CDEBUG("CScriptEngine::CallEvent");
+    CDEBUG("ScriptEngine::CallEvent");
     
-    if (!mapmodule)
+    if (!mapModule)
         return;                                                                // no module loaded == no event
 
     engine->input.Unpress();
     
-    PyObject* pDict=PyModule_GetDict(mapmodule);
+    PyObject* pDict=PyModule_GetDict(mapModule);
     PyObject* pFunc=PyDict_GetItemString(pDict, (char*)sName);
     
     if (!pFunc)
@@ -223,4 +217,47 @@ void CScriptEngine::CallEvent(const char* sName)
     }
     
     Py_XDECREF(result);
+}
+
+//-
+
+std::set<ScriptObject*> ScriptObject::_instances;
+
+ScriptObject::ScriptObject(void* o)
+    : _object(o)
+{
+    Py_XINCREF((PyObject*)o);
+    _instances.insert(this);
+}
+
+ScriptObject::ScriptObject(const ScriptObject& rhs)
+    : _object(rhs._object)
+{
+    Py_XINCREF((PyObject*)_object);
+    _instances.insert(this);
+}
+
+ScriptObject::~ScriptObject()
+{
+    Py_XDECREF((PyObject*)_object);
+
+    _instances.erase(this);
+}
+
+void* ScriptObject::get() const
+{
+    return _object;
+}
+
+void ScriptObject::set(void* o)
+{
+    Py_XDECREF((PyObject*)_object);
+    _object = o;
+    Py_XINCREF((PyObject*)o);
+}
+
+void ScriptObject::release()
+{
+    Py_XDECREF((PyObject*)_object);
+    _object = 0;
 }

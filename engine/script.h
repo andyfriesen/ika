@@ -2,41 +2,30 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#include <Python.h>
+#include <set>
+
 #include "common/types.h"
 
-/*!
-    Python API encapsulation class.
+class CEngine;                                  // proto
+class ScriptObject;
 
-    Due to the way the Python API is structured, the script engine simply will not support multiple instances.
-    Don't even try it. ^_~
-
-    um... I think this is technically a singleton. :o
-
-    A very, very good idea to try would be to make a template class for all these Python objects.
-    
-    I hate this.  It's retarded.  Either wrap it in a namespace and live with its globalness, or
-    figure out how to make it not so gay and full of static things. -_-;
-*/
-
-class CEngine;                                                // proto
-
-class CScriptEngine
+/**
+ *  Python API encapsulation class.
+ *
+ *  Due to the way the Python API is structured, the script engine 
+ *  simply will not support multiple instances.  Don't try.
+ */
+class ScriptEngine
 {
-    string sCurmapscript;
-
-    bool bInited;
-
+    static bool _inited;                        // used to assert that only one instance of this class is ever created.
 public:
-    CScriptEngine() : bInited(false) {}
-
-    void Init(CEngine* pEngine);                            // -_-
+    void Init(CEngine* pEngine);                // -_-
     void Shutdown();
 
     bool LoadSystemScripts(char* fname);
     bool LoadMapScripts(const char* fname);
 
-    bool ExecFunction(void* pFunc);
+    bool ExecFunction(const ScriptObject& func);
 
     void ClearEntityList();
     void AddEntityToList(class CEntity* e);
@@ -44,18 +33,31 @@ public:
     void CallEvent(const char* sName);
 };
 
-/*
-    FIXME:
-    Some of hese objects can't have properties added to them at runtime.
-    This is unacceptable. -_-
+/// Smart pointer for holding a Python object.  I don't want the rest
+/// of the engine to need to be aware of Python.  It just needs opaque,
+/// copy-safe handles.
+class ScriptObject
+{
+    friend class ScriptEngine;
 
-    Objects:
+protected:
+    static std::set<ScriptObject*> _instances;
 
-    Image            check!    (extra blits)
-    Font             check!
-    Entity           check!    (needs extra robustness)
-    Music            check!
-    Sound effects    check!
-*/
+    void* _object;
+    void release();
+
+public:
+    ScriptObject(void* o);
+    ScriptObject(const ScriptObject& so);
+    ~ScriptObject();
+
+    void* get() const;
+    void set(void* o);  
+
+    inline bool operator == (void* p) const
+    {
+        return p == _object;
+    }
+};
 
 #endif

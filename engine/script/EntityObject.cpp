@@ -366,7 +366,7 @@ namespace Script
             int nCount=0;
             PyObject* pKey=NULL;
             PyObject* pValue=NULL;
-            while (PyDict_Next(entitydict, &nCount, &pKey, &pValue))
+            while (PyDict_Next(entityDict, &nCount, &pKey, &pValue))
             {
                 CEntity& e2=*((EntityObject*)pValue)->ent;
                 if (&e1==&e2)   continue;

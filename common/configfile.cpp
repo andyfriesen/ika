@@ -27,7 +27,7 @@ string CConfigFile::operator [](const string& key)
     if (i==keys.end())
         return "";
 
-    return (*i).second;
+    return i->second;
 }
 
 int CConfigFile::Int(const string& key)

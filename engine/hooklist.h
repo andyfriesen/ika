@@ -2,65 +2,74 @@
 #ifndef HOOKLIST_H
 #define HOOKLIST_H
 
-#include "common/types.h"
 #include <list>
+#include "common/types.h"
+#include "script.h"
 
 class HookList
 {
 private:
-    typedef std::list<void*> List;
+    typedef std::list<ScriptObject> List;
+    typedef std::list<void*> VoidList;
 
-    List pHooks;
-    List pKilllist;
-    List pAddlist;
+    List     _hooks;
+    VoidList _killList;
+    VoidList _addList;
 
 public:
     void Add(void* p)
     {
-        pAddlist.push_back(p);
+        _addList.push_back(p);
     }
 
     void Remove(void* p)
     {
-        pKilllist.push_back(p);
+        _killList.push_back(p);
     }
 
     void Flush()
     {
-        for (List::iterator i=pAddlist.begin(); i!=pAddlist.end(); i++)
+        for (VoidList::iterator i = _addList.begin(); i != _addList.end(); i++)
         {
-            void* p=*i;
-            pHooks.push_back(p);
+            void* p = *i;
+            _hooks.push_back(ScriptObject(p));
         }
 
-        if (pKilllist.size())
+        if (_killList.size())
         {
-            for (List::iterator j=pKilllist.begin(); j!=pKilllist.end(); j++)
+            for (VoidList::iterator j = _killList.begin(); j != _killList.end(); j++)
             {
-                void* p=*j;
-                pHooks.remove(p);
+                void* p = *j;
+
+                for (List::iterator k = _hooks.begin(); k != _hooks.end();)
+                {
+                    if (k->get() == p)
+                        _hooks.erase(k++);
+                    else
+                        k++;
+                }
             }
         }
 
-        pAddlist.clear();
-        pKilllist.clear();
+        _addList.clear();
+        _killList.clear();
     }
 
     inline List::iterator begin()
     {
-        return pHooks.begin();
+        return _hooks.begin();
     }
 
     inline List::iterator end()
     {
-        return pHooks.end();
+        return _hooks.end();
     }
 
     void Clear()
     {
-        pHooks.clear();
-        pKilllist.clear();
-        pAddlist.clear();
+        _hooks.clear();
+        _killList.clear();
+        _addList.clear();
     }
 };
 

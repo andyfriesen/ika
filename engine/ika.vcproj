@@ -21,6 +21,7 @@
 			WholeProgramOptimization="TRUE">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories=".,..,..\3rdparty\include,..\3rdparty\include\python"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"

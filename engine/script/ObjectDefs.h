@@ -286,13 +286,13 @@ namespace Script
     // These are defined in ModuleFuncs.cpp, by the by.
     extern CEngine*    engine;
 
-    extern PyObject*   entitydict;
-    extern PyObject*   playerent;
-    extern PyObject*   cameratarget;
-    extern PyObject*   errorhandler;
+    extern PyObject*   entityDict;
+    extern PyObject*   playerEnt;
+    extern PyObject*   cameraTarget;
+    extern PyObject*   errorHandler;
 
-    extern PyObject*   sysmodule;                         // the system scripts (system.py)
-    extern PyObject*   mapmodule;                         // scripts for the currently loaded map
+    extern PyObject*   sysModule;                         // the system scripts (system.py)
+    extern PyObject*   mapModule;                         // scripts for the currently loaded map
 
     METHOD(std_log, PyObject);
     METHOD(std_exit, PyObject);
@@ -310,8 +310,8 @@ namespace Script
     METHOD(std_palettemorph, PyObject);
 
     METHOD(std_processentities, PyObject);
-    METHOD(std_setcameratarget, PyObject);
-    METHOD1(std_getcameratarget, PyObject);
+    METHOD(std_setcameraTarget, PyObject);
+    METHOD1(std_getcameraTarget, PyObject);
     METHOD(std_setplayer, PyObject);
     METHOD1(std_getplayer, PyObject);
     METHOD(std_entityat, PyObject);

@@ -5,13 +5,16 @@
 #include <map>
 #include <queue>
 
-/*!
-    Main input class.
+// >_<
+#include "script.h"
 
-    Encapsulates all input devices, and presents a single, unified interface.
-*/
-
+/**
+ *  Main input class.
+ *
+ *  Encapsulates all input devices, and presents a single, unified interface.
+ */
 class KeyControl;
+class ScriptObject;
 
 class Input
 {
@@ -38,17 +41,18 @@ public:
 
     public:
         // event thingies.  Python objects go here.
-        void* onPress;
-        void* onUnpress;
+        ScriptObject onPress;
+        ScriptObject onUnpress;
 
         operator bool() { return Position() != 0; }
     };
 
 private:
-    static std::map<std::string, int> _keymap;
-    static bool _keymapinitted;
+    static std::map<std::string, int> _keyMap;
+    static bool _keyMapInitted;
 
-    std::queue<void*> _hookqueue;
+    std::queue<void*> _hookQueue;
+    std::queue<char> _keyQueue;
 
     Control* _up;
     Control* _down;
@@ -84,6 +88,9 @@ public:
 
     void* GetNextControlEvent();    // returns 0 if the event queue is empty
     void  ClearEventQueue();
+
+    char GetKey();
+    void ClearKeyQueue();
 
     typedef std::map<std::string, Control*>::iterator iterator;
     iterator begin() { return _controls.begin(); }

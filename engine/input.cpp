@@ -4,8 +4,8 @@
 #include "input.h"
 #include "common/log.h"
 
-std::map<std::string, int> Input::_keymap;
-bool Input::_keymapinitted = false;
+std::map<std::string, int> Input::_keyMap;
+bool Input::_keyMapInitted = false;
 
 namespace
 {
@@ -185,13 +185,13 @@ public:
 
 Input::Input()
 {
-    if (!_keymapinitted)
+    if (!_keyMapInitted)
     {
         const int len = sizeof(keys) / sizeof(keys[0]);
         for (int i = 0; i < len; i++)
-            _keymap[keys[i].name] = keys[i].code;
+            _keyMap[keys[i].name] = keys[i].code;
 
-        _keymapinitted = true;
+        _keyMapInitted = true;
     }
 
     // hurk.  Gay.
@@ -214,13 +214,16 @@ Input::~Input()
 
 void Input::KeyDown(int key)
 {
+    if (key < 255)
+        _keyQueue.push(key);
+
     KeyControl* c = _keys[key];
     if (c)
     {
         c->Press();
 
-        if (c->onPress)
-            _hookqueue.push(c->onPress);
+        if (c->onPress.get())
+            _hookQueue.push(c->onPress.get());
     }
 }
 
@@ -231,14 +234,14 @@ void Input::KeyUp(int key)
     {
         c->Unpress();
 
-        if (c->onUnpress)
-            _hookqueue.push(c->onUnpress);
+        if (c->onUnpress.get())
+            _hookQueue.push(c->onUnpress.get());
     }
 }
 
 Input::Control* Input::GetControl(const std::string& name)
 {
-    int i = _keymap[name];
+    int i = _keyMap[name];
     if (i)
     {
         KeyControl* c = _keys[i];
@@ -256,19 +259,37 @@ Input::Control* Input::GetControl(const std::string& name)
 
 void* Input::GetNextControlEvent()
 {
-    if (_hookqueue.empty())
+    if (_hookQueue.empty())
         return 0;
 
-    void* p = _hookqueue.front();
-    _hookqueue.pop();
+    void* p = _hookQueue.front();
+    _hookQueue.pop();
 
     return p;
 }
 
 void Input::ClearEventQueue()
 {
-    while (_hookqueue.size())
-        _hookqueue.pop();
+    while (!_hookQueue.empty())
+        _hookQueue.pop();
+}
+
+char Input::GetKey()
+{
+    if (_keyQueue.empty())
+        return 0;
+    else
+    {
+        char c = _keyQueue.front();
+        _keyQueue.pop();
+        return c;
+    }
+}
+
+void Input::ClearKeyQueue()
+{
+    while (!_keyQueue.empty())
+        _keyQueue.pop();
 }
 
 void Input::Unpress(const std::string& name)
