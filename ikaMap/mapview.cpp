@@ -21,6 +21,7 @@ BEGIN_EVENT_TABLE(MapView, wxPanel)
     EVT_LEFT_DCLICK(MapView::OnMouseDown)
     EVT_MOTION(MapView::OnMouseMove)
     EVT_MOUSEWHEEL(MapView::OnMouseWheel)
+    EVT_KEY_DOWN(MapView::OnKeyPress)
 END_EVENT_TABLE()
 
 MapView::MapView(MainWindow* mw, wxWindow* parent)
@@ -140,6 +141,11 @@ void MapView::OnMouseWheel(wxMouseEvent& event)
 {
     if (_mainWnd->GetMap()->NumLayers())
         _editState->OnMouseWheel(event);
+}
+
+void MapView::OnKeyPress(wxKeyEvent& event)
+{
+    _editState->OnKeyPress(event);
 }
 
 void MapView::Render()

@@ -15,6 +15,7 @@ BEGIN_EVENT_TABLE(ZonePropertiesDlg, wxDialog)
     EVT_BUTTON(XRCID("button_new"), ZonePropertiesDlg::OnNewBlueprint)
     EVT_BUTTON(XRCID("button_delete"), ZonePropertiesDlg::OnDeleteBlueprint)
     EVT_BUTTON(XRCID("button_rename"), ZonePropertiesDlg::OnRenameBlueprint)
+    EVT_BUTTON(XRCID("button_deletezone"), ZonePropertiesDlg::OnDeleteZone)
     EVT_BUTTON(wxID_OK, ZonePropertiesDlg::OnOk)
 END_EVENT_TABLE()
 
@@ -172,7 +173,8 @@ void ZonePropertiesDlg::OnNewBlueprint(wxCommandEvent&)
 
 void ZonePropertiesDlg::OnDeleteBlueprint(wxCommandEvent&)
 {
-    int result = wxMessageBox("Are you sure?", 
+    int result = wxMessageBox("Are you sure you want to remove this blueprint?\n"
+                              "This is not the same as deleting the zone!", 
                               "All the cool kids are doin' it.", wxYES_NO | wxCENTRE | wxICON_QUESTION, this);
     if (result != wxYES)
         return;
@@ -204,7 +206,6 @@ void ZonePropertiesDlg::OnDeleteBlueprint(wxCommandEvent&)
     _mainWnd->HandleCommand(new CompositeCommand(commands));
 
     UpdateDlg();
-    //EndModal(wxID_CANCEL);
 }
 
 void ZonePropertiesDlg::OnRenameBlueprint(wxCommandEvent&)
@@ -250,6 +251,15 @@ void ZonePropertiesDlg::OnRenameBlueprint(wxCommandEvent&)
 
     UpdateList();
     _bluePrintList->SetStringSelection(newLabel.c_str());
+}
+
+void ZonePropertiesDlg::OnDeleteZone(wxCommandEvent&)
+{
+    if (wxMessageBox("Are you sure you want to remove this zone?", "KILL", wxYES_NO | wxCENTER | wxICON_QUESTION, this) == wxYES)
+    {
+        _mainWnd->HandleCommand(new DestroyZoneCommand(_layerIndex, _zoneIndex));
+        EndModal(wxOK);
+    }
 }
 
 void ZonePropertiesDlg::OnOk(wxCommandEvent& event)

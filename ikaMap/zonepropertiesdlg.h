@@ -33,6 +33,7 @@ private:
     void OnNewBlueprint(wxCommandEvent&);
     void OnDeleteBlueprint(wxCommandEvent&);
     void OnRenameBlueprint(wxCommandEvent&);
+    void OnDeleteZone(wxCommandEvent&);
     void OnOk(wxCommandEvent&);
 
 public:

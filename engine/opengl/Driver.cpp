@@ -76,6 +76,11 @@ namespace OpenGL
 
             oh yeah.  I know this is messy.  Don't give a shit yet.  Prototyping is a bitch
             that way.
+
+            TODO: Generalize this so that we hold onto a bunch of textures for every power-of-two
+            size of image that is created. (8x8, 64x64, et cetera)
+            Or maybe just group images of equal height togeather.  Then ika would be able to
+            leverage texture-sharing for the font as well.
         */
 
         if (src.Width() == 16 && src.Height() == 16)

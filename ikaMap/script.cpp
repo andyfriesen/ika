@@ -86,6 +86,7 @@ Script::Script(const std::string& fileName)
     Local::GetSymbol(dict, onEndState,    "OnEndState");
     Local::GetSymbol(dict, onSwitchLayers, "OnSwitchLayers");
     Local::GetSymbol(dict, onActivated,   "OnActivated");
+    //Local::GetSymbol(dict, onKeyPress,    "OnKeyPress");
 
     // Meta!
     _name = name;
@@ -234,6 +235,17 @@ void Script::OnActivated()
     Py_XDECREF(result);
 }
 
+/*void Script::OnKeyPress(uint keyCode)
+{
+    if (!onKeyPress)    return;
+
+    PyObject* args = Py_BuildValue("(i)", keyCode);
+    PyObject* result = PyObject_CallObject(onKeyPress, args);
+    Py_DECREF(args);
+    if (!result) ReportError();
+    Py_XDECREF(result);
+}
+*/
 std::string Script::GetName() const
 {
     return _name;

@@ -687,7 +687,7 @@ void MainWindow::OnConfigureScripts(wxCommandEvent& e)
 
 void MainWindow::OnSetCurrentScript(wxCommandEvent& event)
 {
-    int id = event.GetId() - id_customscript;
+    uint id = event.GetId() - id_customscript;
     wxASSERT(id >= 0 && id < _scripts.size());
 
     _curScript = id;

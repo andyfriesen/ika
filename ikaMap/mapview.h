@@ -62,6 +62,8 @@ public:
     void OnMouseMove(wxMouseEvent& event);
     void OnMouseWheel(wxMouseEvent& event);
 
+    void OnKeyPress(wxKeyEvent& event);
+
     void Render();
     void ShowPage();
 

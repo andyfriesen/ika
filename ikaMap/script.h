@@ -23,6 +23,7 @@
  * OnEndState()       - Called when the script's time is up. (the current tool was changed to something else)
  * OnSwitchLayers(oldLayer, newLayer) - Called if the current layer is switched while this script is active.
  *                                      oldLayer and newLayer are the indeces of the old layer and new, respectively.
+ * OnKeyPress(keyCode) - Called when a key is pressed.  keyCode is an obscure number that signifies which key was pressed.
  *
  * OnActivated()      - If a script is not meant to be used as a painting tool, it should implement this.
  *                      Scripts that have an OnActivated method will be available in the Tools submenu of the editor.
@@ -99,6 +100,7 @@ private:
     PyObject* onEndState;
     PyObject* onSwitchLayers;
     PyObject* onActivated;
+    //PyObject* onKeyPress;
 
     // Metadata!!
     std::string _name; // filename, I guess
@@ -119,6 +121,7 @@ public:
     void OnEndState();
     void OnSwitchLayers(uint oldLayer, uint newLayer);
     void OnActivated();
+    //void OnKeyPress(uint keycode);
 
     std::string GetName() const;
     std::string GetDesc() const;

@@ -4,6 +4,7 @@
 #include "map.h"
 
 class wxMouseEvent;
+class wxKeyEvent;
 class MainWindow;
 class MapView;
 class TileSetView;
@@ -40,6 +41,7 @@ public:
     virtual void OnRender() {}
     virtual void OnRenderCurrentLayer() {}
     virtual void OnSwitchLayers(uint oldLayer, uint newLayer) {}
+    virtual void OnKeyPress(wxKeyEvent&) {}
 
 protected:
     // Convenience accessors.

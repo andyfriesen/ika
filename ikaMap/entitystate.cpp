@@ -66,6 +66,19 @@ void EntityState::OnMouseWheel(wxMouseEvent& event)
 {
 }
 
+void EntityState::OnKeyPress(wxKeyEvent& event)
+{
+    if (event.GetKeyCode() == WXK_DELETE && _entIndex != -1)
+    {
+        int result = ::wxMessageBox("Are you sure you want to destroy this entity?", "KILL", wxYES_NO | wxCENTER, GetMainWindow());
+        if (result == wxYES)
+        {
+            HandleCommand(new DestroyEntityCommand(_entLayerIndex, _entIndex));
+            _entIndex = -1;
+        }
+    }
+}
+
 void EntityState::OnRenderCurrentLayer()
 {
     Map::Layer* layer = GetCurLayer();
