@@ -524,6 +524,11 @@ void CMapView::LayerEdit(wxMouseEvent& event)
 
 void CMapView::HandleMouse(wxMouseEvent& event)
 {
+    if (event.GetWheelDelta())
+    {
+        return;
+    }
+
     switch (csrmode)
     {
     case mode_normal:

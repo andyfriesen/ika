@@ -354,13 +354,10 @@
 			Name="Resources"
 			Filter="">
 			<File
-				RelativePath=".\dlg.wxr">
+				RelativePath=".\folder.ico">
 			</File>
 			<File
 				RelativePath=".\font.ico">
-			</File>
-			<File
-				RelativePath=".\icon1.ico">
 			</File>
 			<File
 				RelativePath=".\iked.rc">
@@ -381,6 +378,9 @@
 				RelativePath=".\resource.h">
 			</File>
 			<File
+				RelativePath="script.ico">
+			</File>
+			<File
 				RelativePath="sprite.ico">
 			</File>
 			<File
@@ -391,7 +391,7 @@
 			RelativePath=".\colours.bmp">
 		</File>
 		<File
-			RelativePath=".\folder.ico">
+			RelativePath="folderopen.ico">
 		</File>
 	</Files>
 	<Globals>

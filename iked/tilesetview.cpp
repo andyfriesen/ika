@@ -10,7 +10,7 @@ namespace
 {
     enum
     {
-        id_deletetile=100,
+        id_deletetile = 100,
         id_inserttile,
         id_copytile,
         id_pasteinto,
@@ -183,6 +183,7 @@ void CTileSetView::OnMouseWheel(wxMouseEvent& event)
 {
     int i = event.m_wheelRotation / event.m_wheelDelta;
     pTileset->SetCurTile(pTileset->CurTile() + i);
+    Render();
 }
 
 //---------------------------
@@ -233,16 +234,10 @@ void CTileSetView::Render()
     {
         for (int x=0; x<nTilewidth; x++)
         {
-#if 1
             pGraph->ScaleBlit(pTileset->GetImage(nTile),
                 x * tx, y * ty,
                 tx, ty,
                 false);
-#else
-            pGraph->Blit(
-                pTileset->GetImage(nTile),
-                x*tx,y*ty,true);
-#endif
 
             nTile++;
 

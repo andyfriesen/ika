@@ -89,7 +89,7 @@ void CCodeView::InitTextControl()
     pTextctrl->SetMarginType        (linecountmargin,wxSTC_MARGIN_NUMBER);
     pTextctrl->SetMarginSensitive   (linecountmargin,false);
 
-    pTextctrl->SetMarginWidth       (foldmargin,15);
+    pTextctrl->SetMarginWidth       (foldmargin,10);
     pTextctrl->SetMarginType        (foldmargin,wxSTC_MARGIN_SYMBOL);
     pTextctrl->SetMarginSensitive   (foldmargin,true);
     pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
@@ -108,7 +108,7 @@ void CCodeView::InitTextControl()
     {   wxSTC_MARKNUM_FOLDEROPEN,   wxSTC_MARKNUM_FOLDER,   wxSTC_MARKNUM_FOLDERSUB,    wxSTC_MARKNUM_FOLDERTAIL, wxSTC_MARKNUM_FOLDEREND,          wxSTC_MARKNUM_FOLDEROPENMID,        wxSTC_MARKNUM_FOLDERMIDTAIL     };
 
     for (int i = 0; i < 7; i++)
-        pTextctrl->MarkerDefine(marknum[i], styles[0][i]);
+        pTextctrl->MarkerDefine(marknum[i], styles[2][i]);
    
 
     bChanged=false;

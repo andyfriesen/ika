@@ -13,6 +13,33 @@
 #undef APSTUDIO_READONLY_SYMBOLS
 
 /////////////////////////////////////////////////////////////////////////////
+// Neutral resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_NEU)
+#ifdef _WIN32
+LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Icon
+//
+
+// Icon with lowest ID value placed first to ensure application icon
+// remains consistent on all systems.
+FOLDERICON              ICON                    "folder.ico"
+VSPICON                 ICON                    "vsp.ico"
+FONTICON                ICON                    "font.ico"
+MAPICON                 ICON                    "map.ico"
+SPRITEICON              ICON                    "sprite.ico"
+SCRIPTICON              ICON                    "script.ico"
+FOLDEROPENICON          ICON                    "folderopen.ico"
+#endif    // Neutral resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
 // English (Canada) resources
 
 #if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
@@ -61,20 +88,6 @@ BEGIN
     END
 END
 
-
-/////////////////////////////////////////////////////////////////////////////
-//
-// Icon
-//
-
-// Icon with lowest ID value placed first to ensure application icon
-// remains consistent on all systems.
-FOLDERICON              ICON                    "folder.ico"
-VSPICON                 ICON                    "vsp.ico"
-PYICON                  ICON                    "py.ico"
-FONTICON                ICON                    "font.ico"
-MAPICON                 ICON                    "map.ico"
-SPRITEICON              ICON                    "sprite.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////

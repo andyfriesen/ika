@@ -29,7 +29,7 @@ BEGIN_EVENT_TABLE(ProjectView, wxTreeCtrl)
     
     EVT_LEFT_DCLICK(ProjectView::OnDoubleClick)
     EVT_RIGHT_DOWN(ProjectView::OnRightClick)
-//    EVT_CONTEXT_MENU(ProjectView::OnContextMenu)
+    //EVT_CONTEXT_MENU(ProjectView::OnContextMenu)
     EVT_TREE_END_LABEL_EDIT(ProjectView::id_treectrl, ProjectView::OnEndEdit)
     EVT_TREE_BEGIN_DRAG(ProjectView::id_treectrl, ProjectView::OnBeginDrag)
     EVT_TREE_END_DRAG(ProjectView::id_treectrl, ProjectView::OnEndDrag)
@@ -68,7 +68,7 @@ ProjectView::ProjectView(CMainWnd* parent, const wxPoint& pos, const wxSize& siz
     _changed = false;
 
     // Icons
-    const char* names[] = { "foldericon", "pyicon", "vspicon", "fonticon", "mapicon", "spriteicon"  };
+    const char* names[] = { "foldericon", "folderopenicon", "scripticon", "vspicon", "fonticon", "mapicon", "spriteicon"  };
     const int nameCount = sizeof names / sizeof (char*);
 
     _imageList = new wxImageList(16, 16, true);
@@ -212,7 +212,6 @@ void ProjectView::OnAdd(wxCommandEvent& event)
     if (result==wxID_CANCEL)
         return;
 
-    // TODO: Get the lowest-common-denominator path, so the project file can be moved around easier
     wxArrayString names;
     wxArrayString paths;
     dlg.GetFilenames(names);
@@ -270,7 +269,7 @@ wxTreeItemId ProjectView::AddFolder(const wxTreeItemId& parentid, const char* na
 {
     _changed = true;
 
-    return AppendItem(parentid, name, 0, 0, new Leaf( name, t_folder));
+    return AppendItem(parentid, name, 0, 1, new Leaf( name, t_folder));
 }
 
 wxTreeItemId ProjectView::AddItem(const wxTreeItemId& parentid, const string& name, const string& fname)
@@ -279,11 +278,11 @@ wxTreeItemId ProjectView::AddItem(const wxTreeItemId& parentid, const string& na
     int hIcon;
     switch (t)
     {
-    case t_script:  hIcon = 1;  break;
-    case t_vsp:     hIcon = 2;  break;
-    case t_font:    hIcon = 3;  break;
-    case t_map:     hIcon = 4;  break;
-    case t_chr:     hIcon = 5;  break;
+    case t_script:  hIcon = 2;  break;
+    case t_vsp:     hIcon = 3;  break;
+    case t_font:    hIcon = 4;  break;
+    case t_map:     hIcon = 5;  break;
+    case t_chr:     hIcon = 6;  break;
     default:        hIcon = -1; break;
     }
 
@@ -422,11 +421,11 @@ void ProjectView::New()
 
     wxTreeItemId root = AddRoot("Project", -1, -1, new Leaf("Project", t_folder));
     // default folders
-    AppendItem(root, "Scripts", 0, 0, new Leaf("Scripts", t_folder));
-    AppendItem(root, "Maps"   , 0, 0, new Leaf("Maps", t_folder)   );
-    AppendItem(root, "Tilesets", 0, 0, new Leaf("Tilesets", t_folder));
-    AppendItem(root, "Fonts"  , 0, 0, new Leaf("Fonts", t_folder)  );
-    AppendItem(root, "Sprites", 0, 0, new Leaf("Sprites", t_folder));
+    AddFolder(root, "Scripts");
+    AddFolder(root, "Maps");
+    AddFolder(root, "Tilesets");
+    AddFolder(root, "Fonts");
+    AddFolder(root, "Sprites");
     Expand(root);
 
     _changed = false;

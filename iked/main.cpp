@@ -399,7 +399,7 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
 
     pToolbar->AddTool(
         id_toolnewscript,
-        wxIcon("pyicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
+        wxIcon("scripticon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
         wxNullBitmap,
         false,
         -1, -1,
