@@ -106,10 +106,6 @@ SOURCE=.\configdlg.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\GLGraphWidget.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
@@ -138,15 +134,7 @@ SOURCE=.\configdlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\GLGraphWidget.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\common\graph.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\IGraphWidget.h
 # End Source File
 # Begin Source File
 

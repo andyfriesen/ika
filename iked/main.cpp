@@ -183,6 +183,11 @@ void CMainWnd::Open(const std::string& fname)
 #endif
             return;
         }
+    case t_map:
+        {
+            new CMapView(this,fname.c_str());
+            return;
+        }
     default:
         wxMessageDialog(this,"Not implemented yet","NYI",wxOK).ShowModal();
     };       
