@@ -4,8 +4,7 @@
 #include "common/utility.h"
 #include "common/vsp.h"
 
-namespace Video
-{
+namespace Video {
     struct Driver;
     struct Image;
 }

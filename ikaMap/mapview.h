@@ -26,8 +26,7 @@ struct MapEvent;
  * _editState points to one of the editor state subclasses, depending on what the current state is.
  * (simple strategy pattern)
  */
-struct MapView : public wxPanel
-{
+struct MapView : public wxPanel {
     MapView(Executor* executor, wxWindow* parent);
     ~MapView();
 

@@ -39,10 +39,8 @@
 
 #define VERTICAL_FUN
 
-namespace
-{
-    enum
-    {
+namespace {
+    enum {
         id_filenew,
         id_fileopen,
         id_filesave,
@@ -149,10 +147,8 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_BUTTON(id_movelayerdown, MainWindow::OnMoveLayerDown)
 END_EVENT_TABLE()
 
-void MainWindow::ClearList(std::stack< ::Command*>& list)
-{
-    while (!list.empty())
-    {
+void MainWindow::ClearList(std::stack< ::Command*>& list) {
+    while (!list.empty()) {
         ::Command* c = list.top();
         delete c;
         list.pop();
@@ -191,13 +187,11 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     wxPanel* sidePanel = new wxPanel(_sideBar);
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 
-    struct ToolButton
-    {
+    struct ToolButton {
         const char* iconName;
         uint id;
         const char* toolTip;
-    } toolButtons[] = 
-    {
+    } toolButtons[] =  {
         {   "brushicon",        id_tilepaint,       "Place individual tiles on the map."                            },
         {   "selecticon",       id_copypaste,       "Select a group of tiles, and duplicate them elsewhere."        },
         {   "obstructionicon",  id_obstructionedit, "Edit obstructed areas."                                        },
@@ -216,8 +210,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     {
         wxSizer* miniSizer = new wxGridSizer(6);
 
-        for (uint i = 0; i < numToolButtons; i++)
-        {
+        for (uint i = 0; i < numToolButtons; i++) {
             wxBitmapButton* b = new wxBitmapButton(
                 sidePanel, 
                 toolButtons[i].id, 
@@ -390,8 +383,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     ScriptEngine::Init(this);
 }
 
-MainWindow::~MainWindow()
-{
+MainWindow::~MainWindow() {
     for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
         delete iter->second;
     _sprites.clear();
@@ -412,16 +404,13 @@ MainWindow::~MainWindow()
 void MainWindow::OnClose(wxCloseEvent&)
 {}
 
-void MainWindow::OnSize(wxSizeEvent&)
-{
+void MainWindow::OnSize(wxSizeEvent&) {
     wxLayoutAlgorithm algo;
     algo.LayoutWindow(this, _topBar);
 }
 
-void MainWindow::OnDragSash(wxSashEvent& event)
-{
-    switch (event.GetId())
-    {
+void MainWindow::OnDragSash(wxSashEvent& event) {
+    switch (event.GetId()) {
         case id_bottombar:  _bottomBar->SetDefaultSize(event.GetDragRect().GetSize());  break;
         case id_sidebar:    _sideBar->SetDefaultSize(event.GetDragRect().GetSize());    break;
         default:
@@ -431,17 +420,14 @@ void MainWindow::OnDragSash(wxSashEvent& event)
     wxLayoutAlgorithm().LayoutFrame(this, _topBar);
 }
 
-void MainWindow::OnNewMap(wxCommandEvent&)
-{
+void MainWindow::OnNewMap(wxCommandEvent&) {
     NewMapDlg dlg(this);
     int result = dlg.ShowModal();
 
-    if (result == wxID_OK)
-    {
+    if (result == wxID_OK) {
         Map* newMap;
         Tileset* newTileset;
-        try
-        {
+        try {
             newMap = new Map();
             newMap->width = dlg.width;
             newMap->height = dlg.height;
@@ -471,15 +457,13 @@ void MainWindow::OnNewMap(wxCommandEvent&)
 
             mapLoaded.fire(MapTilesetEvent(_map, _tileset));
         }
-        catch (std::runtime_error& error)
-        {
+        catch (std::runtime_error& error) {
             wxMessageBox(va("Unable to create new map:\n%s", error.what()), "Error", wxOK | wxCENTER, this);
         }
     }
 }
 
-void MainWindow::OnOpenMap(wxCommandEvent&)
-{
+void MainWindow::OnOpenMap(wxCommandEvent&) {
     wxFileDialog dlg(
         this,
         "Open File",
@@ -504,19 +488,15 @@ void MainWindow::OnOpenMap(wxCommandEvent&)
     UpdateTitle();
 }
 
-void MainWindow::OnSaveMap(wxCommandEvent& event)
-{
-    if (_curMapName.length() != 0)
-    {
-        try
-        {
+void MainWindow::OnSaveMap(wxCommandEvent& event) {
+    if (_curMapName.length() != 0) {
+        try {
             _map->Save(_curMapName);
             _tileset->Save(_map->tilesetName);
             _changed = false;
             UpdateTitle();
         }
-        catch (std::runtime_error err)
-        {
+        catch (std::runtime_error err) {
             wxMessageBox(va("Unable to write %s:\n%s", _curMapName.c_str(), err.what()), "Error", wxOK | wxCENTER, this);
         }
     }
@@ -524,8 +504,7 @@ void MainWindow::OnSaveMap(wxCommandEvent& event)
         OnSaveMapAs(event);
 }
 
-void MainWindow::OnSaveMapAs(wxCommandEvent&)
-{
+void MainWindow::OnSaveMapAs(wxCommandEvent&) {
     wxFileDialog dlg(
         this,
         "Save Map As",
@@ -542,21 +521,18 @@ void MainWindow::OnSaveMapAs(wxCommandEvent&)
 
     std::string name = dlg.GetPath().c_str();
 
-    try
-    {
+    try {
         _map->Save(name);
         _curMapName = name;
         _changed = false;
         UpdateTitle();
     }
-    catch (std::runtime_error err)
-    {
+    catch (std::runtime_error err) {
         wxMessageBox(va("Unable to write %s:\n%s", name.c_str(), err.what()), "Error", wxOK | wxCENTER, this);
     }
 }
 
-void MainWindow::OnLoadTileset(wxCommandEvent&)
-{
+void MainWindow::OnLoadTileset(wxCommandEvent&) {
     wxFileDialog dlg(
         this,
         "Load tileset",
@@ -567,11 +543,9 @@ void MainWindow::OnLoadTileset(wxCommandEvent&)
         wxOPEN | wxFILE_MUST_EXIST
         );
 
-    if (dlg.ShowModal() == wxID_OK)
-    {
+    if (dlg.ShowModal() == wxID_OK) {
         Tileset* ts = new Tileset();
-        try
-        {
+        try {
             wxFileName fName(dlg.GetPath());
             if (fName.IsAbsolute())
                 fName.MakeRelativeTo();
@@ -584,16 +558,14 @@ void MainWindow::OnLoadTileset(wxCommandEvent&)
 
             HandleCommand(new ChangeTilesetCommand(ts, fName.GetFullPath().c_str()));
         }
-        catch (std::runtime_error err)
-        {
+        catch (std::runtime_error err) {
             delete ts;
             wxMessageBox(va("Unable to load tileset %s:\n%s", dlg.GetPath().c_str(), err.what()), "ERROR", wxOK | wxCENTER, this);
         }
     }
 }
 
-void MainWindow::OnSaveTilesetAs(wxCommandEvent&)
-{
+void MainWindow::OnSaveTilesetAs(wxCommandEvent&) {
     wxFileDialog dlg(
         this,
         "Save Tileset As",
@@ -612,11 +584,9 @@ void MainWindow::OnSaveTilesetAs(wxCommandEvent&)
     _tileset->Save(dlg.GetPath().c_str());
 }
 
-void MainWindow::OnExportTileset(wxCommandEvent&)
-{
+void MainWindow::OnExportTileset(wxCommandEvent&) {
     ExportTilesDlg dlg(this);
-    if (dlg.ShowModal() == wxID_OK)
-    {
+    if (dlg.ShowModal() == wxID_OK) {
         const int padAdjust = dlg._pad ? 1 : 0;
         const uint rowSize = dlg._rowSize;
 
@@ -629,10 +599,8 @@ void MainWindow::OnExportTileset(wxCommandEvent&)
         uint i = 0;
         uint curX = padAdjust;
         uint curY = padAdjust;
-        while (i < _tileset->Count())
-        {
-            for (uint j = 0; j < rowSize; j++)
-            {
+        while (i < _tileset->Count()) {
+            for (uint j = 0; j < rowSize; j++) {
                 Blitter::Blit(_tileset->Get(i), dest, curX, curY, Blitter::OpaqueBlend());
                 curX += _tileset->Width() + padAdjust;
                 i++;
@@ -649,42 +617,34 @@ breakLoop:; // eeeeeeeeeeeeeee
     }
 }
 
-void MainWindow::OnExit(wxCommandEvent&)
-{
+void MainWindow::OnExit(wxCommandEvent&) {
     Close(true);
 }
 
-void MainWindow::OnUndo(wxCommandEvent&)
-{
+void MainWindow::OnUndo(wxCommandEvent&) {
     Undo();
 }
 
-void MainWindow::OnRedo(wxCommandEvent&)
-{
+void MainWindow::OnRedo(wxCommandEvent&) {
     Redo();
 }
 
-void MainWindow::OnEditMapProperties(wxCommandEvent&)
-{
+void MainWindow::OnEditMapProperties(wxCommandEvent&) {
     MapDlg dlg(this);
 
     int result = dlg.ShowModal();
 
-    if (result == wxID_OK)
-    {
+    if (result == wxID_OK) {
         HandleCommand(new ChangeMapPropertiesCommand(dlg.title, dlg.width, dlg.height));
     }
 }
 
-void MainWindow::OnImportTiles(wxCommandEvent&)
-{
+void MainWindow::OnImportTiles(wxCommandEvent&) {
     if (!_importTilesDlg)
         _importTilesDlg = new ImportTilesDlg(this);
 
-    if (_importTilesDlg->ShowModal(_tileset->Width(), _tileset->Height()) == wxID_OK)
-    {
-        if (!_importTilesDlg->_append)
-        {
+    if (_importTilesDlg->ShowModal(_tileset->Width(), _tileset->Height()) == wxID_OK) {
+        if (!_importTilesDlg->_append) {
             // This might start to get a bit RAM intensive.
 
             std::vector< ::Command*> commands; // commands to be sent
@@ -700,8 +660,7 @@ void MainWindow::OnImportTiles(wxCommandEvent&)
     }
 }
 
-void MainWindow::OnEditTileAnim(wxCommandEvent&)
-{
+void MainWindow::OnEditTileAnim(wxCommandEvent&) {
     TileAnimDlg dlg(this);
 
     ::Command* cmd = dlg.Execute(_tileset->GetAnim());
@@ -710,8 +669,7 @@ void MainWindow::OnEditTileAnim(wxCommandEvent&)
         HandleCommand(cmd);
 }
 
-void MainWindow::OnCloneLayer(wxCommandEvent&)
-{
+void MainWindow::OnCloneLayer(wxCommandEvent&) {
     if (!_map->NumLayers())
         return;
 
@@ -728,8 +686,7 @@ void MainWindow::OnZoomTilesetIn(wxCommandEvent&)       {   _tilesetView->IncZoo
 void MainWindow::OnZoomTilesetOut(wxCommandEvent&)      {   _tilesetView->IncZoom(+1);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTilesetNormal(wxCommandEvent&)   {   _tilesetView->SetZoom(16);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   } // 16:16 == 100%
 
-void MainWindow::OnConfigureScripts(wxCommandEvent& e)
-{
+void MainWindow::OnConfigureScripts(wxCommandEvent& e) {
     ScriptDlg dlg(this);
 
     dlg.ShowModal();
@@ -744,8 +701,7 @@ void MainWindow::OnConfigureScripts(wxCommandEvent& e)
     UpdateScriptMenu();
 }
 
-void MainWindow::OnSetCurrentScript(wxCommandEvent& event)
-{
+void MainWindow::OnSetCurrentScript(wxCommandEvent& event) {
     uint id = event.GetId() - id_customscript;
     wxASSERT(id >= 0 && id < _scripts.size());
 
@@ -754,105 +710,91 @@ void MainWindow::OnSetCurrentScript(wxCommandEvent& event)
     _mapView->SetScriptTool(_scripts[_curScript]);
 }
 
-void MainWindow::OnCursorUp(wxCommandEvent&)
-{
+void MainWindow::OnCursorUp(wxCommandEvent&) {
     wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEUP, 0, wxVERTICAL);
     _mapView->ProcessEvent(evt);
 }
 
-void MainWindow::OnCursorDown(wxCommandEvent&)
-{
+void MainWindow::OnCursorDown(wxCommandEvent&) {
     wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEDOWN, 0, wxVERTICAL);
     _mapView->ProcessEvent(evt);
 }
 
-void MainWindow::OnCursorLeft(wxCommandEvent&)
-{
+void MainWindow::OnCursorLeft(wxCommandEvent&) {
     wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEUP, 0, wxHORIZONTAL);
     _mapView->ProcessEvent(evt);
 }
 
-void MainWindow::OnCursorRight(wxCommandEvent&)
-{
+void MainWindow::OnCursorRight(wxCommandEvent&) {
     wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEDOWN, 0, wxHORIZONTAL);
     _mapView->ProcessEvent(evt);
 }
 
-void MainWindow::OnSetTilePaintState(wxCommandEvent&)
-{
+void MainWindow::OnSetTilePaintState(wxCommandEvent&) {
     HighlightToolButton(id_tilepaint);
     _mapView->Cock();
 }
 
-void MainWindow::OnSetCopyPasteState(wxCommandEvent&)
-{
+void MainWindow::OnSetCopyPasteState(wxCommandEvent&) {
     HighlightToolButton(id_copypaste);
     _mapView->SetCopyPasteState();
 }
 
-void MainWindow::OnSetObstructionState(wxCommandEvent&)
-{
+void MainWindow::OnSetObstructionState(wxCommandEvent&) {
     HighlightToolButton(id_obstructionedit);
     _mapView->SetObstructionState();
 }
 
-void MainWindow::OnSetZoneState(wxCommandEvent&)
-{
+void MainWindow::OnSetZoneState(wxCommandEvent&) {
     HighlightToolButton(id_zoneedit);
     _mapView->SetZoneState();
 }
 
-void MainWindow::OnSetEntityState(wxCommandEvent&)
-{
+void MainWindow::OnSetEntityState(wxCommandEvent&) {
     HighlightToolButton(id_entityedit);
     _mapView->SetEntityState();
 }
 
-void MainWindow::OnSetScriptTool(wxCommandEvent&)
-{
+void MainWindow::OnSetScriptTool(wxCommandEvent&) {
     wxASSERT(_curScript < _scripts.size());
-    if (!_scripts.empty() && _scripts[_curScript]->IsTool())
-    {
+    if (!_scripts.empty() && _scripts[_curScript]->IsTool()) {
         HighlightToolButton(id_scripttool);
         _mapView->SetScriptTool(_scripts[_curScript]);
     }
 }
 
-void MainWindow::OnNewLayer(wxCommandEvent&)
-{
+void MainWindow::OnNewLayer(wxCommandEvent&) {
     HandleCommand(new CreateLayerCommand);
+    ShowLayer(GetCurrentLayer(), true);
 }
 
-void MainWindow::OnDestroyLayer(wxCommandEvent&)
-{
-    if (_map->NumLayers() > 1)
-    {
-        if (GetCurrentLayer() < _map->NumLayers())
+void MainWindow::OnDestroyLayer(wxCommandEvent&) {
+    if (_map->NumLayers() > 1) {
+        if (GetCurrentLayer() < _map->NumLayers()) {
             HandleCommand(new DestroyLayerCommand(GetCurrentLayer()));
+        }
 
-        if (GetCurrentLayer() >= _map->NumLayers())
+        if (GetCurrentLayer() >= _map->NumLayers()) {
             SetCurrentLayer(_map->NumLayers() - 1);
+        }
     }
 }
 
-void MainWindow::OnMoveLayerUp(wxCommandEvent&)
-{
+void MainWindow::OnMoveLayerUp(wxCommandEvent&) {
     uint curLay = GetCurrentLayer();
 
     if (curLay != 0 && curLay < _map->NumLayers())
         HandleCommand(new SwapLayerCommand(curLay, curLay - 1));
 }
 
-void MainWindow::OnMoveLayerDown(wxCommandEvent&)
-{
+void MainWindow::OnMoveLayerDown(wxCommandEvent&) {
     const uint curLay = GetCurrentLayer();
 
     if (curLay < _map->NumLayers() - 1)
         HandleCommand(new SwapLayerCommand(curLay, curLay + 1));
 }
 
-void MainWindow::UpdateTitle()
-{
+void MainWindow::UpdateTitle() {
     const std::string name = 
         _map->title.length() ?  _map->title :
         _curMapName.length() ?  _curMapName :
@@ -865,19 +807,15 @@ void MainWindow::UpdateTitle()
     SetTitle(va("ikaMap %s - %s[ %s ] %i%%", IKA_VERSION, asterisk, name.c_str(), zoomFactor));
 }
 
-void MainWindow::UpdateScriptMenu()
-{
+void MainWindow::UpdateScriptMenu() {
     wxMenu* scriptMenu = new wxMenu;
-    if (!_scripts.empty())
-    {
-        for (uint i = 0; i < _scripts.size(); i++)
-        {
+    if (!_scripts.empty()) {
+        for (uint i = 0; i < _scripts.size(); i++) {
             scriptMenu->AppendRadioItem(id_customscript + i, _scripts[i]->GetName().c_str());
             scriptMenu->Enable(id_customscript + i, _scripts[i]->IsTool());
         }
     }
-    else
-    {
+    else {
         wxMenuItem* item = new wxMenuItem(scriptMenu, id_dummy, "(None)");
         scriptMenu->Append(item);
         item->Enable(false);
@@ -891,19 +829,15 @@ void MainWindow::UpdateScriptMenu()
     _curScript = 0;
 }
 
-void MainWindow::SetChanged(bool changed)
-{
-    if (changed != _changed)
-    {
+void MainWindow::SetChanged(bool changed) {
+    if (changed != _changed) {
         _changed = changed;
         UpdateTitle();
     }
 }
 
-void MainWindow::HighlightToolButton(uint buttonId)
-{
-    static const uint ids[] =
-    {
+void MainWindow::HighlightToolButton(uint buttonId) {
+    static const uint ids[] = {
         id_tilepaint,
         id_copypaste,
         id_obstructionedit,
@@ -913,12 +847,10 @@ void MainWindow::HighlightToolButton(uint buttonId)
         id_scripttool
     };
     
-    for (uint i = 0; i < lengthof(ids); i++)
-    {
+    for (uint i = 0; i < lengthof(ids); i++) {
         uint id = ids[i];
         wxButton* button = wxStaticCast(FindWindowById(id, this), wxButton);
-        if (button)
-        {
+        if (button) {
             button->Enable(id != buttonId); // the current button is disabled, since I have no mechanism to keep it pressed at present. (suck)
         }
     }
@@ -1014,29 +946,24 @@ void MainWindow::LoadMap(const std::string& fileName) {
     UpdateTitle();
 }
 
-std::vector<Script*>& MainWindow::GetScripts()
-{
+std::vector<Script*>& MainWindow::GetScripts() {
     return _scripts;
 }
 
 // Executor:
-void MainWindow::HandleCommand(::Command* cmd)
-{
+void MainWindow::HandleCommand(::Command* cmd) {
     cmd->Do(this);
     AddCommand(cmd);
     SetChanged(true);
 }
 
-void MainWindow::AddCommand(::Command* cmd)
-{
+void MainWindow::AddCommand(::Command* cmd) {
     ClearList(_redoList);
     _undoList.push(cmd);
 }
 
-void MainWindow::Undo()
-{
-    if (!_undoList.empty())
-    {
+void MainWindow::Undo() {
+    if (!_undoList.empty()) {
         ::Command* c = _undoList.top();
         _undoList.pop();
 
@@ -1045,10 +972,8 @@ void MainWindow::Undo()
     }
 }
 
-void MainWindow::Redo()
-{
-    if (!_redoList.empty())
-    {
+void MainWindow::Redo() {
+    if (!_redoList.empty()) {
         ::Command* c = _redoList.top();
         _redoList.pop();
 
@@ -1057,36 +982,32 @@ void MainWindow::Redo()
     }
 }
 
-bool MainWindow::IsLayerVisible(uint index)
-{
+bool MainWindow::IsLayerVisible(uint index) {
     if (index >= _map->NumLayers())
         return false;
     else
         return _layerVisibility[index];
 }
 
-void MainWindow::ShowLayer(uint index, bool show)
-{
+void MainWindow::ShowLayer(uint index, bool show) {
     wxASSERT(index < _map->NumLayers());
 
-    if (index != _curLayer || show) // disallow hiding the current layer in all cases
-    {
+    // disallow hiding the current layer in all cases
+    if (index != _curLayer || show)  {
         _layerVisibility[index] = show;
 
         mapVisibilityChanged.fire(MapEvent(_map, index));
     }
 }
 
-void MainWindow::EditLayerProperties(uint index)
-{
+void MainWindow::EditLayerProperties(uint index) {
     wxASSERT(index < _map->NumLayers());
 
     LayerDlg dlg(this, index);
 
     int result = dlg.ShowModal();
 
-    if (result == wxID_OK)
-    {
+    if (result == wxID_OK) {
         HandleCommand(new ChangeLayerPropertiesCommand(
             _map->GetLayer(index),
             dlg.label,
@@ -1097,13 +1018,11 @@ void MainWindow::EditLayerProperties(uint index)
     }
 }
 
-uint MainWindow::GetCurrentTile()
-{
+uint MainWindow::GetCurrentTile() {
     return _curTile;
 }
 
-void MainWindow::SetCurrentTile(uint i)
-{
+void MainWindow::SetCurrentTile(uint i) {
     if (i > _tileset->Count())
         i = 0;
 
@@ -1111,13 +1030,11 @@ void MainWindow::SetCurrentTile(uint i)
     curTileChanged.fire(i);
 }
 
-uint MainWindow::GetCurrentLayer()
-{
+uint MainWindow::GetCurrentLayer() {
     return _curLayer;
 }
 
-void MainWindow::SetCurrentLayer(uint i)
-{
+void MainWindow::SetCurrentLayer(uint i) {
     wxASSERT(i < _map->NumLayers());
 
     _curLayer = i;
@@ -1125,38 +1042,32 @@ void MainWindow::SetCurrentLayer(uint i)
     curLayerChanged.fire(i);
 }
 
-void MainWindow::SetStatusBar(const std::string& text, int field)
-{
+void MainWindow::SetStatusBar(const std::string& text, int field) {
     GetStatusBar()->SetStatusText(text.c_str(), field);
 }
 
-void MainWindow::SetZoom(uint factor)
-{
+void MainWindow::SetZoom(uint factor) {
     _mapView->SetZoom(factor);
     _mapView->Refresh();    
     _mapView->UpdateScrollBars();
     UpdateTitle();
 }
 
-void MainWindow::SetZoomRelative(int factor)
-{
+void MainWindow::SetZoomRelative(int factor) {
     SetZoom(_mapView->GetZoom() + factor);
 }
 
 Map* MainWindow::GetMap()         { return _map; }
 Tileset* MainWindow::GetTileset() { return _tileset; }
 
-SpriteSet* MainWindow::GetSpriteSet(const std::string& fileName)
-{
+SpriteSet* MainWindow::GetSpriteSet(const std::string& fileName) {
     if (_sprites.count(fileName))
         return _sprites[fileName];
-    else
-    {
+    else {
         SpriteSet* ss = new SpriteSet();
         bool result = ss->Load(fileName);
 
-        if (!result)
-        {
+        if (!result) {
             delete ss;
             ss = 0; // put this away in the cache, so that we know that we tried to load it.
         }
@@ -1165,23 +1076,19 @@ SpriteSet* MainWindow::GetSpriteSet(const std::string& fileName)
     }
 }
 
-MapView* MainWindow::GetMapView()
-{
+MapView* MainWindow::GetMapView() {
     return _mapView;
 }
 
-TilesetView* MainWindow::GetTilesetView()
-{
+TilesetView* MainWindow::GetTilesetView() {
     return _tilesetView;
 }
 
-wxWindow* MainWindow::GetParentWindow()
-{
+wxWindow* MainWindow::GetParentWindow() {
     return this;
 }
 
-void MainWindow::SwitchTileset(Tileset* ts)
-{
+void MainWindow::SwitchTileset(Tileset* ts) {
     _tileset = ts;
     tilesetChanged.fire(MapTilesetEvent(_map, _tileset));
 }

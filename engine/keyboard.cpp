@@ -223,6 +223,7 @@ void Keyboard::ClearKeyQueue() {
 
 KeyControl::KeyControl()
     : _pressed(false) 
+    , _position(false)
 {
 }
 

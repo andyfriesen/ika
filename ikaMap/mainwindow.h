@@ -35,8 +35,7 @@ struct Script;
  * Also deals with the layer list, tool buttons, drop down menu, and the Command interface used
  * to actually modify the map.
  */
-struct MainWindow : public wxFrame, Executor
-{
+struct MainWindow : public wxFrame, Executor {
     friend struct ScriptDlg;
 
     MainWindow(

@@ -125,6 +125,7 @@ namespace rho.SpriteEditor {
 
         void FrameSelected(FrameEventArgs e) {
             framePanel.SelectedFrame = e.Index;
+            Console.WriteLine("Index = {0}", e.Index);
         }
 
         void FrameRightClicked(FrameEventArgs e) {

@@ -123,7 +123,7 @@ namespace rho.Dialogs {
                     images.Add(frame);
 
                     x += width + pad;
-                    if (x >= src.Width) {
+                    if (x >= RowCount) {
                         y += height + pad;
                         x = pad;
                     }

@@ -41,8 +41,7 @@ MapView::MapView(Executor* executor, wxWindow* parent)
     , _editState(&_tilesetState)
 
     , _xwin(0)
-    , _ywin(0)
-{
+    , _ywin(0) {
     _video = new VideoFrame(this);
     _video->SetClearColour(RGBA(128, 128, 128));
 }
@@ -50,26 +49,21 @@ MapView::MapView(Executor* executor, wxWindow* parent)
 MapView::~MapView()
 {}
 
-void MapView::OnPaint(wxPaintEvent& event)
-{
+void MapView::OnPaint(wxPaintEvent& event) {
     wxPaintDC dc(this);
 
     Render();
     ShowPage();
 }
 
-void MapView::OnSize(wxSizeEvent& event)
-{
+void MapView::OnSize(wxSizeEvent& event) {
     _video->SetSize(GetClientSize());
     UpdateScrollBars();
 }
 
-void MapView::OnScroll(wxScrollWinEvent& event)
-{
-    struct Local
-    {
-        static void HandleEvent(int& val, int min, int max, int page, int pos, wxEventType et)
-        {
+void MapView::OnScroll(wxScrollWinEvent& event) {
+    struct Local {
+        static void HandleEvent(int& val, int min, int max, int page, int pos, wxEventType et) {
             // Can't switch/case this. :\
             // Luckily, my regex-fu is developed enough that I could convert this
             // from a switch/case to what you see in about 2 seconds. :D
@@ -96,21 +90,18 @@ void MapView::OnScroll(wxScrollWinEvent& event)
     ShowPage();
 }
 
-void MapView::OnMouseDown(wxMouseEvent& event)
-{
+void MapView::OnMouseDown(wxMouseEvent& event) {
     if (_executor->GetMap()->NumLayers() == 0)
         return;
 
-    if (!_executor->IsLayerVisible(_executor->GetCurrentLayer()))
-    {
+    if (!_executor->IsLayerVisible(_executor->GetCurrentLayer())) {
         ::wxMessageBox("You shouldn't be able to have an active layer that is not\n"
                        "visible.  If you are reading this now, you are experiencing a bug.", "Internal error.",
                        wxOK, this);
         return;
     }
 
-    if (event.MiddleDown())
-    {
+    if (event.MiddleDown()) {
         _scrollX = event.GetX();
         _scrollY = event.GetY();
     }
@@ -119,24 +110,20 @@ void MapView::OnMouseDown(wxMouseEvent& event)
         _editState->OnMouseDown(event);
 }
 
-void MapView::OnMouseUp(wxMouseEvent& event)
-{
+void MapView::OnMouseUp(wxMouseEvent& event) {
     if (_executor->GetMap()->NumLayers() > 0)
         _editState->OnMouseUp(event);
 }
 
-void MapView::OnMouseMove(wxMouseEvent& event)
-{
-    if (_executor->GetCurrentLayer() < _executor->GetMap()->NumLayers())
-    {
+void MapView::OnMouseMove(wxMouseEvent& event) {
+    if (_executor->GetCurrentLayer() < _executor->GetMap()->NumLayers()) {
         int x = event.GetX();
         int y = event.GetY();
         ScreenToTile(x, y);
         _executor->SetStatusBar(va("(%i, %i)", x, y), 0);
     }
 
-    if (event.MiddleIsDown())
-    {
+    if (event.MiddleIsDown()) {
         // Middlemouse + drag scrolls the map around.
         // Hold down the Ctrl key to scroll really really fast.
         int dx = _scrollX - event.GetX();
@@ -158,39 +145,32 @@ void MapView::OnMouseMove(wxMouseEvent& event)
         _editState->OnMouseMove(event);
 }
 
-void MapView::OnMouseWheel(wxMouseEvent& event)
-{
+void MapView::OnMouseWheel(wxMouseEvent& event) {
     if (_executor->GetMap()->NumLayers())
         _editState->OnMouseWheel(event);
 }
 
-void MapView::OnKeyPress(wxKeyEvent& event)
-{
+void MapView::OnKeyPress(wxKeyEvent& event) {
     _editState->OnKeyPress(event);
 }
 
-void MapView::OnMapChange(const MapEvent& event)
-{
+void MapView::OnMapChange(const MapEvent& event) {
     Refresh();
 }
 
-void MapView::OnCurLayerChange(uint index)
-{
+void MapView::OnCurLayerChange(uint index) {
     Refresh();
 }
 
-void MapView::Render()
-{
+void MapView::Render() {
     Map* map = _executor->GetMap();
     int curLayer = _executor->GetCurrentLayer();
 
     _video->SetCurrent();
     _video->Clear();
 
-    for (uint i = 0; i < map->NumLayers(); i++)
-    {
-        if (_executor->IsLayerVisible(i))
-        {
+    for (uint i = 0; i < map->NumLayers(); i++) {
+        if (_executor->IsLayerVisible(i)) {
             Map::Layer* lay = map->GetLayer(i);
 
             // TODO: Parallax, and possibly wrapping.
@@ -204,13 +184,11 @@ void MapView::Render()
     _editState->OnRender();
 }
 
-void MapView::ShowPage()
-{
+void MapView::ShowPage() {
     _video->ShowPage();
 }
 
-void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
-{
+void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset) {
     Tileset* ts = _executor->GetTileset();
     if (!ts->Count())
         return;
@@ -230,14 +208,12 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
     int adjustX = xoffset % tileX;
     int adjustY = yoffset % tileY;
 
-    if (firstX < 0)  
-    {
+    if (firstX < 0)   {
         lenX -= -firstX;
         adjustX += firstX * tileX;
         firstX = 0;
     }
-    if (firstY < 0)
-    {
+    if (firstY < 0) {
         lenY -= -firstY;
         adjustY += firstY * tileY;
         firstY = 0;
@@ -246,10 +222,8 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
     if ((uint)(firstX + lenX) > tiles.Width())  lenX = tiles.Width()  - firstX;
     if ((uint)(firstY + lenY) > tiles.Height()) lenY = tiles.Height() - firstY;
 
-    for (int y = 0; y < lenY; y++)
-    {
-        for (int x = 0; x < lenX; x++)
-        {
+    for (int y = 0; y < lenY; y++) {
+        for (int x = 0; x < lenX; x++) {
             int t = tiles(x + firstX, y + firstY);
 
             _video->Blit(
@@ -260,8 +234,7 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
     }
 }
 
-void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
-{
+void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset) {
     // TODO: wrapping
     xoffset = xoffset * lay->parallax.mulx / lay->parallax.divx;
     yoffset = yoffset * lay->parallax.muly / lay->parallax.divy;
@@ -269,10 +242,8 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
     RenderLayer(lay->tiles, xoffset, yoffset);
 }
 
-void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
-{
-    for (std::vector<Map::Entity>::iterator iter = lay->entities.begin(); iter != lay->entities.end(); iter++)
-    {
+void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset) {
+    for (std::vector<Map::Entity>::iterator iter = lay->entities.begin(); iter != lay->entities.end(); iter++) {
         // default position/size if the sprite cannot be found
         int hotx = 0;
         int hoty = 0;
@@ -282,8 +253,7 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
         int height = 16;
 
         SpriteSet* ss = GetEntitySpriteSet(&*iter);
-        if (ss != 0)
-        {
+        if (ss != 0) {
             hotx = ss->GetCHR()->HotX();
             hoty = ss->GetCHR()->HotY();
             hotw = ss->GetCHR()->HotW();
@@ -313,8 +283,7 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
     }
 }
 
-void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
-{
+void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset) {
     // Draw a gray square over obstructed things.
     Tileset* ts = _executor->GetTileset();
 
@@ -333,14 +302,12 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
     int adjustX = (xoffset % tileX);
     int adjustY = (yoffset % tileY);
 
-    if (firstX < 0)  
-    {
+    if (firstX < 0)   {
         lenX -= -firstX;
         adjustX += firstX * tileX;
         firstX = 0;
     }
-    if (firstY < 0)
-    {
+    if (firstY < 0) {
         lenY -= -firstY;
         adjustY += firstY * tileY;
         firstY = 0;
@@ -349,52 +316,43 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
     if ((uint)(firstX + lenX) > lay->Width())  lenX = lay->Width()  - firstX;
     if ((uint)(firstY + lenY) > lay->Height()) lenY = lay->Height() - firstY;
 
-    for (int y = 0; y < lenY; y++)
-    {
-        for (int x = 0; x < lenX; x++)
-        {
+    for (int y = 0; y < lenY; y++) {
+        for (int x = 0; x < lenX; x++) {
             if (lay->obstructions(x + firstX, y + firstY))
                 _video->RectFill(x * tileX - adjustX, y * tileY - adjustY, tileX, tileY, RGBA(128, 128, 128, 128));
         }
     }
 }
 
-void MapView::UpdateScrollBars()
-{
+void MapView::UpdateScrollBars() {
     const Map* map = _executor->GetMap();
 
     SetScrollbar(wxHORIZONTAL, _xwin, _video->LogicalWidth(),  map->width);
     SetScrollbar(wxVERTICAL,   _ywin, _video->LogicalHeight(), map->height);
 }
 
-uint MapView::GetZoom() const
-{
+uint MapView::GetZoom() const {
     return _video->GetZoom();
 }
 
-void MapView::SetZoom(uint z)
-{
+void MapView::SetZoom(uint z) {
     _video->SetZoom(z);
 }
 
-void MapView::IncZoom(int amt)
-{
+void MapView::IncZoom(int amt) {
     _video->IncZoom(amt);
 }
 
-void MapView::ScreenToMap(int& x, int& y) const
-{
+void MapView::ScreenToMap(int& x, int& y) const {
     x += _xwin;
     y += _ywin;
 }
 
-void MapView::ScreenToLayer(int& x, int& y) const
-{
+void MapView::ScreenToLayer(int& x, int& y) const {
     ScreenToLayer(x, y, _executor->GetCurrentLayer());
 }
 
-void MapView::ScreenToLayer(int& x, int& y, uint layer) const
-{
+void MapView::ScreenToLayer(int& x, int& y, uint layer) const {
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     ScreenToMap(x, y);
@@ -405,13 +363,11 @@ void MapView::ScreenToLayer(int& x, int& y, uint layer) const
     y -= lay->y;
 }
 
-void MapView::ScreenToTile(int& x, int& y) const
-{
+void MapView::ScreenToTile(int& x, int& y) const {
     ScreenToTile(x, y, _executor->GetCurrentLayer());
 }
 
-void MapView::ScreenToTile(int& x, int& y, uint layer) const
-{
+void MapView::ScreenToTile(int& x, int& y, uint layer) const {
     wxASSERT(_executor->GetMap() != 0);
     wxASSERT(_executor->GetTileset() != 0);
     wxASSERT(layer < _executor->GetMap()->NumLayers());
@@ -422,13 +378,11 @@ void MapView::ScreenToTile(int& x, int& y, uint layer) const
     y /= _executor->GetTileset()->Height();
 }
 
-void MapView::TileToScreen(int& x, int& y) const
-{
+void MapView::TileToScreen(int& x, int& y) const {
     TileToScreen(x, y, _executor->GetCurrentLayer());
 }
 
-void MapView::TileToScreen(int& x, int& y, uint layer) const
-{
+void MapView::TileToScreen(int& x, int& y, uint layer) const {
     wxASSERT(_executor->GetMap());
     wxASSERT(_executor->GetTileset());
     wxASSERT(layer < _executor->GetMap()->NumLayers());
@@ -439,13 +393,11 @@ void MapView::TileToScreen(int& x, int& y, uint layer) const
     y = (y * _executor->GetTileset()->Height()) + lay->y - _ywin;
 }
 
-void MapView::MapToTile(int& x, int& y) const
-{
+void MapView::MapToTile(int& x, int& y) const {
     MapToTile(x, y, _executor->GetCurrentLayer());
 }
 
-void MapView::MapToTile(int& x, int& y, uint layer) const
-{
+void MapView::MapToTile(int& x, int& y, uint layer) const {
     wxASSERT(_executor->GetMap());
     wxASSERT(_executor->GetTileset());
     wxASSERT(layer < _executor->GetMap()->NumLayers());
@@ -458,13 +410,11 @@ void MapView::MapToTile(int& x, int& y, uint layer) const
     y /= _executor->GetTileset()->Height();
 }
 
-void MapView::TileToMap(int& x, int& y) const
-{
+void MapView::TileToMap(int& x, int& y) const {
     TileToMap(x, y, _executor->GetCurrentLayer());
 }
 
-void MapView::TileToMap(int& x, int& y, uint layer) const
-{
+void MapView::TileToMap(int& x, int& y, uint layer) const {
     wxASSERT(_executor->GetMap());
     wxASSERT(_executor->GetTileset());
     wxASSERT(layer < _executor->GetMap()->NumLayers());
@@ -475,14 +425,12 @@ void MapView::TileToMap(int& x, int& y, uint layer) const
     y = (y * lay->parallax.divy / lay->parallax.muly) - lay->y;
 }
 
-uint MapView::EntityAt(int x, int y, uint layer)
-{
+uint MapView::EntityAt(int x, int y, uint layer) {
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     std::vector<Map::Entity>& ents = _executor->GetMap()->GetLayer(layer)->entities;
 
-    for (uint i = 0; i < ents.size(); i++)
-    {
+    for (uint i = 0; i < ents.size(); i++) {
         Map::Entity& ent = ents[i];
 
         /*if (ent.x > x)  continue;
@@ -494,8 +442,7 @@ uint MapView::EntityAt(int x, int y, uint layer)
         int height = 16;
 
         SpriteSet* ss = GetEntitySpriteSet(&ents[i]);
-        if (ss)
-        {
+        if (ss) {
             hotx =   ss->GetCHR()->HotX();
             hoty =   ss->GetCHR()->HotY();
             width =  ss->Width();
@@ -514,14 +461,12 @@ uint MapView::EntityAt(int x, int y, uint layer)
     return -1;
 }
 
-uint MapView::ZoneAt(int x, int y, uint layer)
-{
+uint MapView::ZoneAt(int x, int y, uint layer) {
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     std::vector<Map::Layer::Zone>& zones = _executor->GetMap()->GetLayer(layer)->zones;
 
-    for (uint i = 0; i < zones.size(); i++)
-    {
+    for (uint i = 0; i < zones.size(); i++) {
         Map::Layer::Zone& zone = zones[i];
 
         if (zone.position.left   <= x &&
@@ -533,18 +478,15 @@ uint MapView::ZoneAt(int x, int y, uint layer)
     return -1;
 }
 
-SpriteSet* MapView::GetEntitySpriteSet(Map::Entity* ent) const
-{
+SpriteSet* MapView::GetEntitySpriteSet(Map::Entity* ent) const {
     return _executor->GetSpriteSet(ent->spriteName);
 }
 
-VideoFrame* MapView::GetVideo() const
-{
+VideoFrame* MapView::GetVideo() const {
     return _video;
 }
 
-void MapView::SetEditState(EditState* newState)
-{
+void MapView::SetEditState(EditState* newState) {
     _editState->OnEndState();
     _editState = newState;
     _editState->OnBeginState();
@@ -553,31 +495,25 @@ void MapView::SetEditState(EditState* newState)
     ShowPage();
 }
 
-void MapView::Cock()
-{
+void MapView::Cock() {
     SetEditState(&_tilesetState);
 }
 
-void MapView::SetCopyPasteState()
-{
+void MapView::SetCopyPasteState() {
     SetEditState(&_copyPasteState);
 }
 
-void MapView::SetObstructionState()
-{
+void MapView::SetObstructionState() {
     SetEditState(&_obstructionState);
 }
-void MapView::SetEntityState()
-{
+void MapView::SetEntityState() {
     SetEditState(&_entityState);
 }
 
-void MapView::SetZoneState()
-{
+void MapView::SetZoneState() {
     SetEditState(&_zoneEditState);
 }
-void MapView::SetScriptTool(Script* script)
-{
+void MapView::SetScriptTool(Script* script) {
     _scriptState.SetScript(script);
 
     SetEditState(&_scriptState);

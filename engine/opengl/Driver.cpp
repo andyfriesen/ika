@@ -464,16 +464,18 @@ namespace OpenGL {
         SwitchTexture(img->_texture->handle);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
+        // Invert Y texel because we're working with raster coordinates, not cartesian.
+        // (Y increases as we go down, but GL likes to do the opposite)
         float texX = float(w) / img->Width()  * scalex;
-        float texY = float(h) / img->Height() * scaley;
+        float texY = 1 - (float(h) / img->Height() * scaley);
 
         // simplest case.  We can draw one big textured quad for the whole thing.
         if (tex->width == img->_width && tex->height == img->_height) {
             glBegin(GL_QUADS);
-            glTexCoord2f(0,    texY);   glVertex2i(x, y);
-            glTexCoord2f(texX, texY);   glVertex2i(x + w, y);
-            glTexCoord2f(texX, 0);      glVertex2i(x + w, y + h);
-            glTexCoord2f(0,    0);      glVertex2i(x, y + h);
+            glTexCoord2f(0,    1);      glVertex2i(x, y);
+            glTexCoord2f(texX, 1);      glVertex2i(x + w, y);
+            glTexCoord2f(texX, texY);   glVertex2i(x + w, y + h);
+            glTexCoord2f(0,    texY);   glVertex2i(x, y + h);
             glEnd();
         } else {
             // backup: Draw a grid of textured quads.
