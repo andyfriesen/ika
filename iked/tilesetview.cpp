@@ -1,8 +1,8 @@
 
-#include "TileSetView.h"
 #include "main.h"
-
-#include "ImageView.h"
+#include "tilesetview.h"
+#include "imageview.h"
+#include "importframesdlg.h"
 
 #include "wx/event.h"
 
@@ -138,6 +138,38 @@ void CTileSetView::OnSave(wxCommandEvent& event)
     pTileset->Save(name.c_str());
 }
 
+void CTileSetView::OnSaveAs(wxCommandEvent& event)
+{
+    wxFileDialog dlg(
+        this,
+        "Save CHR",
+        "",
+        "",
+        "Tilesets (*.vsp)|*.vsp|"
+        "All files (*.*)|*.*",
+        wxSAVE | wxOVERWRITE_PROMPT
+        );
+
+    int result = dlg.ShowModal();
+    if (result==wxID_CANCEL)
+        return;
+
+    std::string oldname(name);
+
+    name = dlg.GetPath().c_str();
+    SetTitle(name.c_str());
+
+    OnSave(event);
+
+    if (!Path::Compare(name, oldname))
+    {
+        pTileset->Load(oldname.c_str());
+        if (!pParent->vsp.Release(pTileset))
+            delete pTileset;
+        pTileset = pParent->vsp.Load(name.c_str());
+    }
+}
+
 void CTileSetView::Paint()
 {
     if (!pTileset)
@@ -204,6 +236,21 @@ void CTileSetView::OnMouseWheel(wxMouseEvent& event)
 
 //---------------------------
 
+void CTileSetView::OnImportTiles(wxCommandEvent&)
+{
+    ImportFramesDlg dlg(this);
+
+    if (dlg.ShowModal(pTileset->Width(), pTileset->Height()) != wxID_OK)
+        return;
+
+    if (!dlg.frames.size())
+        return;
+
+    std::vector<Canvas>& tiles = dlg.frames;
+    for (int i = 0; i < tiles.size(); i++)
+        pTileset->AppendTile(tiles[i]);
+}
+
 void CTileSetView::Zoom(int factor)
 {
     zoom -= factor;
@@ -215,9 +262,8 @@ void CTileSetView::Zoom(int factor)
     UpdateScrollbar();
 }
 
-void CTileSetView::OnEditTile(wxCommandEvent& event)
+void CTileSetView::OnEditTile(wxCommandEvent&)
 {
-//    pParent->
     pParent->OpenDocument( new CImageView(pParent, &pTileset->Get(nTile)) );
 }
 

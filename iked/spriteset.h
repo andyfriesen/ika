@@ -25,6 +25,14 @@ public:
     int Width() const;
     int Height() const;
 
+    void AppendFrame();
+    void AppendFrame(Canvas& p);
+    void InsertFrame(int i);
+    void InsertFrame(int i, Canvas& p);
+    void DeleteFrame(int i);
+
+    void Resize(int width, int height);
+
     inline CCHRfile& GetCHR() const { return *pCHR; }    
 
 };

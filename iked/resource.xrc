@@ -349,8 +349,8 @@
     <title>New Map</title>
     <style>wxDEFAULT_DIALOG_STYLE|wxDIALOG_MODAL</style>
   </object>
-  <object class="wxDialog" name="dialog_importchr">
-    <title>Import CHR</title>
+  <object class="wxDialog" name="dialog_importframes">
+    <title>Import Frames</title>
     <style>wxDEFAULT_DIALOG_STYLE|wxDIALOG_MODAL</style>
     <object class="wxPanel" name="panel_main">
       <object class="wxBoxSizer">
@@ -391,7 +391,7 @@
               </object>
             </object>
             <object class="sizeritem">
-              <object class="wxTextCtrl" name="edit_framesperrow"/>
+              <object class="wxTextCtrl" name="edit_rowsize"/>
               <flag>wxEXPAND</flag>
             </object>
             <object class="sizeritem">

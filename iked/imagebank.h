@@ -13,8 +13,9 @@ class Canvas;
 // that stay sync'd.
 class CImageBank
 {
-    vector < CImage*> bitmaps;
-    std::set < int> altered;
+protected:
+    vector<CImage*> bitmaps;
+    std::set<int> altered;
 
     virtual void SetImage(const Canvas& img, int idx)=0;
 public:

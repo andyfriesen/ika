@@ -57,6 +57,38 @@ int CTileSet::Height() const
     return pVsp?pVsp->Height():0;
 }
 
+void CTileSet::AppendTile()
+{
+    pVsp->AppendTile();
+    SyncAll();
+}
+
+void CTileSet::AppendTile(Canvas& c)
+{
+    pVsp->AppendTile();
+    pVsp->PasteTile(c, pVsp->NumTiles() - 1);
+    SyncAll();
+}
+
+void CTileSet::InsertTile(uint pos)
+{
+    pVsp->InsertTile(pos);
+    SyncAll();
+}
+
+void CTileSet::InsertTile(uint pos, Canvas& c)
+{
+    pVsp->InsertTile(pos);
+    pVsp->PasteTile(c, pos);
+    SyncAll();
+}
+
+void CTileSet::DeleteTile(uint pos)
+{
+    pVsp->DeleteTile(pos);
+    SyncAll();
+}
+
 void CTileSet::SetCurTile(uint t)
 {
     if (t < 0 || t >= pVsp->NumTiles()) return;

@@ -55,16 +55,17 @@ private:
     void SpritePos(int idx, int& x, int& y) const;
     void Zoom(int nZoomscale);
 
-    CMainWnd*       pParent;
-    CGraphFrame*    pGraph;
-    CSpriteSet*     pSprite;
+    CMainWnd*           _parent;
+    CGraphFrame*        _graph;
+    CSpriteSet*         _sprite;
     
-    int             nCurframe;
-    int             ywin;
-    int             nZoom;
+    int                 _curFrame;
+    int                 _ywin;
+    int                 _zoom;
+    bool                _pad;
 
-    wxMenu*             pContextmenu;
-    CMovescriptEditor*  pMovescripteditor;
+    wxMenu*             _contextMenu;
+    CMovescriptEditor*  _moveScriptEditor;
 
     DECLARE_EVENT_TABLE()
 };

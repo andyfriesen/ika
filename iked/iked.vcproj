@@ -162,6 +162,9 @@
 				RelativePath=".\imageview.cpp">
 			</File>
 			<File
+				RelativePath="importframesdlg.cpp">
+			</File>
+			<File
 				RelativePath=".\layervisibilitycontrol.cpp">
 			</File>
 			<File
@@ -236,6 +239,9 @@
 			</File>
 			<File
 				RelativePath=".\imageview.h">
+			</File>
+			<File
+				RelativePath="importframesdlg.h">
 			</File>
 			<File
 				RelativePath=".\layervisibilitycontrol.h">

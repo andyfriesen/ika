@@ -1,5 +1,3 @@
-
-
 // I'm not entirely happy with this interface, but meh.
 // It's conveniant for now.
 //  --khross
@@ -10,6 +8,7 @@
 #include "imageview.h"
 #include "main.h"
 #include "movescripteditor.h"
+#include "importframesdlg.h"
 
 namespace
 {
@@ -94,14 +93,14 @@ END_EVENT_TABLE()
 
 CSpriteSetView::CSpriteSetView(CMainWnd* parentwnd, const string& fname)
     : IDocView(parentwnd, fname)
-    , pParent(parentwnd)
-    , nCurframe(0)
-    , ywin(0)
-    , nZoom(16)
-    , pSprite(0)
+    , _parent(parentwnd)
+    , _curFrame(0)
+    , _ywin(0)
+    , _zoom(16)
+    , _sprite(0)
 {
-    pSprite = parentwnd->spriteset.Load(fname);
-    if (!pSprite)
+    _sprite = parentwnd->spriteset.Load(fname);
+    if (!_sprite)
         throw std::runtime_error(va("Unable to load sprite %s", fname.c_str()));
 
     Init();
@@ -109,25 +108,25 @@ CSpriteSetView::CSpriteSetView(CMainWnd* parentwnd, const string& fname)
 
 CSpriteSetView::CSpriteSetView(CMainWnd* parentwnd, int width, int height)
     : IDocView(parentwnd, "")
-    , pParent(parentwnd)
-    , nCurframe(0)
-    , ywin(0)
-    , nZoom(16)
-    , pSprite(0)
+    , _parent(parentwnd)
+    , _curFrame(0)
+    , _ywin(0)
+    , _zoom(16)
+    , _sprite(0)
 {
-    pSprite = new CSpriteSet;
-    pSprite->New(width, height);
+    _sprite = new CSpriteSet;
+    _sprite->New(width, height);
     Init();
 }
 
 CSpriteSetView::~CSpriteSetView()
 {
-    delete pContextmenu;
+    delete _contextMenu;
 }
 
 void CSpriteSetView::OnSave(wxCommandEvent& event)
 {
-    pSprite->Save(name.c_str());
+    _sprite->Save(name.c_str());
 }
 
 void CSpriteSetView::OnSaveAs(wxCommandEvent& event)
@@ -155,29 +154,29 @@ void CSpriteSetView::OnSaveAs(wxCommandEvent& event)
 
     if (!Path::Compare(name, oldname))
     {
-        pSprite->Load(oldname.c_str());
-        if (!pParent->spriteset.Release(pSprite))
-            delete pSprite;
-        pSprite = pParent->spriteset.Load(name.c_str());
+        _sprite->Load(oldname.c_str());
+        if (!_parent->spriteset.Release(_sprite))
+            delete _sprite;
+        _sprite = _parent->spriteset.Load(name.c_str());
     }
 }
 
 void CSpriteSetView::OnClose(wxCommandEvent& event)
 {
-    pParent->spriteset.Release(pSprite);
-    pSprite = 0;
+    _parent->spriteset.Release(_sprite);
+    _sprite = 0;
 
     Destroy();
 }
 
 const void* CSpriteSetView::GetResource() const
 {
-    return pSprite;
+    return _sprite;
 }
 
 void CSpriteSetView::OnPaint()
 {
-    if (!pGraph || !pSprite)
+    if (!_graph || !_sprite)
         return;
 
     wxPaintDC dc(this);
@@ -187,66 +186,71 @@ void CSpriteSetView::OnPaint()
 
 void CSpriteSetView::Render()
 {
-    if (!pSprite)
+    if (!_sprite)
         return;
 
-    int nWidth = pGraph->LogicalWidth();
-    int nHeight = pGraph->LogicalHeight();
+    int nWidth = _graph->LogicalWidth();
+    int nHeight = _graph->LogicalHeight();
 
-    int tx = pSprite->Width();
-    int ty = pSprite->Height();
+    int framex = _sprite->Width();
+    int framey = _sprite->Height();
 
-    int nSpritewidth = nWidth / tx;
-    int nSpriteheight=(nHeight / ty)+1;
-    int nSprite = ywin * nSpritewidth;
+    int xstep = framex + (_pad ? 1 : 0);
+    int ystep = framey + (_pad ? 1 : 0);
 
-    pGraph->SetCurrent();
-    pGraph->Clear();     
+    int nSpritewidth = nWidth / xstep;
+    if (nSpritewidth < 1) nSpritewidth = 1;
+
+    int nSpriteheight=(nHeight / ystep)+1;
+    int nSprite = _ywin * nSpritewidth;
+
+    _graph->SetCurrent();
+    _graph->Clear();
 
     for(int y = 0; y < nSpriteheight; y++)
     {
         for(int x = 0; x < nSpritewidth; x++)
         {
-            Canvas& rBitmap = pSprite->Get(nSprite);
+            Canvas& rBitmap = _sprite->Get(nSprite);
             CImage img(rBitmap);
-            pGraph->Blit(img, x * tx, y * ty, true);
+
+            _graph->RectFill(x * xstep, y * ystep, framex, framey, RGBA(128, 128, 128));
+            _graph->Blit(img, x * xstep, y * ystep, true);
+            
             nSprite++;
 
-            if (nSprite >= pSprite->Count()) 
+            if (nSprite >= _sprite->Count()) 
                 goto breakloop;
-
-            nSpritewidth = nWidth / tx;
-            nSpriteheight=(nHeight / ty)+1;
         }
     }
 breakloop:
 
     int x2, y2;
-    tx = pSprite->Width();
-    ty = pSprite->Height();
-    SpritePos(nCurframe, x2, y2);
+    framex = _sprite->Width();
+    framey = _sprite->Height();
+    SpritePos(_curFrame, x2, y2);
 
-    pGraph->Rect(x2 - 1, y2 - 1, tx + 1, ty + 1, RGBA(255, 255, 255));
+    _graph->Rect(x2 - 1, y2 - 1, framex + 1, framey + 1, RGBA(255, 255, 255));
 
-    pGraph->ShowPage();
+    _graph->ShowPage();
 }
 
 void CSpriteSetView::OnSize(wxSizeEvent& event)
 {
-    pGraph->SetSize(GetClientSize());
+    _graph->SetSize(GetClientSize());
 
     UpdateScrollbar();
 }
 
 void CSpriteSetView::OnScroll(wxScrollWinEvent& event)
 {
-    if (event.m_eventType == wxEVT_SCROLLWIN_TOP)           ywin = 0;
-    else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM)   ywin = pSprite->Count();
-    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEUP)   ywin--;
-    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEDOWN) ywin++;
-    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEUP)   ywin -= GetScrollThumb(wxVERTICAL);
-    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEDOWN) ywin += GetScrollThumb(wxVERTICAL);
-    else                                                    ywin =  event.GetPosition();
+    if (event.m_eventType == wxEVT_SCROLLWIN_TOP)           _ywin = 0;
+    else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM)   _ywin = _sprite->Count();
+    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEUP)   _ywin--;
+    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEDOWN) _ywin++;
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEUP)   _ywin -= GetScrollThumb(wxVERTICAL);
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEDOWN) _ywin += GetScrollThumb(wxVERTICAL);
+    else                                                    _ywin =  event.GetPosition();
 
     UpdateScrollbar();
     Render();
@@ -257,80 +261,110 @@ void CSpriteSetView::OnLeftClick(wxMouseEvent& event)
     int x = event.GetPosition().x;
     int y = event.GetPosition().y;
 
-    const int tx = pSprite->Width();
-    const int ty = pSprite->Height();
+    const int framex = _sprite->Width();
+    const int framey = _sprite->Height();
 
-    int nSpritewidth = GetClientSize().GetWidth()/tx;
+    int nSpritewidth = GetClientSize().GetWidth()/framex;
 
-    x /= tx;      
-    y /= ty;
+    x /= framex;      
+    y /= framey;
 
-    int t = (y + ywin) * nSpritewidth + x;
+    int t = (y + _ywin) * nSpritewidth + x;
 
-    if (t > pSprite->Count()) t = 0;
-    
-    nCurframe = t;
+    if (t > _sprite->Count()) t = 0;
+   
+    _curFrame = t;
 
     Render();
 }
 
 void CSpriteSetView::OnRightClick(wxMouseEvent& event)
 {
-    PopupMenu(pContextmenu, event.GetPosition());
+    PopupMenu(_contextMenu, event.GetPosition());
 }
 
 void CSpriteSetView::OnEditFrame(wxCommandEvent& event)
 {
-//    pParent->OpenDocument(new CImageView(pParent, &pSprite->Get(nCurframe)));
+//    _parent->OpenDocument(new CImageView(_parent, &_sprite->Get(_curFrame)));
 }
 
 void CSpriteSetView::OnPreviousFrame(wxCommandEvent& event)
 {
-    if (nCurframe > 0)
-        nCurframe--;
+    if (_curFrame > 0)
+        _curFrame--;
     else
-        nCurframe = pSprite->Count();
+        _curFrame = _sprite->Count();
 
     Render();
 }
 
 void CSpriteSetView::OnNextFrame(wxCommandEvent& event)
 {
-    if (nCurframe < pSprite->Count())
-        nCurframe++;
+    if (_curFrame < _sprite->Count())
+        _curFrame++;
     else
-        nCurframe = 0;
+        _curFrame = 0;
 
     Render();
 }
 
 void CSpriteSetView::OnZoomIn(wxCommandEvent& event)    { Zoom(1);  }
 void CSpriteSetView::OnZoomOut(wxCommandEvent& event)   { Zoom(-1); }
-void CSpriteSetView::OnZoomNormal(wxCommandEvent& event){ Zoom(16 - nZoom); } 
+void CSpriteSetView::OnZoomNormal(wxCommandEvent& event){ Zoom(16 - _zoom); } 
 void CSpriteSetView::UpdateScrollbar()
 {
-    const int w = pGraph->LogicalWidth();
-    const int h = pGraph->LogicalHeight();
+    const int w = _graph->LogicalWidth();
+    const int h = _graph->LogicalHeight();
 
-    int nSpritewidth = w / pSprite->Width();
-    int nSpriteheight = h / pSprite->Height();
+    int nSpritewidth = w / _sprite->Width();
+    int nSpriteheight = h / _sprite->Height();
 
-    int nTotalheight = pSprite->Count() / nSpritewidth + 1;
+    if (nSpritewidth < 1) nSpritewidth = 1;
 
-    if (ywin > nTotalheight - nSpriteheight)    ywin = nTotalheight - nSpriteheight;
-    if (ywin < 0)                               ywin = 0;
+    int nTotalheight = _sprite->Count() / nSpritewidth + 1;
 
-    SetScrollbar(wxVERTICAL, ywin, nSpriteheight, nTotalheight, true);
+    if (_ywin > nTotalheight - nSpriteheight)    _ywin = nTotalheight - nSpriteheight;
+    if (_ywin < 0)                               _ywin = 0;
+
+    SetScrollbar(wxVERTICAL, _ywin, nSpriteheight, nTotalheight, true);
 }
 
 void CSpriteSetView::OnShowMovescriptEditor(wxCommandEvent& event)
 {
-    pMovescripteditor->Show(true);
+    _moveScriptEditor->Show(true);
 
 }
 
 void CSpriteSetView::OnImportFrames(wxCommandEvent& event)
 {
+    ImportFramesDlg dlg(this);
+
+    if (dlg.ShowModal() != wxID_OK)
+        return;
+
+    std::vector<Canvas>& frames = dlg.frames;
+    if (frames.size() == 0)
+        return;
+
+    // this is horribly inefficient
+    if (!dlg.append)
+        while (_sprite->Count())
+            _sprite->DeleteFrame(0);
+
+    if (frames[0].Width() != _sprite->Width() || frames[0].Height() != _sprite->Height())
+    {
+        if (!dlg.append)
+            _sprite->Resize(frames[0].Width(), frames[0].Height());
+        else
+        {
+            // TODO: offer to crop or scale or some other things.
+            wxMessageBox("The frames aren't the same size as the sprite!", "Error", wxOK | wxCENTER, this);
+            return;
+        }
+    }
+
+    for (int i = 0; i < frames.size(); i++)
+        _sprite->AppendFrame(frames[i]);
 }
 
 void CSpriteSetView::Init()
@@ -338,17 +372,17 @@ void CSpriteSetView::Init()
     InitMenu();
     InitAccelerators();
 
-    pGraph = new SpriteFrame(this);
-    pGraph->SetSize(GetClientSize());
+    _graph = new SpriteFrame(this);
+    _graph->SetSize(GetClientSize());
 
-    pMovescripteditor = new CMovescriptEditor(this, pSprite);
+    _moveScriptEditor = new CMovescriptEditor(this, _sprite);
 
     SetFocus();
 }
 
 void CSpriteSetView::InitMenu()
 {
-    wxMenuBar* menubar = pParent->CreateBasicMenu();
+    wxMenuBar* menubar = _parent->CreateBasicMenu();
 
     wxMenu* filemenu = menubar->Remove(0);
     filemenu->InsertSeparator(2);
@@ -365,20 +399,20 @@ void CSpriteSetView::InitMenu()
     SetMenuBar(menubar);
 
     // Context menu
-    pContextmenu = new wxMenu();
-    pContextmenu->Append(id_deleteframe, "Delete");
-    pContextmenu->Append(id_insertframe, "Insert");
-    pContextmenu->Append(id_copyframe, "Copy");
-    pContextmenu->Append(id_pasteinto, "Paste into");
-    pContextmenu->Append(id_pasteover, "Paste over");
-    pContextmenu->Append(id_insertandpaste, "Insert and paste");
-    pContextmenu->AppendSeparator();
-    pContextmenu->Append(id_editframe, "Edit");
+    _contextMenu = new wxMenu();
+    _contextMenu->Append(id_deleteframe, "Delete");
+    _contextMenu->Append(id_insertframe, "Insert");
+    _contextMenu->Append(id_copyframe, "Copy");
+    _contextMenu->Append(id_pasteinto, "Paste into");
+    _contextMenu->Append(id_pasteover, "Paste over");
+    _contextMenu->Append(id_insertandpaste, "Insert and paste");
+    _contextMenu->AppendSeparator();
+    _contextMenu->Append(id_editframe, "Edit");
 }
 
 void CSpriteSetView::InitAccelerators()
 {
-    vector < wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
+    vector < wxAcceleratorEntry> accel = _parent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
     accel.resize(accel.size()+4);
@@ -394,23 +428,23 @@ void CSpriteSetView::InitAccelerators()
 
 void CSpriteSetView::SpritePos(int idx, int& x, int& y) const
 {
-    int w = GetClientSize().GetWidth()/pSprite->Width();
+    int w = GetClientSize().GetWidth()/_sprite->Width();
     
     x = idx % w;
-    y = idx / w - ywin;
+    y = idx / w - _ywin;
 
-    x *= pSprite->Width();
-    y *= pSprite->Height();
+    x *= _sprite->Width();
+    y *= _sprite->Height();
 }
 
 void CSpriteSetView::Zoom(int nZoomscale)
 {
-    int nZoom = pGraph->Zoom()-nZoomscale;
+    int _zoom = _graph->Zoom()-nZoomscale;
 
-    if (nZoom < 1) nZoom = 1;
-    if (nZoom > 255) nZoom = 255;
+    if (_zoom < 1) _zoom = 1;
+    if (_zoom > 255) _zoom = 255;
 
-    pGraph->Zoom(nZoom);
+    _graph->Zoom(_zoom);
 
     UpdateScrollbar();
 

@@ -29,6 +29,7 @@ public:
     ~CTileSetView();
 
     virtual void OnSave(wxCommandEvent& event);
+    void OnSaveAs(wxCommandEvent& event);
 
     void Paint();
     void OnSize(wxSizeEvent& event);
@@ -45,6 +46,8 @@ public:
     void OnEraseBackground(wxEraseEvent&) {}
 
     //-----------------------------------
+
+    void OnImportTiles(wxCommandEvent&);
 
     void Zoom(int factor);
     void OnEditTile(wxCommandEvent&);

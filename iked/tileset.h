@@ -34,9 +34,13 @@ public:
     int  Width() const;
     int  Height() const;
 
-    // Don't use this unless you're doing something that has nothing to do with the tile images.
-    // Use the CTileSet interface instead, as it will keep things synch'd.
-    inline VSP& GetVSP() const { return *pVsp; }
+    void AppendTile();
+    void AppendTile(Canvas& c);
+    void InsertTile(uint pos);
+    void InsertTile(uint pos, Canvas& c);
+    void DeleteTile(uint pos);
+
+    inline const VSP& GetVSP() const { return *pVsp; }
 
     inline int CurTile() const { return nCurtile; }
     void SetCurTile(uint t);

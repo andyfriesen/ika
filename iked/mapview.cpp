@@ -144,7 +144,7 @@ namespace
         id_mapentities,
         id_mapzones,
         id_newlayer,
-        id_vsp,
+        id_tileset,
         id_script
     };
 };
@@ -164,7 +164,7 @@ BEGIN_EVENT_TABLE(CMapView, wxMDIChildFrame)
     EVT_MENU(id_mapentities, CMapView::OnShowEntityEditor)
     EVT_MENU(id_mapzones, CMapView::OnShowZoneEditor)
     EVT_MENU(id_newlayer, CMapView::OnNewLayer)
-    EVT_MENU(id_vsp, CMapView::OnShowVSP)
+    EVT_MENU(id_tileset, CMapView::OnShowVSP)
     EVT_MENU(id_script, CMapView::OnShowScript)
 
     EVT_MENU(id_filesave, CMapView::OnSave)
@@ -250,7 +250,7 @@ void CMapView::InitMenu()
 
     wxMenu* mapmenu = new wxMenu;
 
-    mapmenu->Append(id_vsp, "&VSP");
+    mapmenu->Append(id_tileset, "&Tileset");
     mapmenu->Append(id_script, "&Script");
     mapmenu->Append(id_newlayer, "New &Layer");
     mapmenu->Append(id_mapentities, "&Entities...");

@@ -130,8 +130,7 @@ void CMainWnd::NewSprite(wxCommandEvent& event)
 {
     NewSpriteDlg dlg(this);
     if (dlg.ShowModal() == wxID_OK)
-    {
-    }
+        OpenDocument(new CSpriteSetView(this, dlg.width, dlg.height));
 }
 
 void CMainWnd::OnOpen(wxCommandEvent& event)

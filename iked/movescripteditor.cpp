@@ -85,7 +85,8 @@ void CMovescriptEditor::UpdateDlg()
 {
     CCHRfile& chr = pSprite->GetCHR();
 
-    for (uint i = 0; i < movescript.size(); i++)
+    const int s = min(movescript.size(), chr.sMovescript.size());
+    for (uint i = 0; i < s; i++)
     {
         wxTextCtrl* p = movescript[i];
         

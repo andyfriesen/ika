@@ -102,7 +102,7 @@ void CGraphFrame::Rect(int x, int y, int w, int h, RGBA colour)
     h = h * nZoomscale / nZoom;
 
     glColor4ub(colour.r, colour.g, colour.b, colour.a);
-    SetTex(0);
+    glDisable(GL_TEXTURE_2D);
 
     glBegin(GL_LINE_LOOP);
 
@@ -112,6 +112,9 @@ void CGraphFrame::Rect(int x, int y, int w, int h, RGBA colour)
     glVertex2i(x, y + h);
 
     glEnd();
+
+    glColor4f(1, 1, 1, 1);
+    glEnable(GL_TEXTURE_2D);
 }
 
 void CGraphFrame::RectFill(int x, int y, int w, int h, RGBA colour)
@@ -121,7 +124,7 @@ void CGraphFrame::RectFill(int x, int y, int w, int h, RGBA colour)
     w = w * nZoomscale / nZoom;
     h = h * nZoomscale / nZoom;
 
-    SetTex(0);
+    glDisable(GL_TEXTURE_2D);
     glColor4ub(colour.r, colour.g, colour.b, colour.a);
 
     glBegin(GL_QUADS);
@@ -132,6 +135,9 @@ void CGraphFrame::RectFill(int x, int y, int w, int h, RGBA colour)
     glVertex2i(x, y + h);
 
     glEnd();
+
+    glColor4f(1, 1, 1, 1);
+    glEnable(GL_TEXTURE_2D);
 }
 
 void CGraphFrame::Blit(CImage& src, int x, int y, bool trans)

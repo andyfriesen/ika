@@ -8,8 +8,8 @@ CSpriteSet::CSpriteSet() : pCHR(0)
 
 void CSpriteSet::New(int width, int height)
 {
-    CCHRfile* pNewchr = new CCHRfile;
-    pNewchr->New(width, height);
+    pCHR = new CCHRfile;
+    pCHR->New(width, height);
 }
 
 bool CSpriteSet::Load(const char* fname)
@@ -56,4 +56,38 @@ int CSpriteSet::Width() const
 int CSpriteSet::Height() const
 {
     return pCHR?pCHR->Height():0;
+}
+
+void CSpriteSet::AppendFrame()
+{
+    InsertFrame(Count());
+}
+
+void CSpriteSet::AppendFrame(Canvas& p)
+{
+    InsertFrame(Count(), p);
+}
+
+void CSpriteSet::InsertFrame(int i)
+{
+    pCHR->InsertFrame(i);
+    SyncAll();
+}
+
+void CSpriteSet::InsertFrame(int i, Canvas& p)
+{
+    pCHR->InsertFrame(i, p);
+    SyncAll();
+}
+
+void CSpriteSet::DeleteFrame(int i)
+{
+    pCHR->DeleteFrame(i);
+    SyncAll();
+}
+
+void CSpriteSet::Resize(int width, int height)
+{
+    pCHR->Resize(width, height);
+    SyncAll();
 }
