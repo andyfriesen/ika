@@ -64,11 +64,31 @@ namespace Script {
     }
 
     /// Reflects a sound stream.
+    namespace Music {
+        // Object type
+        struct MusicObject {
+            PyObject_HEAD
+            audiere::OutputStream* music;
+        };
+
+        // Methods
+        METHOD1(Music_Play, MusicObject);
+        METHOD1(Music_Pause, MusicObject);
+
+        void Init();
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
+        void Destroy(MusicObject* self);
+
+        // Method table
+        extern PyMethodDef methods[];
+        extern PyTypeObject type;
+    }
+
     namespace Sound {
         // Object type
         struct SoundObject {
             PyObject_HEAD
-            audiere::OutputStream* sound;
+            audiere::SoundEffect* sound;
         };
 
         // Methods
@@ -78,26 +98,6 @@ namespace Script {
         void Init();
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(SoundObject* self);
-
-        // Method table
-        extern PyMethodDef methods[];
-        extern PyTypeObject type;
-    }
-
-    namespace SoundEffect {
-        // Object type
-        struct SoundEffectObject {
-            PyObject_HEAD
-            audiere::SoundEffect* soundEffect;
-        };
-
-        // Methods
-        METHOD1(SoundEffect_Play, SoundEffectObject);
-        METHOD1(SoundEffect_Pause, SoundEffectObject);
-
-        void Init();
-        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
-        void Destroy(SoundEffectObject* self);
 
         // Method table
         extern PyMethodDef methods[];
