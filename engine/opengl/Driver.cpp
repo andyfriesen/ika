@@ -116,15 +116,16 @@ namespace OpenGL
 
         if (_blendMode == Video::Subtract)
         {
-            // hack for ATi cards which freak out with glBlendEquationEXT sometimes. (GAY)
             glBlendEquationEXT(GL_FUNC_ADD_EXT);
+            
+            // hack for ATi cards. (GAY)
             glBegin(GL_POINTS); glVertex2i(-1, -1); glEnd();
         }
 
         switch (bm)
         {
         case Video::None:    glDisable(GL_BLEND);     break;
-        case Video::Matte:  // TODO: see if we can get GL to do matte?
+        case Video::Matte:   // TODO: see if we can get GL to do matte?
         case Video::Normal:  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;
         case Video::Add:     glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;
         case Video::Subtract:

@@ -36,12 +36,12 @@ namespace Script
         PyObject* Input_Subscript(InputObject* self, PyObject* key);
 
 #define GET(x) PyObject* get ## x(InputObject* self)
-        GET(Up)     { return Input_GetControl(self, PyString_FromString("UP"));     }
-        GET(Down)   { return Input_GetControl(self, PyString_FromString("DOWN"));   }
-        GET(Left)   { return Input_GetControl(self, PyString_FromString("LEFT"));   }
-        GET(Right)  { return Input_GetControl(self, PyString_FromString("RIGHT"));  }
-        GET(Enter)  { return Input_GetControl(self, PyString_FromString("RETURN")); }
-        GET(Cancel) { return Input_GetControl(self, PyString_FromString("ESCAPE")); }
+        GET(Up)     { return Input_GetControl(self, Py_BuildValue("(s)", "UP"));     }
+        GET(Down)   { return Input_GetControl(self, Py_BuildValue("(s)", "DOWN"));   }
+        GET(Left)   { return Input_GetControl(self, Py_BuildValue("(s)", "LEFT"));   }
+        GET(Right)  { return Input_GetControl(self, Py_BuildValue("(s)", "RIGHT"));  }
+        GET(Enter)  { return Input_GetControl(self, Py_BuildValue("(s)", "RETURN")); }
+        GET(Cancel) { return Input_GetControl(self, Py_BuildValue("(s)", "ESCAPE")); }
 #undef GET
 
         PyGetSetDef properties[] =
