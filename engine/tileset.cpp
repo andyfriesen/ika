@@ -54,12 +54,17 @@ CTileSet::~CTileSet()
 {
     for (int i=0; i<nFrames; i++)
         video->FreeImage(hFrame[i]);
-        //delete hFrame[i];
 }
 
 Video::Image* CTileSet::GetTile(int index)
 {
+    if (index < 0 || index >= nTileidx.size())
+        index = 0;
+
     index = nTileidx[index];
+
+    if (index < 0 || index >= nTileidx.size())
+        index = 0;
 
     return hFrame[index];
 }

@@ -5,6 +5,7 @@
 #include <wx/wx.h>
 #include <stack>
 #include <map>
+#include "misc.h"
 
 #include "spriteset.h"
 #include "controller.h"
@@ -18,6 +19,7 @@ class TileSetView;
 struct Map;
 class TileSet;
 class Script;
+class ImportTilesDlg;
 
 /**
  * The main application frame.
@@ -38,6 +40,9 @@ private:
     wxCheckListBox*     _layerList;
     MapView* _mapView;
     TileSetView* _tileSetView;
+
+    // We store this because we need to store its default values.
+    ScopedPtr<ImportTilesDlg> _importTilesDlg;
     
     typedef std::map<std::string, SpriteSet*> SpriteMap;
     SpriteMap _sprites;
@@ -48,7 +53,6 @@ private:
     std::stack<::Command*> _undoList;
     std::stack<::Command*> _redoList;
 
-    static const float _version;
     std::string _curMapName;
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.

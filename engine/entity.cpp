@@ -7,7 +7,7 @@
 #include "sprite.h"
 #include "main.h"
 
-Entity::Entity(CEngine* njin)
+Entity::Entity(Engine* njin)
     : engine              (*njin)
     , x                   (0)
     , y                   (0)
@@ -33,7 +33,7 @@ Entity::Entity(CEngine* njin)
     , adjActivateScript(0)
 {}
 
-Entity::Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex)
+Entity::Entity(Engine* njin, const Map::Entity& e, uint _layerIndex)
     : engine(*njin)
     , animscriptofs       (0)
     , animscriptct        (0)

@@ -2,8 +2,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "0.52"
-
 // low level components/containers/etc..
 #include <list>
 
@@ -30,7 +28,7 @@
  *  This is the part that takes all the pieces, and whips them around as necessary.
  */
 
-class CEngine
+class Engine
 {
     // This sucks.
     friend class ScriptEngine;
@@ -50,10 +48,8 @@ public:
     Input                           input;                                          ///< keyboard/mouse (todo: joystick)
     Video::Driver*                  video;                                          ///< video. ;)
 
-    bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if set.
-    
-    bool                            bActive;                                        ///< set to false if we're supposed to sleep
-    bool                            bMaploaded;                                     ///< true if a map is... loaded. -_-
+    bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
+    bool                            _isMapLoaded;                                   ///< true if a map is loaded (gah)
     
 private:
     int                             xwin, ywin;                                     ///< world coordinates of the viewport
@@ -65,7 +61,9 @@ public:
     // Odds and ends
     HookList                        _hookRetrace;
     HookList                        _hookTimer;
-    int                             nFrameskip;                                     ///< the map engine will skip no more than this amount of ticks per retrace
+
+    bool                            _recurseStop;                                   ///< check variable used to ensure that Render is not called from within a hookretrace
+    int                             _frameSkip;                                     ///< the map engine will skip no more than this amount of ticks per retrace
     
     // interface
     void      Sys_Error(const char* errmsg);                                        ///< bitches, and quits
@@ -108,7 +106,7 @@ public:
     Point     GetCamera();                                                          ///< Returns the position of the camera. (the point returned is the upper left corner)
     void      SetCamera(Point p);                                                   ///< Moves the camera to the position specified.  Any necessary clipping is performed.
 
-    CEngine();
+    Engine();
 };
 
 #endif

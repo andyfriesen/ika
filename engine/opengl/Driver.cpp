@@ -282,7 +282,7 @@ namespace OpenGL
         top = min(_yres, _yres - top) - height;
 
         glScissor(
-            max(0, left), top,
+            left, top,
             width, height
             );
     }
@@ -383,18 +383,55 @@ namespace OpenGL
 
     void Driver::TileBlitImage(Video::Image* i, int x, int y, int w, int h, float scalex, float scaley)
     {
-        /*Image* img = (Image*)i;
+        Image* img = static_cast<Image*>(i);
+        Texture* tex = img->_texture;
 
         float texX = float(w) / img->Width()  * scalex;
         float texY = float(h) / img->Height() * scaley;
 
-        SwitchTexture(img->_texture);
-        glBegin(GL_QUADS);
-        glTexCoord2f(0,    texY);   glVertex2i(x, y);
-        glTexCoord2f(texX, texY);   glVertex2i(x + w, y);
-        glTexCoord2f(texX, 0);      glVertex2i(x + w, y + h);
-        glTexCoord2f(0,    0);      glVertex2i(x, y + h);
-        glEnd();*/
+        // simplest case.  We can draw one big textured quad for the whole thing.
+        if (tex->width == img->_width && tex->height == img->_height)
+        {
+
+            SwitchTexture(img->_texture->handle);
+            glBegin(GL_QUADS);
+            glTexCoord2f(0,    texY);   glVertex2i(x, y);
+            glTexCoord2f(texX, texY);   glVertex2i(x + w, y);
+            glTexCoord2f(texX, 0);      glVertex2i(x + w, y + h);
+            glTexCoord2f(0,    0);      glVertex2i(x, y + h);
+            glEnd();
+        }
+        else
+        // backup: Draw a grid of textured quads.
+        // This isn't so bad, really, but we could do another optimization
+        // and see if we could get away with doing some big long horizontal
+        // or vertical strips.  Something for another day.
+        {
+            glPushAttrib(GL_SCISSOR_BIT);
+            ClipScreen(x, y, x + w, y + h);
+
+            float imgWidth = float(img->_width) * scalex;
+            float imgHeight = float(img->_height) * scaley;
+        
+            SwitchTexture(img->_texture->handle);
+
+            const float* texCoords = img->_texCoords;
+    
+            glBegin(GL_QUADS);
+            for (float curY = float(y); curY < y + h; curY += imgWidth)
+            {
+                for (float curX = float(x); curX < x + w; curX += imgHeight)
+                {
+                    glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2f(curX, curY);
+                    glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2f(curX + imgWidth, curY);
+                    glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2f(curX + imgWidth, curY + imgHeight);
+                    glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2f(curX, curY + imgHeight);
+                }
+            }
+            glEnd();
+
+            glPopAttrib();
+        }
     }
 
     void Driver::TintBlitImage(Video::Image* img, int x, int y, u32 tint)

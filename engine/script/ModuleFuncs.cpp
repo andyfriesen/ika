@@ -9,7 +9,7 @@
 
 namespace Script
 {
-    CEngine*    engine;
+    Engine*    engine;
 
     PyObject*   entityDict;
     PyObject*   playerent;

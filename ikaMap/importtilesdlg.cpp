@@ -19,20 +19,17 @@ ImportTilesDlg::ImportTilesDlg(wxWindow* parent)
 
 int ImportTilesDlg::ShowModal()
 {
+    SetDefaultValues();
+
     return wxDialog::ShowModal();
 }
 
 int ImportTilesDlg::ShowModal(uint width, uint height)
 {
-    _defaultWidth = width;
-    _defaultHeight = height;
+    _width = width;
+    _height = height;
 
-    wxTextCtrl* w = XRCCTRL(*this, "edit_framewidth", wxTextCtrl);
-    wxTextCtrl* h = XRCCTRL(*this, "edit_frameheight", wxTextCtrl);
-
-    w->SetValue(ToString(width).c_str());   w->Disable();
-    h->SetValue(ToString(height).c_str());  h->Disable();
-    XRCCTRL(*this, "check_append", wxCheckBox)->SetValue(true);
+    SetDefaultValues();
 
     return wxDialog::ShowModal();
 }
@@ -41,23 +38,22 @@ void ImportTilesDlg::OnOk(wxCommandEvent& event)
 {
     try
     {
-        width = atoi(XRCCTRL(*this, "edit_framewidth", wxTextCtrl)->GetValue());
-        height = atoi(XRCCTRL(*this, "edit_frameheight", wxTextCtrl)->GetValue());
-        int numFrames = atoi(XRCCTRL(*this, "edit_numframes", wxTextCtrl)->GetValue());
-        int rowSize = atoi(XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->GetValue());
-        std::string fileName = XRCCTRL(*this, "edit_filename", wxTextCtrl)->GetValue().c_str();
-        bool pad = XRCCTRL(*this, "check_padding", wxCheckBox)->GetValue();
-        append = XRCCTRL(*this, "check_append", wxCheckBox)->GetValue();
-        // TODO: colour key because dreq is gay.  Also, he asked for it, or something.
-
-        if (!File::Exists(fileName))    throw va("%s does not exist", fileName.c_str());
-        if (width < 0 || height < 0)    throw "The frame dimensions must be at least one pixel.";
-        if (numFrames < 1)              throw "Importing less than one frame doesn't make much sense.";
-        if (rowSize < 1)                throw "There should be at least one frame per row.";
+        _width = atoi(XRCCTRL(*this, "edit_framewidth", wxTextCtrl)->GetValue());
+        _height = atoi(XRCCTRL(*this, "edit_frameheight", wxTextCtrl)->GetValue());
+        _numTiles = atoi(XRCCTRL(*this, "edit_numframes", wxTextCtrl)->GetValue());
+        _rowSize = atoi(XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->GetValue());
+        _fileName = XRCCTRL(*this, "edit_filename", wxTextCtrl)->GetValue().c_str();
+        _pad = XRCCTRL(*this, "check_padding", wxCheckBox)->GetValue();
+        _append = XRCCTRL(*this, "check_append", wxCheckBox)->GetValue();
+    
+        if (!File::Exists(_fileName))   throw va("%s does not exist", _fileName.c_str());
+        if (_width < 0 || _height < 0)  throw "The frame dimensions must be at least one pixel.";
+        if (_numTiles < 1)              throw "Importing less than one frame doesn't make much sense.";
+        if (_rowSize < 1)               throw "There should be at least one frame per row.";
 
         try
         {
-            ImportTiles(width, height, numFrames, rowSize, fileName, pad);
+            ImportTiles(_width, _height, _numTiles, _rowSize, _fileName, _pad);
             wxDialog::OnOK(event);
         }
         catch (std::exception ex)
@@ -78,7 +74,6 @@ void ImportTilesDlg::OnCheckAppend(wxCommandEvent& event)
 
     if (event.GetInt())
     {
-
         editWidth->Disable();
         editWidth->SetValue(ToString(_defaultWidth).c_str());
         editHeight->Disable();
@@ -111,6 +106,22 @@ void ImportTilesDlg::OnBrowse(wxCommandEvent& event)
     int result = dlg.ShowModal();
     if (result == wxID_OK)
         XRCCTRL(*this, "edit_filename", wxTextCtrl)->SetValue(dlg.GetPath());
+}
+
+void ImportTilesDlg::SetDefaultValues()
+{
+    wxTextCtrl* w = XRCCTRL(*this, "edit_framewidth", wxTextCtrl);
+    wxTextCtrl* h = XRCCTRL(*this, "edit_frameheight", wxTextCtrl);
+
+    w->SetValue(ToString(_width).c_str());   w->Enable(!_append);
+    h->SetValue(ToString(_height).c_str());  h->Enable(!_append);
+
+    XRCCTRL(*this, "check_append", wxCheckBox)->SetValue(_append);
+    XRCCTRL(*this, "check_padding", wxCheckBox)->SetValue(_pad);
+
+    XRCCTRL(*this, "edit_numframes", wxTextCtrl)->SetValue(ToString(_numTiles).c_str());
+    XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->SetValue(ToString(_rowSize).c_str());
+    XRCCTRL(*this, "edit_filename", wxTextCtrl)->SetValue(_fileName.c_str());
 }
 
 void ImportTilesDlg::ImportTiles(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad)

@@ -10,10 +10,17 @@
 class ImportTilesDlg : public wxDialog
 {
 public:
-    bool append;                // nothing to do with this dialog.  We expose it so that whoever is using it can interpret the tiles properly.
-    std::vector<Canvas> tiles;  // the resultant tiles
-    uint width;
-    uint height;
+    /// User's chosen settings.
+    bool _append;
+    bool _pad;
+    uint _width;
+    uint _height;
+    uint _rowSize;
+    uint _numTiles;
+    std::string _fileName;
+
+    /// The tiles we grabbed.
+    std::vector<Canvas> tiles;
 
 private:
     uint _defaultWidth;
@@ -30,6 +37,7 @@ private:
     void OnCheckAppend(wxCommandEvent& event);
     void OnBrowse(wxCommandEvent& event);
 
+    void SetDefaultValues();
     void ImportTiles(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad);
 
     DECLARE_EVENT_TABLE()

@@ -12,7 +12,7 @@
 // Rain of prototypes
 class CFont;
 struct Entity;
-class CEngine;
+class Engine;
 class Canvas;
 namespace audiere   {   class OutputStream; }
 namespace Video
@@ -306,7 +306,7 @@ namespace Script
     // "Global" things.
     // Definitely not my favourite way to go about this.
     // These are defined in ModuleFuncs.cpp, by the by.
-    extern CEngine*    engine;
+    extern Engine*    engine;
 
     extern PyObject*   entityDict;
     extern PyObject*   playerEnt;

@@ -1,5 +1,5 @@
 /*
-Things that just don't fit anywhere else, but are handy to have around.
+  Things that just don't fit anywhere else, but are handy to have around.
 
   Some things are simple abstractions over common functions, to make everything
   all happy and portable. (kudos to aegis for the advice)
@@ -10,8 +10,14 @@ Things that just don't fit anywhere else, but are handy to have around.
 #include "types.h"
 #include <string>
 
-#undef min  // GAAAAAAAAAY
-#undef max
+extern const char* IKA_VERSION;
+
+#ifdef min
+#   undef min
+#endif
+#ifdef max
+#   undef max
+#endif
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1300
     // This totally rocks.
@@ -92,6 +98,7 @@ public:
         return *this;
     }
 };
+
 template <class T>
 class ScopedArray
 {

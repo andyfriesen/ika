@@ -51,7 +51,7 @@ bool CApp::OnInit()
 #endif
 
     Log::Init("iked.log");
-    CMainWnd* mainwnd = new CMainWnd(NULL, -1, "iked",
+    CMainWnd* mainwnd = new CMainWnd(NULL, -1, va("iked %s", IKA_VERSION),
         wxPoint(-1, -1),
         wxSize(600, 400),
         wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL);

@@ -8,7 +8,7 @@
 //! Normal entity speed
 const int entspeed_normal = 100;
 
-class CEngine;
+class Engine;
 struct Sprite;
 
 /**
@@ -52,8 +52,8 @@ struct Entity
     ScriptObject activateScript;                                    //!< event to be called when the entity is activated
     ScriptObject adjActivateScript;                                 //!< event to be called when the entity touches the player
     
-    Entity(CEngine* njin);                                          //!< Default constructor
-    Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex);  //!< Converts a map entity
+    Entity(Engine* njin);                                           //!< Default constructor
+    Entity(Engine* njin, const Map::Entity& e, uint _layerIndex);   //!< Converts a map entity
     
     void        Init();                                             //!< does any setup type thingies that need to be done
     void        Free();                                             //!< cleanup
@@ -77,7 +77,7 @@ struct Entity
     void        Update();                                           //!< Performs one tick of AI
 
 private:
-    CEngine&    engine;                                             //!< engine instance.  This allows the entity to gather information about its surroundings
+    Engine&    engine;                                              //!< engine instance.  This allows the entity to gather information about its surroundings
 };
 
 #endif

@@ -187,7 +187,7 @@ namespace Script
 
         PyObject* New()
         {
-            PyObject* map=PyObject_New(PyObject, &type);
+            PyObject* map = PyObject_New(PyObject, &type);
 
             if (!map)
                 return 0;

@@ -1798,14 +1798,14 @@ void InitXmlResource()
 
     // Check for memory FS. If not present, load the handler:
     {
-        wxMemoryFSHandler::AddFile("XRC_resource/dummy_file", "dummy one");
+        wxMemoryFSHandler::AddFile(wxT("XRC_resource/dummy_file"), wxT("dummy one"));
         wxFileSystem fsys;
-        wxFSFile *f = fsys.OpenFile("memory:XRC_resource/dummy_file");
-        wxMemoryFSHandler::RemoveFile("XRC_resource/dummy_file");
+        wxFSFile *f = fsys.OpenFile(wxT("memory:XRC_resource/dummy_file"));
+        wxMemoryFSHandler::RemoveFile(wxT("XRC_resource/dummy_file"));
         if (f) delete f;
         else wxFileSystem::AddHandler(new wxMemoryFSHandler);
     }
 
-    wxMemoryFSHandler::AddFile("XRC_resource/resource.cpp$resource.xrc", xml_res_file_0, xml_res_size_0);
-    wxXmlResource::Get()->Load("memory:XRC_resource/resource.cpp$resource.xrc");
+    wxMemoryFSHandler::AddFile(wxT("XRC_resource/resource.cpp$resource.xrc"), xml_res_file_0, xml_res_size_0);
+    wxXmlResource::Get()->Load(wxT("memory:XRC_resource/resource.cpp$resource.xrc"));
 }

@@ -1,4 +1,3 @@
-
 #include "wxinc.h"
 
 #include "wx\filename.h"
@@ -24,16 +23,13 @@
 #include "canvas.h"
 #include "tileset.h"
 #include "command.h"
+#include "misc.h"
 
 // Scripting!
 #include "scriptengine.h"
 #include "script.h"
 
 #define VERTICAL_FUN
-
-//
-const float MainWindow::_version = 0.20f;
-//
 
 namespace
 {
@@ -156,7 +152,7 @@ void MainWindow::ClearList(std::stack<::Command*>& list)
 }
 
 MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long style)
-    : wxFrame(0, -1, va("ikaMap version %0.2f", _version), position, size, style)
+    : wxFrame(0, -1, va("ikaMap version %s", IKA_VERSION), position, size, style)
     , _map(0)
     , _tileSet(0)
     , _curScript(0)
@@ -612,11 +608,12 @@ void MainWindow::OnEditMapProperties(wxCommandEvent&)
 
 void MainWindow::OnImportTiles(wxCommandEvent&)
 {
-    ImportTilesDlg dlg(this);
+    if (!_importTilesDlg)
+        _importTilesDlg = new ImportTilesDlg(this);
 
-    if (dlg.ShowModal(_tileSet->Width(), _tileSet->Height()) == wxID_OK)
+    if (_importTilesDlg->ShowModal(_tileSet->Width(), _tileSet->Height()) == wxID_OK)
     {
-        if (!dlg.append)
+        if (!_importTilesDlg->_append)
         {
             // This might start to get a bit RAM intensive.
 
@@ -624,12 +621,12 @@ void MainWindow::OnImportTiles(wxCommandEvent&)
 
             if (_tileSet->Count())  // if there are tiles to delete, delete them
                 commands.push_back(new DeleteTilesCommand(0, _tileSet->Count() - 1));   // One copy
-            commands.push_back(new ResizeTileSetCommand(dlg.width, dlg.height));        // Not much to store here, since there are no tiles to resize. (thus nothing to back up)
-            commands.push_back(new InsertTilesCommand(0, dlg.tiles));                   // copy of each tile to be inserted.
+            commands.push_back(new ResizeTileSetCommand(_importTilesDlg->_width, _importTilesDlg->_height));      // Not much to store here, since there are no tiles to resize. (thus nothing to back up)
+            commands.push_back(new InsertTilesCommand(0, _importTilesDlg->tiles));                   // copy of each tile to be inserted.
             HandleCommand(new CompositeCommand(commands));
         }
         else
-            HandleCommand(new InsertTilesCommand(_tileSet->Count(), dlg.tiles));
+            HandleCommand(new InsertTilesCommand(_tileSet->Count(), _importTilesDlg->tiles));
     }
 }
 
@@ -831,7 +828,7 @@ void MainWindow::UpdateTitle()
         _curMapName.length() ?  _curMapName :
                                 "Untitled Map";
 
-    SetTitle(va("ikaMap version %0.2f - [ %s ]", _version, name.c_str()));
+    SetTitle(va("ikaMap %s - [ %s ]", IKA_VERSION, name.c_str()));
 }
 
 void MainWindow::UpdateScriptMenu()

@@ -10,6 +10,8 @@
 #include "map.h"
 #include "misc.h"
 
+#include "log.h"
+
 BEGIN_EVENT_TABLE(LayerDlg, wxDialog)
     EVT_BUTTON(wxID_OK, LayerDlg::OnOk)
     EVT_BUTTON(XRCID("button_resize"), LayerDlg::OnResize)

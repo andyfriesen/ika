@@ -6,7 +6,7 @@
 
 #include "common/types.h"
 
-class CEngine;                                  // proto
+class Engine;                                  // proto
 class ScriptObject;
 struct Entity;
 
@@ -20,7 +20,7 @@ class ScriptEngine
 {
     static bool _inited;                        // used to assert that only one instance of this class is ever created.
 public:
-    void Init(CEngine* njin);                   // Passing the engine here is ungood.  sigh.
+    void Init(Engine* njin);                    // Passing the engine here is ungood.  sigh.
     void Shutdown();
 
     bool LoadSystemScripts(const std::string& fname);

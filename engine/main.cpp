@@ -5,13 +5,14 @@
 
 #include "main.h"
 
+#include "common/misc.h"
 #include "timer.h"
 #include "common/fileio.h"
 
 #include "opengl/Driver.h"
 //#include "soft32/Driver.h"
 
-void CEngine::Sys_Error(const char* errmsg)
+void Engine::Sys_Error(const char* errmsg)
 {
     CDEBUG("sys_error");
 
@@ -30,7 +31,7 @@ void CEngine::Sys_Error(const char* errmsg)
     exit(-1);
 }
 
-void CEngine::Script_Error()
+void Engine::Script_Error()
 {
     CDEBUG("script_error");
     Shutdown();
@@ -53,7 +54,7 @@ void CEngine::Script_Error()
     exit(-1);
 }
 
-void CEngine::CheckMessages()
+void Engine::CheckMessages()
 {
     CDEBUG("checkmessages");
 
@@ -90,7 +91,7 @@ void CEngine::CheckMessages()
     }
 }
 
-void CEngine::MainLoop()
+void Engine::MainLoop()
 {
     CDEBUG("mainloop");
     static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
@@ -115,7 +116,7 @@ void CEngine::MainLoop()
 
         int skipcount = 0;
 
-        for (int i = 0; (i < now - lasttick) && (++skipcount <= nFrameskip); i++)
+        for (int i = 0; (i < now - lasttick) && (++skipcount <= _frameSkip); i++)
         {
             GameTick();
         }
@@ -139,7 +140,7 @@ void CEngine::MainLoop()
     delete font;
 }
 
-void CEngine::Startup()
+void Engine::Startup()
 // TODO: Make a nice happy GUI thingie for making a user.cfg
 // This is ugly. :(
 {
@@ -149,7 +150,7 @@ void CEngine::Startup()
 
     // init a few values
     _showFramerate  = cfg.Int("showfps") != 0;
-    nFrameskip      = cfg.Int("frameskip");
+    _frameSkip      = cfg.Int("frameskip");
 
     // Now the tricky stuff.
     try
@@ -157,7 +158,7 @@ void CEngine::Startup()
         if (cfg.Int("log"))
             Log::Init("ika.log");
 
-        Log::Write("ika " VERSION " startup");
+        Log::Write("ika %s startup", IKA_VERSION);
         Log::Write("Built on " __DATE__);
         Log::Write("--------------------------");
 
@@ -187,9 +188,9 @@ void CEngine::Startup()
         }
 
 #if (!defined _DEBUG)
-        SDL_WM_SetCaption("ika " VERSION, 0);
+        SDL_WM_SetCaption(va("ika %s", IKA_VERSION), 0);
 #else
-        SDL_WM_SetCaption("ika " VERSION " (debug)", 0);
+        SDL_WM_SetCaption(va("ika %s (debug)", IKA_VERSION), 0);
 #endif
 
 #ifdef WIN32
@@ -228,13 +229,13 @@ void CEngine::Startup()
     if (!result)
         Script_Error();
 
-    if (!bMaploaded)
+    if (!_isMapLoaded)
         Sys_Error("");
 
     Log::Write("Startup complete");
 }
 
-void CEngine::Shutdown()
+void Engine::Shutdown()
 {
     CDEBUG("shutdown");
 
@@ -260,7 +261,7 @@ void CEngine::Shutdown()
 }
 
 
-void CEngine::RenderEntity(const Entity* e)
+void Engine::RenderEntity(const Entity* e)
 {
     const Sprite* const s = e->sprite;
     const Map::Layer* layer = map.GetLayer(e->layerIndex);
@@ -271,7 +272,7 @@ void CEngine::RenderEntity(const Entity* e)
     RenderEntity(e, x, y);
 }
 
-void CEngine::RenderEntity(const Entity* e, int x, int y)
+void Engine::RenderEntity(const Entity* e, int x, int y)
 {
     const Sprite* s = e->sprite;
 
@@ -295,7 +296,7 @@ namespace
     };
 };
 
-void CEngine::RenderEntities(uint layerIndex)
+void Engine::RenderEntities(uint layerIndex)
 {
     CDEBUG("renderentities");
 
@@ -344,7 +345,7 @@ void CEngine::RenderEntities(uint layerIndex)
     }
 }
 
-void CEngine::RenderLayer(uint layerIndex)
+void Engine::RenderLayer(uint layerIndex)
 {
     CDEBUG("renderlayer");
     int        lenX, lenY;        // x/y run length
@@ -411,12 +412,15 @@ void CEngine::RenderLayer(uint layerIndex)
     }
 }
 
-void CEngine::Render()
+void Engine::Render()
 {
     CDEBUG("render");
     const Point res = video->GetResolution();
 
-    if (!bMaploaded)    return;
+    if (_recurseStop)
+        Sys_Error("Calling Map.Render within a HookRetrace'd script is a Very, Very Bad Idea.  Don't do this!");
+
+    if (!_isMapLoaded)    return;
 
     tiles->UpdateAnimation(GetTime());
 
@@ -436,16 +440,22 @@ void CEngine::Render()
         RenderLayer(i);
         RenderEntities(i);
     }
+
+    _recurseStop = true;
     DoHook(_hookRetrace);
+    _recurseStop = false;
 }
 
 // redundant.  gah.
-void CEngine::Render(const std::vector<uint>& list)
+void Engine::Render(const std::vector<uint>& list)
 {
     CDEBUG("render");
     const Point res = video->GetResolution();
 
-    if (!bMaploaded)    return;
+    if (_recurseStop)
+        Sys_Error("Calling Map.Render within a HookRetrace'd script is a Very, Very Bad Idea.  Don't do this!");
+
+    if (!_isMapLoaded) return;
 
     tiles->UpdateAnimation(GetTime());
 
@@ -470,10 +480,12 @@ void CEngine::Render(const std::vector<uint>& list)
         }
     }
 
+    _recurseStop = true;
     DoHook(_hookRetrace);
+    _recurseStop = false;
 }
 
-void CEngine::DoHook(HookList& hooklist)
+void Engine::DoHook(HookList& hooklist)
 {
     hooklist.Flush(); // handle any pending insertions/deletions
 
@@ -485,7 +497,7 @@ void CEngine::DoHook(HookList& hooklist)
 
 // ----------------------------------------- AI -------------------------------------------------
 
-void CEngine::GameTick()
+void Engine::GameTick()
 {
     CDEBUG("gametick");
 
@@ -494,7 +506,7 @@ void CEngine::GameTick()
     ProcessEntities();
 }
 
-void CEngine::CheckKeyBindings()
+void Engine::CheckKeyBindings()
 {
     // This isn't really optimal, but I dunno if anybody will notice.
     // Pop whatever's on the top of the queue, and just handle that one.
@@ -510,7 +522,7 @@ void CEngine::CheckKeyBindings()
     }
 }
 
-void CEngine::ProcessEntities()
+void Engine::ProcessEntities()
 {
     for (EntityList::iterator curEnt = entities.begin(); curEnt != entities.end(); curEnt++)
     {
@@ -526,7 +538,7 @@ void CEngine::ProcessEntities()
 
 // --------------------------------------- Entity Handling --------------------------------------
 
-bool CEngine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
+bool Engine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
 // returns true if there is an obstructed map square anywhere along a specified vertical or horizontal line
 // Also TODO: think up a better obstruction system
 {
@@ -548,7 +560,7 @@ bool CEngine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
     return false;
 }
 
-Entity* CEngine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w, int h, uint layerIndex, bool wantobstructable)
+Entity* Engine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w, int h, uint layerIndex, bool wantobstructable)
 // returns the entity colliding with the specified entity, or 0 if none.
 // Note that passing 0 for ent is valid, indicating that you simply want to know if there are any entities in a given area
 {
@@ -574,7 +586,7 @@ Entity* CEngine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w,
 }
 
 // Warning: Brute force.
-Map::Layer::Zone* CEngine::TestZoneCollision(const Entity* ent)
+Map::Layer::Zone* Engine::TestZoneCollision(const Entity* ent)
 {
     Map::Layer* layer = map.GetLayer(ent->layerIndex);
 
@@ -601,7 +613,7 @@ Map::Layer::Zone* CEngine::TestZoneCollision(const Entity* ent)
     return 0;
 }
 
-void CEngine::TestActivate(const Entity* player)
+void Engine::TestActivate(const Entity* player)
 // checks to see if we're supposed to run some a script, due to the player's actions.
 // Thus far, that's one of two things.
 // 1) the player steps on a zone, or
@@ -664,7 +676,7 @@ void CEngine::TestActivate(const Entity* player)
     }
 }
 
-Entity* CEngine::SpawnEntity()
+Entity* Engine::SpawnEntity()
 {
     Entity* e = new Entity(this);
 
@@ -673,7 +685,7 @@ Entity* CEngine::SpawnEntity()
     return e;
 }
 
-void CEngine::DestroyEntity(Entity* e)
+void Engine::DestroyEntity(Entity* e)
 {
     for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
         if (e == (*i))
@@ -696,7 +708,7 @@ void CEngine::DestroyEntity(Entity* e)
 
 // --------------------------------- Misc (interface with old file formats, etc...) ----------------------
 
-void CEngine::LoadMap(const std::string& filename)
+void Engine::LoadMap(const std::string& filename)
 // Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure.
 {
     CDEBUG("loadmap");
@@ -732,7 +744,7 @@ void CEngine::LoadMap(const std::string& filename)
         }
 
         xwin = ywin = 0;                                                // just in case
-        bMaploaded = true;
+        _isMapLoaded = true;
 
         if (!script.LoadMapScripts(filename))
             Script_Error();
@@ -756,29 +768,30 @@ void CEngine::LoadMap(const std::string& filename)
     catch (...)                     {   Sys_Error(va("Unknown error loading map %s", filename.c_str()));    }
 }
 
-Point CEngine::GetCamera()
+Point Engine::GetCamera()
 {
     return Point(xwin, ywin);
 }
 
-void CEngine::SetCamera(Point p)
+void Engine::SetCamera(Point p)
 {
     Point res = video->GetResolution();
     xwin = max<int>(0, min<int>(p.x, map.width - res.x - 1));
     ywin = max<int>(0, min<int>(p.y, map.height - res.y - 1));
 }
 
-CEngine::CEngine()
+Engine::Engine()
     : tiles(0)
     , video(0)
     , pPlayer(0)
     , cameraTarget(0)
-    , bMaploaded(false)
+    , _isMapLoaded(false)
+    , _recurseStop(false)
 {}
 
 int main(int argc, char* args[])
 {
-    CEngine engine;
+    Engine engine;
     engine.Startup();
     engine.MainLoop();
     engine.Shutdown();

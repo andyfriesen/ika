@@ -13,7 +13,7 @@ using namespace Script;
 
 bool ScriptEngine::_inited = false;
 
-void ScriptEngine::Init(CEngine* njin)
+void ScriptEngine::Init(Engine* njin)
 {
     assert(!_inited);
     _inited = true;
@@ -142,12 +142,13 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
     if (!pFunc)
         return true; // No AutoExec?  No problem!
 
-    PyObject* args = PyTuple_New(0);
-    PyObject* result = PyEval_CallObject(pFunc, args);
-    Py_DECREF(args);
+    PyObject* result = PyEval_CallObject(pFunc, 0);
 
     if (!result)
-        Log::Write("Warning: Module %s had an AutoExec event, but it failed to execute.", sTemp.c_str());
+    {
+        PyErr_Print();
+        engine->Script_Error();
+    }
 
     Py_XDECREF(result);
 
