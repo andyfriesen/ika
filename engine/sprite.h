@@ -34,7 +34,8 @@ struct Sprite : RefCounted
     inline uint Width()  const { return nFramex; }
     inline uint Height() const { return nFramey; }
 
-    const std::string& Script(const std::string& name);
+    const std::map<std::string, std::string>& GetAllScripts() const;
+    const std::string& GetScript(const std::string& name);
     const std::string& GetIdleScript(Direction dir);
     const std::string& GetWalkScript(Direction dir);
 

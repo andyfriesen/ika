@@ -395,6 +395,37 @@ namespace Script
         return Py_None;
     }
 
+    METHOD(std_setrenderlist)
+    {
+        // Compile the arguments into a vector.
+        std::vector<uint> renderList(PyTuple_Size(args));
+        
+        for (uint i = 0; i < renderList.size(); i++)
+        {
+            PyObject* item = PyTuple_GetItem(args, i);
+            if (!PyInt_Check(item))
+            {
+                PyErr_SetString(PyExc_SyntaxError, "SetRenderList needs INTEGERS.");  return 0;
+            }
+
+            uint layerIndex = (uint)PyInt_AsLong(item);
+
+            if (layerIndex >= engine->map.NumLayers())
+            {   
+                PyErr_SetString(PyExc_RuntimeError, 
+                    va("SetRenderList: asked to render layer %i.  The map only has %i layers!", 
+                        layerIndex, engine->map.NumLayers())
+                    );
+                return 0;
+            }
+
+            renderList[i] = layerIndex;
+        }
+        engine->renderList = renderList;
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
     PyMethodDef standard_methods[] =
     {
         //  name  | function
@@ -524,6 +555,12 @@ namespace Script
             "UnhookTimer([function])\n\n"
             "Removes the function from the timer queue if it is present.  If not, the call does\n"
             "nothing.  If the argument is omitted, then the list is cleared in its entirety."
+        },
+
+        { "SetRenderList",  (PyCFunction)std_setrenderlist,     METH_VARARGS,
+            "SetRenderList(index, ...)\n\n"
+            "Sets the default rendering order used with Map.Render.  This can be useful for\n"
+            "hiding layers, or moving them up and down in the ordering."
         },
 
         {    0    }

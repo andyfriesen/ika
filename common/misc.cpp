@@ -8,7 +8,7 @@ look at misc.h :P
 #include <time.h>
 #include "misc.h"
 
-const char* IKA_VERSION = "0.58 uber-beta";
+const char* IKA_VERSION = "0.58";
 
 bool IsPowerOf2(uint i)
 {

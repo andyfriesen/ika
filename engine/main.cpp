@@ -448,36 +448,7 @@ void Engine::RenderLayer(uint layerIndex)
 
 void Engine::Render()
 {
-    CDEBUG("render");
-    const Point res = video->GetResolution();
-
-    if (_recurseStop)
-        Sys_Error("Calling Map.Render within a HookRetrace'd script is a Very, Very Bad Idea.  Don't do this!");
-
-    if (!_isMapLoaded)    return;
-
-    tiles->UpdateAnimation(GetTime());
-
-    if (cameraTarget)
-    {
-        const Map::Layer* layer = map.GetLayer(cameraTarget->layerIndex);
-
-        SetCamera(Point(
-            cameraTarget->x - res.x / 2 + layer->x,
-            cameraTarget->y - res.y / 2 + layer->y));
-    }
-
-    video->ClearScreen();
-
-    for (uint i = 0; i < map.NumLayers(); i++)
-    {
-        RenderLayer(i);
-        RenderEntities(i);
-    }
-
-    _recurseStop = true;
-    DoHook(_hookRetrace);
-    _recurseStop = false;
+    Render(renderList);
 }
 
 // redundant.  gah.
@@ -485,9 +456,6 @@ void Engine::Render(const std::vector<uint>& list)
 {
     CDEBUG("render");
     const Point res = video->GetResolution();
-
-    if (_recurseStop)
-        Sys_Error("Calling Map.Render within a HookRetrace'd script is a Very, Very Bad Idea.  Don't do this!");
 
     if (!_isMapLoaded) return;
 
@@ -514,9 +482,12 @@ void Engine::Render(const std::vector<uint>& list)
         }
     }
 
-    _recurseStop = true;
-    DoHook(_hookRetrace);
-    _recurseStop = false;
+    if (!_recurseStop)
+    {
+        _recurseStop = true;
+        DoHook(_hookRetrace);
+        _recurseStop = false;
+    }
 }
 
 void Engine::DoHook(HookList& hooklist)
@@ -776,6 +747,11 @@ void Engine::LoadMap(const std::string& filename)
         std::string oldTileSetName = map.tileSetName;
 
         if (!map.Load(filename)) throw filename;                        // actually load the map
+
+        // Reset the default render list.
+        renderList.clear();
+        for (uint i = 0; i < map.NumLayers(); i++)
+            renderList.push_back(i);
 
         // Only load the tileset if it's different
         if (map.tileSetName != oldTileSetName)

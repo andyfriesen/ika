@@ -18,6 +18,8 @@ ImportTilesDlg::ImportTilesDlg(wxWindow* parent)
     , _autoCount(true)
     , _numTiles(1)
     , _rowSize(18)
+    , _width(16)
+    , _height(16)
 {
     wxXmlResource::Get()->LoadDialog(this, parent, "dialog_importframes");
     XRCCTRL(*this, "panel_main", wxPanel)->GetSizer()->Fit(this);
@@ -32,8 +34,8 @@ int ImportTilesDlg::ShowModal()
 
 int ImportTilesDlg::ShowModal(uint width, uint height)
 {
-    _width = width;
-    _height = height;
+    _width = _defaultWidth = width;
+    _height = _defaultHeight = height;
 
     SetDefaultValues();
 

@@ -4,11 +4,12 @@
 #include "common/types.h"
 #include "common/map.h"
 #include "scriptobject.h"
+#include "animscript.h"
 
 /// Normal entity speed
 const int entspeed_normal = 100;
 
-class Engine;
+struct Engine;
 struct Sprite;
 
 /**
@@ -22,9 +23,13 @@ struct Sprite;
 
 struct Entity
 {
-    std::string curanimscript;                                      ///< a copy of the last frame animation script assigned to this entity
-    uint        animscriptofs;                                      ///< current offset in the current anim script
-    uint        animscriptct;                                       ///< delay counter
+    AnimScript  defaultAnim;                                        ///< Default animation script flow.
+    AnimScript  specAnim;                                           ///< "special" animation script (set from python)
+    bool        useSpecAnim;                                        ///< true if specAnim should be used instead of defaultAnim
+
+    //std::string curanimscript;                                      ///< a copy of the last frame animation script assigned to this entity
+    //uint        animscriptofs;                                      ///< current offset in the current anim script
+    //uint        animscriptct;                                       ///< delay counter
 
     int         x, y;                                               ///< coordinates of the entity
     uint        layerIndex;                                         ///< layer the entity inhabits

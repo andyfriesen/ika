@@ -13,7 +13,7 @@ namespace Ika {  // X11 fix
     struct Font;
 }
 struct Entity;
-class Engine;
+struct Engine;
 class Canvas;
 
 class Input;
@@ -189,6 +189,8 @@ namespace Script
         METHOD(Entity_DetectCollision, EntityObject);
         METHOD(Entity_Touches, EntityObject);
         METHOD(Entity_Draw, EntityObject);
+        METHOD(Entity_GetAnimScript, EntityObject);
+        METHOD(Entity_GetAllAnimScripts, EntityObject);
 
         void Init();
         PyObject* New(::Entity* ent);
@@ -424,6 +426,8 @@ namespace Script
     METHOD(std_unhookretrace, PyObject);
     METHOD(std_hooktimer, PyObject);
     METHOD(std_unhooktimer, PyObject);
+
+    METHOD(std_setrenderlist, PyObject);
 
     extern PyMethodDef standard_methods[];
 

@@ -6,7 +6,7 @@
 
 #include "common/types.h"
 
-class Engine;                                  // proto
+struct Engine;                                  // proto
 class ScriptObject;
 struct Entity;
 

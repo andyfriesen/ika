@@ -29,7 +29,7 @@
  *  This is the part that takes all the pieces, and whips them around as necessary.
  */
 
-class Engine
+struct Engine
 {
 
     // This sucks.
@@ -45,7 +45,7 @@ public:                                                                         
     
     CSpriteController               sprite;                                         ///< sprite files
     EntityList                      entities;                                       ///< entities
-public:
+
     Video::Driver*                  video;                                          ///< video. ;)
 
     bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
@@ -58,6 +58,7 @@ private:
 public:
     Entity*                         player;                                         ///< Points to the current player entity
     Entity*                         cameraTarget;                                   ///< Points to the current camera target
+    std::vector<uint>                renderList;                                    ///< List of layer indeces to draw by default.
     
     // Odds and ends
     HookList                        _hookRetrace;

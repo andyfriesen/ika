@@ -13,8 +13,7 @@ Entity::Entity(Engine* njin)
     , x                   (0)
     , y                   (0)
     , layerIndex          (0)
-    , animscriptofs       (0)
-    , animscriptct        (0)
+    , useSpecAnim         (false)
     , delayCount          (0)
     , speed               (entspeed_normal)
     , speedCount          (0)
@@ -36,8 +35,7 @@ Entity::Entity(Engine* njin)
 
 Entity::Entity(Engine* njin, const Map::Entity& e, uint _layerIndex)
     : engine(*njin)
-    , animscriptofs       (0)
-    , animscriptct        (0)
+    , useSpecAnim(false)
     , delayCount          (0)
     , x                   (e.x)
     , y                   (e.y)
@@ -80,48 +78,21 @@ static uint get_int(const std::string& s, uint& offset)
 
 void Entity::UpdateAnimation()
 {
-    if (animscriptct > 1)
-        animscriptct--;
-
+    if (useSpecAnim)
+        specAnim.update(1);
     else
-    {
-        char c;
-        if (curanimscript.length())                                     // is there a script at all?
-        {
-            do
-            {
-                c=curanimscript[animscriptofs++];                       // get the next char
-                if (animscriptofs >= curanimscript.length()) 
-                {
-                    animscriptofs = 0;  // wrap around                                  
-                    c = curanimscript[animscriptofs++];
-                }
-            } while (c == ' ');                                         // skip whitespace
-            
-            if (c >= 'a' && c <= 'z')       c ^= 32;                    // force uppercase
-            
-            switch(c)
-            {
-            case 'F': 
-                curFrame = get_int(curanimscript, animscriptofs);       // tee hee.  get_int also updates animscriptofs for us. :D
-                break;
-            case 'W': 
-                animscriptct += get_int(curanimscript, animscriptofs);
-                break;
-
-            default:
-                Log::Write("Entity::UpdateAnimation: unknown animation script command '%c'", c);
-                break;
-            }
-        }
-    }
+        defaultAnim.update(1);
+    if (specFrame != -1)
+        curFrame = -1;
+    else if (useSpecAnim)
+        curFrame = specAnim.getCurFrame();
+    else
+        curFrame = defaultAnim.getCurFrame();
 }
 
-void Entity::SetAnimScript(const std::string& newscript)
+void Entity::SetAnimScript(const std::string& newScript)
 {
-    curanimscript = newscript;
-    animscriptofs = 0;
-    animscriptct = 0;
+    defaultAnim = AnimScript(newScript);
     UpdateAnimation();                                                                  // and immediately update the frame
 }
 

@@ -51,7 +51,12 @@ Sprite::~Sprite()
         video->FreeImage(_frames[i]);
 }
 
-const std::string& Sprite::Script(const std::string& name)
+const std::map<std::string, std::string>& Sprite::GetAllScripts() const
+{
+    return _scripts;
+}
+
+const std::string& Sprite::GetScript(const std::string& name)
 {
     static std::string dummy;
 

@@ -62,6 +62,18 @@ namespace Script
                 "and the entity position."
             },
 
+            {   "GetAnimScript",    (PyCFunction)Entity_GetAnimScript,      METH_VARARGS,
+                "Entity.GetAnimScript(name ->str) -> str\n\n"
+                "Returns the animation script with the name given, for the entity's current\n"
+                "spriteset.  The empty string is returned if no such script exists."
+            },
+
+            {   "GetAllAnimScripts",    (PyCFunction)Entity_GetAllAnimScripts,  METH_VARARGS,
+                "Entity.GetAllAnimScripts() -> dict\n\n"
+                "Returns a dict containing all animation scripts defined in the entity's current\n"
+                "spriteset."
+            },
+
             {    0    },                        // end of list
         };
 
@@ -74,6 +86,17 @@ namespace Script
             GET(Direction)          { return PyInt_FromLong(self->ent->direction); }
             GET(CurFrame)           { return PyInt_FromLong(self->ent->curFrame); }
             GET(SpecFrame)          { return PyInt_FromLong(self->ent->specFrame); }
+            GET(SpecAnim)           
+            { 
+                if (self->ent->useSpecAnim)
+                    return PyString_FromString(self->ent->specAnim.toString().c_str()); 
+                else
+                {
+                    Py_INCREF(Py_None);
+                    return Py_None;
+                }
+            }
+
             GET(Visible)            { return PyInt_FromLong(self->ent->isVisible ? 1 : 0); }
             GET(Name)               { return PyString_FromString(self->ent->name.c_str()); }
             GET(MoveScript)
@@ -84,7 +107,7 @@ namespace Script
                 return o;
             }
 
-            GET(ActScript)          
+            GET(ActScript)
             { 
                 PyObject* o = (PyObject*)self->ent->activateScript.get();
                 if (!o) o = Py_None;
@@ -138,6 +161,18 @@ namespace Script
             }
 
             SET(SpecFrame)          { self->ent->specFrame = PyInt_AsLong(value); return 0; }
+            SET(SpecAnim)           
+            { 
+                if (value == Py_None)
+                    self->ent->useSpecAnim = false;
+                else
+                {
+                    self->ent->useSpecAnim = true;
+                    self->ent->specAnim = AnimScript(PyString_AsString(value)); 
+                }
+                return 0;
+            }
+
             SET(Visible)            { self->ent->isVisible = PyInt_AsLong(value)!=0 ; return 0; }
             SET(Name)               { self->ent->name = PyString_AsString(value); return 0; }
             SET(MoveScript)
@@ -186,7 +221,8 @@ namespace Script
             {   "speed",            (getter)getSpeed,               (setter)setSpeed,           "Gets or sets the entity's speed, in pixels/second" },
             {   "direction",        (getter)getDirection,           (setter)setDirection,       "Gets or sets the entity's direction"   },
             {   "curframe",         (getter)getCurFrame,            0,                          "Gets the entity's currently displayed frame"   },
-            {   "specframe",        (getter)getSpecFrame,           (setter)setSpecFrame,       "If nonzeno, this frame is displayed instead of the normal animation" },
+            {   "specframe",        (getter)getSpecFrame,           (setter)setSpecFrame,       "If not -1, this frame is displayed instead of the normal animation" },
+            {   "specanim",         (getter)getSpecAnim,            (setter)setSpecAnim,        "If not None, this animation strand is used instead of the normal animation scripts."   },
             {   "visible",          (getter)getVisible,             (setter)setVisible,         "If nonzero, the entity is drawn when onscreen" },
             {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
             {   "movescript",       (getter)getMoveScript,          (setter)setMoveScript,      "Gets or sets the entity's current move script."    },
@@ -409,6 +445,35 @@ namespace Script
 
             Py_INCREF(Py_None);
             return Py_None;
+        }
+
+        METHOD(Entity_GetAnimScript)
+        {
+            char* scriptName;
+
+            if (!PyArg_ParseTuple(args, "s:GetAnimScript", &scriptName))
+                return 0;
+
+            return PyString_FromString(self->ent->sprite->GetScript(scriptName).c_str());
+        }
+
+        METHOD(Entity_GetAllAnimScripts)
+        {
+            if (!PyArg_ParseTuple(args, ":GetAllAnimScripts"))
+                return 0;
+
+            PyObject* dict = PyDict_New();
+            const std::map<std::string, std::string>& scripts = self->ent->sprite->GetAllScripts();
+            
+            for (std::map<std::string, std::string>::const_iterator
+                iter = scripts.begin();
+                iter != scripts.end();
+                iter++)
+            {
+                PyDict_SetItemString(dict, iter->first.c_str(), PyString_FromString(iter->second.c_str()));
+            }
+
+            return dict;
         }
 
         /////////////////
