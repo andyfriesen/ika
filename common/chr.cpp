@@ -16,7 +16,7 @@ CPixelMatrix& CCHRfile::GetFrame(int nFrame) const
 {
     static CPixelMatrix dummy;
     
-    if (nFrame<0 || nFrame>=frame.size())
+    if (nFrame < 0 || nFrame >= frame.size())
         return dummy;
     
     return (CPixelMatrix&)frame[nFrame];

@@ -633,6 +633,8 @@ void CMapView::RenderInfoLayer(int lay)
             }
         }
     }
+
+    glColor4f(1,1,1,1);
 }
 
 void CMapView::RenderLayer(int lay)

@@ -25,7 +25,7 @@ CConfigDlg::CConfigDlg(wxWindow* parent,
              sFilename(name)
        
 {
-    LoadFromResource(parent,"ConfigDlg");
+    //LoadFromResource(parent,"ConfigDlg");
 
     pFullscreenbox  =(wxCheckBox*)wxFindWindowByName("fullscreen",this);
     pSoundbox       =(wxCheckBox*)wxFindWindowByName("enablesound",this);

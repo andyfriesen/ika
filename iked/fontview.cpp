@@ -205,16 +205,13 @@ void CFontView::OnSize(wxSizeEvent& event)
 
 void CFontView::OnScroll(wxScrollWinEvent& event)
 {
-    switch (event.m_eventType)
-    {
-    case wxEVT_SCROLLWIN_TOP:       ywin=0;                     break;
-    case wxEVT_SCROLLWIN_BOTTOM:    ywin=pFontfile->NumGlyphs();  break; 
-    case wxEVT_SCROLLWIN_LINEUP:    ywin--;                     break;
-    case wxEVT_SCROLLWIN_LINEDOWN:  ywin++;                     break;
-    case wxEVT_SCROLLWIN_PAGEUP:    ywin-=GetScrollThumb(wxVERTICAL);   break;
-    case wxEVT_SCROLLWIN_PAGEDOWN:  ywin+=GetScrollThumb(wxVERTICAL);   break;
-    default:                        ywin=event.GetPosition();   break;
-    };
+    if (event.m_eventType == wxEVT_SCROLLWIN_TOP)           ywin = 0;
+    else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM)   ywin = pFontfile->NumGlyphs();
+    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEUP)   ywin--;
+    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEDOWN) ywin++;
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEUP)   ywin -= GetScrollThumb(wxVERTICAL);
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEDOWN) ywin += GetScrollThumb(wxVERTICAL);
+    else                                                    ywin = event.GetPosition();
 
     UpdateScrollbar();
     Render();

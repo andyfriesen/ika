@@ -85,9 +85,9 @@ void CMovescriptEditor::UpdateDlg()
 {
     CCHRfile& chr=pSprite->GetCHR();
 
-    for (int i=0; i<movescript.size(); i++)
+    for (uint i = 0; i < movescript.size(); i++)
     {
-        wxTextCtrl* p=movescript[i];
+        wxTextCtrl* p = movescript[i];
         
         p->SetValue(chr.sMovescript[i].c_str());
     }
@@ -110,8 +110,8 @@ void CMovescriptEditor::UpdateData()
 {
     CCHRfile& chr=pSprite->GetCHR();
 
-    for (int i=0; i<movescript.size(); i++)
-        chr.sMovescript[i]=movescript[i]->GetValue().c_str();
+    for (uint i = 0; i < movescript.size(); i++)
+        chr.sMovescript[i] = movescript[i]->GetValue().c_str();
 
     
     chr.sDescription=pDesc->GetValue().c_str();

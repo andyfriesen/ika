@@ -15,24 +15,27 @@ namespace rho.MapEditor
             get {   return "Tiles"; }
         }
 
-        public override void MouseDown(MapView view,MouseEventArgs e)
+        public override void MouseDown(MapView view, MouseEventArgs e)
         {
             int x=e.X;
             int y=e.Y;
-            view.GetTileCoords(ref x,ref y,0);
+            view.GetTileCoords(ref x, ref y, 0);
 
-            view.Map.set_Tile(x,y,0,100);
+            view.Map.set_Tile(x, y, 0, 100);
+
+            //view.GetPixelCoords(ref x, ref y);
+            //view.Invalidate();//new Rectangle(x, y, view.TileSet.Width, view.TileSet.Height));
         }
         
-        public override void MouseUp(MapView view,MouseEventArgs e){}
-        public override void MouseWheel(MapView view,MouseEventArgs e){}
-        public override void MouseMove(MapView view,MouseEventArgs e)
+        public override void MouseUp(MapView view, MouseEventArgs e){}
+        public override void MouseWheel(MapView view, MouseEventArgs e){}
+        public override void MouseMove(MapView view, MouseEventArgs e)
         {
             if ((e.Button & MouseButtons.Left)!=0)
-                MouseDown(view,e);
+                MouseDown(view, e);
         }
 
-        public override void KeyDown(MapView view,KeyEventArgs e){}
-        public override void KeyUp(MapView view,KeyEventArgs e){}
+        public override void KeyDown(MapView view, KeyEventArgs e){}
+        public override void KeyUp(MapView view, KeyEventArgs e){}
     }
 }

@@ -85,16 +85,13 @@ void CTileSetView::OnSize(wxSizeEvent& event)
 
 void CTileSetView::OnScroll(wxScrollWinEvent& event)
 {
-    switch (event.m_eventType)
-    {
-    case wxEVT_SCROLLWIN_TOP:       ywin=0;                     break;
-    case wxEVT_SCROLLWIN_BOTTOM:    ywin=pTileset->Count();     break;  // guaranteed to be too big, so that the usual scroll handler will clip it
-    case wxEVT_SCROLLWIN_LINEUP:    ywin--;                     break;
-    case wxEVT_SCROLLWIN_LINEDOWN:  ywin++;                     break;
-    case wxEVT_SCROLLWIN_PAGEUP:    ywin-=GetScrollThumb(wxVERTICAL);   break;
-    case wxEVT_SCROLLWIN_PAGEDOWN:  ywin+=GetScrollThumb(wxVERTICAL);   break;
-    default:                        ywin=event.GetPosition();   break;
-    };
+    if (event.m_eventType == wxEVT_SCROLLWIN_TOP)           ywin=0;                     
+    else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM)   ywin=pTileset->Count();        // guaranteed to be too big, so that the usual scroll handler will clip it
+    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEUP)   ywin--;                     
+    else if (event.m_eventType == wxEVT_SCROLLWIN_LINEDOWN) ywin++;                     
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEUP)   ywin-=GetScrollThumb(wxVERTICAL);   
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEDOWN) ywin+=GetScrollThumb(wxVERTICAL);   
+    else                                                    ywin=event.GetPosition();
 
     UpdateScrollbar();
     Render();

@@ -64,48 +64,36 @@ enum MoveCode											// entity movecodes
 #pragma pack (push,1)
 
 //! A color. ;)
-struct RGBA
+union RGBA
 {
-    u8 r,g,b,a;
-    
+    struct {
+        u8 r, g, b, a;
+    };
+
+    uint i;
+
     RGBA()
-        : r(0),g(0),b(0),a(0)		{}
-    
-    RGBA(u8 ar,u8 ag,u8 ab,u8 aa=255)
-        : r(ar),g(ag),b(ab),a(aa) 	{}
-    
-    // convert from 16bpp
-    RGBA(u16 c)
+        : i(0)
+    {}
+
+    RGBA(u8 index, u8* palette)
     {
-        b=(c&31)<<3;
-        g=(c>>3)&0xFC;
-        r=(c>>8)&0xF8;
-        a=c?255:0;
-    }
-    
-    // conversion from 8bpp with palette
-    RGBA(u8 c,u8* pPal)
-    {
-        r=pPal[c*3  ]<<2;
-        g=pPal[c*3+1]<<2;
-        b=pPal[c*3+2]<<2;
-        a=c?255:0;
+        int i = index * 3;
+        r = palette[i++] << 2;
+        g = palette[i++] << 2;
+        b = palette[i]   << 2;
+        a = index ? 255 : 0;
     }
 
-    RGBA(u32 c)
-    {
-        // not endian independant
-        a=c>>24;
-        r=(c>>16)&255;
-        g=(c>>8)&255;
-        b=c&255;
-    }
-    
-    inline operator u32() const
-    {
-        return *(u32*)this;
-    }
-    //	RGBA(const BGRA& c);
+    RGBA(uint bleagh) 
+        : i(bleagh)
+    {}
+
+    RGBA(u8 _r, u8 _g, u8 _b, u8 _a = 255)
+        : r(_r), g(_g), b(_b), a(_a)
+    {}
+
+    operator u32() { return i; }
 };
 
 //! Also a colour.

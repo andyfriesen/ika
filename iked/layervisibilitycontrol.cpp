@@ -13,7 +13,7 @@ BEGIN_EVENT_TABLE(CLayerVisibilityControl,wxCheckListBox)
 END_EVENT_TABLE()
 
 CLayerVisibilityControl::CLayerVisibilityControl(wxWindow* parent,int id,CMapView* mapview)
-: wxCheckListBox(parent,id), pMapview(mapview)
+    : wxCheckListBox(parent,id), pMapview(mapview)
 {}
 
 void CLayerVisibilityControl::AppendItem(const std::string& name,int idx)
@@ -25,9 +25,9 @@ void CLayerVisibilityControl::AppendItem(const std::string& name,int idx)
 
 void CLayerVisibilityControl::CheckItem(int idx)
 {
-    for (int i=0; i<layidx.size(); i++)
+    for (uint i = 0; i < layidx.size(); i++)
     {
-        if (layidx[i]==idx)
+        if (layidx[i] == idx)
         {
             Check(i);
             return;
@@ -43,7 +43,7 @@ void CLayerVisibilityControl::OnEndDrag(wxListEvent& event)
 {
 }
 
-void CLayerVisibilityControl::OnItemSelected(wxListEvent& event)
+void CLayerVisibilityControl::OnItemSelected(wxCommandEvent& event)
 {
     pMapview->OnLayerChange( layidx[event.GetInt()] );
 }

@@ -23,7 +23,7 @@ public:
 
     void OnDrag(wxListEvent& event);
     void OnEndDrag(wxListEvent& event);
-    void OnItemSelected(wxListEvent& event);
+    void OnItemSelected(wxCommandEvent& event);
     void OnKeyDown(wxListEvent& event);
     void OnItemChecked(wxCommandEvent& event);
 

@@ -11,6 +11,9 @@ using rho.Controls;
 namespace rho.MapEditor
 {
 
+    /// <summary>
+    /// The form where the map is displayed.
+    /// </summary>
     class MapView : Form, IDocView
     {
         /// <summary>
@@ -32,7 +35,7 @@ namespace rho.MapEditor
                 // Check the menuitem just selected.  Uncheck all others.
                 Menu menu=((MenuItem)o).Parent;
                 foreach (MenuItem m in menu.MenuItems)
-                    m.Checked=(m == o);
+                    m.Checked = (m == o);
             }
 
             public EventProxy(MapView mv, State s)
@@ -48,15 +51,18 @@ namespace rho.MapEditor
         MainForm parent;
         string filename;
 	
-        StatusBar  statusbar;
-        GraphView  gfx;
-        ListView   layercontrol;
-        MainMenu   menu;
-        protected MenuItem       statemenu;
+        StatusBar   statusbar;
+        GraphView   gfx;
+        ListView    layercontrol;
+        MainMenu    menu;
+        MenuItem    statemenu;
 
         State     state;
 
-        object[][] states;
+        static readonly object[][] states = 
+            {
+                new object[]    {   "&Tiles",   new TileSetState()  },
+            };
 
         #region Menu Initialization
         private void InitMenu()
@@ -131,23 +137,15 @@ namespace rho.MapEditor
         }
         #endregion
 
-        // What a mess. -_-;
         private void Init(MainForm p, Map m, TileSet t)
         {
-            // When we add a new map editor state, just add another entry here.
-            // I have a handy dandy loop that converts this to menu items. :D
-            states = new object[][]
-            {
-                new object[]    {   "&Tiles",   new TileSetState()  },
-            };
-
             InitControls();
             InitMenu();
 
             parent = p;
             map = m;
             tiles = t;
-		
+
             xwin = ywin = 0;
 		
             state = new TileSetState();
@@ -191,6 +189,11 @@ namespace rho.MapEditor
             gfx.PageSize = ClientSize;
         }
 	
+        public void InvalidateMapRect(Rectangle r)
+        {
+            gfx.Invalidate(r);
+        }
+
         void OnHScroll(object o, ScrollEventArgs e)
         {
             if (e.Type == ScrollEventType.EndScroll)
@@ -331,11 +334,8 @@ namespace rho.MapEditor
                     ywin = map.Width*tiles.Width - gfx.ClientSize.Width;        }
         }
 
-        public Map Map
-        {
-            get {   return map; }
-        }
-
+        public Map Map          {   get {   return map;     }   }
+        public TileSet TileSet  {   get {   return tiles;   }   }
 
         public void Save()
         {

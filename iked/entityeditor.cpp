@@ -95,7 +95,7 @@ void CEntityEditor::InitControls()
 
 #else
     // I REALLY REALLY REALLY wish this worked. ;)
-    LoadFromResource((wxWindow*)parent,"dialog1");
+    //LoadFromResource((wxWindow*)parent,"dialog1");
     pEntlist=(wxListBox*)wxFindWindowByName("EntList",this);    
 #endif
 }
