@@ -21,17 +21,11 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
 :   wxGLCanvas(parent,(wxGLCanvas*)0)
 {
     int w,h;
-    GetSize(&w,&h);
+    GetClientSize(&w,&h);
 
     Show();
 
     SetCurrent();
-    glMatrixMode(GL_PROJECTION);
-    glLoadIdentity();
-
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-
     glClearColor(0,0,0,0);
     glClearDepth(1);
 
@@ -43,7 +37,6 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
 
-//    glViewport(0,0,w,h);
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0f,w,h,0.0f,-1.0f,1.0f);

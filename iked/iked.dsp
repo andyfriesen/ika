@@ -138,10 +138,6 @@ SOURCE=.\configdlg.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\common\graph.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\graph.h
 # End Source File
 # Begin Source File
@@ -260,5 +256,113 @@ SOURCE=.\resource.h
 SOURCE=.\vsp.ico
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\wx\msw\blank.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\bullseye.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\cdrom.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\colours.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\computer.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\cross.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\csquery.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\disable.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\drive.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\file1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\floppy.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\folder1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\folder2.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\hand.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\magnif1.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\noentry.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\pbrush.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\pencil.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\pntleft.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\pntright.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\query.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\removble.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\roller.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\size.cur
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\tick.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\tip.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\watch1.cur
+# End Source File
 # End Target
 # End Project

@@ -14,6 +14,7 @@ public:
 
     void OnPaint();
     void OnErase(wxEraseEvent&) {}
+    void OnSize(wxSizeEvent& event);
 
     DECLARE_EVENT_TABLE()
 };
