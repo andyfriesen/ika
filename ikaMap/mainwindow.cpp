@@ -1,6 +1,8 @@
 
 #include "wxinc.h"
 
+#include "wx\filename.h"
+
 #include <vector>
 #include <sstream>
 
@@ -495,13 +497,17 @@ void MainWindow::OnLoadTileSet(wxCommandEvent&)
         TileSet* ts = new TileSet();
         try
         {
-            bool result = ts->Load(dlg.GetPath().c_str());
+            wxFileName fName(dlg.GetPath());
+            if (fName.IsAbsolute())
+                fName.MakeRelativeTo();
+
+            bool result = ts->Load(fName.GetFullPath().c_str());
             if (!result)    throw std::runtime_error(va("%s does not appear to be a valid tileset", dlg.GetFilename().c_str()));;
 
             // FIXME: paths aren't taken into consideration here.
             // Need to make sure that the tileset name is always relative to the map's position.  Sprites should be the same.
 
-            HandleCommand(new ChangeTileSetCommand(ts, dlg.GetPath().c_str()));
+            HandleCommand(new ChangeTileSetCommand(ts, fName.GetFullPath().c_str()));
         }
         catch (std::runtime_error err)
         {

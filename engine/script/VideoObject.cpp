@@ -294,6 +294,10 @@ namespace Script
 
         METHOD(Video_ClipScreen)
         {
+            const char* keywords[] = {
+                "left", "top", "right", "bottom"
+            };
+
             Point p = self->video->GetResolution();
 
             int left = 0;
