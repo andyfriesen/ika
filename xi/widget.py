@@ -32,7 +32,15 @@ def SetDefaultWindow(wnd):
 
 class Widget(object):
     "Basic widget interface."
-    __slots__ = ['x', 'y', 'width', 'height', 'border']
+    
+    __slots__ = [
+        'x',        #
+        'y',        # Location of the widget, relative to its parent
+        'width',    #
+        'height',   # Size of the widget
+        'border'    # How much breathing room to give the widget.  Only used for the Dock functions.
+        ]
+    
     def __init__(_, x = 0, y = 0, width = 0, height = 0):
         _.x = x
         _.y = y
@@ -90,7 +98,11 @@ class Widget(object):
 
 class Frame(Widget):
     "Base frame class.  A window, with things in it."
-    __slots__ = Widget.__slots__ + [ 'wnd', 'widgets' ]
+
+    __slots__ = Widget.__slots__ + [
+        'wnd',      # The windowstyle to draw for this frame
+        'widgets'   # List of child widgets
+        ]
     
     def __init__(_, wnd = None, x = 0, y = 0, width = 0, height = 0):
         Widget.__init__(_, x, y, width, height)
@@ -120,32 +132,49 @@ class Frame(Widget):
 
 class TextFrame(Frame):
     "A frame with a simple text widget.  Nothing else."
-    __slots__ = Frame.__slots__ + [ '_TextFrame__text', 'text' ]
+
+    __slots__ = Frame.__slots__ + [
+        'label'     # The TextLabel attached to this frame
+        ]
     
     def __init__(_, wnd = None, x = 0, y = 0, width = 0, height = 0):
         Frame.__init__(_, wnd, x, y, width, height)
-        _.__text = TextLabel()
-        _.widgets.append(_.__text)
-        _.text = _.__text.text
+        _.label = TextLabel()
+        _.widgets.append(_.label)
+
+    def get_Text(_):
+        return _.label.Text
+
+    def set_Text(_, *value):
+        _.label.Clear()
+        _.label.AddText(list(value))
+
+    Text = property(get_Text, set_Text)        
 
     def Clear(_):
-        _.__text.Clear()
-        _.__text.width, _.__text.height = 0, 0
+        _.label.Clear()
+        _.label.Size = (0, 0)
 
     def AddText(_, args):
-        _.__text.AddText(args)
-        _.Size = _.__text.Size
+        _.label.AddText(args)
+        _.Size = _.label.Size
         
     def AutoSize(_):
-        _.__text.AutoSize()
-        _.Size = _.__text.Size
+        _.label.AutoSize()
+        _.Size = _.label.Size
 
-    Text = property(lambda _: _.__text.Text)
+    Text = property(lambda _: _.label.Text)
     
 
 class TextLabel(Widget):
     'Textlabels hold one or more lines of text.'
-    __slots__ = Widget.__slots__ + [ 'font', 'ypage', 'ymax', 'text', 'PrintString' ]
+    __slots__ = Widget.__slots__ + [
+        'font',         # The font used to draw the text
+        'ypage',        # Position of the viewport within the text list, if there is more text here than can be seen at once.
+        'ymax',         # If nonzero, the bottom-line maximum height this label can reach.
+        'text',         # The text itself.  Stored as a list of strings; one line per element.
+        'PrintString'   # The method used to draw the text.  Typically for internal use only.
+        ]
 
     def __init__(_, font = defaultfont, *text):
         Widget.__init__(_)
@@ -159,11 +188,7 @@ class TextLabel(Widget):
 
         _.LeftJustify()
 
-    def __len__(_):
-        return len(_.text)
-
-    def __nonzero__(_):
-        return True
+    Length = property(lambda _: len(_.text))
 
     def LeftJustify(_):
         _.PrintString = _.font.Print
@@ -221,13 +246,17 @@ class TextLabel(Widget):
         _.ymax = value
         _.AutoSize()
 
-    YPage = property( lambda _: _.ypage, set_YPage )
-    YMax = property( lambda _: _.ymax, set_YMax )
+    YPage = property(lambda _: _.ypage, set_YPage)
+    YMax = property(lambda _: _.ymax, set_YMax)
     Text = property(lambda _: _.text)
 
 class ColumnedTextLabel(Widget):
     'A text label that holds one or more columns of text.  Columns stay lined up.'
-    __slots__ = Widget.__slots__ + [ 'font', 'columns', 'columngap' ]
+    __slots__ = Widget.__slots__ + [
+        'font',
+        'columns',
+        'columngap'
+        ]
 
     #-------------------
     class Row(object):
@@ -252,11 +281,7 @@ class ColumnedTextLabel(Widget):
         for i in range(columns):
             _.columns.append(TextLabel(font))
 
-    def __len__(_):
-        return len(_.columns[0])
-
-    def __nonzero__(_):
-        return True
+    Length = property(lambda _: _.columns[0].Length)
 
     def LeftJustify(_):
         for c in _.columns:
@@ -308,8 +333,8 @@ class ColumnedTextLabel(Widget):
 
         _.AutoSize()            
 
-    YPage = property( lambda _: _.columns[0].YPage, set_YPage )
-    YMax = property( lambda _: _.columns[0].maxy, set_YMax )
+    YPage = property(lambda _: _.columns[0].YPage, set_YPage)
+    YMax = property(lambda _: _.columns[0].maxy, set_YMax)
 
 '''class ColumnedTextLabel(Widget):
     'A text label that holds one or more columns of text.  Columns stay lined up.'
@@ -360,7 +385,9 @@ class ColumnedTextLabel(Widget):
 
 class Bitmap(Widget):
     "Bitmap widgets are images."
-    __slots__ = Widget.__slots__ + [ 'img' ]
+    __slots__ = Widget.__slots__ + [
+        'img'   # The image drawn within this bitmap
+        ]
     
     def __init__(_, img = None):
         Widget.__init__(_)

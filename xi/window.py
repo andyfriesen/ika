@@ -10,17 +10,23 @@
 
 import ika
 
-i = 0
-
 class Window(object):
-    __slots__ = [ 'iLeft', 'iRight', 'iTop', 'iBottom', 'iTopleft', 'iTopright', 'iBottomleft', 'iBottomright', 'iCentre', 'borderwidth', 'Blit' ]
+    __slots__ = [
+        'iLeft',            # Left edge of the window
+        'iRight',           # Right edge
+        'iTop',             # Top edge
+        'iBottom',          # Bottom edge
+        'iTopleft',         # Top left corner
+        'iTopright',        # Top right corner
+        'iBottomleft',      # Bottom left corner
+        'iBottomright',     # Bottom right corner
+        'iCentre',          # Center area
+        'Blit'              # Blitting function used to draw the edges and centre area.  For internal use only.
+        ]
     def __init__(_, srcimage, bordersize, stretch = 0):
         def ss(x, y, w, h):
-            global i
-            
             c = ika.Canvas(w, h)
             srcimage.Blit(c, -x, -y)
-            i += 1
             return ika.Image(c)
 
         if isinstance(srcimage, str):
@@ -66,29 +72,38 @@ class Window(object):
 
         _.Blit(_.iCentre, x1, y1, x2 - x1, y2 - y1)    
 
-    """Left   = property( lambda _: _.iLeft.width )
+    Left   = property( lambda _: _.iLeft.width )
     Right  = property( lambda _: _.iRight.width )
     Top    = property( lambda _: _.iTop.height )
-    Bottom = property( lambda _: _.iBottom.height )"""
-    Left = Right = property( lambda _: _.iLeft.width )
-    Top = Bottom = property( lambda _: _.iTop.height )
+    Bottom = property( lambda _: _.iBottom.height )
+    #Left = Right = property( lambda _: _.iLeft.width )
+    #Top = Bottom = property( lambda _: _.iTop.height )
 
 
 #--------------------------------------------------------------------
 
 class SimpleWindow(object):
+    __slots__ = [
+        'border',       # Colour of the border
+        'bg'            # Colour of the background
+        ]
+    
     def __init__(_, bordercolour = ika.RGB(0, 0, 0), backgroundcolour = ika.RGB(0, 0, 255)):
-        _.__border = bordercolour
-        _.__bg = backgroundcolour
-        _.Top = _.Bottom = _.Left = _.Right = 1 # border size
+        _.border = bordercolour
+        _.bg = backgroundcolour
 
     def Draw(_, x1, y1, x2, y2):
         ika.Video.DrawRect(x1, y1, x2, y2, _.__bg, True)
         ika.Video.DrawRect(x1, y1, x2, y2, _.__border, False)
 
+    Top = Bottom = Left = Right = property(lambda a: 1)
+    
+
 #--------------------------------------------------------------------
 
 class GradientWindow(object):
+    __slots__ = ['c1', 'c2', 'c3', 'c4'] # Colour of each corner of the window
+    
     def __init__(_, c1, c2, c3, c4):
         _.c1 = c1
         _.c2 = c2

@@ -38,29 +38,33 @@ class EquipMenu(object):
         _.description = widget.TextFrame()
         _.description.AddText('')
 
-    CurChar = property(lambda _: party.party[_.charidx])        
+    CurChar = property(lambda _: party.party[_.charidx])
+
+    def CurEquipType(_):
+        return _.CurChar.equip[_.equipwindow.CursorPos].type
 
     def StartShow(_):
+        _.charidx = 0
         _.Refresh(_.CurChar)
-        
+
         trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
         trans.AddWindowReverse(_.statwindow, (ika.Video.xres, _.statwindow.y))
         trans.AddWindowReverse(_.description, (_.description.x, -_.description.height))
-        trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
         trans.AddWindowReverse(_.itemlist, (_.itemlist.x, ika.Video.yres))
-        
+        trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
+
     def StartHide(_):
         trans.AddWindow(_.portraitwindow, (ika.Video.xres, _.portraitwindow.y), remove = True)
         trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
         trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True)
-        trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)
         trans.AddWindow(_.itemlist, (_.itemlist.x, ika.Video.yres), remove = True)
+        trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)
 
     def Refresh(_, char):
         for x in (_.equipwindow, _.portraitwindow, _.statwindow):
             x.Refresh(char)
 
-        _.itemlist.Refresh(lambda i: char.CanEquip(i.name))
+        _.itemlist.Refresh(lambda i: char.CanEquip(i.name) and i.equiptype == _.CurEquipType())
 
         # Layout
         _.portraitwindow.DockTop().DockLeft()
@@ -87,11 +91,15 @@ class EquipMenu(object):
             _.charidx += 1
             _.Refresh(_.CurChar)
 
+        eqtype = _.CurEquipType()
         result = _.equipwindow.Update()
+        eqtype2 = _.CurEquipType()
+        # rehighlight the item list so that items that this character can equip in this slot are highlighted.
+        if eqtype != eqtype2:
+            _.itemlist.Rehighlight(lambda i: char.CanEquip(i.name) and i.equiptype == eqtype2)
 
-        #k = item.equiptypes[_.equipwindow.CursorPos]
         i = char.equip[_.equipwindow.CursorPos].item
-        _.description.text[0] = i and i.desc or ''
+        _.description.Text[0] = i and i.desc or ''
 
         if result == -1 or result == None:
             return result
@@ -106,7 +114,7 @@ class EquipMenu(object):
         result = _.itemlist.Update()
 
         i = party.inv[_.itemlist.CursorPos].item
-        _.description.text[0] = i and i.desc or ''
+        _.description.Text[0] = i and i.desc or ''
 
         if result == None:
             return None
@@ -129,9 +137,6 @@ class EquipMenu(object):
         return None
 
     def Execute(_):
-        _.charidx = 0
-        _.Refresh(party.party[_.charidx])
-
         _.state = _.UpdateEquipWindow
 
         while True:

@@ -16,10 +16,13 @@ import menu
 import party
 from combatmenus import *
 
-'''
-Hurray for pcode that was initially pcode but turned into actual python.  :D
+def distance(x1, y1, x2, y2):
+    return math.sqrt((x1 - x2) ** 2 + (y1 - y2) ** 2)
 
-globals/instance data: (depending on whether you want to look at the combat system as procedural or a singleton)'''
+#Hurray for pcode that was initially pcode but turned into actual python.  :D
+
+#globals/instance data: (depending on whether you want to look at the combat system as procedural or a singleton)
+
 activemenu = None # The menu thing that the player currently has to deal with, or None.  (this needs to be explained in more detail)
 actors  = [] # All battle participants.
 players = [] # All actors under direct control of the player.
@@ -64,7 +67,7 @@ class PlayerActor(Actor):
         _.char = char
         _.ent = _.char.ent
         _.status = []
-        _.Update = _.DoNothing().next
+        _.Update = lambda: None
 
         if _.ent is None:
             _.ent = ika.Entity(0,0,'charles.chr')
@@ -83,10 +86,6 @@ class PlayerActor(Actor):
             'atk' : _.char.atk,
             'def' : _.char.Def
         }
-
-    def DoNothing(_):
-        while True:
-            yield None
     
     def set_HP(_, val):
         _.char.HP = clamp(val, 0, _.char.maxHP)
@@ -99,6 +98,40 @@ class PlayerActor(Actor):
     Stats = property(lambda _ : _.stats, doc = "The actor's statistics.  (strength etc)")
     Status = property(lambda _: _.status, doc = 'A list of status effects (strings) currently afflicting the actor')
     Ent = property(lambda _: _.ent, doc = 'The entity associated with the actor.')
+
+    # Commands
+    def Attack(_, target):
+        RANGE = 32 # constant for now
+        ent = target.ent
+
+        while True:
+            dist = distance(_.ent.x, _.ent.y, ent.x, ent.y)
+
+            if dist > RANGE:
+                if _.ent.x > ent.x:
+                    _.ent.x -= 1
+                elif _.ent.x < ent.x:
+                    _.ent.x += 1
+                elif _.ent.y > ent.y:
+                    _.ent.y -= 1
+                else:
+                    _.ent.y += 1
+                # animate
+                yield None
+            else:
+                break
+
+        # damage!
+        i = 0
+        while i < 100:
+            i += 1
+            yield None
+            
+        _.Update = lambda: None
+        yield None
+
+class MonsterActor(Actor):
+    pass
 
 def MainLoop():
     global actors, activemenu
@@ -116,10 +149,10 @@ def MainLoop():
             if result is not None:
                 return
                 
-        ika.map.Render()
+        ika.Map.Render()
         trans.Draw()
         ika.Video.ShowPage()
-        ika.input.Update()       
+        ika.Input.Update()
 
 def Battle(*args):
     global actors, players, enemies
@@ -131,3 +164,4 @@ def Battle(*args):
         players.append(p)
        
     MainLoop()
+

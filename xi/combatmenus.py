@@ -70,6 +70,7 @@ class MainMenu(Menu):
         yield None
         
     def Hide(_):
+        trans.Reset()
         trans.AddWindow(_, (_.x, -_.height), remove = True)
         trans.AddWindow(_.statwindow, (ika.Video.xres, ika.Video.yres), remove = True)
         

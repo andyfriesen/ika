@@ -34,6 +34,7 @@ class ItemDatabase(StatelessProxy):
     def Init(self, filename, fieldeffects = None, battleeffects = None):
         def ParseItem(f):
             i = item.Item()
+            stats = i.stats
                 
             i.name = f.GetLine()
             
@@ -69,19 +70,19 @@ class ItemDatabase(StatelessProxy):
                 elif t == 'fieldeffect':    i.fieldeffect  = fieldeffects.__dict__[f.Next()]
                 elif t == 'battleeffect':   i.battleeffect = battleeffects.__dict__[f.Next()]
 
-                #elif t == 'hp':       i.hp = int(f.Next())
-                #elif t == 'mp':       i.mp = int(f.Next())
-                elif t == 'atk':      i.atk = int(f.Next())
-                elif t == 'def':      i.Def = int(f.Next())
-                elif t == 'hit':      i.hit = int(f.Next())
-                elif t == 'eva':      i.eva = int(f.Next())
+                elif t == 'hp':             stats.hp = stats.maxhp = int(f.Next())
+                elif t == 'mp':             stats.mp = stats.maxmp = int(f.Next())
+                elif t == 'atk':            stats.atk = int(f.Next())
+                elif t == 'grd':            stats.grd = int(f.Next())
+                elif t == 'hit':            stats.hit = int(f.Next())
+                elif t == 'eva':            stats.eva = int(f.Next())
 
-                elif t == 'str':      i.str = int(f.Next())
-                elif t == 'vit':      i.vit = int(f.Next())
-                elif t == 'mag':      i.mag = int(f.Next())
-                elif t == 'wil':      i.wil = int(f.Next())
-                elif t == 'spd':      i.spd = int(f.Next())
-                elif t == 'luk':      i.luk = int(f.Next())
+                elif t == 'str':            stats.str = int(f.Next())
+                elif t == 'vit':            stats.vit = int(f.Next())
+                elif t == 'mag':            stats.mag = int(f.Next())
+                elif t == 'wil':            stats.wil = int(f.Next())
+                elif t == 'spd':            stats.spd = int(f.Next())
+                elif t == 'luk':            stats.luk = int(f.Next())
                 elif t == 'end':
                     break
                 else:

@@ -13,7 +13,7 @@ class TokenStream:
         f = open(filename, 'rt')
         _.text = f.read()
         _.curpos = 0
-        _.delimiters = ' \t\n\0'
+        _.delimiters = ' \t\n\r\0'
         f.close()
 
     def EOF(_):
@@ -31,15 +31,15 @@ class TokenStream:
         return c
 
     def WhiteSpace(_):
-        while 1:
+        while not _.EOF():
             c = _.text[_.curpos]
 
             # comment skipper
             if c == '#':
-                while _.text[_.curpos] != '\n' and not _.EOF():
+                while not _.EOF() and _.text[_.curpos] != '\n':
                     _.curpos += 1
                 continue
-                    
+
             if not c in _.delimiters:
                 return
 
@@ -49,13 +49,15 @@ class TokenStream:
         _.WhiteSpace()
 
         s = ''
-        while 1:
+        while not _.EOF():
             c = _.GetChar()
 
             if c in _.delimiters:
-                return s
+                break
 
-            s = s + c
+            s += c
+            
+        return s
 
     def GetLine(_):
         _.WhiteSpace()

@@ -1,10 +1,13 @@
 import ika
 
 class Cursor(object):
-    def __init__(self, font):
-        self.font = font
+    def __init__(_, font):
+        _.font = font
 
-    def Draw(self,x ,y ,dest = None):
-        self.font.Print(x, y, '>')
+    def Draw(_,x ,y ,dest = None):
+        _.font.Print(x, y, '>')
 
-    HotSpot = property(lambda self: (self.font.width, self.font.height / 2)) # read only
+    Width   = property(lambda _: _.font.StringWidth('>'))
+    Height  = property(lambda _: _.font.height)
+    Size    = property(lambda _: (_.Width, _.Height))
+    HotSpot = property(lambda _: (_.font.width, _.font.height / 2)) # read only

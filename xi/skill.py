@@ -14,7 +14,19 @@ from skilldatabase import SkillDatabase
 types = [ 'attack', 'defense', 'energy', 'resist', 'recovery', 'automatic' ]
 
 class Skill(object):
-    __slots__ = [ 'type', 'name', 'desc', 'leadsto', 'basic', 'minlevel', 'mp', 'fieldeffect', 'battleeffect', 'useby' ]
+    __slots__ = [
+        'type',         # the category to stuff the skill into.  One of the above.
+        'name',         # name of the skill
+        'desc',         # a brief description of the skill
+        'leadsto',      # skills that can be learned by using this one
+        'basic',        # if true, the skill has no pre-requisite skills
+        'minlevel',     # The minimum level required to be able to learn this skill
+        'mp',           # MP required to use this skill
+        'fieldeffect',  # Function to call when the skill is used on the field 
+        'battleeffect', # Function called when the skill is used in battle
+        'useby'         # List of names of people who can use this skill
+        ]
+    
     def __init__(self):
         type = 'none'
 
@@ -23,7 +35,7 @@ class Skill(object):
 
         self.leadsto = []
 
-        self.basic = 0
+        self.basic = False
 
         self.fieldeffect = None
         self.battleeffect = None
@@ -87,6 +99,6 @@ class SkillList(object):
 
         i = self.Find(skillname)
         if i is not None:
-            self.skills.remove(i)    # just remove the skill altogeather
+            self.skills.remove(i)
 
     #--------------------------------------------

@@ -13,6 +13,7 @@ import token
 from exception import XiException
 from item import *
 from skill import *
+from statset import *
 from itemdatabase import ItemDatabase
 from skilldatabase import SkillDatabase
 import party
@@ -22,92 +23,110 @@ skilldb = SkillDatabase()
 
 class _EquipSlot(object):
     __slots__ = ['type', 'item']
-    def __init__(self, type, item = None):
-        self.type = type
-        self.item = item
+    def __init__(_, type, item = None):
+        _.type = type
+        _.item = item
     
-    def __str__(self):
-        return self.type + '\t' + self.item.name
+    def __str__(_):
+        return _.type + '\t' + _.item.name
         
-    def __repr__(self):
-        return self.__str__()
+    def __repr__(_):
+        return _.__str__()
 
 class Character(object):
+
+    __slots__ = [
+        'datfilename',
+        'name',
+        'portrait',
+        'chrfile',
+        'charclass',
+        'equip',
+        'skills',
+        'level',
+        'initstats',
+        'endstats',
+        'naturalstats',
+        'stats',
+        'expneeded',
+        'ent'
+        ]
             
-    def __init__(self, datfile):
-        self.datfilename = datfile
+    def __init__(_, datfile):
+        _.datfilename = datfile
 
-        self.name = 'null'
-        self.portrait = ika.Image(ika.Canvas(16,16))
-        self.chrfile = 'null'
-        self.charclass = 'null'
-        self.equip = [] # list of _EquipSlot objects
+        _.name = 'null'
+        _.portrait = ika.Image(ika.Canvas(16,16))
+        _.chrfile = 'null'
+        _.charclass = 'null'
+        _.equip = [] # list of _EquipSlot objects
 
-        self.LoadDatFile(datfile)
+        _.initstats = StatSet()
+        _.endstats = StatSet()
 
-        self.level = 1
-        self.XP = self.initXP
-        self.next = 1000
+        _.LoadDatFile(datfile)
 
-        self.HP = self.initHP
-        self.MP = self.initMP
-        self.maxHP = self.initHP
-        self.maxMP = self.initMP
+        _.naturalstats = _.initstats.Clone()
+        _.stats = _.naturalstats.Clone()
 
-        # pre-equipment modified (natural) stats
-        self.nstr = self.initSTR
-        self.nvit = self.initVIT
-        self.nmag = self.initMAG
-        self.nwil = self.initWIL
-        self.nspd = self.initSPD
-        self.nluk = self.initLUK
+        _.level = 1
+        _.stats.exp = _.initstats.exp
+        _.expneeded = 1000
 
-        self.ent = None        
+        _.ent = None        
 
-        self.skills = SkillList()        
+        _.skills = SkillList()        
 
-        self.CalcEquip()
+        _.CalcEquip()
 
-    #--------------------------------------------------------------------
+    # max(min(value, maximum), minimum) keeps value between maximum and
+    # minimum, inclusive.  It looks scarier than it is.
+    def set_HP(_, value):    _.stats.hp = max(min(value, _.stats.maxhp), 0)
+    def set_MP(_, value):    _.stats.mp = max(min(value, _.stats.maxmp), 0)
 
-    def Heal(self, amount):
-        if self.HP > 0:
-            self.HP = min(self.maxHP, self.HP + amount)
+    HP = property(lambda _: _.stats.hp, set_HP)
+    MP = property(lambda _: _.stats.mp, set_MP)
+    maxHP = property(lambda _: _.stats.maxhp)
+    maxMP = property(lambda _: _.stats.maxmp)
 
     #--------------------------------------------------------------------
 
-    def Hurt(self, amount):
-        self.HP = max(0, self.HP - amount)
+    def Heal(_, amount):
+        if _.HP > 0:
+            _.HP = min(_.stats.maxhp, _.HP + amount)
 
     #--------------------------------------------------------------------
 
-    def CanEquip(self, itemname):
+    def Hurt(_, amount):
+        _.HP = max(0, _.HP - amount)
+
+    #--------------------------------------------------------------------
+
+    def CanEquip(_, itemname):
         "Returns true if the character can equip the item"
 
         #if type(item) is str:   # you can pass a string or an Item object
         item = itemdb[itemname]
         
-        if self.charclass in item.equipby or 'all' in item.equipby:
+        if _.charclass in item.equipby or 'all' in item.equipby:
             return True
         else:
             return False
 
     #--------------------------------------------------------------------
 
-    def CanUse(self, itemname):
+    def CanUse(_, itemname):
         "Returns true if the character can use the item"
 
         item = itemdb.GetItem(itemname)
 
-        if self.charclass in item.useby:
-            return True
-        if 'all' in item.useby:
+        if _.charclass in item.useby or 'all' in item.useby:
             return True
         return False
 
     #--------------------------------------------------------------------
 
-    def SetEquip(self, itemname):
+    def SetEquip(_, itemname):
         """
         Adds the item to the character's current equipment.
 
@@ -119,12 +138,12 @@ class Character(object):
         if not item.equiptype in equiptypes:
             raise XiException('Invalid equipment type '+`item.equiptype`)
 
-        self.equip[item.equiptype] = item
-        self.CalcEquip()
+        _.equip[item.equiptype] = item
+        _.CalcEquip()
 
     #--------------------------------------------------------------------
 
-    def Equip(self, itemname, slot = None):
+    def Equip(_, itemname, slot = None):
         '''
         Equips the specified item.equipby
 
@@ -138,82 +157,58 @@ class Character(object):
         item = itemdb[itemname]
         
         if slot is None:
-            for i in range(len(self.equip)):
-                if self.equip[i].type == item.equiptype:
-                    self.Equip(itemname, i)
+            for i in range(len(_.equip)):
+                if _.equip[i].type == item.equiptype:
+                    _.Equip(itemname, i)
                     return
             return        
         
         # put what was equipped before back (if anything was there)
-        if self.equip[slot].item:
-            party.inv.Give(self.equip[slot].item.name)
+        if _.equip[slot].item:
+            party.inv.Give(_.equip[slot].item.name)
 
         if party.inv.Find(itemname) is not None:
             party.inv.Take(itemname)
             
-        self.equip[slot].item = item
-        self.CalcEquip()
+        _.equip[slot].item = item
+        _.CalcEquip()
 
     #--------------------------------------------------------------------
 
-    def Unequip(self, slot):
+    def Unequip(_, slot):
         "Unequips the item in the specified slot"
         slot = slot.lower()
         if not slot in equiptypes:
             raise XiException('char.unequip: Invalid equip type specified.')
 
-        self.equip[slot]=None
-        self.CalcEquip()
+        _.equip[slot]=None
+        _.CalcEquip()
 
     #--------------------------------------------------------------------
 
-    def CalcEquip(self):
+    def CalcEquip(_):
         "Recalculates stats based on current equipment"
         # base stats
 
-        self.str = self.nstr
-        self.vit = self.nvit
-        self.mag = self.nmag
-        self.wil = self.nwil
-        self.spd = self.nspd
-        self.luk = self.nluk
+        _.stats = _.naturalstats.Clone()
 
         # init the derived stats
-        self.atk = 0
-        self.Def = 0
-        self.hit = 0
-        self.eva = self.spd * 4
+        _.stats.eva = _.stats.spd * 4
 
         # equipment bonuses
-        for equip in self.equip:
-            type = equip.type
-            item = equip.item
-            
-            if item is None:
-                continue
-            #self.maxHP += item.hp
-            #self.maxMP += item.mp
-            self.str += item.str
-            self.vit += item.vit
-            self.mag += item.mag
-            self.wil += item.wil
-            self.spd += item.spd
-            self.luk += item.luk
-
-            self.atk += item.atk
-            self.Def += item.Def
-            self.hit += item.hit
-            self.eva += item.eva
+        for equip in _.equip:
+            if equip.item is not None:
+                _.stats += equip.item.stats
 
         # calculate the derived stats
-        self.atk += self.str
-        self.Def += self.vit
-        self.eva = min(self.eva, 99)    # cap evade and hit# to 99%
-        self.hit = min(self.hit, 99)
+        _.stats.atk += _.stats.str
+        _.stats.grd += _.stats.vit
+        _.stats.eva = min(_.stats.eva, 99)    # cap evade and hit# to 99%
+        _.stats.hit = min(_.stats.hit, 99)
 
     #--------------------------------------------------------------------
 
-    def LoadDatFile(self, datfile):
+    def LoadDatFile(_, datfile):
 
         #----------------------------------
 
@@ -225,8 +220,8 @@ class Character(object):
 
             return (int(s1), int(s2))
 
-        #----------------------------------	
-	
+        #---------------------------------- 
+    
         try:
             tokens = token.TokenStream(datfile)
         except IOError:
@@ -236,49 +231,49 @@ class Character(object):
         while not tokens.EOF():
             t = tokens.Next().lower()
 
-            if t =='name':
-                self.name = tokens.Next()
-            elif t =='portrait':
-                self.portrait = ika.Image(tokens.Next())
-            elif t =='chr':
-                self.chrfile = tokens.Next()
-            elif t =='class':
-                self.charclass = tokens.Next().lower()
-            elif t =='xp':
-                self.initXP , self.endXP  = GetPairOfNumbers(tokens)
-            elif t =='hp':
-                self.initHP , self.endHP  = GetPairOfNumbers(tokens)
-            elif t =='mp':
-                self.initMP , self.endMP  = GetPairOfNumbers(tokens)
-            elif t =='str':
-                self.initSTR, self.endSTR = GetPairOfNumbers(tokens)
-            elif t =='vit':
-                self.initVIT, self.endVIT = GetPairOfNumbers(tokens)
-            elif t =='mag':
-                self.initMAG, self.endMAG = GetPairOfNumbers(tokens)
-            elif t =='wil':
-                self.initWIL, self.endWIL = GetPairOfNumbers(tokens)
-            elif t =='spd':
-                self.initSPD, self.endSPD = GetPairOfNumbers(tokens)
-            elif t =='luk':
-                self.initLUK, self.endLUK = GetPairOfNumbers(tokens)
+            if t == '':
+                break
+            
+            elif t == 'name':
+                _.name = tokens.Next()
+            elif t == 'portrait':
+                _.portrait = ika.Image(tokens.Next())
+            elif t == 'chr':
+                _.chrfile = tokens.Next()
+            elif t == 'class':
+                _.charclass = tokens.Next().lower()
+            elif t == 'xp':
+                _.initstats.exp , _.endstats.exp  = GetPairOfNumbers(tokens)
+            elif t == 'hp':
+                _.initstats.hp , _.endstats.hp  = GetPairOfNumbers(tokens)
+            elif t == 'mp':
+                _.initstats.mp , _.endstats.mp  = GetPairOfNumbers(tokens)
+            elif t == 'str':
+                _.initstats.str, _.endstats.str = GetPairOfNumbers(tokens)
+            elif t == 'vit':
+                _.initstats.vit, _.endstats.vit = GetPairOfNumbers(tokens)
+            elif t == 'mag':
+                _.initstats.mag, _.endstats.mag = GetPairOfNumbers(tokens)
+            elif t == 'wil':
+                _.initstats.wil, _.endstats.wil = GetPairOfNumbers(tokens)
+            elif t == 'spd':
+                _.initstats.spd, _.endstats.spd = GetPairOfNumbers(tokens)
+            elif t == 'luk':
+                _.initstats.luk, _.endstats.luk = GetPairOfNumbers(tokens)
             elif t == 'equipslots':
                 s = tokens.Next().lower()
                 while s != 'end':
-                    self.equip.append(_EquipSlot(s))
+                    _.equip.append(_EquipSlot(s))
                     s = tokens.Next().lower()
 
-            elif t =='/*':                  # comment skipper
-                while t != '*/':
-                    t = tokens.Next()
-
             else:
-                Exit('Unknown '+datfile+' token, '+`t`)
+                ika.Exit('Unknown '+datfile+' token, '+`t`)
 
     #--------------------------------------------------------------
 
-    def Spawn(self, x, y):
-        if self.ent is None:
-            self.ent = ika.Entity(x, y, self.chrfile)
+    def Spawn(_, x, y):
+        if _.ent is None:
+            _.ent = ika.Entity(x, y, _.chrfile)
+            _.ent.name = _.name
 
 #------------------------------------------------------------------

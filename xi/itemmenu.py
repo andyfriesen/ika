@@ -64,7 +64,7 @@ class ItemMenu(object):
     def Execute(_):
         
         while True:
-            _.description.text[0] = party.inv[_.menu.CursorPos].Description
+            _.description.Text[0] = party.inv[_.menu.CursorPos].Description
 
             ika.Map.Render()
             for x in (_.menu, _.statbar, _.description):

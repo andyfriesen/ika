@@ -23,6 +23,15 @@ from misc import *
 
 
 class StatusMenu(object):
+    __slots__ = [
+        'statbar',          # The status bar that sits at the right edge of the screen
+        'portraitwindow',   # Window that contains the character's portrait, HP, MP, Level, and EXP
+        'statwindow',       # Contains the character's strength, magic, et cetera.
+        'equipwindow',      # Holds the character's current equipment.
+        'skillwindow',      # Shows the skills that the character can use
+        'charidx'           # Index of the current character
+        ]
+        
     def __init__(_, statbar):
         _.statbar = statbar
         _.portraitwindow = PortraitWindow()
@@ -54,7 +63,7 @@ class StatusMenu(object):
         _.equipwindow.Refresh(curchar)
         _.skillwindow.Refresh(curchar)
 
-        if len(_.skillwindow.Text) == 0:
+        if _.skillwindow.Text.Length == 0:
             _.skillwindow.AddText('No skills')
     
         _.statbar.Refresh()

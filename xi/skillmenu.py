@@ -84,9 +84,9 @@ class SkillMenu(object):
         char = _.CurChar
         if _.skillwindow.CursorPos < len(char.skills):
             s = char.skills[_.skillwindow.CursorPos]
-            _.description.text[0] = s.desc
+            _.description.Text[0] = s.desc
         else:
-            _.description.text[0] = ''
+            _.description.Text[0] = ''
 
         result = _.skillwindow.Update()
         

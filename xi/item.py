@@ -9,37 +9,34 @@
 # suitability of this code for any purpose.
 
 from itemdatabase import ItemDatabase
+from statset import *
 
 # constants
 equiptypes= [ 'weapon', 'armour', 'accessory' ]
 
 class Item(object):
-    __slots__ = [ 'equiptype', 'name', 'desc', 'atk', 'Def', 'hit', 'eva',
-                  'hp', 'mp', 'str', 'vit', 'mag', 'wil', 'spd', 'luk', 'consumable',
-                  'fieldeffect', 'battleeffect', 'cost', 'equipby', 'useby' ]
+    __slots__ = [
+        'equiptype',
+        'name',
+        'desc',
+        'stats',        # StatSet holding the stat bonuses bestowed by this item, if it is a piece of equipment
+        'consumable',
+        'fieldeffect',
+        'battleeffect',
+        'cost',
+        'equipby',
+        'useby'
+        ]
+    
     def __init__(self):
         self.equiptype = ''
         
         self.name = ''
         self.desc = ''
+
+        self.stats = StatSet()        
         
-        # secondary stats.  Most normal equipment alters these.
-        self.atk = 0
-        self.Def = 0
-        self.hit = 0
-        self.eva = 0
-        
-        # basic stats.  Usually only altered by the more exotic equipment.
-        self.hp = 0
-        self.mp = 0
-        self.str = 0
-        self.vit = 0
-        self.mag = 0
-        self.wil = 0
-        self.spd = 0
-        self.luk = 0
-        
-        self.consumable = 0
+        self.consumable = False
 
         self.fieldeffect = None
         self.battleeffect = None
@@ -75,6 +72,16 @@ class Inventory(object):
 
     def __getitem__(self,val):
         return self.items[val]
+
+    #--------------------------------------------
+
+    def __len__(self):
+        return len(self.items)
+
+    #--------------------------------------------
+
+    def __nonzero__(self):
+        return True
 
     #--------------------------------------------
 
