@@ -1,9 +1,8 @@
 #include "gfx_soft.h"
 #include "blits.h"
+#include "log.h"
 
 #define USE_ASM
-
-extern void log(const char* s,...);
 
 void SetBlitAsNull(handle img)
 {
@@ -95,14 +94,6 @@ bool OpaqueBlit(handle img,int x,int y)
     
     RGBA* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
     RGBA* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
-
-#ifdef _DEBUG
-    if (!pDest)
-    {
-	log("!!! %8x",img);
-	return false;
-    }
-#endif
 
 #ifndef USE_ASM
     while (ylen)

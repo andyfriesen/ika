@@ -58,6 +58,25 @@ inline u16 make16bpp(u32 c)
         return (u16)( ((b>>3)<<10) | ((g>>3)<<5) | (r>>3) );
 }
 
+void logdderr(HRESULT dderr)
+{
+    switch (dderr)
+    {
+    case DD_OK: break;
+    case DDERR_SURFACELOST:     Log::Write("DDerr: SURFACELOST");			break;
+    case DDERR_INVALIDRECT:     Log::Write("DDerr: INVALIDRECT");			break;
+    case DDERR_WASSTILLDRAWING: Log::Write("DDerr: WASSTILLDRAWING");		break;
+    case DDERR_INVALIDCLIPLIST: Log::Write("DDerr: INVALIDCLIPLIST");		break;
+    case DDERR_INVALIDOBJECT:   Log::Write("DDerr: INVALIDOBJECT");		break;
+    case DDERR_INVALIDPARAMS:   Log::Write("DDerr: INVALIDPARAMS");		break;
+    case DDERR_NOALPHAHW:       Log::Write("DDerr: NOALPHAHW");			break;
+    case DDERR_NOBLTHW:         Log::Write("DDerr: NOBLTHW");				break;
+    case DDERR_SURFACEBUSY:     Log::Write("DDerr: SURFACEBUSY");			break;
+    case DDERR_UNSUPPORTED:     Log::Write("DDerr: UNSUPPORTED");			break;
+    case DDERR_GENERIC:         Log::Write("DDerr: GENERIC");				break;
+    default: Log::Write("DDerr: Unknown DirectDraw Error");				break;
+    }
+}
 
 /////////////////// Code ////////////////////////////////
 
@@ -66,12 +85,12 @@ int gfxGetVersion()	{	return 2;	}
 bool gfxInit(HWND hWnd,int x,int y,int,bool fullscreen)
 {
 #ifdef _DEBUG
-    initlog("gfx_soft16.log");
+    Log::Init("gfx_soft16.log");
 #endif
     
     if (bInited)
     {
-        log("redundant gfxInit's");
+        Log::Write("redundant gfxInit's");
         return false;
     }
     
@@ -112,16 +131,16 @@ bool gfxInit(HWND hWnd,int x,int y,int,bool fullscreen)
             result=mainsurface->GetAttachedSurface(&ddscaps,&backsurf);
             if (FAILED(result)) throw result;
             
-            log("Initing gamma stuff...");
+            Log::Write("Initing gamma stuff...");
             result=mainsurface->QueryInterface(IID_IDirectDrawGammaControl,(void**)&lpgamma);
             if (result!=S_OK)
             {
                 lpgamma=NULL;
-                log("gfxInit: gamma init stuff failed!! :o");
+                Log::Write("gfxInit: gamma init stuff failed!! :o");
             }
             else
             {
-                log("Gamma stuff inited okay");
+                Log::Write("Gamma stuff inited okay");
                 lpgamma->GetGammaRamp(0,&normalgamma);
                 lpgamma->GetGammaRamp(0,&currentgamma);
             }
@@ -161,7 +180,7 @@ bool gfxInit(HWND hWnd,int x,int y,int,bool fullscreen)
         }
         catch(const char* msg)
         {
-            log("gfxInit error: %s",msg);
+            Log::Write("gfxInit error: %s",msg);
             gfxShutdown();
             return false;
         }
@@ -175,7 +194,7 @@ bool gfxInit(HWND hWnd,int x,int y,int,bool fullscreen)
     
     gfxClipWnd(0,0,x-1,y-1);
     
-    log("gfxinit finished");
+    Log::Write("gfxinit finished");
     
     bInited=true;
     return true;
@@ -210,7 +229,7 @@ void gfxShutdown()
     }
     
     if (nImagecount!=0)
-        log("gfxShutdown:: %i image%s unaccounted for!!!",nImagecount,nImagecount==1?"s":"");
+        Log::Write("gfxShutdown:: %i image%s unaccounted for!!!",nImagecount,nImagecount==1?"s":"");
 }
 
 bool gfxSwitchToFullScreen()
@@ -228,7 +247,7 @@ bool gfxSwitchResolution(int x,int y)		// OHFUCK: if the display is 565 fullscre
     //	if (hScreen)
     //		return false;
     
-    log("-------resize------------");
+    Log::Write("-------resize------------");
     if (bFullscreen)
     {
         // NYI
@@ -287,7 +306,7 @@ bool gfxFreeImage(handle img)
         return false;
     
     if (img==hScreen)
-        log("Free screen");
+        Log::Write("Free screen");
     
     delete[] img->pData;
     img->pData=NULL;
@@ -382,7 +401,7 @@ bool gfxShowPage()
         ZeroMemory(&ddsd,sizeof ddsd);
         ddsd.dwSize=sizeof ddsd;
         result=backsurf->Lock(NULL,&ddsd,DDLOCK_WAIT | DDLOCK_WRITEONLY,NULL);
-        if (FAILED(result))	{ log("lockfail"); return false; }
+        if (FAILED(result))	{ Log::Write("lockfail"); return false; }
         
         u16* pSrc =hScreen->pData;
         u8* pDest=(u8*)ddsd.lpSurface;
@@ -402,7 +421,7 @@ bool gfxShowPage()
         result=mainsurface->Flip(NULL,DDFLIP_WAIT);
         if (FAILED(result))
         {
-            log("flipfail");
+            Log::Write("flipfail");
             return false;
         }
         
@@ -436,7 +455,7 @@ bool gfxBlitImage(handle img,int x,int y,bool transparent)
 #ifdef _DEBUG
     if (!img->Blit)
     {
-        log("as;dlkjfas;dlkjf");
+        Log::Write("as;dlkjfas;dlkjf");
         return false;
     }
 #endif
@@ -452,7 +471,7 @@ bool gfxScaleBlitImage(handle img,int cx,int cy,int w,int h,bool transparent)
 #ifdef _DEBUG
     if (!img->ScaleBlit)
     {
-        log("dasdasdf");
+        Log::Write("dasdasdf");
         return false;
     }
 #endif
@@ -473,7 +492,7 @@ bool gfxCopyChan(handle src,int nSrcchan,handle dest,int nDestchan)
 #ifdef _DEBUG
     if (!src || !dest)
     {
-        log("dfasdfasdfdfasdfasdfasdf");
+        Log::Write("dfasdfasdfdfasdfasdfasdf");
         return false;
     }
 #endif

@@ -18,7 +18,7 @@ IMPLEMENT_APP(CApp);
 
 bool CApp::OnInit()
 {
-    initlog("iked.log");
+    Log::Init("iked.log");
     CMainWnd* mainwnd=new CMainWnd(NULL,-1,"iked",
         wxPoint(-1,-1),
         wxSize(600,400),

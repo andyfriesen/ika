@@ -128,7 +128,12 @@ struct SMapLayerInfo
     int            pmuly,pdivy;
     int            nTransmode;                      // for v2 maps
 
-    SMapLayerInfo() {}
+    SMapLayerInfo()
+    :   pmulx(0),pmuly(0),
+        pdivx(0),pdivy(0),
+        nTransmode(0)
+    {}
+
     SMapLayerInfo(const layer_r& l)
     :   pmulx(l.pmultx),
         pmuly(l.pmulty),

@@ -3,8 +3,6 @@
 
 #define USE_ASM
 
-extern void log(const char* s,...);
-
 void SetBlitAsNull(handle img)
 {
     img->Blit=&NullBlit;
@@ -97,13 +95,7 @@ bool OpaqueBlit(handle img,int x,int y)
     u16* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
     u8* pSrcalpha=img->pAlpha	 +(ystart*img->nWidth)+xstart;
     u8* pDestalpha=hRenderdest->pAlpha+(y*hRenderdest->nWidth)+x;
-    
-    if (!pDest)
-    {
-        log("!!! %8x",img);
-        return false;
-    }
-    
+        
     while (ylen)
     {
         memcpy(pDest,pSrc,xlen*sizeof(u16));

@@ -31,11 +31,11 @@ void CScriptEngine::Init_Error()
     remove("pyout.log");
     
     // replace stdout and stderr with our error object
-    PyObject* pSysmodule=PyImport_ImportModule("sys");//pGlobalscope,pGlobalscope,NULL);
-    if (!pSysmodule)	{		log("wah");		return;	}
+    PyObject* pSysmodule=PyImport_ImportModule("sys");
+    if (!pSysmodule)            {   Log::Write("Could not create sys module."); return; }
     
     PyObject* pSysdict=PyModule_GetDict(pSysmodule);
-    if (!pSysdict)		{		log("wah2");	return; }
+    if (!pSysdict)		{   Log::Write("Could not init sys module.");   return; }
     
     pErrorhandler=Error_New();
     PyDict_SetItemString(pSysdict,"stdout",pErrorhandler);

@@ -77,7 +77,7 @@ inline int Input::Test(HRESULT result,char* errmsg)
 {
     if (result!=DI_OK)
     {
-        log(errmsg);
+        Log::Write( errmsg);
         ShutDown();
         return 0;
     }
@@ -120,7 +120,7 @@ int Input::Init(HINSTANCE hinst,HWND hwnd)
     }
     catch (const char* s)
     {
-        log("Input init failed: %s",s);
+        Log::Write( "Input init failed: %s",s);
         ShutDown();
         return 0;
     }
@@ -155,7 +155,7 @@ void Input::Poll() // updates the key[] array.  This is called in winproc in res
     numentries=128;
     if (!keybd) 
     {
-        log("input::poll: No keyboard object!");
+        Log::Write( "input::poll: No keyboard object!");
         return;
     }
     
@@ -205,7 +205,7 @@ void Input::Update() // updates the direction variables and the virtual buttons 
 
 void Input::BindKey(int nButtonidx,int nKeycode)
 {
-    log("BindKey %i to %i",nButtonidx,nKeycode);
+    Log::Write( "BindKey %i to %i",nButtonidx,nKeycode);
     if (nKeycode<0 || nKeycode>255)
         return;
     if (nButtonidx<0 || nButtonidx>nControls)

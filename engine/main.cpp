@@ -100,7 +100,7 @@ void CEngine::MainLoop()
             fps=numframes;
             numframes=0;
             t-=timerate;
-            log("%i fps",fps);
+            Log::Write("%i fps",fps);
         }
         numframes++;
         
@@ -124,11 +124,11 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     nFrameskip=cfg.GetInt("frameskip");
 
     if (cfg.GetInt("log"))
-        initlog("ika.log");
+        Log::Init("ika.log");
     
-    log("%s startup",VERSION);
-    log("Built on %s",__DATE__);
-    log("--------------------------");
+    Log::Write("%s startup",VERSION);
+    Log::Write("Built on %s",__DATE__);
+    Log::Write("--------------------------");
     
     bKillFlag=false;
       
@@ -138,7 +138,7 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
         return;
     }
     
-    logp("Initing graphics");
+    Log::Writen("Initing graphics");
     bool a=gfxInit(
         hWnd,
         cfg.GetInt("xres"),
@@ -151,34 +151,34 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
         Sys_Error("gfxInit failed.\nThis could mean that you're trying to set a video mode that your hardware cannot handle.");
         return;
     }
-    logok();
+    Log::Write("... OK");
     
-    logp("Initing sound");
+    Log::Writen("Initing sound");
     a=SetupSound(cfg.Get("sounddriver").c_str());
     if (!a)
-        log("Sound initialization failed.  Disabling audio.");
-    logok();
+        Log::Write("Sound initialization failed.  Disabling audio.");
+    Log::Write("... OK");
     
-    logp("Initing input");
+    Log::Writen("Initing input");
     if (!input.Init(hinst,hwnd))
     {
         Sys_Error("input.Init failed");
         return;
     }
     input.ClipMouse(0,0,cfg.GetInt("xres"),cfg.GetInt("yres"));
-    //if (cfg.GetInt("fullscreen"))
+    if (cfg.GetInt("fullscreen"))
         input.HideMouse();
-    // Clear key bindings
-    ZeroMemory(pBindings,nControls*sizeof(void*));
-    logok();
     
-    logp("Initing timer");
+    memset(pBindings,0,nControls*sizeof(void*));            // Clear key bindings
+    Log::Write("... OK");
+    
+    Log::Writen("Initing timer");
     if (!timer.Init(timerate))
     {
         Sys_Error("timer.Init failed");
         return;
     }
-    logok();
+    Log::Write("... OK");
     
     pPlayer=0;
     pCameratarget=0;
@@ -188,9 +188,9 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     
     srand(timeGetTime());                                        // win32 specific x_x
     
-    log("Initing Python");
+    Log::Write("Initing Python");
     script.Init(this);
-    log("Executing system.py");
+    Log::Write("Executing system.py");
     bool result=script.LoadSystemScripts("system.py");
     if (!result)
         Script_Error();
@@ -198,7 +198,7 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     if (!bMaploaded)
         Sys_Error("");
     
-    log("Startup complete");
+    Log::Write("Startup complete");
 }
 
 void CEngine::Shutdown()
@@ -210,14 +210,14 @@ void CEngine::Shutdown()
     
     if (blah)
     {
-        log("REDUNDANT CALLS TO SHUTDOWN!!!!!");
+        Log::Write("REDUNDANT CALLS TO SHUTDOWN!!!!!");
         return;
     }
     
     blah=true;
 #endif
     
-    log("---- shutdown ----");
+    Log::Write("---- shutdown ----");
     map.Free();
     timer.Shutdown();
     tiles.Free();
@@ -463,7 +463,7 @@ void CEngine::CheckKeyBindings()
     {
         if (c<0 || c>nControls)
         {
-            log("CEngine::CheckKeyBindings control out of range");
+            Log::Write("CEngine::CheckKeyBindings control out of range");
             return;
         }
 
@@ -654,7 +654,7 @@ void CEngine::DestroyEntity(CEntity* e)
         }
         
     // In a Perfect World, this will never execute.
-    log("Attempt to unallocate invalid entity!!!");
+    Log::Write("Attempt to unallocate invalid entity!!!");
 }
 
 // --------------------------------- Misc (interface with old file formats, etc...) ----------------------
@@ -668,7 +668,7 @@ void CEngine::LoadMap(const char* filename)
     
     try
     {
-        log("Loading map \"%s\"",filename);
+        Log::Write("Loading map \"%s\"",filename);
         
         if (!map.Load(filename)) throw filename;                            // actually load the map
         

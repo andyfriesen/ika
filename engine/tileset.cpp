@@ -21,7 +21,7 @@ void CTileSet::BlitFrame(int x,int y,int frame)
 #ifdef _DEBUG
     if (frame<0 || frame>nFrames)
     {
-        log("CTileSet::BlitFrame : Invalid frame %i specified.",frame);
+        Log::Write("CTileSet::BlitFrame : Invalid frame %i specified.",frame);
         return;
     }
 #endif
@@ -36,7 +36,7 @@ void CTileSet::TBlitFrame(int x,int y,int frame)
 #ifdef _DEBUG
     if (frame<0 || frame>nFrames)
     {
-        log("CTileSet::TBlitFrame : Invalid frame %i specified.",frame);
+        Log::Write("CTileSet::TBlitFrame : Invalid frame %i specified.",frame);
         return;
     }
 #endif

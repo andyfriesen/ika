@@ -260,13 +260,13 @@ void Map::New()
     info.resize(1);
     nLayers=1;
     pData[0]=new u32[nWidth*nHeight];                   // layer data
-    ZeroMemory(pData[0],nWidth*nHeight*sizeof(u32));    // clear it
+    memset(pData[0],0, nWidth*nHeight*sizeof(u32) );    // clear it
     
     pObstruct=new u8[nWidth*nHeight];
     pZone=new u32[nWidth*nHeight];
     
-    ZeroMemory(pObstruct,nWidth*nHeight*sizeof(u8));
-    ZeroMemory(pZone,nWidth*nHeight*sizeof(u32));
+    memset(pObstruct,0, nWidth*nHeight*sizeof(u8) );
+    memset(pZone,0, nWidth*nHeight*sizeof(u32) );
     
     info[0].pmulx = info[0].pdivx=1;
     info[0].pmuly = info[0].pdivy=1;    
@@ -396,7 +396,7 @@ bool Map::Importv2Map(File& f)
     }
     
     char sChrlist[255][60];
-    ZeroMemory(sChrlist,255*60);
+    memset(sChrlist,0,255*60);
     
     f.Read(cTemp);
     for (i=0; i<cTemp; i++)
@@ -851,11 +851,10 @@ void Map::AddLayer(int pos)
     
     SMapLayerInfo newlay;
     
-    ZeroMemory(&newlay,sizeof newlay);                              // set everything to 0, just in case.
     newlay.pmulx = newlay.pdivx = 1;
     newlay.pmuly = newlay.pdivy = 1;
     u32* pTemp=new u32[nWidth*nHeight];
-    ZeroMemory(pTemp,nWidth*nHeight*sizeof(u32));                   // make sure the new layer is empty
+    memset(pTemp,0, nWidth*nHeight*sizeof(u32) );                   // make sure the new layer is empty
     
     info.push_back(newlay);
     pData.push_back(pTemp);

@@ -212,9 +212,9 @@ void Benchmark(HWND hwnd)
         tests[i].result=tests[i].function();
     }
 
-    initlog("benchmark.log");
+    Log::Init("benchmark.log");
     for (i=0; i<nTests; i++)
-        log("%20s\t%ims",tests[i].name,tests[i].result);
+        Log::Write("%20s\t%ims",tests[i].name,tests[i].result);
 
     exit(-1);
 }

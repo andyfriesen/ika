@@ -65,12 +65,11 @@ void CScriptEngine::Init(CEngine* p)
     // Create entity dictionary
     pEntitydict=PyDict_New();
     if (!pEntitydict)
-        log("!pEntitydict");
+        Log::Write("!pEntitydict");
 }
 
 void CScriptEngine::Shutdown()
 {
-    // free any objects
     if (!bInited)
         return;
     
@@ -87,9 +86,11 @@ void CScriptEngine::Shutdown()
     Py_XDECREF(pEntitydict);
     Py_XDECREF(pCameratarget);
     
-    // nux0r the screen object, but not the actual image.  The engine still needs it. ;)
+    // nuke the screen object, but not the actual image.  The engine still needs it. ;)
     ((v_ImageObject*)pScreenobject)->data=0;
     Py_XDECREF(pScreenobject);
+
+    // Free all other engine objects.
     Py_XDECREF(pRenderdest);
     
     Py_XDECREF(pErrorhandler);
@@ -120,9 +121,9 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
     string sTemp=fname;
     
     int nExtension=sTemp.find_last_of(".",sTemp.length());
-    sTemp.erase(nExtension,sTemp.length());                    // nuke the extension
+    sTemp.erase(nExtension,sTemp.length());                             // nuke the extension
     
-    pMapmodule=PyImport_ImportModule((char*)sTemp.c_str());//,pGlobalscope,pGlobalscope,NULL);
+    pMapmodule=PyImport_ImportModule((char*)sTemp.c_str());
     
     if (!pMapmodule)
     {
@@ -190,13 +191,10 @@ void CScriptEngine::CallEvent(const char* sName)
     
     if (!pFunc)
     {
-        log("CallEvent, no such event \"%s\"",sName);
+        Log::Write("CallEvent, no such event \"%s\"",sName);
         return;                                                                // no such event
     }
-    
-    if (!PyCallable_Check(pFunc))
-        log("Can't call it?! O_O");
-    
+        
     PyObject* result=PyEval_CallObject(pFunc,0);
     
     if (!result)

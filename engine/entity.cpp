@@ -261,7 +261,7 @@ Direction CEntity::Chase()
 {
     if (!pChasetarget)
     {
-        log("Chasing entity with no chasing target!!");
+        Log::Write( "Chasing entity with no chasing target!!");
         return face_nothing;
     }
 
@@ -401,7 +401,7 @@ void CEntity::Update()
         case mc_chase:      newdir=Chase();                 break;
         case mc_script:     newdir=GetMoveScriptCommand();  break;
         default:
-            log("CEntity::Update: Internal error -- bogus movecode");
+            Log::Write( "CEntity::Update: Internal error -- bogus movecode");
             return;     // O_O;
         }
 

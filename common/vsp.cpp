@@ -29,11 +29,9 @@ bool VSP::Load(const char *fname)
     
     Free(); // nuke any existing VSP data
     
-    log("Loading VSP, %s",fname);
-    // TO DO: Stick a little dealy in here for loading up a V16, if there is one
     if (!f.OpenRead(fname))
     {
-        log("Error opening %s",fname);
+        Log::Write("Error opening %s",fname);
         return false;
     }
     
@@ -175,7 +173,7 @@ bool VSP::Load(const char *fname)
             break;
         }
     default: 
-        log("Fatal error: unknown VSP version (%d)",ver);
+        Log::Write("Fatal error: unknown VSP version (%d)",ver);
         return false;
     }
     
@@ -191,8 +189,6 @@ bool VSP::Load(const char *fname)
     
     f.Close();
     
-    logok();
-    
     return true;
 }
 
@@ -204,7 +200,7 @@ int VSP::Save(const char* fname)
     
     if (!f.OpenWrite(fname))
     {
-        log("Error writing to %s",fname);
+        Log::Write("Error writing to %s",fname);
         return 0;
     }
     

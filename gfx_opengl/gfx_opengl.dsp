@@ -122,14 +122,6 @@ SOURCE=.\stuff.h
 # PROP Default_Filter ""
 # Begin Source File
 
-SOURCE=..\common\log.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\log.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\common\pixel_matrix.cpp
 # End Source File
 # Begin Source File

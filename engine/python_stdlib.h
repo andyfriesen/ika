@@ -24,7 +24,7 @@ METHOD(std_log)
     if (!PyArg_ParseTuple(args,"s:log",&message))
         return NULL;
     
-    log(message);
+    Log::Write(message);
     
     Py_INCREF(Py_None);
     return Py_None;									// returning void :)

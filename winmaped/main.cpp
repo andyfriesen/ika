@@ -136,9 +136,9 @@ bool Engine::Init(HINSTANCE hInstance,int nCmdShow)
     const int initxsize=600;									// these are arbitrary
     const int initysize=450;
 
-    initlog("winmaped.log");
-    log("WinMapEd Logging initialized");
-    log("Built on %s",__DATE__);
+    Log::Init("winmaped.log");
+    Log::Write("WinMapEd Logging initialized");
+    Log::Write("Built on %s",__DATE__);
     hInst=hInstance;
     
     hWnd=CreateMainWindow(hInstance,nCmdShow);
@@ -153,7 +153,7 @@ bool Engine::Init(HINSTANCE hInstance,int nCmdShow)
 	MessageBox(hWnd,"Couldn't create main window.\r\nAborting.","Something fucked up",0);
 	return false;
     }
-    log("Created main window");
+    Log::Write("Created main window");
     
     SizeWindow(initxsize,initysize);							// Inits correct clipping and whatnot
     vsp.New();
@@ -161,7 +161,7 @@ bool Engine::Init(HINSTANCE hInstance,int nCmdShow)
     //	SetActiveLayer(0);
     pMapview->SetActiveLayer(0);
     pMapview->ScrollWin(0,0);
-    log("Map and VSP memory initialized");
+    Log::Write("Map and VSP memory initialized");
     
     //	UpdateVSP();
     
@@ -170,7 +170,7 @@ bool Engine::Init(HINSTANCE hInstance,int nCmdShow)
     SetFocus(hWnd);												// In theory, this should send a WM_ACTIVATE message to our window, which should set bActive to true. (note that
     // it's important that the graphics are inited before this is called, as WM_PAINT uses the graphics stuff)
 
-    log("Startup finished");
+    Log::Write("Startup finished");
     return true;
 }
 

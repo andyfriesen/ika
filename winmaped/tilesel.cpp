@@ -201,7 +201,7 @@ void CTileSel::SaveVSP()
     }
     
     if (!result)												// uh... I duno what to do.  So I'll just cry and bitch.
-        log("pVsp->SaveAs failed! ;_;");
+        Log::Write("pVsp->SaveAs failed! ;_;");
 }
 
 // kudos to JL for this.  I just ported it from Python.

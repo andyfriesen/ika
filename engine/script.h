@@ -4,7 +4,6 @@
 
 #include "types.h"
 #include "python.h"
-#include "BasePyObject.h"
 
 /*
     Due to the way the Python API is structured, the script engine simply will not support multiple instances.

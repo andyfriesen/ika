@@ -61,9 +61,9 @@ static int	nMusic=0;
 bool EXPORT sfxInit()
 {
 #ifdef _DEBUG
-    initlog("sfx_mikmod.log");
+    Log::Init("sfx_mikmod.log");
 #endif
-    log("Initing sound...");
+    Log::Write("Initing sound...");
     Mikmod_RegisterLoader(load_mod);
     Mikmod_RegisterLoader(load_s3m);
     Mikmod_RegisterLoader(load_xm);
@@ -73,7 +73,7 @@ bool EXPORT sfxInit()
     pDriver=Mikmod_Init(44100,100,NULL,MD_STEREO, CPU_AUTODETECT, DMODE_16BITS | DMODE_INTERP | DMODE_SAMPLE_DYNAMIC | DMODE_NOCLICK);
     if (!pDriver)
     {
-        log("Mikmod_init failed");
+        Log::Write("Mikmod_init failed");
         return false;
     }
     
@@ -85,7 +85,7 @@ bool EXPORT sfxInit()
     
     if (!pGlobalvoice || !pMusicvoice || !pSfxvoice)
     {
-        log("voice creation failed");
+        Log::Write("voice creation failed");
         //		sfxShutdown();
         return false;
     }
@@ -99,12 +99,12 @@ bool EXPORT sfxInit()
 // Assumes that all sound effects and mods have been freed, so watch it. ;)
 void EXPORT sfxShutdown()
 {
-    log("Shutting down sound system...");
+    Log::Write("Shutting down sound system...");
     
     if (nSounds!=0)
-        log("Shutdown: Sound count at %i!!  BAD!!",nSounds);
+        Log::Write("Shutdown: Sound count at %i!!  BAD!!",nSounds);
     if (nMusic=0)
-        log("Shutdown: Music count at %i!!  Bad!!",nMusic);
+        Log::Write("Shutdown: Music count at %i!!  Bad!!",nMusic);
     
     Mikmod_Exit(pDriver);
 }
@@ -172,21 +172,21 @@ int  EXPORT sfxGetMusicPos(SMusic* m)
 void EXPORT sfxSetMusicPos(SMusic* m,long time)
 {
     if (!m)
-        log("SetMusicVolume: null passed");
+        Log::Write("SetMusicVolume: null passed");
     Player_SetPosTime(m->pPlayer,time);
 }
 
 int  EXPORT sfxGetMusicVolume(SMusic* m)
 {
     if (!m)
-        log("SetMusicVolume: null passed");
+        Log::Write("SetMusicVolume: null passed");
     return m->pPlayer->state.volume;
 }
 
 void EXPORT sfxSetMusicVolume(SMusic* m,int newvol)
 {
     if (!m)
-        log("SetMusicVolume: null passed");
+        Log::Write("SetMusicVolume: null passed");
     Player_SetVolume(m->pPlayer,newvol);
 }
 

@@ -62,7 +62,7 @@ void CScriptEngine::Entity_Destroy(PyObject* self)
     if (pEnt)
         pEngine->DestroyEntity(pEnt);
     else
-        log("Entity_Destroy weirdness");
+        Log::Write("Entity_Destroy weirdness");
 
     pEnt=0;
    

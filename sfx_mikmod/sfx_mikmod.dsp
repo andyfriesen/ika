@@ -70,7 +70,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MTd /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /D "_USRDLL" /D "SFX_MIKMOD_EXPORTS" /YX /FD /GZ /c
-# ADD CPP /nologo /Gz /MT /W3 /Gm /GX /ZI /Od /I "..\common" /I "..\3rdparty" /I "$(PYTHON)\include" /D "_DEBUG" /D "_USRDLL" /D "SFX_MIKMOD_EXPORTS" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSVC" /D "INLINE_ASM" /FD /GZ /c
+# ADD CPP /nologo /Gz /MTd /W3 /Gm /GX /ZI /Od /I "..\common" /I "..\3rdparty" /I "$(PYTHON)\include" /D "_DEBUG" /D "_USRDLL" /D "SFX_MIKMOD_EXPORTS" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSVC" /D "INLINE_ASM" /FD /GZ /c
 # SUBTRACT CPP /YX
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32

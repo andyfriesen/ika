@@ -379,7 +379,7 @@ void CMapView::SetActiveLayer(int i)
     default:
         if (i<0 || i>=pMap->NumLayers())
         {
-            log("SetActiveLayer: layer index out of bounds!!!");
+            Log::Write("SetActiveLayer: layer index out of bounds!!!");
             return;
         }
         bLayertoggle[i]=true;
@@ -402,7 +402,7 @@ void CMapView::FlipLayer(int i)
     default:
         if (i<0 || i>=pMap->NumLayers())
         {
-            log("FlipLayer: layer index out of bounds!!!");
+            Log::Write("FlipLayer: layer index out of bounds!!!");
             return;
         }
         bLayertoggle[i]=!bLayertoggle[i];
@@ -513,7 +513,7 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
             t=*layptr++;
             if (t<0 || t>pVsp->NumTiles())                
             {
-                log("tile out of bounds! :o");
+                Log::Write("tile out of bounds! :o");
                 continue;
             }
             

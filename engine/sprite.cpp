@@ -114,7 +114,7 @@ void CSpriteController::Free(CSprite* s)
         }
     }
 
-    log("Unallocated sprite tried to release!!  \"%s\"",((CRefCountedSprite*)s)->sFilename);
+    Log::Write("Unallocated sprite tried to release!!  \"%s\"",((CRefCountedSprite*)s)->sFilename);
 }
 
 CSpriteController::~CSpriteController()

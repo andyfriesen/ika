@@ -1,40 +1,39 @@
 /*
-This also comprises of some handy dandy debugging tricks I've accumulated.
+    Logging stuff.
+
+    Not sure if the singleton pattern is the best way to handle this stuff.  Not an issue right now anyway. --andy
 */
 
 #ifndef LOG_H
 #define LOG_H
 
-#include <windows.h>
-
-//#ifdef _DEBUG
-//#define _CALLBACK
-//#endif
-
-extern void log(const char *s,...);
-#ifdef WIN32
-extern void logdderr(HRESULT dderr);
-#endif
-extern void logp(char *s,...);
-extern void logok(void);
-extern void initlog(const char* s);
-
-#ifdef _CALLBACK
 #include "types.h"
-extern void callback_log(const char* s,...);
 
-class CDebuggingthing
+//#define LOG_CALLBACK
+
+namespace Log
 {
-    static std::string callback;
-    int len;
-public:
-    CDebuggingthing(const char* s);
-    ~CDebuggingthing();
+    void Init(const char* fname);
+    void Write(const char*,...);        // writes to the log file
+    void Writen(const char*,...);       // same, but does not append a newline
 };
 
-#define CDEBUG(x) CDebuggingthing __debugthing(x)
+#ifdef LOG_CALLBACK
+
+    class CCallbackLog
+    {
+        static string sHistory;
+
+        int nOldlen;
+    public:
+        CCallbackLog(const char* s);
+        ~CCallbackLog();
+    };
+
+#   define CDEBUG(x) CCallbackLog __callbacklogger(x)
+
 #else
-#define CDEBUG(x)
+#   define CDEBUG(x)
 #endif
 
 #endif
