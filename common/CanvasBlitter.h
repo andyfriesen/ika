@@ -29,8 +29,6 @@ namespace
     {
         static inline RGBA Blend(RGBA src, RGBA dest)
         {
-#if 1 || !defined(MSVC) || !defined(INLINE_ASM)
-            // Not as fast as it could be
             if (!src.a) return dest;
             if (src.a==255) return src;
 
@@ -39,90 +37,11 @@ namespace
             RGBA col;
             col.a = a;
 
-            col.r=  ( (src.r * a) + (dest.r*(255 - a)) ) >>8;
-            col.g=  ( (src.g * a) + (dest.g*(255 - a)) ) >>8;
-            col.b=  ( (src.b * a) + (dest.b*(255 - a)) ) >>8;
+            col.r=  ( (src.r * a) + (dest.r * (255 - a)) ) >>8;
+            col.g=  ( (src.g * a) + (dest.g * (255 - a)) ) >>8;
+            col.b=  ( (src.b * a) + (dest.b * (255 - a)) ) >>8;
 
             return col;
-#else
-            // not portable at all, but pretty fast
-            // Bleh.  Broken, because I can no longer figure out how the hell this thing ever worked in the first place. ;P
-            u32 s, d, c;
-            u8 a = src.a;
-            __asm
-            {
-                    mov         ebx, [src]
-                    mov		s, ebx			// s=*pSrc
-                    mov         eax, [dest]
-                    mov		d, eax			// d=*pDest
-                    
-                    // Mix the blue channel
-                    mov		ecx, eax			// ebx = s  ecx = d		
-                    and		ebx, 255			// ebx = s&255
-                    and		ecx, 255			// ecx = d&255
-                    
-                    xor		ah, ah
-                    mov		al, a
-                    sub		bx, cx			// bx=(s&255 - d&255)
-                    mul		bx			// eax = bx * ax (where bx is set above, and ax is equal to the alpha)
-                    
-                    shr		ax, 8			// ax= a*(s&255 - d&255)/256
-                    add		ax, cx			// al= a*(s&255 - d&255)/256 + d&255
-                    and		eax, 255
-                    
-                    shl         eax, 16                  // temp
-                    
-                    mov		c, eax			// save the blue chan
-                    
-                    // Green
-                    mov		ebx, s			// ebx = s
-                    mov		ecx, d			// ecx = d
-                    shr		ebx, 8
-                    shr		ecx, 8
-                    mov		s, ebx			// s>>=8;
-                    mov		d, ecx			// d>>=8;
-                    
-                    and		ebx, 255			// ebx = s&255
-                    and		ecx, 255			// ecx = d&255
-                    
-                    xor		ax, ax
-                    mov		al, a
-                    sub		bx, cx			// bl=(s&255 - d&255)
-                    imul	bx			// ax = bl * al (where bl is set above, and al is equal to the alpha)
-                    
-                    shl		cx, 8
-                    add		ax, cx			// ax= a*(s&255 - d&255)+(d&255 * 256)
-                    and		eax, 0xFF00
-                    
-                    or		c, eax			// mix in the green chan
-                    
-                    // Red
-                    mov		ebx, s			// ebx = s
-                    mov		ecx, d			// ecx = d
-                    shr		ebx, 8
-                    shr		ecx, 8
-                    
-                    and		ebx, 255			// ebx = s&255
-                    and		ecx, 255			// ecx = d&255
-                    
-                    xor		ax, ax
-                    mov		al, a
-                    sub		bx, cx			// bl=(s&255 - d&255)
-                    imul	bx			// ax = bl * al (where bl is set above, and al is equal to the alpha)
-                    
-                    shl		cx, 8
-                    add		ax, cx			// ax= a*(s&255 - d&255)+(d&255 * 256)
-                    and		eax, 0xFF00
-                    shl		eax, 8
-                    
-                    or		c, eax			// mix in the red chan
-
-                    shr         eax, 16
-                   
-                    mov		eax, c
-            }
-            return RGBA(c);
-#endif
         }
     };
 

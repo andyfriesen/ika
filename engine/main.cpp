@@ -137,7 +137,7 @@ void CEngine::MainLoop()
 
         if (_showFramerate)
         {
-            font->PrintString(0, 0, va("FFF: %i", video->GetFrameRate()));
+            font->PrintString(0, 0, va("Fps: %i", video->GetFrameRate()));
         }
 
         video->ShowPage();
@@ -359,9 +359,6 @@ void CEngine::RenderLayer(uint layerIndex)
     lenX = res.x / tiles->Width() + 1;
     lenY = res.y / tiles->Height() + 2;
     
-    if (firstX + lenX > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
-    if (firstY + lenY > layer->Height()) lenY = layer->Height() - firstY;
-
     if (firstX < 0)
     {
         lenX -= -firstX;
@@ -375,6 +372,9 @@ void CEngine::RenderLayer(uint layerIndex)
         adjustY += firstY * tiles->Height();
         firstY = 0;
     }
+
+    if ((uint)(firstX + lenX) > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
+    if ((uint)(firstY + lenY) > layer->Height()) lenY = layer->Height() - firstY;
 
     if (lenX < 1 || lenY < 1) return;   // not visible
     
@@ -426,12 +426,41 @@ void CEngine::Render()
         RenderLayer(i);
         RenderEntities(i);
     }
-//    DoHook(_hookRetrace);
+    DoHook(_hookRetrace);
 }
 
+// redundant.  gah.
 void CEngine::Render(const std::vector<uint>& list)
 {
+    CDEBUG("render");
+    const Point res = video->GetResolution();
+    
+    if (!bMaploaded)    return;
+    
+    tiles->UpdateAnimation(GetTime());
+    
+    if (cameraTarget)
+    {        
+        const Map::Layer* layer = &map.GetLayer(cameraTarget->layerIndex);
 
+        SetCamera(Point(
+            cameraTarget->x - res.x / 2 + layer->x,
+            cameraTarget->y - res.y / 2 + layer->y));
+    }
+
+    // Note that we do not clear the screen here.  This is intentional.
+
+    for (uint i = 0; i < list.size(); i++)
+    {
+        uint j = list[i];
+        if (j < map.NumLayers())
+        {
+            RenderLayer(j);
+            RenderEntities(j);
+        }
+    }
+
+    DoHook(_hookRetrace);
 }
 
 void CEngine::DoHook(HookList& hooklist)

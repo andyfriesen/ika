@@ -27,7 +27,7 @@ namespace
             mainwnd->Show(true);
 
             if (argc > 1)
-                mainwnd->LoadMap(argv[0]);
+                mainwnd->LoadMap(argv[1]);
 
             SetTopWindow(mainwnd);
             return TRUE;

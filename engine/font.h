@@ -1,17 +1,12 @@
 #ifndef FONT_H
 #define FONT_H
 
+#include "video/driver.h"
 #include "common/types.h"
 #include "common/fontfile.h"
 #include "tileset.h"
 
 class File;
-
-namespace Video
-{
-    class Driver;
-    class Image;
-}
 
 struct FontException{};
 
@@ -39,13 +34,13 @@ public:
     Canvas& GetGlyphCanvas(char c, uint subset) const;
 
     void PrintChar(int& x, int y, uint subset, char c);
-    void PrintChar(int& x, int y, uint subset, char c, Canvas& dest);
+    void PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::BlendMode blendMode);
 
     template <class Printer>
     void PaintString(int x, int y, const char* s, Printer& print);  ///< Draws the string somewhere.
 
     void PrintString(int x, int y, const char* s);
-    void PrintString(int x, int y, const char* s, Canvas& dest);    ///< Draws the string on a canvas.
+    void PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode);    ///< Draws the string on a canvas.
     
     int StringWidth(const char* s) const;                       ///< Returns the width, in pixels, of the string, if printed in this font.
     

@@ -74,6 +74,8 @@ public:
     void OnRedo(wxCommandEvent&);
     void OnEditMapProperties(wxCommandEvent&);
     void OnImportTiles(wxCommandEvent&);
+    void OnCloneLayer(wxCommandEvent&);
+
     void OnChangeCurrentLayer(wxCommandEvent& event);
     void OnShowLayerProperties(wxCommandEvent& event);
     void OnZoomMapIn(wxCommandEvent&);
@@ -82,6 +84,10 @@ public:
     void OnZoomTileSetIn(wxCommandEvent&);
     void OnZoomTileSetOut(wxCommandEvent&);
     void OnZoomTileSetNormal(wxCommandEvent&);
+    void OnCursorDown(wxCommandEvent&);
+    void OnCursorUp(wxCommandEvent&);
+    void OnCursorLeft(wxCommandEvent&);
+    void OnCursorRight(wxCommandEvent&);
 
     void OnToggleLayer(wxCommandEvent& event);
     void OnSetTilePaintState(wxCommandEvent&);

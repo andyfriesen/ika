@@ -317,11 +317,12 @@ namespace Script
             Script::Font::FontObject* font;
             int x, y;
             char* text;
+            ::Video::BlendMode blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!iis:DrawText", &Script::Font::type, &font, &x, &y, &text))
+            if (!PyArg_ParseTuple(args, "O!iis|i:DrawText", &Script::Font::type, &font, &x, &y, &text, &blendMode))
                 return 0;
 
-            font->font->PrintString(x, y, text, *self->canvas);
+            font->font->PrintString(x, y, text, *self->canvas, blendMode);
 
             Py_INCREF(Py_None);
             return Py_None;

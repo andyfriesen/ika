@@ -45,6 +45,7 @@ namespace
         id_editredo,
         id_editmapproperties,
         id_importtiles,
+        id_clonelayer,
 
         id_zoommapin,
         id_zoommapout,
@@ -52,6 +53,11 @@ namespace
         id_zoomtilesetin,
         id_zoomtilesetout,
         id_zoomtilesetnormal,
+
+        id_cursorup,
+        id_cursordown,
+        id_cursorleft,
+        id_cursorright,
 
         id_tilepaint,
         id_selecttiles,
@@ -89,6 +95,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_editredo, MainWindow::OnRedo)
     EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
     EVT_MENU(id_importtiles, MainWindow::OnImportTiles)
+    EVT_MENU(id_clonelayer, MainWindow::OnCloneLayer)
 
     EVT_MENU(id_zoommapin, MainWindow::OnZoomMapIn)
     EVT_MENU(id_zoommapout, MainWindow::OnZoomMapOut)
@@ -96,6 +103,11 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_zoomtilesetin, MainWindow::OnZoomTileSetIn)
     EVT_MENU(id_zoomtilesetout, MainWindow::OnZoomTileSetOut)
     EVT_MENU(id_zoomtilesetnormal, MainWindow::OnZoomTileSetNormal)
+
+    EVT_MENU(id_cursorup, MainWindow::OnCursorUp)
+    EVT_MENU(id_cursordown, MainWindow::OnCursorDown)
+    EVT_MENU(id_cursorleft, MainWindow::OnCursorLeft)
+    EVT_MENU(id_cursorright, MainWindow::OnCursorRight)
 
     EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
@@ -227,6 +239,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     editMenu->AppendSeparator();
     editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
     editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
+    editMenu->AppendSeparator();
+    editMenu->Append(id_clonelayer, "Clone Layer", "Create a copy of the current layer.");
 
     wxMenu* viewMenu = new wxMenu;
     viewMenu->Append(id_zoommapin, "Zoom Map In\t+");
@@ -244,7 +258,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     SetMenuBar(menuBar);
 
     // Set up hotkey stuff.
-    const int tableSize = 11;
+    const int tableSize = 15;
     int i = 0;
     wxAcceleratorEntry entries[tableSize]; // bleh
     entries[i++].Set(wxACCEL_CTRL, (int)'N', id_filenew);
@@ -258,6 +272,10 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     entries[i++].Set(wxACCEL_NORMAL, WXK_NUMPAD8, id_zoomtilesetin);
     entries[i++].Set(wxACCEL_NORMAL, WXK_NUMPAD2, id_zoomtilesetout);
     entries[i++].Set(wxACCEL_NORMAL, WXK_NUMPAD5, id_zoomtilesetnormal);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_UP, id_cursorup);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_DOWN, id_cursordown);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_LEFT, id_cursorleft);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_RIGHT, id_cursorright);
     wxAcceleratorTable table(tableSize, entries);
     SetAcceleratorTable(table);
 
@@ -492,7 +510,7 @@ void MainWindow::OnExportTileSet(wxCommandEvent&)
         int height = tileHeight * numRows;
 
         Canvas bigImage(width, height);
-        int i = 0;
+        uint i = 0;
         for (int y = 0; y < numRows; y++)
         {
             for (int x = 0; x < colSize; x++)
@@ -563,6 +581,14 @@ void MainWindow::OnImportTiles(wxCommandEvent&)
     }
 }
 
+void MainWindow::OnCloneLayer(wxCommandEvent&)
+{
+    uint curLayer = _mapView->GetCurLayer();
+    wxASSERT(curLayer < _map->NumLayers());
+
+    HandleCommand(new CloneLayerCommand(curLayer));
+}
+
 void MainWindow::OnChangeCurrentLayer(wxCommandEvent& event)
 {
     wxASSERT(_map != 0 && (uint)event.GetInt() < _map->NumLayers());
@@ -597,11 +623,32 @@ void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoo
 void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTileSetNormal(wxCommandEvent&)   {   _tileSetView->SetZoom(16);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   } // 16:16 == 100%
 
+void MainWindow::OnCursorUp(wxCommandEvent&)
+{
+    wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEUP, 0, wxVERTICAL);
+    _mapView->ProcessEvent(evt);
+}
+
+void MainWindow::OnCursorDown(wxCommandEvent&)
+{
+    wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEDOWN, 0, wxVERTICAL);
+    _mapView->ProcessEvent(evt);
+}
+
+void MainWindow::OnCursorLeft(wxCommandEvent&)
+{
+    wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEUP, 0, wxHORIZONTAL);
+    _mapView->ProcessEvent(evt);
+}
+
+void MainWindow::OnCursorRight(wxCommandEvent&)
+{
+    wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEDOWN, 0, wxHORIZONTAL);
+    _mapView->ProcessEvent(evt);
+}
+
 void MainWindow::OnToggleLayer(wxCommandEvent& event)
 {
-    //int layIdx = event.GetInt();
-    //wxASSERT(layIdx >= 0 && layIdx < _map->NumLayers());
-
     _mapView->Render();
     _mapView->ShowPage();
 }
@@ -630,6 +677,9 @@ void MainWindow::OnDestroyLayer(wxCommandEvent&)
 {
     if (_mapView->GetCurLayer() < _map->NumLayers())
         HandleCommand(new DestroyLayerCommand(_mapView->GetCurLayer()));
+
+    if (_mapView->GetCurLayer() >= _map->NumLayers())
+        _mapView->SetCurLayer(_map->NumLayers() - 1);
 }
 
 void MainWindow::OnMoveLayerUp(wxCommandEvent&)
@@ -642,7 +692,7 @@ void MainWindow::OnMoveLayerUp(wxCommandEvent&)
 
 void MainWindow::OnMoveLayerDown(wxCommandEvent&)
 {
-    uint curLay = _mapView->GetCurLayer();
+    const uint curLay = _mapView->GetCurLayer();
 
     if (curLay < _map->NumLayers() - 1)
         HandleCommand(new SwapLayerCommand(curLay, curLay + 1));

@@ -110,7 +110,7 @@ void CFont::PrintChar(int& x, int y, uint subset, char c)
     x += img->Width();
 }
 
-void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest)
+void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::BlendMode blendMode)
 {
     //if (c < 0 || c > 96)
     //    return;
@@ -119,7 +119,16 @@ void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest)
 
     Canvas& glyph = GetGlyphCanvas(c, subset);
 
-    CBlitter<Alpha>::Blit(glyph, dest, x, y);
+    switch (blendMode)
+    {
+    default:
+    case Video::None:       CBlitter<Opaque>::Blit(glyph, dest, x, y);      break;
+    case Video::Add:        CBlitter<Additive>::Blit(glyph, dest, x, y);    break;
+    case Video::Matte:      CBlitter<Matte>::Blit(glyph, dest, x, y);       break;
+    case Video::Normal:     CBlitter<Alpha>::Blit(glyph, dest, x, y);       break;
+    case Video::Subtract:   CBlitter<Subtractive>::Blit(glyph, dest, x, y); break;
+    }
+
     x += glyph.Width();
 }
 
@@ -177,14 +186,16 @@ namespace
     struct PrintToCanvas
     {
         Canvas& _dest;
+        Video::BlendMode _blendMode;
 
-        PrintToCanvas(Canvas& dest)
+        PrintToCanvas(Canvas& dest, Video::BlendMode blendMode)
             : _dest(dest)
+            , _blendMode(blendMode)
         {}
 
         inline void operator ()(int& x, int y, int subset, char c, CFont* font)
         {
-            font->PrintChar(x, y, subset, c, _dest);
+            font->PrintChar(x, y, subset, c, _dest, _blendMode);
         }
     };
 };
@@ -194,9 +205,9 @@ void CFont::PrintString(int x, int y, const char* s)
     PaintString(x, y, s, PrintToVideo());
 }
 
-void CFont::PrintString(int x, int y, const char* s, Canvas& dest)
+void CFont::PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode)
 {
-    PaintString(x, y, s, PrintToCanvas(dest));
+    PaintString(x, y, s, PrintToCanvas(dest, blendMode));
 }
 
 int CFont::StringWidth(const char* s) const

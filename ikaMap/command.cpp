@@ -173,6 +173,29 @@ void SwapLayerCommand::Undo(MainWindow* m)
 
 //-----------------------------------------------------------------------------
 
+CloneLayerCommand::CloneLayerCommand(uint index)
+    : _index(index)
+{}
+
+void CloneLayerCommand::Do(MainWindow* m)
+{
+    Map::Layer* newLay = new Map::Layer(m->GetMap()->GetLayer(_index));
+    m->GetMap()->InsertLayer(newLay, _index + 1);
+
+    m->UpdateLayerList();
+    m->GetMapView()->Refresh();
+}
+
+void CloneLayerCommand::Undo(MainWindow* m)
+{
+    m->GetMap()->DestroyLayer(_index + 1);
+
+    m->UpdateLayerList();
+    m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
 ResizeLayerCommand::ResizeLayerCommand(uint index, uint newWidth, uint newHeight)
     : _index(index)
     , _newWidth(newWidth)

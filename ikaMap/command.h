@@ -114,6 +114,18 @@ public:
     virtual void Undo(MainWindow* m);
 };
 
+class CloneLayerCommand: public Command
+{
+private:
+    uint _index;    // index of the layer to clone.  The new layer is put directly after this one.
+
+public:
+    CloneLayerCommand(uint index);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
 class ResizeLayerCommand : public Command
 {
 private:
