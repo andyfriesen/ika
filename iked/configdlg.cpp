@@ -58,9 +58,9 @@ void CConfigDlg::Save(const string& fname)
 
 void CConfigDlg::Update()
 {
-    pFullscreenbox->SetValue(cfg.GetInt("fullscreen")!=0);
-    pSoundbox->SetValue     (cfg.Get("sounddriver")!="");
-    pLogbox->SetValue       (cfg.GetInt("log")!=0);
+    pFullscreenbox->SetValue(cfg.Int("fullscreen")!=0);
+    pSoundbox->SetValue     (cfg["sounddriver"]!="");
+    pLogbox->SetValue       (cfg.Int("log")!=0);
 }
 
 void CConfigDlg::OnOk(wxCommandEvent&)

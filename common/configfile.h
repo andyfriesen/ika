@@ -36,8 +36,8 @@ public:
     CConfigFile(const char* fname);
 
     void        Add(const string& key,const string& value);
-    string Get(const string& key);
-    int         GetInt(const string& key);
+    string      operator [](const string& key);
+    int         Int(const string& key);
 
     void        Load(const char* fname);
     void        Save(const char* fname);

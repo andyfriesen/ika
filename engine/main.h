@@ -51,6 +51,8 @@ public:                                                                         
     
     Timer                           timer;                                          //!< timer-based callback type stuff
     Input                           input;                                          //!< keyboard/mouse (todo: joystick)
+
+    bool                            bShowfps;                                       //!< Shows the current framerate in the window title if set.
     
     bool                            bKillFlag;                                      //!< set to true if a certain something hits the fan
     bool                            bActive;                                        //!< set to false if we're supposed to sleep

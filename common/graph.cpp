@@ -61,9 +61,9 @@ static void Assign(T& dest,void* src)
     dest=(T&)src;
 }
 
-bool SetUpGraphics(const char* dllname)
+bool SetUpGraphics(const string& dllname)
 {
-    hGraph=LoadLibrary(dllname);
+    hGraph=LoadLibrary(dllname.c_str());
     if (!hGraph)
         return false;
     

@@ -45,7 +45,7 @@ extern int  (*gfxImageHeight)(handle img);
 
 extern bool (*gfxPaletteMorph)(int r,int g,int b);
 
-extern bool SetUpGraphics(const char* dllname);
+extern bool SetUpGraphics(const string& dllname);
 extern void UnloadGraphics();
 
 extern bool gfxLoadPNG(handle hImage,const char* fname);												// loads a png into the specified image

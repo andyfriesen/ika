@@ -1,3 +1,4 @@
+
 #include "configfile.h"
 #include "fileio.h"
 
@@ -6,7 +7,7 @@ CConfigFile::CConfigFile(const char* fname)
     Load(fname);
 }
 
-void CConfigFile::Add(const std::string& key,const std::string& value)
+void CConfigFile::Add(const string& key,const string& value)
 {
     if (key.length()==0 || value.length()==0)
         return;
@@ -14,7 +15,7 @@ void CConfigFile::Add(const std::string& key,const std::string& value)
     keys[key]=value;
 }
 
-std::string CConfigFile::Get(const std::string& key)
+string CConfigFile::operator [](const string& key)
 {
     ConfigMap::iterator i=keys.find(key);
 
@@ -24,9 +25,9 @@ std::string CConfigFile::Get(const std::string& key)
     return (*i).second;
 }
 
-int CConfigFile::GetInt(const std::string& key)
+int CConfigFile::Int(const string& key)
 {
-    return atoi(Get(key).c_str());
+    return atoi((*this)[key].c_str());
 }
 
 void CConfigFile::Load(const char* fname)

@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include <algorithm>
 
 const int timerate=100;
 
@@ -97,7 +98,8 @@ void CEngine::MainLoop()
             fps=numframes;
             numframes=0;
             t-=timerate;
-            Log::Write("%i fps",fps);
+            if (bShowfps)
+                SetWindowText(hWnd,va("ika - %ifps",fps));
         }
         numframes++;
         
@@ -111,6 +113,7 @@ void CEngine::MainLoop()
 
 void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
 // TODO: Make a nice happy GUI thingie for making a user.cfg
+// This is ugly. :(
 {
     CDEBUG("Startup");
     
@@ -118,9 +121,11 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     
     CConfigFile cfg("user.cfg");
 
-    nFrameskip=cfg.GetInt("frameskip");
+    bShowfps= cfg.Int("showfps")!=0 ;
 
-    if (cfg.GetInt("log"))
+    nFrameskip=cfg.Int("frameskip");
+
+    if (cfg.Int("log"))
         Log::Init("ika.log");
     
     Log::Write("%s startup",VERSION);
@@ -129,7 +134,7 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     
     bKillFlag=false;
       
-    if (!SetUpGraphics(cfg.Get("graphdriver").c_str()))
+    if (!SetUpGraphics(cfg["graphdriver"]))
     {
         Sys_Error("Unable to load graphics driver.");
         return;
@@ -138,10 +143,10 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     Log::Writen("Initing graphics");
     bool a=gfxInit(
         hWnd,
-        cfg.GetInt("xres"),
-        cfg.GetInt("yres"),
-        cfg.GetInt("bitdepth"),
-        cfg.GetInt("fullscreen")!=0
+        cfg.Int("xres"),
+        cfg.Int("yres"),
+        cfg.Int("bitdepth"),
+        cfg.Int("fullscreen")!=0
         );
     if (!a)
     {
@@ -151,7 +156,7 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     Log::Write("... OK");
     
     Log::Writen("Initing sound");
-    a=SetupSound(cfg.Get("sounddriver").c_str());
+    a=SetupSound(cfg["sounddriver"].c_str());
     if (!a)
         Log::Write("Sound initialization failed.  Disabling audio.");
     Log::Write("... OK");
@@ -162,8 +167,8 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
         Sys_Error("input.Init failed");
         return;
     }
-    input.ClipMouse(0,0,cfg.GetInt("xres"),cfg.GetInt("yres"));
-    if (cfg.GetInt("fullscreen"))
+    input.ClipMouse(0,0,cfg.Int("xres"),cfg.Int("yres"));
+    if (cfg.Int("fullscreen"))
         input.HideMouse();
     
     memset(pBindings,0,nControls*sizeof(void*));            // Clear key bindings
@@ -227,12 +232,23 @@ void CEngine::Shutdown()
 
 // ------------------------------------------------------------------------------------------
 
+namespace
+{
+    class CompareEntities
+    {
+    public:
+        int operator () (const CEntity* a,const CEntity* b)
+        {
+            return a->y<b->y;
+        }
+    };
+};
+
 void CEngine::RenderEntities()
 {
     CDEBUG("renderentities");
-    std::vector<CEntity*>    drawlist;
+    std::vector<CEntity*>     drawlist;
     
-    drawlist.clear();
     // first, get a list of entities onscreen
     int width,height;
     for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
@@ -255,25 +271,13 @@ void CEngine::RenderEntities()
     
     if (!drawlist.size())
         return;                                                                             // nobody onscreen?  Easy out!
-    
-    int nEntsonscreen=drawlist.size();
-    bool blarg;
-    do                                                                                      // quick n' dirty bubble sort
+
+    // Sort them by y value. (see the CompareEntity functor above)
+    std::sort(drawlist.begin(),drawlist.end(),CompareEntities());
+
+    for (std::vector<CEntity*>::iterator j=drawlist.begin(); j!=drawlist.end(); j++)
     {
-        blarg=false;
-        for (int i=0; i<nEntsonscreen; i++)
-            for (int j=i+1; j<nEntsonscreen; j++)
-                if (drawlist[i]->y>drawlist[j]->y)                                          // FIXME:  is this a gigantic bottleneck?  Quicksort?
-                {
-                    swap(drawlist[i],drawlist[j]);
-                    blarg=true;
-                }            
-    } while (blarg);
-    
-    
-    for (int j=0; j<nEntsonscreen; j++)
-    {
-        CEntity& e=*drawlist[j];
+        const CEntity& e=**j;
         CSprite& s=*e.pSprite;
         
         int frame=e.nSpecframe?e.nSpecframe:e.nCurframe;

@@ -200,7 +200,7 @@ void Benchmark(HWND hwnd)
     CConfigFile cfg("user.cfg");
 
 //    cfg.Read("user.cfg");
-    SetUpGraphics(cfg.Get("graphdriver").c_str());//cfg.sGraphplugin);
+    SetUpGraphics(cfg["graphdriver"].c_str());//cfg.sGraphplugin);
     SetupSound("");
 
     gfxInit(hwnd,320,240,32,false);

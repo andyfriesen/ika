@@ -27,7 +27,7 @@ METHOD(std_log)
     Log::Write(message);
     
     Py_INCREF(Py_None);
-    return Py_None;									// returning void :)
+    return Py_None;                                    // returning void :)
 }
 
 METHOD(std_exit)
@@ -71,7 +71,7 @@ METHOD(std_wait)
         return NULL;
     
     CEntity* pSaveplayer=pEngine->pPlayer;
-    pEngine->pPlayer=0;								// stop the player entity
+    pEngine->pPlayer=0;                                // stop the player entity
     
     pEngine->timer.t=0;
     
@@ -89,7 +89,7 @@ METHOD(std_wait)
         gfxShowPage();
     }
     
-    pEngine->pPlayer=pSaveplayer;								// restore the player
+    pEngine->pPlayer=pSaveplayer;                                // restore the player
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -202,7 +202,7 @@ METHOD(std_hookbutton)
 
 METHOD(std_hookretrace)
 {
-    PyObject*	pFunc;
+    PyObject*    pFunc;
     
     if (!PyArg_ParseTuple(args,"O:HookRetrace",&pFunc))
         return NULL;
@@ -232,12 +232,12 @@ METHOD(std_unhookretrace)
         std::list<void*>::iterator i;
         
         for (i=pEngine->pHookretrace.begin(); i!=pEngine->pHookretrace.end(); i++)
-            Py_DECREF((PyObject*)*i);										// dereference
+            Py_DECREF((PyObject*)*i);                                        // dereference
 
         pEngine->pHookretrace.clear();
     }
     else
-    {	
+    {    
         std::list<void*>::iterator i;
         
         for (i=pEngine->pHookretrace.begin(); i!=pEngine->pHookretrace.end(); i++)
@@ -249,14 +249,14 @@ METHOD(std_unhookretrace)
                 break;
             }
         }
-    }		
+    }        
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 METHOD(std_hooktimer)
 {
-    PyObject*	pFunc;
+    PyObject*    pFunc;
     
     if (!PyArg_ParseTuple(args,"O:HookTimer",&pFunc))
         return NULL;
@@ -289,8 +289,8 @@ METHOD(std_unhooktimer)
         
         for (i=pEngine->pHooktimer.begin(); i!=pEngine->pHooktimer.end(); i++)
         {
-            Py_DECREF((PyObject*)*i);									// dereference
-            pEngine->pHooktimer.remove(*i);								// destroy
+            Py_DECREF((PyObject*)*i);                                    // dereference
+            pEngine->pHooktimer.remove(*i);                                // destroy
         }
     }
     else
@@ -313,49 +313,54 @@ METHOD(std_unhooktimer)
 
 // MASTA TABLE YO
 
+// WAH WAH MACROS ARE EVIL WAH WAH WAH.
+// I have no problem with this at all.  It's nice and clean looking.
+#define FUNCTION(x,y) { x,CScriptEngine::y,1}
+
 PyMethodDef standard_methods[] =
 {
-    //  name  | function | calling convention
+    //  name  | function
     
     // Misc
-    {	"Log",				CScriptEngine::std_log	,			1	},
-    {	"Exit",				CScriptEngine::std_exit	,			1	},
-    {	"Delay",			CScriptEngine::std_delay,			1	},
-    {	"Wait",				CScriptEngine::std_wait	,			1	},
-    {	"GetTime",			CScriptEngine::std_gettime,			1	},
-    {	"Random",			CScriptEngine::std_random,			1	},
+    FUNCTION("Log",std_log),
+    FUNCTION("Exit",std_exit),
+    FUNCTION("Delay",std_delay),
+    FUNCTION("Wait",std_wait),
+    FUNCTION("GetTime",std_gettime),
+    FUNCTION("Random",std_random),
     
     // Video
-    {	"LoadImage",		CScriptEngine::std_loadimage,		1	},
-    {	"ShowPage",			CScriptEngine::std_showpage,		1	},
-    {	"SetRenderDest",	CScriptEngine::std_setrenderdest,	1	},
-    {	"GetRenderDest",	CScriptEngine::std_getrenderdest,	1	},
-    {	"GetScreenImage",	CScriptEngine::std_getscreenimage,	1	},
-    {	"RGB",				CScriptEngine::std_rgb,				1	},
-    {	"GetRGB",			CScriptEngine::std_getrgb,			1	},
-    {	"PaletteMorph",		CScriptEngine::std_palettemorph,	1	},
+    FUNCTION("LoadImage",std_loadimage),
+    FUNCTION("ShowPage",std_showpage),
+    FUNCTION("SetRenderDest",std_setrenderdest),
+    FUNCTION("GetRenderDest",std_getrenderdest),
+    FUNCTION("GetScreenImage",std_getscreenimage),
+    FUNCTION("RGB",std_rgb),
+    FUNCTION("GetRGB",std_getrgb),
+    FUNCTION("PaletteMorph",std_palettemorph),
     
     // Entity
-    {	"ProcessEntities",	CScriptEngine::std_processentities,	1	},
-    {	"SetPlayer",		CScriptEngine::std_setplayer,		1	},
-    {	"SetCameraTarget",	CScriptEngine::std_setcameratarget,	1	},
-    {	"GetCameraTarget",	CScriptEngine::std_getcameratarget,	1	},
+    FUNCTION("ProcessEntities",std_processentities),
+    FUNCTION("SetPlayer",std_setplayer),
+    FUNCTION("SetCameraTarget",std_setcameratarget),
+    FUNCTION("GetCameraTarget",std_getcameratarget),
     
-    {	"HookButton",		CScriptEngine::std_hookbutton,		1	},
-    {	"HookRetrace",		CScriptEngine::std_hookretrace,		1	},
-    {	"UnhookRetrace",	CScriptEngine::std_unhookretrace,	1	},
-    {	"HookTimer",		CScriptEngine::std_hooktimer,		1	},
-    {	"UnhookTimer",		CScriptEngine::std_unhooktimer,		1	},
+    FUNCTION("HookButton",std_hookbutton),
+    FUNCTION("HookRetrace",std_hookretrace),
+    FUNCTION("UnhookRetrace",std_unhookretrace),
+    FUNCTION("HookTimer",std_hooktimer),
+    FUNCTION("UnhookTimer",std_unhooktimer),
     
     // Object constructors
-    {	"Image",			CScriptEngine::Image_New,			1	},
-    {	"Music",			CScriptEngine::Music_New,			1	},
-    {	"Sound",			CScriptEngine::Sound_New,			1	},
-    {	"Font",				CScriptEngine::Font_New,			1	},
-    {	"Entity",			CScriptEngine::std_spawnentity,		1	},
-    {	NULL,	NULL	}						// sentinel?  (end of list marker, I think)
+    FUNCTION("Image",Image_New),
+    FUNCTION("Music",Music_New),
+    FUNCTION("Sound",Sound_New),
+    FUNCTION("Font",Font_New),
+    FUNCTION("Entity",std_spawnentity),
+    {    NULL,    NULL    }                        // sentinel?  (end of list marker, I think)
 };
 
+#undef FUNCTION
 #undef METHOD
 
 #endif
