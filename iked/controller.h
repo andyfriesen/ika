@@ -35,18 +35,14 @@ namespace iked {
     struct Allocator {
         virtual ~Allocator() { }
 	virtual T* allocate(const std::string& name) = 0;
-	//virtual void free(T* t) = 0;
+        // no destroy?
     };
 
     template <class T>
     struct DefaultAllocator : Allocator<T> {
 	virtual T* allocate(const std::string& name) {
-	    return new new T(name);
+	    return new T(name);
 	}
-
-	/*virtual void free(T* t) {
-	    delete t;
-	}*/
     };
 
     /**
@@ -67,9 +63,8 @@ namespace iked {
         }
 
 	~Controller() {
-            foreach (Document* doc, documents ) {
+            foreach (Document* doc, documents) {
 		Log::Write("Leak detected! %s", doc->getName().c_str());
-                delete doc;
 	    }
 	    delete allocator;
 	}
@@ -77,7 +72,6 @@ namespace iked {
 	Document* get(const std::string& name) {
 #ifdef WIN32
 	    std::string fileName = toUpper(name);
-            fileName.replace(
 #else
 	    std::string fileName = name;
 #endif
@@ -96,15 +90,11 @@ namespace iked {
 		try {
 		    data = allocator->allocate(fileName);
 		} catch (std::runtime_error& error) {
-		    errorMessage = error.what();
-		    data = 0;
+		    Log::Write("allocate(\"%s\") failed: %s", name.c_str(), error.what());
+		    throw;
 		}
 
-		if (data == 0) {
-		    Log::Write("allocate(\"%s\") failed: %s", name.c_str(), errorMessage.c_str());
-		    delete data;
-		    return 0;
-		}
+                assert(data != 0);
 
 		documents.insert(data);
 

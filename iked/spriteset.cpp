@@ -32,9 +32,7 @@ namespace iked {
         int pos = fileName.rfind('.');
         
         // If the extension is CHR, then export to the old format.
-        if (Path::equals(
-            Path::getExtension(fileName), "chr"))
-        {
+        if (Path::equals(Path::getExtension(fileName), "chr")) {
             chr->SaveOld(fileName);
         } else {
             chr->Save(fileName);

@@ -2,7 +2,7 @@
 #pragma once
 
 #include <wx/wx.h>
-#include <wx/grid.h>
+#include <wx/listctrl.h>
 
 #include "docview.h"
 #include "graph.h"
@@ -18,7 +18,7 @@ namespace iked {
         ~SpriteSetView();
 
     private:
-        void Render();  // blech
+        virtual void deleteDocument(Document* doc);
 
         void onSave(wxCommandEvent& event);
         void onSaveAs(wxCommandEvent& event);
@@ -39,14 +39,17 @@ namespace iked {
         void initMenu();
         void initAccelerators();
 
+        void refresh();             // copies sprite data onto the form
+        void refreshSprite();       // copies form data into the dialog
+
         SpriteSet*          getSprite();
 
         wxTextCtrl*         hotXEdit;
         wxTextCtrl*         hotYEdit;
         wxTextCtrl*         hotWidthEdit;
         wxTextCtrl*         hotHeightEdit;
-        wxListBox*          animScriptGrid;
-        wxListBox*          metaDataGrid;
+        wxListCtrl*          animScriptGrid;
+        wxListCtrl*          metaDataGrid;
         ImageArrayPanel*    imagePanel;
         
         wxMenu*             contextMenu;

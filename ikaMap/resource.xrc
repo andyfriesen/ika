@@ -467,7 +467,18 @@
               </object>
             </object>
             <object class="sizeritem">
-              <object class="wxTextCtrl" name="edit_rowsize"/>
+              <object class="wxBoxSizer">
+                <orient>wxHORIZONTAL</orient>
+                <object class="sizeritem">
+                  <object class="wxTextCtrl" name="edit_rowsize"/>
+                </object>
+                <object class="sizeritem">
+                  <object class="wxCheckBox" name="check_autorowsize">
+                    <label>&amp;Figure this out automatically</label>
+                    <enabled>0</enabled>
+                  </object>
+                </object>
+              </object>
             </object>
             <object class="sizeritem">
               <object class="wxStaticText">

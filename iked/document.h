@@ -21,8 +21,12 @@ namespace iked {
      * Wraps a document resource.  Forces mutations to that resource to go
      * through the command interface, maintains the undo stack.
      */
-    struct Document : RefCounted {
-        virtual ~Document();
+    struct Document {
+        Document();
+
+        int getRefCount() const;
+        void ref();
+        void unref();
 
         virtual std::string getName() = 0;
         virtual bool isChanged() = 0;
@@ -40,6 +44,11 @@ namespace iked {
 
         // Events
         Listener<Document*> destroyed;  // fired when the document is deallocated.
+
+    protected:
+        virtual ~Document();
+
+        int refCount;
     };
 
     /**

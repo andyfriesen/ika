@@ -1,8 +1,8 @@
 /*
-    Logging stuff.
-
-    Not sure if the singleton pattern is the best way to handle this stuff.  Not an issue right now anyway. --andy
-*/
+ * Logging stuff.
+ *
+ * Not sure if the singleton pattern is the best way to handle this stuff.  Not an issue right now anyway. --andy
+ */
 
 #pragma once
 
@@ -10,8 +10,7 @@
 
 //#define LOG_CALLBACK
 
-namespace Log
-{
+namespace Log {
     void Init(const char* fname);
     void Write(const char*, ...);        // writes to the log file
     void Write(const std::string& s);
@@ -21,8 +20,7 @@ namespace Log
 
 #ifdef LOG_CALLBACK
 
-    class CCallbackLog
-    {
+    class CCallbackLog {
         static std::string sHistory;
 
         int nOldlen;

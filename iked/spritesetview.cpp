@@ -7,6 +7,7 @@
 #include "main.h"
 #include "movescripteditor.h"
 #include "spritesetview.h"
+#include "common/chr.h"
 
 namespace iked {
 
@@ -20,6 +21,12 @@ namespace iked {
 
             id_chrmovescript,
             id_chrimportframes,
+
+            id_newanimscript,
+            id_destroyanimscript,
+
+            id_newmetadata,
+            id_destroymetadata,
 
             id_deleteframe,
             id_insertframe,
@@ -57,11 +64,11 @@ namespace iked {
         : DocumentPanel(parentwnd, doc, fileName)
     {
         wxASSERT(doc && doc->asSpriteSet() != 0);
-        Freeze();
 
+        Freeze();
         init();
+        refresh();
         Thaw();
-        Refresh();
 
         // Connect imagePanel event(s)
         imagePanel->rightClickImage.add(bind(this, &SpriteSetView::onRightClickFrame));
@@ -71,8 +78,16 @@ namespace iked {
         delete contextMenu;
     }
 
+    void SpriteSetView::deleteDocument(Document* doc) {
+        getParent()->spriteset.free(doc);
+    }
+
     void SpriteSetView::onSave(wxCommandEvent& event) {
-        getDocument()->save(getName());
+        if (getName().empty()) {
+            onSaveAs(event);
+        } else {
+            saveDocument();
+        }
     }
 
     void SpriteSetView::onSaveAs(wxCommandEvent& event) {
@@ -104,9 +119,9 @@ namespace iked {
         //_parent->OpenDocument(new CImageView(_parent, &_sprite->Get(_curFrame)));
     }
 
-    void SpriteSetView::onZoomIn(wxCommandEvent& event)    { imagePanel->Zoom(1);  }
-    void SpriteSetView::onZoomOut(wxCommandEvent& event)   { imagePanel->Zoom(-1); }
-    void SpriteSetView::onZoomNormal(wxCommandEvent& event){ imagePanel->Zoom(16 - imagePanel->Zoom()); } 
+    void SpriteSetView::onZoomIn(wxCommandEvent& event)    { imagePanel->incZoom(-1);  imagePanel->Refresh(); }
+    void SpriteSetView::onZoomOut(wxCommandEvent& event)   { imagePanel->incZoom(1); imagePanel->Refresh(); }
+    void SpriteSetView::onZoomNormal(wxCommandEvent& event){ imagePanel->setZoom(16); imagePanel->Refresh(); }
 
     void SpriteSetView::onShowMovescriptEditor(wxCommandEvent& event) {
 #if 1
@@ -155,16 +170,30 @@ namespace iked {
     }
 
     void SpriteSetView::init() {
+        SpriteSet* sprite = getSprite();        
+
+        // Create controls
         hotXEdit = new wxTextCtrl(this, -1);
         hotYEdit = new wxTextCtrl(this, -1);
         hotWidthEdit = new wxTextCtrl(this, -1);
         hotHeightEdit = new wxTextCtrl(this, -1);
 
-        animScriptGrid = new wxListBox(this, -1);
-        metaDataGrid = new wxListBox(this, -1);
+        wxButton* newScriptButton = new wxButton(this, id_newanimscript, "&New");
+        wxButton* deleteScriptButton = new wxButton(this, id_destroyanimscript, "&Delete");
+        wxButton* newMetaDataButton = new wxButton(this, id_newmetadata, "Ne&w");
+        wxButton* deleteMetaDataButton = new wxButton(this, id_destroymetadata, "Dele&te");
 
-        imagePanel = new ImageArrayPanel(this, getSprite());
+        animScriptGrid = new wxListCtrl(this, -1, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+        animScriptGrid->InsertColumn(0, "Name");
+        animScriptGrid->InsertColumn(1, "Value");
 
+        metaDataGrid = new wxListCtrl(this, -1, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+        metaDataGrid->InsertColumn(0, "Name");
+        metaDataGrid->InsertColumn(1, "Value");
+
+        imagePanel = new ImageArrayPanel(this, sprite);
+
+        // Create sizers and arrange everything all pretty-like.
         wxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
         wxSizer* leftSide = new wxBoxSizer(wxVERTICAL);
         wxSizer* s1 = new wxGridSizer(2, 4);
@@ -178,11 +207,21 @@ namespace iked {
         s1->Add(new wxStaticText(this, -1, "Hotspot Height"));
         s1->Add(hotHeightEdit);
 
+        wxSizer* s2 = new wxBoxSizer(wxHORIZONTAL);
+        s2->Add(newScriptButton);
+        s2->Add(deleteScriptButton);
+
+        wxSizer* s3 = new wxBoxSizer(wxHORIZONTAL);
+        s3->Add(newMetaDataButton);
+        s3->Add(deleteMetaDataButton);
+
         leftSide->Add(s1);
         leftSide->Add(new wxStaticText(this, -1, "Animation Scripts"));
         leftSide->Add(animScriptGrid, 1, wxEXPAND);
+        leftSide->Add(s2);
         leftSide->Add(new wxStaticText(this, -1, "Metadata"));
         leftSide->Add(metaDataGrid, 1, wxEXPAND);
+        leftSide->Add(s3);
 
         topSizer->Add(leftSide, 0, wxEXPAND);
         topSizer->Add(imagePanel, 1, wxEXPAND);
@@ -208,6 +247,14 @@ namespace iked {
         chrmenu->Append(id_chrmovescript, "&Movescript...");
         chrmenu->Append(id_chrimportframes, "Import &Frames...");
         menubar->Append(chrmenu, "&CHR");
+
+        wxMenu* viewMenu = new wxMenu;
+        viewMenu->Append(id_zoomin, "Zoom &in");
+        viewMenu->Append(id_zoomout, "Zoom &out");
+        viewMenu->Append(id_zoomnormal, "Zoom &normal");
+        //viewMenu->Append(id_zoomin2x, "Zoom &in 2x");
+        //viewMenu->Append(id_zoomin4x, "Zoom &in 4x");
+        menubar->Append(viewMenu, "&View");
 
         SetMenuBar(menubar);
 
@@ -237,6 +284,39 @@ namespace iked {
 
         wxAcceleratorTable table(p, &*accel.begin());
         SetAcceleratorTable(table);
+    }
+
+    void SpriteSetView::refresh() {
+        CCHRfile& chr = getSprite()->GetCHR();
+
+        hotXEdit->SetValue(toString(chr.HotX()).c_str());
+        hotYEdit->SetValue(toString(chr.HotY()).c_str());
+        hotWidthEdit->SetValue(toString(chr.HotW()).c_str());
+        hotHeightEdit->SetValue(toString(chr.HotH()).c_str());
+
+        animScriptGrid->Clear();
+        int index = 0;
+        for (CCHRfile::StringMap::iterator
+            iter = chr.moveScripts.begin();
+            iter != chr.moveScripts.end();
+            iter++
+        ) {
+            animScriptGrid->InsertItem(index, iter->first.c_str());
+            animScriptGrid->SetItem(index, 1, iter->second.c_str());
+            index++;
+        }
+
+        index = 0;
+        metaDataGrid->Clear();
+        for (CCHRfile::StringMap::iterator
+            iter = chr.metaData.begin();
+            iter != chr.metaData.end();
+            iter++
+        ) {
+            metaDataGrid->InsertItem(index, iter->first.c_str());
+            metaDataGrid->SetItem(index, 1, iter->second.c_str());
+            index++;
+        }
     }
 
     SpriteSet* SpriteSetView::getSprite() {

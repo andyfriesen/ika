@@ -295,7 +295,7 @@ namespace iked {
             OpenDocument(wnd);
         }
         catch (std::runtime_error err) {
-            ::wxMessageBox(va("There was an error loading the file\n%s", err.what()), "Error opening file", wxID_OK | wxCENTER, this);
+            ::wxMessageBox(va("Unable to load '%s':\n%s", fname.c_str(), err.what()), "Error opening file", wxID_OK | wxCENTER, this);
         }
     }
 

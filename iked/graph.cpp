@@ -20,8 +20,10 @@ namespace iked {
     static void SetTex(uint tex) {
 	static uint last = 0;
 
-	if (tex==last)
+        if (tex==last) {
 	    return;
+        }
+
 	glBindTexture(GL_TEXTURE_2D, tex);
 	last = tex;
     }
@@ -32,7 +34,7 @@ namespace iked {
 	// Borrow a context from an existing frame, if there is one
 	: wxGLCanvas(parent, 
 	    allFrames.empty() 
-		? 0//(wxGLCanvas*)0 
+		? 0
 		: *allFrames.begin())
 	, zoomFactor(16) 
     {
@@ -152,10 +154,11 @@ namespace iked {
 	GLfloat nTexendy = 1.0f * src.height / src.texHeight;
 
 	SetTex(src.hTex);
-	if (trans)
+        if (trans) {
 	    glEnable(GL_BLEND);
-	else
+        } else {
 	    glDisable(GL_BLEND);
+        }
 
 	glBegin(GL_QUADS);
 
@@ -183,12 +186,16 @@ namespace iked {
 	return GetClientSize().GetHeight() * zoomFactor / nZoomscale;
     }
 
-    int GraphicsFrame::Zoom() const {
+    int GraphicsFrame::getZoom() const {
 	return zoomFactor;
     }
 
-    void GraphicsFrame::Zoom(int z) {
-	zoomFactor = z;
+    void GraphicsFrame::setZoom(int z) {
+	zoomFactor = max(1, min(256, z));
+    }
+
+    void GraphicsFrame::incZoom(int z) {
+        setZoom(getZoom() + z);
     }
 
     Image::Image(const Canvas& src) {

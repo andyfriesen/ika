@@ -1,6 +1,7 @@
 
 #include "imagearraypanel.h"
 #include "imagebank.h"
+#include "common/listener.h"
 
 namespace iked {
 
@@ -22,7 +23,7 @@ namespace iked {
         , scrollPos(0)
         , imagePadSize(0)
     {
-        this->Zoom(2);
+        document->destroyed.add(bind(this, &ImageArrayPanel::onDocumentDestroyed));
         Refresh();
     }
 
@@ -181,6 +182,12 @@ namespace iked {
         Rect(x2 - 1, y2 - 1, framex + 1, framey + 1, RGBA(255, 255, 255));
 
         ShowPage();
+    }
+
+    void ImageArrayPanel::onDocumentDestroyed(Document* doc) {
+        if (doc == document) {
+            document = 0;
+        }
     }
 
     void ImageArrayPanel::updateScrollbar() {

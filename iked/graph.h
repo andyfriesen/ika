@@ -38,8 +38,9 @@ namespace iked {
         int LogicalWidth() const;
         int LogicalHeight() const;
 
-        int Zoom() const;
-        void Zoom(int z);
+        int getZoom() const;
+        void setZoom(int z);
+        void incZoom(int z);
 
         /// x and y are client window coords.
         void getLogicalPosition(int* x, int* y);

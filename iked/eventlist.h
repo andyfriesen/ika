@@ -3,16 +3,17 @@
 
 #include <vector>
 
+namespace iked {
     template <typename T>
     struct EventList {
         typedef std::vector<T*>::iterator iterator;
 
         void insert(const T& e) {
-            if (Find(e) != 0) {
+            if (find(e) != 0) {
                 return;
             }
 
-            T* evt=e.Copy();
+            T* evt = e.Copy();
             events->push_back(evt);
         }
 
@@ -31,8 +32,9 @@
         iterator find(const T& e) {
             // Brute force search.
             for (iterator i = begin(); i != end(); i++) {
-                if ((*i)->Value() == e.Value())
+                if ((*i)->Value() == e.Value()) {
                     return i;
+                }
             }
             return end();
         }
@@ -65,4 +67,4 @@
         std::vector<T*> events;
     };
 
-};
+}

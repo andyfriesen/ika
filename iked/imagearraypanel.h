@@ -7,6 +7,7 @@
 namespace iked {
 
     struct ImageArrayDocument;
+    struct Document;
 
     /**
      * Control that displays an array of images.
@@ -32,6 +33,7 @@ namespace iked {
         Listener<int> doubleClickImage;
 
         DECLARE_EVENT_TABLE();
+
     private:
         void onSize(wxSizeEvent& event);
         void onScroll(wxScrollWinEvent& event);
@@ -42,6 +44,8 @@ namespace iked {
 
         void onPaint(wxPaintEvent& event);
         void onEraseBackground(wxEraseEvent&) { }
+
+        void onDocumentDestroyed(Document* doc); // gross
 
         void updateScrollbar();
 

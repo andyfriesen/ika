@@ -46,6 +46,10 @@ namespace iked {
     }
 
     void DocumentPanel::onClose(wxCloseEvent& event) {
+        if (document == 0) { // it can happen!!! @_@;
+            return;
+        }
+
         if (isChanged) {
             // FIXME: wtf.  Why make a temporary instance like this? :P
             wxMessageDialog msgdlg(
@@ -75,7 +79,7 @@ namespace iked {
             }
         }
         
-        parent->spriteset.free(document);
+        deleteDocument(document);
         document = 0;
         parent->OnChildClose(this);
         event.Skip();

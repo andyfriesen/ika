@@ -31,7 +31,7 @@ namespace iked {
             saveDocument(getName());
         }
 
-        virtual void onClose(wxCloseEvent& event);
+        void onClose(wxCloseEvent& event);
         virtual void onSave(wxCommandEvent& event);
 
         MainWindow* getParent() { return parent; }
@@ -39,6 +39,8 @@ namespace iked {
         DECLARE_EVENT_TABLE()
 
     private:
+        virtual void deleteDocument(Document* doc) = 0;
+
         MainWindow* parent;
         Document* document;
         bool isChanged;

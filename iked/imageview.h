@@ -15,25 +15,22 @@ class GraphicsFrame;
 class Image;
 class Canvas;
 
-class CImageView : public DocumentPanel
-{
-protected:
-    MainWindow*       pParent;
-    GraphicsFrame*    pGraph;     // the main editing grid
-
-    Canvas*         pData;      // the image we're editing (real pixel data)
-    Image*         pImage;     // hardware dependant copy of the image
-
-public:
-
-    CImageView(MainWindow* parent, Canvas* img);
-    virtual ~CImageView();
+class ImageView : DocumentPanel {
+    ImageView(MainWindow* parent, Canvas* img);
+    virtual ~ImageView();
 
     // events
     void OnPaint();
 
     virtual void OnSave(wxCommandEvent&);
     virtual const void* GetResource() const;
+
+protected:
+    MainWindow*     pParent;
+    GraphicsFrame*  pGraph;     // the main editing grid
+
+    Canvas*         pData;      // the image we're editing (real pixel data)
+    Image*          pImage;     // hardware dependant copy of the image
 
     DECLARE_EVENT_TABLE()
 };

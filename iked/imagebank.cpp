@@ -8,7 +8,6 @@ namespace iked {
     { }
 
     ImageArrayDocument::~ImageArrayDocument() {
-        //invariant(); // :(
         free();
     }
 
@@ -29,7 +28,8 @@ namespace iked {
         return doGetCanvas(index);
     }
 
-    /*void ImageArrayDocument::insert(const Canvas& canvas, int position) {
+    /*
+    void ImageArrayDocument::insert(const Canvas& canvas, int position) {
         assert(0 <= position && position <= getCount());
         doInsert(canvas, position);
         images.insert(images.begin() + position, 0);
@@ -39,7 +39,8 @@ namespace iked {
         assert(0 <= index && index < getCount());
         makeDirty(index);
         doSetCanvas(canvas, index);
-    }*/
+    }
+    */
 
     Image& ImageArrayDocument::getImage(int index) {
         assert(0 <= index && index < getCount());

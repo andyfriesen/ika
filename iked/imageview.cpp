@@ -2,11 +2,11 @@
 #include "imageview.h"
 #include "graph.h"
 
-BEGIN_EVENT_TABLE(CImageView, DocumentPanel)
-    EVT_PAINT(CImageView::OnPaint)
+BEGIN_EVENT_TABLE(ImageView, DocumentPanel)
+    EVT_PAINT(ImageView::OnPaint)
 END_EVENT_TABLE()
 
-CImageView::CImageView(MainWindow* parent, Canvas* img)
+ImageView::ImageView(MainWindow* parent, Canvas* img)
     : DocumentPanel(parent, "image"), pData(img)
 {
     SetSize(-1, -1, 340, 340);
@@ -17,13 +17,11 @@ CImageView::CImageView(MainWindow* parent, Canvas* img)
     pImage = new Image(*img);
 }
 
-CImageView::~CImageView()
-{
+ImageView::~ImageView() {
     delete pImage;
 }
 
-void CImageView::OnPaint()
-{
+void ImageView::OnPaint() {
     wxPaintDC bleh(this);
 
     pGraph->SetCurrent();
@@ -31,11 +29,9 @@ void CImageView::OnPaint()
     pGraph->ShowPage();
 }
 
-void CImageView::OnSave(wxCommandEvent&)
-{
+void ImageView::OnSave(wxCommandEvent&) {
 }
 
-const void* CImageView::GetResource() const
-{
+const void* ImageView::GetResource() const {
     return pData;
 }
