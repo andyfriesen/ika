@@ -533,6 +533,14 @@ void CCodeView::OnSaveAs(wxCommandEvent& event)
     OnSave(event);
 }
 
+const void* CCodeView::GetResource() const
+{
+    // This is kinda dirty, but it works.  The code itself is stored in the text control,
+    // so we don't really have a pointer to a resource to give.  So, we return this,
+    // since we're guaranteed that no other open document will have the same value.
+    return this;
+}
+
 // Trivial stuff
 
 void CCodeView::OnMarginClick(wxStyledTextEvent& event)

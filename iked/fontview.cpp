@@ -212,6 +212,11 @@ void CFontView::OnSaveAs(wxCommandEvent& event)
     OnSave(event);
 }
 
+const void* CFontView::GetResource() const
+{
+    return pFontfile;
+}
+
 void CFontView::OnClose()
 {
     Destroy();

@@ -535,3 +535,7 @@ void CProjectView::OnClose(wxCommandEvent& event)
     
     Destroy();
 }
+const void* CProjectView::GetResource() const
+{
+    return this;
+}

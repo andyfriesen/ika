@@ -345,6 +345,11 @@ void CTextView::OnSaveAs(wxCommandEvent& event)
 }
 
 
+const void* CTextView::GetResource() const
+{
+    return this;
+}
+
 void CTextView::OnUndo(wxCommandEvent& event)        {   pTextctrl->Undo();      }
 void CTextView::OnRedo(wxCommandEvent& event)        {   pTextctrl->Redo();      }
 void CTextView::OnCopy(wxCommandEvent& event)        {   pTextctrl->Copy();      }

@@ -154,9 +154,14 @@ void CTileSetView::OnScroll(wxScrollWinEvent& event)
     Render();
 }
 
-void CTileSetView::OnClose()
+void CTileSetView::OnClose(wxCommandEvent& event)
 {
     Destroy();
+}
+
+const void* CTileSetView::GetResource() const
+{
+    return pTileset;
 }
 
 void CTileSetView::OnLeftClick(wxMouseEvent& event)

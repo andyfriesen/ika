@@ -19,9 +19,11 @@ class CSpriteSetView : public IDocView
         ~CSpriteSetView();
 
 
-        void OnSave(wxCommandEvent& event);
+        virtual void OnSave(wxCommandEvent& event);
         void OnSaveAs(wxCommandEvent& event);
-        void OnClose();
+        virtual void OnClose(wxCommandEvent& event);
+
+        virtual const void* GetResource() const;
 
         void OnPaint();
         void Render();
@@ -53,29 +55,19 @@ class CSpriteSetView : public IDocView
         void SpritePos(int idx,int& x,int& y) const;
         void Zoom(int nZoomscale);
 
-
-
         CMainWnd*       pParent;
         CGraphFrame*    pGraph;
         CSpriteSet*     pSprite;
         
-
         int             nCurframe;
         int             ywin;
         int             nZoom;
         string          sSpritename;
 
-
         wxMenu*             pContextmenu;
         CMovescriptEditor*  pMovescripteditor;
 
-        
-
-
-
         DECLARE_EVENT_TABLE()
-
-
 };
 
 #endif

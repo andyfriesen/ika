@@ -158,15 +158,12 @@ void CMainWnd::NewMap(wxCommandEvent& event)
     if (result == wxID_OK)
     {
         Log::Write("New map!  %ix%i.", dlg.width, dlg.height);
-        if (dlg.loadtileset)
-            Log::Write("Loading %s as a tileset", dlg.tilesetname.c_str());
-        else
-            Log::Write("New Tileset %ix%i", dlg.tilesetwidth, dlg.tilesetheight);
+        Log::Write("Loading %s as a tileset", dlg.tilesetname.c_str());
+        CMapView* mapview=new CMapView(this, dlg.width, dlg.height, dlg.tilesetname);
+        if (!File::Exists(dlg.tilesetname.c_str()))
+            Log::Write("fuck");
+        OpenDocument(mapview);
     }
-/*    Map* m=new Map;
-    VSP* v=new VSP;
-    
-    CMapWnd* mapview=new CMapWnd(this, "New map", wxPoint(-1, -1), wxSize(-1, -1), wxDEFAULT_FRAME_STYLE, m, v);*/
 }
 
 void CMainWnd::NewScript(wxCommandEvent& event)
@@ -367,7 +364,7 @@ void CMainWnd::OnToolBarNewMap(wxCommandEvent& event)
     wxToolBar* pToolbar = GetToolBar();
     if (!pToolbar) return;
     pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
-    // ....
+    NewMap(event);
 }
 
 
@@ -387,4 +384,13 @@ void CMainWnd::OnToolLeftClick(wxCommandEvent& event)
 void CMainWnd::OnChildClose(IDocView* child)
 {
     pDocuments.erase(child);
+}
+
+IDocView* CMainWnd::FindWindow(const void* rsrc) const
+{
+    for (std::set<IDocView*>::const_iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+        if ((*i)->GetResource() == rsrc)
+            return *i;
+
+    return 0;
 }

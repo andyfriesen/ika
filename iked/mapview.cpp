@@ -180,64 +180,25 @@ BEGIN_EVENT_TABLE(CMapView, wxMDIChildFrame)
     EVT_MOUSE_EVENTS(CMapView::HandleMouse)
 END_EVENT_TABLE()
 
-CMapView::CMapView(CMainWnd* parent, const string& name)
-:   IDocView(parent, name),
-
-    pParentwnd(parent),
-    nZoom(16)
+CMapView::CMapView(CMainWnd* parent, int width, int height, const string& tilesetname)
+    : IDocView(parent, "")
+    , pParentwnd(parent)
+    , nZoom(16)
 {
-    int w, h;
-    GetClientSize(&w, &h);
+    pMap = new Map;
+    pMap->Resize(width, height);
+    pMap->SetVSPName(tilesetname);
+    pMap->Zones().push_back(SMapZone());
+    Init();
+}
 
-    // Left side -- layer properties
-    pLeftbar = new wxSashLayoutWindow(this, -1);
-    pLeftbar->SetAlignment(wxLAYOUT_LEFT);
-    pLeftbar->SetOrientation(wxLAYOUT_VERTICAL);
-    pLeftbar->SetDefaultSize(wxSize(100, 100));
-    pLeftbar->SetSashVisible(wxSASH_RIGHT, true);
-
-    pLayerlist = new CLayerVisibilityControl(pLeftbar, -1, this);
-
-    // Right side -- Map view
-    pRightbar = new CMapSash(this, -1);
-    pRightbar->SetAlignment(wxLAYOUT_RIGHT);
-
-    pGraph = new CMapFrame(pRightbar, this);
-
-    // Get resources
-    pMap = pParentwnd->map.Load(name);                                  // load the map
-        
-    string sTilesetname = Path::Directory(name) + pMap->GetVSPName();   // get the absolute path to the map, and add it to the tileset filename
-    pTileset = pParentwnd->vsp.Load(sTilesetname);                      // load the VSP
-
-    // Load CHRs
-
-    for (int i = 0; i < pMap->NumEnts(); i++)
-    {
-        // Get the absolute path.  I'm paranoid.
-        string sFilename = Path::Directory(name) + pMap->GetEntity(i).sCHRname;
-        pSprite.push_back(pParentwnd->spriteset.Load(sFilename));
-    }
-
-    // --
-
-    pRightbar->SetScrollbar(wxVERTICAL, 0, w, pMap->Height()* pTileset->Height());
-    pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, pMap->Width()* pTileset->Width());
-    xwin = ywin = 0;
-
-    UpdateLayerList();
-    InitAccelerators();
-    InitMenu();
-
-    nCurlayer = 0;
-    //csrmode = mode_select;
-    csrmode = mode_normal;
-    _selection = Rect(5,2,8,12);
-
-    pEntityeditor = new CEntityEditor(this, pMap);
-    _zoneeditor = new ZoneEditor(this, pMap);
-
-    Show();
+CMapView::CMapView(CMainWnd* parent, const string& name)
+    : IDocView(parent, name)
+    , pParentwnd(parent)
+    , nZoom(16)
+{
+    pMap = pParentwnd->map.Load(name);    
+    Init();
 }
 
 void CMapView::InitAccelerators()
@@ -299,6 +260,59 @@ void CMapView::InitMenu()
     //--
 
     SetMenuBar(menubar);
+}
+
+void CMapView::Init()
+{
+    int w, h;
+    GetClientSize(&w, &h);
+
+    // Left side -- layer properties
+    pLeftbar = new wxSashLayoutWindow(this, -1);
+    pLeftbar->SetAlignment(wxLAYOUT_LEFT);
+    pLeftbar->SetOrientation(wxLAYOUT_VERTICAL);
+    pLeftbar->SetDefaultSize(wxSize(100, 100));
+    pLeftbar->SetSashVisible(wxSASH_RIGHT, true);
+
+    pLayerlist = new CLayerVisibilityControl(pLeftbar, -1, this);
+
+    // Right side -- Map view
+    pRightbar = new CMapSash(this, -1);
+    pRightbar->SetAlignment(wxLAYOUT_RIGHT);
+
+    pGraph = new CMapFrame(pRightbar, this);
+
+    string sTilesetname = Path::Directory(name) + pMap->GetVSPName();   // get the absolute path to the map, and add it to the tileset filename
+    pTileset = pParentwnd->vsp.Load(sTilesetname);                      // load the VSP
+
+    // Load CHRs
+
+    for (int i = 0; i < pMap->NumEnts(); i++)
+    {
+        // Get the absolute path.  I'm paranoid.
+        string sFilename = Path::Directory(name) + pMap->GetEntity(i).sCHRname;
+        pSprite.push_back(pParentwnd->spriteset.Load(sFilename));
+    }
+
+    // --
+
+    pRightbar->SetScrollbar(wxVERTICAL, 0, w, pMap->Height()* pTileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, pMap->Width()* pTileset->Width());
+    xwin = ywin = 0;
+
+    UpdateLayerList();
+    InitAccelerators();
+    InitMenu();
+
+    nCurlayer = 0;
+    //csrmode = mode_select;
+    csrmode = mode_normal;
+    _selection = Rect(5,2,8,12);
+
+    pEntityeditor = new CEntityEditor(this, pMap);
+    _zoneeditor = new ZoneEditor(this, pMap);
+
+    Show();
 }
 
 void CMapView::Paint()
@@ -392,9 +406,14 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
 }
 
 
+const void* CMapView::GetResource() const
+{
+    return pMap;
+}
+
 void CMapView::Zoom(int nZoomscale)
 {
-    int nZoom = pGraph->Zoom()-nZoomscale;
+    nZoom = pGraph->Zoom() - nZoomscale;
 
     if (nZoom < 1) nZoom = 1;
     if (nZoom > 255) nZoom = 255;
@@ -411,7 +430,7 @@ void CMapView::OnZoomIn2x(wxCommandEvent& event)  { Zoom(2);  }
 void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
 void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
 void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
-void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(16-nZoom); }  // >:D
+void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(nZoom - 16); }  // >:D
 
 void CMapView::OnShowEntityEditor(wxCommandEvent& event)
 {

@@ -28,13 +28,15 @@ public:
     CTileSetView(CMainWnd* parentwnd,const string& fname);
     ~CTileSetView();
 
-    void OnSave(wxCommandEvent& event);
+    virtual void OnSave(wxCommandEvent& event);
 
     void Paint();
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
 
-    void OnClose();
+    virtual void OnClose(wxCommandEvent& event);
+
+    virtual const void* GetResource() const;
 
     void OnLeftClick(wxMouseEvent& event);
     void OnRightClick(wxMouseEvent& event);

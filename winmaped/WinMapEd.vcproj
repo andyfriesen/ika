@@ -43,7 +43,7 @@
 				OutputFile=".\Debug/WinMapEd.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common,$(PYTHON)\lib,..\3rdparty"
+				AdditionalLibraryDirectories="..\common,..\3rdparty\lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/WinMapEd.pdb"
 				SubSystem="2"/>

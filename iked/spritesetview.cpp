@@ -63,11 +63,9 @@ BEGIN_EVENT_TABLE(CSpriteSetView,IDocView)
     
     EVT_PAINT(CSpriteSetView::OnPaint)
     EVT_CLOSE(CSpriteSetView::OnClose)
-    //EVT_ERASE_BACKGROUND(CSpriteSetView::OnEraseBackground)
 
     EVT_LEFT_DOWN(CSpriteSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CSpriteSetView::OnRightClick)
-    //EVT_MOUSE_EVENTS(CSpriteSetView::HandleMouse)
 
 END_EVENT_TABLE()
 
@@ -214,12 +212,17 @@ void CSpriteSetView::OnSaveAs(wxCommandEvent& event)
     OnSave(event);
 }
 
-void CSpriteSetView::OnClose()
+void CSpriteSetView::OnClose(wxCommandEvent& event)
 {
     pParent->spriteset.Release(pSprite);
     pSprite=0;
 
     Destroy();
+}
+
+const void* CSpriteSetView::GetResource() const
+{
+    return pSprite;
 }
 
 void CSpriteSetView::OnPaint()

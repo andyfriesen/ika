@@ -20,7 +20,7 @@ protected:
     CMainWnd*       pParent;
     CGraphFrame*    pGraph;     // the main editing grid
 
-    Canvas*   pData;      // the image we're editing (real pixel data)
+    Canvas*         pData;      // the image we're editing (real pixel data)
     CImage*         pImage;     // hardware dependant copy of the image
 
 public:
@@ -31,7 +31,8 @@ public:
     // events
     void OnPaint();
 
-    void OnSave(wxCommandEvent&);
+    virtual void OnSave(wxCommandEvent&);
+    virtual const void* GetResource() const;
 
     DECLARE_EVENT_TABLE()
 };

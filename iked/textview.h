@@ -23,8 +23,10 @@ class CTextView : public IDocView
         void OnStyleNeeded(wxStyledTextEvent& event);
         void OnCharAdded(wxStyledTextEvent& event);
     
-        void OnSave(wxCommandEvent& event);
+        virtual void OnSave(wxCommandEvent& event);
         void OnSaveAs(wxCommandEvent& event);
+
+        virtual const void* GetResource() const;
 
         void OnUndo(wxCommandEvent& event);
         void OnRedo(wxCommandEvent& event);

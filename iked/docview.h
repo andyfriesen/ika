@@ -24,9 +24,11 @@ public:
     virtual ~IDocView();
 
     virtual void OnClose(wxCommandEvent& event);
-    virtual void OnSave(wxCommandEvent& event)=0;
+    virtual void OnSave(wxCommandEvent& event) = 0;
 
     const string& GetFileName() { return name; }
+
+    virtual const void* GetResource() const = 0;        // Returns a pointer to the data that this document is editing.  Some windows just return a unique ID.
 
     DECLARE_EVENT_TABLE()
 };

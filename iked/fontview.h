@@ -29,8 +29,9 @@ class CFontView : public IDocView
         void Paint();
 
         void OnChangeBackgroundColor(wxCommandEvent&);
-        void OnSave(wxCommandEvent&);
+        virtual void OnSave(wxCommandEvent&);
         void OnSaveAs(wxCommandEvent&);
+        virtual const void* GetResource() const;
         void OnSize(wxSizeEvent&);
         void OnEraseBackground(wxEraseEvent&) {}
         void OnScroll(wxScrollWinEvent&);

@@ -87,6 +87,8 @@ public:
 
     void OnChildClose(IDocView* child);
 
+    IDocView* FindWindow(const void* rsrc) const;
+
     wxMenuBar*  CreateBasicMenu();
 /*
 

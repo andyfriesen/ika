@@ -34,3 +34,8 @@ void CImageView::OnPaint()
 void CImageView::OnSave(wxCommandEvent&)
 {
 }
+
+const void* CImageView::GetResource() const
+{
+    return pData;
+}

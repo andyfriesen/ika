@@ -31,9 +31,10 @@ public:
     ~CProjectView();
 
     // events
-    void OnSave(wxCommandEvent& event);
+    virtual void OnSave(wxCommandEvent& event);
     void OnSaveAs(wxCommandEvent& event);
-    void OnClose(wxCommandEvent& event);
+    virtual void OnClose(wxCommandEvent& event);
+    virtual const void* GetResource() const;
 
     // bleh
     void Load(const char* fname);           // load a project file into the window

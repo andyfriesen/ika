@@ -83,18 +83,22 @@ private:
     Rect _selection;
 
 public:
+    CMapView(CMainWnd* parent, int width, int height, const string& tilesetname);
     CMapView(CMainWnd* parent,const string& fname);
 
     void InitAccelerators();
     void InitMenu();
+    void Init();
 
     void Paint();
     void OnErase(wxEraseEvent&) {}
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
 
-    void OnSave(wxCommandEvent& event);
+    virtual void OnSave(wxCommandEvent& event);
     void OnSaveAs(wxCommandEvent& event);
+
+    virtual const void* GetResource() const;
 
     void OnZoomIn(wxCommandEvent& event);
     void OnZoomOut(wxCommandEvent& event);
