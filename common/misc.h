@@ -22,13 +22,13 @@ inline void swap(T& a,T& b)
 }
 
 template <typename T>
-inline T& min(T a, T b)
+inline T min(T a, T b)
 {
     return a < b ? a : b;
 }
 
 template <typename T>
-inline T& max(T a, T b)
+inline T max(T a, T b)
 {
     return a > b ? a : b;
 }
@@ -44,8 +44,6 @@ bool IsPowerOf2(int i);
 int sgn(int x);
 int Random(int min,int max);
 char* va(char* format, ...);
-void ChangeDirectory(const char* s);
-char* GetCurrentDirectory();
 
 const string Trim(string s);
 

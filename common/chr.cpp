@@ -2,6 +2,7 @@
 #include "fileio.h"
 #include "vergepal.h"
 #include "rle.h"
+#include "misc.h"
 
 CCHRfile::CCHRfile()
 {
@@ -49,7 +50,7 @@ void CCHRfile::InsertFrame(int idx)
     Canvas p(frame[frame.size()-1]);        // copy the last frame
     
     for (int i=idx; i<frame.size(); i++)
-        frame[i+1]=frame[i];
+        frame[i + 1]=frame[i];
     
     InsertFrame(frame.size(),p);                    // and tack it on the end.
 }
@@ -75,7 +76,7 @@ void CCHRfile::DeleteFrame(int idx)
         return;
     
     for (int i=idx; i<frame.size(); i++)
-        frame[i]=frame[i+1];
+        frame[i]=frame[i + 1];
     
     frame.resize(frame.size()-1);
 }
@@ -143,7 +144,7 @@ bool CCHRfile::Load(const char* fname)
         int nLen;
         f.Read(nLen);
         
-        char* s=new char[nLen+1];
+        char* s=new char[nLen + 1];
         f.Read(s,nLen);
         s[nLen]=0;
         sMovescript.push_back(s);
@@ -245,18 +246,17 @@ bool CCHRfile::Loadv2CHR(File& f)
     for (int nCurframe=0; nCurframe<nFrames; nCurframe++)
     {
         frame[nCurframe].CopyPixelData(src,nWidth,nHeight,cVergepal);
-        src+=nWidth*nHeight;
+        src += nWidth * nHeight;
     }
     
     sMovescript.resize(16);
     
     // Get the idle frames
-    char c[10];
     int i;
-    f.Read(i);        sMovescript[8+face_left]    =string("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_right]    =string("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_up]        =string("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_down]    =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8 + face_left]  =string("F") + ToString(i) + "W10";
+    f.Read(i);        sMovescript[8 + face_right] =string("F") + ToString(i) + "W10";
+    f.Read(i);        sMovescript[8 + face_up]    =string("F") + ToString(i) + "W10";
+    f.Read(i);        sMovescript[8 + face_down]  =string("F") + ToString(i) + "W10";
     
     for (int b=0; b<4; b++)
     {
@@ -271,16 +271,16 @@ bool CCHRfile::Loadv2CHR(File& f)
         
         switch (b)
         {
-        case 0: sMovescript[face_left]=ptr;        break;
-        case 1: sMovescript[face_right]=ptr;    break;
-        case 2: sMovescript[face_up]=ptr;        break;
-        case 3: sMovescript[face_down]=ptr;        break;
+        case 0: sMovescript[face_left]  = ptr;  break;
+        case 1: sMovescript[face_right] = ptr;  break;
+        case 2: sMovescript[face_up]    = ptr;  break;
+        case 3: sMovescript[face_down]  = ptr;  break;
         }
     }
-    sMovescript[face_upleft]=    sMovescript[face_left];
-    sMovescript[face_downleft]=    sMovescript[face_left];
-    sMovescript[face_upright]=    sMovescript[face_right];
-    sMovescript[face_downright]=sMovescript[face_right];
+    sMovescript[face_upleft]    = sMovescript[face_left];
+    sMovescript[face_downleft]  = sMovescript[face_left];
+    sMovescript[face_upright]   = sMovescript[face_right];
+    sMovescript[face_downright] = sMovescript[face_right];
     
     return true;
 }
@@ -302,12 +302,11 @@ bool CCHRfile::Loadv4CHR(File& f)
     sMovescript.resize(16);
     
     // Get the idle frames
-    char c[10];
     u16 i;
-    f.Read(i);        sMovescript[8+face_left]    =string("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_right]    =string("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_up]        =string("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_down]    =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8 + face_left]    = string("F") + ToString(i) + "W10";
+    f.Read(i);        sMovescript[8 + face_right]   = string("F") + ToString(i) + "W10";
+    f.Read(i);        sMovescript[8 + face_up]      = string("F") + ToString(i) + "W10";
+    f.Read(i);        sMovescript[8 + face_down]    = string("F") + ToString(i) + "W10";
     
     f.Read(i);
     int nFrames=i;                // frame count
@@ -325,16 +324,16 @@ bool CCHRfile::Loadv4CHR(File& f)
         
         switch (b)
         {
-        case 0: sMovescript[face_left]=ptr;        break;
-        case 1: sMovescript[face_right]=ptr;    break;
-        case 2: sMovescript[face_up]=ptr;        break;
-        case 3: sMovescript[face_down]=ptr;        break;
+        case 0: sMovescript[face_left]  = ptr;  break;
+        case 1: sMovescript[face_right] = ptr;  break;
+        case 2: sMovescript[face_up]    = ptr;  break;
+        case 3: sMovescript[face_down]  = ptr;  break;
         }
     }
-    sMovescript[face_upleft]=    sMovescript[face_left];
-    sMovescript[face_downleft]=    sMovescript[face_left];
-    sMovescript[face_upright]=    sMovescript[face_right];
-    sMovescript[face_downright]=sMovescript[face_right];
+    sMovescript[face_upleft]    = sMovescript[face_left];
+    sMovescript[face_downleft]  = sMovescript[face_left];
+    sMovescript[face_upright]   = sMovescript[face_right];
+    sMovescript[face_downright] = sMovescript[face_right];
     
     int n;
     f.Read(n);
@@ -353,7 +352,7 @@ bool CCHRfile::Loadv4CHR(File& f)
     for (int nCurframe=0; nCurframe<nFrames; nCurframe++)
     {
         for (int n=0; n<nWidth*nHeight; n++)
-            p[n]=RGBA( pTemp[ nCurframe*nWidth*nHeight + n ] );
+            p[n]=RGBA( pTemp[ nCurframe*nWidth*nHeight + n]);
         
         frame[nCurframe].CopyPixelData(p,nWidth,nHeight);
     }

@@ -1,6 +1,6 @@
 // VSP.cpp
 #include <stdio.h>
-#include "VSP.h"
+#include "vsp.h"
 #include "types.h"
 #include "rle.h"
 #include "fileio.h"

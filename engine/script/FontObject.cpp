@@ -3,7 +3,7 @@ Python font object
 */
 
 #include "ObjectDefs.h"
-#include "Font.h"
+#include "font.h"
 #include "main.h"
 
 namespace Script

@@ -80,7 +80,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="../common,../3rdparty,$(WXWIN)/include,$(WXWIN)/contrib/include"
+				AdditionalIncludeDirectories="../common,../3rdparty/include,$(WXWIN)/include,$(WXWIN)/contrib/include"
 				PreprocessorDefinitions="NDEBUG,MSVC,WIN32,_WINDOWS,__WINDOWS__,__WXMSW__,__WIN95__,__WIN32__,WINVER=0x0400,STRICT"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"

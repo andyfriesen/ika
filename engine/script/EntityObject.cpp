@@ -9,7 +9,7 @@ being garbage collected)
 
 #include "ObjectDefs.h"
 #include "main.h"
-#include "Entity.h"
+#include "entity.h"
 
 namespace Script
 {

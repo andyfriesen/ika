@@ -137,7 +137,7 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
     PyObject* result=PyEval_CallObject(pFunc, 0);
 
     if (!result)
-        Log::Write("Warning: Module %s had an AutoExec event, but it could not execute.", fname);
+        Log::Write("Warning: Module %s had an AutoExec event, but it could not execute.", sTemp.c_str());
 
     Py_XDECREF(result);
     

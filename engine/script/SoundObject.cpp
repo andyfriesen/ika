@@ -1,7 +1,7 @@
 
 #include "audiere.h"
 
-#include "common/FileIO.h"
+#include "common/fileio.h"
 #include "common/misc.h"
 #include "sound.h"
 #include "ObjectDefs.h"

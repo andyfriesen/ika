@@ -432,14 +432,11 @@ void CMapView::ScreenToMap(int& x, int& y)
     SMapLayerInfo l;
     pMap->GetLayerInfo(l, nCurlayer);
 
-/*    x = x *nZoomscale/nZoom;
-    y = y * nZoomscale/nZoom;*/
-
     x+=(xwin * l.pmulx / l.pdivx);
     y+=(ywin * l.pmuly / l.pdivy);
 }
 
-void CMapView::HandleLayerEdit(wxMouseEvent& event)
+void CMapView::LayerEdit(wxMouseEvent& event)
 {
     if (
        !(event.LeftIsDown() || event.RightIsDown()) ||
@@ -485,6 +482,8 @@ void CMapView::HandleMouse(wxMouseEvent& event)
     case lay_entity: break;
     case lay_zone: break;
     //case lay_obstruction: break;
+
+    case mode_select:
 
     default:
         HandleLayerEdit(event);

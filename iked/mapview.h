@@ -72,6 +72,7 @@ class CMapView : public IDocView
     {
         mode_normal,
         lay_obstruction=-12
+        mode_select,
         // copy/paste/etc...
     };
 
@@ -95,6 +96,8 @@ private:
     std::vector<CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
 
     int  nZoom;                                                     // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
+
+    Rect selection;
 
 public:
     CMapView(CMainWnd* parent,const string& fname);
@@ -146,7 +149,7 @@ private:
     std::map<int,int> nLayertoggle;
 
     void ScreenToMap(int& x,int& y);
-    void HandleLayerEdit(wxMouseEvent& event);
+    void LayerEdit(wxMouseEvent& event);
     void HandleMouse(wxMouseEvent& event);
     void UpdateScrollbars();
 

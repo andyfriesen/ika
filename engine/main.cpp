@@ -166,7 +166,7 @@ void CEngine::Startup()
             );
           
         Log::Write("Initializing Video");
-#if 1 || defined OPENGL_VIDEO
+#if 1
         video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
 #else
         video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);

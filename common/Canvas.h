@@ -51,8 +51,8 @@ public:
     void Mirror();
     void Resize(int x,int y);
     
-    const Rect& GetClipRect() { return _cliprect; }
-    void SetClipRect(Rect& r);
+    const Rect& GetClipRect() const { return _cliprect; }
+    void SetClipRect(const Rect& r);
 };
 
 #include "CanvasBlitter.h"

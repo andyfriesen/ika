@@ -1,3 +1,5 @@
+#include <math.h>
+
 #include "common/misc.h"
 #include "common/log.h"
 #include "entity.h"

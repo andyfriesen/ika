@@ -4,7 +4,7 @@
 #include "SDL/SDL_opengl.h"
 
 #include "Driver.h"
-#include "image.h"
+#include "Image.h"
 
 #include "common/types.h"
 #include "common/Canvas.h"

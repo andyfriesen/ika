@@ -43,22 +43,8 @@ int Random(int min,int max)
     return i;
 }
 
-#include <direct.h>
-
-void ChangeDirectory(const char* s)
-{
-//    _chdir(s);
-}
-
-char* GetCurrentDirectory()
-{
-/*    static char s[255];
-    _getcwd(s,255);
-    return s;*/return 0;
-}
-
 #include <string>
-#include <strstream>
+#include <sstream>
 
 const string Trim(string s)
 {
@@ -96,7 +82,7 @@ string Upper(const string& s)
 
 string ToString(int i)
 {
-    std::strstream s;
+    std::stringstream s;
     s << i << '\0';
     return s.str();
 }
@@ -106,21 +92,6 @@ string ToString(int i)
 
 string Path::Directory(const string& s,const string& relativeto)
 {
-/*    struct Local
-    {
-        static inline string Next(const string& s,unsigned int& pos)
-        {
-            unsigned int startpos=pos;
-            for (; pos<s.length(); pos++)
-            {
-                if (s[pos]==Path::cDelimiter)
-                    return s.substr(startpos,++pos);
-            }
-            return s;
-        }
-    };
-*/
-
     int p=s.rfind(Path::cDelimiter);
     if (p==string::npos) return s;
 

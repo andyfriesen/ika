@@ -1,5 +1,5 @@
 #include "ObjectDefs.h"
-#include "Input.h"
+#include "input.h"
 
 namespace Script
 {

@@ -19,11 +19,7 @@
 #include "misc.h"
 #include "types.h"
 
-#ifdef MSVC
-#   include <map>
-#else
-#   include <\bcc\include\map.h>
-#endif
+#include <map>
 
 class CConfigFile
 {

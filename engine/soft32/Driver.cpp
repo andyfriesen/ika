@@ -18,7 +18,7 @@ namespace Soft32
         , _bpp(bpp)
         , _fullscreen(fullscreen)
     {
-        _screen = SDL_SetVideoMode(xres, yres, bpp, SDL_HWSURFACE | SDL_ASYNCBLIT | (fullscreen ? SDL_FULLSCREEN | SDL_DOUBLEBUF: 0));
+        _screen = SDL_SetVideoMode(xres, yres, bpp, SDL_SWSURFACE | SDL_ASYNCBLIT | (fullscreen ? SDL_FULLSCREEN | SDL_DOUBLEBUF: 0));
         if (!_screen)
             throw Video::Exception();
 

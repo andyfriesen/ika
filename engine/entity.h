@@ -5,7 +5,7 @@
 #include "common/map.h"
 
 //! Normal entity speed
-const entspeed_normal=100;
+const int entspeed_normal = 100;
 
 class CEngine;
 class CSprite;

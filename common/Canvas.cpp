@@ -230,16 +230,13 @@ void Canvas::Resize(int x, int y)
     _width=x;
     _height=y;
 
-    SetClipRect(Rect(0, 0, _width, _height));
+    _cliprect = Rect(0, 0, _width, _height);
 }
 
-void Canvas::SetClipRect(Rect& r)
+void Canvas::SetClipRect(const Rect& r)
 {
     _cliprect.left=max(0, r.left);
     _cliprect.top=max(0, r.top);
     _cliprect.right=min(_width, r.right);
     _cliprect.bottom=min(_height, r.bottom);
-
-    if (r.Width()<0)    swap(r.left, r.right);
-    if (r.Height()<0)   swap(r.top, r.bottom);
 }
