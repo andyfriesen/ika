@@ -5,11 +5,13 @@ Tile selector
   
     TODO: add flip/rotate functions
 */
+
+#include "corona.h"
+
 #include "tilesel.h"
 #include "log.h"
 #include "resource.h"
 #include "importvspdlg.h"
-#include "importpng.h"
 #include "miscdlg.h"
 
 const int nGayarbitraryconstant=0;//32;
@@ -51,7 +53,7 @@ int CTileSel::TileUnderCursor(int x,int y)
     
     x/=tx; y/=ty;
     
-    int t=(y+nYoffset)*(width/tx)+x;
+    uint t=(y+nYoffset)*(width/tx)+x;
     if (t<pVsp->NumTiles())
         return  t;
     else
@@ -154,7 +156,7 @@ void CTileSel::Render(const RECT& r)
     for (int y=0; y<height / ty; y++)
         for (int x=0; x<width / tx; x++)
         {
-            int nTile=(y+nYoffset)*(width/tx)+x;
+            uint nTile=(y+nYoffset)*(width/tx)+x;
             
             if (nTile>pVsp->NumTiles())
                 return;
@@ -220,7 +222,7 @@ bool CTileSel::ExportPNG(const char* fname)
     int currY = 0;
     int tileSize = pVsp->Width() * pVsp->Height() * 4;
     
-    for (int i=0; i<pVsp->NumTiles(); i++)
+    for (uint i=0; i<pVsp->NumTiles(); i++)
     {
         CBlitter<Opaque>::Blit(pVsp->GetTile(i),bigImage,currX,currY);
         
@@ -231,10 +233,17 @@ bool CTileSel::ExportPNG(const char* fname)
             currY+=pVsp->Height();
         }
     }
+
+    corona::Image* image = corona::CreateImage(bigImage.Width(),bigImage.Height(),corona::PF_R8G8B8A8);
+    std::copy(bigImage.GetPixelData()
+        ,bigImage.GetPixelData() + bigImage.Width() * bigImage.Height()
+        ,(RGBA*)image->getPixels());
+
+    bool result = corona::SaveImage(fname,corona::FF_PNG,image);
+
+    delete image;
     
-    PNG::Save(bigImage,fname);
-    // TODO: error checking
-    return true;
+    return result;
 }
 
 BOOL CTileSel::MainProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)

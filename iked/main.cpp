@@ -186,7 +186,7 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
     wxArrayString filenames;
     dlg.GetPaths(filenames);
 
-    for (int i=0; i<filenames.Count(); i++)
+    for (uint i=0; i<filenames.Count(); i++)
         Open(std::string( filenames[i].c_str() ));
 }
 

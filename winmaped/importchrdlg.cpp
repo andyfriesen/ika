@@ -1,8 +1,9 @@
+#include "corona.h"
+
 #include "importchrdlg.h"
 #include "resource.h"
 #include "fileio.h"
 #include "pixel_matrix.h"
-#include "importpng.h"
 
 void CImportCHRDlg::Execute(HINSTANCE hinst,HWND hwndparent,CCHRfile* chr)
 {
@@ -71,8 +72,16 @@ void CImportCHRDlg::ImportImage(int nFrames,int nFramex,int nFramey,int nFramesp
     int nCurframe=0;
     const int bpp=4;
     
-    CPixelMatrix bigimage;
-    PNG::Load(bigimage,fname);
+    corona::Image* image = corona::OpenImage(fname,corona::FF_AUTODETECT,corona::PF_R8G8B8A8);
+    if (!image)
+    {
+        MessageBox(0,"Unable to load image","Import image failed",0);
+        return;
+    }
+
+    CPixelMatrix bigimage((RGBA*)image->getPixels(),image->getWidth(),image->getHeight());
+
+    delete image;
     
     if (append)
     {

@@ -22,7 +22,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\common,$(PYTHON)\include,$(CORONA)\include;..\3rdparty"
+				AdditionalIncludeDirectories="..\common,..\3rdparty"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				StringPooling="TRUE"
 				RuntimeLibrary="4"
@@ -39,11 +39,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="dinput.lib dxguid.lib winmm.lib libpng.lib zlib.lib corona.lib"
+				AdditionalDependencies="dinput.lib dxguid.lib winmm.lib zlib.lib corona.lib"
 				OutputFile=".\Release/ika.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common\,$(PYTHON)\libs,$(CORONA)\lib;..\3rdparty"
+				AdditionalLibraryDirectories="..\common\,..\3rdparty"
 				ProgramDatabaseFile=".\Release/ika.pdb"
 				SubSystem="2"/>
 			<Tool
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\common,$(PYTHON)\include,$(CORONA)\include;..\3rdparty"
+				AdditionalIncludeDirectories="..\common,..\3rdparty"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="5"
@@ -96,11 +96,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="dinput.lib dxguid.lib winmm.lib libpng.lib zlib.lib corona.lib"
+				AdditionalDependencies="dinput.lib dxguid.lib winmm.lib zlib.lib corona.lib"
 				OutputFile=".\Debug/ika.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common\,$(PYTHON)\libs,$(CORONA)\lib;..\3rdparty"
+				AdditionalLibraryDirectories="..\common\,..\3rdparty"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/ika.pdb"
 				SubSystem="2"/>
@@ -247,12 +247,6 @@
 			</File>
 			<File
 				RelativePath="..\common\fontfile.h">
-			</File>
-			<File
-				RelativePath="..\common\importpng.cpp">
-			</File>
-			<File
-				RelativePath="..\common\importpng.h">
 			</File>
 			<File
 				RelativePath="..\common\log.cpp">

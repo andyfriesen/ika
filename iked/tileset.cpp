@@ -57,7 +57,7 @@ int CTileSet::Height() const
     return pVsp?pVsp->Height():0;
 }
 
-void CTileSet::SetCurTile(int t)
+void CTileSet::SetCurTile(uint t)
 {
     if (t<0 || t>=pVsp->NumTiles()) return;
     nCurtile=t;

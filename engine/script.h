@@ -2,8 +2,8 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
+#include "python/python.h"
 #include "types.h"
-#include "python.h"
 
 /*!
     Python API encapsulation class.

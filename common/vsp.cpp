@@ -276,37 +276,37 @@ void VSP::New(int xsize,int ysize,int numtiles)     // creates a blank 32 bit VS
 
 // vsp alteration routines
 
-void VSP::InsertTile(int pos)
+void VSP::InsertTile(uint pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
     
     tiles.push_back(tiles[tiles.size()-1]); // tack the last tile on the end
     
-    for (int i=pos; i<tiles.size()-1; i++)
+    for (uint i=pos; i<tiles.size()-1; i++)
         tiles[i+1]=tiles[i];                // bump 'em all over
 }
 
-void VSP::DeleteTile(int pos)
+void VSP::DeleteTile(uint pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
     
-    for (int i=pos; i<tiles.size()-1; i++)
+    for (uint i=pos; i<tiles.size()-1; i++)
         tiles[i]=tiles[i+1];                // shuffle them all down one
     
     tiles.pop_back();
 }
 
-void VSP::AppendTiles(int count)
+void VSP::AppendTiles(uint count)
 {
     CPixelMatrix dummy(nTilex,nTiley);
     
-    for (int i=0; i<count; i++)
+    for (uint i=0; i<count; i++)
         tiles.push_back(dummy);
 }
 
-void VSP::CopyTile(CPixelMatrix& tb,int pos)
+void VSP::CopyTile(CPixelMatrix& tb,uint pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
@@ -314,7 +314,7 @@ void VSP::CopyTile(CPixelMatrix& tb,int pos)
     tb=tiles[pos];
 }
 
-void VSP::PasteTile(const CPixelMatrix& tb,int pos)
+void VSP::PasteTile(const CPixelMatrix& tb,uint pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
@@ -322,13 +322,13 @@ void VSP::PasteTile(const CPixelMatrix& tb,int pos)
     tiles[pos]=tb;
 }
 
-void VSP::TPasteTile(CPixelMatrix& tb,int pos)
+void VSP::TPasteTile(CPixelMatrix& tb,uint pos)
 {
     CBlitter<Alpha>::Blit(tb,tiles[pos],0,0);
     // NYI
 }
 
-VSP::AnimState& VSP::Anim(int strand)
+VSP::AnimState& VSP::Anim(uint strand)
 {
     static AnimState dummy;
     
@@ -337,7 +337,7 @@ VSP::AnimState& VSP::Anim(int strand)
     return vspanim[strand];
 }
 
-CPixelMatrix& VSP::GetTile(int tileidx)
+CPixelMatrix& VSP::GetTile(uint tileidx)
 {
     if (tileidx<0 || tileidx>tiles.size())
         tileidx=0;
@@ -345,14 +345,14 @@ CPixelMatrix& VSP::GetTile(int tileidx)
     return tiles[tileidx];
 }
 
-void VSP::CreateTilesFromBuffer(u8* data,u8* pal,int numtiles,int tilex,int tiley)
+void VSP::CreateTilesFromBuffer(u8* data,u8* pal,uint numtiles,int tilex,int tiley)
 {
     nTilex=tilex;
     nTiley=tiley;
     
     tiles.resize(numtiles);
     
-    for (int i=0; i<numtiles; i++)
+    for (uint i=0; i<numtiles; i++)
     {
         tiles[i].Resize(nTilex,nTiley);       
         tiles[i].CopyPixelData(data,nTilex,nTiley,pal);
@@ -360,7 +360,7 @@ void VSP::CreateTilesFromBuffer(u8* data,u8* pal,int numtiles,int tilex,int tile
     }
 }
 
-void VSP::CreateTilesFromBuffer(u16* data,int numtiles,int tilex,int tiley)
+void VSP::CreateTilesFromBuffer(u16* data,uint numtiles,int tilex,int tiley)
 {
     nTilex=tilex;
     nTiley=tiley;
@@ -370,7 +370,7 @@ void VSP::CreateTilesFromBuffer(u16* data,int numtiles,int tilex,int tiley)
     RGBA* pBuffer=new RGBA[nTilex*nTiley];
     u16* pSrc=data;
     
-    for (int i=0; i<numtiles; i++)
+    for (uint i=0; i<numtiles; i++)
     {
         tiles[i].Resize(nTilex,nTiley);
         
@@ -386,14 +386,14 @@ void VSP::CreateTilesFromBuffer(u16* data,int numtiles,int tilex,int tiley)
     delete[] pBuffer;
 }
 
-void VSP::CreateTilesFromBuffer(RGBA* data,int numtiles,int tilex,int tiley)
+void VSP::CreateTilesFromBuffer(RGBA* data,uint numtiles,int tilex,int tiley)
 {
     nTilex=tilex;
     nTiley=tiley;
     
     tiles.resize(numtiles);
     
-    for (int i=0; i<numtiles; i++)
+    for (uint i=0; i<numtiles; i++)
     {
         tiles[i].Resize(nTilex,nTiley);
         tiles[i].CopyPixelData(data+i*nTilex*nTiley,nTilex,nTiley);

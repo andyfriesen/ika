@@ -119,7 +119,7 @@ int CFont::StringWidth(const char* s) const
     int nWidth=0;
     int nCursubset=0;
     
-    for (int i=0; i<strlen(s); i++)
+    for (uint i=0; i<strlen(s); i++)
     {
         unsigned char c=s[i];
         

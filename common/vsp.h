@@ -68,31 +68,31 @@ public:
     void Free();
     void New(int xsize=16,int ysize=16,int numtiles=100);
     
-    void InsertTile(int pos);
-    void DeleteTile(int pos);
+    void InsertTile(uint pos);
+    void DeleteTile(uint pos);
     inline void AppendTile() { AppendTiles(1); }
-    void AppendTiles(int count=1);
-    void CopyTile(CPixelMatrix& tb,int pos);        // Copies the tile into a buffer.
-    void PasteTile(const CPixelMatrix& tb,int pos); // pastes the tile from a buffer
-    void TPasteTile(CPixelMatrix& tb,int pos);      // transparently pastes the tile from a buffer
+    void AppendTiles(uint count=1);
+    void CopyTile(CPixelMatrix& tb,uint pos);        // Copies the tile into a buffer.
+    void PasteTile(const CPixelMatrix& tb,uint pos); // pastes the tile from a buffer
+    void TPasteTile(CPixelMatrix& tb,uint pos);      // transparently pastes the tile from a buffer
     
-    void SetPixel(int x,int y,int tileidx,int c);
-    int  GetPixel(int x,int y,int tileidx);
+    void SetPixel(int x,int y,uint tileidx,int c);
+    int  GetPixel(int x,int y,uint tileidx);
     
-    AnimState& Anim(int strand);
+    AnimState& Anim(uint strand);
 
-    CPixelMatrix& GetTile(int tileidx);
+    CPixelMatrix& GetTile(uint tileidx);
 
     inline int Width() const { return nTilex; }
     inline int Height() const { return nTiley; }
-    inline int NumTiles() const { return tiles.size(); }
+    inline uint NumTiles() const { return tiles.size(); }
     
     inline const char* Name() const { return (const char*)sName; }
     
 private:
-    void CreateTilesFromBuffer(u8* data,u8* pal,int numtiles,int tilex,int tiley);
-    void CreateTilesFromBuffer(u16* data,int numtiles,int tilex,int tiley);
-    void CreateTilesFromBuffer(RGBA* data,int numtiles,int tilex,int tiley);
+    void CreateTilesFromBuffer(u8* data,u8* pal,uint numtiles,int tilex,int tiley);
+    void CreateTilesFromBuffer(u16* data,uint numtiles,int tilex,int tiley);
+    void CreateTilesFromBuffer(RGBA* data,uint numtiles,int tilex,int tiley);
 
 };
 

@@ -197,7 +197,7 @@ void CMapView::InitLayerVisibilityControl()
     // Fill up the layer info bar
     const string& s=pMap->GetRString();
     
-    for (int idx=0; idx<s.length(); idx++)
+    for (uint idx=0; idx<s.length(); idx++)
     {
         char c=s[idx];
         if (c>='0' && c<='9')
@@ -514,7 +514,7 @@ void CMapView::Render()
     pGraph->SetCurrent();
     pGraph->Clear();
 
-    for (int i=0; i<r.length(); i++)
+    for (uint i=0; i<r.length(); i++)
     {
         if (r[i]>='0' && r[i]<='9')
         {

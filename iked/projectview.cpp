@@ -190,7 +190,7 @@ public:
         dlg.GetFilenames(sNames);
         dlg.GetPaths(sPaths);
         
-        for (int i=0; i<sNames.Count(); i++)
+        for (uint i=0; i<sNames.Count(); i++)
             AddItem(id,sNames[i].c_str(),sPaths[i].c_str());
         Expand(id);
         Refresh();

@@ -39,7 +39,7 @@ public:
     inline VSP& GetVSP() const { return *pVsp; }
 
     inline int CurTile() const { return nCurtile; }
-    void SetCurTile(int t);
+    void SetCurTile(uint t);
 };
 
 #endif

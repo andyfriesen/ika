@@ -1,6 +1,5 @@
 #include "tileset.h"
 #include "log.h"
-#include "importpng.h"
 #include "misc.h"
 
 void CTileSet::Free()
