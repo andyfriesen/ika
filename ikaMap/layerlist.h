@@ -63,7 +63,7 @@ private:
 
     wxBoxSizer* _sizer;
 
-    wxMenu* _contextMenu;
+    ScopedPtr<wxMenu> _contextMenu;
     int _contextMenuIndex;          // needed to determine which layer is the subject of a context menu command.  -1 if not needed at the moment.
 
     wxIcon _visibleIcon;

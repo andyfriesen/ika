@@ -225,15 +225,6 @@ namespace aries
             throw std::runtime_error(std::string("Unable to find node ") + name);
         else
             return n;
-        /*for (NodeList::const_iterator i = _children.begin(); i != _children.end(); i++)
-        {
-            Node* n = *i;
-            if (!n->isString() &&
-                reinterpret_cast<DataNode*>(n)->getName() == name)
-                return reinterpret_cast<DataNode*>(n);
-        }
-
-        throw std::runtime_error(std::string("Unable to find node ") + name);*/
     }
 
     DataNode* DataNode::getChild(const std::string& name, DataNode* defaultValue) const

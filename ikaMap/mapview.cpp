@@ -180,7 +180,6 @@ void MapView::OnCurLayerChange(uint index)
 
 void MapView::Render()
 {
-    //Log::Write("Render!");
     Map* map = _executor->GetMap();
     int curLayer = _executor->GetCurrentLayer();
 
@@ -267,54 +266,6 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
     yoffset = yoffset * lay->parallax.muly / lay->parallax.divy;
 
     RenderLayer(lay->tiles, xoffset, yoffset);
-
-    /*TileSet* ts = _executor->GetTileSet();
-    if (!ts->Count())
-        return;
-
-    int width  = _video->LogicalWidth();
-    int height = _video->LogicalHeight();
-
-    int tileX = ts->Width();
-    int tileY = ts->Height();
-
-    int firstX = xoffset / tileX;
-    int firstY = yoffset / tileY;
-    
-    int lenX = width  / tileX + 2;
-    int lenY = height / tileY + 2;
-
-    int adjustX = xoffset % tileX;
-    int adjustY = yoffset % tileY;
-
-    if (firstX + lenX > lay->Width())  lenX = lay->Width()  - firstX;
-    if (firstY + lenY > lay->Height()) lenY = lay->Height() - firstY;
-
-    if (firstX < 0)  
-    {
-        lenX -= -firstX;
-        adjustX += firstX * tileX;
-        firstX = 0;
-    }
-    if (firstY < 0)
-    {
-        lenY -= -firstY;
-        adjustY += firstY * tileY;
-        firstY = 0;
-    }
-
-    for (int y = 0; y < lenY; y++)
-    {
-        for (int x = 0; x < lenX; x++)
-        {
-            int t = lay->tiles(x + firstX, y + firstY);
-
-            _video->Blit(
-                ts->GetImage(t),
-                x * tileX - adjustX, y * tileY - adjustY,
-                true);
-        }
-    }*/
 }
 
 void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)

@@ -976,6 +976,7 @@ void MainWindow::LoadMap(const std::string& fileName)
                        "DANGER WILL ROBINSON", 
                        wxOK | wxCENTRE | wxICON_ERROR, 
                        this);
+        delete newMap;
         return;
     }
 
@@ -986,6 +987,7 @@ void MainWindow::LoadMap(const std::string& fileName)
     {
         ::wxMessageBox(va("Unable to load tileset %s.", newMap->tileSetName.c_str()), "Error loading tileset.", wxOK | wxCENTRE | wxICON_ERROR, this);
         delete newMap;
+        delete ts;
         return;
     }
 
@@ -1005,13 +1007,6 @@ void MainWindow::LoadMap(const std::string& fileName)
     _layerVisibility.resize(_map->NumLayers());
     std::fill(_layerVisibility.begin(), _layerVisibility.end(), true);
 
-    // Not firing events here because several components listen to more than one
-    // event.  This would cause things to redraw themselves more than is sane.
-    /*_mapView->UpdateScrollBars();
-    _tileSetView->UpdateScrollBars();
-    _mapView->Refresh();
-    _tileSetView->Refresh();
-    _layerList->Update(_map);*/
     mapLoaded.fire(MapTileSetEvent(_map, _tileSet));
 
     _changed = false;

@@ -76,14 +76,6 @@ static uint get_int(const std::string& s, uint& offset)
         offset++;
 
     return atoi(s.substr(start, offset).c_str());
-
-    /*while (1)
-    {
-        if (s[offset]>='0' && s[offset]<='9')
-            offset++;
-        else
-            return atoi(s.substr(start).c_str());
-    }*/
 }
 
 void Entity::UpdateAnimation()

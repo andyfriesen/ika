@@ -158,7 +158,7 @@ void LayerList::OnActivateLayer(wxCommandEvent& event)
 void LayerList::OnShowContextMenu(wxContextMenuEvent& event)
 {
     _contextMenuIndex = event.GetId();
-    PopupMenu(_contextMenu, ScreenToClient(::wxGetMousePosition()));
+    PopupMenu(_contextMenu.get(), ScreenToClient(::wxGetMousePosition()));
 }
 
 void LayerList::OnEditLayerProperties(wxCommandEvent& event)

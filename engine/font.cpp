@@ -1,7 +1,7 @@
 /*
-Font stuff.
-You know the drill. --tSB
-*/
+ * Font stuff.
+ * You know the drill. --tSB
+ */
 
 #include "common/fontfile.h"
 #include "common/fileio.h"

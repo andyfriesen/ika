@@ -3,17 +3,12 @@
 #define SPRITESET_H
 
 #include "imagebank.h"
+#include "misc.h"
 
 class CCHRfile;
 
 struct SpriteSet : ImageBank
 {
-    virtual void SetImage(const Canvas& img, uint idx);
-
-    CCHRfile* _chr;
-
-public:
-
     SpriteSet();
 
     void New(int width, int height);
@@ -33,8 +28,12 @@ public:
 
     void Resize(int width, int height);
 
-    inline CCHRfile* GetCHR() const { return _chr; }
+    inline CCHRfile* GetCHR() const { return _chr.get(); }
 
+private:
+    virtual void SetImage(const Canvas& img, uint idx);
+
+    ScopedPtr<CCHRfile> _chr;
 };
 
 #endif

@@ -458,8 +458,6 @@ public:
         int d, dir, diu, dx, dy;
         
         //two pointers because we render the line from both ends
-        /*RGBA* w1=&(img.GetPixels())[img.Width()*y1 + x1];
-        RGBA* w2=&(img.GetPixels())[img.Width()*y2 + x2];*/
         RGBA* w1 = img.GetPixels() + (img.Width()*y1 + x1);
         RGBA* w2 = img.GetPixels() + (img.Width()*y2 + x2);
 

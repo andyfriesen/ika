@@ -333,15 +333,6 @@ void VSP::TPasteTile(Canvas& tb, uint pos)
     // NYI
 }
 
-/*VSP::AnimState& VSP::Anim(uint strand)
-{
-    static AnimState dummy;
-
-    if (strand < 0 || strand > 99) return dummy;
-
-    return _vspanim[strand];
-}*/
-
 Canvas& VSP::GetTile(uint tileidx)
 {
     if (tileidx < 0 || tileidx > tiles.size())

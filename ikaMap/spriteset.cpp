@@ -25,7 +25,6 @@ bool SpriteSet::Load(const std::string& fname)
         return false;
     }
 
-    delete _chr;
     _chr = _newChr;
 
     SyncAll();
