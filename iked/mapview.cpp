@@ -4,10 +4,26 @@
 #include "tileset.h"
 #include <gl\glu.h>
 
+#include <wx\laywin.h>
+#include <wx\sashwin.h>
+
+/*
+    blegh, didn't want this to get complicated.
+
+    wxMDIChildFrame
+        |----------------------|
+        |                      |
+    wxSashLayoutWindow  wxSashLayoutWindow
+        |                      |
+    CGraphFrame         Layer visibility stuff, not finalized
+
+*/
+
 BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_PAINT(CMapView::OnPaint)
     EVT_ERASE_BACKGROUND(CMapView::OnErase)
     EVT_SIZE(CMapView::OnSize)
+    EVT_SCROLLWIN(CMapView::OnScroll)
 
     EVT_CLOSE(CMapView::OnClose)
 END_EVENT_TABLE()
@@ -18,10 +34,21 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     pParentwnd=parent;
 
     int w,h;
-    GetSize(&w,&h);
+    GetClientSize(&w,&h);
 
-    pGraph=new CGraphFrame(this);
-    pGraph->SetSize(w,h);
+    pLeftbar=new wxSashLayoutWindow(this,-1);
+    pLeftbar->SetAlignment(wxLAYOUT_LEFT);
+    pLeftbar->SetOrientation(wxLAYOUT_VERTICAL);
+    pLeftbar->SetDefaultSize(wxSize(100,100));
+    pLeftbar->SetSashVisible(wxSASH_RIGHT,true);
+
+    pRightbar=new wxSashLayoutWindow(this,-1);
+    pRightbar->SetAlignment(wxLAYOUT_RIGHT);
+
+    pRightbar->SetScrollbar(wxVERTICAL,0,10,10000);
+    pRightbar->SetScrollbar(wxHORIZONTAL,0,10,10000);
+
+    pGraph=new CGraphFrame(pRightbar);
     Show();
 
     // Get resources
@@ -46,13 +73,28 @@ void CMapView::OnPaint()
 
 void CMapView::OnSize(wxSizeEvent& event)
 {
-    pGraph->SetSize(event.GetSize());
+    wxLayoutAlgorithm layout;
+    layout.LayoutWindow(this,pRightbar);
+    int w,h;
+//    pScrollwin->GetClientSize(&w,&h);
+    pRightbar->GetClientSize(&w,&h);
+    pGraph->SetSize(w,h);
+}
+
+void CMapView::OnScroll(wxScrollWinEvent& event)
+{
+    switch (event.GetOrientation())
+    {
+    case wxHORIZONTAL:  xwin=event.GetPosition();   break;
+    case wxVERTICAL:    ywin=event.GetPosition();   break;
+    }
 }
 
 void CMapView::OnClose()
 {
     pParentwnd->map.Release(pMap);
     pParentwnd->vsp.Release(pTileset);
+    Destroy();
 }
 
 // ------------------------------ Core logic -------------------------

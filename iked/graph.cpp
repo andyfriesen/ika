@@ -62,8 +62,6 @@ void CGraphFrame::OnSize(wxSizeEvent& event)
 
 void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
 {
-    SetCurrent();
-
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
 
     glBegin(GL_LINE_LOOP);
@@ -78,8 +76,6 @@ void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
 
 void CGraphFrame::RectFill(int x,int y,int w,int h,RGBA colour)
 {
-    SetCurrent();
-
     glBindTexture(GL_TEXTURE_2D,0);
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
 
