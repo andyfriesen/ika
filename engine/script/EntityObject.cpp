@@ -7,7 +7,7 @@ defined dictionary that holds all the map-defined entities. (and serves as their
 being garbage collected)    
 */
 
-#include <set>  // all entity instances
+#include <set>
 
 #include "ObjectDefs.h"
 #include "main.h"
@@ -17,7 +17,7 @@ namespace Script
 {
     namespace Entity
     {
-        std::map<::Entity*, Script::Entity::EntityObject*> instances;
+        std::map<::Entity*, Script::Entity::EntityObject*> instances;   // all entity instances
 
         PyTypeObject type; 
         
@@ -226,6 +226,7 @@ namespace Script
 
         void Destroy(EntityObject* self)
         {
+            Log::Write("Nuking %s", self->ent->name.c_str());
             if (self->ent)
                 engine->DestroyEntity(self->ent);
             else

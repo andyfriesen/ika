@@ -16,14 +16,13 @@ bool ScriptEngine::_inited = false;
 void ScriptEngine::Init(CEngine* p)
 {
     assert(!_inited);
-    _inited=true;
+    _inited = true;
     
     Py_Initialize();
-    PyRun_SimpleString("import sys; sys.path.insert(0, '.')");
+    PyRun_SimpleString("import sys; sys.path.insert(0, '.')");  // :x
     
-
     PyImport_AddModule("ika");
-    PyObject* module=Py_InitModule3("ika", Script::standard_methods,
+    PyObject* module = Py_InitModule3("ika", Script::standard_methods,
         "ika standard module. \n"
         "\n"
         "Contains functions and crap for manipulating the ika game engine at runtime.\n"
@@ -138,7 +137,7 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
     if (!pFunc)
         return true; // No AutoExec?  No problem!
 
-    PyObject* result=PyEval_CallObject(pFunc, 0);
+    PyObject* result = PyEval_CallObject(pFunc, 0);
 
     if (!result)
         Log::Write("Warning: Module %s had an AutoExec event, but it failed to execute.", sTemp.c_str());
@@ -171,14 +170,15 @@ void ScriptEngine::ClearEntityList()
 {
     if (!Script::entityDict)
         return;
-    
-    // Wipe the entity list clean
-    PyObject* pKeys=PyDict_Keys(Script::entityDict);
-    
-    for (int i = 0; i<PyDict_Size(Script::entityDict); i++)
-        PyDict_DelItem(Script::entityDict, PyList_GetItem(pKeys, i));
-    
-    Py_DECREF(pKeys);
+
+    PyDict_Clear(Script::entityDict);
+
+    for (std::map<::Entity*, Script::Entity::EntityObject*>::iterator iter = Script::Entity::instances.begin();
+        iter != Script::Entity::instances.end();
+        iter++)
+    {
+        Log::Write("%s still exists, with refcount %i", iter->first->name.c_str(), iter->second->ob_refcnt);
+    }
 }
 
 void ScriptEngine::AddEntityToList(::Entity* e)
@@ -238,15 +238,18 @@ void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
         return;
     }
 
-    PyObject* result = PyObject_CallObject(func, Py_BuildValue("(O)", entObject));
+    PyObject* args = Py_BuildValue("(O)", entObject);
+    PyObject* result = PyObject_CallObject(func, args);
+    Py_DECREF(entObject);
+    Py_DECREF(args);
 
     if (!result)
     {
         PyErr_Print();
         engine->Script_Error();
     }
-
-    Py_XDECREF(result);
+    else
+        Py_DECREF(result);
 }
 
 //-

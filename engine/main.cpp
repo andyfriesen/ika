@@ -161,7 +161,7 @@ void CEngine::Startup()
         Sys_Error("No user.cfg found.");
 
     // init a few values
-    _showFramerate        = cfg.Int("showfps") != 0 ;
+    _showFramerate  = cfg.Int("showfps") != 0;
     nFrameskip      = cfg.Int("frameskip");
 
     // Now the tricky stuff.

@@ -105,7 +105,7 @@ namespace Script
             },
 
             {   "GetAllEntities",   (PyCFunction)Map_GetAllEntities,    METH_NOARGS,
-                "Map.GetAllEntities) -> list\n\n"
+                "Map.GetAllEntities() -> list\n\n"
                 "Creates a list of every single existing entity, and returns it."
             },
 
