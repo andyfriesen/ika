@@ -87,9 +87,9 @@ namespace Script
 
             try
             {
-                font->font = new ::Font(filename, engine->video);
+                font->font = new Ika::Font(filename, engine->video);
             }
-            catch (FontException)
+            catch (Ika::FontException)
             {
                 PyErr_SetString(PyExc_OSError, va("Failed to load %s", filename));
                 return 0;
@@ -129,7 +129,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iis:Font.CenterPrint", &x, &y, &message))
                 return 0;
 
-            ::Font* f=self->font;
+            Ika::Font* f=self->font;
             f->PrintString(x - f->StringWidth(message) / 2 , y, message);
 
             Py_INCREF(Py_None);
@@ -144,7 +144,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iis:Font.RightPrint", &x, &y, &message))
                 return 0;
 
-            ::Font* f = self->font;
+            Ika::Font* f = self->font;
             f->PrintString(x - f->StringWidth(message) , y, message);
 
             Py_INCREF(Py_None);

@@ -9,7 +9,9 @@
 #include "Python.h"
 
 // Rain of prototypes
-struct Font;
+namespace Ika {  // X11 fix
+    struct Font;
+}
 struct Entity;
 class Engine;
 class Canvas;
@@ -149,7 +151,7 @@ namespace Script
         struct FontObject
         {
             PyObject_HEAD
-            ::Font* font;
+            Ika::Font* font;
         };
 
         // Methods

@@ -106,12 +106,12 @@ void Engine::MainLoop()
     CDEBUG("mainloop");
     static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
 
-    ScopedPtr<Font> font;
+    ScopedPtr<Ika::Font> font;
     try
     {
-        font = new Font("system.fnt", video);
+        font = new Ika::Font("system.fnt", video);
     }
-    catch (FontException)
+    catch (Ika::FontException)
     {
         font = 0;
         _showFramerate = false;

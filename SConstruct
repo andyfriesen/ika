@@ -39,9 +39,9 @@ libs(Split('''
     SDL
     audiere
     corona
-    zlib
-    python23
 '''))
+libs(sys.platform == 'win32' and 'zlib' or 'z')
+libs(sys.platform == 'win32' and 'python23' or 'python2.3')
 
 # SDL linking info
 env.ParseConfig('sdl-config --cflags')
