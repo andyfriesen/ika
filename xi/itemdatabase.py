@@ -17,14 +17,13 @@ from exception import XiException
 import item
 
 class ItemDatabase(StatelessProxy):
-    def __init__(self, fname = 'items.dat'):
+    def __init__(self):
         StatelessProxy.__init__(self)
 
         if len(self.__dict__) != 0:
             return
 
         self.__items = {}  # name:item object
-        self.LoadData(fname)
 
     def __getitem__(self, name):
         return self.__items[name]
@@ -32,7 +31,7 @@ class ItemDatabase(StatelessProxy):
     def __iter__(self):
         return self.__items.iteritems()
 
-    def LoadData(self, filename):
+    def Init(self, filename, fieldeffects = None, battleeffects = None):
         def ParseItem(f):
             i = item.Item()
                 
@@ -42,27 +41,33 @@ class ItemDatabase(StatelessProxy):
                 t = f.Next().lower()
                 
                 if t == 'desc':
-                    i.desc = f.GetLine()
+                    s = f.GetLine()
+                    while s != 'end':
+                        i.desc += s 
+                        s = f.GetLine()
+                        
                 elif t == 'equiptype':
                     e = f.Next()
-                    if not e in item.equiptypes:
+                    if e not in item.equiptypes:
                         raise XiException('Unknown equip type '+`e`)
                     i.equiptype = e
+                    
                 elif t == 'equipby':
-                    while 1:
+                    s = f.Next().lower()
+                    while s != 'end':
+                       i.equipby.append(s)
                        s = f.Next().lower()
-                       if s == 'end':
-                               break
-                       i.eqby.append(s)
+                       
                 elif t == 'useby':
-                    while 1:
-                       s = f.Next().lower()
-                       if s == 'end':
-                               break
+                    s = f.Next().lower()
+                    while s != 'end':
                        i.useby.append(s)
-                elif t == 'consumable':
-                    i.consumable = True
-                elif t == 'cost':     i.cost = int(f.Next())
+                       s = f.Next().lower()
+                       
+                elif t == 'consumable':     i.consumable = True
+                elif t == 'cost':           i.cost = int(f.Next())
+                elif t == 'useeffect':      i.fieldeffect  = fieldeffects[f.Next()]
+                elif t == 'battleeffect':   i.battleeffect = battleeffects[f.Next()]
 
                 elif t == 'atk':      i.atk = int(f.Next())
                 elif t == 'def':      i.Def = int(f.Next())

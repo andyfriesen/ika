@@ -22,7 +22,7 @@ class Window:
         self.iBottomRight = None
         self.iCentre = None
 
-#----------------------------------------------------------------
+    #----------------------------------------------------------------
 
     def _CreateCorners(self, img, borderwidth):
         self.iTopleft = Image(borderwidth, borderwidth)
@@ -42,7 +42,7 @@ class Window:
         SetRenderDest(self.iBottomright)
         img.Blit(-(img.width - borderwidth), -(img.height - borderwidth), 0)
 
-#----------------------------------------------------------------
+    #----------------------------------------------------------------
 
     def _CreateEdges(self, img, borderwidth):
         self.iTop = Image(img.width - borderwidth * 2, borderwidth)
@@ -62,7 +62,7 @@ class Window:
         SetRenderDest(self.iRight)
         img.Blit(borderwidth - img.width, -borderwidth, 0)
 
-#----------------------------------------------------------------
+    #----------------------------------------------------------------
 
     def Load(self, filename, borderwidth):
         img = Image()
@@ -87,7 +87,7 @@ class Window:
         
         SetRenderDest(oldrenderdest)
 
-#----------------------------------------------------------------
+    #----------------------------------------------------------------
 
     def Draw(self, x1, y1, x2, y2):
         self.iTopleft.Blit(x1-self.iTopleft.width, y1-self.iTopleft.height)
@@ -100,12 +100,24 @@ class Window:
 
         self.iTop.ScaleBlit   (x1, y1-self.iTop.height, x2-x1, self.iTop.height)
         self.iBottom.ScaleBlit(x1, y2, x2-x1, self.iBottom.height)
+        #self.iCentre.ScaleBlit(x1, y1, 900,900)
         self.iCentre.ScaleBlit(x1, y1, x2-x1, y2-y1)
+
+    """Left   = property( lambda self: self.iLeft.width )
+    Right  = property( lambda self: self.iRight.width )
+    Top    = property( lambda self: self.iTop.height )
+    Bottom = property( lambda self: self.iBottom.height )"""
+    Left = Right = property( lambda self: self.iLeft.width )
+    Top = Bottom = property( lambda self: self.iTop.height )
+
+
+#--------------------------------------------------------------------
 
 class SimpleWindow(object):
     def __init__(self, bordercolour, backgroundcolour):
         self.__border = bordercolour
         self.__bg = backgroundcolour
+        self.Top = self.Bottom = self.Left = self.Right = 1 # border size
 
     def Draw(self, x1, y1, x2, y2):
         scr = GetScreenImage()

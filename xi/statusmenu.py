@@ -19,23 +19,22 @@ from ika import input
 from menuwindows import StatusWindow, PortraitWindow, StatusBar, EquipWindow
 
 from party import party
-from equipmenu import GenerateEquipMenu
 
 def Update(curchar):
+	global portraitwindow, statwindow, equipwindow
 	portraitwindow.Update(curchar)
 	statwindow.Update(curchar)
 	equipwindow.Update(curchar)
-	portraitwindow.Position = (10, 10)
-	statwindow.Position = (portraitwindow.Right) + 30, portraitwindow.y
-	equipwindow.Position = statwindow.x, statwindow.Bottom + 16
+	portraitwindow.DockTop().DockLeft()
+	statwindow.DockLeft(portraitwindow).DockTop()
+	equipwindow.DockLeft(portraitwindow).DockTop(statwindow)
 
 def Execute():
 	global portraitwindow, statwindow, equipwindow
 	nCurchar=0
 	statbar=StatusBar()
 	statbar.Update()
-	statbar.DockTop()
-	statbar.DockRight()
+	statbar.DockTop().DockRight()
 
 	portraitwindow = PortraitWindow()
 	statwindow = StatusWindow()
@@ -45,7 +44,7 @@ def Execute():
 
 	while 1:
 		ika.map.Render()
-		[ x.Draw() for x in (portraitwindow, statwindow, equipwindow, statbar) ]
+		[ x.Draw() for x in (equipwindow, statwindow, statbar, portraitwindow) ]
 		ika.ShowPage()
 
 		input.Update()

@@ -10,13 +10,15 @@
 
 from ika import *
 import token
+from exception import XiException
 from item import *
-import party
+from itemdatabase import ItemDatabase
+
+itemdb = ItemDatabase()
 
 class Character:
-    def __init__(self, itemdatabase, datfile):
+    def __init__(self, datfile):
         self.datfilename = datfile
-        self.itemdb = itemdatabase
 
         self.name = 'null'
         self.portrait = Image()
@@ -53,7 +55,7 @@ class Character:
     def CanEquip(self, itemname):
         "Returns true if the character can equip the item"
 
-        item = self.itemdb.GetItem(itemname)
+        item = itemdb[itemname]
 
         if self.charclass in item.equipby:
             return True
@@ -66,7 +68,7 @@ class Character:
     def CanUse(self, itemname):
         "Returns true if the character can use the item"
 
-        item = self.itemdb.GetItem(itemname)
+        item = itemdb.GetItem(itemname)
 
         if self.charclass in item.useby:
             return True
@@ -79,11 +81,10 @@ class Character:
     def Equip(self, itemname):
         "Equips the specified item."
         
-        item = self.itemdb[itemname]
+        item = itemdb[itemname]
         
         if not item.equiptype in equiptypes:
-            print "Invalid equipment type "+`item.equiptype`
-            return
+            raise XiException('Invalid equipment type '+`item.equiptype`)
 
         # put what was equipped before back (if anything was there)
         self.Unequip(item.equiptype)
@@ -97,8 +98,7 @@ class Character:
         "Unequips the item in the specified slot"
         slot = slot.lower()
         if not slot in equiptypes:
-            print "char.unequip: Invalid equip type specified."
-            return
+            raise XiException('char.unequip: Invalid equip type specified.')
 
         self.equip[slot]=None
 
@@ -175,7 +175,7 @@ class Character:
             elif t =='chr':
                 self.chrfile = tokens.Next()
             elif t =='class':
-                self.charclass = tokens.Next()
+                self.charclass = tokens.Next().lower()
             elif t =='xp':
                 self.initXP , self.endXP  = GetPairOfNumbers(tokens)
             elif t =='hp':

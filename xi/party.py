@@ -8,22 +8,28 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-# TODO: party followers?
+#--------------- Globals ----------------
+
+chars = {}  # every character in the game is in this dictionary.  The keys are the characters' names.
+party = []  # the characters in the current party are in this list, ordered according to the current roster
+
+player = None # the player entity.
+itemdb = None # item database thingie
+inv    = None # party's current inventory
+
+#--------------- Imports ----------------
 
 import ika
 import char
 from item import *
 from itemdatabase import ItemDatabase
 
-#--------------- globals ----------------
-
-chars = {}  # every character in the game is in this dictionary.  The keys are the characters' names.
-party = []  # the characters in the current party are in this list, ordered according to the current roster
-
-player = None # the player entity.
-
-itemdb = ItemDatabase('items.dat')
-inv = Inventory()
+def Init(itemdat = 'items.dat'):
+    global itemdb, inv
+    
+    itemdb = ItemDatabase()
+    itemdb.Init(itemdat)
+    inv = Inventory()
 
 #------------------------------------------------------------------------------
 
@@ -36,7 +42,7 @@ def AddCharacter(name,datname=''):
         if datname == '':
             datname=name + '.dat'
 
-        chars[name] = char.Character(itemdb,datname)
+        chars[name] = char.Character(datname)
 
     if chars[name] in party:        # already in the party?
         return

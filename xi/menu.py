@@ -8,55 +8,36 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from ika import *
+import ika
 import widget
+import cursor
 
+input = ika.input
 #------------------------------------------------------------------------------
 
-class _MenuList(widget.TextLabel):
-	def __init__(self,x=0,y=0):
-		# call parent constructor
-		widget.TextLabel.__init__(self)
-		
-		self.x = x
-		self.y = y
+CURSOR_WIDTH=20
+defaultcursor = cursor.Cursor(widget.defaultfont)
 
-		self.ywin=0
-		self.ymax=10
-		
-	def Clear(self):
-		self.text=[]
-
-	def AddText(self,*text):
-		for x in text:
-			self.text.append(x)
-			self.width = max(self.width,self.fnt.StringWidth(x))
-			
-			if len(text)<self.ymax:
-				self.height+=self.fnt.height
-
-	def Draw(self,xoffset=0,yoffset=0):
-		curx = self.x+xoffset
-		cury = self.y+yoffset
-		for t in self.text[ self.ywin : self.ywin+self.ymax ]:
-			self.PrintString(curx,cury,t)
-			cury+=self.fnt.height
-
-#------------------------------------------------------------------------------
-
-CURSOR_WIDTH=10
+def SetDefaultCursor(csr):
+	global defaultcursor
+	
+	defaultcursor = csr
 
 class Menu(widget.Frame):
 	"A menu window.  Has a list of items that the user can select."
-	def __init__(self,x=0,y=0):
-		widget.Frame.__init__(self)
+	def __init__(self, x = 0 , y = 0, cursor = None):
+		global defaultcursor
 		
-		self.x = x
-		self.y = y
-
-		self.menuitems = _MenuList()
+		widget.Frame.__init__(self)
+		self.menuitems = widget.TextLabel()
 		self.menuitems.x = CURSOR_WIDTH
 		self.widgets.append(self.menuitems)
+		self.cursor = cursor or defaultcursor
+
+		self.Position = (x, y)
+		self.Size = self.menuitems.Size
+		self.width += CURSOR_WIDTH
+
 		self.cursory = 0
 		self.active = 1
 
@@ -64,13 +45,14 @@ class Menu(widget.Frame):
 		widget.Frame.Draw(self)
 
 		if self.active:
-			self.menuitems.fnt.Print(self.x,self.y+self.cursory*widget.defaultfont.height,'>')
-	
+			self.cursor.Draw(self.x+CURSOR_WIDTH, self.y + (self.cursory + 0.5) * self.menuitems.font.height)
+			#self.menuitems.font.Print(self.x,self.y+self.cursory*widget.defaultfont.height,'>')
+
 	def Clear(self):
 		self.menuitems.Clear()
-	
+
 	def AddText(self,*args):
-		self.menuitems.AddText(*args)
+		self.menuitems.AddText('\n'.join(args))
 		self.AutoSize()
 
 	def Update(self):
@@ -92,7 +74,7 @@ class Menu(widget.Frame):
 		if input.cancel:
 			input.cancel=0
 			return -1
-		
+
 		return None
 
 	def Execute(self):
@@ -107,4 +89,4 @@ class Menu(widget.Frame):
 				return result
 				
 			self.Draw()
-			ShowPage()
+			ika.ShowPage()

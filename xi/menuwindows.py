@@ -13,63 +13,82 @@ import menu
 import party # -_-
 
 class StatusBar(widget.TextFrame):
-	'Displays HP/MP counts for the party in a vertical status bar thing.'
-		
-	def Update(self):
-		self.Clear()
-		for char in party.party:
-			self.AddText( char.name )
-			self.AddText( 'HP\t%i/%i' % (char.HP, char.maxHP) )
-			self.AddText( 'MP\t%i/%i' % (char.MP, char.maxMP) )
-			self.AddText( '' )
+    'Displays HP/MP counts for the party in a vertical status bar thing.'
+
+    def Update(self):
+        self.Clear()
+        for char in party.party:
+            self.AddText( char.name )
+            self.AddText( 'HP\t%i/%i' % (char.HP, char.maxHP) )
+            self.AddText( 'MP\t%i/%i' % (char.MP, char.maxMP) )
+            self.AddText( '' )
+        self.AutoSize()
 
 class PortraitWindow(widget.Frame):
-	"Displays the character's portrait, HP, MP, and experience totals."
+    "Displays the character's portrait, HP, MP, and experience totals."
 
-	def __init__(self):
-		widget.Frame.__init__(self)
-		self.text = widget.TextLabel()
-		self.portrait = widget.Bitmap()
-		self.widgets.append(self.portrait)
-		self.widgets.append(self.text)
+    def __init__(self):
+        widget.Frame.__init__(self)
+        self.text = widget.TextLabel()
+        self.portrait = widget.Bitmap()
+        self.widgets.append(self.portrait)
+        self.widgets.append(self.text)
 
-	def Update(self,char):
-		portrait = self.portrait
-		text = self.text
-		
-		portrait.Image = char.portrait
-		portrait.Position = (0, 0)
+    def Update(self,char):
+        portrait = self.portrait
+        text = self.text
 
-		text.Clear()
-		text.AddText( char.name )
-		text.AddText( 'HP\t%i/%i' % (char.HP, char.maxHP) )
-		text.AddText( 'MP\t%i/%i' % (char.MP, char.maxMP) )
-		text.AddText( '' )
-		text.AddText( 'XP\t%i' % char.XP )
-		text.AddText( 'Next\t%i' % (char.next - char.XP) )
-		text.Position = (0, portrait.height)
+        portrait.Image = char.portrait
+        portrait.Position = (0, 0)
 
-		self.AutoSize()
+        text.Clear()
+        text.AddText( char.name )
+        text.AddText( 'HP\t%i/%i' % (char.HP, char.maxHP) )
+        text.AddText( 'MP\t%i/%i' % (char.MP, char.maxMP) )
+        text.AddText( '' )
+        text.AddText( 'XP\t%i' % char.XP )
+        text.AddText( 'Next\t%i' % (char.next - char.XP) )
+        text.Position = (0, portrait.height)
+        
+        self.AutoSize()
 
 class StatusWindow(widget.TextFrame):
-	"Displays a character's stats in a frame."
+    "Displays a character's stats in a frame."
 
-	def Update(self,char):
-		self.Clear()
-		
-		self.AddText( 'Strength\t%i\t~2%i' % (char.str, char.nstr) )
-		self.AddText( 'Vitality\t%i\t~2%i' % (char.vit, char.nvit) )
-		self.AddText( 'Magic\t%i\t~2%i'    % (char.mag, char.nmag) )
-		self.AddText( 'Will\t%i\t~2%i'     % (char.wil, char.nwil) )
-		self.AddText( 'Speed\t%i\t~2%i'    % (char.spd, char.nspd) )
-		self.AddText( 'Luck\t%i\t~2%i'     % (char.luk, char.nluk) )
-		
+    def Update(self,char):
+        self.Clear()
+
+        def add(n, a):
+            self.AddText( '%s\t%i' % (n, a) )
+
+        add('Attack', char.atk)
+        add('Defend', char.Def)
+        add('Hit %', char.hit)
+        add('Evade %', char.eva)
+
+        def add(n, a, b):
+            self.AddText( '%s\t%i\t~2%i' % (n, a, b) )
+
+        self.AddText( '' )
+        add('Strength', char.str, char.nstr)
+        add('Vitality', char.vit, char.nvit)
+        add('Magic', char.mag, char.nmag)
+        add('Will', char.wil, char.nwil)
+        add('Speed', char.spd, char.nspd)
+        add('Luck', char.luk, char.nluk)
 
 class EquipWindow(widget.TextFrame):
-	"Displays a character's current equipment."
+    "Displays a character's current equipment."
 
-	def Update(self, char):
-		self.Clear()
+    def Update(self, char):
+        self.Clear()
 
-		for e in char.equip.items():
-			self.AddText( '%s:\t%s' % (e[0].capitalize(), e[1] and e[1].name or '') )
+        for e in char.equip.items():
+            self.AddText( '%s:\t%s' % (e[0].capitalize(), e[1] and e[1].name or '') )
+
+class InventoryWindow(widget.TextFrame):
+    "Displays the group's inventory."
+
+    def Update(self):
+        for i in party.inv:
+            self.AddText( '%s\t%i' % (i.item.name, i.qty) )

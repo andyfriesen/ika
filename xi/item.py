@@ -14,7 +14,9 @@ from itemdatabase import ItemDatabase
 equiptypes= [ 'weapon', 'shield', 'armour', 'accessory' ]
 
 class Item(object):
-    __slots__ = [ 'equiptype', 'name', 'desc', 'atk', 'Def', 'hit', 'eva', 'str', 'vit', 'mag', 'wil', 'spd', 'luk', 'consumable', 'fieldeffect', 'battleeffect', 'cost', 'eqby', 'useby' ]
+    __slots__ = [ 'equiptype', 'name', 'desc', 'atk', 'Def', 'hit', 'eva',
+                  'str', 'vit', 'mag', 'wil', 'spd', 'luk', 'consumable',
+                  'fieldeffect', 'battleeffect', 'cost', 'equipby', 'useby' ]
     def __init__(self):
         equiptype = 'none'
         
@@ -36,13 +38,13 @@ class Item(object):
         self.luk = 0
         
         self.consumable = 0
-        
-        self.fieldeffect = 0
-        self.battleeffect = 0
+
+        self.fieldeffect = None
+        self.battleeffect = None
         
         self.cost = 0
         
-        self.eqby = []
+        self.equipby = []
         self.useby = []
 
 #--------------------------------------------
@@ -51,6 +53,9 @@ class InventoryEntry(object):
     def __init__(self, item, qty):
         self.item = item
         self.qty = qty
+
+    Name = property( lambda self: self.item.name )
+    Description = property( lambda self: self.item.desc )
 
 #--------------------------------------------
 
@@ -65,7 +70,12 @@ class Inventory(object):
         return iter(self.items)
 
     #--------------------------------------------
-        
+
+    def __getitem__(self,val):
+        return self.items[val]
+
+    #--------------------------------------------
+
     def Find(self, itemname):
         'Returns the InventoryEntry containing the specified item, or None.'
 

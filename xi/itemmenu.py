@@ -16,57 +16,52 @@ import widget
 import item
 import mainmenu
 from menuwindows import *
+import party
 
-from party import itemdb,inv
-
-# TODO: class wrap this junk
-
-def UpdateItemMenu():
-    self.Clear()
-    for itm in inv:
-            itemmenu.AddText( itm.item.name + '\t' + str(itm.qty) )
-
-#------------------------------------------------------------------------------
-
-def Execute():
-    statbar = StatusBar()
-    statbar.Update()
-    statbar.DockTop()
-    statbar.DockRight()
-
-    itemmenu = menu.Menu()
-    
-    description = widget.TextFrame()
-    description.Position = 10, 10
-    description.AddText('')
-    description.AutoSize()
-    description.width = statbar.x - 20
-    
-    itemmenu.x = 10
-    itemmenu.y = 10 + description.Bottom
-    
-    UpdateItemMenu(itemmenu)    
-
-    while 1:
-        ika.map.Render()
-        statbar.Draw()
-        result = itemmenu.Update()
+class ItemMenu(object):
+    def __init__(self):
+        self.menu = menu.Menu()
+        self.statbar = StatusBar()
+        self.statbar.Update()
+        self.statbar.AutoSize()
         
-        # update the description box
-        description.text.text[0] = inv.items[itemmenu.cursory].item.desc
+        self.description = widget.TextFrame()
+        self.description.DockTop().DockLeft()
+        self.description.AddText( '' )
+        self.description.AutoSize()
 
-        itemmenu.Draw()
-        description.Draw()
+        self.statbar.DockTop().DockRight()
+        self.menu.DockLeft().DockTop(self.description)
+        self.description.width = self.statbar.x - self.description.x
+
+    #--------------------------------------------
+
+    def Refresh(self):
+        self.statbar.Update()
+        self.menu.Clear()
+        for itm in party.inv:
+            self.menu.AddText( '%s\t%i' % (itm.Name, itm.qty) )
+        self.menu.AutoSize()
+
+
+    #--------------------------------------------
+
+    def Execute(self):
+        self.Refresh()
         
-        ika.ShowPage()
+        while True:
+            self.description.text[0] = party.inv[self.menu.cursory].Description
 
-        if result == None:
-            continue
-        elif result == -1:
-            break
+            ika.map.Render()
+            for x in (self.menu, self.statbar, self.description):
+                x.Draw()
+            ika.ShowPage()
+
+            result = self.menu.Update()
+            if result == -1:
+                break
             
-        # TODO: implement using items
+            if result is not None:
+                pass # Handle item use here
 
-    return 1
-
-#------------------------------------------------------------------------------
+#--------------------------------------------

@@ -28,13 +28,16 @@ class MainMenu(StatelessProxy):
 		# "static constructor" logic follows
 		mm = self.mainmenu = Menu()
 		mm.AddText('Item','Magic','Equip','Status')
-		mm.Position = 10,10
+		mm.DockLeft().DockTop()
 
 		self.statbar = StatusBar()
 		self.statbar.Update()
-		self.statbar.Position = (ika.GetScreenImage().width - self.statbar.width - 10), 10
+		self.statbar.DockRight().DockTop()
 
-		self.submenu = [ itemmenu.Execute, dummy, dummy, statusmenu.Execute ]
+		self.submenu = [ itemmenu.ItemMenu().Execute,
+						 dummy,
+						 equipmenu.EquipMenu().Execute,
+						 statusmenu.Execute ]
 
 	def Draw(self):
 		self.statbar.Draw()
