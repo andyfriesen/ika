@@ -31,6 +31,7 @@ void CScriptEngine::Init_Font()
     fonttype.tp_basicsize=sizeof fonttype;
     fonttype.tp_dealloc=(destructor)Font_Destroy;
     fonttype.tp_getattr=(getattrfunc)Font_GetAttribute;
+    fonttype.tp_setattr=(setattrfunc)Font_SetAttribute;
 }
 
 PyObject* CScriptEngine::Font_New(PyObject* self,PyObject* args)
@@ -75,7 +76,7 @@ PyObject* CScriptEngine::Font_GetAttribute(PyObject* self,char* name)
     return Py_FindMethod(font_methods,self,name);
 }
 
-PyObject* CScriptEngine::Font_SetAttribute(PyObject* self,char* name,PyObject* value)
+int CScriptEngine::Font_SetAttribute(PyObject* self,char* name,PyObject* value)
 {
     if (!strcmp(name,"tabsize"))
         ((v_FontObject*)self)->pFont->SetTabSize(PyInt_AsLong(value));

@@ -111,7 +111,7 @@ public:                                                        // too bad
     static PyObject* Font_New(PyObject* self,PyObject* args);
     static void      Font_Destroy(PyObject* self);
     static PyObject* Font_GetAttribute(PyObject* self,char* name);
-    static PyObject* Font_SetAttribute(PyObject* self,char* name,PyObject* value);
+    static int       Font_SetAttribute(PyObject* self,char* name,PyObject* value);
 
     // Singleton objects
     // map
