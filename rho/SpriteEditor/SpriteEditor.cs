@@ -124,8 +124,26 @@ namespace rho.SpriteEditor {
         }
 
         void FrameSelected(FrameEventArgs e) {
+            // If the selected frame isn't completely visible, make it so.
+            Point framePos = framePanel.GetFramePos(e.Index);
+            Point scrollPos = scrollPanel.AutoScrollPosition;
+            Size s = framePanel.GetScaledFrameSize();
+
+            int ywin = -scrollPos.Y; // WinForms is stupid.  Must invert, lest everything get dumb.
+            int y = framePos.Y - ywin;
+
+            int miny = framePos.Y - scrollPanel.Height + s.Height;
+            int maxy = framePos.Y;
+
+            if (ywin < miny) ywin = miny;
+            else if (ywin > maxy) ywin = maxy;
+
+            if (ywin != -scrollPos.Y) {
+                scrollPos.Y = ywin;
+                scrollPanel.AutoScrollPosition = scrollPos;
+            }
+
             framePanel.SelectedFrame = e.Index;
-            Console.WriteLine("Index = {0}", e.Index);
         }
 
         void FrameRightClicked(FrameEventArgs e) {

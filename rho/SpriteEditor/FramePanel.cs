@@ -1,10 +1,11 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Diagnostics;
 
 namespace rho.SpriteEditor {
-    public class FramePanel : Panel {
+    public class FramePanel : UserControl {
         public FramePanel(SpriteDocument doc) {
             document = doc;
             backBuffer = new Bitmap(Size.Width, Size.Height);
@@ -44,7 +45,8 @@ namespace rho.SpriteEditor {
                 return selectedFrame;
             }
             set {
-                Debug.Assert(-1 <= value && value < document.Frames.Count);
+                if (value < 0) value = 0;
+                if (value >= document.Frames.Count) value = document.Frames.Count - 1;
                 selectedFrame = value;
                 Refresh();
             }
@@ -143,6 +145,80 @@ namespace rho.SpriteEditor {
             }
         }
 
+        protected override bool IsInputKey(Keys keyData) {
+            Keys[] keys = {
+                Keys.Up, Keys.Down, Keys.Left, Keys.Right, Keys.PageUp, Keys.PageDown, Keys.Home, Keys.End
+            };
+            foreach (Keys k in keys) {
+                if (keyData == k) {
+                    return true;
+                }
+            }
+
+            return base.IsInputKey (keyData);
+        }
+
+        protected override void OnKeyDown(KeyEventArgs e) {
+            Console.WriteLine(e.KeyCode);
+            switch (e.KeyCode) {
+                case Keys.Left: {
+                    SelectedFrame -= 1;
+                    break;
+                }
+                case Keys.Right: {
+                    SelectedFrame += 1;
+                    break;
+                }
+                case Keys.Up: {
+                    SelectedFrame -= GetRowSize();
+                    break;
+                }
+                case Keys.Down: {
+                    SelectedFrame += GetRowSize();
+                    break;
+                }
+
+#if false
+                // Won't work because the FramePanel has no idea how big one page is.
+                case Keys.PageUp: {
+                    SelectedFrame -= GetRowSize() * GetNumRows();
+                    break;
+                }
+                case Keys.PageDown: {
+                    SelectedFrame += GetRowSize() * GetNumRows();
+                    break;
+                }
+#endif
+
+                case Keys.Home: {
+                    SelectedFrame = 0;
+                    break;
+                }
+                case Keys.End: {
+                    SelectedFrame = document.Frames.Count - 1;
+                    break;
+                }
+                default: {
+                    base.OnKeyDown (e);
+                    return;
+                }
+            }
+
+            OnFrameSelected(new FrameEventArgs(SelectedFrame));
+            e.Handled = true;
+        }
+
+        protected override void OnGotFocus(EventArgs e) {
+            base.OnGotFocus (e);
+            Refresh();
+        }
+
+        protected override void OnLostFocus(EventArgs e) {
+            base.OnLostFocus (e);
+            Refresh();
+        }
+
+
         protected virtual void OnRightClick(MouseEventArgs e) {
             Point cursor = PointToClient(Cursor.Position);
             int index = GetFrameAtPos(cursor);
@@ -150,9 +226,6 @@ namespace rho.SpriteEditor {
         }
 
         protected virtual void OnFrameSelected(FrameEventArgs e) {
-            //selectedFrame = e.Index;
-            //Refresh();
-
             if (FrameSelected != null) {
                 FrameSelected(e);
             }
@@ -168,8 +241,18 @@ namespace rho.SpriteEditor {
             Point framePos = GetFramePos(selectedFrame);
             Size frameSize = GetScaledFrameSize();
             Rectangle rect = new Rectangle(framePos, frameSize);
-            using (Pen pen = new Pen(Color.White)) {
+            Pen pen = null;
+
+            if (Focused) {
+                pen = new Pen(Color.White);
+            } else {
+                pen = new Pen(new HatchBrush(HatchStyle.Percent50, Color.White, Color.Black));
+            }
+            
+            try {
                 g.DrawRectangle(pen, framePos.X, framePos.Y, frameSize.Width, frameSize.Height);
+            } finally {
+                pen.Dispose();
             }
         }
 
@@ -185,7 +268,7 @@ namespace rho.SpriteEditor {
         }
 
         /// <summary>Returns the sprite frame under the point given.</summary>
-        int GetFrameAtPos(Point p) {
+        public int GetFrameAtPos(Point p) {
             Size frameSize = GetScaledFrameSize();
             frameSize.Width += pad;
             frameSize.Height += pad;
@@ -205,7 +288,7 @@ namespace rho.SpriteEditor {
         }
 
         /// <summary>Returns the position of the frame, given its index.</summary>
-        Point GetFramePos(int index) {
+        public Point GetFramePos(int index) {
             Point result = new Point(-1, -1);
 
             if (index < 0 || index >= document.Frames.Count) {
@@ -223,7 +306,7 @@ namespace rho.SpriteEditor {
         }
 
         /// <returns>Returns the size of a frame after zooming and the like.</returns>
-        Size GetScaledFrameSize() {
+        public Size GetScaledFrameSize() {
             return new Size(
                 (document.Size.Width * 256 / zoom),
                 (document.Size.Height * 256 / zoom)
@@ -241,7 +324,8 @@ namespace rho.SpriteEditor {
         }
 
         int GetNumRows() {
-            return GetRowSize() / document.Frames.Count;
+            int s = GetRowSize();
+            return (document.Frames.Count + s - 1) / s; // round up
         }
 
         Bitmap backBuffer;

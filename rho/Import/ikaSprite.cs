@@ -80,12 +80,26 @@ namespace rho.Import {
             int width = size.Width;
             int height = size.Height;
 
-            MemoryStream compressed = new MemoryStream(cdata);
-            InflaterInputStream iis = new InflaterInputStream(compressed);
             byte[] pixels = new byte[width * height * frameCount * 4];
-            iis.Read(pixels, 0, pixels.Length);
-            iis.Close();
-            compressed.Close();
+
+            using (MemoryStream compressed = new MemoryStream(cdata))
+            using (InflaterInputStream iis = new InflaterInputStream(compressed)) {
+
+                /**
+                 * This is silly.
+                 * InflaterInputStream doesn't actually read until it's got what you asked for.
+                 * It seems to just stop when it feels like a good idea, then returns the number
+                 * of bytes read.
+                 * 
+                 * What the hell.
+                 */
+
+                int byteCount = 0;
+                while (byteCount < pixels.Length) {
+                    byteCount += iis.Read(pixels, byteCount, pixels.Length - byteCount);
+                }
+
+            }
 
             frames = new ImageArray(width, height);
 

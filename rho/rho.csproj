@@ -359,7 +359,7 @@
                 />
                 <File
                     RelPath = "SpriteEditor\FramePanel.cs"
-                    SubType = "Component"
+                    SubType = "UserControl"
                     BuildAction = "Compile"
                 />
                 <File
