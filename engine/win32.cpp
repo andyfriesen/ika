@@ -10,6 +10,7 @@ win32.cpp
 
 #include <windows.h>
 #include "main.h"
+#include "benchmark.h"
 
 LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
@@ -93,6 +94,12 @@ int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrev,LPSTR lpCmdline,int n
     SetFocus(hWnd);							// In theory, this should send a WM_ACTIVATE message to our window, which should set bActive to true.
     
     ShowWindow(hWnd,nCmdShow);
+
+    if (!stricmp(lpCmdline,"-benchmark"))
+    {
+        Benchmark(hWnd);
+        return 0;
+    }
     
     engine.Startup(hWnd,hThisInstance);
     engine.MainLoop();

@@ -486,29 +486,6 @@ void CEngine::ProcessEntities()
 
 // --------------------------------------- Entity Handling --------------------------------------
 
-int  CEngine::EntityAt(int x,int y,int w,int h)
-// Returns the index of the entity within the specified rect
-// Returns -1 if there is no entity there.
-{
-    CDEBUG("entityat");
-    /*    CEntity* e;
-    CSprite* s;
-    
-      for (int i=0; i<entities.Count(); i++)
-      if (entities.IsValid(i))    
-      {
-      e=&entities[i];
-      s=e->pSprite;
-      
-        if (e->x         >=x+w)     continue;
-        if (e->y         >=y+h)     continue;
-        if (e->x+s->nHotw<=x)       continue;
-        if (e->y+s->nHoth<=y)       continue;
-        return i;
-}*/
-    return -1;
-}
-
 bool CEngine::DetectMapCollision(int x,int y,int w,int h)
 // returns true if there is an obstructed map square anywhere along a specified vertical or horizontal line
 // Also TODO: think up a better obstruction system

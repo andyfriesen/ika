@@ -23,37 +23,37 @@
                 ret
         ENDM
 
-	m2m	MACRO	a1,a2
-		push	a1
-		pop	a2
-	ENDM
+    m2m MACRO   a1,a2
+        push    a1
+        pop a2
+    ENDM
 
-	calldd	MACRO	ddobject,ddfunc
-		mov	eax,ddobject
-		push	eax
-		mov	eax,[eax]
-		call	DWORD PTR[eax+ddfunc]
-	ENDM
+    calldd  MACRO   ddobject,ddfunc
+        mov eax,ddobject
+        push    eax
+        mov eax,[eax]
+        call    DWORD PTR[eax+ddfunc]
+    ENDM
 
-	zeromem	MACRO	dest,size
-		LOCAL	blah
+    zeromem MACRO   dest,size
+        LOCAL   blah
 
-		mov	ebx,OFFSET dest
-		mov	al,0
-		mov	ecx,size
-		
-		blah:
-			mov	[ebx],al
-			add	ebx,1
-;		dec	ecx
-		jnz	blah
-	ENDM
-		
+        mov ebx,OFFSET dest
+        mov al,0
+        mov ecx,size
+
+        blah:
+            mov [ebx],al
+            add ebx,1
+            dec ecx
+        jnz blah
+    ENDM
+        
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ; Prototypes
 
-	gfxShutdown	PROTO	STDCALL
+    gfxShutdown PROTO   STDCALL
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
@@ -67,10 +67,10 @@
         lpBacksurf      LPDIRECTDRAWSURFACE     NULL
         lpClipper       LPDIRECTDRAWCLIPPER     NULL
         bltfx           DDBLTFX                 <0>
-	ddsd		DDSURFACEDESC		<0>
-	ddscaps		DDSCAPS			<0>
+    ddsd        DDSURFACEDESC       <0>
+    ddscaps     DDSCAPS         <0>
 
-	hCurwnd		HWND			?
+    hCurwnd     HWND            ?
 
                 ; Pixel format information
         nRedsize        DWORD   0
@@ -117,141 +117,141 @@ gfxGetVersion   Endp
 gfxInit         proc    STDCALL, hWnd:HWND,xres:DWORD,yres:DWORD,bpp:DWORD,bfullscreen:BYTE
 
         ; locals
-	LOCAL	result	:	DWORD;
+    LOCAL   result  :   DWORD;
 
-	.IF	bInited!=0					; Is this being called redundantly?
-		return	FALSE					; Yes.  Fail
-	.ENDIF
+    .IF bInited!=0                      ; Is this being called redundantly?
+        return  FALSE                   ; Yes.  Fail
+    .ENDIF
 
-	mov	bInited,TRUE					; set the flag, so that we know it's been set up
+    mov bInited,TRUE                    ; set the flag, so that we know it's been set up
 
-	m2m	nXres,xres
-	m2m	nYres,yres
-	mov	nBytesperpixel,32				; ignore the passed value for now.  Maybe write a whole new driver for 16 bit.
-	m2m	hCurwnd,hWnd
-	mov	al,bfullscreen
-	mov	bFullscreen,al
+    m2m nXres,xres
+    m2m nYres,yres
+    mov nBytesperpixel,32               ; ignore the passed value for now.  Maybe write a whole new driver for 16 bit.
+    m2m hCurwnd,hWnd
+    mov al,bfullscreen
+    mov bFullscreen,al
 
-	.IF	lpdd==NULL
-		INVOKE	DirectDrawCreate,NULL,ADDR lpdd,NULL
-		.IF	eax!=DD_OK
-			return FALSE				; Directdraw create failed :(
-		.ENDIF
-	.ENDIF
+    .IF lpdd==NULL
+        INVOKE  DirectDrawCreate,NULL,ADDR lpdd,NULL
+        .IF eax!=DD_OK
+            return FALSE                ; Directdraw create failed :(
+        .ENDIF
+    .ENDIF
 
-	.IF	bfullscreen!=0
+    .IF bfullscreen!=0
 
-	; Set the cooperative level
-		push	(DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN)
-		push	hWnd
-		calldd	lpdd,IDIRECTDRAW_SETCOOPERATIVELEVEL
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return FALSE
-		.ENDIF
+    ; Set the cooperative level
+        push    (DDSCL_EXCLUSIVE or DDSCL_FULLSCREEN)
+        push    hWnd
+        calldd  lpdd,IDIRECTDRAW_SETCOOPERATIVELEVEL
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return FALSE
+        .ENDIF
 
-	; Set the display mode
-		push	32					; bits per pixel
-		push	nYres
-		push	nXres
-		calldd	lpdd,IDIRECTDRAW_SETDISPLAYMODE
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return FALSE
-		.ENDIF
+    ; Set the display mode
+        push    32                  ; bits per pixel
+        push    nYres
+        push    nXres
+        calldd  lpdd,IDIRECTDRAW_SETDISPLAYMODE
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return FALSE
+        .ENDIF
 
-	; Create the primary surface
-		mov		ddsd.dwSize,SIZEOF ddsd
-		mov		ddsd.dwFlags,(DDSD_CAPS or DDSD_BACKBUFFERCOUNT)
-		mov		ddsd.ddsCaps.dwCaps,(DDSCAPS_PRIMARYSURFACE or DDSCAPS_COMPLEX or DDSCAPS_FLIP)
-		mov		ddsd.dwBackBufferCount,1
-		push	NULL
-		push	OFFSET lpMainsurf
-		push	OFFSET ddsd
-		calldd	lpdd,IDIRECTDRAW_CREATESURFACE
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return FALSE
-		.ENDIF
+    ; Create the primary surface
+        mov     ddsd.dwSize,SIZEOF ddsd
+        mov     ddsd.dwFlags,(DDSD_CAPS or DDSD_BACKBUFFERCOUNT)
+        mov     ddsd.ddsCaps.dwCaps,(DDSCAPS_PRIMARYSURFACE or DDSCAPS_COMPLEX or DDSCAPS_FLIP)
+        mov     ddsd.dwBackBufferCount,1
+        push    NULL
+        push    OFFSET lpMainsurf
+        push    OFFSET ddsd
+        calldd  lpdd,IDIRECTDRAW_CREATESURFACE
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return FALSE
+        .ENDIF
 
-	; Grab the back buffer (which is attached to the primary)
-		mov	ddscaps.dwCaps,DDSCAPS_BACKBUFFER
-		push	OFFSET lpBacksurf
-		push	OFFSET ddscaps
-		calldd	lpMainsurf,IDIRECTDRAWSURFACE_GETATTACHEDSURFACE
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return FALSE
-		.ENDIF
-	.ELSE							; If windowed mode
+    ; Grab the back buffer (which is attached to the primary)
+        mov ddscaps.dwCaps,DDSCAPS_BACKBUFFER
+        push    OFFSET lpBacksurf
+        push    OFFSET ddscaps
+        calldd  lpMainsurf,IDIRECTDRAWSURFACE_GETATTACHEDSURFACE
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return FALSE
+        .ENDIF
+    .ELSE                           ; If windowed mode
 
-	; Set the cooperative level
-		push	DDSCL_NORMAL
-		push	hWnd
-		calldd	lpdd,IDIRECTDRAW_SETCOOPERATIVELEVEL
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return	FALSE
-		.ENDIF
+    ; Set the cooperative level
+        push    DDSCL_NORMAL
+        push    hWnd
+        calldd  lpdd,IDIRECTDRAW_SETCOOPERATIVELEVEL
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return  FALSE
+        .ENDIF
 
-	; Create the primary surface
-		mov		ddsd.dwSize,SIZEOF ddsd
-		mov		ddsd.dwFlags,DDSD_CAPS;
-		mov		ddsd.ddsCaps.dwCaps,DDSCAPS_PRIMARYSURFACE;
-		push	NULL
-		push	OFFSET	lpMainsurf
-		push	OFFSET	ddsd
-		calldd	lpdd,IDIRECTDRAW_CREATESURFACE
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return	FALSE
-		.ENDIF
+    ; Create the primary surface
+        mov     ddsd.dwSize,SIZEOF ddsd
+        mov     ddsd.dwFlags,DDSD_CAPS;
+        mov     ddsd.ddsCaps.dwCaps,DDSCAPS_PRIMARYSURFACE;
+        push    NULL
+        push    OFFSET  lpMainsurf
+        push    OFFSET  ddsd
+        calldd  lpdd,IDIRECTDRAW_CREATESURFACE
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return  FALSE
+        .ENDIF
 
-	; Create the main clipper
-		push	NULL
-		push	OFFSET	lpClipper
-		push	0
-		calldd	lpdd,IDIRECTDRAW_CREATECLIPPER
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return	FALSE
-		.ENDIF
+    ; Create the main clipper
+        push    NULL
+        push    OFFSET  lpClipper
+        push    0
+        calldd  lpdd,IDIRECTDRAW_CREATECLIPPER
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return  FALSE
+        .ENDIF
 
-	; Set the clipper to clip to the client window
-		push	hWnd
-		push	0
-		calldd	lpClipper,IDIRECTDRAWCLIPPER_SETHWND
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return	FALSE
-		.ENDIF
+    ; Set the clipper to clip to the client window
+        push    hWnd
+        push    0
+        calldd  lpClipper,IDIRECTDRAWCLIPPER_SETHWND
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return  FALSE
+        .ENDIF
 
-	; Set the clipper to clip our primary surface
-		push	OFFSET	lpClipper
-		calldd	lpMainsurf,IDIRECTDRAWSURFACE_SETCLIPPER
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return	FALSE
-		.ENDIF
+    ; Set the clipper to clip our primary surface
+        push    OFFSET  lpClipper
+        calldd  lpMainsurf,IDIRECTDRAWSURFACE_SETCLIPPER
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return  FALSE
+        .ENDIF
 
-		call	MakeClientFit
+        call    MakeClientFit
 
-	; Create the backbuffer surface
-		mov		ddsd.dwSize,SIZEOF ddsd
-		mov		ddsd.dwFlags,(DDSD_CAPS or DDSD_HEIGHT or DDSD_WIDTH)
-		m2m		ddsd.dwWidth,nXres
-		m2m		ddsd.dwHeight,nYres
-		mov		ddsd.ddsCaps.dwCaps,DDSCAPS_OFFSCREENPLAIN
-		calldd	lpdd,IDIRECTDRAW_CREATESURFACE
-		.IF	eax!=DD_OK
-			INVOKE	gfxShutdown
-			return	FALSE
-		.ENDIF
-	.ENDIF
+    ; Create the backbuffer surface
+        mov     ddsd.dwSize,SIZEOF ddsd
+        mov     ddsd.dwFlags,(DDSD_CAPS or DDSD_HEIGHT or DDSD_WIDTH)
+        m2m     ddsd.dwWidth,nXres
+        m2m     ddsd.dwHeight,nYres
+        mov     ddsd.ddsCaps.dwCaps,DDSCAPS_OFFSCREENPLAIN
+        calldd  lpdd,IDIRECTDRAW_CREATESURFACE
+        .IF eax!=DD_OK
+            INVOKE  gfxShutdown
+            return  FALSE
+        .ENDIF
+    .ENDIF
 gfxInit         Endp
 
-gfxShutdown	proc	STDCALL
+gfxShutdown proc    STDCALL
 
-gfxShutdown	Endp
+gfxShutdown Endp
 
 End LibMain

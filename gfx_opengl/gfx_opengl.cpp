@@ -49,6 +49,7 @@ struct SImage
 //------------------------------------- Prototypes --------------------------------------
 
 bool EXPORT gfxShutdown();
+bool EXPORT gfxSetRenderDest(handle);
 handle EXPORT gfxCreateImage(int x,int y);
 void MakeClientFit();
 
@@ -153,6 +154,8 @@ bool EXPORT gfxInit(HWND hWnd,int x,int y,int bpp,bool fullscreen)
 	
 	hScreen=gfxCreateImage(xres,yres);
 	hScreen->bIsscreen=true;
+
+        gfxSetRenderDest(hScreen);
 	
 	InitGL();
     }
