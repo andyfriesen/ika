@@ -322,6 +322,32 @@ namespace OpenGL
         glEnd();*/
     }
 
+    void Driver::TintBlitImage(Video::Image* img, int x, int y, u32 tint)
+    {
+        glColor4ubv((u8*)&tint);
+        ::OpenGL::Driver::BlitImage(img, x, y); // inline this?  Pretty please? :(
+        glColor4ub(255, 255, 255, 255);
+    }
+
+    void Driver::TintDistortBlitImage(Video::Image* i, int x[4], int y[4], u32 colour[4])
+    {
+        Image* img = (Image*)i;
+
+        const float* texCoords = img->_texCoords;
+        const float texX[] = { texCoords[0], texCoords[2], texCoords[2], texCoords[0] };
+        const float texY[] = { texCoords[3], texCoords[3], texCoords[1], texCoords[1] };
+
+        SwitchTexture(img->_texture->handle);
+        glBegin(GL_QUADS);
+        for (int i = 0; i < 4; i++)
+        {
+            glColor4ubv((u8*)&colour[i]);
+            glTexCoord2f(texX[i], texY[i]);
+            glVertex2i(x[i], y[i]);
+        }
+        glEnd();
+    }
+
     void Driver::DrawPixel(int x, int y, u32 colour)
     {
         glDisable(GL_TEXTURE_2D);

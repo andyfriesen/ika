@@ -3,12 +3,13 @@
 
 #include "common/types.h"
 #include "common/map.h"
+#include "scriptobject.h"
 
 //! Normal entity speed
 const int entspeed_normal = 100;
 
 class CEngine;
-class CSprite;
+struct Sprite;
 
 /*!
   Entity stuff.
@@ -19,10 +20,8 @@ class CSprite;
   I'm not sure if I like this, but it's better than it was before.
 */
 
-class Entity
+struct Entity
 {
-    CEngine&    engine;                                             //!< engine instance.  This allows the entity to gather information about its surroundings
-public: // AVERT YOUR EYES
     std::string curanimscript;                                      //!< a copy of the last frame animation script assigned to this entity
     uint        animscriptofs;                                      //!< current offset in the current anim script
     uint        animscriptct;                                       //!< delay counter
@@ -37,7 +36,7 @@ public: // AVERT YOUR EYES
     int         speedCount;                                         //!< Speed counter.
     uint        delayCount;                                         //!< Delay counter. (der)
     
-    CSprite*    sprite;                                             //!< the sprite this entity uses
+    Sprite*     sprite;                                             //!< the sprite this entity uses
     std::string spriteName;                                         //!< filename of the sprite this entity uses.
     
     Direction   direction;                                          //!< the direction the entity is facing (and moving in, if applicable)
@@ -51,8 +50,8 @@ public: // AVERT YOUR EYES
     
     std::string name;                                               //!< the entity's name
     
-    std::string activateScript;                                     //!< event to be called when the entity is activated
-    std::string adjActivateScript;                                  //!< event to be called when the entity touches the player
+    ScriptObject activateScript;                                    //!< event to be called when the entity is activated
+    ScriptObject adjActivateScript;                                 //!< event to be called when the entity touches the player
     
     Entity(CEngine* njin);                                          //!< Default constructor
     Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex);  //!< Converts a map entity
@@ -78,6 +77,9 @@ public: // AVERT YOUR EYES
     void        Wait(uint time);                                    //!< Commands the entity to stop what it's doing for the given time period.
 
     void        Update();                                           //!< Performs one tick of AI
+
+private:
+    CEngine&    engine;                                             //!< engine instance.  This allows the entity to gather information about its surroundings
 };
 
 #endif

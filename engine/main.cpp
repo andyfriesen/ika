@@ -264,6 +264,7 @@ void CEngine::Shutdown()
 #endif
     
     Log::Write("---- shutdown ----");
+    entities.clear();
     Sound::Shutdown();
     script.Shutdown();
 
@@ -297,7 +298,7 @@ void CEngine::RenderEntities(uint layerIndex)
     for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
     {    
         Entity* e = *i;
-        const CSprite* sprite = e->sprite;
+        const Sprite* sprite = e->sprite;
 
         if (e->layerIndex != layerIndex)    continue;   // wrong layer
         if (!sprite)                        continue;   // no sprite? @_x
@@ -325,7 +326,7 @@ void CEngine::RenderEntities(uint layerIndex)
     for (std::vector<Entity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++)
     {
         const Entity* e = *j;
-        CSprite* s = e->sprite;
+        Sprite* s = e->sprite;
         
         uint frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
         if (frame >= s->Count()) frame = 0;
@@ -550,7 +551,7 @@ Entity* CEngine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w,
     for (EntityList::const_iterator i = entities.begin(); i != entities.end(); i++)
     {
         Entity* e = *i;
-        const CSprite* s = e->sprite;
+        const Sprite* s = e->sprite;
 
         if ((e->layerIndex != layerIndex) ||                    // wrong layer
             (wantobstructable && !e->obstructsEntities) ||      // obstructable entities only?
@@ -603,7 +604,7 @@ void CEngine::TestActivate(const Entity* player)
 // This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
 {
     CDEBUG("testactivate");
-    CSprite* sprite = player->sprite;
+    Sprite* sprite = player->sprite;
     
     int tx = (player->x + sprite->nHotw / 2) / tiles->Width();
     int ty = (player->y + sprite->nHoth / 2) / tiles->Height();
@@ -655,9 +656,9 @@ void CEngine::TestActivate(const Entity* player)
     Entity* ent = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
     if (ent)
     {
-        if (!ent->activateScript.empty())
+        if (ent->activateScript)
         {
-            script.CallScript(ent->activateScript.c_str());
+            script.ExecObject(ent->activateScript);
             input.Flush();
             return;
         }
@@ -723,6 +724,8 @@ void CEngine::LoadMap(const std::string& filename)
         
         script.ClearEntityList();                                       // DEI
 
+        std::map<const Map::Entity*, Entity*> entMap;                         // used so we know which is related to which, so we can properly gather objects from the map script. (once it's loaded)
+
         // for each layer, create entities
         for (uint curLayer = 0; curLayer < map.NumLayers(); curLayer++)
         {
@@ -735,6 +738,8 @@ void CEngine::LoadMap(const std::string& filename)
                 entities.push_back(ent);
                 ent->sprite = sprite.Load(ent->spriteName, video);
                 script.AddEntityToList(ent);
+
+                entMap[&ents[curEnt]] = ent;
             }
         }
         
@@ -743,6 +748,17 @@ void CEngine::LoadMap(const std::string& filename)
         
         if (!script.LoadMapScripts(filename))
             Script_Error();
+
+        // Now that the scripts have been loaded, it's time to get the activation scripts for the entities
+        for (std::map<const Map::Entity*, Entity*>::iterator
+            iter = entMap.begin();
+            iter != entMap.end();
+            iter++)
+        {
+            Entity* ent = iter->second;
+            iter->second->activateScript = script.GetObjectFromMapScript(iter->first->activateScript);
+            iter->second->adjActivateScript = script.GetObjectFromMapScript(iter->first->adjActivateScript);
+        }
     }
     catch (std::runtime_error err)  {   Sys_Error(va("LoadMap(\"%s\"): %s", filename.c_str(), err.what())); }
     catch (TileSetException)        {   Sys_Error(va("Unable to load tileset %s", map.tileSetName.c_str())); }

@@ -4,40 +4,41 @@
 
 #include "common/log.h"
 #include "common/chr.h"
+#include "common/misc.h"
 #include "video/Driver.h"
 #include "video/Image.h"
 
-CSprite::CSprite(const std::string& fname, Video::Driver* v)
+Sprite::Sprite(const std::string& fname, Video::Driver* v)
     : video(v)
 {
     CCHRfile chr;
     chr.Load(fname);
         
-    nFramex=chr.Width();
-    nFramey=chr.Height();
-    nHotx=chr.HotX();
-    nHoty=chr.HotY();
-    nHotw=chr.HotW();
-    nHoth=chr.HotH();
+    nFramex = chr.Width();
+    nFramey = chr.Height();
+    nHotx = chr.HotX();
+    nHoty = chr.HotY();
+    nHotw = chr.HotW();
+    nHoth = chr.HotH();
     
     sScript.resize(chr.moveScripts.size());
     for (uint s = 0; s < chr.moveScripts.size(); s++)
         sScript[s] = chr.moveScripts[s];
     
-    hFrame.resize(chr.NumFrames());
+    _frames.resize(chr.NumFrames());
     for (uint i = 0; i < chr.NumFrames(); i++)
     {
-        hFrame[i] = video->CreateImage(chr.GetFrame(i));
+        _frames[i] = video->CreateImage(chr.GetFrame(i));
     }
 }
 
-CSprite::~CSprite()
+Sprite::~Sprite()
 {
-    for (uint i=0; i<hFrame.size(); i++)
-        video->FreeImage(hFrame[i]);
+    for (uint i = 0; i < _frames.size(); i++)
+        video->FreeImage(_frames[i]);
 }
 
-const std::string& CSprite::Script(uint s) const
+const std::string& Sprite::Script(uint s) const
 {
     static std::string dummy;
 
@@ -47,70 +48,62 @@ const std::string& CSprite::Script(uint s) const
     return sScript[s];
 }
 
-Video::Image* CSprite::GetFrame(uint frame)
+Video::Image* Sprite::GetFrame(uint frame)
 {
-    if (frame<0 || frame>hFrame.size())
+    if (frame < 0 || frame > _frames.size())
         return 0;
     
-    return hFrame[frame];
+    return _frames[frame];
 }
 
 // -----------------------------------  CSpriteController methods ------------------------
 
-CSprite* CSpriteController::Load(const std::string& fname, Video::Driver* video)
+Sprite* CSpriteController::Load(const std::string& fname, Video::Driver* video)
 {
     CDEBUG("ccharactercontroller::load");
 
-    for (SpriteList::iterator i=sprite.begin(); i!=sprite.end(); i++)
+    if (sprite.count(fname) != 0)
     {
-        if ((*i)->sFilename==fname)
-        {
-            (*i)->nRefcount++;
-            return *i;
-        }
+        Sprite* s = sprite[fname];
+        s->ref();
+        return s;
     }
 
     // Not already loaded, we'll have to do that now.
-    CRefCountedSprite* s;
-    s=new CRefCountedSprite(fname, video);
-    
-    s->nRefcount=1;
-    s->sFilename=fname;
-
-    sprite.push_back(s);
+    Sprite* s = new Sprite(fname, video);
+    s->_fileName=fname;
+    s->ref();
+    sprite[fname] = s;
 
     return s;
 }
 
-void CSpriteController::Free(CSprite* s)
+void CSpriteController::Free(Sprite* s)
 {
-    CRefCountedSprite* a=(CRefCountedSprite*)s;
-    for (SpriteList::iterator i=sprite.begin(); i!=sprite.end(); i++)
+    if (sprite.count(s->_fileName))
     {
-        CRefCountedSprite* t = *i;
-        if (a==t)
+        if (s->getRefCount() == 1)
         {
-            t->nRefcount--;
-
-            if (t->nRefcount == 0)
-            {
-                Log::Write("Deallocating %s", t->sFilename.c_str());
-                sprite.remove(*i);
-                delete s;
-            }
-            return;
+            Log::Write("Deallocating %s", s->_fileName.c_str());
+            sprite.erase(s->_fileName);
         }
-    }
 
-    Log::Write("Unallocated sprite tried to release!!  \"%s\"", ((CRefCountedSprite*)s)->sFilename.c_str());
+        s->unref();
+    }
+    else
+        Log::Write("Unallocated sprite tried to release!!  \"%s\"", s->_fileName.c_str());
 }
 
 CSpriteController::~CSpriteController()
 {
-    for (SpriteList::iterator i=sprite.begin(); i!=sprite.end(); i++)
+    for (SpriteMap::iterator i = sprite.begin(); i != sprite.end(); i++)
     {
-        CRefCountedSprite* s=*i;
-        delete s;
+        if (i->second->getRefCount() != 1)
+        {
+            Log::Write("Internal Warning: Leaking sprite %s.  Refcount is still %i.", i->second->_fileName.c_str(), i->second->getRefCount());
+        }
+
+        i->second->unref();
     }
 
     sprite.clear();

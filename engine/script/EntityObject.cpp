@@ -63,13 +63,27 @@ namespace Script
             GET(SpecFrame)          { return PyInt_FromLong(self->ent->specFrame); }
             GET(Visible)            { return PyInt_FromLong(self->ent->isVisible ? 1 : 0); }
             GET(Name)               { return PyString_FromString(self->ent->name.c_str()); }
-            GET(ActScript)          { return PyString_FromString(self->ent->activateScript.c_str()); }
-            GET(AdjacentActivate)   { return PyString_FromString(self->ent->adjActivateScript.c_str()); }
+            GET(ActScript)          
+            { 
+                PyObject* o = (PyObject*)self->ent->activateScript.get();
+                if (!o) o = Py_None;
+                Py_INCREF(o);
+                return o;
+            }
+
+            GET(AdjacentActivate)   
+            {
+                PyObject* o = (PyObject*)self->ent->adjActivateScript.get();
+                if (!o) o = Py_None;
+                Py_INCREF(o);
+                return o;
+            }
+
 //            GET(AutoFace)           { return PyInt_FromLong(self->ent->bAutoface?1:0; }
             GET(IsObs)              { return PyInt_FromLong(self->ent->obstructsEntities?1:0); }
             GET(MapObs)             { return PyInt_FromLong(self->ent->obstructedByMap?1:0); }
             GET(EntObs)             { return PyInt_FromLong(self->ent->obstructedByEntities?1:0); }
-            GET(Sprite)             { return PyString_FromString(self->ent->sprite->sFilename.c_str()); }
+            GET(Sprite)             { return PyString_FromString(self->ent->sprite->_fileName.c_str()); }
             GET(HotX)               { return PyInt_FromLong(self->ent->sprite->nHotx); }
             GET(HotY)               { return PyInt_FromLong(self->ent->sprite->nHoty); }
             GET(HotWidth)           { return PyInt_FromLong(self->ent->sprite->nHotw); }
@@ -103,8 +117,18 @@ namespace Script
             SET(SpecFrame)          { self->ent->specFrame = PyInt_AsLong(value); return 0; }
             SET(Visible)            { self->ent->isVisible = PyInt_AsLong(value)!=0 ; return 0; }
             SET(Name)               { self->ent->name = PyString_AsString(value); return 0; }
-            SET(ActScript)          { self->ent->activateScript = PyString_AsString(value); return 0; }
-            SET(AdjacentActivate)   { self->ent->adjActivateScript = PyString_AsString(value); return 0; }
+            SET(ActScript)
+            {
+                self->ent->activateScript.set(value);
+                return 0;
+            }
+
+            SET(AdjacentActivate)
+            {
+                self->ent->adjActivateScript.set(value);
+                return 0;
+            }
+
 //            SET(AutoFace)           { self->ent->bAutoface = PyInt_AsLong(value) != 0; return 0; }
             SET(IsObs)              { self->ent->obstructsEntities = (PyInt_AsLong(value)!=0) ; return 0; }
             SET(MapObs)             { self->ent->obstructedByMap = (PyInt_AsLong(value)!=0) ; return 0; }
@@ -200,7 +224,7 @@ namespace Script
                 return 0;
             }
 
-            CSprite* sprite = engine->sprite.Load(spritename, engine->video);
+            Sprite* sprite = engine->sprite.Load(spritename, engine->video);
             if (!sprite)
             {
                 PyErr_SetString(PyExc_OSError, va("Couldn't load sprite file %s", spritename));

@@ -6,11 +6,10 @@
 #include <vector>
 #include <queue>
 
-// >_<
-#include "script.h"
+#include "common/types.h"
+#include "scriptobject.h"
 
 class KeyControl;
-class ScriptObject;
 
 /**
  *  Main input class.

@@ -13,7 +13,7 @@ using namespace Script;
 
 bool ScriptEngine::_inited = false;
 
-void ScriptEngine::Init(CEngine* p)
+void ScriptEngine::Init(CEngine* njin)
 {
     assert(!_inited);
     _inited = true;
@@ -28,7 +28,7 @@ void ScriptEngine::Init(CEngine* p)
         "Contains functions and crap for manipulating the ika game engine at runtime.\n"
         );
     
-    engine = p;   // I cannot express the sheer gayness behind this.
+    engine = njin;
     
     // Initialize objects
     Script::Image::Init();
@@ -113,6 +113,7 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
     
     int nExtension = sTemp.find_last_of(".", sTemp.length());
     sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
+    // TODO: replace / and \ with dots, so python will search for a package with the correct path.
     
     mapModule = PyImport_ImportModule((char*)sTemp.c_str());
     
@@ -157,6 +158,19 @@ void ScriptEngine::ExecObject(const ScriptObject& func)
     }
     
     Py_DECREF(result);
+}
+
+ScriptObject ScriptEngine::GetObjectFromMapScript(const std::string& name)
+{
+    assert(mapModule != 0);
+
+    PyObject* dict = PyModule_GetDict(mapModule);
+    assert(dict != 0);
+
+    PyObject* func = PyDict_GetItemString(dict, name.c_str());
+    // func may be 0, which is fine.
+
+    return ScriptObject(func);
 }
 
 void ScriptEngine::ClearEntityList()
@@ -236,47 +250,4 @@ void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
 std::string ScriptEngine::GetErrorMessage()
 {
     return Script::pyOutput.str();
-}
-
-//-
-
-std::set<ScriptObject*> ScriptObject::_instances;
-
-ScriptObject::ScriptObject(void* o)
-    : _object(o)
-{
-    Py_XINCREF((PyObject*)o);
-    _instances.insert(this);
-}
-
-ScriptObject::ScriptObject(const ScriptObject& rhs)
-    : _object(rhs._object)
-{
-    Py_XINCREF((PyObject*)_object);
-    _instances.insert(this);
-}
-
-ScriptObject::~ScriptObject()
-{
-    Py_XDECREF((PyObject*)_object);
-
-    _instances.erase(this);
-}
-
-void* ScriptObject::get() const
-{
-    return _object;
-}
-
-void ScriptObject::set(void* o)
-{
-    Py_XDECREF((PyObject*)_object);
-    _object = o;
-    Py_XINCREF((PyObject*)o);
-}
-
-void ScriptObject::release()
-{
-    Py_XDECREF((PyObject*)_object);
-    _object = 0;
 }

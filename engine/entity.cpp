@@ -27,6 +27,9 @@ Entity::Entity(CEngine* njin)
     
     , curFrame            (0)
     , specFrame           (-1)
+
+    , activateScript(0)
+    , adjActivateScript(0)
 {}
 
 Entity::Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex)
@@ -56,8 +59,11 @@ Entity::Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex)
     , obstructedByMap     (e.obstructedByMap)
     , obstructedByEntities(e.obstructedByEntities)
 
-    , adjActivateScript   (e.adjActivateScript)
-    , activateScript      (e.activateScript)
+    // These can't be set here, because the entities are created before the script is loaded
+    , activateScript(0)
+    , adjActivateScript(0)
+    //, adjActivateScript   (e.adjActivateScript)
+    //, activateScript      (e.activateScript)
 {}
 
 static uint get_int(const std::string& s, uint& offset)
@@ -238,8 +244,8 @@ void Entity::Move(Direction d)
         Entity* pEnt = engine.DetectEntityCollision(this, newx, newy, sprite->nHotw, sprite->nHoth, layerIndex, true);
         if (pEnt && pEnt->obstructsEntities)
         {
-            if (this==engine.pPlayer && pEnt->adjActivateScript.length() != 0)                                    // Adjacent activation
-                engine.script.CallScript(pEnt->adjActivateScript.c_str());
+            if (this == engine.pPlayer && pEnt->adjActivateScript) //pEnt->adjActivateScript.length() != 0)                                    // Adjacent activation
+                engine.script.ExecObject(pEnt->adjActivateScript);
         
             Stop(); 
             return;

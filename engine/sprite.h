@@ -2,9 +2,9 @@
 #define SPRITE_H
 
 #include "common/types.h"
+#include "common/refcount.h"
 
-#include <list>
-using std::list;
+#include <map>
 
 namespace Video
 {
@@ -15,32 +15,34 @@ namespace Video
 struct SpriteException{};
 
 /**
-    A hardware dependant representation of a .CHR file.
+    A hardware dependant representation of a spriteset file.
 */
-class CSprite
+struct Sprite : RefCounted
 {
+    std::string _fileName;
+
+    int	nHotx, nHoty;		                            ///< hotspot position
+    int	nHotw, nHoth;		                            ///< hotspot size
+
+
+    Sprite(const std::string& fname, Video::Driver* v);
+    virtual ~Sprite();
+
+    Video::Image* GetFrame(uint frame);                     ///< Returns the frame image
+  
+    inline uint Count()  const { return _frames.size(); }
+    inline uint Width()  const { return nFramex; }
+    inline uint Height() const { return nFramey; }
+
+    const std::string& Script(uint s) const;
+
+private:
     std::vector<std::string>  sScript;                      ///< move scripts
     Video::Driver* video;
 
-    uint nFramex, nFramey;                                   ///< frame size
+    uint nFramex, nFramey;                                  ///< frame size
 
-    std::vector<Video::Image*> hFrame;                      ///< array of frame images
-public:
-    std::string sFilename;
-
-    int	nHotx, nHoty;		                    ///< hotspot position
-    int	nHotw, nHoth;		                    ///< hotspot size
-
-
-    CSprite(const std::string& fname, Video::Driver* v);
-    virtual ~CSprite();
-
-    Video::Image* GetFrame(uint frame);                     ///< Returns the frame image
-    inline uint Count() const  { return hFrame.size(); }
-  
-    inline uint Width()  const { return nFramex; }
-    inline uint Height() const { return nFramey; }
-    const std::string& Script(uint s) const;
+    std::vector<Video::Image*> _frames;                     ///< frame images
 };
 
 /**
@@ -50,22 +52,13 @@ public:
 */
 class CSpriteController
 {
-    struct CRefCountedSprite : public CSprite
-    {
-        int nRefcount;
-        CRefCountedSprite(const std::string& fname, Video::Driver* v)
-            : CSprite(fname, v)
-            , nRefcount(0)
-        {}
-    };
+    typedef std::map<std::string, Sprite*> SpriteMap;
 
-    typedef list<CRefCountedSprite*> SpriteList;
-
-    SpriteList sprite;                                      ///< List of allocated sprites
+    SpriteMap sprite;                                      ///< List of allocated sprites
 
 public:
-    CSprite* Load(const std::string& fname, Video::Driver* video); ///< loads a CHR file
-    void Free(CSprite* s);                                  ///< releases a CHR file
+    Sprite* Load(const std::string& fname, Video::Driver* video); ///< loads a CHR file
+    void Free(Sprite* s);                                  ///< releases a CHR file
 
     ~CSpriteController();
 };

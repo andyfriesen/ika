@@ -44,6 +44,28 @@ namespace Script
                 "The default is ika.Alphablend."
             },
 
+            {   "TintBlit",     (PyCFunction)Video_TintBlit,    METH_VARARGS,
+                "Video.TintBlit(image, x, y, tintColour[, blendMode])\n\n"
+                "Draws the image onscreen, using tintColour to 'tint' the image.\n"
+                "Each pixel is multiplied by tintColour.  The resultant values are then\n"
+                "scaled before the pixel is plotted.\n\n"
+
+                "In English, this means that RGBA(255, 255, 255, 255) is a normal blit,\n"
+                "while RGBA(0, 0, 0, 255) will leave the alpha channel intact, but reduce\n"
+                "all pixels to black. (effectively drawing a silhouette)\n\n"
+
+                "blendMode is handled the same way as all the other blits.\n\n"
+
+                "Lots of effects could be created by using this creatively.  Experiment!"
+            },
+
+            {   "TintDistortBlit",  (PyCFunction)Video_TintDistortBlit, METH_VARARGS,
+                "Video.TintDistortBlit(image, (upleftX, upleftY, upleftTint), (uprightX, uprightY, uprightTint), (downrightX, downrightY, downrightTint), (downleftX, downleftY, downrightTint)[, blendmode])\n\n"
+                "Combines the effects of DistortBlit and TintBlit.  Each corner can be tinted individually,\n"
+                "using the same algorithm as TintBlit.  The corners, if not the same, are smoothly interpolated\n"
+                "across the image."
+            },
+
             // TODO: more blits.  I want a wrapblit, tintblit, and others
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   METH_VARARGS,
                 "Video.DrawPixel(x, y, colour)\n\n"
@@ -209,6 +231,47 @@ namespace Script
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->TileBlitImage(image->img, x, y, w, h, scalex, scaley);
             
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Video_TintBlit)
+        {
+            Script::Image::ImageObject* image;
+            int x, y;
+            u32 tint;
+            uint blendMode = 1;
+
+            if (!PyArg_ParseTuple(args, "O!iii|i:Video.TintBlit", &Script::Image::type, &image, &x, &y, &tint, &blendMode))
+                return 0;
+
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
+            self->video->TintBlitImage(image->img, x, y, tint);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Video_TintDistortBlit)
+        {
+            Script::Image::ImageObject* image;
+            int x[4];
+            int y[4];
+            u32 tint[4];
+            uint blendMode = 1;
+
+            if (!PyArg_ParseTuple(args, "O!(iii)(iii)(iii)(iii)|i:Video.TintDistortBlit", 
+                &Script::Image::type, &image, 
+                x, y, tint, 
+                x + 1, y + 1, tint + 1,
+                x + 2, y + 2, tint + 2,
+                x + 3, y + 3, tint + 3,
+                &blendMode))
+                return 0;
+
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
+            self->video->TintDistortBlitImage(image->img, x, y, tint);
+
             Py_INCREF(Py_None);
             return Py_None;
         }
