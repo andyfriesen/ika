@@ -80,4 +80,7 @@ env.Alias('ikamap', ikamap)
 if ARGUMENTS.get('ikamap', 'no') != 'no':
     env.Default('ikamap')
 
-# env.Install(dir = '/usr/local/bin', source = ['ika'])
+################ Installation
+env['PREFIX'] = ARGUMENTS.get('prefix', '/usr')
+env.Alias('install', env.Install(dir = '$PREFIX/bin',
+        source = ika))

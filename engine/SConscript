@@ -20,9 +20,13 @@ ika = env.Program('ika',
         script/ErrorObject.cpp
         script/FontObject.cpp
         script/ImageObject.cpp
+        script/InputDeviceObject.cpp
         script/InputObject.cpp
+        script/JoystickObject.cpp
+        script/KeyboardObject.cpp
         script/MapObject.cpp
         script/ModuleFuncs.cpp
+        script/MouseObject.cpp
         script/SoundObject.cpp
         script/VideoObject.cpp
         opengl/Driver.cpp
