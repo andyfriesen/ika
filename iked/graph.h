@@ -10,6 +10,11 @@
 #include <wx\wx.h>
 #include <wx\glcanvas.h>
 
+// win32 is retarded -- andy
+#ifdef WIN32
+#   undef FindText
+#endif
+
 class CGraphFrame;
 class CImage;
 
