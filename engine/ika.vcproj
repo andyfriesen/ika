@@ -4,6 +4,7 @@
 	Version="7.10"
 	Name="ika"
 	ProjectGUID="{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}"
+	RootNamespace="ika"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -24,7 +25,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".,..,\src\audiere\src,..\3rdparty\include,../3rdparty/include/python"
+				AdditionalIncludeDirectories=".;&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -87,7 +88,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..,..\3rdparty\include,../3rdparty/include/python"
+				AdditionalIncludeDirectories=".;&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -233,9 +234,6 @@
 				RelativePath=".\mouse.h">
 			</File>
 			<File
-				RelativePath="resource.h">
-			</File>
-			<File
 				RelativePath=".\script.h">
 			</File>
 			<File
@@ -334,12 +332,6 @@
 				RelativePath="..\common\matrix.h">
 			</File>
 			<File
-				RelativePath="..\common\misc.cpp">
-			</File>
-			<File
-				RelativePath="..\common\misc.h">
-			</File>
-			<File
 				RelativePath="..\common\oldbase64.cpp">
 			</File>
 			<File
@@ -358,10 +350,22 @@
 				RelativePath="..\common\types.h">
 			</File>
 			<File
+				RelativePath="..\common\utility.cpp">
+			</File>
+			<File
+				RelativePath="..\common\utility.h">
+			</File>
+			<File
 				RelativePath="..\common\vergemap.cpp">
 			</File>
 			<File
 				RelativePath="..\common\vergepal.cpp">
+			</File>
+			<File
+				RelativePath="..\common\version.cpp">
+			</File>
+			<File
+				RelativePath="..\common\version.h">
 			</File>
 			<File
 				RelativePath="..\common\vsp.cpp">

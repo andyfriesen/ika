@@ -7,7 +7,7 @@
 #include "../mapview.h"
 #include "../tilesetview.h"
 
-#include "map.h"
+#include "common/map.h"
 
 namespace ScriptObject
 {

@@ -1,14 +1,14 @@
 
-#include "map.h"
-#include "log.h"
-#include "compression.h"
-#include "oldbase64.h"
-#include "base64.h"
-#include "misc.h"
-
-#include "aries.h"
 #include <fstream>
 #include <stdexcept>
+
+#include "aries.h"
+#include "base64.h"
+#include "compression.h"
+#include "common/log.h"
+#include "map.h"
+#include "oldbase64.h"
+#include "utility.h"
 
 using aries::newNode;
 using aries::Node;
@@ -17,10 +17,8 @@ using aries::StringNode;
 using aries::DataNodeList;
 using aries::NodeList;
 
-namespace
-{
-    const char* dirNames[] =
-    {
+namespace {
+    const char* dirNames[] = {
         "up",
         "down",
         "left",
@@ -39,23 +37,18 @@ Map::Map()
     , height(0)
 {}
 
-Map::Map(const std::string& filename)
-{
+Map::Map(const std::string& filename) {
     Load(filename);
 }
 
-Map::~Map()
-{
+Map::~Map() {
     for (uint i = 0; i < layers.size(); i++)
         delete layers[i];
 }
 
-bool Map::Load(const std::string& filename)
-{
-    struct Local
-    {
-        static std::string getStringNode(DataNode* parent, const std::string& name)
-        {
+bool Map::Load(const std::string& filename) {
+    struct Local {
+        static std::string getStringNode(DataNode* parent, const std::string& name) {
             DataNode* n = parent->getChild(name);
             if (!n)
                 throw std::runtime_error(std::string() + "Unable to find node " + name);
@@ -63,8 +56,7 @@ bool Map::Load(const std::string& filename)
             return n->getString();
         }
 
-        static int getIntNode(DataNode* parent, const std::string& name)
-        {
+        static int getIntNode(DataNode* parent, const std::string& name) {
             return atoi(getStringNode(parent, name).c_str());
         }
     };
@@ -75,18 +67,20 @@ bool Map::Load(const std::string& filename)
     layers.clear();
     zones.clear();
     wayPoints.clear();
-    metaData.clear();
+
 
     std::ifstream file(filename.c_str());
     DataNode* rootNode;
     file >> rootNode;
     file.close();
 
-    try
-    {
+    try {
         DataNode* realRoot = rootNode->getChild("ika-map");
 
         const std::string ver = realRoot->getChild("version")->getString();
+        if (ver != "1.0" && ver != "1.1") {
+            throw std::runtime_error(va("Map version is %s.  Expecting 1.0 or 1.1", ver));
+        }
 
         {
             DataNode* infoNode = realRoot->getChild("information");
@@ -95,10 +89,8 @@ bool Map::Load(const std::string& filename)
 
             DataNode* metaNode = infoNode->getChild("meta");
             const NodeList& metaNodes = metaNode->getChildren();
-            for (NodeList::const_iterator iter = metaNodes.begin(); iter != metaNodes.end(); iter++)
-            {
-                if (!(*iter)->isString())
-                {
+            for (NodeList::const_iterator iter = metaNodes.begin(); iter != metaNodes.end(); iter++) {
+                if (!(*iter)->isString()) {
                     DataNode* node = reinterpret_cast<DataNode*>(*iter);
 
                     std::string name = node->getName();
@@ -133,8 +125,7 @@ bool Map::Load(const std::string& filename)
             DataNode* zoneNode = realRoot->getChild("zones");
 
             DataNodeList nodes = zoneNode->getChildren("zone");
-            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-            {
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
                 Zone z;
                 z.label = Local::getStringNode(*iter, "label");
                 z.scriptName = Local::getStringNode(*iter, "script");
@@ -146,8 +137,7 @@ bool Map::Load(const std::string& filename)
             DataNode* wpNode = realRoot->getChild("waypoints");
 
             DataNodeList nodes = wpNode->getChildren("waypoint");
-            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-            {
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
                 WayPoint wp;
                 wp.label = Local::getStringNode(*iter, "label");
                 wp.x = Local::getIntNode(*iter, "x");
@@ -160,20 +150,16 @@ bool Map::Load(const std::string& filename)
             DataNode* layerNode = realRoot->getChild("layers");
 
             DataNodeList nodes = layerNode->getChildren("layer");
-            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-            {
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
                 Layer* lay = new Layer();
                 DataNode* n;
 
                 lay->label = Local::getStringNode(*iter, "label");
 
-                if (!(*iter)->hasChild("type"))
-                {
+                if (!(*iter)->hasChild("type")) {
                     // Do we change this and forbid a default?  It would break backward compatibility.
                     Log::Write("Warning: layer lacking 'type' node.  Assuming it is a tile layer.");
-                }
-                else
-                {
+                } else {
                     // do nothing for now.
                     // I think I want to implement vector layers.  No tiles, just textures
                     // and groups of vertices.  Lots and lots of editor work required for that. >_>
@@ -208,37 +194,36 @@ bool Map::Load(const std::string& filename)
                     ScopedArray<u8> compressed(new u8[d64.length()]);
                     int compressedSize;
                         
-                    if (ver == "1.0")
-                    {
+                    if (ver == "1.0") {
                         compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
-                    }
-                    else if (ver == "1.1")
-                    {
+                    } else if (ver == "1.1") {
                         std::string un64 = base64::decode(d64);
                         std::copy((u8*)un64.c_str(), (u8*)un64.c_str() + un64.length(), compressed.get());
                         compressedSize = un64.length();
+                    } else {
+                        // Don't know how to handle
+                        assert(false);
                     }
+
                     ScopedArray<uint> tiles(new uint[width * height]);
                     Compression::decompress(compressed.get(), compressedSize, reinterpret_cast<u8*>(tiles.get()), width * height * sizeof(uint));
                     lay->tiles = Matrix<uint>(width, height, tiles.get());
                 }
-
-                {
+ {
                     DataNode* obsNode = (*iter)->getChild("obstructions");
 
                     std::string d64 = obsNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
                     int compressedSize;
 
-                    if (ver == "1.0")
-                    {
+                    if (ver == "1.0") {
                         compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
-                    }
-                    else if (ver == "1.1")
-                    {
+                    } else if (ver == "1.1") {
                         std::string un64 = base64::decode(d64);
                         std::copy((u8*)(un64.c_str()), (u8*)(un64.c_str() + un64.length()), compressed.get());
                         compressedSize = un64.length();
+                    } else {
+                        assert(false);
                     }
 
                     ScopedArray<u8> obs(new u8[width * height]);
@@ -250,8 +235,7 @@ bool Map::Load(const std::string& filename)
                     DataNode* entNode = (*iter)->getChild("entities");
 
                     DataNodeList nodes = entNode->getChildren("entity");
-                    for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-                    {
+                    for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
                         Entity e;
 
                         e.x = Local::getIntNode(*iter, "x");
@@ -262,8 +246,7 @@ bool Map::Load(const std::string& filename)
                         std::string dir = Local::getStringNode(*iter, "direction");
                         e.direction = face_down;
                         for (uint i = 0; i < numDirs; i++)
-                            if (dir == dirNames[i])
-                            {   e.direction = (Direction)i; break;  }
+                            if (dir == dirNames[i]) {   e.direction = (Direction)i; break;  }
 
                         e.speed = Local::getIntNode(*iter, "speed");
                         e.moveScript = Local::getStringNode(*iter, "move_script");
@@ -306,8 +289,7 @@ bool Map::Load(const std::string& filename)
         delete rootNode;
         return true;
     }
-    catch (std::runtime_error err)
-    {
+    catch (std::runtime_error err) {
         delete rootNode;
         Log::Write("Map::Load(\"%s\"): %s", filename.c_str(), err.what());
 
@@ -315,8 +297,7 @@ bool Map::Load(const std::string& filename)
     }
 }
 
-void Map::Save(const std::string& filename)
-{
+void Map::Save(const std::string& filename) {
     DataNode* rootNode = newNode("ika-map");
 
     rootNode->addChild(newNode("version")->addChild("1.1"));
@@ -370,8 +351,7 @@ void Map::Save(const std::string& filename)
         DataNode* wpNode = newNode("waypoints");
         rootNode->addChild(wpNode);
 
-        for (WayPointMap::iterator iter = wayPoints.begin(); iter != wayPoints.end(); iter++)
-        {
+        for (WayPointMap::iterator iter = wayPoints.begin(); iter != wayPoints.end(); iter++) {
             WayPoint& wp = iter->second;
             wpNode->addChild(
                 newNode("waypoint")
@@ -386,8 +366,7 @@ void Map::Save(const std::string& filename)
         DataNode* zoneNode = newNode("zones");
         rootNode->addChild(zoneNode);
 
-        for (ZoneMap::iterator iter = zones.begin(); iter != zones.end(); iter++)
-        {
+        for (ZoneMap::iterator iter = zones.begin(); iter != zones.end(); iter++) {
             Zone& z = iter->second;
             zoneNode->addChild(newNode("zone")
                 ->addChild(newNode("label")->addChild(z.label))
@@ -400,8 +379,7 @@ void Map::Save(const std::string& filename)
         DataNode* layerNode = newNode("layers");
         rootNode->addChild(layerNode);
 
-        for (uint i = 0; i < layers.size(); i++)
-        {
+        for (uint i = 0; i < layers.size(); i++) {
             Layer* lay = layers[i];
 
             DataNode* layNode = newNode("layer");
@@ -469,8 +447,7 @@ void Map::Save(const std::string& filename)
 
                 for (std::vector<Entity>::iterator iter = lay->entities.begin();
                     iter != lay->entities.end();
-                    iter++)
-                {
+                    iter++) {
                     entNode->addChild(newNode("entity")
                         ->addChild(newNode("label")->addChild(iter->label))
                         ->addChild(newNode("x")->addChild(iter->x))
@@ -514,46 +491,38 @@ void Map::Save(const std::string& filename)
     delete rootNode;
 }
 
-Map::Layer* Map::GetLayer(uint index)
-{
+Map::Layer* Map::GetLayer(uint index) {
     assert(index >= 0 && index < layers.size());
     return layers[index];
 }
 
-uint Map::LayerIndex(Map::Layer* lay) const
-{
-    for (uint i = 0; i < layers.size(); i++)
-    {
+uint Map::LayerIndex(Map::Layer* lay) const {
+    for (uint i = 0; i < layers.size(); i++) {
         if (lay == layers[i])
             return i;
     }
     return (uint)-1;
 }
 
-uint Map::LayerIndex(const std::string& label) const
-{
-    for (uint i = 0; i < layers.size(); i++)
-    {
+uint Map::LayerIndex(const std::string& label) const {
+    for (uint i = 0; i < layers.size(); i++) {
         if (layers[i]->label == label)
             return i;
     }
     return (uint)-1;
 }
 
-Map::Layer* Map::AddLayer(const std::string& name, uint width, uint height)
-{
+Map::Layer* Map::AddLayer(const std::string& name, uint width, uint height) {
     Map::Layer* lay = new Layer(name, width, height);
     AddLayer(lay);
     return lay;
 }
 
-void Map::AddLayer(Map::Layer* lay)
-{
+void Map::AddLayer(Map::Layer* lay) {
     layers.push_back(lay);
 }
 
-void Map::InsertLayer(Map::Layer* lay, uint index)
-{
+void Map::InsertLayer(Map::Layer* lay, uint index) {
     assert(index <= NumLayers());
 
     if (index == NumLayers())
@@ -562,20 +531,17 @@ void Map::InsertLayer(Map::Layer* lay, uint index)
         layers.insert(layers.begin() + index, lay);
 }
 
-void Map::DestroyLayer(uint index)
-{
+void Map::DestroyLayer(uint index) {
     assert(index >= 0 && index < layers.size());
     delete layers[index];
     layers.erase(layers.begin() + index);
 }
 
-void Map::DestroyLayer(Map::Layer* lay)
-{
+void Map::DestroyLayer(Map::Layer* lay) {
     DestroyLayer(LayerIndex(lay));
 }
 
-void Map::SwapLayers(uint i, uint j)
-{
+void Map::SwapLayers(uint i, uint j) {
     assert(i >= 0 && i < layers.size());
     assert(j >= 0 && j < layers.size());
 
@@ -584,7 +550,6 @@ void Map::SwapLayers(uint i, uint j)
     layers[j] = l;
 }
 
-uint Map::NumLayers() const
-{
+uint Map::NumLayers() const {
     return layers.size();
 }

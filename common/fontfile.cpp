@@ -2,7 +2,7 @@
 #include "fileio.h"
 #include "rle.h"
 #include "vergepal.h"
-#include "misc.h"
+#include "utility.h"
 
 FontFile::~FontFile()
 {

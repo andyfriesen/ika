@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../common,../3rdparty/include,../3rdparty/include/python,$(WXWIN)/include,$(WXWIN)/contrib/include"
+				AdditionalIncludeDirectories=".;&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/contrib/include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -73,7 +73,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="../common,../3rdparty/include,../3rdparty/include/python,$(WXWIN)/include,$(WXWIN)/contrib/include"
+				AdditionalIncludeDirectories=".;&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/contrib/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -257,9 +257,6 @@
 				RelativePath=".\layerlist.h">
 			</File>
 			<File
-				RelativePath=".\listener.h">
-			</File>
-			<File
 				RelativePath="mainwindow.h">
 			</File>
 			<File
@@ -439,6 +436,9 @@
 				RelativePath="..\common\fontfile.h">
 			</File>
 			<File
+				RelativePath="..\common\listener.h">
+			</File>
+			<File
 				RelativePath="..\common\log.cpp">
 			</File>
 			<File
@@ -452,12 +452,6 @@
 			</File>
 			<File
 				RelativePath="..\common\matrix.h">
-			</File>
-			<File
-				RelativePath="..\common\misc.cpp">
-			</File>
-			<File
-				RelativePath="..\common\misc.h">
 			</File>
 			<File
 				RelativePath="..\common\oldbase64.cpp">
@@ -475,6 +469,12 @@
 				RelativePath="..\common\types.h">
 			</File>
 			<File
+				RelativePath="..\common\utility.cpp">
+			</File>
+			<File
+				RelativePath="..\common\utility.h">
+			</File>
+			<File
 				RelativePath="..\common\vergemap.cpp">
 			</File>
 			<File
@@ -482,6 +482,12 @@
 			</File>
 			<File
 				RelativePath="..\common\vergepal.h">
+			</File>
+			<File
+				RelativePath="..\common\version.cpp">
+			</File>
+			<File
+				RelativePath="..\common\version.h">
 			</File>
 			<File
 				RelativePath="..\common\vsp.cpp">

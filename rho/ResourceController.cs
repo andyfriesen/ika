@@ -1,23 +1,19 @@
-//! class for a ref counting resource holding thingie
 
 using System;
 using System.Collections;
 
-namespace rho
-{
+namespace rho {
 
-    public abstract class ResourceController
-    {
-        ArrayList resources;
+    /// <summary>class for a ref counting resource holding thingie</summary>
+    public abstract class ResourceController {
+        readonly ArrayList resources = new ArrayList();
 	
-        class Resource
-        {
+        class Resource {
             public object o;		//!< the thingie we're holding onto
             public int refcount;	//!< number of thingies using it
             public string fname;	//!< filename
 		
-            public Resource(object obj, string n)
-            {
+            public Resource(object obj, string n) {
                 o=obj;
                 fname=n;
                 refcount=1;
@@ -26,13 +22,10 @@ namespace rho
 	
         public abstract object Load(string fname);
 
-        public object this[string fname]
-        {
-            get
-            {
+        public object this[string fname] {
+            get {
                 foreach (Resource r in resources)
-                    if (r.fname==fname)
-                    {
+                    if (r.fname==fname) {
                         r.refcount++;
                         return r.o;
                     }
@@ -44,25 +37,17 @@ namespace rho
             }
         }
 
-        public void Free(object o)
-        {
+        public void Free(object o) {
             foreach (Resource r in resources)
-                if (r.o==o)
-                {
+                if (r.o==o) {
                     r.refcount--;
-                    if (r.refcount==0)
-                    {
+                    if (r.refcount==0) {
                         ((IDisposable)o).Dispose();
                         resources.Remove(r);	// now the GCer can clean up at its leisure.
                     }
 				
                     return;
                 }
-        }
-	
-        public ResourceController()
-        {
-            resources=new ArrayList();
         }
     }
 

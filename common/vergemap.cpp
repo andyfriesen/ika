@@ -8,48 +8,43 @@
 #include "map.h"
 #include "vsp.h"
 #include "rle.h"
-#include "misc.h"
-#include "types.h"
+#include "utility.h"
 
-static u16 fgetw(FILE* f)
-{
+static u16 fgetw(FILE* f) {
     u16 s = 0;
     fread(&s, 1, 2, f);
     return s;
 }
 
-static u32 fgetq(FILE* f)
-{
+static u32 fgetq(FILE* f) {
     u32 q = 0;
     fread(&q, 1, 4, f);
     return q;
 }
 
-static void fputw(u16 w, FILE* f)
-{
+static void fputw(u16 w, FILE* f) {
     fwrite(&w, 1, sizeof(u16), f);
 }
 
-static void fputq(u32 q, FILE* f)
-{
+static void fputq(u32 q, FILE* f) {
     fwrite(&q, 1, sizeof(u32), f);
 }
 
-Map* ImportVerge1Map(const std::string& fileName)
-{
+Map* ImportVerge1Map(const std::string& fileName) {
     FILE* f = fopen(fileName.c_str(), "rb");
-    if (!f)
+    if (f == 0) {
         throw std::runtime_error(va("Unable to open %s", fileName.c_str()));
+    }
 
     Map* map = new Map;
 
-    try
-    {
+    try {
         u8 magic = fgetc(f);
-        if (magic != 4)
+        if (magic != 4) {
             throw std::runtime_error(va(
                 "Magic number was %i, not 4.  This is not a v1 map.",
                 magic));
+        }
 
         char buffer[256];
         std::fill(buffer, buffer + 256, 0);
@@ -67,10 +62,10 @@ Map* ImportVerge1Map(const std::string& fileName)
 
         bool showName = fgetc(f) != 0;   map->metaData["showname"] = showName ? "true" : "false";
         bool saveFlag = fgetc(f) != 0;   map->metaData["saveflag"] = saveFlag ? "true" : "false";
-        map->metaData["startx"] = ToString(fgetw(f));
-        map->metaData["starty"] = ToString(fgetw(f));
-        map->metaData["hide"] = ToString(fgetc(f));
-        map->metaData["warp"] = ToString(fgetc(f));
+        map->metaData["startx"] = toString(fgetw(f));
+        map->metaData["starty"] = toString(fgetw(f));
+        map->metaData["hide"] = toString(fgetc(f));
+        map->metaData["warp"] = toString(fgetc(f));
 
         int xsize = fgetw(f);
         int ysize = fgetw(f);
@@ -104,8 +99,7 @@ Map* ImportVerge1Map(const std::string& fileName)
         map->AddLayer(layer0);
         map->AddLayer(layer1);
 
-        struct VergeZone
-        {
+        struct VergeZone {
             char name[15];
             u16  eventIndex;
             u8   chance;
@@ -119,8 +113,7 @@ Map* ImportVerge1Map(const std::string& fileName)
 
         std::fill(buffer, buffer + 256, 0);
         std::vector<std::string> chrlist;
-        for (int i = 0; i < 100; i++)
-        {
+        for (int i = 0; i < 100; i++) {
             fread(buffer, 1, 13, f);
             chrlist.push_back(std::string(buffer));
         }
@@ -128,8 +121,7 @@ Map* ImportVerge1Map(const std::string& fileName)
         int numEntities = 0;
         fread(&numEntities, 1, 4, f);
 
-        struct VergeEntity
-        {
+        struct VergeEntity {
             u16 x;       
             u16 y;       
             u8 direction;
@@ -161,8 +153,7 @@ Map* ImportVerge1Map(const std::string& fileName)
             char description[20];                 // Editing description
         };
 
-        for (int i = 0; i < numEntities; i++)
-        {
+        for (int i = 0; i < numEntities; i++) {
             VergeEntity vergeEnt;
             Map::Entity ikaEnt;
 
@@ -187,31 +178,30 @@ Map* ImportVerge1Map(const std::string& fileName)
         fclose(f);
         return map;
     }
-    catch (...)
-    {
+    catch (...) {
         fclose(f);
         throw;
     }
 }
 
-Map* ImportVerge2Map(const std::string& fileName)
-{
+Map* ImportVerge2Map(const std::string& fileName) {
     FILE* f = fopen(fileName.c_str(), "rb");
-    if (!f)
+    if (!f) {
         throw std::runtime_error(va("Unable to open %s", fileName.c_str()));
+    }
 
     Map* map = new Map;
 
-    try
-    {
+    try {
         const char* mapsig="MAPù5";
         char buffer[256];
 
         std::fill(buffer, buffer + 256, 0);
 
         fread(buffer, 1, 6, f);
-        if (std::string(buffer) != mapsig)
+        if (std::string(buffer) != mapsig) {
             throw "Bogus map file";
+        }
 
         fseek(f, 4, SEEK_CUR);
 
@@ -228,8 +218,7 @@ Map* ImportVerge2Map(const std::string& fileName)
         std::vector<int> pmulx(numLayers), pmuly(numLayers);
         std::vector<int> pdivx(numLayers), pdivy(numLayers);
 
-        for (int i = 0; i < numLayers; i++)
-        {
+        for (int i = 0; i < numLayers; i++) {
             pmulx.push_back(fgetc(f));
             pdivx.push_back(fgetc(f));
             pmuly.push_back(fgetc(f));
@@ -244,8 +233,7 @@ Map* ImportVerge2Map(const std::string& fileName)
         map->width = width * 16;
         map->height = height * 16;
 
-        for (int i = 0; i < numLayers; i++)
-        {
+        for (int i = 0; i < numLayers; i++) {
             u32 bufSize = fgetq(f);
             ScopedArray<u16> buffer(new u16[bufSize]);
             ScopedArray<u32> data(new u32[width * height]);
@@ -259,14 +247,12 @@ Map* ImportVerge2Map(const std::string& fileName)
             lay->parallax.divx = pdivx[i];
             lay->parallax.divy = pdivy[i];
 
-            if (lay->parallax.divx == 0)
-            {
+            if (lay->parallax.divx == 0) {
                 lay->parallax.mulx = 1;
                 lay->parallax.divx = 1;
             }
 
-            if (lay->parallax.divy == 0)
-            {
+            if (lay->parallax.divy == 0) {
                 lay->parallax.muly = 1;
                 lay->parallax.divy = 1;
             }
@@ -280,15 +266,15 @@ Map* ImportVerge2Map(const std::string& fileName)
         ScopedArray<u8> obsData(new u8[width * height]);
         fread(rleBuffer.get(), 1, bufSize, f);
         ReadCompressedLayer1(obsData.get(), width * height, rleBuffer.get());
-        if (map->NumLayers())
+        if (map->NumLayers()) {
             map->GetLayer(0)->obstructions = Matrix<u8>(width, height, obsData.get());
+        }
 
         // zones
         bufSize = fgetq(f);
         fseek(f, bufSize, SEEK_CUR); // TODO: use this data
 
-        struct Verge2Zone
-        {
+        struct Verge2Zone {
             char name[40];       
             u16 scriptIndex;          
             u16 chance;         
@@ -303,15 +289,13 @@ Map* ImportVerge2Map(const std::string& fileName)
         std::fill(buffer, buffer + 255, 0);
         int numSprites = fgetc(f);
         std::vector<std::string> chrList(numSprites);
-        for (int i = 0; i < numSprites; i++)
-        {
+        for (int i = 0; i < numSprites; i++) {
             fread(buffer, 1, 60, f);
             chrList.push_back(buffer);
         }
 
         int numEntities = fgetc(f);
-        for (int i = 0; i < numEntities; i++)
-        {
+        for (int i = 0; i < numEntities; i++) {
             Map::Entity ent;
 
             ent.x = fgetq(f) * 16;
@@ -369,39 +353,39 @@ Map* ImportVerge2Map(const std::string& fileName)
         fclose(f);
         return map;
     }
-    catch (...)
-    {
+    catch (...) {
         fclose(f);
         throw;
     }
 }
 
-static void DecompressVerge3(void* dest, int outSize, FILE* f)
-{
+static void DecompressVerge3(void* dest, int outSize, FILE* f) {
     int uncompressedSize = fgetq(f);
     int compressedSize = fgetq(f);
 
-    if (uncompressedSize != outSize)
+    if (uncompressedSize != outSize) {
         throw std::runtime_error(va("Compression block sizes do not match. "
             "(%i vs %i)", compressedSize, outSize));
+    }
 
     uLong zsize = outSize;
     ScopedArray<u8> cdata(new u8[compressedSize]);
 
     fread(cdata.get(), 1, compressedSize, f);
     int result = uncompress(reinterpret_cast<Bytef*>(dest), &zsize, cdata.get(), compressedSize);
-    if (result != Z_OK)
+    if (result != Z_OK) {
         throw std::runtime_error(va("DecompressVerge3 returned zlib error %i", result));
+    }
 }
 
-static void CompressVerge3(void* src, int size, FILE* f)
-{
+static void CompressVerge3(void* src, int size, FILE* f) {
     uLongf bufferSize = size * 101 / 100 + 12;    // 0.1% larger than source, plus 12 bytes. (we splurge and give it a whole 1%)
     ScopedArray<u8> buffer = new u8[bufferSize];
 
     int result = compress((Bytef*)buffer.get(), &bufferSize, (Bytef*)src, size);
-    if (result != Z_OK)
+    if (result != Z_OK) {
         throw std::runtime_error(va("CompressVerg3 returned zlib error %i", result));
+    }
 
     fputq(size, f);
     fputq(bufferSize, f);
@@ -412,25 +396,25 @@ static void CompressVerge3(void* src, int size, FILE* f)
 static const char* verge3MapSig = "V3MAP";
 static const int VERGE3_MAP_VERSION = 2;
 
-Map* ImportVerge3Map(const std::string& fileName)
-{
+Map* ImportVerge3Map(const std::string& fileName) {
     FILE* f = fopen(fileName.c_str(), "rb");
     if (!f)
         return 0;
 
-    try
-    {
+    try {
         Map* map = new Map;
 
         char buffer[256];
 
         fread(buffer, 1, 6, f);
-        if (std::string(buffer) != verge3MapSig)
+        if (std::string(buffer) != verge3MapSig) {
             throw std::runtime_error("Bogus map signature");
+        }
 
         int version = fgetq(f);
-        if (version != VERGE3_MAP_VERSION)
+        if (version != VERGE3_MAP_VERSION) {
             throw std::runtime_error(va("Invalid map version %i (looking for %i)", version, VERGE3_MAP_VERSION));
+        }
 
         fseek(f, 4, SEEK_CUR); // skip vc offset
 
@@ -440,12 +424,11 @@ Map* ImportVerge3Map(const std::string& fileName)
         fread(buffer, 1, 256, f);   map->metaData["rstring"] = buffer;
         fread(buffer, 1, 256, f);   map->metaData["startupscript"] = buffer;
 
-        map->metaData["startx"] = ToString(fgetw(f));
-        map->metaData["starty"] = ToString(fgetw(f));
+        map->metaData["startx"] = toString(fgetw(f));
+        map->metaData["starty"] = toString(fgetw(f));
 
         int numLayers = fgetq(f);
-        for (int i = 0; i < numLayers; i++)
-        {
+        for (int i = 0; i < numLayers; i++) {
             Map::Layer* lay = new Map::Layer;
             fread(buffer, 1, 256, f);   lay->label = buffer;
             assert(sizeof(double) == 8);
@@ -484,31 +467,26 @@ Map* ImportVerge3Map(const std::string& fileName)
 
         return map;
     }
-    catch (...)
-    {
+    catch (...) {
         fclose(f);
         throw;
     }
 }
 
-VSP* ImportVerge3TileSet(const std::string& fileName)
-{
+VSP* ImportVerge3TileSet(const std::string& fileName) {
     const char* VSP_SIGNATURE = "VSP";
     const int VSP_VERSION = 6;
-    enum
-    {
+    enum {
         BPP24 = 1,
         BPP32 = 2
     };
 
-    enum
-    {
+    enum {
         NO_COMPRESSION = 0,
         ZLIB_COMPRESSION = 1,
     };
 
-    enum
-    {
+    enum {
         ANIM_FORWARD = 0,
         ANIM_BACKWARD = 1,
         ANIM_RANDOM = 2,
@@ -516,8 +494,9 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
     };
 
     FILE* f = fopen(fileName.c_str(), "rb");
-    if (!f)
+    if (!f) {
         throw std::runtime_error(va("Unable to load %s", fileName.c_str()));
+    }
 
     VSP* vsp = new VSP;
 
@@ -525,12 +504,14 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
     std::fill(buffer, buffer + 256, 0);
 
     fread(buffer, 1, 4, f);
-    if (std::string(buffer) != VSP_SIGNATURE)
+    if (std::string(buffer) != VSP_SIGNATURE) {
         throw std::runtime_error("VSP signature ain't there.  This isn't no map.");
+    }
 
     int version = fgetq(f);
-    if (version != VSP_VERSION)
+    if (version != VSP_VERSION) {
         throw std::runtime_error(va("Version should have been %i.  It was %i.  This not good.", VSP_VERSION, version));
+    }
 
     int tileWidth = fgetq(f);
     int tileHeight = tileWidth;
@@ -540,36 +521,32 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
     int numTiles = fgetq(f);
     int compression = fgetq(f);
 
-    if (compression != ZLIB_COMPRESSION)
+    if (compression != ZLIB_COMPRESSION) {
         throw std::runtime_error("I was unaware than Verge3 VSPs had any compression other than zlib.");
+    }
 
     ScopedArray<RGBA> pixels(new RGBA[numTiles * tileWidth * tileHeight]);
 
-    if (format == BPP24)
-    {
+    if (format == BPP24) {
         ScopedArray<u8> rgb(new u8[numTiles * tileWidth * tileHeight * 3]);
         DecompressVerge3(rgb.get(), numTiles * tileWidth * tileHeight * 3, f);
         u8* p = rgb.get();
-        for (int i = 0; i < numTiles * tileWidth * tileHeight; i++)
-        {
+        for (int i = 0; i < numTiles * tileWidth * tileHeight; i++) {
             u8 r = *p++;
             u8 g = *p++;
             u8 b = *p++;
             u8 a = (r == 255 && g == 0 && b == 255) ? 0 : 255;
             pixels[i] = RGBA(r, g, b, a);
         }
-    }
-    else if (format == BPP32)
-    {
+    } else if (format == BPP32) {
         DecompressVerge3(pixels.get(), 
             numTiles * tileWidth * tileHeight * sizeof(u32), f);
-    }
-    else
+    } else {
         assert(false);
+    }
 
     RGBA* p = pixels.get();
-    for (int i = 0; i < numTiles; i++)
-    {
+    for (int i = 0; i < numTiles; i++) {
         Canvas c(p, tileWidth, tileHeight);
         
         vsp->AppendTile();
@@ -579,8 +556,7 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
     }
 
     int numAnimStrands = fgetq(f);
-    for (int i = 0; i < numAnimStrands; i++)
-    {
+    for (int i = 0; i < numAnimStrands; i++) {
         VSP::AnimState ikaAnim;
 
         fread(buffer, 1, 256, f); // discard strand name
@@ -602,11 +578,11 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
     return vsp;
 }
 
-void ExportVerge3Map(const std::string& fileName, Map* map)
-{
+void ExportVerge3Map(const std::string& fileName, Map* map) {
     FILE* f = fopen(fileName.c_str(), "wb");
-    if (!f)
+    if (!f) {
         throw std::runtime_error(va("Unable to open %s for writing", fileName.c_str()));
+    }
 
     fwrite(verge3MapSig, 1, 6, f);
     fputq(VERGE3_MAP_VERSION, f);
@@ -619,14 +595,17 @@ void ExportVerge3Map(const std::string& fileName, Map* map)
     buffer = map->tileSetName;     fwrite(buffer.c_str(), 1, 256, f);
     buffer = map->metaData.count("music") ? map->metaData["music"] : "";     
     fwrite(buffer.c_str(), 1, 256, f);
-    if (map->metaData.count("rstring")) buffer = map->metaData["rstring"];
-    else
-    {
+    
+    if (map->metaData.count("rstring")) {
+        buffer = map->metaData["rstring"];
+    } else {
         buffer.clear();
-        for (uint i = 0; i < buffer.size(); i++)
+        for (uint i = 0; i < buffer.size(); i++) {
             buffer += '1' + i;
+        }
         buffer += "ER";
     }
+
     fwrite(buffer.c_str(), 1, 256, f);
     buffer = map->metaData.count("startupscript") ? map->metaData["startupscript"] : "";     
     fwrite(buffer.c_str(), 1, 256, f);
@@ -635,8 +614,7 @@ void ExportVerge3Map(const std::string& fileName, Map* map)
     fputw(0, f); // starty
 
     fputq(map->NumLayers(), f);
-    for (uint i = 0; i < map->NumLayers(); i++)
-    {
+    for (uint i = 0; i < map->NumLayers(); i++) {
         Map::Layer* lay = map->GetLayer(i);
         buffer = lay->label;
         fwrite(buffer.c_str(), 1, 256, f);

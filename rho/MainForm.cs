@@ -2,23 +2,30 @@
 using System;
 using System.Windows.Forms;
 using System.IO;
+using WeifenLuo.WinFormsUI;
 
+#if false
 using Import.ika;
+#endif
 
 namespace rho
 {
     class MainForm : Form
     {
-        public TileSetController tilesets=new TileSetController();
+        //public TileSetController tilesets=new TileSetController();
+        DockManager dockManager;
 	
         public MainForm()
         {
             Text = "rho alpha 1";
-            IsMdiContainer=true;
+            //IsMdiContainer=true;
 		
-            Width=640;
-            Height=480;
-		
+            dockManager = new DockManager();
+            dockManager.Parent = this;
+            dockManager.Dock = DockStyle.Fill;
+
+            dockManager.MouseDown += new MouseEventHandler(dockManager_MouseDown);
+
             MenuItem file=new MenuItem("&File", new MenuItem[]
                                 {
                                     new MenuItem("&New", new MenuItem[]
@@ -46,27 +53,17 @@ namespace rho
                             window,                              
                         }
                 );
-
-            Splitter splitter=new Splitter();
-            splitter.Dock=DockStyle.Left;
-            Controls.Add(splitter);		
-            splitter.Show();
-
-            TreeView tree=new TreeView();
-            tree.Dock=DockStyle.Left;
-            Controls.Add(tree);
-            tree.Show();
         }
 
         void CreateDocumentWindow(string filename)
         {
             string extension=Path.GetExtension(filename).ToLower();
-            Form doc;
+            Content doc;
 
             switch (extension)
             {
                 case ".py":  
-                    doc=new TextEditor.CodeView(this, filename, new TextEditor.PythonHighlightStyle());    
+                    doc = new TextEditor.CodeView(this, filename, new TextEditor.PythonHighlightStyle());    
                     break;
 
                 case ".cs":
@@ -78,8 +75,7 @@ namespace rho
                     return;
             }
 
-            doc.MdiParent=this;
-            doc.Show();
+            doc.Show(dockManager);
         }
 
         void NewScript(object o, EventArgs e)
@@ -119,6 +115,10 @@ namespace rho
                 f.CreateDocumentWindow(s);
 
             Application.Run(new MainForm());
+        }
+
+        private void dockManager_MouseDown(object sender, MouseEventArgs e) {
+            MessageBox.Show(":O");
         }
     }
 

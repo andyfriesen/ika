@@ -1,17 +1,17 @@
 #include <cassert>
 #include <stdexcept>
 
-#include "chr.h"
-#include "fileio.h"
-#include "vergepal.h"
-#include "rle.h"
-#include "misc.h"
-#include "log.h"
-
-#include "compression.h"
-#include "oldbase64.h"
-#include "base64.h"
 #include "aries.h"
+#include "base64.h"
+#include "chr.h"
+#include "compression.h"
+#include "fileio.h"
+#include "common/log.h"
+#include "oldbase64.h"
+#include "rle.h"
+#include "utility.h"
+#include "vergepal.h"
+
 #include <fstream>
 #include <stdexcept>
 
@@ -150,21 +150,21 @@ void CCHRfile::Load(const std::string& fname)
     moveScripts.clear();
 
     // first, a quick check for loading older file formats.
-    if (Lower(Path::Extension(fname)) == "chr")
-    {
+    if (Path::equals("chr", Path::getExtension(fname))) {
         LoadCHR(fname);
         return;
     }
 
-    try
-    {
-        if (!fname.length())
+    try {
+        if (!fname.length()) {
             throw std::runtime_error("LoadCHR: No filename given.");
+        }
 
         std::ifstream file;
         file.open(fname.c_str());
-        if (!file.is_open())
+        if (!file.is_open()) {
             throw std::runtime_error(va("LoadCHR: %s does not exist.", fname.c_str()));
+        }
 
         DataNode* document;
         file >> document;
@@ -181,15 +181,16 @@ void CCHRfile::Load(const std::string& fname)
                 DataNode* metaNode = infoNode->getChild("meta");
 
                 NodeList nodes = metaNode->getChildren();
-                for (NodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-                {
-                    if ((*iter)->isString())
+                for (NodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
+                    if ((*iter)->isString()) {
                         continue;
+                    }
 
                     DataNode* n = (DataNode*)*iter;
 
-                    if (n->getString().empty())
+                    if (n->getString().empty()) {
                         metaData[n->getName()] = n->getString();
+                    }
                 }
             }
         }
@@ -203,8 +204,7 @@ void CCHRfile::Load(const std::string& fname)
             DataNode* scriptNode = rootNode->getChild("scripts");
 
             DataNodeList nodes = scriptNode->getChildren("script");
-            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-            {
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
                 std::string name = (*iter)->getChild("label")->getString();
                 std::string script = (*iter)->getString();
 
@@ -236,15 +236,16 @@ void CCHRfile::Load(const std::string& fname)
             std::string d64 = dataNode->getString();
             ScopedArray<u8> compressed(new u8[d64.length()]); // way more than enough.
             int compressedSize;
-            if (ver == "1.0")
-            {
+            if (ver == "1.0") {
                 compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
-            }
-            else if (ver == "1.1")
-            {
+            } else if (ver == "1.1") {
                 std::string un64 = base64::decode(d64);
                 std::copy((u8*)(un64.c_str()), (u8*)(un64.c_str() + un64.length()), compressed.get());
                 compressedSize = un64.length();
+            } else {
+                throw std::runtime_error(va("Sprite uses unrecognized version %s.  "
+                    "This build of ika only knows about 1.0 and 1.1", ver.c_str())
+                );
             }
 
             ScopedArray<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
@@ -271,8 +272,7 @@ void CCHRfile::Load(const std::string& fname)
 
 void CCHRfile::Save(const std::string& fname)
 {
-    if (Lower(Path::Extension(fname)) == "chr")
-    {
+    if (Path::equals("chr", Path::getExtension(fname))) {
         SaveOld(fname);
         return;
     }
@@ -477,10 +477,10 @@ void CCHRfile::Loadv2CHR(File& f)
     
     // Get the idle frames
     int i;
-    f.Read(i);        moveScripts["idle_left"]  = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts["idle_right"] = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts["idle_up"]    = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts["idle_down"]  = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_left"]  = std::string("F") + toString(i) + "W10";
+    f.Read(i);        moveScripts["idle_right"] = std::string("F") + toString(i) + "W10";
+    f.Read(i);        moveScripts["idle_up"]    = std::string("F") + toString(i) + "W10";
+    f.Read(i);        moveScripts["idle_down"]  = std::string("F") + toString(i) + "W10";
     
     for (int b = 0; b < 4; b++)
     {
@@ -532,10 +532,10 @@ void CCHRfile::Loadv4CHR(File& f)
     
     // Get the idle frames
     u16 i;
-    f.Read(i);        moveScripts["idle_left"]  = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts["idle_right"] = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts["idle_up"]    = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts["idle_down"]  = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_left"]  = std::string("F") + toString(i) + "W10";
+    f.Read(i);        moveScripts["idle_right"] = std::string("F") + toString(i) + "W10";
+    f.Read(i);        moveScripts["idle_up"]    = std::string("F") + toString(i) + "W10";
+    f.Read(i);        moveScripts["idle_down"]  = std::string("F") + toString(i) + "W10";
     
     f.Read(i);
     int nFrames = i;                // frame count

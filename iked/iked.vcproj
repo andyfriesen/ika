@@ -21,7 +21,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../common,../3rdparty/include,$(WXWIN)/include,$(WXWIN)/contrib/include"
+				AdditionalIncludeDirectories=".;&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/contrib/include&quot;"
 				PreprocessorDefinitions="_DEBUG,DEBUG=1,__WXDEBUG__,MSVC,WIN32,_WINDOWS,__WINDOWS__,__WXMSW__,__WIN95__,__WIN32__,WINVER=0x0400,STRICT"
 				RuntimeLibrary="3"
 				PrecompiledHeaderFile=".\Debug/iked.pch"
@@ -87,7 +87,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="1"
 				InlineFunctionExpansion="2"
-				AdditionalIncludeDirectories="../common,../3rdparty/include,$(WXWIN)/include,$(WXWIN)/contrib/include"
+				AdditionalIncludeDirectories=".;&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;;&quot;$(WXWIN)/include&quot;;&quot;$(WXWIN)/contrib/include&quot;"
 				PreprocessorDefinitions="NDEBUG,MSVC,WIN32,_WINDOWS,__WINDOWS__,__WXMSW__,__WIN95__,__WIN32__,WINVER=0x0400,STRICT"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -384,12 +384,6 @@
 				RelativePath="..\common\matrix.h">
 			</File>
 			<File
-				RelativePath="..\common\misc.cpp">
-			</File>
-			<File
-				RelativePath="..\common\misc.h">
-			</File>
-			<File
 				RelativePath="..\common\oldbase64.cpp">
 			</File>
 			<File
@@ -405,10 +399,22 @@
 				RelativePath="..\common\types.h">
 			</File>
 			<File
+				RelativePath="..\common\utility.cpp">
+			</File>
+			<File
+				RelativePath="..\common\utility.h">
+			</File>
+			<File
 				RelativePath="..\common\vergepal.cpp">
 			</File>
 			<File
 				RelativePath="..\common\vergepal.h">
+			</File>
+			<File
+				RelativePath="..\common\version.cpp">
+			</File>
+			<File
+				RelativePath="..\common\version.h">
 			</File>
 			<File
 				RelativePath="..\common\vsp.cpp">

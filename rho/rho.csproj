@@ -1,8 +1,8 @@
 <VisualStudioProject>
     <CSHARP
         ProjectType = "Local"
-        ProductVersion = "7.0.9466"
-        SchemaVersion = "1.0"
+        ProductVersion = "7.10.3077"
+        SchemaVersion = "2.0"
         ProjectGuid = "{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}"
     >
         <Build>
@@ -16,7 +16,10 @@
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
                 OutputType = "WinExe"
+                PreBuildEvent = ""
+                PostBuildEvent = ""
                 RootNamespace = "rho"
+                RunPostBuildEvent = "OnBuildSuccess"
                 StartupObject = ""
             >
                 <Config
@@ -30,6 +33,8 @@
                     DebugSymbols = "true"
                     FileAlignment = "4096"
                     IncrementalBuild = "true"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "false"
                     OutputPath = "bin\Debug\"
                     RegisterForComInterop = "false"
@@ -48,6 +53,8 @@
                     DebugSymbols = "false"
                     FileAlignment = "4096"
                     IncrementalBuild = "false"
+                    NoStdLib = "false"
+                    NoWarn = ""
                     Optimize = "true"
                     OutputPath = "bin\Release\"
                     RegisterForComInterop = "false"
@@ -83,14 +90,14 @@
                     HintPath = "..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
-                    Name = "sci.NET"
-                    AssemblyName = "sci.NET"
-                    HintPath = "..\..\src\scintilla.NET\sci.NET.DLL"
+                    Name = "ScintillaNET"
+                    AssemblyName = "ScintillaNET"
+                    HintPath = "..\..\..\..\src\scintilla\ScintillaNET\Release\ScintillaNET.dll"
                 />
                 <Reference
-                    Name = "ikaImport"
-                    Project = "{E522652F-513B-4694-9518-8760F2F17F4C}"
-                    Package = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
+                    Name = "WeifenLuo.WinFormsUI"
+                    AssemblyName = "WeifenLuo.WinFormsUI"
+                    HintPath = "..\..\..\..\src\DockManager\WinFormsUI\bin\Release\WeifenLuo.WinFormsUI.dll"
                 />
             </References>
         </Build>
@@ -131,6 +138,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Commands\Command.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Commands\RenameCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Controls\GraphView.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -144,6 +161,21 @@
                     RelPath = "Controls\ScrollWindow.resx"
                     DependentUpon = "ScrollWindow.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "Documents\AbstractDocument.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Documents\Document.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Documents\TextDocument.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "TextEditor\CodeView.cs"

@@ -1,5 +1,6 @@
 
-#include "log.h"
+#include "common/log.h"
+#include "utility.h"
 #include <stdarg.h>
 #include <fstream>
 #include <ios>
@@ -40,19 +41,29 @@ void Log::Writen(const char* s, ...)
 {
     if (!bLogging) return;
     
-    char sTemp[1024];
     va_list lst;
     
     va_start(lst, s);
-    vsprintf(sTemp, s, lst);
+
+#if 1
+    ScopedArray<char> buffer = new char[_vscprintf(s, lst)];;
+    vsprintf(buffer.get(), s, lst);
+    logfile << buffer.get();
+#else
+#    error buffer overrun gayness that must be overcome!
+    char buffer[1024];
+    vsprintf(buffer, s, lst);
+    logfile << buffer;
+#endif
+
     va_end(lst);
   
-    logfile << sTemp;
 }
 
-void Log::Write(const char* s, ...)
-{
-    if (!bLogging) return;
+void Log::Write(const char* s, ...) {
+    if (!bLogging) {
+        return;
+    }
 
     char sTemp[1024];
     va_list lst;
@@ -64,9 +75,12 @@ void Log::Write(const char* s, ...)
     logfile << sTemp << endl;
 }
 
-void Log::Write(const std::string& s)
-{
+void Log::Write(const std::string& s) {
     logfile << s << endl;
+}
+
+void Log::Writen(const std::string& s) {
+    logfile << s;
 }
 
 // -----------------------

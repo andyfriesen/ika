@@ -5,7 +5,8 @@
 
 #include "main.h"
 
-#include "common/misc.h"
+#include "common/utility.h"
+#include "common/version.h"
 #include "timer.h"
 
 #include "input.h"
@@ -188,7 +189,7 @@ void Engine::Startup()
 #endif
 
         Log::Write("Initializing Video");
-        std::string driver = Lower(cfg["videodriver"]);
+        std::string driver = toLower(cfg["videodriver"]);
 
 #if 0
         if (driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
@@ -388,8 +389,8 @@ void Engine::RenderLayer(uint layerIndex)
     int        adjustX, adjustY;    // sub-tile offset
     const Map::Layer* layer = map.GetLayer(layerIndex);
 
-    int layerWidth = layer->Width() * tiles->Width();
-    int layerHeight = layer->Height() * tiles->Height();
+    //int layerWidth = layer->Width() * tiles->Width();
+    //int layerHeight = layer->Height() * tiles->Height();
 
     int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
     int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
@@ -418,12 +419,8 @@ void Engine::RenderLayer(uint layerIndex)
         firstY = 0;
     }
 
-    if (!layer->wrapx) {
-      if ((uint)(firstX + lenX) > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
-    }
-    if (!layer->wrapy) {
-      if ((uint)(firstY + lenY) > layer->Height()) lenY = layer->Height() - firstY;
-    }
+    if ((uint)(firstX + lenX) > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
+    if ((uint)(firstY + lenY) > layer->Height()) lenY = layer->Height() - firstY;
 
     if (lenX < 1 || lenY < 1) return;   // not visible
 
@@ -438,9 +435,6 @@ void Engine::RenderLayer(uint layerIndex)
     {
         for (int x = 0; x < lenX; x++)
         {
-            if (layer->wrapx || layer->wrapy) {
-              t = layer->tiles.GetPointer((firstX + x) % layer->Width(), (firstY + y) % layer->Height());
-            }
             //if (*t)
                 video->BlitImage(tiles->GetTile(*t), curx, cury);
 
@@ -801,8 +795,6 @@ void Engine::LoadMap(const std::string& filename)
             iter != entMap.end();
             iter++)
         {
-            Entity* ent = iter->second;
-
             // if they're already nonzero, they changed in the init code, so we shouldn't change them.
             if (!iter->second->moveScript)
                 iter->second->moveScript = script.GetObjectFromMapScript(iter->first->moveScript);

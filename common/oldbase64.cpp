@@ -213,7 +213,7 @@ VERSION HISTORY:
 
 #include <cassert>
 #include <vector>
-#include "types.h"
+#include "common/utility.h"
 
 namespace oldBase64
 {

@@ -55,14 +55,15 @@ void CConfigFile::Load(const char* fname)
     if (!result)    
         return;
 
-    char key[1024], value[1024];
+	std::string key;
+	std::string value;
     while (!f.eof())
     {
         f.ReadToken(key);
         f.ReadToken(value);
 
         // empty keys / values are no good
-        if (!key[0] || !value[0])
+        if (key.empty() || value.empty())
             return;
 
         Add(key, value);

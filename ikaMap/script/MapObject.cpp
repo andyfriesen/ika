@@ -7,7 +7,7 @@ Map manipulation junque.
 #include "../command.h"
 #include "../tileset.h"
 
-#include "map.h"
+#include "common/map.h"
 
 namespace ScriptObject
 {

@@ -264,9 +264,9 @@ namespace aries
 
     DataNode* DataNode::addChild(int n)
     {
-        char c[32];
-        sprintf(c, "%i", n);
-        return addChild(std::string(c));
+        std::stringstream ss;
+        ss << n;
+        return addChild(ss.str());
     }
 
     /*DataNode* DataNode::addChild(double d)
