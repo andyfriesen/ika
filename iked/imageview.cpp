@@ -9,10 +9,10 @@ END_EVENT_TABLE()
 CImageView::CImageView(CMainWnd* parent,CPixelMatrix* img)
     : IDocView(parent,"image"), pData(img)
 {
-    //SetSize(-1,-1,340,340);
+    SetSize(-1,-1,340,340);
 
     pGraph=new CGraphFrame(this);
-    pGraph->SetSize(GetClientSize());
+    pGraph->SetSize(10,10,320,320);
 
     pImage=new CImage(*img);
 }

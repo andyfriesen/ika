@@ -477,12 +477,11 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
     SMapLayerInfo linf;
     int xw  ,yw;                // x/ywin after being adjusted for parallax
     int xl  ,yl;                // the last tile on each axis to be drawn
-    int xofs,yofs;                // sub-tile adjustment
+    int xofs,yofs;              // sub-tile adjustment
     int xs  ,ys;                // First tile on each axis
     int tilex,tiley;
     u32 t;
     
-    //    if (!pMap->IsLayerVisible(lay) || lay>=pMap->NumLayers())    return;
     if (lay>=pMap->NumLayers() || !bLayertoggle[lay])
         return;
     
@@ -493,8 +492,8 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
     xw=(xwin*linf.pmulx)/linf.pdivx;
     yw=(ywin*linf.pmuly)/linf.pdivy;
     
-    xw+=r.left;            yw+=r.top;
-    xofs=-(xw%tilex);    yofs=-(yw%tiley);
+    xw+=r.left;         yw+=r.top;
+    xofs=-(xw%tilex);   yofs=-(yw%tiley);
     xs=xw/tilex;        ys=yw/tiley;
     
     yl=((r.bottom-r.top)/tiley)+2; xl=((r.right-r.left)/tilex)+2;

@@ -185,7 +185,7 @@ void CTileSel::SaveVSP()
     ofn.lpstrTitle=sTitle;
     ofn.lpstrFilter=sFilter;
     ofn.lpstrFileTitle=sFilename;
-    ofn.nMaxFile=255;
+    ofn.nMaxFileTitle=255;
     ofn.Flags=OFN_OVERWRITEPROMPT;
     
     if (!GetSaveFileName(&ofn))

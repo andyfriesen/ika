@@ -6,6 +6,7 @@
 #include <stdio.h>
 
 using std::ios;
+using std::endl;
 
 // -----------------------
 
@@ -47,8 +48,6 @@ void Log::Writen(const char* s,...)
     va_end(lst);
   
     logfile << sTemp;
-//    std::ofstream f(sLogname.c_str(),ios::app);
-//    f << sTemp;
 }
 
 void Log::Write(const char* s,...)
@@ -62,9 +61,7 @@ void Log::Write(const char* s,...)
     vsprintf(sTemp,s,lst);
     va_end(lst);
 
-    logfile << sTemp;
-//    std::ofstream f(sLogname.c_str(),ios::app);
-//    f << sTemp << std::endl;
+    logfile << sTemp << endl;
 }
 
 // -----------------------
