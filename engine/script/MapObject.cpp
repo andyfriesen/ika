@@ -14,18 +14,18 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Switch",       (PyCFunction)Map_Switch,        METH_VARARGS,
-                "Map.Switch(filename)\n\n"
+                "Switch(filename)\n\n"
                 "Switches the current map to the map file specified.\n"
                 "The new map's AutoExec event is executed, if it exists."
             },
 
             {   "GetMetaData",  (PyCFunction)Map_GetMetaData,   METH_NOARGS,
-                "Map.GetMetaData() -> dict\n\n"
+                "GetMetaData() -> dict\n\n"
                 "Creates a dictionary containing the map's metadata, and returns it."
             },
 
             {   "Render",       (PyCFunction)Map_Render,        METH_VARARGS,
-                "Map.Render([layerList])\n\n"
+                "Render([layerList])\n\n"
                 "Draws the map and entities.  layerList is a sequence of integers;\n"
                 "ika will only draw these layers (in the order given).  If layerList\n"
                 "is omitted, all layers will be drawn, in their predefined order (set\n"
@@ -35,54 +35,54 @@ namespace Script
             },
 
             {   "GetTile",      (PyCFunction)Map_GetTile,       METH_VARARGS,
-                "Map.GetTile(x, y, layer) -> int\n\n"
+                "GetTile(x, y, layer) -> int\n\n"
                 "Returns the index of the tile at (x, y) on the layer specified."
             },
 
             {   "SetTile",      (PyCFunction)Map_SetTile,       METH_VARARGS,
-                "Map.SetTile(x, y, layer, tile)\n\n"
+                "SetTile(x, y, layer, tile)\n\n"
                 "Sets the tile at (x, y) of the layer specified."
             },
 
             {   "GetObs",       (PyCFunction)Map_GetObs,        METH_VARARGS,
-                "Map.GetObs(x, y, layerIndex) -> int\n\n"
+                "GetObs(x, y, layerIndex) -> int\n\n"
                 "Returns 1 if the tile at (x, y) is obstructed, or 0 if not."
             },
 
             {   "SetObs",       (PyCFunction)Map_SetObs,        METH_VARARGS,
-                "Map.SetObs(x, y, layerIndex, obs)\n\n"
+                "SetObs(x, y, layerIndex, obs)\n\n"
                 "If obs is nonzero, the tile at (x, y) is obstructed, else it is\n"
                 "unobstructed."
             },
 
             /*{   "GetZone",      (PyCFunction)Map_GetZone,       METH_VARARGS,
-                "Map.GetZone(x, y) -> int\n\n"
+                "GetZone(x, y) -> int\n\n"
                 "Returns the id number of the zone at (x, y)"
             },
             {   "SetZone",      (PyCFunction)Map_SetZone,       METH_VARARGS,
-                "Map.SetZone(x, y, zone)\n\n"
+                "SetZone(x, y, zone)\n\n"
                 "Sets the zone id number at (x, y)."
             },*/
 
             {   "GetLayerName", (PyCFunction)Map_GetLayerName,  METH_VARARGS,
-                "Map.GetLayerName(layerIndex) -> string\n\n"
+                "GetLayerName(layerIndex) -> string\n\n"
                 "Returns the name of the layer with the given index."
             },
 
             {   "SetLayerName", (PyCFunction)Map_SetLayerName,  METH_VARARGS,
-                "Map.SetLayerName(layerIndex, newName)\n\n"
+                "SetLayerName(layerIndex, newName)\n\n"
                 "Sets the layer's name to newName.  Subsequent GetLayerName and FindLayerByName will\n"
                 "use this as the layer's name, as if it were set in the editor."
             },
 
             {   "FindLayerByName", (PyCFunction)Map_FindLayerByName,    METH_VARARGS,
-                "Map.FindLayerByName(name) -> integer\n\n"
+                "FindLayerByName(name) -> integer\n\n"
                 "Returns the index of the first layer with the given name, or None if no such layer\n"
                 "exists."
             },
 
             {   "GetParallax",  (PyCFunction)Map_GetParallax,   METH_VARARGS,
-                "Map.GetParallax(layer) -> (int, int, int, int)\n\n"
+                "GetParallax(layer) -> (int, int, int, int)\n\n"
                 "Returns a 4-tuple containing parallax settings for the layer specified.\n"
                 "Its contents are as follows:\n"
                 "( parallax X multiplier, \n"
@@ -92,35 +92,35 @@ namespace Script
             },
 
             {   "SetParallax",  (PyCFunction)Map_SetParallax,   METH_VARARGS,
-                "Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)\n\n"
+                "SetParallax(layer, xmul, xdiv, ymul, ydiv)\n\n"
                 "Sets the specified layer's parallax settings according to the multipliers\n"
                 "and divisors given.  If either of the divisors are zero, a parallax value of 0/1\n"
                 "will be used for that axis."
             },
 
             {   "GetLayerProperties",   (PyCFunction)Map_GetLayerProperties,    METH_VARARGS,
-                "Map.GetLayerProperties(layerIndex) -> (label, width, height, wrapx, wrapy)\n\n"
+                "GetLayerProperties(layerIndex) -> (label, width, height, wrapx, wrapy)\n\n"
                 "Returns a 5-tuple containing information about the map layer specified."
             },
 
             {   "GetLayerPosition",     (PyCFunction)Map_GetLayerPosition,  METH_VARARGS,
-                "Map.GetLayerPosition(layerIndex) -> (x, y)\n\n"
+                "GetLayerPosition(layerIndex) -> (x, y)\n\n"
                 "Returns a tuple containing the layer's position on the map. (in pixels)"
             },
 
             {   "SetLayerPosition",     (PyCFunction)Map_SetLayerPosition,  METH_VARARGS,
-                "Map.SetLayerPosition(layerIndex, x, y)\n\n"
+                "SetLayerPosition(layerIndex, x, y)\n\n"
                 "Sets the layer's position to the (x,y) coordinates specified."
             },
 
             {   "GetWaypoints", (PyCFunction)Map_GetWaypoints,  METH_NOARGS,
-                "Map.GetWaypoints() -> list\n\n"
+                "GetWaypoints() -> list\n\n"
                 "Returns a list of three-tuples in the format of (name, x, y), one for\n"
                 "each waypoint defined within the editor."
             },
 
             {   "GetAllEntities",   (PyCFunction)Map_GetAllEntities,    METH_NOARGS,
-                "Map.GetAllEntities() -> list\n\n"
+                "GetAllEntities() -> list\n\n"
                 "Creates a list of every single existing entity, and returns it."
             },
 

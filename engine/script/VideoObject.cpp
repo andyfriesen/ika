@@ -12,7 +12,7 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Blit",         (PyCFunction)Video_Blit,        METH_VARARGS,
-                "Video.Blit(image, x, y[, blendmode])\n\n"
+                "Blit(image, x, y[, blendmode])\n\n"
                 "Draws the image at (x, y) at its original size.\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
@@ -20,7 +20,7 @@ namespace Script
             },
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
-                "Video.ScaleBlit(image, x, y, width, height[, blendmode])\n\n"
+                "ScaleBlit(image, x, y, width, height[, blendmode])\n\n"
                 "Draws the image at (x, y), stretching it out to the size given.\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
@@ -28,7 +28,7 @@ namespace Script
             },
             
             {   "DistortBlit",  (PyCFunction)Video_DistortBlit, METH_VARARGS,
-                "Video.DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[, blendmode])\n\n"
+                "DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[, blendmode])\n\n"
                 "Draws the image onscreen, stretched to the four points specified.\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
@@ -36,7 +36,7 @@ namespace Script
             },
 
             {   "TileBlit",     (PyCFunction)Video_TileBlit,    METH_VARARGS,
-                "Video.TileBlit(image, x, y, width, height[, scalex[, scaley[, blendmode]]])\n\n"
+                "TileBlit(image, x, y, width, height[, scalex[, scaley[, blendmode]]])\n\n"
                 "Draws the image onscreen, \"tiling\" it as necessary to fit the rectangle specified.\n"
                 "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
@@ -45,7 +45,7 @@ namespace Script
             },
 
             {   "TintBlit",     (PyCFunction)Video_TintBlit,    METH_VARARGS,
-                "Video.TintBlit(image, x, y, tintColour[, blendMode])\n\n"
+                "TintBlit(image, x, y, tintColour[, blendMode])\n\n"
                 "Draws the image onscreen, using tintColour to 'tint' the image.\n"
                 "Each pixel is multiplied by tintColour.  The resultant values are then\n"
                 "scaled before the pixel is plotted.\n\n"
@@ -60,7 +60,7 @@ namespace Script
             },
 
             {   "TintDistortBlit",  (PyCFunction)Video_TintDistortBlit, METH_VARARGS,
-                "Video.TintDistortBlit(image, (upleftX, upleftY, upleftTint), (uprightX, uprightY, uprightTint), (downrightX, downrightY, downrightTint), (downleftX, downleftY, downrightTint)[, blendmode])\n\n"
+                "TintDistortBlit(image, (upleftX, upleftY, upleftTint), (uprightX, uprightY, uprightTint), (downrightX, downrightY, downrightTint), (downleftX, downleftY, downrightTint)[, blendmode])\n\n"
                 "Combines the effects of DistortBlit and TintBlit.  Each corner can be tinted individually,\n"
                 "using the same algorithm as TintBlit.  The corners, if not the same, are smoothly interpolated\n"
                 "across the image."
@@ -68,35 +68,35 @@ namespace Script
 
             // TODO: more blits.  I want a wrapblit, tintblit, and others
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   METH_VARARGS,
-                "Video.DrawPixel(x, y, colour)\n\n"
+                "DrawPixel(x, y, colour)\n\n"
                 "Draws a dot at (x, y) with the colour specified."
             },
 
             {   "DrawLine",     (PyCFunction)Video_DrawLine,    METH_VARARGS,
-                "Video.DrawLine(x1, y1, x2, y2, colour)\n\n"
+                "DrawLine(x1, y1, x2, y2, colour)\n\n"
                 "Draws a straight line from (x1, y1) to (x2, y2) in the colour specified."
             },
 
             {   "DrawRect",     (PyCFunction)Video_DrawRect,    METH_VARARGS,
-                "Video.DrawRect(x1, y1, x2, y2, colour[, fill])\n\n"
+                "DrawRect(x1, y1, x2, y2, colour[, fill])\n\n"
                 "Draws a rectangle with (x1, y1) and (x2, y2) as opposite corners.\n"
                 "If fill is omitted or zero, an outline is drawn, else it is filled in."
             },
 
             {   "DrawEllipse",  (PyCFunction)Video_DrawEllipse, METH_VARARGS,
-                "Video.DrawEllipse(cx, cy, rx, ry, colour[, filled])\n\n"
+                "DrawEllipse(cx, cy, rx, ry, colour[, filled])\n\n"
                 "Draws an ellipse, centred at (cx, cy), of radius rx and ry on the X and\n"
                 "Y axis, respectively.  If filled is omitted or nonzero, the ellipse is filled in\n"
                 "else it is drawn as an outline."
             },
             
             {   "DrawTriangle", (PyCFunction)Video_DrawTriangle, METH_VARARGS,
-                "Video.DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))\n\n"
+                "DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))\n\n"
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
 
             {   "ClipScreen",   (PyCFunction)Video_ClipScreen, METH_VARARGS,
-                "Video.ClipScreen(left=0, top=0, right=xres, bottom=yres)\n\n"
+                "ClipScreen(left=0, top=0, right=xres, bottom=yres)\n\n"
                 "Clips the video display to the rectangle specfied.  All drawing\n"
                 "operations will be confined to this region.\n\n"
                 "Calling ClipScreen with no arguments will reset the clipping rect\n"
@@ -104,17 +104,17 @@ namespace Script
             },
 
             {   "GrabImage",    (PyCFunction)Video_GrabImage, METH_VARARGS,
-                "Video.GrabImage(x1, y1, x2, y2) -> image\n\n"
+                "GrabImage(x1, y1, x2, y2) -> image\n\n"
                 "Grabs a rectangle from the screen, copies it to an image, and returns it."
             },
 
             {   "GrabCanvas",   (PyCFunction)Video_GrabCanvas, METH_VARARGS,
-                "Video.GrabCanvas(x1, y1, x2, y2) -> canvas\n\n"
+                "GrabCanvas(x1, y1, x2, y2) -> canvas\n\n"
                 "Grabs a rectangle from the screen, copies it to a canvas, and returns it."
             },
 
             {   "ShowPage",     (PyCFunction)Video_ShowPage, METH_NOARGS,
-                "Video.ShowPage()\n\n"
+                "ShowPage()\n\n"
                 "Flips the back and front video buffers.  This must be called after the screen\n"
                 "has been completely drawn, or the scene will never be presented to the player.\n"
                 "This method is not guaranteed to preserve the contents of the screen, so it is\n"
@@ -123,7 +123,7 @@ namespace Script
 
             /** Disabled due to limitations inherent in SDL. (switching video modes causes all textures to be erased)
             {   "SetResolution",   (PyCFunction)Video_SetResolution, METH_VARARGS,
-                "Video.SetResolution(xres, yres)\n\n"
+                "SetResolution(xres, yres)\n\n"
                 "Changes the current video mode to (xres, yres).  If the video mode cannot be set,\n"
                 "ika will raise a RuntimeError exception."
             },*/

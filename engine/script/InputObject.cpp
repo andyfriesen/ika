@@ -17,7 +17,7 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Update",           (PyCFunction)Input_Update,      METH_NOARGS,
-                "Input.Update()\n\n"
+                "Update()\n\n"
                 "Updates the state of the mouse, and any attached input devices.\n"
                 "Also gives the OS a chance to do background tasks.  Continious\n"
                 "loops should call this occasionally to give the OS time to perform\n"
@@ -25,7 +25,7 @@ namespace Script
             },
             
             {   "Unpress",          (PyCFunction)Input_Unpress,     METH_NOARGS,
-                "Input.Unpress()\n\n"
+                "Unpress()\n\n"
                 "Unsets the Pressed() property of all controls.  Has no effect on\n"
                 "their positions.\n"
                 "Individual controls can be unpressed by simply calling their Pressed()\n"
@@ -33,25 +33,25 @@ namespace Script
             },
 
             {   "GetControl",       (PyCFunction)Input_GetControl,  METH_VARARGS,
-                "Input.GetControl(name -> string)\n\n"
+                "GetControl(name -> string)\n\n"
                 "Returns an object that represents the requested control.\n"
                 "Input[name->string] performs the exact same function.\n"
                 "ie x = ika.Input['UP'] or x = ika.Input.GetControl('UP')"
             },
 
             {   "GetKey",           (PyCFunction)Input_GetKey,  METH_NOARGS,
-                "Input.GetKey() -> char or None\n\n"
+                "GetKey() -> char or None\n\n"
                 "Returns the next key in the keyboard queue, or None if the queue is empty."
             },
 
             {   "ClearKeyQueue",    (PyCFunction)Input_ClearKeyQueue,   METH_NOARGS,
-                "Input.ClearKeyQueue()\n\n"
+                "ClearKeyQueue()\n\n"
                 "Flushes the keyboard queue.  Any keypresses that were in the queue will not\n"
                 "be returned by Input.GetKey()"
             },
 
             {   "WasKeyPressed",    (PyCFunction)Input_WasKeyPressed,   METH_NOARGS,
-                "Input.WasKeyPressed() -> bool\n\n"
+                "WasKeyPressed() -> bool\n\n"
                 "Returns True if there is a key in the key queue.  False if not.\n"
                 "(ie Input.GetKey() will return None if the result is False)"
             },
