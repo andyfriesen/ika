@@ -187,7 +187,7 @@ void Canvas::Rotate()
     
     for (int y=0; y<_height; y++)
         for (int x=0; x<_width; x++)
-            SetPixel(y, x, temp.GetPixel(x, y));
+            SetPixel(_height - y, x, temp.GetPixel(x, y));
 }
 
 void Canvas::Flip()

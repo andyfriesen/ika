@@ -20,16 +20,65 @@ namespace Script
 
         PyMethodDef methods[] =
         {
-            {   "Save",     (PyCFunction)Canvas_Save,       METH_VARARGS  },
-            {   "Blit",     (PyCFunction)Canvas_Blit,       METH_VARARGS  },
-            {   "ScaleBlit",(PyCFunction)Canvas_ScaleBlit,  METH_VARARGS  },
-            {   "GetPixel", (PyCFunction)Canvas_GetPixel,   METH_VARARGS  },
-            {   "SetPixel", (PyCFunction)Canvas_SetPixel,   METH_VARARGS  },
-            {   "Clear",    (PyCFunction)Canvas_Clear,      METH_VARARGS  },
-            {   "Resize",   (PyCFunction)Canvas_Resize,     METH_VARARGS  },
-            {   "Rotate",   (PyCFunction)Canvas_Rotate,     METH_NOARGS   },
-            {   "Flip",     (PyCFunction)Canvas_Flip,       METH_NOARGS   },
-            {   "Mirror",   (PyCFunction)Canvas_Mirror,     METH_NOARGS   },
+            {   "Save",     (PyCFunction)Canvas_Save,       METH_VARARGS,
+                "Canvas.Save(fname)\n"
+                "Writes the image to the filename specified in PNG format.\n"
+                "\n"
+                "ie.  canvas.Save('myimage.png')"
+            },
+
+            {   "Blit",     (PyCFunction)Canvas_Blit,       METH_VARARGS,
+                "Canvas.Blit(destcanvas, x, y, blendmode)\n"
+                "Draws the image on destcanvas, at position (x,y)\n"
+                "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
+            },
+
+            {   "ScaleBlit",(PyCFunction)Canvas_ScaleBlit,  METH_VARARGS,
+                "Canvas.ScaleBlit(destcanvas, x, y, width, height, blendmode)\n"
+                "Draws the image on destcanvas, at position (x,y), scaled to (width, height) pixels in size.\n"
+                "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
+            },
+
+            {   "GetPixel", (PyCFunction)Canvas_GetPixel,   METH_VARARGS,
+                "Canvas.GetPixel(x, y)\n"
+                "Returns the pixel at position (x,y) on the canvas, as a packed 32bpp RGBA colour."
+            },
+
+            {   "SetPixel", (PyCFunction)Canvas_SetPixel,   METH_VARARGS,
+                "Canvas.SetPixel(x, y, colour)\n"
+                "Sets the pixel at (x,y) on the canvas to the colour specified.  This function\n"
+                "totally disregards alpha.  It *sets* the pixel, in the truest sense of the word."
+            },
+
+            {   "Clear",    (PyCFunction)Canvas_Clear,      METH_VARARGS,
+                "Canvas.Clear([colour])\n"
+                "Sets every pixel on the canvas to the colour given.  If colour is omitted,\n"
+                "flat black is used."
+            },
+
+            {   "Resize",   (PyCFunction)Canvas_Resize,     METH_VARARGS,
+                "Canvas.Resize(width, height)\n"
+                "Resizes the canvas to the size specified.  No scaling takes place; if the dimensions\n"
+                "given are smaller than the existing image, it is cropped.  Blank, transparent space is\n"
+                "added when the canvas is enlarged."
+            },
+
+            {   "Rotate",   (PyCFunction)Canvas_Rotate,     METH_NOARGS,
+                "Canvas.Rotate()\n"
+                "Rotates the contents of the canvas 90 degrees, clockwise."
+            },
+
+            {   "Flip",     (PyCFunction)Canvas_Flip,       METH_NOARGS,
+                "Canvas.Flip()\n"
+                "Flips the contents of the canvas on the X axis.\n"
+                "(turns it upside down)"
+            },
+
+            {   "Mirror",   (PyCFunction)Canvas_Mirror,     METH_NOARGS,
+                "Canvas.Mirror()\n"
+                "Mirrors the contents of the canvas along the Y axis.\n"
+                "(left to right)"
+            },
             {   0   }
         };
 
@@ -198,8 +247,8 @@ namespace Script
 
         METHOD(Canvas_Clear)
         {
-            u32 colour;
-            if (!PyArg_ParseTuple(args, "i:SetPixel", &colour))
+            u32 colour = 0;
+            if (!PyArg_ParseTuple(args, "|i:SetPixel", &colour))
                 return 0;
 
             self->canvas->Clear(colour);

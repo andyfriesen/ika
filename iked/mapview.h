@@ -53,7 +53,8 @@ class CMapView : public IDocView
 
         id_mapentities,
         id_mapzones,
-        id_vsp
+        id_vsp,
+        id_script
     };
 
     enum
@@ -127,6 +128,7 @@ public:
     void OnShowEntityEditor(wxCommandEvent& event);
     void OnShowZoneEditor(wxCommandEvent& event);
     void OnShowVSP(wxCommandEvent& event);
+    void OnShowScript(wxCommandEvent& event);
 
     void OnClose();
 

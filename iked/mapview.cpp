@@ -145,6 +145,7 @@ BEGIN_EVENT_TABLE(CMapView, wxMDIChildFrame)
     EVT_MENU(CMapView::id_mapentities, CMapView::OnShowEntityEditor)
     EVT_MENU(CMapView::id_mapzones, CMapView::OnShowZoneEditor)
     EVT_MENU(CMapView::id_vsp, CMapView::OnShowVSP)
+    EVT_MENU(CMapView::id_script, CMapView::OnShowScript)
 
     EVT_MENU(CMapView::id_filesave, CMapView::OnSave)
     EVT_MENU(CMapView::id_filesaveas, CMapView::OnSaveAs)
@@ -304,6 +305,7 @@ void CMapView::InitMenu()
     wxMenu* mapmenu = new wxMenu;
 
     mapmenu->Append(id_vsp, "&VSP");
+    mapmenu->Append(id_script, "&Script");
     mapmenu->Append(id_mapentities, "&Entities...");
     mapmenu->Append(id_mapzones, "&Zones...");
 
@@ -433,6 +435,11 @@ void CMapView::OnShowZoneEditor(wxCommandEvent&)
 void CMapView::OnShowVSP(wxCommandEvent& event)
 {
     pParent->Open(pTileset->GetVSP().Name());
+}
+
+void CMapView::OnShowScript(wxCommandEvent& event)
+{
+    pParent->Open(Path::ReplaceExtension(sName, "py"));
 }
 
 //------------------------------------------------------------

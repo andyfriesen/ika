@@ -64,6 +64,9 @@ namespace Path
 
     string Filename(const string& s);           // same idea, but just returns the filename
 
+    string Extension(const string& s);          // returns the extension. (excluding the period)
+    string ReplaceExtension(const string& s, const string& extension); // swaps the extension, and returns the result
+
     bool Compare(const string& s, const string& t); // returns true if the two paths are the same.  Disregards case in win32.
 };
 

@@ -117,6 +117,24 @@ string Path::Filename(const string& s)
     return s.substr(p+1);
 }
 
+string Path::Extension(const string& s)
+{
+    int pos = s.rfind('.');
+    if (pos == string::npos)
+        return "";
+
+    return s.substr(pos + 1);
+}
+
+string Path::ReplaceExtension(const string& s, const string& extension)
+{
+    int pos = s.rfind('.');
+    if (pos == string::npos)
+        return s + "." + extension;
+
+    return s.substr(0, pos + 1) + extension;
+}
+
 bool Path::Compare(const string& s, const string& t)
 {
 #ifdef WIN32

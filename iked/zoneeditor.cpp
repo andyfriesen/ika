@@ -20,6 +20,7 @@ END_EVENT_TABLE()
 void ZoneEditor::UpdateList()
 {
     int pos = _zonelist->GetSelection();
+    if (pos == -1) pos = 0;
 
     _zonelist->Clear();
 

@@ -461,7 +461,6 @@ void CEngine::CheckKeyBindings()
         // I don't like this, but if I don't, then the key triggerings start to do weird things.
         // Like, the key that triggered the hook will always initially be pressed. (not useful behaviour)
         input.Unpress();
-
         script.ExecFunction(func);
         input.ClearEventQueue();
     }
@@ -563,6 +562,7 @@ void CEngine::TestActivate(const CEntity& player)
     // adjacent activation
     
     if (!input.Enter()) return;                                // From this point on, the only time we'd have to check this crap is if enter was pressed.
+    input.Unpress();
     
     tx = player.x; ty = player.y;
     // entity activation

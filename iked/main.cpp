@@ -272,9 +272,7 @@ FileType CMainWnd::GetFileType(const std::string& fname)
 
     const int nExt=sizeof(ext);
 
-    int idx=fname.rfind(".")+1;
-
-    std::string sExt=fname.substr(idx);
+    std::string sExt=Path::Extension(fname);
     
     strlwr((char*)sExt.c_str());
 

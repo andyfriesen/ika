@@ -430,54 +430,150 @@ namespace Script
         return Py_None;
     }
 
-#define FUNCTION(x, y)  { x, y, 1}
-#define FUNCTION1(x, y) { x, y, METH_NOARGS }
-
     PyMethodDef standard_methods[] =
     {
         //  name  | function
 
         // Misc
-        FUNCTION("Log",                 (PyCFunction)std_log),
-        FUNCTION("Exit",                (PyCFunction)std_exit),
-        FUNCTION1("GetCaption",         (PyCFunction)std_getcaption),
-        FUNCTION("SetCaption",          (PyCFunction)std_setcaption),
-        FUNCTION1("GetFrameRate",       (PyCFunction)std_getframerate),
-        FUNCTION("Delay",               (PyCFunction)std_delay),
-        FUNCTION("Wait",                (PyCFunction)std_wait),
-        FUNCTION1("GetTime",            (PyCFunction)std_gettime),
-        FUNCTION("Random",              (PyCFunction)std_random),
+        { "Log",            (PyCFunction)std_log,               METH_VARARGS,
+            "Log(message)\n"
+            "Writes a string to ika.log, if logging is enabled."
+        },
+
+        { "Exit",           (PyCFunction)std_exit,              METH_VARARGS,
+            "Exit([message])\n"
+            "Exits ika immediately, displaying the message onscreen, if specified."
+        },
+
+        { "GetCaption",     (PyCFunction)std_getcaption,        METH_NOARGS,
+            "GetCaption()\n"
+            "Returns the caption on the ika window title bar."
+        },
+
+        { "SetCaption",     (PyCFunction)std_setcaption,        METH_VARARGS,
+            "SetCaption(newcaption)\n"
+            "Sets the caption on the ika window title bar."
+        },
+
+        { "GetFrameRate",   (PyCFunction)std_getframerate,      METH_NOARGS,
+            "GetFrameRate()\n"
+            "Returns the current engine framerate, in frames per second."
+        },
+
+        { "Delay",          (PyCFunction)std_delay,             METH_VARARGS,
+            "Delay(time)\n"
+            "Freezes the engine for a number of 'ticks'. (one tick is 1/100th of a second)"
+        },
+
+        { "Wait",           (PyCFunction)std_wait,              METH_VARARGS,
+            "Wait(time)\n"
+            "Runs the engine for a number of ticks, disallowing player input.\n"
+            "Unlike Delay, Wait causes entities to be processed, the tileset to be animated, and the map drawn."
+        },
+
+        { "GetTime",        (PyCFunction)std_gettime,           METH_NOARGS,
+            "GetTime()\n"
+            "Returns the number of ticks since the engine was started."
+        },
+
+        { "Random",         (PyCFunction)std_random,            METH_VARARGS,
+            "Random(min, max)\n"
+            "Returns a random integer less than or equal to min, and less than max.\n"
+            "ie.  min <= value < max"
+        },
 
         // Video
-        FUNCTION("ShowPage",            (PyCFunction)std_showpage),
-        FUNCTION("RGB",                 (PyCFunction)std_rgb),
-        FUNCTION("GetRGB",              (PyCFunction)std_getrgb),
-        //FUNCTION("PaletteMorph",        (PyCFunction)std_palettemorph),
+        { "ShowPage",       (PyCFunction)std_showpage,          METH_VARARGS,
+            "ShowPage()\n"
+            "Flips the back and front video buffers.  This must be called after the screen\n"
+            "has been completely drawn, or the scene will never be presented to the player.\n"
+            "This method is not guaranteed to preserve the contents of the screen, so it is\n"
+            "advised to dedraw the entire screen, instead of incrementally drawing."
+        },
+
+        { "RGB",            (PyCFunction)std_rgb,               METH_VARARGS,
+            "RGB(r, g, b[, a])\n"
+            "Creates a 32bpp colour value from the four colour levels passed.  If alpha is\n"
+            "omitted, it is assumed to be 255. (opaque)"
+        },
+
+        { "GetRGB",         (PyCFunction)std_getrgb,            METH_VARARGS,
+            "GetRGB(colour)\n"
+            "Returns a 4-tuple containing the red, blue, green, and alpha values of the colour\n"
+            "passed, respectively."
+        },
+
+        //{ "PaletteMorph", (PyCFunction)std_palettemorph,      METH_VARARGS },
 
         // Entity
-        FUNCTION("ProcessEntities",     (PyCFunction)std_processentities),
-        FUNCTION("SetCameraTarget",     (PyCFunction)std_setcameratarget),
-        FUNCTION1("GetCameraTarget",    (PyCFunction)std_getcameratarget),
-        FUNCTION("SetPlayer",           (PyCFunction)std_setplayer),
-        FUNCTION1("GetPlayer",          (PyCFunction)std_getplayer),
-        FUNCTION("EntityAt",            (PyCFunction)std_entityat),
+        { "ProcessEntities", (PyCFunction)std_processentities,  METH_VARARGS,
+            "ProcessEntities()\n"
+            "Performs 1/100th of a second of entity AI.  Calling this 100 times a second\n"
+            "will cause entities to move around as if the engine was in control."
+        },
 
-        FUNCTION("HookRetrace",         (PyCFunction)std_hookretrace),
-        FUNCTION("UnhookRetrace",       (PyCFunction)std_unhookretrace),
-        FUNCTION("HookTimer",           (PyCFunction)std_hooktimer),
-        FUNCTION("UnhookTimer",         (PyCFunction)std_unhooktimer),
+        { "SetCameraTarget", (PyCFunction)std_setcameratarget,  METH_VARARGS,
+            "SetCameraTarget(entity)\n"
+            "Sets the camera target to the entity specified.  If None is passed instead,\n"
+            "the camera remains stationary, and can be altered with the Map.xwin and map.ywin\n"
+            "properties."
+        },
+
+        { "GetCameraTarget", (PyCFunction)std_getcameratarget,  METH_NOARGS,
+            "GetCameraTarget()\n"
+            "Returns the entity that the camera is following, or None if it is free."
+        },
+
+        { "SetPlayer",      (PyCFunction)std_setplayer,         METH_VARARGS,
+            "SetPlayer(entity)\n"
+            "Sets the player entity to the entity passed.  The player entity is the entity\n"
+            "that moves according to user input.  Passing None instead unsets any player entity\n"
+            "that may have been previously set."
+        },
+
+        { "GetPlayer",      (PyCFunction)std_getplayer,         METH_NOARGS,
+            "GetPlayer(entity)\n"
+            "Returns the current player entity, or None if there isn't one."
+        },
+        { "EntityAt",       (PyCFunction)std_entityat,          METH_VARARGS,
+            "EntityAt(x, y, width, height)\n"
+            "If there is an entity within the rectangle passed, it is returned.\n"
+            "If not, then None is returned."
+        },
+
+        { "HookRetrace",    (PyCFunction)std_hookretrace,       METH_VARARGS,
+            "HookRetrace(function)\n"
+            "Adds the function to the retrace queue. (it will be called whenever the map is drawn,\n"
+            "whether by Map.Render or by other means)"
+        },
+
+        { "UnhookRetrace",  (PyCFunction)std_unhookretrace,     METH_VARARGS,
+            "UnhookRetrace([function])\n"
+            "Removes the function from the retrace queue if it is present.  If not, the call does\n"
+            "nothing.  If the argument is omitted, then the list is cleared in its entirety."
+        },
+
+        { "HookTimer",      (PyCFunction)std_hooktimer,         METH_VARARGS,
+            "HookTimer(function)\n"
+            "Adds the function to the timer queue. (the function will be called 100 times per second.\n"
+            "This feature should be used sparingly, as it will cause serious problems if the queue\n"
+            "cannot be executed in less than 1/100th of a second."
+        },
+        { "UnhookTimer",    (PyCFunction)std_unhooktimer,       METH_VARARGS,
+            "UnhookTimer([function])\n"
+            "Removes the function from the timer queue if it is present.  If not, the call does\n"
+            "nothing.  If the argument is omitted, then the list is cleared in its entirety."
+        },
 
         // Object constructors
-        FUNCTION("Image",               Script::Image::New),
-        FUNCTION("Sound",               Script::Sound::New),
-        FUNCTION("Font",                Script::Font::New),
-        FUNCTION("Entity",              Script::Entity::New),
-        FUNCTION("Canvas",              Script::Canvas::New),
+        { "Image",          Script::Image::New,                 METH_VARARGS },
+        { "Sound",          Script::Sound::New,                 METH_VARARGS },
+        { "Font",           Script::Font::New,                  METH_VARARGS },
+        { "Entity",         Script::Entity::New,                METH_VARARGS },
+        { "Canvas",         Script::Canvas::New,                METH_VARARGS },
         {    0    }
     };
 
-#undef FUNCTION
-#undef FUNCTION1
 #undef METHOD
 #undef METHOD1
 }
