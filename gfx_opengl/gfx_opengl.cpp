@@ -393,7 +393,7 @@ int EXPORT gfxGetPixel(handle img,int x,int y)
 
 bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
 {
-    if (hRenderdest==hScreen)
+    if (img==hScreen)
 	HardLine(x1,y1,x2,y2,colour);
     else
     {
@@ -405,8 +405,19 @@ bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
 
 bool EXPORT gfxRect(handle img,int x1,int y1,int x2,int y2,u32 colour,bool filled)
 {
-    if (hRenderdest==hScreen)
+    if (img==hScreen)
 	HardRect(x1,y1,x2,y2,colour,filled);
+    else
+    {
+        RGBA c(colour);
+
+        if (!c.a)   return true;
+        if (c.a==255)
+            CBlitter<Opaque>::DrawRect(img->pixels,x1,y1,x2,y2,c,filled);
+        else
+            CBlitter<Alpha>::DrawRect(img->pixels,x1,y1,x2,y2,c,filled);
+        img->bAltered=true;
+    }
     return true;
 }
 
@@ -417,7 +428,7 @@ bool EXPORT gfxEllipse(handle img,int cx,int cy,int rx,int ry,u32 colour,bool fi
 
 bool EXPORT gfxFlatPoly(handle img,int x[3],int y[3],u32 colour[3])
 {
-    if (hRenderdest==hScreen)
+    if (img==hScreen)
 	HardPoly(img,x,y,colour);
     return true;
 }

@@ -200,6 +200,8 @@ void CPixelMatrix::Resize(int x,int y)
     pData=pTemp;
     nWidth=x;
     nHeight=y;
+
+    SetClipRect(Rect(0,0,nWidth,nHeight));
 }
 
 void CPixelMatrix::SetClipRect(Rect& r)

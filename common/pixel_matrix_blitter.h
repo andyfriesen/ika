@@ -160,7 +160,7 @@ public:
 
     static void Blit(CPixelMatrix& src,CPixelMatrix& dest,int x,int y)
     {
-        const ::Rect& r=src.GetClipRect();
+        const Rect& r=src.GetClipRect();
 
         int xstart=r.left;
         int ystart=r.top;
@@ -205,7 +205,7 @@ public:
         ix=iy=0;
         x=cx; y=cy;
 
-        const ::Rect& srcclip=src.GetClipRect();
+        const Rect& srcclip=src.GetClipRect();
         
         xinc=((srcclip.Width())<<16)/w;
         yinc=((srcclip.Height())<<16)/h;
@@ -262,7 +262,7 @@ public:
 
     static inline void HLine(CPixelMatrix& img,int x1,int x2,int y,RGBA colour)
     {
-        const ::Rect& r=img.GetClipRect();
+        const Rect& r=img.GetClipRect();
 
         if (y<r.top || y>=r.bottom)
             return;
@@ -287,7 +287,7 @@ public:
 
     static inline void VLine(CPixelMatrix& img,int x,int y1,int y2,u32 colour)
     {
-        const ::Rect& r=img.GetClipRect();
+        const Rect& r=img.GetClipRect();
         
         if (x<r.left || x>=r.right) return;
         
@@ -310,7 +310,7 @@ public:
         }
     }
 
-    static void Rect(CPixelMatrix& img,int x1,int y1,int x2,int y2,RGBA colour)
+    static void DrawRect(CPixelMatrix& img,int x1,int y1,int x2,int y2,RGBA colour,bool filled)
     {
         if (filled)
         {
@@ -328,7 +328,7 @@ public:
             else
             {
                 HLine(img,x1,x2,y1,colour);
-                return true;
+                return;
             }
             
             if (abs(x1-x2)>1)
@@ -339,7 +339,7 @@ public:
             else
             {
                 VLine(img,x1,y1,y2,colour);
-                return true;
+                return;
             }
         }
     }
@@ -364,7 +364,7 @@ public:
             return;
         }
 
-        const ::Rect& r=img.GetClipRect();
+        const Rect& r=img.GetClipRect();
         
         // it's good to have these handy
         int cx1=r.left;
