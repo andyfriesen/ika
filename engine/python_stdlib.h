@@ -214,7 +214,7 @@ METHOD(std_hookretrace)
     }
     
     Py_INCREF(pFunc);
-    pEngine->pHookretrace.push_back(pFunc);
+    pEngine->pHookretrace.Add(pFunc);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -234,7 +234,7 @@ METHOD(std_unhookretrace)
         for (i=pEngine->pHookretrace.begin(); i!=pEngine->pHookretrace.end(); i++)
             Py_DECREF((PyObject*)*i);                                        // dereference
 
-        pEngine->pHookretrace.clear();
+        pEngine->pHookretrace.Clear();
     }
     else
     {    
@@ -245,7 +245,7 @@ METHOD(std_unhookretrace)
             if (*i==pFunc)
             {
                 Py_DECREF(pFunc);
-                pEngine->pHookretrace.remove(*i);
+                pEngine->pHookretrace.Remove(*i);
                 break;
             }
         }
@@ -268,7 +268,8 @@ METHOD(std_hooktimer)
     }
     
     Py_INCREF(pFunc);
-    pEngine->pHooktimer.push_back(pFunc);
+//    pEngine->pHooktimer.push_back(pFunc);
+    pEngine->pHooktimer.Add(pFunc);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -288,10 +289,9 @@ METHOD(std_unhooktimer)
         std::list<void*>::iterator i;
         
         for (i=pEngine->pHooktimer.begin(); i!=pEngine->pHooktimer.end(); i++)
-        {
             Py_DECREF((PyObject*)*i);                                    // dereference
-            pEngine->pHooktimer.remove(*i);                                // destroy
-        }
+
+        pEngine->pHooktimer.Clear();
     }
     else
     {
@@ -302,7 +302,8 @@ METHOD(std_unhooktimer)
             if (*i==pFunc)
             {
                 Py_DECREF(pFunc);
-                pEngine->pHooktimer.remove(*i);
+                //pEngine->pHooktimer.remove(*i);
+                pEngine->pHooktimer.Remove(*i);
                 break;
             }
         }

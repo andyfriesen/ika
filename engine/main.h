@@ -11,6 +11,7 @@
 #include "graph.h"
 #include "input.h"
 #include "timer.h"
+#include "hooklist.h"
 
 // engine components
 #include "script.h"
@@ -65,8 +66,10 @@ public:                                                                         
     // Odds and ends
     handle                          hRenderdest;                                    //!< the current rendering destination.  It's only needed here so the renderer knows how many tiles to draw. ;P
     void*                           pBindings[nControls];                           //!< key bindings (TODO: remove the arbitrary size)
-    std::list<void*>                pHookretrace;                                   //!< list of functions to be executed every retrace
-    std::list<void*>                pHooktimer;                                     //!< list of functions to be executed every tick
+//    std::list<void*>                pHookretrace;                                   //!< list of functions to be executed every retrace
+//    std::list<void*>                pHooktimer;                                     //!< list of functions to be executed every tick
+    HookList                        pHookretrace;
+    HookList                        pHooktimer;
     int                             nFrameskip;                                     //!< the map engine will skip no more than this amount of ticks per retrace
     
     // interface
@@ -93,8 +96,9 @@ public:                                                                         
     
     void      LoadMap(const char* filename);                                        //!< switches maps
     
-    void      HookTimer();                                                          //!< does junk to keep hooked scripts running at the proper rate
-    void      HookRetrace();                                                        //!< calls each hookretraced script exactly once (if applicable)
+    //void      HookTimer();                                                          //!< does junk to keep hooked scripts running at the proper rate
+    //void      HookRetrace();                                                        //!< calls each hookretraced script exactly once (if applicable)
+    void      DoHook(HookList& hooklist);                                               //!< Calls every function in the list, then flushes any pending adds/removals from said list
 
     void      Startup(HWND hwnd, HINSTANCE hinst);                                  //!< Inits the engine
     void      Shutdown();                                                           //!< deinits the engine

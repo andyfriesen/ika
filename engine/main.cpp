@@ -413,16 +413,17 @@ void CEngine::Render(const char* sTemprstring)
             RenderEntities();
             break;
         case 'R':
-            HookRetrace();
+            //HookRetrace();
+            DoHook(pHookretrace);
             break;
         }
         ++p;
     }
 }
 
-void CEngine::HookTimer()
+void CEngine::DoHook(HookList& hooklist)
 {
-    if (pHooktimer.empty())
+/*    if (pHooktimer.empty())
         return;
     
     std::list<void*>::iterator i;
@@ -433,9 +434,14 @@ void CEngine::HookTimer()
         // In case scripts are unhooked from within a hooked script.
         if (pHooktimer.size()==0)
             break;
-    }
-}
+    }*/
 
+    for (std::list<void*>::iterator i=hooklist.begin(); i!=hooklist.end(); i++)
+        script.ExecFunction(*i);
+
+    hooklist.Flush(); // handle any hook list alterations done within hooks.
+}
+/*
 void CEngine::HookRetrace()
 {
     if (pHookretrace.empty())
@@ -450,7 +456,7 @@ void CEngine::HookRetrace()
         if (pHookretrace.size()==0)
             break;
     }
-}
+}*/
 
 // ----------------------------------------- AI -------------------------------------------------
 
@@ -459,7 +465,8 @@ void CEngine::GameTick()
     CDEBUG("gametick");
     
     CheckKeyBindings();
-    HookTimer();
+    //HookTimer();
+    DoHook(pHooktimer);
     ProcessEntities();
 }
 

@@ -144,4 +144,10 @@ struct RGB
 //inline RGBA::RGBA(const BGRA& c) {	r=c.r; g=c.g; b=c.b; a=c.a;	}
 #pragma pack (pop)
 
+// kudos to kepler and aegis for this trick
+// fixes gay for scoping in VC6
+#ifdef MSVC
+//#   define for if (0); else for
+#endif
+
 #endif

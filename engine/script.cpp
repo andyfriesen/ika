@@ -77,11 +77,11 @@ void CScriptEngine::Shutdown()
     std::list<void*>::iterator i;
     for (i=pEngine->pHookretrace.begin(); i!=pEngine->pHookretrace.end(); i++)
         Py_XDECREF((PyObject*)*i);
-    pEngine->pHookretrace.clear();
+    pEngine->pHookretrace.Clear();
     
     for (i=pEngine->pHooktimer.begin(); i!=pEngine->pHooktimer.end(); i++)
         Py_XDECREF((PyObject*)*i);
-    pEngine->pHooktimer.clear();
+    pEngine->pHooktimer.Clear();
     
     Py_XDECREF(pEntitydict);
     Py_XDECREF(pCameratarget);

@@ -3,7 +3,7 @@
 #define MOVESCRIPTEDITOR_H
 
 #include <wx\wx.h>
-#include <vector>
+#include "types.h"
 
 class CCHRfile;
 class CSpriteSet;
