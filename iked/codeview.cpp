@@ -140,9 +140,10 @@ CCodeView::CCodeView(CMainWnd* parent,
     // Extra file menu options
     // the debug build generates a runtime warning from wx.  Ignore it.
     wxMenu* filemenu = menubar->Remove(0);
-    filemenu->Insert(2, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the script to disk."));
-    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesaveas, "Save &As", "Save the script under a new filename."));
-    filemenu->Insert(4, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the script window."));
+    filemenu->InsertSeparator(2);
+    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the script to disk."));
+    filemenu->Insert(4, new wxMenuItem(filemenu, id_filesaveas, "Save &As", "Save the script under a new filename."));
+    filemenu->Insert(5, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the script window."));
     menubar->Append(filemenu, "&File");
 
     wxMenu* editmenu = new wxMenu;

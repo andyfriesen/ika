@@ -8,66 +8,65 @@
 #include "graph.h"
 #include "spriteset.h"
 
-
 class CMovescriptEditor;
 
 class CSpriteSetView : public IDocView
 {
-    public:
+public:
 
-        CSpriteSetView(CMainWnd* parentwnd, const string& fname);
-        ~CSpriteSetView();
+    CSpriteSetView(CMainWnd* parentwnd, const string& fname);
+    CSpriteSetView(CMainWnd* parentwnd, int width, int height);
+    ~CSpriteSetView();
 
+    virtual void OnSave(wxCommandEvent& event);
+    void OnSaveAs(wxCommandEvent& event);
+    virtual void OnClose(wxCommandEvent& event);
 
-        virtual void OnSave(wxCommandEvent& event);
-        void OnSaveAs(wxCommandEvent& event);
-        virtual void OnClose(wxCommandEvent& event);
+    virtual const void* GetResource() const;
 
-        virtual const void* GetResource() const;
+private:
+    void OnPaint();
+public:
+    void Render();  // blech
+private:
+    void OnSize(wxSizeEvent& event);
+    void OnScroll(wxScrollWinEvent& event);
 
-        void OnPaint();
-        void Render();
-        void OnSize(wxSizeEvent& event);
-        void OnScroll(wxScrollWinEvent& event);
+    void OnLeftClick(wxMouseEvent& event);
+    void OnRightClick(wxMouseEvent& event);
 
-        void OnLeftClick(wxMouseEvent& event);
-        void OnRightClick(wxMouseEvent& event);
+    void OnEditFrame(wxCommandEvent& event);
 
-        void OnEditFrame(wxCommandEvent&);
+    void OnPreviousFrame(wxCommandEvent& event);
+    void OnNextFrame(wxCommandEvent& event);
 
-        void OnPreviousFrame(wxCommandEvent&);
-        void OnNextFrame(wxCommandEvent&);
+    void OnZoomIn(wxCommandEvent& event);
+    void OnZoomOut(wxCommandEvent& event);
+    void OnZoomNormal(wxCommandEvent& event);
 
-        void OnZoomIn(wxCommandEvent& event);
-        void OnZoomOut(wxCommandEvent& event);
-        void OnZoomNormal(wxCommandEvent& event);
+    void UpdateScrollbar();
 
-        void UpdateScrollbar();
-        //void HandleMouse(wxMouseEvent& event);
+    void OnShowMovescriptEditor(wxCommandEvent& event);
+    void OnImportFrames(wxCommandEvent& event);
 
-        void OnShowMovescriptEditor(wxCommandEvent& event);
+    void Init();
+    void InitMenu();
+    void InitAccelerators();
+    void SpritePos(int idx, int& x, int& y) const;
+    void Zoom(int nZoomscale);
 
+    CMainWnd*       pParent;
+    CGraphFrame*    pGraph;
+    CSpriteSet*     pSprite;
+    
+    int             nCurframe;
+    int             ywin;
+    int             nZoom;
 
-    private:
+    wxMenu*             pContextmenu;
+    CMovescriptEditor*  pMovescripteditor;
 
-        void InitMenu();
-        void InitAccelerators();
-        void SpritePos(int idx, int& x, int& y) const;
-        void Zoom(int nZoomscale);
-
-        CMainWnd*       pParent;
-        CGraphFrame*    pGraph;
-        CSpriteSet*     pSprite;
-        
-        int             nCurframe;
-        int             ywin;
-        int             nZoom;
-        string          sSpritename;
-
-        wxMenu*             pContextmenu;
-        CMovescriptEditor*  pMovescripteditor;
-
-        DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

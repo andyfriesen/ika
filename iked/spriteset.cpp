@@ -6,6 +6,12 @@ CSpriteSet::CSpriteSet() : pCHR(0)
 {
 }
 
+void CSpriteSet::New(int width, int height)
+{
+    CCHRfile* pNewchr = new CCHRfile;
+    pNewchr->New(width, height);
+}
+
 bool CSpriteSet::Load(const char* fname)
 {
     CCHRfile* pNewchr = new CCHRfile;

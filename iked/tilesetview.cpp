@@ -10,7 +10,12 @@ namespace
 {
     enum
     {
-        id_deletetile = 100,
+        id_filler = 100,
+
+        id_filesave,
+        id_filesaveas,
+        id_fileclose,
+        id_deletetile,
         id_inserttile,
         id_copytile,
         id_pasteinto,
@@ -30,18 +35,18 @@ namespace
     {
         DECLARE_EVENT_TABLE()
         
-        CTileSetView* pTilesetview;
+        CTileSetView* _parent;
     public:
-        CTileSetFrame(wxWindow* parent, CTileSetView* tilesetview)
+        CTileSetFrame(CTileSetView* parent)
             : CGraphFrame(parent)
-            , pTilesetview(tilesetview)
+            , _parent(parent)
         {}
 
         void OnPaint(wxPaintEvent& event)
         {
             wxPaintDC blah(this);
 
-            pTilesetview->Paint();
+            _parent->Paint();
         }
     };
 
@@ -79,12 +84,20 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd, const string& fname)
     , ywin(0)
     , zoom(16)
 {
-    pGraph = new CTileSetFrame(this, this); //new CGraphFrame(this);
+    pGraph = new CTileSetFrame(this);
     pGraph->SetSize(GetClientSize());
 
     pTileset = pParent->vsp.Load(fname);
 
     wxMenuBar* menubar = pParent->CreateBasicMenu();
+
+    wxMenu* filemenu = menubar->Remove(0);
+    filemenu->InsertSeparator(2);
+    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the tileset to disk."));
+    filemenu->Insert(4, new wxMenuItem(filemenu, id_filesaveas, "&Save As", "Save the tileset to disk under a new name."));
+    filemenu->Insert(5, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the tileset window."));
+    menubar->Append(filemenu, "&File");
+
     wxMenu* viewmenu = new wxMenu;
     viewmenu->Append(id_zoomnormal, "Zoom %&100", "");
     viewmenu->Append(id_zoomin, "Zoom &In\t+", "");

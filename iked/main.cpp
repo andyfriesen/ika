@@ -14,7 +14,9 @@
 #include "textview.h"
 #include "imageview.h"
 #include "spritesetview.h"
+
 #include "newmapdlg.h"
+#include "newspritedlg.h"
 
 #include <wx/xrc/xmlres.h>
 #include <wx/laywin.h>
@@ -57,16 +59,10 @@ BEGIN_EVENT_TABLE(CMainWnd, wxMDIParentFrame)
     EVT_MENU(CMainWnd::id_filenewproject, CMainWnd::NewProject)
     EVT_MENU(CMainWnd::id_filenewmap, CMainWnd::NewMap)
     EVT_MENU(CMainWnd::id_filenewscript, CMainWnd::NewScript)
+    EVT_MENU(CMainWnd::id_filenewsprite, CMainWnd::NewSprite)
     EVT_MENU(CMainWnd::id_fileopen, CMainWnd::OnOpen)
     EVT_MENU(CMainWnd::id_filesaveproject, CMainWnd::OnSaveProject)
     EVT_MENU(CMainWnd::id_filesaveprojectas, CMainWnd::OnSaveProjectAs)
-
-    // Add more toolbar buttons as iked becomes more functional
-    //   -- khross
-    EVT_MENU(-1, CMainWnd::OnToolLeftClick)
-    EVT_TOOL(CMainWnd::id_toolopen, CMainWnd::OnToolBarOpen)
-    EVT_TOOL(CMainWnd::id_toolnewscript, CMainWnd::OnToolBarNewScript)
-    EVT_TOOL(CMainWnd::id_toolnewmap, CMainWnd::OnToolBarNewMap)
 
     EVT_SIZE(CMainWnd::OnSize)
     EVT_CLOSE(CMainWnd::OnQuit)
@@ -84,7 +80,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     wxMenuBar* menu = CreateBasicMenu();
     SetMenuBar(menu);
 
-    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
+    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16));
 
     CreateStatusBar();
 
@@ -118,25 +114,8 @@ void CMainWnd::NewProject(wxCommandEvent& event)
 void CMainWnd::NewMap(wxCommandEvent& event)
 {
     NewMapDlg dlg(this);
-
-    int result = dlg.ShowModal();
-    if (result != wxID_OK)
-        return;
-
-    // Sanity check
-    if (dlg.width < 1 || dlg.height < 1)
-    {
-        wxMessageBox("Maps need to be at least one tile wide, and one tile high.", "", wxOK | wxCENTRE, this);
-        return;
-    }
-
-    if (!File::Exists(dlg.tilesetname.c_str()))
-    {
-        wxMessageBox(va("%s does not exist.", dlg.tilesetname.c_str()), "", wxOK | wxCENTER, this);
-        return;
-    }
-
-    OpenDocument(new CMapView(this, dlg.width, dlg.height, dlg.tilesetname));
+    if (dlg.ShowModal() == wxID_OK)
+        OpenDocument(new CMapView(this, dlg.width, dlg.height, dlg.tilesetname));
 }
 
 void CMainWnd::NewScript(wxCommandEvent& event)
@@ -145,6 +124,14 @@ void CMainWnd::NewScript(wxCommandEvent& event)
     
     pDocuments.insert(codeview);
     codeview->Activate();
+}
+
+void CMainWnd::NewSprite(wxCommandEvent& event)
+{
+    NewSpriteDlg dlg(this);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+    }
 }
 
 void CMainWnd::OnOpen(wxCommandEvent& event)
@@ -269,44 +256,6 @@ IDocView* CMainWnd::FindWindow(const void* rsrc) const
     return 0;
 }
 
-void CMainWnd::OnToolBarOpen(wxCommandEvent& event)
-{
-    wxToolBar* pToolbar = GetToolBar();
-    if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
-    OnOpen(event);
-}
-
-void CMainWnd::OnToolBarNewScript(wxCommandEvent& event)
-{
-    wxToolBar* pToolbar = GetToolBar();
-    if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolnewscript, !pToolbar->GetToolState(id_toolnewscript));
-    NewScript(event);
-}
-
-void CMainWnd::OnToolBarNewMap(wxCommandEvent& event)
-{
-    wxToolBar* pToolbar = GetToolBar();
-    if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
-    NewMap(event);
-}
-
-
-void CMainWnd::OnToolLeftClick(wxCommandEvent& event)
-// this handles the left click mouse event.
-{
-    switch (event.GetId())
-    {
-    case id_toolnewscript:  OnToolBarNewScript(event);  break;
-    case id_toolopen:       OnToolBarOpen(event);       break;
-    case id_toolnewmap:     OnToolBarNewMap(event);     break;
-    }
-
-    // etc.
-}
-
 void CMainWnd::OnSaveProject(wxCommandEvent& event)
 {
     if (!_project->GetFileName().empty())
@@ -349,7 +298,8 @@ wxMenuBar* CMainWnd::CreateBasicMenu()
     filenew->Append(id_filenewproject, "&Project", "Create an empty project workspace.");
     filenew->AppendSeparator();
     filenew->Append(id_filenewmap, "&Map", "Create an empty map.");
-    filenew->Append(id_filenewscript, "New &Script", "Create an empty Python script.");
+    filenew->Append(id_filenewscript, "&Script", "Create an empty Python script.");
+    filenew->Append(id_filenewsprite, "S&prite", "Create a new sprite.");
 
     filemenu->Append(id_filenewmap, "&New", filenew, "Create a new document.");  
     filemenu->Append(id_fileopen, "&Open", "Open an existing document.");
@@ -387,7 +337,7 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
     
 
     pToolbar->AddTool(
-        id_toolopen,
+        id_fileopen,
         wxIcon("foldericon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
         wxNullBitmap,
         false,
@@ -399,7 +349,17 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
     pToolbar->AddSeparator();
 
     pToolbar->AddTool(
-        id_toolnewscript,
+        id_filenewmap,
+        wxIcon("mapicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
+        wxNullBitmap,
+        false,
+        -1, -1,
+        NULL,
+        "Create map",
+        "Create a new map.");
+
+    pToolbar->AddTool(
+        id_filenewscript,
         wxIcon("scripticon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
         wxNullBitmap,
         false,
@@ -408,16 +368,15 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
         "Create source",
         "Create a new source document.");
 
-    // doesn't do anything yet.
     pToolbar->AddTool(
-        id_toolnewmap,
-        wxIcon("mapicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
+        id_filenewsprite,
+        wxIcon("spriteicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
         wxNullBitmap,
         false,
         -1, -1,
-        NULL,
-        "Create map",
-        "Create a new map.");
+        0,
+        "Create sprite",
+        "Create a new sprite.");
 
     //pToolbar->Realize();
     return pToolbar;

@@ -59,15 +59,10 @@ public:
         id_filenewproject,
         id_filenewmap,
         id_filenewscript,
+        id_filenewsprite,
         id_fileopen,
         id_filesaveproject,
         id_filesaveprojectas,
-
-        id_tool,                // Have to keep this low.  IDs above 100 are reserved for individual application windows.  (though they may overlap with each other, they must not overlap with these)
-        id_toolnewscript,
-        id_toolnewmap,
-        id_toolopen
-        
     };
     
     CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
@@ -78,6 +73,7 @@ public:
     void NewProject(wxCommandEvent& event);
     void NewMap(wxCommandEvent& event);
     void NewScript(wxCommandEvent& event);
+    void NewSprite(wxCommandEvent& event);
     void OnOpen(wxCommandEvent& event);
     void OnSize(wxSizeEvent& event);
     void OnQuit(wxCloseEvent& event);
@@ -86,11 +82,6 @@ public:
     void OpenDocument(IDocView* newwnd);
 
     IDocView* FindWindow(const void* rsrc) const;
-
-    void OnToolBarOpen(wxCommandEvent& event);
-    void OnToolBarNewScript(wxCommandEvent& event);
-    void OnToolBarNewMap(wxCommandEvent& event);
-    void OnToolLeftClick(wxCommandEvent& event);
 
     void OnSaveProject(wxCommandEvent& event);
     void OnSaveProjectAs(wxCommandEvent& event);

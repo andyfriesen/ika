@@ -177,6 +177,9 @@
 				RelativePath="newmapdlg.cpp">
 			</File>
 			<File
+				RelativePath="newspritedlg.cpp">
+			</File>
+			<File
 				RelativePath=".\projectview.cpp">
 			</File>
 			<File
@@ -248,6 +251,9 @@
 			</File>
 			<File
 				RelativePath="newmapdlg.h">
+			</File>
+			<File
+				RelativePath="newspritedlg.h">
 			</File>
 			<File
 				RelativePath=".\projectview.h">

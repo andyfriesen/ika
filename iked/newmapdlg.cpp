@@ -1,5 +1,9 @@
+#include <wx/wx.h>
 #include <wx/xrc/xmlres.h>
+
 #include "newmapdlg.h"
+#include "fileio.h"
+#include "misc.h"
 
 BEGIN_EVENT_TABLE(NewMapDlg, wxDialog)
     EVT_BUTTON(wxID_OK, NewMapDlg::OnOK)
@@ -17,7 +21,13 @@ void NewMapDlg::OnOK(wxCommandEvent& event)
     width         = atoi(XRCCTRL(*this, "edit_width", wxTextCtrl)->GetValue().c_str());
     height        = atoi(XRCCTRL(*this, "edit_height", wxTextCtrl)->GetValue().c_str()); 
     tilesetname   = XRCCTRL(*this, "edit_tileset", wxTextCtrl)->GetValue().c_str();
-    wxDialog::OnOK(event);
+
+    if (width < 0 || height < 0)
+        wxMessageBox("Width and height must be at least one pixel.", "Error", wxOK | wxCENTER, this);
+    else if (!File::Exists(tilesetname))
+        wxMessageBox(va("%s does not exist!", tilesetname.c_str()), "Error", wxOK | wxCENTER, this);
+    else
+        wxDialog::OnOK(event);
 }
 
 void NewMapDlg::OnBrowse(wxCommandEvent& event)

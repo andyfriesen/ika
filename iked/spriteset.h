@@ -16,6 +16,7 @@ public:
 
     CSpriteSet();
 
+    void New(int width, int height);
     bool Load(const char* fname);
     bool Save(const char* fname);
 

@@ -222,9 +222,10 @@ void CMapView::InitMenu()
     wxMenuBar* menubar = pParent->CreateBasicMenu();
 
     wxMenu* filemenu = menubar->Remove(0);
-    filemenu->Insert(2, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the map to disk."));
-    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesaveas, "Save &As", "Save the map under a new filename."));
-    filemenu->Insert(4, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the map view."));
+    filemenu->InsertSeparator(2);
+    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the map to disk."));
+    filemenu->Insert(4, new wxMenuItem(filemenu, id_filesaveas, "Save &As", "Save the map under a new filename."));
+    filemenu->Insert(5, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the map view."));
     menubar->Append(filemenu, "&File");
 
     //--
@@ -405,10 +406,25 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
     if (result == wxID_CANCEL)
         return;
 
+    std::string oldname(name);
+
     name = dlg.GetPath().c_str();
     SetTitle(name.c_str());
 
     OnSave(event);
+
+    if (!Path::Compare(name, oldname))
+    {
+        /* This bit is important.
+         * iked refcounts everything based on filename.
+         * we need to do this to make sure that the integrity is maintained.
+         */
+        pMap->Load(oldname.c_str());        // If anybody else is looking at this map, they'll get the right one. (unlikely in the case of maps)
+        if (!pParent->map.Release(pMap))
+            delete pMap;                    // We let go of it. (one way or the other)
+
+        pMap = pParent->map.Load(name);     // Then we get the one we just saved.
+    }
 }
 
 

@@ -25,7 +25,7 @@ private:
         Resource(const string& s="", T* d = 0) : sFilename(s), nRefcount(1), pData(d) {}
     };
 
-    typedef std::list < Resource> ResourceList;
+    typedef std::list <Resource> ResourceList;
 
     ResourceList    rsrc;
 
@@ -89,7 +89,7 @@ public:
         }
     }
 
-    void Release(T* data)
+    bool Release(T* data)
     {
         for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
         {
@@ -107,12 +107,11 @@ public:
                 else
                     Log::Write("Decref       %s", i->sFilename.c_str());
 
-                return;
+                return true;
             }
         }
 
-        Log::Write("Attempt to deallocate unallocated resource! %8x", data);
-        // !!!
+        return false;
     }
 
     ~CController()

@@ -62,9 +62,10 @@ CFontView::CFontView(CMainWnd* parentwnd, const string& fname)
 
     wxMenuBar* menubar = pParent->CreateBasicMenu();
     wxMenu* filemenu = menubar->Remove(0);
-    filemenu->Insert(2, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the font to disk."));
-    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesaveas, "Save &As", "Save the font under a new filename."));
-    filemenu->Insert(4, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the font window."));
+    filemenu->InsertSeparator(2);
+    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the font to disk."));
+    filemenu->Insert(4, new wxMenuItem(filemenu, id_filesaveas, "Save &As", "Save the font under a new filename."));
+    filemenu->Insert(5, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the font window."));
     menubar->Append(filemenu, "&File");
 
     wxMenu* optionsmenu = new wxMenu;

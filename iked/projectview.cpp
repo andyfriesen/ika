@@ -68,7 +68,7 @@ ProjectView::ProjectView(CMainWnd* parent, const wxPoint& pos, const wxSize& siz
     _changed = false;
 
     // Icons
-    const char* names[] = { "foldericon", "folderopenicon", "scripticon", "vspicon", "fonticon", "mapicon", "spriteicon"  };
+    const char* names[] = { "appicon", "foldericon", "folderopenicon", "scripticon", "vspicon", "fonticon", "mapicon", "spriteicon"  };
     const int nameCount = sizeof names / sizeof (char*);
 
     _imageList = new wxImageList(16, 16, true);
@@ -269,7 +269,7 @@ wxTreeItemId ProjectView::AddFolder(const wxTreeItemId& parentid, const char* na
 {
     _changed = true;
 
-    return AppendItem(parentid, name, 0, 1, new Leaf( name, t_folder));
+    return AppendItem(parentid, name, 1, 2, new Leaf( name, t_folder));
 }
 
 wxTreeItemId ProjectView::AddItem(const wxTreeItemId& parentid, const string& name, const string& fname)
@@ -278,11 +278,11 @@ wxTreeItemId ProjectView::AddItem(const wxTreeItemId& parentid, const string& na
     int hIcon;
     switch (t)
     {
-    case t_script:  hIcon = 2;  break;
-    case t_vsp:     hIcon = 3;  break;
-    case t_font:    hIcon = 4;  break;
-    case t_map:     hIcon = 5;  break;
-    case t_chr:     hIcon = 6;  break;
+    case t_script:  hIcon = 3;  break;
+    case t_vsp:     hIcon = 4;  break;
+    case t_font:    hIcon = 5;  break;
+    case t_map:     hIcon = 6;  break;
+    case t_chr:     hIcon = 7;  break;
     default:        hIcon = -1; break;
     }
 
@@ -378,7 +378,7 @@ void ProjectView::Load(const std::string& fname)
                     wxTreeItemId id;
 
                     if (!tree->GetRootItem().IsOk())
-                        id = tree->AddRoot(name.c_str(), -1, -1, new Leaf(name.c_str(), t_folder));
+                        id = tree->AddRoot(name.c_str(), 0, 0, new Leaf(name.c_str(), t_folder));
                     else
                         id = tree->AddFolder(parentid, name.c_str());
 
@@ -419,7 +419,7 @@ void ProjectView::New()
 {
     DeleteAllItems();
 
-    wxTreeItemId root = AddRoot("Project", -1, -1, new Leaf("Project", t_folder));
+    wxTreeItemId root = AddRoot("Project", 0, 0, new Leaf("Project", t_folder));
     // default folders
     AddFolder(root, "Scripts");
     AddFolder(root, "Maps");
