@@ -151,8 +151,8 @@ class MapClip                                               // a chunk of map (t
     friend class Map;
 private:
     int             nLayers;
-    vector<u32*> pData;                                     // info on any tile layers we've grabbed up
-    vector<bool> bUsed;                                     // true if the specified layer has valid tile data
+    vector<u32*>    pData;                                  // info on any tile layers we've grabbed up
+    vector<bool>    bUsed;                                  // true if the specified layer has valid tile data
     char*           pObstruct;                              // obstruction data
     char*           pZone;                                  // zone data
     
@@ -245,10 +245,12 @@ public:
     int  CountUsedZones(void);
     void SetZone(int x,int y,int z);                        // Sets the zone at the specified tile position
     int  GetZone(int x,int y);                              // returns the zone at the specified tile position
-    void GetZoneInfo(SMapZone& info, int zonenum);          // fills info with information about the specified zone
+    /*void GetZoneInfo(SMapZone& info, int zonenum);          // fills info with information about the specified zone
+    SMapZone& GetZoneInfo(int zonenum);
     void SetZoneInfo(const SMapZone& newdat,int zonenum);   // sets the specified zone's properties based on newdat
     inline int NumZones() const                             // returns the number of used zones
-    { return zoneinfo.size(); }
+    { return zoneinfo.size(); }*/
+    std::vector<SMapZone>& Zones() { return zoneinfo; }
     
     int  EntityAt(int x,int y);                             // returns the index of the entity at the specified coords, -1 if no entity is there
 //    void GetEntInfo(SMapEntity& info,int entidx);           // fills info with information about the specified entity

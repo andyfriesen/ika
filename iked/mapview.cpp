@@ -9,6 +9,7 @@
 #include "log.h"
 #include "layervisibilitycontrol.h"
 #include "entityeditor.h"
+#include "zoneeditor.h"
 #include "tilesetview.h"
 #include "vsp.h"
 #include <gl\glu.h>
@@ -142,6 +143,7 @@ BEGIN_EVENT_TABLE(CMapView, wxMDIChildFrame)
     EVT_MENU(CMapView::id_zoomout4x, CMapView::OnZoomOut4x)
 
     EVT_MENU(CMapView::id_mapentities, CMapView::OnShowEntityEditor)
+    EVT_MENU(CMapView::id_mapzones, CMapView::OnShowZoneEditor)
     EVT_MENU(CMapView::id_vsp, CMapView::OnShowVSP)
 
     EVT_MENU(CMapView::id_filesave, CMapView::OnSave)
@@ -212,6 +214,7 @@ CMapView::CMapView(CMainWnd* parent, const string& name)
     _selection = Rect(5,2,8,12);
 
     pEntityeditor = new CEntityEditor(this, pMap);
+    _zoneeditor = new ZoneEditor(this, pMap);
 
     Show();
 }
@@ -302,6 +305,7 @@ void CMapView::InitMenu()
 
     mapmenu->Append(id_vsp, "&VSP");
     mapmenu->Append(id_mapentities, "&Entities...");
+    mapmenu->Append(id_mapzones, "&Zones...");
 
     menubar->Append(mapmenu, "&Map");
 
@@ -419,6 +423,11 @@ void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(16-nZoom); }  // >:D
 void CMapView::OnShowEntityEditor(wxCommandEvent& event)
 {
     pEntityeditor->Show(true);
+}
+
+void CMapView::OnShowZoneEditor(wxCommandEvent&)
+{
+    _zoneeditor->Show(true);
 }
 
 void CMapView::OnShowVSP(wxCommandEvent& event)
@@ -571,7 +580,7 @@ void CMapView::Render()
     if (nLayertoggle[lay_zone])
         RenderInfoLayer(lay_zone);
  
-    RenderSelectionRect();
+//    RenderSelectionRect();
 }
 
 typedef std::pair<SMapEntity*, CSpriteSet*> EntSpritePair;

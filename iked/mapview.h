@@ -27,6 +27,7 @@ class CTileSet;
 class CSpriteSet;
 class CLayerVisibilityControl;
 class CEntityEditor;
+class ZoneEditor;
 
 class wxSashLayoutWindow;
 class wxCheckListBox;
@@ -51,6 +52,7 @@ class CMapView : public IDocView
         id_fileclose,
 
         id_mapentities,
+        id_mapzones,
         id_vsp
     };
 
@@ -87,6 +89,7 @@ private:
 
 protected:
     CEntityEditor*      pEntityeditor;
+    ZoneEditor*         _zoneeditor;
 private:
 
     Map*                pMap;
@@ -122,6 +125,7 @@ public:
     void OnZoomNormal(wxCommandEvent& event);
 
     void OnShowEntityEditor(wxCommandEvent& event);
+    void OnShowZoneEditor(wxCommandEvent& event);
     void OnShowVSP(wxCommandEvent& event);
 
     void OnClose();

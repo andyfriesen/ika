@@ -541,7 +541,6 @@ void CEngine::TestActivate(const CEntity& player)
     CDEBUG("testactivate");
     static int    nOldtx = -1;
     static int    nOldty = -1;
-    SMapZone zone;
     CSprite& sprite = *player.pSprite;
     
     int tx = (player.x + sprite.nHotw / 2) / tiles->Width();
@@ -552,7 +551,7 @@ void CEngine::TestActivate(const CEntity& player)
     if ((tx != nOldtx || ty != nOldty) && n)                        // the player is not on the same zone it was before, check for activation
     {
         nOldtx = tx; nOldty = ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
-        map.GetZoneInfo(zone, map.GetZone(tx, ty));
+        const SMapZone& zone = map.Zones()[map.GetZone(tx, ty)];
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
         {
             script.CallEvent(zone.sActscript.c_str());
@@ -591,7 +590,7 @@ void CEngine::TestActivate(const CEntity& player)
     }
     
     // Activating a zone?
-    map.GetZoneInfo(zone, map.GetZone(tx / tiles->Width(), ty / tiles->Height()));
+    const SMapZone& zone = map.Zones()[map.GetZone(tx / tiles->Width(), ty / tiles->Height())];
     
     if (zone.bAdjacentactivation)
     {

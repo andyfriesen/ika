@@ -733,9 +733,9 @@ bool Map::Save(const char* fname)
     f.WriteCompressed(pObstruct,nWidth*nHeight*sizeof(u8));
     f.WriteCompressed(pZone,nWidth*nHeight*sizeof(u32));
     
-    f.Write(NumZones());
+    f.Write(zoneinfo.size());
     
-    for (int i=0; i<NumZones(); i++)
+    for (int i=0; i<zoneinfo.size(); i++)
     {
         f.WriteString(zoneinfo[i].sName.c_str());
         f.WriteString(zoneinfo[i].sDescription.c_str());
@@ -961,32 +961,6 @@ int  Map::GetZone(int x,int y)
     if (y<0 || y>=nHeight) return false; // bounds checking
     
     return pZone[y*nWidth+x];
-}
-
-void Map::GetZoneInfo(SMapZone& info,int zonenum)
-{
-    if (zonenum>=0 && zonenum<zoneinfo.size())
-        info=zoneinfo[zonenum];
-    else
-    {
-        SMapZone dummy;
-        info=dummy;
-    }
-}
-
-void Map::SetZoneInfo(const SMapZone& info,int zonenum)
-{
-    if (zonenum>=0 && zonenum<zoneinfo.size())
-        zoneinfo[zonenum]=info;
-    if (zonenum>=zoneinfo.size() && 
-            (
-                info.sName!="" ||
-                info.sActscript!="" ||
-                info.sDescription!="" ||
-                info.sEntactscript!=""
-            )
-        )
-        zoneinfo.push_back(info);
 }
 
 int Map::EntityAt(int x,int y)

@@ -12,14 +12,11 @@ BEGIN_EVENT_TABLE(CEntityEditor, wxDialog)
 END_EVENT_TABLE()
 
 CEntityEditor::CEntityEditor(CMapView* parent, Map* m)
-: wxDialog((wxWindow*)parent, -1, "Entities", wxDefaultPosition, wxSize(600, 285))
+    : wxDialog((wxWindow*)parent, -1, "Entities", wxDefaultPosition, wxSize(600, 285))
+    , pParent(parent)
+    , pMap(m)
 {
-    pParent=parent;
-
-    pMap=m;
-
     InitControls();
-
     UpdateList();
 }
 

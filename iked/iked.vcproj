@@ -190,6 +190,9 @@
 			<File
 				RelativePath=".\tilesetview.cpp">
 			</File>
+			<File
+				RelativePath="zoneeditor.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Headers"
@@ -253,6 +256,9 @@
 			</File>
 			<File
 				RelativePath=".\tilesetview.h">
+			</File>
+			<File
+				RelativePath="zoneeditor.h">
 			</File>
 		</Filter>
 		<Filter
