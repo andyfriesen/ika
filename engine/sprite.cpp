@@ -72,15 +72,8 @@ CSprite* CSpriteController::Load(const std::string& fname, Video::Driver* video)
 
     // Not already loaded, we'll have to do that now.
     CRefCountedSprite* s;
-    try
-    {
-        s=new CRefCountedSprite(fname, video);
-    }
-    catch (std::runtime_error)
-    {
-        return 0;
-    }
-
+    s=new CRefCountedSprite(fname, video);
+    
     s->nRefcount=1;
     s->sFilename=fname;
 
