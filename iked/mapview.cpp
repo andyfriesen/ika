@@ -36,7 +36,37 @@
 
 namespace
 {
-    // wxSashLayoutWindow tweak that passes scroll events to its parent.
+    enum
+    {
+        id_filler = 100,
+
+        // Command IDs
+        id_zoomin,
+        id_zoomout,
+        id_zoomnormal,
+        id_zoomin2x,
+        id_zoomin4x,
+        id_zoomout2x,
+        id_zoomout4x,
+
+        id_filesave,
+        id_filesaveas,
+        id_fileclose,
+
+        id_goprevtile,
+        id_gonexttile,
+        id_mapentities,
+        id_mapzones,
+        id_tileset,
+        id_script,
+
+        id_movelayerup,
+        id_movelayerdown,
+        id_deletelayer,
+        id_newlayer,
+    };
+
+    // wxSashLayoutWindow tweak that passes scroll and command events to its parent.
     class CMapSash : public wxSashLayoutWindow
     {
     public:
@@ -81,12 +111,16 @@ namespace
         void OnScroll(wxScrollWinEvent& event)
         {
             ((CMapView*)GetParent())->OnScroll(event);
-           
         }
 
         void OnMouseEvent(wxMouseEvent& event)
         {
             wxPostEvent(GetParent(), event);
+        }
+
+        void OnCommand(wxCommandEvent& event)
+        {
+            GetParent()->ProcessEvent(event);
         }
 
         DECLARE_EVENT_TABLE()
@@ -103,6 +137,8 @@ namespace
         EVT_SCROLLWIN_PAGEDOWN(CMapSash::ScrollPageDown)
         EVT_SCROLLWIN_THUMBTRACK(CMapSash::OnScroll)
         EVT_SCROLLWIN_THUMBRELEASE(CMapSash::OnScroll)
+
+        EVT_COMMAND_RANGE(id_filler, id_filler + 100, wxEVT_COMMAND_BUTTON_CLICKED, CMapSash::OnCommand)
     END_EVENT_TABLE()
 
     class CMapFrame : public CGraphFrame
@@ -127,32 +163,58 @@ namespace
         EVT_PAINT(CMapFrame::OnPaint)
     END_EVENT_TABLE()
 
-
-    enum
+    class LayerToolBar : public wxPanel
     {
-        id_zoomin = 100,
-        id_zoomout,
-        id_zoomnormal,
-        id_zoomin2x,
-        id_zoomin4x,
-        id_zoomout2x,
-        id_zoomout4x,
+        CMapView* _mapView;
+    public:
+        LayerToolBar(wxWindow* parent, CMapView* mapview)
+            : wxPanel(parent)
+            , _mapView(mapview)
+        {
+            struct {
+                const char* label;
+                int id;
+                const char* tooltip;
+            } buttons[] =
+            {
+                { "^", id_movelayerup, "Move the layer up in the render order." },
+                { "v", id_movelayerdown, "Move the layer down in the render order." },
+                { "x", id_deletelayer, "Remove the layer from the map." },
+                { "*", id_newlayer, "Create a new layer." }
+            };
 
-        id_filesave,
-        id_filesaveas,
-        id_fileclose,
+            wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 
-        id_goprevtile,
-        id_gonexttile,
-        id_mapentities,
-        id_mapzones,
-        id_newlayer,
-        id_tileset,
-        id_script,
+            for (int i = 0; i < sizeof buttons / sizeof buttons[0]; i++)
+            {
+                wxButton* b = new wxButton(this, buttons[i].id, buttons[i].label, wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT);
+                b->SetToolTip(buttons[i].tooltip);
+                sizer->Add(b, 0, wxALL | wxEXPAND);
+            }
 
-        id_movelayerup,
-        id_movelayerdown,
+            SetSizer(sizer);
+            sizer->Fit(this);
+        }
+
+        // ARGH
+#define MAKE_STUPID_RELAY_THING(name) void name(wxCommandEvent& event) { _mapView->name(event); }
+
+        MAKE_STUPID_RELAY_THING(OnNewLayer)
+        MAKE_STUPID_RELAY_THING(OnDeleteLayer)
+        MAKE_STUPID_RELAY_THING(OnMoveLayerUp)
+        MAKE_STUPID_RELAY_THING(OnMoveLayerDown)
+
+#undef MAKE_STUPID_RELAY_THING
+
+        DECLARE_EVENT_TABLE()
     };
+
+    BEGIN_EVENT_TABLE(LayerToolBar, wxPanel)
+        EVT_BUTTON(id_newlayer, LayerToolBar::OnNewLayer)
+        EVT_BUTTON(id_deletelayer, LayerToolBar::OnDeleteLayer)
+        EVT_BUTTON(id_movelayerdown, LayerToolBar::OnMoveLayerDown)
+        EVT_BUTTON(id_movelayerup, LayerToolBar::OnMoveLayerUp)
+    END_EVENT_TABLE()
 };
 
 //-------------------------------------------------------------------------------------
@@ -288,22 +350,8 @@ void CMapView::Init()
     wxPanel* panel = new wxPanel(pLeftbar);
 
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
-        wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 
-/*          
-            //It'd be sweet if this worked.
-
-            wxToolBar* tb = new wxToolBar(panel, -1);
-            tb->AddTool(id_movelayerup, wxIcon("mapicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16), wxNullBitmap, false, -1, -1, 0, "Blah", "blah blah");
-            tb->AddTool(id_movelayerdown, wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16));
-            SetToolBar(tb);
-*/
-
-            sizer->Add(new wxButton(panel, id_movelayerup, "^", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), 0, wxALL);
-            sizer->Add(new wxButton(panel, id_movelayerdown, "v", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), 0, wxALL);
-
-        mainSizer->Add(sizer, 0, wxALIGN_CENTER);
-    
+        mainSizer->Add(new LayerToolBar(panel, this), 0, wxALL);
         pLayerlist = new CLayerVisibilityControl(panel, -1, this);
         mainSizer->Add(pLayerlist, 1, wxALL | wxEXPAND);
 
@@ -344,8 +392,8 @@ void CMapView::Init()
 
     // --
 
-    pRightbar->SetScrollbar(wxVERTICAL, 0, w, pMap->Height()* pTileset->Height());
-    pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, pMap->Width()* pTileset->Width());
+    pRightbar->SetScrollbar(wxVERTICAL,   0, w, pMap->Height() * pTileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, pMap->Width()  * pTileset->Width());
     xwin = ywin = 0;
 
     UpdateLayerList();
@@ -353,12 +401,10 @@ void CMapView::Init()
     InitMenu();
 
     nCurlayer = 0;
-    //csrmode = mode_copy;
     csrmode = mode_normal;
-    _selection = Rect(5, 2, 8, 12);
 
-    pEntityeditor = new CEntityEditor(this, pMap);
-    _zoneeditor = new ZoneEditor(this, pMap);
+    _entityEditor = new CEntityEditor(this, pMap);
+    _zoneEditor   = new ZoneEditor(this, pMap);
 
     Show();
     SetFocus();
@@ -515,30 +561,61 @@ void CMapView::Zoom(int nZoomscale)
     Render();   pGraph->ShowPage();
 }
 
-void CMapView::OnZoomIn(wxCommandEvent& event)    { Zoom(1);  }
-void CMapView::OnZoomOut(wxCommandEvent& event)   { Zoom(-1); }
-void CMapView::OnZoomIn2x(wxCommandEvent& event)  { Zoom(2);  }
-void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
-void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
-void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
-void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(pGraph->Zoom() - 16); }  // >:D
+void CMapView::OnZoomIn(wxCommandEvent&)    { Zoom(1);  }
+void CMapView::OnZoomOut(wxCommandEvent&)   { Zoom(-1); }
+void CMapView::OnZoomIn2x(wxCommandEvent&)  { Zoom(2);  }
+void CMapView::OnZoomOut2x(wxCommandEvent&) { Zoom(-2); }
+void CMapView::OnZoomIn4x(wxCommandEvent&)  { Zoom(4);  }
+void CMapView::OnZoomOut4x(wxCommandEvent&) { Zoom(-4); }
+void CMapView::OnZoomNormal(wxCommandEvent&){ Zoom(pGraph->Zoom() - 16); }  // >:D
 
-void CMapView::OnShowEntityEditor(wxCommandEvent& event)
+void CMapView::OnShowEntityEditor(wxCommandEvent&)
 {
-    pEntityeditor->Show(true);
+    _entityEditor->Show(true);
 }
 
 void CMapView::OnShowZoneEditor(wxCommandEvent&)
 {
-    _zoneeditor->Show(true);
+    _zoneEditor->Show(true);
 }
 
-void CMapView::OnShowVSP(wxCommandEvent& event)
+void CMapView::OnShowVSP(wxCommandEvent&)
 {
     pParent->Open(pTileset->GetVSP().Name());
 }
 
-void CMapView::OnNewLayer(wxCommandEvent& event)
+void CMapView::OnShowScript(wxCommandEvent&)
+{
+    pParent->Open(Path::ReplaceExtension(name, "py"));
+}
+
+void CMapView::OnMoveLayerUp(wxCommandEvent&)
+{
+    
+}
+
+void CMapView::OnMoveLayerDown(wxCommandEvent&)
+{
+}
+
+void CMapView::OnDeleteLayer(wxCommandEvent&)
+{
+    int result = wxMessageBox("Are you sure you want to delete this layer?\nThis cannot be undone!", "You sure?", wxYES_NO | wxCENTRE, this);
+    if (result == wxYES)
+    {
+        // Find any reference to the layer in the render string, and annihilate it.
+        char c = '0' + nCurlayer;
+        std::string s = pMap->GetRString();
+        while (int p = s.find(c) != std::string::npos)
+            s.erase(p);
+        pMap->SetRString(s);
+
+        pMap->DeleteLayer(nCurlayer);
+        UpdateLayerList();
+    }
+}
+
+void CMapView::OnNewLayer(wxCommandEvent&)
 {
     if (pMap->NumLayers() < 10)
     {
@@ -547,11 +624,8 @@ void CMapView::OnNewLayer(wxCommandEvent& event)
         pMap->SetRString(s + (char)('0' + pMap->NumLayers()));
         UpdateLayerList();
     }
-}
-
-void CMapView::OnShowScript(wxCommandEvent& event)
-{
-    pParent->Open(Path::ReplaceExtension(name, "py"));
+    else
+        wxMessageBox("ika can only handle 10 layers right now.", "Error", wxOK | wxCENTER, this);
 }
 
 //------------------------------------------------------------
@@ -708,8 +782,8 @@ void CMapView::HandleMouseWheel(wxMouseEvent& event)
     }
     else
     {
-        if (delta > 0)  GoNextTile(event);
-        else            GoPrevTile(event);
+        if (delta > 0)  GoPrevTile(event);
+        else            GoNextTile(event);
     }
 }
 

@@ -53,6 +53,13 @@ void CScriptEngine::Init(CEngine* p)
     PyModule_AddIntConstant(module, "Matte", 1);
     PyModule_AddIntConstant(module, "AlphaBlend", 2);
 
+    PyModule_AddIntConstant(module, "nothing", mc_nothing);
+    PyModule_AddIntConstant(module, "wander", mc_wander);
+    PyModule_AddIntConstant(module, "wanderrect", mc_wanderrect);
+    PyModule_AddIntConstant(module, "wanderzone", mc_wanderzone);
+    PyModule_AddIntConstant(module, "scripted", mc_script);
+    PyModule_AddIntConstant(module, "chase", mc_chase);
+
     Py_INCREF(&Script::Image::type);    PyModule_AddObject(module, "Image", (PyObject*)&Script::Image::type);
     Py_INCREF(&Script::Entity::type);   PyModule_AddObject(module, "Entity",(PyObject*)&Script::Entity::type);
     Py_INCREF(&Script::Sound::type);    PyModule_AddObject(module, "Sound", (PyObject*)&Script::Sound::type);

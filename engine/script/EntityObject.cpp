@@ -82,10 +82,16 @@ namespace Script
             GET(HotY)               { return PyInt_FromLong(self->ent->pSprite->nHoty); }
             GET(HotWidth)           { return PyInt_FromLong(self->ent->pSprite->nHotw); }
             GET(HotHeight)          { return PyInt_FromLong(self->ent->pSprite->nHoth); }
+            GET(MovePattern)        { return PyInt_FromLong(self->ent->movecode);   }
             SET(X)                  { self->ent->x = PyInt_AsLong(value); return 0; }
             SET(Y)                  { self->ent->y = PyInt_AsLong(value); return 0; }
             SET(Speed)              { self->ent->nSpeed = PyInt_AsLong(value); return 0; }
-            SET(Direction)          { self->ent->direction = (Direction)PyInt_AsLong(value);    return 0; } // I dislike this 
+            SET(Direction)          
+            { 
+                self->ent->direction = (Direction)PyInt_AsLong(value);    return 0;
+                self->ent->SetAnimScript(self->ent->pSprite->Script((int)self->ent->direction + self->ent->bMoving ? 0 : 8));
+            }
+
             SET(SpecFrame)          { self->ent->nSpecframe = PyInt_AsLong(value); return 0; }
             SET(Visible)            { self->ent->bVisible = PyInt_AsLong(value)!=0 ; return 0; }
             SET(Name)               { self->ent->sName = PyString_AsString(value); return 0; }
@@ -99,7 +105,7 @@ namespace Script
                 engine->sprite.Free(self->ent->pSprite);
 
                 self->ent->pSprite=engine->sprite.Load(PyString_AsString(value), engine->video);
-                self->ent->SetAnimScript(va("F%i",self->ent->nCurframe));
+                self->ent->SetAnimScript(self->ent->pSprite->Script((int)self->ent->direction + self->ent->bMoving ? 0 : 8));
                 return 0;
             }
 #undef SET
@@ -125,6 +131,13 @@ namespace Script
             {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
             {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
             {   "hotheight",        (getter)getHotHeight,           0,                          "Gets the height of the entity's hotspot."  },
+            {   "movepattern",      (getter)getMovePattern,         0,                          "Gets a value representing the entity's current movement pattern:\n\n"
+                                                                                                "   ika.nothing - The entity is standing still.\n"
+                                                                                                "   ika.wander - The entity is wandering.\n"
+                                                                                                "   ika.wanderrect - The entity is wandering within a rect.\n"
+                                                                                                "   ika.wanderzone - The entity is wandering within a zone.\n"
+                                                                                                "   ika.scripted - The entity is following a movement script.\n"
+                                                                                                "   ika.chase - The entity is chasing another entity." },
             {   0   }
         };
 

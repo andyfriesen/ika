@@ -36,7 +36,7 @@ CEntity::CEntity(CEngine* njin)
     , nMinchasedist       (0)
 {}
 
-CEntity::CEntity(CEngine* njin,const SMapEntity& e) 
+CEntity::CEntity(CEngine* njin, const SMapEntity& e)
     : engine(*njin)
     , animscriptofs       (0)
     , animscriptct        (0)
@@ -402,20 +402,22 @@ void CEntity::Update()
 
     UpdateAnimation();
 
-    if (this==engine.pPlayer)
+    if (this==engine.pPlayer && movecode == mc_nothing)
         newdir=HandlePlayer();
     else
         switch (movecode)
         {
-        case mc_nothing:    newdir=face_nothing;            break;
+        case mc_nothing:    newdir = face_nothing;              break;
         case mc_wander:
         case mc_wanderzone:
-        case mc_wanderrect: newdir=Wander();                break;
-        case mc_chase:      newdir=Chase();                 break;
-        case mc_script:     newdir=GetMoveScriptCommand();  break;
+        case mc_wanderrect: newdir = Wander();                  break;
+        case mc_chase:      newdir = Chase();                   break;
+        case mc_script:     newdir = GetMoveScriptCommand();    break;
+
         default:
-            Log::Write( "CEntity::Update: Internal error -- bogus movecode");
-            return;     // O_O;
+            Log::Write( "CEntity::Update: Internal error -- bogus movecode %i", movecode);
+            movecode = mc_nothing;
+            return;
         }
 
     if (newdir==face_nothing)

@@ -70,8 +70,8 @@ private:
                         pLayerlist;
 
 protected:
-    CEntityEditor*      pEntityeditor;
-    ZoneEditor*         _zoneeditor;
+    CEntityEditor*      _entityEditor;
+    ZoneEditor*         _zoneEditor;
 private:
 
     Map*                pMap;
@@ -102,19 +102,23 @@ public:
     void GoNextTile(wxEvent&);
     void GoPrevTile(wxEvent&);
 
-    void OnZoomIn(wxCommandEvent& event);
-    void OnZoomOut(wxCommandEvent& event);
-    void OnZoomIn2x(wxCommandEvent& event);
-    void OnZoomIn4x(wxCommandEvent& event);
-    void OnZoomOut2x(wxCommandEvent& event);
-    void OnZoomOut4x(wxCommandEvent& event);
-    void OnZoomNormal(wxCommandEvent& event);
+    void OnZoomIn(wxCommandEvent&);
+    void OnZoomOut(wxCommandEvent&);
+    void OnZoomIn2x(wxCommandEvent&);
+    void OnZoomIn4x(wxCommandEvent&);
+    void OnZoomOut2x(wxCommandEvent&);
+    void OnZoomOut4x(wxCommandEvent&);
+    void OnZoomNormal(wxCommandEvent&);
 
-    void OnShowEntityEditor(wxCommandEvent& event);
-    void OnShowZoneEditor(wxCommandEvent& event);
-    void OnNewLayer(wxCommandEvent& event);
-    void OnShowVSP(wxCommandEvent& event);
-    void OnShowScript(wxCommandEvent& event);
+    void OnShowEntityEditor(wxCommandEvent&);
+    void OnShowZoneEditor(wxCommandEvent&);
+    void OnShowVSP(wxCommandEvent&);
+    void OnShowScript(wxCommandEvent&);
+
+    void OnMoveLayerUp(wxCommandEvent&);
+    void OnMoveLayerDown(wxCommandEvent&);
+    void OnDeleteLayer(wxCommandEvent&);
+    void OnNewLayer(wxCommandEvent&);
 
     void OnClose();
 
