@@ -397,8 +397,8 @@ void CEntity::Update()
         case mc_nothing:    newdir=face_nothing;            break;
         case mc_wander:
         case mc_wanderzone:
-        case mc_chase:      newdir=Chase();                 break;
         case mc_wanderrect: newdir=Wander();                break;
+        case mc_chase:      newdir=Chase();                 break;
         case mc_script:     newdir=GetMoveScriptCommand();  break;
         default:
             log("CEntity::Update: Internal error -- bogus movecode");

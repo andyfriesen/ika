@@ -33,21 +33,11 @@
 
 class CEngine
 {
-    // -_-;
+    // friends suck.  Kill them all. -_-;
     friend LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     friend class CScriptEngine;
-    
-    enum
-    {
-        b_up=0,
-        b_down,
-        b_left,
-        b_right,
-        b_enter,
-        b_cancel,
-    };
 
-    typedef std::list<CEntity*>      EntityList;
+    typedef std::list<CEntity*>     EntityList;
     typedef EntityList::iterator    EntityIterator;
     
 public:                                                                             // Too many components need access to this class.  Kinda sucks. :/
