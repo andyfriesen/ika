@@ -1,5 +1,5 @@
 static char *Entities = "dialog(name = 'Entities',\
-  style = 'wxRAISED_BORDER | wxCAPTION | wxSYSTEM_MENU | wxDIALOG_MODAL',\
+  style = 'wxRAISED_BORDER | wxCAPTION | wxSYSTEM_MENU',\
   title = 'Entities',\
   id = 20008,\
   x = 10, y = 10, width = 300, height = 150,\

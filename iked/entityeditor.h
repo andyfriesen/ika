@@ -5,13 +5,20 @@
 #include <wx\wx.h>
 
 class CMapView;
+class Map;
 
 class CEntityEditor : public wxDialog
 {
-    CMapView* pParent;
+    CMapView*   pParent;
+    Map*        pMap;
+
+    // Convenience pointers to dialog elements
+    wxListBox*  pEntlist;
 
 public:
-    CEntityEditor(CMapView* parent);
+    CEntityEditor(CMapView* parent,Map* m);
+
+    void Update();
 };
 
 #endif

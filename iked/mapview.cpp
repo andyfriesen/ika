@@ -166,8 +166,8 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     nCurlayer=0;
     csrmode=mode_normal;
 
-    CEntityEditor* bleh=new CEntityEditor(this);
-    bleh->Show(true);
+    pEntityeditor=new CEntityEditor(this,pMap);
+    pEntityeditor->Show(true);
 
     Show();
 }
@@ -250,6 +250,9 @@ void CMapView::OnPaint()
 {
     wxPaintDC paintdc(this);
 
+    if (!pTileset || !pMap)
+        return; // .................................................................. really retarded.  wx likes to call this between deallocating my stuff, and actually destroying the frame. ;P
+
     pGraph->SetCurrent();
     pGraph->Clear();    
 
@@ -284,6 +287,10 @@ void CMapView::OnClose()
 {
     pParentwnd->map.Release(pMap);
     pParentwnd->vsp.Release(pTileset);
+    
+    pMap=0;
+    pTileset=0;
+
     Destroy();
 }
 

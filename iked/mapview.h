@@ -25,6 +25,7 @@ class CMainWnd;
 class CGraphFrame;
 class CTileSet;
 class CLayerVisibilityControl;
+class CEntityEditor;
 
 class wxSashLayoutWindow;
 class wxCheckListBox;
@@ -75,6 +76,8 @@ class CMapView : public IDocView
     CGraphFrame*        pGraph;
     CLayerVisibilityControl*
                         pLayerlist;
+
+    CEntityEditor*      pEntityeditor;
 
     Map*                pMap;
     CTileSet*           pTileset;

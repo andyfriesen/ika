@@ -208,7 +208,7 @@ void CMainWnd::Open(const std::string& fname)
                 );
 
             configdlg->ShowModal();
-            configdlg->Close(true);
+            configdlg->Close(TRUE);
 
             return;
         }
