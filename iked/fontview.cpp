@@ -48,26 +48,39 @@ void CFontView::OnLeftClick(wxMouseEvent& event)
 
 void CFontView::Render()
 {
-    CPixelMatrix& rGlyph=pFontfile->GetGlyph(nCurfont);
 
+    int nTx=0, nTy=0;
     int nWidth, nHeight;
+
     GetClientSize(&nWidth, &nHeight);
 
-    const int nTx=rGlyph.Width();
-    const int nTy=rGlyph.Height();
 
+    CPixelMatrix& rGlyph_=pFontfile->GetGlyph(nCurfont);
+    nTx=rGlyph_.Width();
+    nTy=rGlyph_.Height();
 
     int nFontwidth=nWidth/nTx;
     int nFontheight=(nHeight/nTy)+1;
     int nFont=ywin*nFontwidth;
 
+
+
     pGraph->SetCurrent();
     pGraph->Clear();     
+
+    nTx=0;
+    nTy=0;
 
     for(int y=0; y<nFontheight; y++)
     {
         for(int x=0; x<nFontwidth; x++)
         {
+            CPixelMatrix& rGlyph=pFontfile->GetGlyph(nFont);
+            nTx=rGlyph.Width();
+            nTy=rGlyph.Height();
+
+            
+
             // Grab the font bitmap, blit, and move right along.
             //  -- khross
 
@@ -75,8 +88,8 @@ void CFontView::Render()
             CPixelMatrix& rBitmap=pFontfile->GetGlyph(nFont);
             CImage rImage(rBitmap);
             pGraph->ScaleBlit(rImage,x*nTx+1,y*nTy+1,
-                rGlyph.Width(),rGlyph.Height(),
-                true);
+                nTx, nTy, true);
+
             // add zooming.
 
             nFont++;
@@ -87,10 +100,16 @@ void CFontView::Render()
                 break;
             }
 
+            nFontwidth=nWidth/nTx;
+            nFontheight=(nHeight/nTy)+1;
+
         }
+        
     }
 
     int x2, y2;
+    nTx=pFontfile->GetGlyph(nCurfont).Width();
+    nTy=pFontfile->GetGlyph(nCurfont).Height();
 
     FontPos(nCurfont,x2,y2);
     pGraph->Rect(x2-1,y2-1,nTx+1,nTy+1,RGBA(255,255,255));
