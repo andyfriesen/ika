@@ -53,6 +53,7 @@ char* GetCurrentDirectory()
 }
 
 #include <string>
+#include <strstream>
 
 const string Trim(string s)
 {
@@ -77,6 +78,13 @@ const string Trim(string s)
     }
 
     return s;
+}
+
+string ToString(int i)
+{
+    std::strstream s;
+    s << i << '\0';
+    return s.str();
 }
 
 //---------------------------------------

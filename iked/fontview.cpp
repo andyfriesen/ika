@@ -54,14 +54,12 @@ void CFontView::Render()
 
     GetClientSize(&nWidth, &nHeight);
 
-
     tx=pFontfile->Width();
     ty=pFontfile->Height();
 
     int nFontwidth=nWidth/tx;
     int nFontheight=(nHeight/ty)+1;
     int nFont=ywin*nFontwidth;
-
 
     pGraph->SetCurrent();
     pGraph->Clear();     
@@ -70,8 +68,6 @@ void CFontView::Render()
     {
         for(int x=0; x<nFontwidth; x++)
         {
-//            CPixelMatrix& rGlyph=pFontfile->GetGlyph(nFont);          
-
             // Grab the font bitmap, blit, and move right along.
             //  -- khross
 

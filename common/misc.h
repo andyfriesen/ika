@@ -27,6 +27,8 @@ char* GetCurrentDirectory();
 
 const string Trim(string s);
 
+string ToString(int i);
+
 namespace Path
 {
     // ifdef and blah blah for platform independance

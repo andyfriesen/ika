@@ -105,5 +105,20 @@ void CEntityEditor::Update()
         pEntlist->Append(e.sName.c_str());
     }
 
-
+    const SMapEntity& e=pMap->GetEntity(0);//pEntlist->GetSelection());
+    pName       ->SetValue(e.sName.c_str());
+    pX          ->SetValue(ToString(e.x).c_str());
+    pY          ->SetValue(ToString(e.y).c_str());
+    pSprite     ->SetValue(e.sCHRname.c_str());
+    pSpeed      ->SetValue(ToString(e.nSpeed).c_str());
+    pActscript  ->SetValue(e.sActscript.c_str());
+    pMovescript ->SetValue(e.sMovescript.c_str());
+    pSteps      ->SetValue(ToString(e.nWandersteps).c_str());
+    pDelay      ->SetValue(ToString(e.nWanderdelay).c_str());
+    pX1         ->SetValue(ToString(e.wanderrect.left).c_str());
+    pY1         ->SetValue(ToString(e.wanderrect.top).c_str());
+    pX2         ->SetValue(ToString(e.wanderrect.right).c_str());
+    pY2         ->SetValue(ToString(e.wanderrect.bottom).c_str());
+    pZone       ->SetValue(e.sZone.c_str());
+    pChasetarget->SetValue(e.sChasetarget.c_str());
 }
