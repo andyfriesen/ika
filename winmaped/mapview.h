@@ -40,8 +40,6 @@ private:
 
 	MapClip			clipboard;	// copy/pasting buffer
 
-//	std::vector<CPixelMatrix>	tileimages;	// Image buffer for the VSP
-
 public:
 	// The engine class likes to mangle these
 	int     xwin,ywin;
@@ -59,7 +57,7 @@ public:
 								// true if the zone, entities, and obstructions are to be rendered, respectively
 
 	RECT	clientrect;
-	RECT	curselection;		// the currently active selection rectangle.
+	Rect	curselection;		// the currently active selection rectangle.
 
 	//---------------------Startup------------------------
 	HWND CreateWnd(HWND hWndparent);

@@ -528,6 +528,7 @@ bool CEngine::DetectMapCollision(int x,int y,int w,int h)
 
 CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h)
 // returns the entity colliding with the specified entity, or 0 if none.
+// Note that passing 0 for ent is valid, indicating that you simply want to know if there are any entities in a given area
 {
     CDEBUG("detectentitycollision");
     
@@ -548,119 +549,90 @@ CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,i
     return 0;
 }
 
-Direction CEngine::HandlePlayer()
-// Moves the player entity around according to the controls and whatnot
-// Also checks for zone/entity activation
+/*Direction CEngine::HandleWanderingEntity(CEntity& ent)
 {
-    CDEBUG("handleplayer");
-    input.Update();
-    
-    TestActivate();
-    
-    if (input.up)    
+    if (ent.movescriptct<1)
     {
-        if (input.left)        return face_upleft;
-        if (input.right)    return face_upright;
-        return face_up;
+        if (ent.thedirectionImgoinginnow==face_nothing)                    // are we through with a non-walking period?
+        {
+            ent.thedirectionImgoinginnow=face_down;//(Direction)(rand()%4);                            // 1-4 (up, down, left, or right)
+            ent.movescriptct=ent.nWandersteps;
+            return ent.thedirectionImgoinginnow;
+        }
+        else
+        {
+            ent.thedirectionImgoinginnow=face_nothing;
+            ent.movescriptct=ent.nWanderdelay;
+            return face_nothing;
+        }
     }
-    if (input.down)    
-    {
-        if (input.left)        return face_downleft;
-        if (input.right)    return face_downright;
-        return face_down;
-    }
-    if (input.left) return face_left;                    // by this point, the diagonal possibilities are already taken care of
-    if (input.right)return face_right;
     
-    return face_nothing;
-}
-
-Direction CEngine::HandleWanderingEntity(CEntity& ent)
-{
-/*    if (ent.movescriptct<1)
-{
-if (ent.thedirectionImgoinginnow==face_nothing)                    // are we through with a non-walking period?
-{
-ent.thedirectionImgoinginnow=face_down;//(Direction)(rand()%4);                            // 1-4 (up, down, left, or right)
-ent.movescriptct=ent.nWandersteps;
-return ent.thedirectionImgoinginnow;
-}
-else
-{
-ent.thedirectionImgoinginnow=face_nothing;
-ent.movescriptct=ent.nWanderdelay;
-return face_nothing;
-}
-}
-
-  ent.movescriptct--;
-  
+    ent.movescriptct--;
+    
     switch(ent.movecode)
     {
     case mc_wanderrect:
-    switch(ent.thedirectionImgoinginnow)
-    {
-    case face_up:        if (ent.y-1<ent.wanderrect.top)            ent.thedirectionImgoinginnow=face_nothing;    break;
-    case face_down:        if (ent.y+1>ent.wanderrect.bottom)        ent.thedirectionImgoinginnow=face_nothing;    break;
-    case face_left:        if (ent.x-1<ent.wanderrect.left)        ent.thedirectionImgoinginnow=face_nothing;    break;
-    case face_right:    if (ent.x+1>ent.wanderrect.right)        ent.thedirectionImgoinginnow=face_nothing;    break;
+        switch(ent.thedirectionImgoinginnow)
+        {
+        case face_up:        if (ent.y-1<ent.wanderrect.top)            ent.thedirectionImgoinginnow=face_nothing;    break;
+        case face_down:        if (ent.y+1>ent.wanderrect.bottom)        ent.thedirectionImgoinginnow=face_nothing;    break;
+        case face_left:        if (ent.x-1<ent.wanderrect.left)        ent.thedirectionImgoinginnow=face_nothing;    break;
+        case face_right:    if (ent.x+1>ent.wanderrect.right)        ent.thedirectionImgoinginnow=face_nothing;    break;
+            
+        case face_upleft:    if (ent.y-1<ent.wanderrect.top || ent.x-1<ent.wanderrect.left)    ent.thedirectionImgoinginnow=face_nothing;    break;
+        case face_upright:    if (ent.y-1<ent.wanderrect.top || ent.x+1>ent.wanderrect.right)    ent.thedirectionImgoinginnow=face_nothing;    break;
+        case face_downleft:    if (ent.y+1>ent.wanderrect.top || ent.x-1<ent.wanderrect.left)    ent.thedirectionImgoinginnow=face_nothing;    break;
+        case face_downright:if (ent.y+1>ent.wanderrect.top || ent.x+1>ent.wanderrect.right)    ent.thedirectionImgoinginnow=face_nothing;    break;
+        }
+        break;
+    }
     
-      case face_upleft:    if (ent.y-1<ent.wanderrect.top || ent.x-1<ent.wanderrect.left)    ent.thedirectionImgoinginnow=face_nothing;    break;
-      case face_upright:    if (ent.y-1<ent.wanderrect.top || ent.x+1>ent.wanderrect.right)    ent.thedirectionImgoinginnow=face_nothing;    break;
-      case face_downleft:    if (ent.y+1>ent.wanderrect.top || ent.x-1<ent.wanderrect.left)    ent.thedirectionImgoinginnow=face_nothing;    break;
-      case face_downright:if (ent.y+1>ent.wanderrect.top || ent.x+1>ent.wanderrect.right)    ent.thedirectionImgoinginnow=face_nothing;    break;
-      }
-      break;
-      }
-      
-        
-    return ent.thedirectionImgoinginnow;*/
-    return face_nothing;
-}
+    
+    return ent.thedirectionImgoinginnow;
+}//*/
 
-#include <math.h>
+/*#include <math.h>
 Direction CEngine::HandleChasingEntity(CEntity& ent)
 // TODO: Make this chase algorithm not suck. (Bresenham's line algorithm or something)
 {
-/*    int nDeltax,nDeltay;
-int nTarget;
-Direction d;
-nTarget=ent.nEntchasetarget;
-
-  nDeltax=entities[nTarget].x-ent.x;
-  nDeltay=entities[nTarget].y-ent.y;
-  
+    int nDeltax,nDeltay;
+    int nTarget;
+    Direction d;
+    nTarget=ent.nEntchasetarget;
+    
+    nDeltax=entities[nTarget].x-ent.x;
+    nDeltay=entities[nTarget].y-ent.y;
+    
     int distance=(int)sqrt(nDeltax*nDeltax+nDeltay*nDeltay);
     if (distance<ent.nMinchasedist)    return face_nothing;    // The entity is close enough, and is thus content to be where it is.
     
-      if (nDeltax<0) 
-      {
-      if (nDeltay<0)
-      d=face_upleft;
-      else if (nDeltay>0)
-      d=face_downleft;
-      else
-      d=face_left;
-      }
-      else if (nDeltax>0)
-      {
-      if (nDeltay<0)
-      d=face_upright;
-      else if (nDeltay>0)
-      d=face_downright;
-      else
-      d=face_right;
-      }
-      else if (nDeltay<0)
-      d=face_up;
-      else if (nDeltay>0)
-      d=face_down;
-      
-    return d;*/
-    return face_nothing;
-}
+    if (nDeltax<0) 
+    {
+        if (nDeltay<0)
+            d=face_upleft;
+        else if (nDeltay>0)
+            d=face_downleft;
+        else
+            d=face_left;
+    }
+    else if (nDeltax>0)
+    {
+        if (nDeltay<0)
+            d=face_upright;
+        else if (nDeltay>0)
+            d=face_downright;
+        else
+            d=face_right;
+    }
+    else if (nDeltay<0)
+        d=face_up;
+    else if (nDeltay>0)
+        d=face_down;
+    
+    return d;
+}//*/
 
-void CEngine::TestActivate()
+void CEngine::TestActivate(const CEntity& player)
 // checks to see if we're supposed to run some VC, due to the player's actions.
 // Thus far, that's one of three things.
 // 2) the player steps on a zone
@@ -669,74 +641,71 @@ void CEngine::TestActivate()
 
 // This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
 {
-/*    CDEBUG("testactivate");
-static int    nOldtx=-1;
-static int    nOldty=-1;
-static int    nOldzone=-1;
-SMapZone zone;
-CEntity& e=entities[player];
-CSprite& s=*e.pSprite;
-
-  int tx=(e.x+s.nHotw/2)/tiles.Width();
-  int ty=(e.y+s.nHoth/2)/tiles.Height();
-  
+    CDEBUG("testactivate");
+    static int    nOldtx=-1;
+    static int    nOldty=-1;
+    static int    nOldzone=-1;
+    SMapZone zone;
+    CSprite& sprite=*player.pSprite;
+    
+    int tx=(player.x+sprite.nHotw/2)/tiles.Width();
+    int ty=(player.y+sprite.nHoth/2)/tiles.Height();
+    
     int n=map.GetZone(tx,ty);
     // stepping on a zone?
     if ((tx!=nOldtx || ty!=nOldty) && n)                        // the player is not on the same zone it was before, check for activation
     {
-    nOldtx=tx; nOldty=ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
-    map.GetZoneInfo(zone,map.GetZone(tx,ty));
-    if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
-    {
-    script.CallEvent(zone.sActscript.c_str());
-    input.enter=false;
-    }
+        nOldtx=tx; nOldty=ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
+        map.GetZoneInfo(zone,map.GetZone(tx,ty));
+        if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
+        {
+            script.CallEvent(zone.sActscript.c_str());
+            input.enter=false;
+        }
     }
     
-      nOldtx=tx; nOldty=ty;
-      
-        // TODO: adjacent activation
-        // This probably isn't the best place for that sort of thing.  Maybe in ProcessEntities, in the clause that
-        // executes when an entity is obstructed.  That'd be both more efficient, and accurate.
+    nOldtx=tx; nOldty=ty;
+    
+    // TODO: adjacent activation
+    // This probably isn't the best place for that sort of thing.  Maybe in ProcessEntities, in the clause that
+    // executes when an entity is obstructed.  That'd be both more efficient, and accurate.
+    
+    if (!input.enter) return;                                // From this point on, the only time we'd have to check this crap is if b1 was pressed.
+    
+    tx=player.x; ty=player.y;
+    // entity activation
+    switch(player.direction)
+    {
+    case face_up:        ty-=sprite.nHoth;    break;
+    case face_down:      ty+=sprite.nHoth;    break;
+    case face_left:      tx-=sprite.nHotw;    break;
+    case face_right:     tx+=sprite.nHotw;    break;
         
-          if (!input.enter) return;                                // From this point on, the only time we'd have to check this crap is if b1 was pressed.
-          
-            tx=e.x; ty=e.y;
-            // entity activation
-            switch(entities[player].facing)
-            {
-            case face_up:        ty-=s.nHoth;    break;
-            case face_down:        ty+=s.nHoth;    break;
-            case face_left:        tx-=s.nHotw;    break;
-            case face_right:    tx+=s.nHotw;    break;
-            
-              case face_upleft:    tx-=s.nHotw;    ty-=s.nHoth;    break;
-              case face_upright:    tx+=s.nHotw;    ty-=s.nHoth;    break;
-              case face_downleft:    tx-=s.nHotw;    ty+=s.nHoth;    break;
-              case face_downright:tx+=s.nHotw;    ty+=s.nHoth;    break;
-              }
-              
-                int i=EntityAt(tx,ty,s.nHotw,s.nHoth);
-                if (i>=0)
-                {
-                CEntity* e=&entities[i];
-                
-                  if (!e->bAdjacentactivate && e->sActscript.length()!=0)
-                  {
-                  script.CallEvent(e->sActscript.c_str());
-                  input.enter=false;
-                  return;
-                  }
-                  }
-                  
-                    // Activating a zone?
-                    map.GetZoneInfo(zone,map.GetZone(tx/tiles.Width(),ty/tiles.Height()));
-                    
-                      if (zone.bAdjacentactivation)// && zone.script)
-                      {
-                      script.CallEvent(zone.sActscript.c_str());
-                      input.enter=false;
-}*/
+    case face_upleft:    tx-=sprite.nHotw;    ty-=sprite.nHoth;    break;
+    case face_upright:   tx+=sprite.nHotw;    ty-=sprite.nHoth;    break;
+    case face_downleft:  tx-=sprite.nHotw;    ty+=sprite.nHoth;    break;
+    case face_downright: tx+=sprite.nHotw;    ty+=sprite.nHoth;    break;
+    }
+    
+    CEntity* pEnt=DetectEntityCollision(0 ,tx,ty,sprite.nHotw,sprite.nHoth);
+    if (pEnt)
+    {
+        if (!pEnt->bAdjacentactivate && pEnt->sActscript.length()!=0)
+        {
+            script.CallEvent(pEnt->sActscript.c_str());
+            input.enter=false;
+            return;
+        }
+    }
+    
+    // Activating a zone?
+    map.GetZoneInfo(zone,map.GetZone(tx/tiles.Width(),ty/tiles.Height()));
+    
+    if (zone.bAdjacentactivation)
+    {
+        script.CallEvent(zone.sActscript.c_str());
+        input.enter=false;
+    }
 }
 
 CEntity* CEngine::SpawnEntity()

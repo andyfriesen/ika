@@ -24,10 +24,10 @@ void CEntityDlg::UpdateData(HWND hWnd)
     GetDlgItemText(hWnd,ID_EDSCRIPT,c,255);			curdata.sActscript		= c;
     curdata.nWandersteps	= GetDlgItemInt(hWnd,ID_EDSTEPS,NULL,false);
     curdata.nWanderdelay	= GetDlgItemInt(hWnd,ID_EDDELAY,NULL,false);
-    curdata.nWanderrect[0]	= GetDlgItemInt(hWnd,ID_EDX1,NULL,false);
-    curdata.nWanderrect[1]	= GetDlgItemInt(hWnd,ID_EDY1,NULL,false);
-    curdata.nWanderrect[2]	= GetDlgItemInt(hWnd,ID_EDX2,NULL,false);
-    curdata.nWanderrect[3]	= GetDlgItemInt(hWnd,ID_EDY2,NULL,false);
+    curdata.wanderrect.left	= GetDlgItemInt(hWnd,ID_EDX1,NULL,false);
+    curdata.wanderrect.top	= GetDlgItemInt(hWnd,ID_EDY1,NULL,false);
+    curdata.wanderrect.right	= GetDlgItemInt(hWnd,ID_EDX2,NULL,false);
+    curdata.wanderrect.bottom	= GetDlgItemInt(hWnd,ID_EDY2,NULL,false);
     GetDlgItemText(hWnd,IDC_EDMZONE,c,255);			curdata.sZone			= c;
     GetDlgItemText(hWnd,IDC_EDCHASETARGET,c,255);	curdata.sChasetarget	= c;
     curdata.nChasedist		= GetDlgItemInt(hWnd,IDC_EDCHASEDIST,NULL,false);
@@ -51,10 +51,10 @@ void CEntityDlg::UpdateDialog(HWND hWnd)
     SetDlgItemText(hWnd,ID_EDMSCRIPT,curdata.sMovescript.c_str());
     SetDlgItemInt(hWnd,ID_EDSTEPS,curdata.nWandersteps,false);
     SetDlgItemInt(hWnd,ID_EDDELAY,curdata.nWanderdelay,false);
-    SetDlgItemInt(hWnd,ID_EDX1,curdata.nWanderrect[0],false);
-    SetDlgItemInt(hWnd,ID_EDY1,curdata.nWanderrect[1],false);
-    SetDlgItemInt(hWnd,ID_EDX2,curdata.nWanderrect[2],false);
-    SetDlgItemInt(hWnd,ID_EDY2,curdata.nWanderrect[3],false);
+    SetDlgItemInt(hWnd,ID_EDX1,curdata.wanderrect.left,false);
+    SetDlgItemInt(hWnd,ID_EDY1,curdata.wanderrect.top,false);
+    SetDlgItemInt(hWnd,ID_EDX2,curdata.wanderrect.right,false);
+    SetDlgItemInt(hWnd,ID_EDY2,curdata.wanderrect.bottom ,false);
     
     CheckDlgButton(hWnd,ID_ENTOBSMAP,curdata.bMapobs?BST_CHECKED:0);
     CheckDlgButton(hWnd,IDC_ENTOBSENT,curdata.bEntobs?BST_CHECKED:0);

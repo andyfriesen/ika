@@ -39,7 +39,7 @@ void CScriptEngine::Init(CEngine* p)
     PyObject* module=Py_InitModule("std",standard_methods);
     PyObject* dict  =PyModule_GetDict(module);
     
-    pEngine=p;												// urk
+    pEngine=p;                                                // urk
     
     // Initialize objects
     Init_Image();
@@ -100,7 +100,7 @@ void CScriptEngine::Shutdown()
 
 bool CScriptEngine::LoadSystemScripts(char* fname)
 {
-    Py_XDECREF(pSysmodule);											// free it if it's already allocated
+    Py_XDECREF(pSysmodule);                                            // free it if it's already allocated
     
     pSysmodule=PyImport_ImportModule("system");//pGlobalscope,pGlobalscope,NULL);
     if (!pSysmodule)
@@ -119,7 +119,7 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
     std::string sTemp=fname;
     
     int nExtension=sTemp.find_last_of(".",sTemp.length());
-    sTemp.erase(nExtension,sTemp.length());					// nuke the extension
+    sTemp.erase(nExtension,sTemp.length());                    // nuke the extension
     
     pMapmodule=PyImport_ImportModule((char*)sTemp.c_str());//,pGlobalscope,pGlobalscope,NULL);
     
@@ -167,7 +167,7 @@ void CScriptEngine::ClearEntityList()
 
 void CScriptEngine::AddEntityToList(CEntity* e)
 {
-    PyObject* pEnt=Entity_New(e);				// make an object for the entity
+    PyObject* pEnt=Entity_New(e);                // make an object for the entity
 
     char c[1024];
     strcpy(c,e->sName.c_str());
@@ -182,7 +182,7 @@ void CScriptEngine::CallEvent(const char* sName)
     CDEBUG("CScriptEngine::CallEvent");
     
     if (!pMapmodule)
-        return;																// no module loaded == no event
+        return;                                                                // no module loaded == no event
     
     PyObject* pDict=PyModule_GetDict(pMapmodule);
     PyObject* pFunc=PyDict_GetItemString(pDict,(char*)sName);
@@ -190,7 +190,7 @@ void CScriptEngine::CallEvent(const char* sName)
     if (!pFunc)
     {
         log("CallEvent, no such event \"%s\"",sName);
-        return;																// no such event
+        return;                                                                // no such event
     }
     
     if (!PyCallable_Check(pFunc))
@@ -206,5 +206,5 @@ void CScriptEngine::CallEvent(const char* sName)
     
     Py_XDECREF(result);
     
-    pEngine->timer.t=0;														// a little icky, but meh
+    pEngine->timer.t=0;                                                        // a little icky, but meh
 }

@@ -221,36 +221,38 @@ Direction CEntity::GetMoveScriptCommand()
             if (movescriptofs>curmovescript.length())			// if we've reached the end of the move script,
             {
                 Stop();
-                return direction;
+                return face_nothing;
             }
             
         } while (c==' ');
         
         if (c>='a' && c<='z') c^=32;
         
+        Direction newdir;
+
         switch(c)
         {
-        case 'U': bMoving=true;  direction=face_up;                 movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'D': bMoving=true;  direction=face_down;               movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'L': bMoving=true;  direction=face_left;               movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'R': bMoving=true;  direction=face_right;              movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'F': bMoving=false; direction=(Direction)get_int(curmovescript,movescriptofs);                             break;
+        case 'U': bMoving=true;  newdir=face_up;                 movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'D': bMoving=true;  newdir=face_down;               movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'L': bMoving=true;  newdir=face_left;               movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'R': bMoving=true;  newdir=face_right;              movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'F': bMoving=false; newdir=(Direction)get_int(curmovescript,movescriptofs);                             break;
         case 'Z': bMoving=false; nSpecframe=get_int(curmovescript,movescriptofs);                                       break;
         case 'W': bMoving=false; movescriptct=get_int(curmovescript,movescriptofs);                                     break;
     
         case 'X':
             {
                 int destx=get_int(curmovescript,movescriptofs);
-                if      (x>destx)  {    bMoving=true;               direction=face_left;                        movescriptct=x-destx;   }
-                else if (x<destx)  {    bMoving=true;               direction=face_right;                       movescriptct=destx-x;   }
+                if      (x>destx)  {    bMoving=true;               newdir=face_left;                        movescriptct=x-destx;   }
+                else if (x<destx)  {    bMoving=true;               newdir=face_right;                       movescriptct=destx-x;   }
                 else               {    bMoving=false;                                                          movescriptct=1;         }
                 break;
             }
         case 'Y':
             {
                 int desty=get_int(curmovescript,movescriptofs);
-                if      (y>desty)  {    bMoving=true;               direction=face_down;                        movescriptct=y-desty;   }
-                else if (y<desty)  {    bMoving=true;               direction=face_up;                          movescriptct=desty-y;   }
+                if      (y>desty)  {    bMoving=true;               newdir=face_down;                        movescriptct=y-desty;   }
+                else if (y<desty)  {    bMoving=true;               newdir=face_up;                          movescriptct=desty-y;   }
                 else               {    bMoving=false;                                                          movescriptct=1;         } 
                 break;
             }
@@ -261,6 +263,8 @@ Direction CEntity::GetMoveScriptCommand()
             bMoving=false;					// the entity will get a new command next tick, so make it stand still for this one
             break;
         }
+
+        return bMoving?newdir:face_nothing;
     }
     else
         movescriptct--;
@@ -270,6 +274,8 @@ Direction CEntity::GetMoveScriptCommand()
 
 Direction CEntity::HandlePlayer()
 {
+    engine.TestActivate(*this);
+    
     Input& input=engine.input;
     input.Update();
 
