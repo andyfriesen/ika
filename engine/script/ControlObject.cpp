@@ -90,7 +90,8 @@ namespace Script
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;
-            type.tp_doc = "Represents a single button or axis. (such as a key, or a joystick button)";
+            type.tp_doc = "Represents a single button or axis. (such as a key, or a joystick button)\n"
+                "Access these through an input device.  They can never be created directly.";
 
             PyType_Ready(&type);
         }

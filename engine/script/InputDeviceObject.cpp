@@ -36,12 +36,14 @@ namespace Script
 
             type.ob_refcnt = 1;
             type.ob_type = &PyType_Type;
+            type.tp_base = 0;
             type.tp_name = "InputDevice";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_as_mapping = &mappingmethods;
-            type.tp_doc = "Interface for hardware input devices. (such as the keyboard and mouse)";
+            type.tp_doc = "Interface for hardware input devices. (such as the keyboard and mouse)\n"
+                "This object is a singleton; you cannot create additional instances.";
 
             PyType_Ready(&type);
         }

@@ -65,7 +65,9 @@ namespace Script
             type.tp_dealloc=(destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;
-            type.tp_doc="An ika font.\nTODO: say something interesting in here. :P";
+            type.tp_doc="ika.Font(fontFileName)->font\n\n"
+                "A proportional bitmap font.  fontFileName is a string that contains\n"
+                "the filename to a font file.";
             type.tp_new = New;
 
             PyType_Ready(&type);

@@ -668,8 +668,8 @@ void Engine::TestActivate(const Entity* player)
     }
 
     // adjacent activation
-
-    if (!the<Input>()->enter->Pressed()) return; // Don't check the rest unless enter was pressed.
+    bool b = the<Input>()->enter->Pressed();
+    if (!b) return; // Don't check the rest unless enter was pressed.
 
     tx = player->x; ty = player->y;
     // entity activation
@@ -691,6 +691,7 @@ void Engine::TestActivate(const Entity* player)
     {
         if (ent->activateScript)
         {
+            the<Input>()->Unpress();
             script.ExecObject(ent->activateScript);
             the<Input>()->Flush();
             return;

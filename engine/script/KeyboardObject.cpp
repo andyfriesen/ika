@@ -28,6 +28,8 @@ namespace Script
                 "ClearKeyQueue()\n\n"
                 "Clears the keyboard queue."
             },
+
+            {   0   }
         };
 
         void Init()
@@ -38,10 +40,11 @@ namespace Script
             type.ob_type = &PyType_Type;
             type.tp_name = "Keyboard";
             type.tp_base = &Script::InputDevice::type;
-            type.tp_basicsize = sizeof type;
+            type.tp_basicsize = sizeof Script::InputDevice::DeviceObject;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
-            type.tp_doc = "teh keybroad";
+            type.tp_doc = "The keyboard. Get access to this object from ika.Input.keyboard.\n"
+                "There can only be one instance of the Keyboard.";
 
             PyType_Ready(&type);
         }

@@ -18,11 +18,11 @@ namespace Script
 
         PyGetSetDef properties[] =
         {
-            {   "axes", (getter)getAxes,        0,      "Gets a tuple containing all of the joystick axes."     },
-            {   "reverseAxes",  (getter)getReverseAxes, 0, "Gets a tuple containing all of the joystick axes.\n"
-                                                        "Unlike axes, the controls in this tuple *reverse*\n"
-                                                        "the direction of the axis."                            },
-            {   "buttons",  (getter)getButtons, 0,      "Gets a tuple containing all of the joystick buttons."  },
+            {   "axes", (getter)getAxes,        0,      "A tuple containing all of the joystick axes."      },
+            {   "reverseAxes",  (getter)getReverseAxes, 0, "A tuple containing all of the joystick axes.\n"
+                                                        "Unlike axes, these controls *reverse* the direction \n"
+                                                        "of the axis."                                      },
+            {   "buttons",  (getter)getButtons, 0,      "A tuple containing all of the joystick buttons."   },
             {   0   }
         };
 
@@ -36,7 +36,8 @@ namespace Script
             type.tp_base = &Script::InputDevice::type;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_getset = properties;
-            type.tp_doc = "A joystick.";
+            type.tp_doc = "A joystick.  There is a list of these in the ika.Input object.\n"
+                "They can never be created directly.";
             PyType_Ready(&type);
         }
 

@@ -60,11 +60,9 @@ def clamp(value, lower, upper):
 
 import ika
 
-a = lambda n: ika.Input[n].Pressed
-up = a('UP')
-down = a('DOWN')
-left = a('LEFT')
-right = a('RIGHT')
-enter = a('RETURN')
-cancel = a('ESCAPE')
-del a
+up = ika.Input.up.Pressed
+down = ika.Input.down.Pressed
+left = ika.Input.left.Pressed
+right = ika.Input.right.Pressed
+enter = ika.Input.enter.Pressed
+cancel = ika.Input.cancel.Pressed

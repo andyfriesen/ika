@@ -41,7 +41,8 @@ namespace Script
             type.tp_dealloc = (destructor)Destroy;
             type.tp_getset = properties;
             type.tp_base = &Script::InputDevice::type;
-            type.tp_doc = "The mouse";
+            type.tp_doc = "The mouse.  Access this through ika.Input.mouse\n"
+                "Additional instances of this object cannot be created.";
             PyType_Ready(&type);
         }
 

@@ -28,7 +28,13 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         mkdir tempdist/xi
         cp -R dist/* tempdist
         cp xi/* tempdist/xi
-        cp 3rdparty/dlls/{audiere,corona,msvc*71,python23,sdl,zlib}.dll tempdist
+
+        cp 3rdparty/dlls/audiere.dll tempdist
+        cp 3rdparty/dlls/corona.dll tempdist
+        cp 3rdparty/dlls/msvcp71.dll tempdist
+        cp 3rdparty/dlls/msvcr71.dll tempdist
+        cp 3rdparty/dlls/python23.dll tempdist
+        cp 3rdparty/dlls/zlib.dll tempdist
         #cp engine/Release/ika.exe tempdist
         #cp iked/Release/iked.exe tempdist
         #cp ikamap/Release/ikamap.exe tempdist
@@ -45,7 +51,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         rm ika.nis
         cd ..
         echo Done.
-        rm -rf tempdist
+        #rm -rf tempdist
 
         echo Assembling source archive...
         mkdir ika
