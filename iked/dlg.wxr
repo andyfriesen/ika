@@ -9,7 +9,7 @@ static char *ConfigDlg = "dialog(name = 'ConfigDlg',\
   font = [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg'],\
   control = [102, wxStaticBox, 'Graphics Driver', '0', 'Resolution', 0, 0, 113, 85,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
-  control = [20001, wxListBox, '', 'wxLB_EXTENDED', 'resolution', 1, 8, 108, 75, [],\
+  control = [20001, wxListBox, '', 'wxLB_EXTENDED', 'graphdriver', 1, 8, 108, 75, [],\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
   control = [20002, wxCheckBox, 'Run &Fullscreen', '0', 'fullscreen', 116, 9, 64, 8, 1,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\

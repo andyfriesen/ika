@@ -34,8 +34,8 @@ public:
     std::string Get(const std::string& key);
     int         GetInt(const std::string& key);
 
-    void        Write(const char* fname);
-    void        Read (const char* fname);
+    void        Load(const char* fname);
+    void        Save(const char* fname);
 };
 
 #endif

@@ -3,11 +3,14 @@
 
 CConfigFile::CConfigFile(const char* fname)
 {
-    Read(fname);
+    Load(fname);
 }
 
 void CConfigFile::Add(const std::string& key,const std::string& value)
 {
+    if (key.length()==0 || value.length()==0)
+        return;
+
     keys[key]=value;
 }
 
@@ -26,7 +29,7 @@ int CConfigFile::GetInt(const std::string& key)
     return atoi(Get(key).c_str());
 }
 
-void CConfigFile::Read(const char* fname)
+void CConfigFile::Load(const char* fname)
 {
     File f;
 
@@ -49,7 +52,7 @@ void CConfigFile::Read(const char* fname)
     f.Close();
 }
 
-void CConfigFile::Write(const char* fname)
+void CConfigFile::Save(const char* fname)
 {
     File f;
 

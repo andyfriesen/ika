@@ -168,16 +168,19 @@ void CMainWnd::Open(const std::string& fname)
         }
     case t_config:
         {
+#if 0
             wxDialog* dlg=new wxDialog();
             dlg->LoadFromResource(this,"ConfigDlg");
             dlg->ShowModal();
             dlg->Destroy();
-/*            CConfigDlg* configdlg=new CConfigDlg(
+#else
+            CConfigDlg* configdlg=new CConfigDlg(
                 this,
                 -1,
-                "Config"
+                fname
                 );
-            return;*/
+#endif
+            return;
         }
     default:
         wxMessageDialog(this,"Not implemented yet","NYI",wxOK).ShowModal();
