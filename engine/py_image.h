@@ -13,19 +13,19 @@ struct v_ImageObject
 
 PyMethodDef CScriptEngine::image_methods[] =
 {
-    {	"Load",			CScriptEngine::image_load,		1	},
-    {	"Copy",			CScriptEngine::image_copy,		1	},
-    {	"Blit",			CScriptEngine::image_blit,		1	},
-    {	"ScaleBlit",	CScriptEngine::image_scaleblit,	1	},
-    {	"CopyChannel",	CScriptEngine::image_copychannel,1	},
-    {	"Clip",			CScriptEngine::image_clip,		1	},
-    {	"Line",			CScriptEngine::image_line,		1	},
-    {	"Rect",			CScriptEngine::image_rect,		1	},
-    {	"Ellipse",		CScriptEngine::image_ellipse,	1	},
-    {	"SetPixel",		CScriptEngine::image_setpixel,	1	},
-    {	"GetPixel",		CScriptEngine::image_getpixel,	1	},
-    {	"FlatPoly",		CScriptEngine::image_flatpoly,	1	},
-    {	NULL,	NULL }
+    {    "Load",         CScriptEngine::image_load,         1    },
+    {    "Copy",         CScriptEngine::image_copy,         1    },
+    {    "Blit",         CScriptEngine::image_blit,         1    },
+    {    "ScaleBlit",    CScriptEngine::image_scaleblit,    1    },
+    {    "CopyChannel",  CScriptEngine::image_copychannel,  1    },
+    {    "Clip",         CScriptEngine::image_clip,         1    },
+    {    "Line",         CScriptEngine::image_line,         1    },
+    {    "Rect",         CScriptEngine::image_rect,         1    },
+    {    "Ellipse",      CScriptEngine::image_ellipse,      1    },
+    {    "SetPixel",     CScriptEngine::image_setpixel,     1    },
+    {    "GetPixel",     CScriptEngine::image_getpixel,     1    },
+    {    "FlatPoly",     CScriptEngine::image_flatpoly,     1    },
+    {    NULL,    NULL }
 };
 
 PyTypeObject CScriptEngine::imagetype;
@@ -76,9 +76,9 @@ void CScriptEngine::Image_Destroy(PyObject* self)
 PyObject* CScriptEngine::Image_GetAttribute(PyObject* self,char* name)
 {
     if (!strcmp(name,"width"))
-        return Py_BuildValue("i",gfxImageWidth(((v_ImageObject*)self)->data));		// @_@;
+        return Py_BuildValue("i",gfxImageWidth(((v_ImageObject*)self)->data));          // @_@;
     if (!strcmp(name,"height"))
-        return Py_BuildValue("i",gfxImageHeight(((v_ImageObject*)self)->data));		// yipes
+        return Py_BuildValue("i",gfxImageHeight(((v_ImageObject*)self)->data));         // yipes
     
     return Py_FindMethod(image_methods,self,name);
 }

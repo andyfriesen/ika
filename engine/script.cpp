@@ -2,6 +2,7 @@
 #include "fileio.h"
 #include "log.h"
 
+#include "python.h"
 #include "python_stdlib.h"
 #include "py_image.h"
 #include "py_entity.h"

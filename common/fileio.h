@@ -5,11 +5,11 @@
 
 class File
 {
-    enum	filemode
+    enum    FileMode
     {
         closed,
-            open_read,
-            open_write
+        open_read,
+        open_write
     };
     
     struct SDirectoryInfo
@@ -20,7 +20,7 @@ class File
     
     // Directory structure handling things
 private:
-    static std::vector<SDirectoryInfo> directoryinfo;
+    static vector<SDirectoryInfo> directoryinfo;
     string GetRealPath(const string& fname);
 public:
     static void AddPath(string sExtension,string sPath);
@@ -32,7 +32,7 @@ public:
     // Actual file junk
 private:
     FILE *f;
-    filemode mode;
+    FileMode mode;
 public:
     File(void);
     ~File(void);

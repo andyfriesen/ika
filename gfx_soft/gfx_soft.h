@@ -31,7 +31,7 @@ class SImage
 public:
     int	    nWidth,nHeight;
     int	    nPitch;				// pitch is in pixels
-    BGRA*   pData;
+    RGBA*   pData;
     Rect    rClip;
     
     bool (*Blit)(handle img,int x,int y);

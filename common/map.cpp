@@ -25,7 +25,7 @@ MapClip::~MapClip()
 
 void MapClip::Free()
 {
-    for (int i=0; i<pData.size(); i++)
+    for (u32 i=0; i<pData.size(); i++)
     {
         if (pData[i])
             delete[] pData[i];
@@ -144,7 +144,7 @@ void Map::Paste(MapClip &mc,int x,int y,int destlayer)
         return;
     }
     
-    for (int i=0; i<mc.pData.size(); i++)    // else
+    for (u32 i=0; i<mc.pData.size(); i++)    // else
         if (mc.bUsed[i])
             Paste(mc,x,y,i,i,true);        // copy whichever layer to wherever
 }
@@ -259,7 +259,7 @@ void Map::New()
     pData.resize(1);
     info.resize(1);
     nLayers=1;
-    pData[0]=new u32[nWidth*nHeight];                    // layer data
+    pData[0]=new u32[nWidth*nHeight];                   // layer data
     ZeroMemory(pData[0],nWidth*nHeight*sizeof(u32));    // clear it
     
     pObstruct=new u8[nWidth*nHeight];
@@ -300,11 +300,11 @@ bool Map::Importv2Map(File& f)
     f.Read(i);
     
     char c[255];
-    f.Read(c,60);    sVSPname=c;
-    f.Read(c,60);    sMusicname=c;
-    f.Read(c,20);    sRenderstring=c;
-    f.Read(wTemp);    nStartx=wTemp;
-    f.Read(wTemp);    nStarty=wTemp;
+    f.Read(c,60);   sVSPname=c;
+    f.Read(c,60);   sMusicname=c;
+    f.Read(c,20);   sRenderstring=c;
+    f.Read(wTemp);  nStartx=wTemp;
+    f.Read(wTemp);  nStarty=wTemp;
     f.Read(c,51);                        // don't ask me!
     
     f.Read(cTemp);
@@ -314,7 +314,7 @@ bool Map::Importv2Map(File& f)
     {
         layer_r templay;
        
-        f.Read(&templay,12);            // WHAT THE BLOODY FUCK
+        f.Read(&templay,12);            // ...... -_-;
         
         // If any maps exist which have different layer sizes, this could cause problems.
         nWidth=templay.sizex;   nHeight=templay.sizey;
@@ -786,37 +786,38 @@ bool Map::Save(const char* fname)
 }
 
 void Map::Resize(int newx,int newy)
-/* note to self:  This routine really messes with the memory.  Make damn
-sure it works right, because if it doesn't, all hell can break loose.
-This is directly ported from MapEd 2+i
+/*
+    note to self:  This routine really messes with the memory.  Make damn
+    sure it works right, because if it doesn't, all hell can break loose.
+    This is directly ported from MapEd 2+i
 
-  Coming back to this after howevermany months of not looking at it, I think
-  "dude... this is ugly", and yet I can't think of any way to clean it up.
-  *shrugs*                                                                
+    Coming back to this after howevermany months of not looking at it, I think
+    "dude... this is ugly", and yet I can't think of any way to clean it up.
+    *shrugs*
 */
 {
     
-    int maxx,maxy;                                                    // how many tiles in each axis to be copied
+    int maxx,maxy;                                                  // how many tiles in each axis to be copied
     int oldx,oldy;
     int x,y;                                                        // loop counters
     
     oldx=nWidth; oldy=nHeight;
     
     maxx=(oldx<newx)?oldx:newx;
-    maxy=(oldy<newy)?oldy:newy;                                        // whichever is smaller
+    maxy=(oldy<newy)?oldy:newy;                                     // whichever is smaller
     
-    u32* pTemp=new u32[newx*newy];                                        // first the zone layer
+    u32* pTemp=new u32[newx*newy];                                  // first the zone layer
     memset(pTemp,0,newx*newy*sizeof(u32));
     for (y=0; y<maxy; y++)
     {
         for (x=0; x<maxx; x++)
             pTemp[y*newx+x] = pZone[y*oldx+x];
     }
-    delete[] pZone;                                                    // dump the old data
+    delete[] pZone;                                                 // dump the old data
     pZone=pTemp;                                                    // and use the new data instead
     
     
-    u8* pcTemp=new u8[newx*newy];                                // now the obstructions
+    u8* pcTemp=new u8[newx*newy];                                   // now the obstructions
     memset(pcTemp,0,newx*newy);
     for (y=0; y<maxy; y++)
     {
@@ -827,7 +828,7 @@ This is directly ported from MapEd 2+i
     pObstruct=pcTemp;
     
     
-    for (int curlayer=0; curlayer<NumLayers(); curlayer++)            // and finally, the tile layers
+    for (int curlayer=0; curlayer<NumLayers(); curlayer++)          // and finally, the tile layers
     {
         
         u32* pTemp=new u32[newx*newy];
@@ -840,21 +841,21 @@ This is directly ported from MapEd 2+i
             pData[curlayer]=pTemp;
             
     }
-    this->nWidth=newx; this->nHeight=newy;                            // whoops, one must be careful to not clog one's namespace up. >_<
+    this->nWidth=newx; this->nHeight=newy;                          // whoops, one must be careful to not clog one's namespace up. >_<
 }
 
 void Map::AddLayer(int pos)
 {
     // TODO: make this actually use the pos variable. :P
-    //    if (nLayerss) return;                                    // TODO: Remove this
+    //    if (nLayerss) return;                                     // TODO: Remove this
     
     SMapLayerInfo newlay;
     
-    ZeroMemory(&newlay,sizeof newlay);                                // set everything to 0, just in case.
+    ZeroMemory(&newlay,sizeof newlay);                              // set everything to 0, just in case.
     newlay.pmulx = newlay.pdivx = 1;
     newlay.pmuly = newlay.pdivy = 1;
     u32* pTemp=new u32[nWidth*nHeight];
-    ZeroMemory(pTemp,nWidth*nHeight*sizeof(u32));                    // make sure the new layer is empty
+    ZeroMemory(pTemp,nWidth*nHeight*sizeof(u32));                   // make sure the new layer is empty
     
     info.push_back(newlay);
     pData.push_back(pTemp);

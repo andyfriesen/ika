@@ -93,8 +93,8 @@ bool OpaqueBlit(handle img,int x,int y)
     DoClipping(x,y,xstart,xlen,ystart,ylen,hRenderdest->rClip);
     if (xlen<1 || ylen<1)	return true;	// offscreen
     
-    BGRA* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
-    BGRA* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
+    RGBA* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    RGBA* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
 
 #ifdef _DEBUG
     if (!pDest)
@@ -161,8 +161,8 @@ bool SpriteBlit(handle img,int x,int y)
     DoClipping(x,y,xstart,xlen,ystart,ylen,hRenderdest->rClip);
     if (xlen<1 || ylen<1)	return true;	// offscreen
     
-    BGRA* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
-    BGRA* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
+    RGBA* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    RGBA* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
     
 #ifndef USE_ASM
     int destinc=hRenderdest->nPitch-xlen;
@@ -438,8 +438,8 @@ bool OpaqueScaleBlit(handle img,int cx,int cy,int w,int h)
     ix=xs;
     iy=ys&0xFFFF;
     
-    BGRA* src	=img->pData+((ys>>16)*img->nPitch);
-    BGRA* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    RGBA* src	=img->pData+((ys>>16)*img->nPitch);
+    RGBA* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
     
     x=0;
     y=h;
@@ -500,8 +500,8 @@ bool SpriteScaleBlit(handle img,int cx,int cy,int w,int h)
     ix=xs;
     iy=ys&0xFFFF;
     
-    BGRA* src	=img->pData+((ys>>16)*img->nPitch);
-    BGRA* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    RGBA* src	=img->pData+((ys>>16)*img->nPitch);
+    RGBA* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
     
     x=0;
     y=h;

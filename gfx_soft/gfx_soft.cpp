@@ -269,7 +269,7 @@ handle gfxCreateImage(int x,int y)
     
     temp=new SImage;
     
-    temp->pData=new BGRA[x*y];
+    temp->pData=new RGBA[x*y];
     //ZeroMemory(temp->pData,x*y*sizeof(u32));
     temp->nWidth=x;
     temp->nHeight=y;
@@ -315,7 +315,7 @@ bool gfxCopyPixelData(handle img,u32* data,int width,int height)
     
     delete[] img->pData;
     
-    img->pData=new BGRA[width*height];
+    img->pData=new RGBA[width*height];
     
     img->nWidth=width;
     img->nHeight=height;
@@ -326,15 +326,17 @@ bool gfxCopyPixelData(handle img,u32* data,int width,int height)
     {
         for (int x=0; x<width; x++)
         {
-            u32 c=*data++;
+/*            u32 c=*data++;
             
             int r,g,b,a;
             a=c>>24;
             r=(c>>16)&255;
             g=(c>>8)&255;
-            b=c&255;
+            b=c&255;*/
+
+            RGBA c=*data++;
             
-            img->pData[y*width+x]=(a<<24)|(b<<16)|(g<<8)|r;
+            img->pData[y*width+x]=c;//(a<<24)|(b<<16)|(g<<8)|r;
         }
     }   
 

@@ -13,7 +13,7 @@ bool gfxSetPixel(handle img,int x,int y,int colour)
         y<0 || y>=img->nHeight)
         return false;
     
-    BGRA* p=img->pData+y*img->nPitch+x;
+    RGBA* p=img->pData+y*img->nPitch+x;
     
     *p=Blend_Pixels(colour,img->pData[y*img->nPitch+x]);
     p->a=255;																				// max out the alpha
@@ -41,7 +41,7 @@ void HLine(handle img,int x1,int x2,int y,u32 colour)
     keepinrange(x1,img->rClip.left,img->rClip.right-1);
     keepinrange(x2,img->rClip.left,img->rClip.right-1);
     
-    BGRA* p=img->pData+(y*img->nPitch)+x1;
+    RGBA* p=img->pData+(y*img->nPitch)+x1;
     
     int xlen=x2-x1;
     
@@ -63,7 +63,7 @@ void VLine(handle img,int x,int y1,int y2,u32 colour)
     keepinrange(y1,img->rClip.top,img->rClip.bottom-1);
     keepinrange(y2,img->rClip.top,img->rClip.bottom-1);
     
-    BGRA* p=img->pData+(y1*img->nPitch)+x;
+    RGBA* p=img->pData+(y1*img->nPitch)+x;
     
     int yinc=img->nWidth;
     
