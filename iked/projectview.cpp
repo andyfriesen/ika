@@ -1,6 +1,6 @@
 #include "projectview.h"
 #include "main.h"
-
+#include "misc.h"
 
 struct CLeaf : public wxTreeItemData
 {
@@ -306,7 +306,7 @@ void CProjectWnd::OnSave(wxCommandEvent& event)
 {
     wxFileDialog dlg(
         this,
-        "Open File",
+        "Save File",
         "",
         "",
         "Project files (*.ikaprj)|*.ikaprj|"
@@ -316,7 +316,7 @@ void CProjectWnd::OnSave(wxCommandEvent& event)
 
     int result=dlg.ShowModal();
     if (result!=wxID_CANCEL)
-        Save(dlg.GetFilename().c_str());
+        Save(dlg.GetPath().c_str());
 }
 
 void CProjectWnd::Load(const char* fname)
@@ -325,35 +325,43 @@ void CProjectWnd::Load(const char* fname)
     {
         static void ReadNode(FILE* f,CProjectTree* pTreectrl,const wxTreeItemId& parentid)
         {
-            char name[100];
-            char type[100];
+            char s[1024];
 
             while (1)
             {
-                fscanf(f,"%s",name);
-                if (!stricmp(name,"END"))
+                if ( feof(f) )  break;
+
+                fgets(s,1024,f);
+                std::string sLine=s;
+
+                int p;
+                p=sLine.find("END");
+                if (p!=std::string::npos)
                     break;
 
-                fscanf(f,"%s",type);
-                
-                if (!stricmp(type,"FOLDER"))
+                p=sLine.rfind("FOLDER");
+                if (p!=std::string::npos)
                 {
+                    std::string sName=Trim(sLine.substr(0,p-1));
+
                     wxTreeItemId id;
 
                     if (parentid==-1)
                         id=pTreectrl->AddRoot("Project",-1,-1,new CLeaf("Project",t_folder));
                     else
-                        id=pTreectrl->AddFolder(parentid,name);
+                        id=pTreectrl->AddFolder(parentid,sName.c_str());
 
                     ReadNode(f,pTreectrl,id);
-                }
-                else if (!stricmp(type,"FILE"))
-                {
-                    pTreectrl->AddItem(parentid,name,name);
+
+                    continue;
                 }
 
-                if ( feof(f) )
-                    break;
+                p=sLine.rfind("FILE");
+                if (p!=std::string::npos)
+                {
+                    std::string sName=Trim(sLine.substr(0,p-1));
+                    pTreectrl->AddItem(parentid,sName.c_str(),sName.c_str());
+                }
             }
         }
     };

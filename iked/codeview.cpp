@@ -62,7 +62,7 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     pTextctrl=new wxStyledTextCtrl(this,id_ed,position,size,wxSTC_STYLE_INDENTGUIDE);
 
     // TODO: make this all mutable
-    wxFont font(8, wxMODERN, wxNORMAL, wxNORMAL);
+    wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
     pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     pTextctrl->StyleClearAll();
 
@@ -89,17 +89,18 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
         );
 
     // init the margins
-    pTextctrl->SetMarginWidth(linecountmargin,40);    // current line
-    pTextctrl->SetMarginType(linecountmargin,wxSTC_MARGIN_NUMBER);
-    pTextctrl->SetMarginSensitive(linecountmargin,false);
-    pTextctrl->SetMarginWidth(foldmargin,10);
-    pTextctrl->SetMarginType(foldmargin,wxSTC_MARGIN_SYMBOL);
-    pTextctrl->SetMarginSensitive(foldmargin,true);
-    pTextctrl->SetMarginMask(foldmargin,wxSTC_MASK_FOLDERS);
-    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN,wxSTC_MARK_MINUS);
-    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDER,wxSTC_MARK_PLUS);
-    pTextctrl->SetModEventMask(wxSTC_MOD_CHANGEFOLD);
-    pTextctrl->SetFoldFlags(16);
+    pTextctrl->SetMarginWidth       (linecountmargin,40);    // current line
+    pTextctrl->SetMarginType        (linecountmargin,wxSTC_MARGIN_NUMBER);
+    pTextctrl->SetMarginSensitive   (linecountmargin,false);
+
+    pTextctrl->SetMarginWidth       (foldmargin,10);
+    pTextctrl->SetMarginType        (foldmargin,wxSTC_MARGIN_SYMBOL);
+    pTextctrl->SetMarginSensitive   (foldmargin,true);
+    pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
+    pTextctrl->MarkerDefine         (wxSTC_MARKNUM_FOLDEROPEN,wxSTC_MARK_MINUS);
+    pTextctrl->MarkerDefine         (wxSTC_MARKNUM_FOLDER,wxSTC_MARK_PLUS);
+    pTextctrl->SetModEventMask      (wxSTC_MOD_CHANGEFOLD);
+    pTextctrl->SetFoldFlags         (16);
 
     if (fname)
     {

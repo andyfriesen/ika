@@ -52,4 +52,29 @@ char* GetCurrentDirectory()
     return s;
 }
 
-#include <windows.h>
+#include <string>
+
+const std::string Trim(std::string s)
+{
+    int pos=std::string::npos;
+
+    for (int i=0; i<s.length(); i++)
+    {
+        if (s[i]!=' ')
+        {
+            s=s.substr(i);
+            break;
+        }
+    }
+
+    for (i=s.length()-1; i; i--)
+    {
+        if (s[i]!=' ')
+        {
+            s=s.substr(0,i+1);
+            break;
+        }
+    }
+
+    return s;
+}

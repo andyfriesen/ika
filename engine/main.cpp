@@ -360,8 +360,8 @@ void CEngine::Render(const char* sTemprstring)
 {
     CDEBUG("render");
     char    rstring[255];
-    char*    p;
-    int        numlayers;
+    char*   p;
+    int     numlayers;
     
     if (!bMaploaded)    return;
     

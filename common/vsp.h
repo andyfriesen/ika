@@ -50,10 +50,10 @@ public:
     };
     
 private:
-    vector<CPixelMatrix>   tiles;  // tile images
+    vector<CPixelMatrix>   tiles;   // tile images
     
     char sDesc[64];
-    char sName[64];		// the VSPs filename
+    char sName[64];		    // the VSPs filename
     
     vector<AnimState>  vspanim;
     
@@ -73,10 +73,9 @@ public:
     void DeleteTile(int pos);
     inline void AppendTile() { AppendTiles(1); }
     void AppendTiles(int count=1);
-    void CopyTile(CPixelMatrix& tb,int pos); // Copies the tile into a buffer.
+    void CopyTile(CPixelMatrix& tb,int pos);        // Copies the tile into a buffer.
     void PasteTile(const CPixelMatrix& tb,int pos); // pastes the tile from a buffer
-    void TPasteTile(CPixelMatrix& tb,int pos); // transparently pastes the tile from a buffer
-    void To32bpp();
+    void TPasteTile(CPixelMatrix& tb,int pos);      // transparently pastes the tile from a buffer
     
     void SetPixel(int x,int y,int tileidx,int c);
     int  GetPixel(int x,int y,int tileidx);

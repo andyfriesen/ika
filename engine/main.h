@@ -11,7 +11,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "ika 0.12"
+#define VERSION "ika 0.13"
 
 // low level components/containers/etc..
 #include <list>

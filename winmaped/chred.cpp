@@ -133,6 +133,7 @@ void CCHReditor::Open()
     
     pChar->Load(sFilename);
     
+    sLastfilename=sFilename;
     nCurframe=0;
     curimage=pChar->GetFrame(nCurframe);
     PurgeUndo();
@@ -166,6 +167,7 @@ void CCHReditor::SaveAs()
     if (!GetSaveFileName(&ofn)) return;
     
     pChar->Save(sFilename);
+    sLastfilename=sFilename;
     bAltered=false;
 }
 

@@ -7,7 +7,7 @@ Things that just don't fit anywhere else, but are handy to have around.
 #ifndef MISC_H
 #define MISC_H
 
-//#include <windows.h>
+#include <string>
 
 template <typename T>
 void swap(T& a,T& b)
@@ -18,22 +18,12 @@ void swap(T& a,T& b)
     b=c;
 }
 
-/*template <typename T>
-T& min(T& a,T& b)
-{
-    return a<b?a:b;
-}
-
-template <typename T>
-T& max(T& a,T& b)
-{
-    return a<b?b:a;
-}*/
-
 int sgn(int x);
 int Random(int min,int max);
 char* va(char* format, ...);
 void ChangeDirectory(const char* s);
 char* GetCurrentDirectory();
+
+const std::string Trim(std::string s);
 
 #endif

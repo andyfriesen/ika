@@ -185,7 +185,7 @@ void CCHRfile::Save(const char* fname)
     
     f.Write((char)5);                                               // version - u8
     
-    f.Write(sDescription.c_str(),64);                               // desc    - 64 u8 string
+    f.Write(sDescription.c_str(),64);                               // desc    - 64 byte string
     
     int i;
     
