@@ -205,6 +205,9 @@
 				RelativePath="tilesetview.cpp">
 			</File>
 			<File
+				RelativePath=".\userdialog.cpp">
+			</File>
+			<File
 				RelativePath="video.cpp">
 			</File>
 			<File
@@ -309,6 +312,9 @@
 			</File>
 			<File
 				RelativePath="tilesetview.h">
+			</File>
+			<File
+				RelativePath=".\userdialog.h">
 			</File>
 			<File
 				RelativePath="video.h">

@@ -8,6 +8,8 @@
 
 #include "scriptengine.h" // geh
 
+#include "log.h"
+
 Script::Script(const std::string& fileName)
     : module(0)
     , onMouseDown(0)

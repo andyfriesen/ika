@@ -15,6 +15,7 @@ namespace Log
 {
     void Init(const char* fname);
     void Write(const char*, ...);        // writes to the log file
+    void Write(const std::string& s);
     void Writen(const char*, ...);       // same, but does not append a newline
 };
 

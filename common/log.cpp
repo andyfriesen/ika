@@ -64,6 +64,11 @@ void Log::Write(const char* s, ...)
     logfile << sTemp << endl;
 }
 
+void Log::Write(const std::string& s)
+{
+    logfile << s << endl;
+}
+
 // -----------------------
 
 #ifdef LOG_CALLBACK

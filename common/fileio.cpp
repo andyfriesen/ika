@@ -228,9 +228,11 @@ std::string File::ReadAll()
     memset(c, 0, size + 1);
     //c[size] = 0;
     Seek(0);
-    Read(c, size);
+    // Need the number of bytes actually read, since it may be different than 
+    // the length of the file due to newline conversion
+    int len = fread(c, 1, size, f);
 
-    std::string s(c);
+    std::string s(c, len);
     delete[] c;
     return s;
 }
