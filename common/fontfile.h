@@ -25,14 +25,23 @@ struct FontFile {
     bool Load(const char* fname);                           //!< Reads data from the specified filename.
     void Save(const char* fname);                           //!< Writes data to the specified filename, destroying any data that was there.
     
-    uint          NumSubSets()           const { return set.size();                     }   //!< Returns the number of subsets.
-    SSubSet&      GetSubSet(int subset)  const { return (SSubSet&)set[subset];          }   //!< Returns the specified subset table.
-    Canvas& GetGlyph(int glyphidx) const { return (Canvas&)glyph[glyphidx]; }   //!< Returns the specified glyph.
-    uint          NumGlyphs()            const { return glyph.size();                   }   //!< Returns the number of glyphs in the font.
+    /// Returns the number of subsets.
+    uint NumSubSets() const;
 
-    int           Width()                const { return width;                         }   //!< Returns the width of the widest character in the font
-    int           Height()               const { return height;                        }   //!< Returns the height of the highest character in the font
+    /// Returns the specified subset table.
+    const SSubSet& GetSubSet(int subset) const;
 
+    /// Returns the specified glyph.
+    const Canvas& GetGlyph(int glyphidx) const;
+
+    /// Returns the number of glyphs in the font.
+    uint NumGlyphs() const;
+
+    /// Returns the width of the widest character in the font
+    int Width() const;
+
+    /// Returns the height of the highest character in the font
+    int Height() const;
     
 private:
     bool Load8bppFont(File& f);

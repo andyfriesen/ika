@@ -274,9 +274,6 @@
 			<File
 				RelativePath=".\tileset.h">
 			</File>
-			<File
-				RelativePath=".\wx_events.h">
-			</File>
 		</Filter>
 		<Filter
 			Name="Resources"

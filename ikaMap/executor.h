@@ -30,8 +30,7 @@ struct TileSetView;
  * Get methods never ever fire events.  Set methods can be assumed to fire
  * the appropriate event.
  */
-struct Executor
-{
+struct Executor {
     virtual void HandleCommand(::Command* cmd) = 0;
     virtual void AddCommand(::Command* cmd) = 0;
 

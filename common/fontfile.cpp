@@ -9,6 +9,31 @@ FontFile::~FontFile()
     glyph.clear();
 }
 
+uint FontFile::NumSubSets() const { 
+    return set.size();
+}
+
+const FontFile::SSubSet& FontFile::GetSubSet(int subset) const { 
+    return set[subset];          
+}
+
+const Canvas& FontFile::GetGlyph(int glyphidx) const { 
+    return glyph[glyphidx]; 
+}
+
+uint FontFile::NumGlyphs() const { 
+    return glyph.size();                   
+}
+
+int FontFile::Width() const {
+    return width;
+}
+
+int FontFile::Height() const {
+    return height;
+}
+
+
 bool FontFile::Load8bppFont(File& f)
 {
     short int width, height, subsetcount;
@@ -113,87 +138,94 @@ bool FontFile::Load16bppFont(File& f)
     return true;
 }
 
-bool FontFile::Load32bppFont(File& f)
-{
+bool FontFile::Load32bppFont(File& f) {
     f.Seek(0);
     
-    char sSig[6];
-    f.Read(sSig, 6);
-    if (memcmp(sSig, "FONT27", 6)!=0)
+    char signature[6];
+    f.Read(signature, 6);
+    if (memcmp(signature, "FONT27", 6) != 0) {
         return false;
+    }
     
-    char nSubsets;
-    u16  nGlyphs;
+    u8   subsetCount;
+    u16  glyphCount;
     
-    f.Read(nSubsets);
-    f.Read(nGlyphs);
+    f.Read(subsetCount);
+    f.Read(glyphCount);
     
-    set.resize(nSubsets);
-    for (int nSet = 0; nSet < nSubsets; nSet++)
-    {
+    set.resize(subsetCount);
+    for (int nSet = 0; nSet < subsetCount; nSet++) {
         u16 i[256];
         f.Read(i, 256 * sizeof(u16));
         
-        for (int j = 0; j < 256; j++)
-            set[nSet].glyphIndex[j]=i[j];
+        for (int j = 0; j < 256; j++) {
+            set[nSet].glyphIndex[j] = i[j];
+        }
     }
     
-    std::vector<int>    nGlyphwidth;
-    std::vector<int>    nGlyphheight;
-    int nGlyphdatasize = 0;
+    std::vector<int>    glyphWidths;
+    std::vector<int>    glyphHeights;
+    int dataSize = 0;
 
     width = height = 0;
     
-    for (int i = 0; i < nGlyphs; i++)
-    {
+    for (int i = 0; i < glyphCount; i++) {
         u16 w, h;
         f.Read(w);      f.Read(h);
-        nGlyphwidth.push_back(w);
-        nGlyphheight.push_back(h);
-        nGlyphdatasize += w * h;
+        glyphWidths.push_back(w);
+        glyphHeights.push_back(h);
+        dataSize += w * h;
 
         if (width < w) width = w;
         if (height < h) height = h;
     }
     
-    ScopedArray<RGBA> pBuffer(new RGBA[nGlyphdatasize]);
-    f.ReadCompressed(pBuffer.get(), nGlyphdatasize * sizeof(RGBA));
+    ScopedArray<RGBA> pBuffer(new RGBA[dataSize]);
+    f.ReadCompressed(pBuffer.get(), dataSize * sizeof(RGBA));
     
-    glyph.resize(nGlyphs);
+    glyph.resize(glyphCount);
     RGBA* p = pBuffer.get();
-    for (int nGlyph = 0; nGlyph < nGlyphs; nGlyph++)
-    {
-        glyph[nGlyph].CopyPixelData(p, nGlyphwidth[nGlyph], nGlyphheight[nGlyph]);
-        p += nGlyphwidth[nGlyph]*nGlyphheight[nGlyph];
+    for (int nGlyph = 0; nGlyph < glyphCount; nGlyph++) {
+        glyph[nGlyph].CopyPixelData(p, glyphWidths[nGlyph], glyphHeights[nGlyph]);
+
+        p += glyphWidths[nGlyph] * glyphHeights[nGlyph];
     }
     
     f.Close();
     return true;
 }
 
-bool FontFile::Load(const char* fname)
-{
+bool FontFile::Load(const char* fname) {
     File f;
-    bool bResult;
+    bool result;
     
-    bResult = f.OpenRead(fname);
-    if (!bResult)
+    result = f.OpenRead(fname);
+    if (!result)
         return false;
     
     char magic;
     f.Read(magic);
     
-    switch (magic)
-    {
-    case 1:     bResult = Load8bppFont(f);              break;
-    case 2:     bResult = Load16bppFont(f);             break;
-    case 'F':   bResult = Load32bppFont(f);             break;
-    default:    bResult = false;
+    switch (magic) {
+        case 1: {    
+            result = Load8bppFont(f);              
+            break;
+        }
+        case 2: {    
+            result = Load16bppFont(f);             
+            break;
+        }
+        case 'F': {  
+            result = Load32bppFont(f);             
+            break;
+        }
+        default: {   
+            result = false;
+        }
     };
     
-    return bResult;     
+    return result;     
 }
 
-void FontFile::Save(const char* fname)
-{
+void FontFile::Save(const char* fname) {
 }

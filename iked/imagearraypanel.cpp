@@ -1,7 +1,6 @@
 
 #include "imagearraypanel.h"
 #include "imagebank.h"
-#include "wx_events.h"
 
 namespace iked {
 
@@ -11,6 +10,9 @@ namespace iked {
         EVT_LEFT_UP(ImageArrayPanel::onLeftClick)
         EVT_RIGHT_UP(ImageArrayPanel::onRightClick)
         EVT_LEFT_DCLICK(ImageArrayPanel::onDoubleClick)
+
+        EVT_SCROLLWIN(ImageArrayPanel::onScroll)
+        EVT_SIZE(ImageArrayPanel::onSize)
     END_EVENT_TABLE()
 
     ImageArrayPanel::ImageArrayPanel(wxWindow* parent, ImageArrayDocument* doc)
@@ -19,7 +21,10 @@ namespace iked {
         , selectedImage(0)
         , scrollPos(0)
         , imagePadSize(0)
-    {}
+    {
+        this->Zoom(2);
+        Refresh();
+    }
 
     int ImageArrayPanel::getImageAtPos(int x, int y) {
         y += scrollPos;
@@ -33,7 +38,7 @@ namespace iked {
 
         int index = y * cols + x;
 
-        if (0 <= index && index <= document->getCount()) {
+        if (0 <= index && index < document->getCount()) {
             return index;
         } else {
             return -1;
@@ -41,6 +46,7 @@ namespace iked {
     }
 
     void ImageArrayPanel::getImagePos(int index, int* x, int* y) {
+#if 0
         int xstep = document->getWidth()  + imagePadSize;
         int ystep = document->getHeight() + imagePadSize;
 
@@ -52,9 +58,23 @@ namespace iked {
         *x *= xstep;
         *y *= ystep;
         *y += scrollPos;
+#else
+        if (index > document->getCount()) {
+            *x = *y = -1;
+        } else {
+            uint frameWidth  = document->getWidth()  + (imagePadSize ? 1 : 0);
+            uint frameHeight = document->getHeight() + (imagePadSize ? 1 : 0);
+            uint framesPerRow = getNumCols();
+
+            *y = (index / framesPerRow) * frameHeight - scrollPos;
+            *x = (index % framesPerRow) * frameWidth;
+        }
+#endif
     }
 
     void ImageArrayPanel::onSize(wxSizeEvent& event) {
+        updateScrollbar();
+        GraphicsFrame::OnSize(event);
         Refresh();
     }
 
@@ -81,6 +101,7 @@ namespace iked {
     }
 
     void ImageArrayPanel::onLeftClick(wxMouseEvent& event) {
+        GraphicsFrame::OnMouseEvent(event);
         wxPoint p = event.GetPosition();
 
         int index = getImageAtPos(p.x, p.y);
@@ -92,6 +113,7 @@ namespace iked {
     }
 
     void ImageArrayPanel::onRightClick(wxMouseEvent& event) {
+        GraphicsFrame::OnMouseEvent(event);
         wxPoint p = event.GetPosition();
 
         int index = getImageAtPos(p.x, p.y);
@@ -103,6 +125,7 @@ namespace iked {
     }
 
     void ImageArrayPanel::onDoubleClick(wxMouseEvent& event) {
+        GraphicsFrame::OnMouseEvent(event);
         wxPoint p = event.GetPosition();
 
         int index = getImageAtPos(p.x, p.y);
@@ -115,7 +138,9 @@ namespace iked {
     
     void ImageArrayPanel::onPaint(wxPaintEvent& event){
         wxPaintDC paintDC(this);
+
         if (!document) {
+            // This sometimes happens during the constructor
             return;
         }
 
@@ -127,6 +152,8 @@ namespace iked {
         int xstep = framex + imagePadSize;
         int ystep = framey + imagePadSize;
 
+        int yadjust = scrollPos % ystep;
+
         int cols = max(1, width / xstep);
 
         SetCurrent();
@@ -134,13 +161,13 @@ namespace iked {
 
         int x = 0;
         int y = 0;
-        int index = scrollPos * cols;
+        int index = (scrollPos / ystep) * cols;
         while (index < document->getCount()) {
-            Blit(document->getImage(index), x * xstep, y * ystep, true);
+            Blit(document->getImage(index), x * xstep, y * ystep - yadjust, true);
 
             index++;
             x++;
-            if (x > cols) {
+            if (x >= cols) {
                 x = 0;
                 y++;
             }
@@ -157,21 +184,11 @@ namespace iked {
     }
 
     void ImageArrayPanel::updateScrollbar() {
-        const int width = LogicalWidth();
-        const int height = LogicalHeight();
-
-        int cols = max(1, width / document->getWidth());
-        int rows = height / document->getHeight();
-
-        int totalHeight = document->getCount() / cols + 1;
-
-        scrollPos = clamp(scrollPos, 0, rows);
-
-        SetScrollbar(wxVERTICAL, scrollPos, rows, totalHeight, true);
+        SetScrollbar(wxVERTICAL, scrollPos, LogicalHeight(), getNumRows() * document->getHeight());
     }
 
     int ImageArrayPanel::getNumCols() {
-        return max(LogicalWidth() / (document->getWidth() + imagePadSize), 1);
+        return max(1, LogicalWidth() / (document->getWidth() + imagePadSize));
     }
 
     int ImageArrayPanel::getNumRows() {

@@ -67,7 +67,9 @@ namespace iked {
 	allFrames.erase(this);
     }
 
-    void GraphicsFrame::OnErase(wxEraseEvent&) { }
+    void GraphicsFrame::OnErase(wxEraseEvent&) { 
+        // Do nothing.
+    }
 
     void GraphicsFrame::OnSize(wxSizeEvent& event) {
 	int w = event.GetSize().GetWidth();
@@ -88,14 +90,6 @@ namespace iked {
 	// Tweak the mouse position, so that the parent doesn't have to compensate for interacting with the frame.
 	event.m_x = event.m_x * zoomFactor / nZoomscale;
 	event.m_y = event.m_y * zoomFactor / nZoomscale;
-
-	// Relay to the parent.
-	wxPostEvent(GetParent(), event);
-    }
-
-    void GraphicsFrame::OnPaint(wxPaintEvent& event) {
-	wxPaintDC dc(this);
-	wxPostEvent(GetParent(), event);
     }
 
     void GraphicsFrame::Rect(int x, int y, int w, int h, RGBA colour) {

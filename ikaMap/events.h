@@ -8,8 +8,7 @@ struct Map;
 struct TileSet;
 
 
-struct MapTileSetEvent
-{
+struct MapTileSetEvent {
     Map* map;
     TileSet* tileSet;
     int arg;
@@ -20,8 +19,7 @@ struct MapTileSetEvent
     {}
 };
 
-struct MapEvent
-{
+struct MapEvent {
     Map* map;
     int  arg; // context dependant.
     MapEvent(Map* m, int a = 0)
@@ -34,8 +32,7 @@ struct MapEvent
     {}
 };
 
-struct TileSetEvent
-{
+struct TileSetEvent {
     TileSet* tileSet;
     int arg; // context dependant
     TileSetEvent(TileSet* ts, int a = 0)

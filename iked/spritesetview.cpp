@@ -7,7 +7,6 @@
 #include "main.h"
 #include "movescripteditor.h"
 #include "spritesetview.h"
-#include "wx_events.h"
 
 namespace iked {
 
@@ -52,8 +51,6 @@ namespace iked {
         EVT_MENU(id_filesaveas, SpriteSetView::onSaveAs)
         EVT_MENU(id_fileclose, SpriteSetView::onClose)
         
-        EVT_COMMAND(EVT_IMAGE_RIGHT_CLICK, -1, SpriteSetView::onRightClickFrame)
-
     END_EVENT_TABLE()
 
     SpriteSetView::SpriteSetView(MainWindow* parentwnd, Document* doc, const std::string& fileName)

@@ -34,7 +34,6 @@ namespace iked {
         void OnErase(wxEraseEvent&);
         void OnSize(wxSizeEvent& event);
         void OnMouseEvent(wxMouseEvent& event);
-        void OnPaint(wxPaintEvent& event);
 
         int LogicalWidth() const;
         int LogicalHeight() const;

@@ -17,7 +17,8 @@ namespace {
      * operator(), allowing us compile time parameterization as well as
      * runtime.  Delegate implements the same interface for efficiency
      * reasons; it could just as easily be wrapped by a Callable, but then
-     * calling it involves three levels of virtual indirection.  blech.
+     * calling it involves three levels of virtual indirection for no reason.
+     * blech.
      */
     template <typename ArgType>
     struct CallableBase {
@@ -111,8 +112,8 @@ struct Listener {
         for (typename CallSet::iterator
             iter = _list.begin();
             iter != _list.end();
-            iter++)
-        {
+            iter++
+        ) {
             (**iter)(arg);
         }
     }

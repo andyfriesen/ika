@@ -35,7 +35,7 @@ namespace Ika {
         _glyphs.resize(_fontFile.NumGlyphs());
 
         for (uint i = 0; i < _fontFile.NumGlyphs(); i++) {
-            Canvas& glyph = _fontFile.GetGlyph(i);
+            const Canvas& glyph = _fontFile.GetGlyph(i);
             _width = max<uint>(_width, glyph.Width());
             _height = max<uint>(_height, glyph.Height());
         }
@@ -67,14 +67,14 @@ namespace Ika {
         Video::Image* img = _glyphs[glyphIndex];
 
         if (!img) {
-            img = _video->CreateImage(_fontFile.GetGlyph(glyphIndex));
+            img = _video->CreateImage(const_cast<Canvas&>(_fontFile.GetGlyph(glyphIndex)));
             _glyphs[glyphIndex] = img;
         }
 
         return img;
     }
 
-    Canvas& Font::GetGlyphCanvas(char c, uint subset) const {
+    const Canvas& Font::GetGlyphCanvas(char c, uint subset) const {
         return _fontFile.GetGlyph(GetGlyphIndex(c, subset));
     }
 
@@ -82,7 +82,6 @@ namespace Ika {
         Video::Image* img = GetGlyphImage(c, subset);
 
         if (img) {
-            //_video->BlitImage(img, x, y);
             _video->TintBlitImage(img, x, y, colour.i);
             x += img->Width();
         }
@@ -94,7 +93,7 @@ namespace Ika {
 
         assert((uint)GetGlyphIndex(c, subset) < _fontFile.NumGlyphs()); // paranoia check
 
-        Canvas& glyph = GetGlyphCanvas(c, subset);
+        Canvas& glyph = const_cast<Canvas&>(GetGlyphCanvas(c, subset));
 
         switch (blendMode) {
             default:

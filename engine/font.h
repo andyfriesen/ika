@@ -26,7 +26,7 @@ namespace Ika {
         int GetGlyphIndex(char c, uint subset) const;
 
         Video::Image* GetGlyphImage(char c, uint subset);
-        Canvas& GetGlyphCanvas(char c, uint subset) const;
+        const Canvas& GetGlyphCanvas(char c, uint subset) const;
 
         void PrintChar(int& x, int y, uint subset, char c, RGBA colour);
         void PrintChar(int& x, int y, uint subset, char c, RGBA colour, Canvas& dest, Video::BlendMode blendMode);

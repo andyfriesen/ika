@@ -43,8 +43,7 @@ IMPLEMENT_APP(Application)
 
 // HACK.  This shouldn't be needed in release mode. -_-
 #ifndef _DEBUG
-void __cdecl wxAssert(int, char const*, int, char const*, char const*)
-{
+void __cdecl wxAssert(int, char const*, int, char const*, char const*) {
     exit(-1);
 }
 #endif

@@ -300,6 +300,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         tilesImported.add       (_tileSetView, &TileSetView::OnTileSetChange);
         tileSetChanged.add      (_tileSetView, &TileSetView::OnTileSetChange);
 
+        // Must explicitly call bind() because these methods need to convert a MapTileSetEvent to a MapEvent or a TileSetEvent
         mapLoaded.add           (bind(_mapView, &MapView::OnMapChange));
         mapLoaded.add           (bind(_tileSetView, &TileSetView::OnTileSetChange));
         mapLoaded.add           (bind(_layerList, &LayerList::OnMapLayersChanged));
