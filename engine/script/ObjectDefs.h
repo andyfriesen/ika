@@ -16,12 +16,12 @@ struct Entity;
 struct Engine;
 struct Canvas;
 
-class Input;
-class InputDevice;
-class InputControl;
-class Keyboard;
-class Mouse;
-class Joystick;
+struct Input;
+struct InputDevice;
+struct InputControl;
+struct Keyboard;
+struct Mouse;
+struct Joystick;
 struct Tileset;
 
 namespace audiere   {   

@@ -380,7 +380,7 @@ static void DecompressVerge3(void* dest, int outSize, FILE* f) {
 
 static void CompressVerge3(void* src, int size, FILE* f) {
     uLongf bufferSize = size * 101 / 100 + 12;    // 0.1% larger than source, plus 12 bytes. (we splurge and give it a whole 1%)
-    ScopedArray<u8> buffer = new u8[bufferSize];
+    ScopedArray<u8> buffer(new u8[bufferSize]);
 
     int result = compress((Bytef*)buffer.get(), &bufferSize, (Bytef*)src, size);
     if (result != Z_OK) {
@@ -627,7 +627,7 @@ void ExportVerge3Map(const std::string& fileName, Map* map) {
         fputw(lay->Height(), f);
         fputc(0, f); // lucent
 
-        ScopedArray<u16> data16 = new u16[lay->Width() * lay->Height()];
+        ScopedArray<u16> data16(new u16[lay->Width() * lay->Height()]);
         std::copy(lay->tiles.GetPointer(0, 0), lay->tiles.GetPointer(0, 0) + lay->Width() * lay->Height(), data16.get());
         CompressVerge3(data16.get(), lay->Width() * lay->Height() * sizeof(u16), f);
     }
@@ -635,7 +635,7 @@ void ExportVerge3Map(const std::string& fileName, Map* map) {
     // for now, don't write any obstruction or zone data
     int width = map->GetLayer(0)->Width();
     int height = map->GetLayer(0)->Height();
-    ScopedArray<u8> obsData = new u8[width * height];
+    ScopedArray<u8> obsData(new u8[width * height]);
     std::fill(obsData.get(), obsData.get() + width * height, 0);
     CompressVerge3(obsData.get(), width * height, f);
 

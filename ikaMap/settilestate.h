@@ -7,10 +7,10 @@
 
 struct CompositeCommand;
 
-struct TileSetState : EditState
+struct TilesetState : EditState
 {
 public:
-    TileSetState(Executor* e);
+    TilesetState(Executor* e);
 
     virtual void OnMouseDown(wxMouseEvent& event);
     virtual void OnMouseUp(wxMouseEvent& event);

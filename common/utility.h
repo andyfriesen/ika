@@ -12,7 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "boost/foreach.hpp"
+#include "common/foreach.hpp"
 
 #if defined(_MSC_VER)
 #   define DEPRECATED __declspec(deprecated)
@@ -110,7 +110,7 @@ inline T* the() {
 }
 
 // Simple little predicate for for_each
-template <class T>
+template <typename T>
 struct Destroy {
     void operator()(T* t) { delete t; } 
 };
@@ -137,12 +137,8 @@ uint hexToInt(const std::string& s);
 //--
 
 /// Pointer that deletes its datum when it dies.
-template <class T>
-class ScopedPtr {
-    T* _data;
-    ScopedPtr(ScopedPtr&){} // no copy!
-
-public:
+template <typename T>
+struct ScopedPtr {
     ScopedPtr(T* t)  : _data(t) {}
     ScopedPtr()      : _data(0) {}
     ~ScopedPtr()     { delete _data;  }
@@ -158,15 +154,15 @@ public:
         _data = t;
         return *this;
     }
+
+private:
+    T* _data;
+    ScopedPtr(ScopedPtr&){} // no copy!
 };
 
 /// Same as ScopedPtr, except it uses delete[]
-template <class T>
-class ScopedArray {
-    T* _data;
-    ScopedArray(ScopedArray&){} // no copy!
-
-public:
+template <typename T>
+struct ScopedArray {
     ScopedArray(T* t)  : _data(t) {}
     ScopedArray()      : _data(0) {}
     ~ScopedArray()     { delete[] _data;  }
@@ -183,28 +179,39 @@ public:
         _data = t;
         return *this;
     }
+
+private:
+    T* _data;
+    ScopedArray(ScopedArray&){} // no copy!
 };
 
-/*
- * Helper class for creating types that cannot be derived.
- * Source: http://www.codeguru.com/Cpp/Cpp/cpp_mfc/stl/article.php/c4143/
- * Usage:
- *
- * struct MyFinalClass : virtual FinalClass<MyFinalClass> { ... };
- */
-template <typename T>
-struct FinalClass {
-private:
-    ~FinalClass() { }
-    friend class T;
-};
+#if 0
+    /*
+     * Helper class for creating types that cannot be derived.
+     * Source: http://www.codeguru.com/Cpp/Cpp/cpp_mfc/stl/article.php/c4143/
+     * Usage:
+     *
+     * struct MyFinalClass : virtual FinalClass<MyFinalClass> { ... };
+     *
+     * Does not work in g++.  Only works in MSVC because it specifically
+     * defies the standard.
+     *
+     * C++ is stupid.
+     */
+    template <typename T>
+    struct FinalClass {
+    private:
+        ~FinalClass() { }
+        friend class T;
+    };
+#endif
 
 namespace Path {
     // ifdef and blah blah for platform independance
 #ifdef _WIN32
     const std::string delimiters = "\\/";
 #else // assume unix
-    const std::string delimiters = '/';
+    const std::string delimiters = "/";
 #endif
 
     // strips the path from the filename, and returns it.

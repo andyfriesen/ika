@@ -3,7 +3,9 @@ using System.Data;
 using System.Drawing;
 using System.Windows.Forms;
 using WeifenLuo.WinFormsUI;
+
 using rho.Documents;
+using rho.Dialogs;
 
 namespace rho.SpriteEditor {
 
@@ -63,6 +65,8 @@ namespace rho.SpriteEditor {
                     MenuBuilder.menu("&Copy", new EventHandler(CopyFrame), Shortcut.CtrlC),
                     MenuBuilder.menu("&Paste over", new EventHandler(PasteOverFrame), Shortcut.CtrlShiftV),
                     MenuBuilder.menu("Insert and p&aste", new EventHandler(InsertAndPasteFrame), Shortcut.CtrlV),
+                    MenuBuilder.separator(),
+                    MenuBuilder.menu("&Import frames from image...", new EventHandler(ImportFramesFromImage)),
                 }
             );
             editMenu.MergeType = MenuMerge.MergeItems;
@@ -163,6 +167,16 @@ namespace rho.SpriteEditor {
             }
 
             document.SendCommand(new InsertFrameCommand(framePanel.SelectedFrame, frame));
+        }
+
+        void ImportFramesFromImage(object o, EventArgs e) {
+            using (ImportFramesDialog dlg = new ImportFramesDialog()) {
+                DialogResult result = dlg.ShowDialog();
+
+                if (result == DialogResult.OK) {
+                    MessageBox.Show(this, "Not yet implemented!!");
+                }
+            }
         }
 
         void HotSpotChanged(Rectangle newHotSpot) {

@@ -107,7 +107,7 @@ namespace Ika {
         x += glyph.Width();
     }
 
-    template <class Printer>
+    template <typename Printer>
     void Font::PaintString(int startx, int starty, const std::string& s, Printer& print) {
         int cursubset = 0;
         int x = startx;

@@ -10,13 +10,13 @@
 namespace Blitter {
 
     struct OpaqueBlend {
-        inline RGBA operator()(RGBA src, RGBA) {
+        inline RGBA operator()(RGBA src, RGBA) const {
             return src;
         }
     };
 
     struct MatteBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) {
+        inline RGBA operator()(RGBA src, RGBA dest) const {
             if (src.a) {
                 return src;
             } else {
@@ -26,7 +26,7 @@ namespace Blitter {
     };
 
     struct AlphaBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) {
+        inline RGBA operator()(RGBA src, RGBA dest) const {
             // Trivial cases: handle zero and full alpha.
             if (!src.a) return dest;
             if (src.a == 255) return src;
@@ -47,7 +47,7 @@ namespace Blitter {
     };
 
     struct AddBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) {
+        inline RGBA operator()(RGBA src, RGBA dest) const {
             // add and clamp to 255
             dest.r = min<u8>(dest.r + src.r, 255);
             dest.g = min<u8>(dest.g + src.g, 255);
@@ -58,7 +58,7 @@ namespace Blitter {
     };
 
     struct SubtractBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) {
+        inline RGBA operator()(RGBA src, RGBA dest) const {
             // subtract and clamp at 0
             dest.r = max<u8>(dest.r - src.r, 0);
             dest.g = max<u8>(dest.g - src.g, 0);
@@ -77,7 +77,7 @@ namespace Blitter {
 
     /// Renders an image on another image.
     template <typename Blender>
-    void Blit(const Canvas& src, Canvas& dest, int x, int y, Blender& blend) {
+    void Blit(const Canvas& src, Canvas& dest, int x, int y, const Blender& blend) {
         const Rect& r = src.GetClipRect();
 
         int xstart = r.left;
@@ -112,7 +112,7 @@ namespace Blitter {
 
     /// Renders an image on another image, stretching as necessary.
     template <typename Blender>
-    static void ScaleBlit(const Canvas& src, Canvas& dest, int cx, int cy, int w, int h, Blender& blend) {
+    static void ScaleBlit(const Canvas& src, Canvas& dest, int cx, int cy, int w, int h, const Blender& blend) {
         int x, y;               // current pixel position
         int ix, iy;             // current image location (fixed point 16.16)
         int xinc, yinc;         // Increment to ix, iy per screen pixel (fixed point)
@@ -170,7 +170,7 @@ namespace Blitter {
     }
 
     template <typename Blender>
-    static void TileBlit(const Canvas& src, Canvas& dest, int startX, int startY, int w, int h, int offsetX, int offsetY, Blender& blend) {
+    static void TileBlit(const Canvas& src, Canvas& dest, int startX, int startY, int w, int h, int offsetX, int offsetY, const Blender& blend) {
         Rect oldClipRect = dest.GetClipRect();
         dest.SetClipRect(Rect(startX, startY, startX + w, startY + h));
 

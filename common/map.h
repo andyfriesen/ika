@@ -9,8 +9,7 @@
 #include <map>
 
 // Partial tile obstruction stuff.
-enum
-{
+enum {
     ob_none             = 0x00,
     ob_top              = 0x01,
     ob_bottom           = 0x02,
@@ -23,17 +22,14 @@ enum
     ob_all = ob_top | ob_bottom | ob_left | ob_right,
 };
 
-struct Map
-{
+struct Map {
 
-    struct Zone
-    {
+    struct Zone {
         std::string label;
         std::string scriptName;
     };
 
-    struct Entity
-    {
+    struct Entity {
         int x, y;
 
         std::string label;
@@ -51,30 +47,25 @@ struct Map
             , speed(100)
             , obstructedByEntities(true)
             , obstructedByMap(true)
-            , obstructsEntities(true)
-        {}
+            , obstructsEntities(true) {}
     };
 
-    struct WayPoint
-    {
+    struct WayPoint {
         int x, y;
         std::string label;
         WayPoint()
             : x(0)
-            , y(0)
+            , y(0) 
         {}
     };
 
-    struct Layer
-    {
-        struct Zone
-        {
+    struct Layer {
+        struct Zone {
             Rect position;
             std::string label;
         };
 
-        struct ParallaxInfo
-        {
+        struct ParallaxInfo {
             int mulx, muly;
             int divx, divy;
 
@@ -124,8 +115,7 @@ struct Map
 
         uint Width() const  { return tiles.Width();  }
         uint Height() const { return tiles.Height(); }
-        void Resize(uint newx, uint newy)
-        {
+        void Resize(uint newx, uint newy) {
             tiles.Resize(newx, newy);
             obstructions.Resize(newx, newy);
         }
@@ -168,4 +158,3 @@ public:
     void SwapLayers(uint i, uint j);
     uint NumLayers() const;
 };
-

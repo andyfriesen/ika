@@ -5,10 +5,8 @@
 #include <string>
 #include "common/utility.h"
 
-struct AnimScript
-{
-    struct Command
-    {
+struct AnimScript {
+    struct Command {
         char type;
         int amount;
 

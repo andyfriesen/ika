@@ -8,13 +8,13 @@ struct Map;
 struct Tileset;
 
 
-struct MapTileSetEvent {
+struct MapTilesetEvent {
     Map* map;
-    Tileset* tileSet;
+    Tileset* tileset;
     int arg;
-    MapTileSetEvent(Map* m, Tileset* ts, int a = 0)
+    MapTilesetEvent(Map* m, Tileset* ts, int a = 0)
         : map(m)
-        , tileSet(ts)
+        , tileset(ts)
         , arg(a)
     {}
 };
@@ -26,21 +26,21 @@ struct MapEvent {
         : map(m), arg(a)
     {}
 
-    MapEvent(const MapTileSetEvent& e)
+    MapEvent(const MapTilesetEvent& e)
         : map(e.map)
         , arg(e.arg)
     {}
 };
 
-struct TileSetEvent {
-    Tileset* tileSet;
+struct TilesetEvent {
+    Tileset* tileset;
     int arg; // context dependant
-    TileSetEvent(Tileset* ts, int a = 0)
-        : tileSet(ts), arg(a)
+    TilesetEvent(Tileset* ts, int a = 0)
+        : tileset(ts), arg(a)
     {}
 
-    TileSetEvent(const MapTileSetEvent& e)
-        : tileSet(e.tileSet)
+    TilesetEvent(const MapTilesetEvent& e)
+        : tileset(e.tileset)
         , arg(e.arg)
     {}
 };

@@ -70,7 +70,7 @@ namespace iked {
         /*EVT_MENU(id_filenewproject, MainWindow::NewProject)
         EVT_MENU(id_filenewmap, MainWindow::NewMap)
         EVT_MENU(id_filenewscript, MainWindow::NewScript)
-        EVT_MENU(id_filenewtileset, MainWindow::NewTileSet)*/
+        EVT_MENU(id_filenewtileset, MainWindow::NewTileset)*/
         EVT_MENU(id_filenewsprite, MainWindow::NewSprite)
         EVT_MENU(id_fileopen, MainWindow::OnOpen)
         EVT_MENU(id_filesaveproject, MainWindow::OnSaveProject)
@@ -145,12 +145,12 @@ namespace iked {
         codeview->Activate();
     }
 
-    void MainWindow::NewTileSet(wxCommandEvent& event) {
+    void MainWindow::NewTileset(wxCommandEvent& event) {
         NewSpriteDlg dlg(this);
         dlg.SetTitle("New Tileset");
 
         if (dlg.ShowModal() == wxID_OK)
-            OpenDocument(new CTileSetView(this, dlg.width, dlg.height));
+            OpenDocument(new CTilesetView(this, dlg.width, dlg.height));
     }
 
 #endif
@@ -286,7 +286,7 @@ namespace iked {
                 }
 
                 case t_vsp: {
-                    wnd = new CTileSetView(this, fname.c_str());  break;
+                    wnd = new CTilesetView(this, fname.c_str());  break;
                 }
 
                 case t_font: {

@@ -9,9 +9,8 @@ namespace Soft32
 {
     /// Encapsulates an image by putting it on a SDL surface.
     /// Most of the work is actually done in the driver.  This is little more than a container.
-    struct Image : Video::Image
-    {
-        friend class Soft32::Driver;
+    struct Image : Video::Image {
+        friend struct Soft32::Driver;
         virtual int Width();
         virtual int Height();
 

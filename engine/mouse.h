@@ -5,14 +5,12 @@
 #include "input.h"
 #include "common/utility.h"
 
-class MouseAxisControl;
-class MouseButtonControl;
+struct MouseAxisControl;
+struct MouseButtonControl;
 
-class Mouse : public InputDevice
-{
-public:
-    enum MouseAxis
-    {
+struct Mouse : InputDevice {
+
+    enum MouseAxis {
         X,
         Y,
         WHEEL
@@ -36,23 +34,21 @@ private:
     ScopedPtr<MouseButtonControl> _middle;
 };
 
-class MouseAxisControl : public InputControl
-{
-public:
+struct MouseAxisControl : InputControl {
     MouseAxisControl(uint axis);
 
-    virtual float Position();
+protected:
+    virtual float GetPosition();
 
 private:
     uint _axis;
 };
 
-class MouseButtonControl : public InputControl
-{
-public:
+struct MouseButtonControl : InputControl {
     MouseButtonControl(uint index);
 
-    virtual float Position();
+protected:
+    virtual float GetPosition();
 
 private:
     uint _index;

@@ -10,14 +10,12 @@
 #include <string>
 #include "input.h"
 
-class AxisControl;
-class ReverseAxisControl;
-class ButtonControl;
+struct AxisControl;
+struct ReverseAxisControl;
+struct ButtonControl;
 struct _SDL_Joystick;
 
-class Joystick : public InputDevice
-{
-public:
+struct Joystick : InputDevice {
     Joystick(uint index);
     ~Joystick();
 
@@ -40,15 +38,14 @@ private:
     std::vector<ButtonControl*> _buttons;
 };
 
-class AxisControl : public InputControl
-{
-    friend class Joystick;
-public:
-    virtual bool  Pressed();
-    virtual float Position();
+struct AxisControl : InputControl {
+    friend struct Joystick;
 
 protected:
     AxisControl(_SDL_Joystick* j, uint index);
+
+    virtual bool  GetPressed();
+    virtual float GetPosition();
 
 private:
     _SDL_Joystick* _joystick;
@@ -56,23 +53,21 @@ private:
 };
 
 // Reverse of the PositiveAxisControl.  Duh.
-class ReverseAxisControl : public AxisControl
-{
-    friend class Joystick;
+struct ReverseAxisControl : AxisControl {
+    friend struct Joystick;
 
-public:
-    virtual float Position();
+protected:
+    virtual float GetPosition();
 
 private:
     ReverseAxisControl(_SDL_Joystick* j, uint index);
 };
 
-class ButtonControl : public InputControl
-{
-    friend class Joystick;
+struct ButtonControl : public InputControl {
+    friend struct Joystick;
 
-public:
-    virtual float Position();
+protected:
+    virtual float GetPosition();
 
 private:
     ButtonControl(_SDL_Joystick* j, uint index);

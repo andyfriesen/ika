@@ -1,11 +1,10 @@
 #include "ColourHandler.h"
 
-struct colourEntry
-{
-    std::string name;
-    RGBA colour;
-}
-    stdColours[] = {
+namespace {
+    struct ColourEntry {
+        std::string name;
+        RGBA colour;
+    } stdColours[] = {
         {"aqua",    RGBA(0,255,255)},
         {"black",   RGBA(0,0,0)},
         {"blue",    RGBA(0,0,255)},
@@ -26,6 +25,7 @@ struct colourEntry
         {"yellow",  RGBA(255,255,0)},
         {"",        RGBA(0)}
     };
+}
     
 ColourHandler::ColourHandler()
 {

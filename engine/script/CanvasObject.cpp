@@ -9,10 +9,10 @@ namespace Script
 {
     namespace Canvas
     {
-        template <class T, T U, class V>
+        template <typename T, T U, typename V>
         PyObject* Get(T* self, PyObject* value);
 
-        template <class T, T U, int>
+        template <typename T, T U, int>
         PyObject* Get(T* self, PyObject* value)
         {
             return PyInt_FromLong(self->U);

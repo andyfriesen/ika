@@ -19,8 +19,8 @@ ika = env.Program('ika',
         tileset.cpp
         timer.cpp
         script/CanvasObject.cpp
-        script/ControlObject.cpp
         script/ColoursObject.cpp
+        script/ControlObject.cpp
         script/EntityObject.cpp
         script/ErrorObject.cpp
         script/FontObject.cpp
@@ -32,7 +32,9 @@ ika = env.Program('ika',
         script/MapObject.cpp
         script/ModuleFuncs.cpp
         script/MouseObject.cpp
+        script/MusicObject.cpp
         script/SoundObject.cpp
+        script/TileSetObject.cpp
         script/VideoObject.cpp
         opengl/Driver.cpp
         opengl/Image.cpp

@@ -12,7 +12,7 @@
  *  have ever written.  It's just so damned useful.
  *   -- andy 17 July 2004
  */
-struct Canvas : virtual FinalClass<Canvas> {
+struct Canvas {
     // con / destructors
     Canvas();
     Canvas(int width, int height);

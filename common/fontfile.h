@@ -7,7 +7,7 @@ Font file
 #include "common/utility.h"
 #include "Canvas.h"
 
-class File;
+struct File;
 
 /**
  * Hardware independant representation of a bitmap font.

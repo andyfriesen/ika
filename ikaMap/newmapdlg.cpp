@@ -8,7 +8,7 @@
 BEGIN_EVENT_TABLE(NewMapDlg, wxDialog)
     EVT_BUTTON(wxID_OK, NewMapDlg::OnOK)
     EVT_BUTTON(XRCID("button_browse"), NewMapDlg::OnBrowse)
-    EVT_CHECKBOX(XRCID("check_newtileset"), NewMapDlg::OnCheckNewTileSet)
+    EVT_CHECKBOX(XRCID("check_newtileset"), NewMapDlg::OnCheckNewTileset)
 END_EVENT_TABLE()
 
 // I like the look of this better than the XRCCTRL macro. :>
@@ -40,21 +40,21 @@ void NewMapDlg::OnOK(wxCommandEvent& event)
 {
     width         = atoi(Ctrl<wxTextCtrl>("edit_width")->GetValue().c_str());
     height        = atoi(Ctrl<wxTextCtrl>("edit_height")->GetValue().c_str());
-    tileSetName   = Ctrl<wxTextCtrl>("edit_tilesetname")->GetValue().c_str();
-    newTileSet    = Ctrl<wxCheckBox>("check_newtileset")->IsChecked();
+    tilesetName   = Ctrl<wxTextCtrl>("edit_tilesetname")->GetValue().c_str();
+    newTileset    = Ctrl<wxCheckBox>("check_newtileset")->IsChecked();
     tileWidth     = atoi(Ctrl<wxTextCtrl>("edit_tilewidth")->GetValue().c_str());
     tileHeight    = atoi(Ctrl<wxTextCtrl>("edit_tileheight")->GetValue().c_str());
 
     try
     {
         if (width < 0 || height < 0)                            throw "Width and height must be at least one pixel.";
-        if (!newTileSet && !File::Exists(tileSetName))          throw va("%s does not exist!", tileSetName.c_str());
-        if (newTileSet && File::Exists(tileSetName))
+        if (!newTileset && !File::Exists(tilesetName))          throw va("%s does not exist!", tilesetName.c_str());
+        if (newTileset && File::Exists(tilesetName))
         {
-            if (wxMessageBox(va("A tileset named %s already exists.\nOverwrite?", tileSetName.c_str()), "", wxYES_NO, this) == wxID_NO)
+            if (wxMessageBox(va("A tileset named %s already exists.\nOverwrite?", tilesetName.c_str()), "", wxYES_NO, this) == wxID_NO)
                 return;
         }
-        if (newTileSet && (tileWidth < 0 || tileHeight < 0))    throw "The tileset to be created must be at least 1 pixel wide and high.";
+        if (newTileset && (tileWidth < 0 || tileHeight < 0))    throw "The tileset to be created must be at least 1 pixel wide and high.";
         else
             wxDialog::OnOK(event);
     }
@@ -81,7 +81,7 @@ void NewMapDlg::OnBrowse(wxCommandEvent& event)
         Ctrl<wxTextCtrl>("edit_tilesetname")->SetValue(dlg.GetPath());
 }
 
-void NewMapDlg::OnCheckNewTileSet(wxCommandEvent& event)
+void NewMapDlg::OnCheckNewTileset(wxCommandEvent& event)
 {
     bool b = Ctrl<wxCheckBox>("check_newtileset")->IsChecked();
 

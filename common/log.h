@@ -20,7 +20,7 @@ namespace Log {
 
 #ifdef LOG_CALLBACK
 
-    class CCallbackLog {
+    struct CCallbackLog {
         static std::string sHistory;
 
         int nOldlen;

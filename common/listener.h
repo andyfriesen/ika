@@ -90,7 +90,7 @@ Delegate<T, ArgType> bind(T* inst, void (T::*func)(ArgType)) {
  * You feed it a bunch of callable objects, and it stores them all.
  * Each is called in succession when the fire() method is invoked.
  */
-template <class ArgType>
+template <typename ArgType>
 struct Listener {
     ~Listener() {
         for (typename CallSet::iterator iter = _list.begin(); iter != _list.end(); iter++) {

@@ -45,7 +45,7 @@ void ReadCompressedLayer2(u16 *dest, int numWords, u16 *src) {
 }
 
 void ReadCompressedLayer2tou32(u32* dest, int numu32s, void* src) {
-    ScopedArray<u16> buffer16 = new u16[numu32s];
+    ScopedArray<u16> buffer16(new u16[numu32s]);
     
     ReadCompressedLayer2(buffer16.get(), numu32s, (u16*)src);
     

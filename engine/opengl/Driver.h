@@ -46,9 +46,8 @@ namespace OpenGL
 #   define NYI { throw NotYetImplementedException(); }
 
     /// The driver itself.
-    struct Driver : public Video::Driver
-    {
-    public:
+    struct Driver : public Video::Driver {
+
         Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize);
         ~Driver();
 

@@ -7,10 +7,10 @@
 
 struct Executor;
 struct Tileset;
-struct TileSetEvent;
-struct MapTileSetEvent;
+struct TilesetEvent;
+struct MapTilesetEvent;
 
-struct TileSetView : VideoFrame
+struct TilesetView : VideoFrame
 {
 private:
     Executor* _executor;
@@ -18,8 +18,8 @@ private:
     bool _pad;
 
 public:
-    TileSetView(Executor* e, wxWindow* parent);
-    ~TileSetView();
+    TilesetView(Executor* e, wxWindow* parent);
+    ~TilesetView();
 
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
@@ -30,7 +30,7 @@ public:
 
     void UpdateScrollBars();
 
-    void OnTileSetChange(const TileSetEvent& event);
+    void OnTilesetChange(const TilesetEvent& event);
     void OnCurrentTileChange(uint newTile);
 
     uint PointToTile(int x, int y) const;   // returns the tile under coordinates (x,y)

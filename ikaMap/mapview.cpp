@@ -31,14 +31,14 @@ MapView::MapView(Executor* executor, wxWindow* parent)
     : wxPanel(parent)
     , _executor(executor)
 
-    , _tileSetState(executor)
+    , _tilesetState(executor)
     , _copyPasteState(executor)
     , _obstructionState(executor)
     , _entityState(executor)
     , _zoneEditState(executor)
     , _scriptState(executor)
 
-    , _editState(&_tileSetState)
+    , _editState(&_tilesetState)
 
     , _xwin(0)
     , _ywin(0)
@@ -211,7 +211,7 @@ void MapView::ShowPage()
 
 void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
 {
-    Tileset* ts = _executor->GetTileSet();
+    Tileset* ts = _executor->GetTileset();
     if (!ts->Count())
         return;
 
@@ -316,7 +316,7 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
 void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
 {
     // Draw a gray square over obstructed things.
-    Tileset* ts = _executor->GetTileSet();
+    Tileset* ts = _executor->GetTileset();
 
     int width  = _video->LogicalWidth();
     int height = _video->LogicalHeight();
@@ -413,13 +413,13 @@ void MapView::ScreenToTile(int& x, int& y) const
 void MapView::ScreenToTile(int& x, int& y, uint layer) const
 {
     wxASSERT(_executor->GetMap() != 0);
-    wxASSERT(_executor->GetTileSet() != 0);
+    wxASSERT(_executor->GetTileset() != 0);
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     ScreenToLayer(x, y, layer);
 
-    x /= _executor->GetTileSet()->Width();
-    y /= _executor->GetTileSet()->Height();
+    x /= _executor->GetTileset()->Width();
+    y /= _executor->GetTileset()->Height();
 }
 
 void MapView::TileToScreen(int& x, int& y) const
@@ -430,13 +430,13 @@ void MapView::TileToScreen(int& x, int& y) const
 void MapView::TileToScreen(int& x, int& y, uint layer) const
 {
     wxASSERT(_executor->GetMap());
-    wxASSERT(_executor->GetTileSet());
+    wxASSERT(_executor->GetTileset());
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     Map::Layer* lay = _executor->GetMap()->GetLayer(layer);
 
-    x = (x * _executor->GetTileSet()->Width()) + lay->x - _xwin;
-    y = (y * _executor->GetTileSet()->Height()) + lay->y - _ywin;
+    x = (x * _executor->GetTileset()->Width()) + lay->x - _xwin;
+    y = (y * _executor->GetTileset()->Height()) + lay->y - _ywin;
 }
 
 void MapView::MapToTile(int& x, int& y) const
@@ -447,15 +447,15 @@ void MapView::MapToTile(int& x, int& y) const
 void MapView::MapToTile(int& x, int& y, uint layer) const
 {
     wxASSERT(_executor->GetMap());
-    wxASSERT(_executor->GetTileSet());
+    wxASSERT(_executor->GetTileset());
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     Map::Layer* lay = _executor->GetMap()->GetLayer(layer);
 
     x = (x + lay->x) * lay->parallax.mulx / lay->parallax.divx;
     y = (y + lay->y) * lay->parallax.muly / lay->parallax.divy;
-    x /= _executor->GetTileSet()->Width();
-    y /= _executor->GetTileSet()->Height();
+    x /= _executor->GetTileset()->Width();
+    y /= _executor->GetTileset()->Height();
 }
 
 void MapView::TileToMap(int& x, int& y) const
@@ -466,7 +466,7 @@ void MapView::TileToMap(int& x, int& y) const
 void MapView::TileToMap(int& x, int& y, uint layer) const
 {
     wxASSERT(_executor->GetMap());
-    wxASSERT(_executor->GetTileSet());
+    wxASSERT(_executor->GetTileset());
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     Map::Layer* lay = _executor->GetMap()->GetLayer(layer);
@@ -555,7 +555,7 @@ void MapView::SetEditState(EditState* newState)
 
 void MapView::Cock()
 {
-    SetEditState(&_tileSetState);
+    SetEditState(&_tilesetState);
 }
 
 void MapView::SetCopyPasteState()

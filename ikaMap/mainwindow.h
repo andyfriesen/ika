@@ -19,7 +19,7 @@ struct Command;
 struct CompositeCommand;
 
 struct MapView;
-struct TileSetView;
+struct TilesetView;
 struct LayerList;
 
 struct ImportTilesDlg;
@@ -53,9 +53,9 @@ struct MainWindow : public wxFrame, Executor
     void OnOpenMap(wxCommandEvent&);
     void OnSaveMap(wxCommandEvent&);
     void OnSaveMapAs(wxCommandEvent&);
-    void OnLoadTileSet(wxCommandEvent&);
-    void OnSaveTileSetAs(wxCommandEvent&);
-    void OnExportTileSet(wxCommandEvent&);
+    void OnLoadTileset(wxCommandEvent&);
+    void OnSaveTilesetAs(wxCommandEvent&);
+    void OnExportTileset(wxCommandEvent&);
     void OnExit(wxCommandEvent&);
     void OnUndo(wxCommandEvent&);
     void OnRedo(wxCommandEvent&);
@@ -68,9 +68,9 @@ struct MainWindow : public wxFrame, Executor
     void OnZoomMapIn(wxCommandEvent&);
     void OnZoomMapOut(wxCommandEvent&);
     void OnZoomMapNormal(wxCommandEvent&);
-    void OnZoomTileSetIn(wxCommandEvent&);
-    void OnZoomTileSetOut(wxCommandEvent&);
-    void OnZoomTileSetNormal(wxCommandEvent&);
+    void OnZoomTilesetIn(wxCommandEvent&);
+    void OnZoomTilesetOut(wxCommandEvent&);
+    void OnZoomTilesetNormal(wxCommandEvent&);
 
     void OnConfigureScripts(wxCommandEvent&);
     void OnSetCurrentScript(wxCommandEvent& event);
@@ -100,9 +100,9 @@ struct MainWindow : public wxFrame, Executor
     void HighlightToolButton(uint buttonId);
 
     Map* GetMap() const;
-    Tileset* GetTileSet() const;
+    Tileset* GetTileset() const;
     MapView* GetMapView() const;
-    TileSetView* GetTileSetView() const;
+    TilesetView* GetTilesetView() const;
 
     void LoadMap(const std::string& fileName);
 
@@ -129,20 +129,20 @@ struct MainWindow : public wxFrame, Executor
     void SetZoomRelative(int factor);
 
     virtual Map* GetMap();
-    virtual Tileset* GetTileSet();
+    virtual Tileset* GetTileset();
     virtual SpriteSet* GetSpriteSet(const std::string& fileName);
 
     virtual MapView* GetMapView();
-    virtual TileSetView* GetTileSetView();
+    virtual TilesetView* GetTilesetView();
     virtual wxWindow* GetParentWindow();
 
-    virtual void SwitchTileSet(Tileset* ts);
+    virtual void SwitchTileset(Tileset* ts);
 
 protected:
     std::vector<Script*>& GetScripts();
 
     Map*     _map;
-    Tileset* _tileSet;
+    Tileset* _tileset;
 
     DECLARE_EVENT_TABLE()
 
@@ -153,7 +153,7 @@ private:
     wxSashLayoutWindow* _sideBar;
     LayerList*          _layerList;
     MapView*            _mapView;
-    TileSetView*        _tileSetView;
+    TilesetView*        _tilesetView;
 
     // Store and reuse the dialog so that it can remember its previous values.
     ScopedPtr<ImportTilesDlg> _importTilesDlg;

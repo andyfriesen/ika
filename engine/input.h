@@ -10,18 +10,16 @@
 #include "common/utility.h"
 #include "scriptobject.h"
 
-class KeyControl;
-class Joystick;
-class Keyboard;
-class Mouse;
+struct KeyControl;
+struct Joystick;
+struct Keyboard;
+struct Mouse;
 
-class InputControl;
+struct InputControl;
 
-class InputDevice
-{
-    friend class Input;
+struct InputDevice {
+    friend struct Input;
 
-public:
     virtual ~InputDevice(){}
 
     virtual void Update()  = 0;                             // poll the device
@@ -32,19 +30,19 @@ public:
     virtual InputControl* GetControl(const std::string& name) = 0;
 };
 
-class InputControl
-{
-    friend class Input;
-public:
-    virtual ~InputControl(){}
-    virtual bool  Pressed();
-    virtual float Position() = 0;
-    virtual float Delta();
-    virtual float PeekDelta();
+struct InputControl {
+    friend struct Input;
+
+    InputControl();
+    virtual ~InputControl() {}
+
+    bool  Pressed();
+    float Position();
+    float Delta();
+    float PeekDelta();
 
     // Pretty looking method for 'unpressing'.
-    inline  void  Unpress() 
-    {
+    inline  void  Unpress() {
         Pressed(); 
     }
 
@@ -54,21 +52,25 @@ public:
 
     operator bool() { return Position() > 0; }
 
+protected:
+    virtual bool GetPressed();
+    virtual float GetPosition() = 0;
+
 private:
-    float  _oldPos; // for Pressed and Delta
+    // Used to implement Pressed() and Delta()
+    float  _oldPos;
+    float  _curPos;
 };
 
 // TODO: some kind of control compositor, so we can have a single
 // control instance that responds to more than one source of input.
 
 // Input singleton.  Handles everything.
-class Input
-{
-    friend class InputDevice;
-    friend class InputControl;
-    friend class ScopedPtr<Input>;
+struct Input {
+    friend struct InputDevice;
+    friend struct InputControl;
+    friend struct ScopedPtr<Input>;
 
-public:
     static Input* getInstance();
     static void Destroy();
 

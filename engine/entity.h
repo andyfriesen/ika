@@ -21,8 +21,7 @@ struct Sprite;
  * I'm not sure if I like this, but it's better than it was before.
  */
 
-struct Entity
-{
+struct Entity {
     AnimScript  defaultAnim;                                        ///< Default animation script flow.
     AnimScript  specAnim;                                           ///< "special" animation script (set from python)
     bool        useSpecAnim;                                        ///< true if specAnim should be used instead of defaultAnim

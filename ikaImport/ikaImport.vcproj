@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="7.10"
 	Name="ikaImport"
 	ProjectGUID="{E522652F-513B-4694-9518-8760F2F17F4C}"
 	Keyword="ManagedCProj">
@@ -50,7 +50,13 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -91,9 +97,17 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -102,23 +116,23 @@
 				RelativePath="AssemblyInfo.cpp">
 			</File>
 			<File
-				RelativePath="Strings.cpp">
+				RelativePath="ikaTileSet.cpp">
 			</File>
 			<File
-				RelativePath="ikaTileSet.cpp">
+				RelativePath="Strings.cpp">
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
 			<File
-				RelativePath="Strings.h">
-			</File>
-			<File
 				RelativePath="ikaMap.h">
 			</File>
 			<File
 				RelativePath="ikaTileSet.h">
+			</File>
+			<File
+				RelativePath="Strings.h">
 			</File>
 		</Filter>
 		<Filter

@@ -2,16 +2,13 @@
 #include "SDL/SDL.h"
 #include "keyboard.h"
 
-namespace
-{
+namespace {
     // Pulled from the SDL header, and munged a bit with regexps and
     // so forth.
-    const struct
-    {
+    const struct {
         const char* name;
         SDLKey code;
-    } keys[] =
-    {
+    } keys[] = {
         {"BACKSPACE", SDLK_BACKSPACE},
         {"TAB", SDLK_TAB},
         {"CLEAR", SDLK_CLEAR},
@@ -142,112 +139,107 @@ namespace
     const uint numKeys = sizeof(keys) / sizeof(keys[0]);
 }
 
-Keyboard::Keyboard()
-{
-    for (uint i = 0; i < numKeys; i++)
+Keyboard::Keyboard() {
+    for (uint i = 0; i < numKeys; i++) {
         _nameToKeySym[keys[i].name] = keys[i].code;
+    }
 }
 
-Keyboard::~Keyboard()
-{
+Keyboard::~Keyboard() {
     for (KeyMap::iterator
         iter = _keys.begin();
         iter != _keys.end();
-        iter++)
-    {
+        iter++
+    ) {
         KeyControl* c = iter->second;
         delete c;
     }
 }
 
-void Keyboard::Unpress()
-{
+void Keyboard::Unpress() {
     for (KeyMap::iterator
         iter = _keys.begin();
         iter != _keys.end();
-        iter++)
-    {
+        iter++
+    ) {
         iter->second->Unpress();
     }
 }
 
-InputControl* Keyboard::GetControl(const std::string& name)
-{
+InputControl* Keyboard::GetControl(const std::string& name) {
     KeySymMap::iterator iter = _nameToKeySym.find(name);
-    if (iter == _nameToKeySym.end())
+    if (iter == _nameToKeySym.end()) {
         return 0;
+    }
 
     uint keySym = iter->second;
     KeyMap::iterator iter2 = _keys.find(keySym);
-    if (iter2 == _keys.end())
-    {
+    if (iter2 == _keys.end()) {
         KeyControl* key = new KeyControl;
         _keys[keySym] = key;
         return key;
-    }
-    else
+    } else {
         return iter2->second;
+    }
 }
 
-void Keyboard::KeyDown(uint keyCode)
-{
+void Keyboard::KeyDown(uint keyCode) {
     KeyMap::iterator iter = _keys.find(keyCode);
-    if (iter != _keys.end())
+    if (iter != _keys.end()) {
         iter->second->KeyDown();
+    }
 
-    if (keyCode < 256)
+    if (keyCode < 256) {
         _keyQueue.push(keyCode);
+    }
 }
 
-void Keyboard::KeyUp(uint keyCode)
-{
+void Keyboard::KeyUp(uint keyCode) {
     KeyMap::iterator iter = _keys.find(keyCode);
-    if (iter != _keys.end())
+    if (iter != _keys.end()) {
         iter->second->KeyUp();
+    }
 }
 
-bool Keyboard::WasKeyPressed() const
-{
+bool Keyboard::WasKeyPressed() const {
     return _keyQueue.size() != 0;
 }
 
-char Keyboard::GetKey()
-{
-    if (_keyQueue.size())
-    {
+char Keyboard::GetKey() {
+    if (_keyQueue.size()) {
         char c = _keyQueue.front();
         _keyQueue.pop();
         return c;
-    }
-    else
+    } else {
         return 0;
+    }
 }
 
-void Keyboard::ClearKeyQueue()
-{
-    while (_keyQueue.size())
+void Keyboard::ClearKeyQueue() {
+    while (_keyQueue.size()) {
         _keyQueue.pop();
+    }
 }
 
 KeyControl::KeyControl()
-    : _pressed(false)
-{}
-
-void KeyControl::KeyDown()
+    : _pressed(false) 
 {
+}
+
+void KeyControl::KeyDown() {
     _pressed = true;
-    if (onPress)
+    if (onPress) {
         the< ::Input>()->QueueEvent(&onPress);
+    }
 }
 
-void KeyControl::KeyUp()
-{
+void KeyControl::KeyUp() {
     _pressed = false;
-    if (onUnpress)
+    if (onUnpress) {
         the< ::Input>()->QueueEvent(&onUnpress);
+    }
 }
 
-float KeyControl::Position()
-{
+float KeyControl::GetPosition() {
     return _pressed ? 1.0f : 0.0f;
 }

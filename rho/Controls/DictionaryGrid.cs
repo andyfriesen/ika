@@ -1,6 +1,3 @@
-#if DEBUG
-#define TEST_DICTGRID
-#endif
 
 using System;
 using System.Collections;
@@ -8,7 +5,7 @@ using System.Collections.Specialized;
 using System.Data;
 using System.Windows.Forms;
 
-#if TEST_DICTGRID
+#if DEBUG
 using System.Diagnostics;
 #endif
 
@@ -117,7 +114,7 @@ namespace rho.Controls {
         readonly DataTable table = new DataTable("Table");
         readonly StringDictionary values = new StringDictionary();
 
-#if TEST_DICTGRID
+#if DEBUG
         class Blah {
 
             public void RowAdded(string name, string value) {

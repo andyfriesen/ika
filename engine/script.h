@@ -7,7 +7,7 @@
 #include "common/utility.h"
 
 struct Engine;                                  // proto
-class ScriptObject;
+struct ScriptObject;
 struct Entity;
 
 /**
@@ -16,10 +16,7 @@ struct Entity;
  *  Due to the way the Python API is structured, the script engine 
  *  simply will not support multiple instances.  Don't try.
  */
-class ScriptEngine
-{
-    static bool _inited;                        // used to assert that only one instance of this class is ever created.
-public:
+struct ScriptEngine {
     void Init(Engine* njin);                    // Passing the engine here is ungood.  sigh.
     void Shutdown();
 
@@ -38,6 +35,9 @@ public:
     void CallScript(const std::string& name, const Entity* ent);        // Calls the function, passing the equivalent Python Entity object as an argument.
 
     std::string GetErrorMessage();
+
+private:
+    static bool _inited;                        // used to assert that only one instance of this class is ever created.
 };
 
 #endif

@@ -5,9 +5,7 @@ using System.Windows.Forms;
 
 namespace rho.Controls {
     public class HorizontalBoxSizer : BoxSizer {
-        protected override void OnLayout(LayoutEventArgs levent) {
-            base.OnLayout(levent);
-
+        protected override void DoLayout() {
             // number of pixels that are not absorbed by non-resizing controls
             int availableWidth = ClientSize.Width;
 

@@ -8,7 +8,7 @@ class wxMouseEvent;
 class wxKeyEvent;
 struct Executor;
 struct MapView;
-struct TileSetView;
+struct TilesetView;
 struct Tileset;
 struct Command;
 
@@ -44,11 +44,11 @@ protected:
     // Convenience accessors.
     Executor*       GetExecutor() const;
     MapView*        GetMapView() const;
-    TileSetView*    GetTileSetView() const;
+    TilesetView*    GetTilesetView() const;
     Map*            GetMap() const;
     Map::Layer*     GetCurLayer() const;
     uint            GetCurLayerIndex() const;
-    Tileset*        GetTileSet() const;
+    Tileset*        GetTileset() const;
     wxWindow*       GetParentWindow() const;
     void            HandleCommand(::Command* cmd);
 

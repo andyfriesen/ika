@@ -11,97 +11,92 @@ TODO: Pack files
 
 std::vector<File::SDirectoryInfo> File::directoryinfo;
 
-std::string File::GetRealPath(const std::string& fname)
-{
-    if (fname.substr(0, 2)==".\\" || fname.substr(0, 2)=="./")	// absolute path specified
+std::string File::GetRealPath(const std::string& fname) {
+    if (fname.substr(0, 2)==".\\" || fname.substr(0, 2)=="./") {
+        // absolute path specified
         return fname;
+    }
 
     std::string sExtension = fname;
     std::string sResult = fname;
 
     unsigned int i = sExtension.length()-1;
-    do
-    {
-        if (sExtension[i]=='.')
-        {
+    do {
+        if (sExtension[i]=='.') {
             sExtension.erase(0, i + 1);
             break;
         }
     } while (i-->0);
 
-    if (!i)												// no extension specified?
-        sExtension='*';									// okay, then use the default path (if there is one)
 
-    int nSavepositionofdefaultdirectory=-1;				// :D
+    if (!i) {                                                                           // no extension specified?
+        sExtension='*';                                                                 // okay, then use the default path (if there is one)
+    }
 
-    for (i = 0; i < directoryinfo.size(); i++)				// now, we know the extension of the file, so we search the directory list for a match
-    {
-        if (directoryinfo[i].sExtension=="*")
-        {
+    int nSavepositionofdefaultdirectory=-1;                             // :D
+
+    for (i = 0; i < directoryinfo.size(); i++) {                        // now, we know the extension of the file, so we search the directory list for a match
+        if (directoryinfo[i].sExtension=="*") {
             nSavepositionofdefaultdirectory = i;
             continue;
         }
-        if (sExtension==directoryinfo[i].sExtension)
-        {
+        if (sExtension==directoryinfo[i].sExtension) {
             nSavepositionofdefaultdirectory=-1;
             sResult = directoryinfo[i].sPath + fname;
             break;
         }
     }
 
-    if (nSavepositionofdefaultdirectory!=-1)			// couldn't find an exact match, but we found a default
+    if (nSavepositionofdefaultdirectory!=-1) {                  // couldn't find an exact match, but we found a default
         sResult = directoryinfo[nSavepositionofdefaultdirectory].sPath + fname;
+    }
 
     return sResult;
 }
 
-void File::AddPath(std::string sExtension, std::string sPath)
-{
+void File::AddPath(std::string sExtension, std::string sPath) {
     SDirectoryInfo di;
 
-    if (sPath[sPath.length()-1]!='\\')
+    if (sPath[sPath.length()-1]!='\\') {
         sPath+="\\";
+    }
 
-    for (unsigned int i = 0; i < directoryinfo.size(); i++)
-        if (directoryinfo[i].sExtension==sExtension)
-        {
+    for (unsigned int i = 0; i < directoryinfo.size(); i++) {
+        if (directoryinfo[i].sExtension==sExtension) {
             directoryinfo[i].sPath = sPath;
             return;
         }
+    }
 
-        di.sExtension = sExtension;
-        di.sPath = sPath;
-        directoryinfo.push_back(di);
+    di.sExtension = sExtension;
+    di.sPath = sPath;
+    directoryinfo.push_back(di);
 }
 
-void File::ClearPaths()
-{
+void File::ClearPaths() {
     directoryinfo.clear();
 }
 
-bool File::Exists(const std::string& fname)
-{
+bool File::Exists(const std::string& fname) {
     File f;
-    if (!f.OpenRead(fname.c_str()))
+    if (!f.OpenRead(fname.c_str())) {
         return false;
+    }
 
     f.Close();
     return true;
 }
 
 
-File::File(void)
-{
+File::File() {
     mode = closed;
 }
 
-File::~File(void)
-{
+File::~File() {
     if (mode!=closed) Close();
 }
 
-bool File::OpenRead(const char *fname, bool binary)
-{
+bool File::OpenRead(const char *fname, bool binary) {
     Close();
 
     if (fname == 0 || fname[0] == 0) {
@@ -123,8 +118,7 @@ bool File::OpenRead(const char *fname, bool binary)
     }
 }
 
-bool File::OpenAppend(const char *fname, bool bBinary)
-{
+bool File::OpenAppend(const char *fname, bool bBinary) {
     Close();
 
     if (!strlen(fname))
@@ -136,8 +130,7 @@ bool File::OpenAppend(const char *fname, bool bBinary)
         f = fopen(sFilename.c_str(), "ab");
     else
         f = fopen(sFilename.c_str(), "a");
-    if (f)
-    {
+    if (f) {
         mode = open_write;
         return true;
     }
@@ -145,16 +138,14 @@ bool File::OpenAppend(const char *fname, bool bBinary)
     return false;
 }
 
-bool File::OpenWrite(const char *fname, bool bBinary)
-{
+bool File::OpenWrite(const char *fname, bool bBinary) {
     Close();
 
     if (bBinary)
         f = fopen(fname, "wb");
     else
         f = fopen(fname, "w");
-    if (f)
-    {
+    if (f) {
         mode = open_write;
         return true;
     }
@@ -162,24 +153,21 @@ bool File::OpenWrite(const char *fname, bool bBinary)
     return false;
 }
 
-void File::Close(void)
-{
+void File::Close() {
     if (mode==closed) return;
     fclose(f);
     mode = closed;
 }
 
-void File::Read(void* dest, int numbytes)
-{
-    if (numbytes==0)		return;
-    if (dest==NULL)			return;
-    if (mode!=open_read)	return;
+void File::Read(void* dest, int numbytes) {
+    if (numbytes==0)            return;
+    if (dest==NULL)                     return;
+    if (mode!=open_read)        return;
 
     fread(dest, 1, numbytes, f);
 }
 
-void File::ReadString(char* dest)
-{
+void File::ReadString(char* dest) {
     int nLen;
 
     Read(nLen);
@@ -187,9 +175,8 @@ void File::ReadString(char* dest)
     dest[nLen]=0;
 }
 
-void File::ReadToken(std::string& dest)
-{
-    if (mode != open_read)	return;
+void File::ReadToken(std::string& dest) {
+    if (mode != open_read)      return;
 
     char buffer[256];
 
@@ -197,8 +184,7 @@ void File::ReadToken(std::string& dest)
     dest = buffer;
 }
 
-void File::ReadCompressed(void* dest, int numbytes)
-{
+void File::ReadCompressed(void* dest, int numbytes) {
     z_stream stream;
     int nCompressedblocksize;
 
@@ -224,8 +210,7 @@ void File::ReadCompressed(void* dest, int numbytes)
     delete[] cb;
 }
 
-std::string File::ReadAll()
-{
+std::string File::ReadAll() {
     int size = Size();
     char* c = new char[size + 1];
     memset(c, 0, size + 1);
@@ -240,35 +225,31 @@ std::string File::ReadAll()
     return s;
 }
 
-void File::Write(const void* source, int numbytes)
-{
-    if (numbytes==0)    	return;
-    if (source==NULL)		return;
-    if (mode!=open_write)	return;
+void File::Write(const void* source, int numbytes) {
+    if (numbytes==0)            return;
+    if (source==NULL)           return;
+    if (mode!=open_write)       return;
 
     fwrite(source, 1, numbytes, f);
     fflush(f);
 }
 
-void File::Write(const char* source)
-{
+void File::Write(const char* source) {
     if (mode!=open_write)       return;
     if (!source)                return;
     fprintf(f, "%s", source);
 }
 
-void File::WriteString(const char* source)
-{
+void File::WriteString(const char* source) {
     int nLen = strlen(source);
 
     Write(nLen);
     Write(source, nLen);
 }
 
-void File::WriteCompressed(const void* source, int numbytes)
-{
+void File::WriteCompressed(const void* source, int numbytes) {
     z_stream stream;
-    int nDatasize=(numbytes * 11)/10 + 12;		// +10% and 12 bytes
+    int nDatasize = (numbytes * 11) / 10 + 12;              // +10% and 12 bytes
 
     char* cb = new char[nDatasize];
 
@@ -291,34 +272,39 @@ void File::WriteCompressed(const void* source, int numbytes)
     delete[] cb;
 }
 
-void File::Seek(int position)
-{
-    if (mode==closed)		return;
+void File::Seek(int position) {
+    if (mode==closed)           return;
 
     fseek(f, position, SEEK_SET);
 }
 
-int File::Size(void)
-{
-    int i, j;
-    if (mode==closed) return 0;
+int File::Size() {
+    if (mode == closed) {
+        return 0;
+    } else {
 
-    i = ftell(f);
-    fseek(f, 0, SEEK_END);
-    j = ftell(f);
-    fseek(f, i, SEEK_SET);
+        int i = ftell(f);
+        fseek(f, 0, SEEK_END);
 
-    return j;
+        int j = ftell(f);
+        fseek(f, i, SEEK_SET);
+
+        return j;
+    }
 }
 
-int File::Pos(void)
-{
-    if (mode) return ftell(f);
-    return 0;
+int File::Pos() {
+    if (mode) {
+        return ftell(f);
+    } else {
+        return 0;
+    }
 }
 
-bool File::eof()
-{
-    if (mode==closed)	return true;
-    return feof(f)?true:false;
+bool File::eof() {
+    if (mode == closed) {
+        return true;
+    } else {
+        return feof(f) ? true : false;
+    }
 }

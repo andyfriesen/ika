@@ -65,7 +65,7 @@ void Log::Writen(const char* s, ...) {
     }
 
 #else
-#   error buffer overrun gayness that must be overcome!
+//#   error buffer overrun gayness that must be overcome!
     char buffer[1024];
     vsprintf(buffer, s, lst);
     logFile << buffer;

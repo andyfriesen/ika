@@ -2,17 +2,14 @@
 #include "input.h"
 #include <map>
 
-namespace Script
-{
-    namespace Control
-    {
+namespace Script {
+    namespace Control {
         // A simple way to make sure that multiple control objects aren't created for the same control.
         std::map<InputControl*, ControlObject*> _instances;
 
         PyTypeObject type;
 
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Pressed",  (PyCFunction)Control_Pressed,    METH_NOARGS,   
                 "Control.Pressed() -> int\n\n"
                 "Returns nonzero if the key has been pressed since the last time Pressed() or Delta() have been called"
@@ -33,8 +30,7 @@ namespace Script
 #define GET(x) PyObject* get ## x(ControlObject* self)
 #define SET(x) PyObject* set ## x(ControlObject* self, PyObject* value)
 
-        GET(OnPress)
-        {
+        GET(OnPress) {
             PyObject* o;
             if (self->control->onPress.get())
                 o = (PyObject*)self->control->onPress.get();
@@ -45,8 +41,7 @@ namespace Script
             return o;
         }
 
-        GET(OnUnpress)
-        {
+        GET(OnUnpress) {
             PyObject* o;
             if (self->control->onUnpress.get())
                 o = (PyObject*)self->control->onUnpress.get();
@@ -57,14 +52,12 @@ namespace Script
             return o;
         }
 
-        SET(OnPress)
-        {
+        SET(OnPress) {
             self->control->onPress.set(value != Py_None ? value : 0);
             return 0;
         }
 
-        SET(OnUnpress)
-        {
+        SET(OnUnpress) {
             self->control->onUnpress.set(value != Py_None ? value : 0);
             return 0;
         }
@@ -72,15 +65,13 @@ namespace Script
 #undef GET
 #undef SET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "onpress",      (getter)getOnPress,     (setter)setOnPress,     "Gets or sets the function to be executed when the key is pressed."   },
             {   "onunpress",    (getter)getOnUnpress,   (setter)setOnUnpress,   "Gets or sets the function to be executed when the key is released."  },
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt = 1;
@@ -96,12 +87,10 @@ namespace Script
             PyType_Ready(&type);
         }
  
-        PyObject* New(InputControl* control)
-        {
+        PyObject* New(InputControl* control) {
             assert(control);
 
-            if (_instances.count(control))
-            {
+            if (_instances.count(control)) {
                 ControlObject* c = _instances[control];
                 Py_INCREF(c);
                 return (PyObject*)c;
@@ -115,25 +104,21 @@ namespace Script
             return (PyObject*)ctrl;
         }
 
-        void Destroy(ControlObject* self)
-        {
+        void Destroy(ControlObject* self) {
             _instances.erase(self->control);
 
             PyObject_Del(self);
         }
 
-        PyObject* Control_Pressed(ControlObject* self)
-        {
+        PyObject* Control_Pressed(ControlObject* self) {
             return PyInt_FromLong(self->control->Pressed() ? 1 : 0);
         }
 
-        PyObject* Control_Position(ControlObject* self)
-        {
+        PyObject* Control_Position(ControlObject* self) {
             return PyFloat_FromDouble(self->control->Position());
         }
 
-        PyObject* Control_Delta(ControlObject* self)
-        {
+        PyObject* Control_Delta(ControlObject* self) {
             return PyFloat_FromDouble(self->control->Delta());
         }
    }

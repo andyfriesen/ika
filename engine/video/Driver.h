@@ -15,7 +15,7 @@
 /// The video driver interface lives here.
 namespace Video {
     /// Thrown when something in the video system screws up. ;)
-    class Exception{};
+    struct Exception {};
 
     /// Different methods for alpha blending
     enum BlendMode {

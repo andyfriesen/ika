@@ -18,7 +18,7 @@ CopyPasteState::CopyPasteState(Executor* e)
 
 void CopyPasteState::OnMouseDown(wxMouseEvent& event)
 {
-    const Tileset* ts = GetTileSet();
+    const Tileset* ts = GetTileset();
     const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 
@@ -138,8 +138,8 @@ void CopyPasteState::OnMouseMove(wxMouseEvent& event)
 
     if (!_dragging)
     {
-        int deltaX = (event.GetX() - _offsetX) / GetTileSet()->Width();
-        int deltaY = (event.GetY() - _offsetY) / GetTileSet()->Height();
+        int deltaX = (event.GetX() - _offsetX) / GetTileset()->Width();
+        int deltaY = (event.GetY() - _offsetY) / GetTileset()->Height();
 
         // since _selection still holds the initial position of the selection, we can just use it.
         _selX = _selection.left + deltaX;
@@ -168,7 +168,7 @@ void CopyPasteState::OnMouseMove(wxMouseEvent& event)
 
 void CopyPasteState::OnRenderCurrentLayer()
 {
-    const Tileset* ts = GetTileSet();
+    const Tileset* ts = GetTileset();
     const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 

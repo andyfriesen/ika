@@ -170,10 +170,9 @@ namespace rho {
             Close();
         }
 
-	
         [STAThread]
         public static void Main(string[] args) {
-            MainForm f=new MainForm();
+            MainForm f = new MainForm();
             foreach (string s in args) {
                 f.CreateDocumentWindow(s);
             }

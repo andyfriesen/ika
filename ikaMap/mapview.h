@@ -102,7 +102,7 @@ struct MapView : public wxPanel
     aegisz: Oh, yeah.
     andys evil clone: er... it should be "void SetSetTileState();"
         (actually it shouldn't be that either because that's a horrible name)
-    aegisz: TileSetterState
+    aegisz: TilesetterState
     aegisz: lol
     aegisz: just call it cock() and be done with it
     andys evil clone: hah.
@@ -131,7 +131,7 @@ private:
     EditState* _editState;
 
     // Instances of the various edit states.  We only ever create one of each.
-    TileSetState _tileSetState;
+    TilesetState _tilesetState;
     CopyPasteState _copyPasteState;
     ObstructionState _obstructionState;
     EntityState _entityState;

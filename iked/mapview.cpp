@@ -236,7 +236,7 @@ namespace MapEditState
 {
     Map::Layer* IEditState::CurLayer() const { return This->_curLayer; }
     MainWindow* IEditState::Parent() const { return This->pParent; }
-    Tileset* IEditState::Tileset() const { return This->_tileSet; }
+    Tileset* IEditState::Tileset() const { return This->_tileset; }
     Point IEditState::CameraPos() const
     {
         return Point(This->xwin, This->ywin);
@@ -307,7 +307,7 @@ namespace MapEditState
         }
     };
 
-    class TileSetState : public IEditState
+    class TilesetState : public IEditState
     {
         int oldx, oldy;
 
@@ -342,7 +342,7 @@ namespace MapEditState
                 Tileset()->SetCurTile(CurLayer()->tiles(x, y));
 
                 // Find the tileset window, if it is open
-                CTileSetView* tsv = (CTileSetView*)Parent()->FindWindow(Tileset());
+                CTilesetView* tsv = (CTilesetView*)Parent()->FindWindow(Tileset());
                 // Tell it to refresh if it is.
                 if (tsv)
                     tsv->Render();
@@ -363,7 +363,7 @@ namespace MapEditState
         }
 
     public:
-        TileSetState(MapView* t) 
+        TilesetState(MapView* t) 
             : IEditState(t)
             , oldx(0)
             , oldy(0)
@@ -739,7 +739,7 @@ loopBack:
         This->_map->Copy(mc, _selection, CurLayer());
         Clipboard::Set(mc);
         MapView* mv = This;
-        This->_editState = new TileSetState(This);
+        This->_editState = new TilesetState(This);
 
         mv->Render();
     }
@@ -749,7 +749,7 @@ loopBack:
         if (!event.ControlDown())
         {
             MapView* mv = This;
-            This->_editState = new TileSetState(This);
+            This->_editState = new TilesetState(This);
             mv->Render();
             return;
         }
@@ -762,7 +762,7 @@ loopBack:
         _selection.bottom = y;
 
         if (event.RightDown() || !event.ControlDown())         // Right mouse button, or control key released - cancel
-            This->_editState = new TileSetState(This);
+            This->_editState = new TilesetState(This);
 
         This->Render();
     }
@@ -784,7 +784,7 @@ loopBack:
     void PasteState::OnMouseDown(wxMouseEvent& event)
     {
         if (event.LeftDown())
-            This->_editState = new TileSetState(This);
+            This->_editState = new TilesetState(This);
     }
 
     void PasteState::OnMouseUp(wxMouseEvent& event)
@@ -793,7 +793,7 @@ loopBack:
         {
             This->_map->Paste(Clipboard::GetMap(), _selection.left, _selection.top, CurLayer());
             MapView* mv = This;
-            This->_editState = new TileSetState(This);
+            This->_editState = new TilesetState(This);
             mv->Render();
             return;
         }
@@ -804,7 +804,7 @@ loopBack:
         if (!event.ControlDown())
         {
             MapView* mv = This;
-            This->_editState = new TileSetState(This);
+            This->_editState = new TilesetState(This);
             mv->Render();
             return;
         }
@@ -884,7 +884,7 @@ MapView::MapView(MainWindow* parent, int width, int height, const std::string& t
     _map = new Map;
     _map->width = width;
     _map->height = height;
-    _map->tileSetName = tilesetname;
+    _map->tilesetName = tilesetname;
     Init();
 }
 
@@ -1021,7 +1021,7 @@ void MapView::Init()
     pRightbar = new MapSash(this, -1);
     pRightbar->SetAlignment(wxLAYOUT_RIGHT);
 
-    _editState = new MapEditState::TileSetState(this);
+    _editState = new MapEditState::TilesetState(this);
     //_editState = new MapEditState::LayerMoveState(this);
 
     _graph = new MapFrame(pRightbar, this);
@@ -1029,14 +1029,14 @@ void MapView::Init()
     wxString mapPath(wxFileName(name.c_str()).GetPath());
     
     // If it's not an absolute path, then it is assumed to be relative to the map file.
-    wxFileName tileSetName(_map->tileSetName.c_str());
-    if (!tileSetName.IsAbsolute() && !mapPath.empty())
-        tileSetName.InsertDir(0, mapPath);
+    wxFileName tilesetName(_map->tilesetName.c_str());
+    if (!tilesetName.IsAbsolute() && !mapPath.empty())
+        tilesetName.InsertDir(0, mapPath);
 
-    _tileSet = pParentwnd->vsp.Load(tileSetName.GetFullPath().c_str()); // load the VSP
-    if (!_tileSet)
+    _tileset = pParentwnd->vsp.Load(tilesetName.GetFullPath().c_str()); // load the VSP
+    if (!_tileset)
     {
-        wxMessageBox(va("Unable to load tileset %s", tileSetName.GetFullPath().c_str()), "Error", wxOK | wxCENTER, this);
+        wxMessageBox(va("Unable to load tileset %s", tilesetName.GetFullPath().c_str()), "Error", wxOK | wxCENTER, this);
         Close();
         return;
     }
@@ -1065,8 +1065,8 @@ void MapView::Init()
 
     // --
 
-    pRightbar->SetScrollbar(wxVERTICAL,   0, w, _map->height * _tileSet->Height());
-    pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, _map->width  * _tileSet->Width());
+    pRightbar->SetScrollbar(wxVERTICAL,   0, w, _map->height * _tileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, _map->width  * _tileset->Width());
     xwin = ywin = 0;
 
     UpdateLayerList();
@@ -1083,7 +1083,7 @@ void MapView::Init()
 
 void MapView::Paint()
 {
-    if (!_tileSet || !_map)
+    if (!_tileset || !_map)
         return; // Frick'n gay.  wx likes to call this between deallocating my stuff, and actually destroying the frame. ;P
 
     _graph->SetCurrent();
@@ -1097,7 +1097,7 @@ void MapView::OnSize(wxSizeEvent& event)
     wxLayoutAlgorithm layout;
     layout.LayoutWindow(this, pRightbar);
 
-    if (_map && _tileSet) // gaaaay.
+    if (_map && _tileset) // gaaaay.
         UpdateScrollbars();
 }
 
@@ -1123,7 +1123,7 @@ void MapView::OnClose()
     Log::Write("Releasing Map.");
     pParentwnd->map.Release(_map);
     Log::Write("Releasing tileset.");
-    pParentwnd->vsp.Release(_tileSet);
+    pParentwnd->vsp.Release(_tileset);
 
     Log::Write("Releasing spritesets.");
     for (SpriteMap::iterator i = _sprites.begin(); i!= _sprites.end(); i++)
@@ -1131,7 +1131,7 @@ void MapView::OnClose()
     
     _sprites.clear();
     _map = 0;
-    _tileSet = 0;
+    _tileset = 0;
 
     Log::Write("Destroying map window....");
 
@@ -1148,11 +1148,11 @@ void MapView::OnSave(wxCommandEvent& event)
     if (name.length())
     {
         // More path junk.  Absolute paths need to be converted to relative paths, or the game won't run in any other directory.
-        wxFileName tileSetName(_map->tileSetName.c_str());
-        if (tileSetName.IsAbsolute())
-            tileSetName.MakeRelativeTo(wxFileName(name.c_str(), "", "").GetPath());
+        wxFileName tilesetName(_map->tilesetName.c_str());
+        if (tilesetName.IsAbsolute())
+            tilesetName.MakeRelativeTo(wxFileName(name.c_str(), "", "").GetPath());
 
-        _map->tileSetName = tileSetName.GetFullPath().c_str();
+        _map->tilesetName = tilesetName.GetFullPath().c_str();
 
         _map->Save(name);
     }
@@ -1226,19 +1226,19 @@ void MapView::SetCurrentLayer(const std::string& layerName)
 
 void MapView::GoPrevTile(wxEvent&)
 {
-    int t = _tileSet->CurTile() + 1;                                    // increment
-    _tileSet->SetCurTile(t % _tileSet->Count());                        // modulo for wraparound
+    int t = _tileset->CurTile() + 1;                                    // increment
+    _tileset->SetCurTile(t % _tileset->Count());                        // modulo for wraparound
 
-    CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(_tileSet);   // And redraw the tileset window, if it is open.
+    CTilesetView* tsv = (CTilesetView*)pParent->FindWindow(_tileset);   // And redraw the tileset window, if it is open.
     if (tsv)    tsv->Render();
 }
 
 void MapView::GoNextTile(wxEvent&)
 {
-    int t = _tileSet->CurTile() + _tileSet->Count() - 1;                // Decrement.  Add the total number of tiles so...
-    _tileSet->SetCurTile(t % _tileSet->Count());                        // modulo can once again perform cheapass wraparound
+    int t = _tileset->CurTile() + _tileset->Count() - 1;                // Decrement.  Add the total number of tiles so...
+    _tileset->SetCurTile(t % _tileset->Count());                        // modulo can once again perform cheapass wraparound
     
-    CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(_tileSet);   // And redraw the tileset window, if it is open.
+    CTilesetView* tsv = (CTilesetView*)pParent->FindWindow(_tileset);   // And redraw the tileset window, if it is open.
     if (tsv)    tsv->Render();
 }
 
@@ -1275,7 +1275,7 @@ void MapView::OnShowZoneEditor(wxCommandEvent&)
 
 void MapView::OnShowVSP(wxCommandEvent&)
 {
-    pParent->Open(_tileSet->GetVSP().Name());
+    pParent->Open(_tileset->GetVSP().Name());
 }
 
 void MapView::OnShowScript(wxCommandEvent&)
@@ -1291,7 +1291,7 @@ void MapView::OnLayerMode(wxCommandEvent&)
 
 void MapView::OnTileMode(wxCommandEvent&)
 {
-    _editState = new MapEditState::TileSetState(this);
+    _editState = new MapEditState::TilesetState(this);
     Render();
 }
 
@@ -1374,8 +1374,8 @@ void MapView::OnNewLayer(wxCommandEvent&)
 
 void MapView::MapToTile(int& x, int& y)
 {
-    x /= _tileSet->Width();
-    y /= _tileSet->Height();
+    x /= _tileset->Width();
+    y /= _tileset->Height();
 }
 
 void MapView::ScreenToTile(int& x, int& y)
@@ -1443,8 +1443,8 @@ void MapView::UpdateScrollbars()
     }
     // end temp
 
-    int maxx = _map->width * _tileSet->Width();
-    int maxy = _map->height * _tileSet->Height();
+    int maxx = _map->width * _tileset->Width();
+    int maxy = _map->height * _tileset->Height();
 
     // clip the viewport
     if (xwin + w > maxx) xwin = maxx - w;
@@ -1452,8 +1452,8 @@ void MapView::UpdateScrollbars()
     if (xwin < 0) xwin = 0;
     if (ywin < 0) ywin = 0;
 
-    pRightbar->SetScrollbar(wxHORIZONTAL, xwin, w, _map->width * _tileSet->Width()  );
-    pRightbar->SetScrollbar(wxVERTICAL, ywin, h,   _map->height* _tileSet->Height() );
+    pRightbar->SetScrollbar(wxHORIZONTAL, xwin, w, _map->width * _tileset->Width()  );
+    pRightbar->SetScrollbar(wxVERTICAL, ywin, h,   _map->height* _tileset->Height() );
 }
 
 void MapView::UpdateLayerList()
@@ -1552,7 +1552,7 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
         if (j->sprite)                                                                             // spritesets that couldn't be loaded are null pointers
             _graph->Blit(j->sprite->GetImage(0), j->x - xwin, j->y - ywin, true);
         else
-            _graph->RectFill(j->x, j->y, _tileSet->Width(), _tileSet->Height(), RGBA(0, 0, 0, 128)); // no spriteset found, draw a gray square
+            _graph->RectFill(j->x, j->y, _tileset->Width(), _tileset->Height(), RGBA(0, 0, 0, 128)); // no spriteset found, draw a gray square
     }
 }
 
@@ -1566,8 +1566,8 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
     int xw = xwin;
     int yw = ywin;
 
-    int tx = _tileSet->Width();
-    int ty = _tileSet->Height();
+    int tx = _tileset->Width();
+    int ty = _tileset->Height();
 
     int nFirstx = xw / tx;
     int nFirsty = yw / ty;
@@ -1625,8 +1625,8 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
     int xw = xoffset;
     int yw = yoffset;
 
-    int tx = _tileSet->Width();
-    int ty = _tileSet->Height();
+    int tx = _tileset->Width();
+    int ty = _tileset->Height();
 
     int nFirstx = xw / tx;
     int nFirsty = yw / ty;
@@ -1660,7 +1660,7 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
             int t = lay->tiles(x+ nFirstx, y + nFirsty);
 
             _graph->Blit(
-                _tileSet->GetImage(t),
+                _tileset->GetImage(t),
                 x * tx - nAdjx, y * ty - nAdjy,
                 true);
         }
@@ -1684,10 +1684,10 @@ void MapView::RenderSelectionRect(Rect r, RGBA colour)
         swap(r.bottom, r.top);
     }
 
-    r.top *= _tileSet->Height();
-    r.left *= _tileSet->Width();
-    r.bottom = (r.bottom + 1) * _tileSet->Height();
-    r.right = (r.right + 1) * _tileSet->Width();*/
+    r.top *= _tileset->Height();
+    r.left *= _tileset->Width();
+    r.bottom = (r.bottom + 1) * _tileset->Height();
+    r.right = (r.right + 1) * _tileset->Width();*/
 
     _graph->Rect(r.left - xwin, r.top - ywin, r.Width(), r.Height(), colour);
 }

@@ -129,7 +129,7 @@ protected:
 //private:
 
     Map*                _map;
-    Tileset*           _tileSet;
+    Tileset*           _tileset;
     ScopedPtr<MapEditState::IEditState> _editState;
 
     // Entity spritesets needed for this map.  The key is the filename of the sprite.

@@ -30,11 +30,10 @@
  *  This is the part that takes all the pieces, and whips them around as necessary.
  */
 
-struct Engine
-{
+struct Engine {
 
     // This sucks.
-    friend class ScriptEngine;
+    friend struct ScriptEngine;
 
     typedef std::list<Entity*>      EntityList;
     

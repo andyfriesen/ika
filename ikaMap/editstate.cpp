@@ -13,7 +13,7 @@ EditState::EditState(Executor* e)
 
 Executor*    EditState::GetExecutor()       const { return _executor; }
 MapView*     EditState::GetMapView()        const { return _executor->GetMapView(); }
-TileSetView* EditState::GetTileSetView()    const { return _executor->GetTileSetView(); }
+TilesetView* EditState::GetTilesetView()    const { return _executor->GetTilesetView(); }
 Map*         EditState::GetMap()            const { return _executor->GetMap(); }
 
 Map::Layer*  EditState::GetCurLayer() const
@@ -25,7 +25,7 @@ Map::Layer*  EditState::GetCurLayer() const
 }
 
 uint      EditState::GetCurLayerIndex()     const { return _executor->GetCurrentLayer(); }
-Tileset*  EditState::GetTileSet()           const { return _executor->GetTileSet(); }
+Tileset*  EditState::GetTileset()           const { return _executor->GetTileset(); }
 wxWindow* EditState::GetParentWindow()      const { return _executor->GetParentWindow(); }
 
 void EditState::HandleCommand(::Command* cmd)

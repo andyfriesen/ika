@@ -5,6 +5,8 @@
 #include "common/utility.h"
 #include "Canvas.h"
 
+struct File;
+
 /**
  * Hardware independant representation of a sprite.
  *
@@ -62,8 +64,8 @@ private:
     int        nHotw, nHoth;                    ///< hotspot width / height
 
     void LoadCHR(const std::string& filename);
-    void Loadv2CHR(class File& f);
-    void Loadv4CHR(class File& f);
-    void Loadv5CHR(class File& f);
+    void Loadv2CHR(File& f);
+    void Loadv4CHR(File& f);
+    void Loadv5CHR(File& f);
 };
 

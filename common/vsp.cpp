@@ -49,7 +49,7 @@ bool VSP::Load(const std::string& fileName) {
             f.Read(&pal, 768);
             f.Read(&numTiles, 2);
 
-            ScopedArray<u8> data8 = new u8[numTiles * 256];
+            ScopedArray<u8> data8(new u8[numTiles * 256]);
             f.Read(data8.get(), numTiles * 256);
 
             CreateTilesFromBuffer(data8.get(), pal, numTiles, _width, _height);
@@ -69,8 +69,8 @@ bool VSP::Load(const std::string& fileName) {
             f.Read(&numTiles, 2);
             f.Read(&bufsize, 4);
 
-            ScopedArray<u8> buffer = new u8[bufsize];
-            ScopedArray<u8> data8 = new u8[numTiles * 256];
+            ScopedArray<u8> buffer(new u8[bufsize]);
+            ScopedArray<u8> data8(new u8[numTiles * 256]);
             f.Read(buffer.get(), bufsize);
             ReadCompressedLayer1(data8.get(), numTiles * 256, buffer.get());
 
@@ -84,7 +84,7 @@ bool VSP::Load(const std::string& fileName) {
 
             f.Read(&numTiles, 2);
 
-            ScopedArray<u16> data16 = new u16[numTiles * _width * _height];
+            ScopedArray<u16> data16(new u16[numTiles * _width * _height]);
 
             f.Read(data16.get(), numTiles * _width * _height * 2); 
 
@@ -101,8 +101,8 @@ bool VSP::Load(const std::string& fileName) {
             f.Read(&numTiles, 2);
             f.Read(&bufsize, 4);
 
-            ScopedArray<u8> buffer = new u8[bufsize];
-            ScopedArray<u16> data16 = new u16[numTiles * _width * _height];
+            ScopedArray<u8> buffer(new u8[bufsize]);
+            ScopedArray<u16> data16(new u16[numTiles * _width * _height]);
 
             f.Read(buffer.get(), bufsize);
             ReadCompressedLayer2(data16.get(), numTiles * _width * _height, reinterpret_cast<u16*>(buffer.get()));
@@ -141,8 +141,8 @@ bool VSP::Load(const std::string& fileName) {
             int compressedBlockSize;
             f.Read(&compressedBlockSize, 4);
 
-            ScopedArray<u8> buffer = new u8[compressedBlockSize];
-            ScopedArray<u8> data = new u8[dataSize];
+            ScopedArray<u8> buffer(new u8[compressedBlockSize]);
+            ScopedArray<u8> data(new u8[dataSize]);
 
             f.Read(buffer.get(), compressedBlockSize);
 
@@ -194,7 +194,7 @@ int VSP::Save(const std::string& fname) {
         return 0;
     }
 
-    ScopedArray<RGBA> tileBuffer = new RGBA[_width * _height * tiles.size()];
+    ScopedArray<RGBA> tileBuffer(new RGBA[_width * _height * tiles.size()]);
 
     // copy all the tile data into one big long buffer that we can write to disk
     for (uint j = 0; j < tiles.size(); j++) {
@@ -222,7 +222,7 @@ int VSP::Save(const std::string& fname) {
     size_t nDatasize = tiles.size() * _width * _height * bpp;
 
     // Compression buffer.  11/10ths the size of the original, plus 12 bytes.
-    ScopedArray<u8> cb = new u8[(nDatasize * 11) / 10 + 12];
+    ScopedArray<u8> cb(new u8[(nDatasize * 11) / 10 + 12]);
 
     stream.next_in = reinterpret_cast<Bytef*>(tileBuffer.get());
     stream.avail_in = nDatasize;
@@ -346,7 +346,7 @@ void VSP::CreateTilesFromBuffer(u16* data, uint numTiles, int tilex, int tiley) 
 
     tiles.resize(numTiles);
 
-    ScopedArray<RGBA> buffer = new RGBA[_width * _height];
+    ScopedArray<RGBA> buffer(new RGBA[_width * _height]);
     u16* source = data;
 
     for (uint i = 0; i < numTiles; i++) {

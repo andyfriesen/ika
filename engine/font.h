@@ -6,7 +6,7 @@
 #include "common/fontfile.h"
 #include "tileset.h"
 
-class File;
+struct File;
 
 // fix X11 header conflict
 namespace Ika {
@@ -31,7 +31,7 @@ namespace Ika {
         void PrintChar(int& x, int y, uint subset, char c, RGBA colour);
         void PrintChar(int& x, int y, uint subset, char c, RGBA colour, Canvas& dest, Video::BlendMode blendMode);
 
-        template <class Printer>
+        template <typename Printer>
         void PaintString(int x, int y, const std::string& s, Printer& print);  ///< Draws the string somewhere.
 
         void PrintString(int x, int y, const std::string& s);                  ///< Draws the string to the screen

@@ -4,16 +4,14 @@
 
 #include "input.h"
 
-class KeyControl;// : public InputControl;
+struct KeyControl;// : public InputControl;
 
-class Keyboard : public InputDevice
-{
-public:
+struct Keyboard : public InputDevice {
     Keyboard();
     ~Keyboard();
 
     // no-op.
-    virtual void Update(){}
+    virtual void Update() {}
     virtual void Unpress();
 
     virtual InputControl* GetControl(const std::string& name);
@@ -36,15 +34,14 @@ private:
     KeyMap _keys;
 };
 
-class KeyControl : public InputControl
-{
-public:
+struct KeyControl : public InputControl {
     KeyControl();
-
-    virtual float Position();
 
     void KeyDown();
     void KeyUp();
+
+protected:
+    virtual float GetPosition();
 
 private:
     bool _pressed;

@@ -11,10 +11,10 @@ namespace iked {
     struct Tileset;
     struct ImageBank;
 
-    struct TileSetPanel : DocumentPanel {
-        TileSetPanel(MainWindow* parentwnd, const std::string& fname);
-        TileSetPanel(MainWindow* parentwnd, int width, int height);
-        ~TileSetPanel();
+    struct TilesetPanel : DocumentPanel {
+        TilesetPanel(MainWindow* parentwnd, const std::string& fname);
+        TilesetPanel(MainWindow* parentwnd, int width, int height);
+        ~TilesetPanel();
 
         void init();
 
@@ -68,7 +68,7 @@ namespace iked {
         MainWindow*       parent;
         GraphicsFrame*    graph;
 
-        Tileset*        tileSet;
+        Tileset*        tileset;
 
         wxMenu*         contextMenu;
 

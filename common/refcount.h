@@ -122,7 +122,7 @@ struct RefPtr {
         return data != 0;
     }
 
-    inline operator !() const {
+    inline bool operator !() const {
         return data == 0;
     }
 

@@ -428,29 +428,29 @@ void DestroyEntityCommand::Undo(Executor* e)
 
 //-----------------------------------------------------------------------------
 
-ChangeTileSetCommand::ChangeTileSetCommand(Tileset* tileSet, const std::string& fileName)
-    : _tileSet(tileSet)
+ChangeTilesetCommand::ChangeTilesetCommand(Tileset* tileset, const std::string& fileName)
+    : _tileset(tileset)
     , _fileName(fileName)
 {}
 
-ChangeTileSetCommand::~ChangeTileSetCommand()
+ChangeTilesetCommand::~ChangeTilesetCommand()
 {
-    delete _tileSet;
+    delete _tileset;
 }
 
-void ChangeTileSetCommand::Do(Executor* e)
+void ChangeTilesetCommand::Do(Executor* e)
 {
     std::string s = _fileName;
-    Tileset* t    = _tileSet;
+    Tileset* t    = _tileset;
 
-    _tileSet  = e->GetTileSet();
-    _fileName = e->GetMap()->tileSetName;
+    _tileset  = e->GetTileset();
+    _fileName = e->GetMap()->tilesetName;
 
-    e->SwitchTileSet(t);
-    e->GetMap()->tileSetName = s;
+    e->SwitchTileset(t);
+    e->GetMap()->tilesetName = s;
 }
 
-void ChangeTileSetCommand::Undo(Executor* e)
+void ChangeTilesetCommand::Undo(Executor* e)
 {
     Do(e);  // a swap undoes a swap
 }
@@ -467,22 +467,22 @@ InsertTilesCommand::InsertTilesCommand(uint pos, std::vector<Canvas >& tiles)
 
 void InsertTilesCommand::Do(Executor* e)
 {
-    Tileset* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileset();
 
     for (uint i = 0; i < _tiles.size(); i++)
         ts->InsertTile(_startPos + i, _tiles[i]);
 
-    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
+    e->tilesetChanged.fire(TilesetEvent(e->GetTileset()));
 }
 
 void InsertTilesCommand::Undo(Executor* e)
 {
-    Tileset* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileset();
 
     for (uint i = 0; i < _tiles.size(); i++)
         ts->DeleteTile(ts->Count() - 1);
 
-    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
+    e->tilesetChanged.fire(TilesetEvent(e->GetTileset()));
 }
 
 //-----------------------------------------------------------------------------
@@ -496,7 +496,7 @@ DeleteTilesCommand::DeleteTilesCommand(uint firstTile, uint lastTile)
 
 void DeleteTilesCommand::Do(Executor* e)
 {
-    Tileset* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileset();
 
     _savedTiles.reserve(_lastTile - _firstTile + 1);
 
@@ -506,31 +506,31 @@ void DeleteTilesCommand::Do(Executor* e)
         ts->DeleteTile(_firstTile);                     // then nuke it
     }
 
-    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
+    e->tilesetChanged.fire(TilesetEvent(e->GetTileset()));
 }
 
 void DeleteTilesCommand::Undo(Executor* e)
 {
-    Tileset* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileset();
 
     for (uint i = _firstTile; i <= _lastTile; i++)
     {
         ts->InsertTile(i, _savedTiles[i]);
     }
 
-    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
+    e->tilesetChanged.fire(TilesetEvent(e->GetTileset()));
 }
 
 //-----------------------------------------------------------------------------
 
-ResizeTileSetCommand::ResizeTileSetCommand(uint newWidth, uint newHeight)
+ResizeTilesetCommand::ResizeTilesetCommand(uint newWidth, uint newHeight)
     : _newWidth(newWidth)
     , _newHeight(newHeight)
 {}
 
-void ResizeTileSetCommand::Do(Executor* e)
+void ResizeTilesetCommand::Do(Executor* e)
 {
-    Tileset* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileset();
 
     _oldWidth = ts->Width();
     _oldHeight = ts->Height();
@@ -544,12 +544,12 @@ void ResizeTileSetCommand::Do(Executor* e)
 
     ts->New(_newWidth, _newHeight);
 
-    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
+    e->tilesetChanged.fire(TilesetEvent(e->GetTileset()));
 }
 
-void ResizeTileSetCommand::Undo(Executor* e)
+void ResizeTilesetCommand::Undo(Executor* e)
 {
-    Tileset* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileset();
 
     ts->New(_oldWidth, _oldHeight);
     for (uint i = 0; i < _savedTiles.size(); i++)
@@ -557,7 +557,7 @@ void ResizeTileSetCommand::Undo(Executor* e)
 
     _savedTiles.clear();    // free up all that memory.  We don't need it anymore anyway.
 
-    e->tileSetChanged.fire(TileSetEvent(e->GetTileSet()));
+    e->tilesetChanged.fire(TilesetEvent(e->GetTileset()));
 }
 
 //-----------------------------------------------------------------------------
@@ -678,12 +678,12 @@ UpdateTileAnimStrandCommand::UpdateTileAnimStrandCommand(uint index, const VSP::
 
 void UpdateTileAnimStrandCommand::Do(Executor* e)
 {
-    VSP::AnimState& strand = e->GetTileSet()->GetAnim()[_index];
+    VSP::AnimState& strand = e->GetTileset()->GetAnim()[_index];
     _oldStrand = strand;
     strand = _newStrand;
 }
 
 void UpdateTileAnimStrandCommand::Undo(Executor* e)
 {
-    e->GetTileSet()->GetAnim()[_index] = _oldStrand;
+    e->GetTileset()->GetAnim()[_index] = _oldStrand;
 }

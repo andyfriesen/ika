@@ -20,7 +20,7 @@
                 PostBuildEvent = ""
                 RootNamespace = "rho"
                 RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = "rho.MainForm"
+                StartupObject = "rho.Controls.Tests.SizerTest"
             >
                 <Config
                     Name = "Debug"

@@ -38,7 +38,7 @@ namespace iked {
 
     struct DocumentPanel;
     struct ProjectView;
-    struct TileSetPanel;
+    struct TilesetPanel;
 
     //////////////////////////////////////////
 
@@ -63,7 +63,7 @@ namespace iked {
         /*void NewProject(wxCommandEvent& event);
         void NewMap(wxCommandEvent& event);
         void NewScript(wxCommandEvent& event);
-        void NewTileSet(wxCommandEvent& event);*/
+        void NewTileset(wxCommandEvent& event);*/
         void NewSprite(wxCommandEvent& event);
         void OnOpen(wxCommandEvent& event);
         void OnSize(wxSizeEvent& event);

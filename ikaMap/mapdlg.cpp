@@ -49,7 +49,7 @@ void MapDlg::OnOk(wxCommandEvent& event)
 void MapDlg::OnAutoSize(wxCommandEvent&)
 {
     Map* map = _mainWnd->GetMap();
-    Tileset* tileSet = _mainWnd->GetTileSet();
+    Tileset* tileset = _mainWnd->GetTileset();
 
     width = height = 0;
 
@@ -57,8 +57,8 @@ void MapDlg::OnAutoSize(wxCommandEvent&)
     {
         Map::Layer* lay = map->GetLayer(i);
 
-        width  = max(width,  lay->x + lay->Width()  * tileSet->Width());
-        height = max(height, lay->y + lay->Height() * tileSet->Height());
+        width  = max(width,  lay->x + lay->Width()  * tileset->Width());
+        height = max(height, lay->y + lay->Height() * tileset->Height());
     }
 
     Ctrl<wxTextCtrl>("edit_width")->SetValue(va("%i", width));

@@ -158,8 +158,9 @@ void Engine::Startup() {
 
     // Now the tricky stuff.
     try {
-        if (cfg.Int("log"))
+        if (cfg.Int("log")) {
             Log::Init("ika.log");
+        }
 
         Log::Write("ika %s startup", IKA_VERSION);
         Log::Write("Built on " __DATE__);
@@ -237,11 +238,13 @@ void Engine::Startup() {
     script.Init(this);
     Log::Write("Executing system.py");
     bool result = script.LoadSystemScripts("system.py");
-    if (!result)
+    if (!result) {
         Script_Error();
+    }
 
-    if (!_isMapLoaded)
+    if (!_isMapLoaded) {
         Sys_Error("");
+    }
 
     Log::Write("Startup complete");
 }
@@ -693,14 +696,16 @@ void Engine::DestroyEntity(Entity* e) {
 void Engine::LoadMap(const std::string& filename) {
     CDEBUG("loadmap");
 
-    int bleah = 0;
-
     try {
         Log::Write("Loading map \"%s\"", filename.c_str());
 
         std::string oldTilesetName = map.tilesetName;
 
-        if (!map.Load(filename)) throw filename;                        // actually load the map
+        bool result = map.Load(filename);
+
+        if (!result) {
+            throw std::runtime_error("LoadMap(\"%s\") failed: invalid map file?");
+        }
 
         // Reset the default render list.
         renderList.clear();
@@ -722,7 +727,6 @@ void Engine::LoadMap(const std::string& filename) {
         for (uint curLayer = 0; curLayer < map.NumLayers(); curLayer++) {
             const Map::Layer* lay = map.GetLayer(curLayer);
             const std::vector<Map::Entity>& ents = lay->entities;
-            bleah += ents.size();
 
             for (uint curEnt = 0; curEnt < ents.size(); curEnt++) {
                 Entity* ent = new Entity(this, ents[curEnt], curLayer);
@@ -737,15 +741,16 @@ void Engine::LoadMap(const std::string& filename) {
         xwin = ywin = 0;                                                // just in case
         _isMapLoaded = true;
 
-        if (!script.LoadMapScripts(filename))
+        if (!script.LoadMapScripts(filename)) {
             Script_Error();
+        }
 
         // Now that the scripts have been loaded, it's time to get the movement and activation scripts for the entities
         for (std::map<const Map::Entity*, Entity*>::iterator
             iter = entMap.begin();
             iter != entMap.end();
-            iter++) 
-        {
+            iter++
+        ) {
             // if they're already nonzero, they changed in the init code, so we shouldn't change them.
 
             if (!iter->second->moveScript) {

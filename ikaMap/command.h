@@ -253,15 +253,15 @@ public:
     virtual void Undo(Executor* e);
 };
 
-struct ChangeTileSetCommand : Command
+struct ChangeTilesetCommand : Command
 {
 private:
-    struct Tileset* _tileSet;
+    struct Tileset* _tileset;
     std::string _fileName;
 
 public:
-    ChangeTileSetCommand(struct Tileset* tileSet, const std::string& fileName);
-    virtual ~ChangeTileSetCommand();
+    ChangeTilesetCommand(struct Tileset* tileset, const std::string& fileName);
+    virtual ~ChangeTilesetCommand();
 
     virtual void Do(Executor* e);
     virtual void Undo(Executor* e);
@@ -296,7 +296,7 @@ public:
     virtual void Undo(Executor* e);
 };
 
-struct ResizeTileSetCommand : Command
+struct ResizeTilesetCommand : Command
 {
 private:
     std::vector<Canvas> _savedTiles;
@@ -306,7 +306,7 @@ private:
     uint _newHeight;
 
 public:
-    ResizeTileSetCommand(uint newWidth, uint newHeight);
+    ResizeTilesetCommand(uint newWidth, uint newHeight);
 
     virtual void Do(Executor* e);
     virtual void Undo(Executor* e);

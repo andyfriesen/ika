@@ -17,8 +17,7 @@
 
 #include "common/utility.h"
 
-class CConfigFile
-{
+struct CConfigFile {
     typedef std::map<std::string, std::string> ConfigMap;
     
     ConfigMap keys;

@@ -3,17 +3,14 @@
 #include "common/utility.h"
 #include <stdio.h>
 
-class File
-{
-    enum FileMode
-    {
+struct File {
+    enum FileMode {
         closed,
         open_read,
         open_write
     };
 
-    struct SDirectoryInfo
-    {
+    struct SDirectoryInfo {
         std::string sExtension;
         std::string sPath;
     };
@@ -34,12 +31,12 @@ private:
     FILE *f;
     FileMode mode;
 public:
-    File(void);
-    ~File(void);
+    File();
+    ~File();
     bool OpenRead(const char* fname, bool bBinary = true);
     bool OpenAppend(const char* fname, bool bBinary = true);
     bool OpenWrite(const char* fname, bool bBinary = true);
-    void Close(void);
+    void Close();
     
     void Read(void* dest, int numbytes);
     template <typename T>
@@ -59,8 +56,8 @@ public:
     void WriteCompressed(const void* source, int numbytes);
     
     void Seek(int position);
-    int  Size(void);
-    int  Pos(void);
+    int  Size();
+    int  Pos();
     bool eof();
 };
 

@@ -110,23 +110,23 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_fileopen, MainWindow::OnOpenMap)
     EVT_MENU(id_filesave, MainWindow::OnSaveMap)
     EVT_MENU(id_filesavemapas, MainWindow::OnSaveMapAs)
-    EVT_MENU(id_fileloadtileset, MainWindow::OnLoadTileSet)
-    EVT_MENU(id_filesavetilesetas, MainWindow::OnSaveTileSetAs)
+    EVT_MENU(id_fileloadtileset, MainWindow::OnLoadTileset)
+    EVT_MENU(id_filesavetilesetas, MainWindow::OnSaveTilesetAs)
     EVT_MENU(id_fileexit, MainWindow::OnExit)
     EVT_MENU(id_editundo, MainWindow::OnUndo)
     EVT_MENU(id_editredo, MainWindow::OnRedo)
     EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
     EVT_MENU(id_importtiles, MainWindow::OnImportTiles)
-    EVT_MENU(id_exporttiles, MainWindow::OnExportTileSet)
+    EVT_MENU(id_exporttiles, MainWindow::OnExportTileset)
     EVT_MENU(id_clonelayer, MainWindow::OnCloneLayer)
     EVT_MENU(id_edittileanim, MainWindow::OnEditTileAnim)
 
     EVT_MENU(id_zoommapin, MainWindow::OnZoomMapIn)
     EVT_MENU(id_zoommapout, MainWindow::OnZoomMapOut)
     EVT_MENU(id_zoommapnormal, MainWindow::OnZoomMapNormal)
-    EVT_MENU(id_zoomtilesetin, MainWindow::OnZoomTileSetIn)
-    EVT_MENU(id_zoomtilesetout, MainWindow::OnZoomTileSetOut)
-    EVT_MENU(id_zoomtilesetnormal, MainWindow::OnZoomTileSetNormal)
+    EVT_MENU(id_zoomtilesetin, MainWindow::OnZoomTilesetIn)
+    EVT_MENU(id_zoomtilesetout, MainWindow::OnZoomTilesetOut)
+    EVT_MENU(id_zoomtilesetnormal, MainWindow::OnZoomTilesetNormal)
 
     EVT_MENU(id_configurescripts, MainWindow::OnConfigureScripts)
     EVT_MENU_RANGE(id_customscript, id_lastcustomscript, MainWindow::OnSetCurrentScript)
@@ -168,7 +168,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 #endif
         position, size, style)
     , _map(0)
-    , _tileSet(0)
+    , _tileset(0)
     , _curScript(0)
     , _curLayer(0)
     , _curTile(0)
@@ -262,11 +262,11 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 #endif
 
     _mapView = new MapView(this, _topBar);
-    _tileSetView = new TileSetView(this, _bottomBar);
+    _tilesetView = new TilesetView(this, _bottomBar);
 
     _map = new Map;
-    _tileSet = new Tileset;
-    _tileSet->New(16, 16);
+    _tileset = new Tileset;
+    _tileset->New(16, 16);
 
     /*
      * Time to bind components to events:
@@ -297,12 +297,12 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         entitiesChanged.add     (_mapView, &MapView::OnMapChange);
         mapPropertiesChanged.add(_mapView, &MapView::OnMapChange);
 
-        tilesImported.add       (_tileSetView, &TileSetView::OnTileSetChange);
-        tileSetChanged.add      (_tileSetView, &TileSetView::OnTileSetChange);
+        tilesImported.add       (_tilesetView, &TilesetView::OnTilesetChange);
+        tilesetChanged.add      (_tilesetView, &TilesetView::OnTilesetChange);
 
-        // Must explicitly call bind() because these methods need to convert a MapTileSetEvent to a MapEvent or a TileSetEvent
+        // Must explicitly call bind() because these methods need to convert a MapTilesetEvent to a MapEvent or a TilesetEvent
         mapLoaded.add           (bind(_mapView, &MapView::OnMapChange));
-        mapLoaded.add           (bind(_tileSetView, &TileSetView::OnTileSetChange));
+        mapLoaded.add           (bind(_tilesetView, &TilesetView::OnTilesetChange));
         mapLoaded.add           (bind(_layerList, &LayerList::OnMapLayersChanged));
 
         mapVisibilityChanged.add(_mapView, &MapView::OnMapChange);
@@ -311,7 +311,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         curLayerChanged.add     (_mapView, &MapView::OnCurLayerChange);
         curLayerChanged.add     (_layerList, &LayerList::OnLayerActivated);
 
-        curTileChanged.add      (_tileSetView, &TileSetView::OnCurrentTileChange);
+        curTileChanged.add      (_tilesetView, &TilesetView::OnCurrentTileChange);
     }
 
     // Create the menu.
@@ -400,7 +400,7 @@ MainWindow::~MainWindow()
     ClearList(_redoList);
 
     delete _map;
-    delete _tileSet;
+    delete _tileset;
 
     for (uint i = 0; i < _scripts.size(); i++)
         delete _scripts[i];
@@ -439,37 +439,37 @@ void MainWindow::OnNewMap(wxCommandEvent&)
     if (result == wxID_OK)
     {
         Map* newMap;
-        Tileset* newTileSet;
+        Tileset* newTileset;
         try
         {
             newMap = new Map();
             newMap->width = dlg.width;
             newMap->height = dlg.height;
-            newMap->tileSetName = dlg.tileSetName;
+            newMap->tilesetName = dlg.tilesetName;
 
-            newTileSet = new Tileset();
-            if (!dlg.newTileSet)
-                newTileSet->Load(dlg.tileSetName);
+            newTileset = new Tileset();
+            if (!dlg.newTileset)
+                newTileset->Load(dlg.tilesetName);
             else
-                newTileSet->New(dlg.tileWidth, dlg.tileHeight);
+                newTileset->New(dlg.tileWidth, dlg.tileHeight);
 
             _curMapName = "";
             _changed = false;
             UpdateTitle();
 
             delete _map;        _map = newMap;
-            delete _tileSet;    _tileSet = newTileSet;
+            delete _tileset;    _tileset = newTileset;
 
             _layerVisibility.resize(_map->NumLayers());
             std::fill(_layerVisibility.begin(), _layerVisibility.end(), true);
 
             _mapView->UpdateScrollBars();       _mapView->Refresh();
-            _tileSetView->UpdateScrollBars();   _tileSetView->Refresh();
+            _tilesetView->UpdateScrollBars();   _tilesetView->Refresh();
 
             ClearList(_undoList);
             ClearList(_redoList);
 
-            mapLoaded.fire(MapTileSetEvent(_map, _tileSet));
+            mapLoaded.fire(MapTilesetEvent(_map, _tileset));
         }
         catch (std::runtime_error& error)
         {
@@ -511,7 +511,7 @@ void MainWindow::OnSaveMap(wxCommandEvent& event)
         try
         {
             _map->Save(_curMapName);
-            _tileSet->Save(_map->tileSetName);
+            _tileset->Save(_map->tilesetName);
             _changed = false;
             UpdateTitle();
         }
@@ -555,7 +555,7 @@ void MainWindow::OnSaveMapAs(wxCommandEvent&)
     }
 }
 
-void MainWindow::OnLoadTileSet(wxCommandEvent&)
+void MainWindow::OnLoadTileset(wxCommandEvent&)
 {
     wxFileDialog dlg(
         this,
@@ -582,7 +582,7 @@ void MainWindow::OnLoadTileSet(wxCommandEvent&)
             // FIXME: paths aren't taken into consideration here.
             // Need to make sure that the tileset name is always relative to the map's position.  Sprites should be the same.
 
-            HandleCommand(new ChangeTileSetCommand(ts, fName.GetFullPath().c_str()));
+            HandleCommand(new ChangeTilesetCommand(ts, fName.GetFullPath().c_str()));
         }
         catch (std::runtime_error err)
         {
@@ -592,7 +592,7 @@ void MainWindow::OnLoadTileSet(wxCommandEvent&)
     }
 }
 
-void MainWindow::OnSaveTileSetAs(wxCommandEvent&)
+void MainWindow::OnSaveTilesetAs(wxCommandEvent&)
 {
     wxFileDialog dlg(
         this,
@@ -608,11 +608,11 @@ void MainWindow::OnSaveTileSetAs(wxCommandEvent&)
     if (result != wxID_OK)
         return;
 
-    _map->tileSetName = dlg.GetFilename().c_str();
-    _tileSet->Save(dlg.GetPath().c_str());
+    _map->tilesetName = dlg.GetFilename().c_str();
+    _tileset->Save(dlg.GetPath().c_str());
 }
 
-void MainWindow::OnExportTileSet(wxCommandEvent&)
+void MainWindow::OnExportTileset(wxCommandEvent&)
 {
     ExportTilesDlg dlg(this);
     if (dlg.ShowModal() == wxID_OK)
@@ -621,27 +621,27 @@ void MainWindow::OnExportTileSet(wxCommandEvent&)
         const uint rowSize = dlg._rowSize;
 
         Canvas dest(
-            rowSize * (_tileSet->Width() + padAdjust) + padAdjust,
-            (_tileSet->Count() / rowSize) * (_tileSet->Height() + padAdjust) + padAdjust);
+            rowSize * (_tileset->Width() + padAdjust) + padAdjust,
+            (_tileset->Count() / rowSize) * (_tileset->Height() + padAdjust) + padAdjust);
 
         dest.Clear(RGBA(255, 255, 255));
 
         uint i = 0;
         uint curX = padAdjust;
         uint curY = padAdjust;
-        while (i < _tileSet->Count())
+        while (i < _tileset->Count())
         {
             for (uint j = 0; j < rowSize; j++)
             {
-                Blitter::Blit(_tileSet->Get(i), dest, curX, curY, Blitter::OpaqueBlend());
-                curX += _tileSet->Width() + padAdjust;
+                Blitter::Blit(_tileset->Get(i), dest, curX, curY, Blitter::OpaqueBlend());
+                curX += _tileset->Width() + padAdjust;
                 i++;
-                if (i >= _tileSet->Count())
+                if (i >= _tileset->Count())
                     goto breakLoop;
             }
 
             curX = padAdjust;
-            curY += _tileSet->Height() + padAdjust;
+            curY += _tileset->Height() + padAdjust;
         }
 breakLoop:; // eeeeeeeeeeeeeee
 
@@ -681,7 +681,7 @@ void MainWindow::OnImportTiles(wxCommandEvent&)
     if (!_importTilesDlg)
         _importTilesDlg = new ImportTilesDlg(this);
 
-    if (_importTilesDlg->ShowModal(_tileSet->Width(), _tileSet->Height()) == wxID_OK)
+    if (_importTilesDlg->ShowModal(_tileset->Width(), _tileset->Height()) == wxID_OK)
     {
         if (!_importTilesDlg->_append)
         {
@@ -689,14 +689,14 @@ void MainWindow::OnImportTiles(wxCommandEvent&)
 
             std::vector< ::Command*> commands; // commands to be sent
 
-            if (_tileSet->Count())  // if there are tiles to delete, delete them
-                commands.push_back(new DeleteTilesCommand(0, _tileSet->Count() - 1));   // One copy
-            commands.push_back(new ResizeTileSetCommand(_importTilesDlg->_width, _importTilesDlg->_height));      // Not much to store here, since there are no tiles to resize. (thus nothing to back up)
+            if (_tileset->Count())  // if there are tiles to delete, delete them
+                commands.push_back(new DeleteTilesCommand(0, _tileset->Count() - 1));   // One copy
+            commands.push_back(new ResizeTilesetCommand(_importTilesDlg->_width, _importTilesDlg->_height));      // Not much to store here, since there are no tiles to resize. (thus nothing to back up)
             commands.push_back(new InsertTilesCommand(0, _importTilesDlg->tiles));                   // copy of each tile to be inserted.
             HandleCommand(new CompositeCommand(commands));
         }
         else
-            HandleCommand(new InsertTilesCommand(_tileSet->Count(), _importTilesDlg->tiles));
+            HandleCommand(new InsertTilesCommand(_tileset->Count(), _importTilesDlg->tiles));
     }
 }
 
@@ -704,7 +704,7 @@ void MainWindow::OnEditTileAnim(wxCommandEvent&)
 {
     TileAnimDlg dlg(this);
 
-    ::Command* cmd = dlg.Execute(_tileSet->GetAnim());
+    ::Command* cmd = dlg.Execute(_tileset->GetAnim());
 
     if (cmd)
         HandleCommand(cmd);
@@ -724,9 +724,9 @@ void MainWindow::OnCloneLayer(wxCommandEvent&)
 void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   SetZoomRelative(-1); }//{   _mapView->IncZoom(-1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
 void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   SetZoomRelative(+1); }//{   _mapView->IncZoom(+1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
 void MainWindow::OnZoomMapNormal(wxCommandEvent&)       {   SetZoom        (16); }//{   _mapView->SetZoom(16);      _mapView->Refresh();        _mapView->UpdateScrollBars();   } // 16:16 == 100%
-void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoom(-1);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   }
-void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   }
-void MainWindow::OnZoomTileSetNormal(wxCommandEvent&)   {   _tileSetView->SetZoom(16);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   } // 16:16 == 100%
+void MainWindow::OnZoomTilesetIn(wxCommandEvent&)       {   _tilesetView->IncZoom(-1);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   }
+void MainWindow::OnZoomTilesetOut(wxCommandEvent&)      {   _tilesetView->IncZoom(+1);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   }
+void MainWindow::OnZoomTilesetNormal(wxCommandEvent&)   {   _tilesetView->SetZoom(16);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   } // 16:16 == 100%
 
 void MainWindow::OnConfigureScripts(wxCommandEvent& e)
 {
@@ -925,7 +925,7 @@ void MainWindow::HighlightToolButton(uint buttonId)
 }
 
 MapView* MainWindow::GetMapView() const { return _mapView; }
-TileSetView* MainWindow::GetTileSetView() const { return _tileSetView; }
+TilesetView* MainWindow::GetTilesetView() const { return _tilesetView; }
 
 void MainWindow::LoadMap(const std::string& fileName) {
     extern Map* ImportVerge1Map(const std::string& fileName);
@@ -972,20 +972,20 @@ void MainWindow::LoadMap(const std::string& fileName) {
     }
 
     Tileset* ts = new Tileset;
-    result = ts->Load(newMap->tileSetName.c_str());
+    result = ts->Load(newMap->tilesetName.c_str());
 
     if (!result) {
         delete ts;
         ts = 0;
         try {
-            VSP* v = ImportVerge3Tileset(newMap->tileSetName.c_str());
+            VSP* v = ImportVerge3Tileset(newMap->tilesetName.c_str());
             ts = new Tileset(v);
             result = 1;
         } catch (...) {}
     }
 
     if (!result) {
-        ::wxMessageBox(va("Unable to load tileset %s.", newMap->tileSetName.c_str()), "Error loading tileset.", wxOK | wxCENTRE | wxICON_ERROR, this);
+        ::wxMessageBox(va("Unable to load tileset %s.", newMap->tilesetName.c_str()), "Error loading tileset.", wxOK | wxCENTRE | wxICON_ERROR, this);
         delete newMap;
         delete ts;
         return;
@@ -994,7 +994,7 @@ void MainWindow::LoadMap(const std::string& fileName) {
     _curMapName = fileName;
 
     delete _map;        _map = newMap;
-    delete _tileSet;    _tileSet = ts;
+    delete _tileset;    _tileset = ts;
 
     // Free spritesets used by the old map.
     for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++) {
@@ -1008,7 +1008,7 @@ void MainWindow::LoadMap(const std::string& fileName) {
     _layerVisibility.resize(_map->NumLayers());
     std::fill(_layerVisibility.begin(), _layerVisibility.end(), true);
 
-    mapLoaded.fire(MapTileSetEvent(_map, _tileSet));
+    mapLoaded.fire(MapTilesetEvent(_map, _tileset));
 
     _changed = false;
     UpdateTitle();
@@ -1104,7 +1104,7 @@ uint MainWindow::GetCurrentTile()
 
 void MainWindow::SetCurrentTile(uint i)
 {
-    if (i > _tileSet->Count())
+    if (i > _tileset->Count())
         i = 0;
 
     _curTile = i;
@@ -1144,7 +1144,7 @@ void MainWindow::SetZoomRelative(int factor)
 }
 
 Map* MainWindow::GetMap()         { return _map; }
-Tileset* MainWindow::GetTileSet() { return _tileSet; }
+Tileset* MainWindow::GetTileset() { return _tileset; }
 
 SpriteSet* MainWindow::GetSpriteSet(const std::string& fileName)
 {
@@ -1170,9 +1170,9 @@ MapView* MainWindow::GetMapView()
     return _mapView;
 }
 
-TileSetView* MainWindow::GetTileSetView()
+TilesetView* MainWindow::GetTilesetView()
 {
-    return _tileSetView;
+    return _tilesetView;
 }
 
 wxWindow* MainWindow::GetParentWindow()
@@ -1180,9 +1180,9 @@ wxWindow* MainWindow::GetParentWindow()
     return this;
 }
 
-void MainWindow::SwitchTileSet(Tileset* ts)
+void MainWindow::SwitchTileset(Tileset* ts)
 {
-    _tileSet = ts;
-    tileSetChanged.fire(MapTileSetEvent(_map, _tileSet));
+    _tileset = ts;
+    tilesetChanged.fire(MapTilesetEvent(_map, _tileset));
 }
 

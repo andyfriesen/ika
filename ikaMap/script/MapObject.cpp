@@ -97,9 +97,9 @@ namespace ScriptObject
         GET(Title)      { return PyString_FromString(self->GetMap()->title.c_str()); }
         SET(Title)      { self->GetMap()->title = PyString_AsString(value); return 0;   }
         GET(LayerCount) { return PyInt_FromLong(self->GetMap()->NumLayers());   }
-        GET(TileCount)  { return PyInt_FromLong(self->mainWnd->GetTileSet()->Count()); }
-        GET(TileWidth)  { return PyInt_FromLong(self->mainWnd->GetTileSet()->Width()); }
-        GET(TileHeight) { return PyInt_FromLong(self->mainWnd->GetTileSet()->Height()); }
+        GET(TileCount)  { return PyInt_FromLong(self->mainWnd->GetTileset()->Count()); }
+        GET(TileWidth)  { return PyInt_FromLong(self->mainWnd->GetTileset()->Width()); }
+        GET(TileHeight) { return PyInt_FromLong(self->mainWnd->GetTileset()->Height()); }
 
 #undef GET
 #undef SET

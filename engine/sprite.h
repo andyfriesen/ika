@@ -55,17 +55,16 @@ private:
  *  CSpriteController also keeps tabs on redundant requests for the same sprite, and
  *  refcounts accordingly.
  */
-class CSpriteController
-{
-    typedef std::map<std::string, Sprite*> SpriteMap;
-
-    SpriteMap sprite;                                      ///< List of allocated sprites
-
-public:
+struct CSpriteController {
     Sprite* Load(const std::string& fname, Video::Driver* video); ///< loads a CHR file
     void Free(Sprite* s);                                  ///< releases a CHR file
 
     ~CSpriteController();
+
+private:
+    typedef std::map<std::string, Sprite*> SpriteMap;
+
+    SpriteMap sprite;                                      ///< List of allocated sprites
 };
 
 #endif

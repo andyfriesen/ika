@@ -11,15 +11,15 @@ class NewMapDlg : public wxDialog
 
     void OnOK(wxCommandEvent& event);
     void OnBrowse(wxCommandEvent& event);
-    void OnCheckNewTileSet(wxCommandEvent& event);
+    void OnCheckNewTileset(wxCommandEvent& event);
 public:
     NewMapDlg(wxWindow* parent);
 
     // too lazy to encapsulate this shit.
     int width;
     int height;
-    std::string tileSetName;
-    bool newTileSet;
+    std::string tilesetName;
+    bool newTileset;
     int tileWidth;
     int tileHeight;
 

@@ -61,7 +61,7 @@ MouseAxisControl::MouseAxisControl(uint axis)
     : _axis(axis)
 {}
 
-float MouseAxisControl::Position()
+float MouseAxisControl::GetPosition()
 {
     int x, y;
     SDL_GetMouseState(&x, &y);
@@ -82,7 +82,7 @@ MouseButtonControl::MouseButtonControl(uint index)
     : _index(index)
 {}
 
-float MouseButtonControl::Position()
+float MouseButtonControl::GetPosition()
 {
     int b = SDL_GetMouseState(0, 0);
     return b & SDL_BUTTON(_index) ? 1.0f : 0.0f;

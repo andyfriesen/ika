@@ -33,12 +33,12 @@ namespace iked {
             id_zoomnormal
         };
 
-        struct TileSetFrame : public GraphicsFrame {
+        struct TilesetFrame : public GraphicsFrame {
             DECLARE_EVENT_TABLE()
 
-            TileSetPanel* _parent;
+            TilesetPanel* _parent;
         public:
-            TileSetFrame(TileSetPanel* parent)
+            TilesetFrame(TilesetPanel* parent)
                 : GraphicsFrame(parent)
                 , _parent(parent) 
             {}
@@ -50,74 +50,74 @@ namespace iked {
             }
         };
 
-        BEGIN_EVENT_TABLE(TileSetFrame, GraphicsFrame)
-            EVT_PAINT(TileSetFrame::onPaint)
+        BEGIN_EVENT_TABLE(TilesetFrame, GraphicsFrame)
+            EVT_PAINT(TilesetFrame::onPaint)
         END_EVENT_TABLE();
         __declspec(noreturn) void NYI() { throw std::runtime_error("Not yet impemented!!"); }
     }
 
-    BEGIN_EVENT_TABLE(TileSetPanel, DocumentPanel)
-        EVT_SCROLLWIN(TileSetPanel::onScroll)
-        EVT_SIZE(TileSetPanel::onSize)
-        EVT_ERASE_BACKGROUND(TileSetPanel::onEraseBackground)
+    BEGIN_EVENT_TABLE(TilesetPanel, DocumentPanel)
+        EVT_SCROLLWIN(TilesetPanel::onScroll)
+        EVT_SIZE(TilesetPanel::onSize)
+        EVT_ERASE_BACKGROUND(TilesetPanel::onEraseBackground)
 
-        EVT_LEFT_DOWN(TileSetPanel::onLeftClick)
-        EVT_RIGHT_DOWN(TileSetPanel::onRightClick)
-        EVT_MOUSEWHEEL(TileSetPanel::onMouseWheel)
+        EVT_LEFT_DOWN(TilesetPanel::onLeftClick)
+        EVT_RIGHT_DOWN(TilesetPanel::onRightClick)
+        EVT_MOUSEWHEEL(TilesetPanel::onMouseWheel)
 
-        EVT_MENU(id_filesave, TileSetPanel::onSave)
-        EVT_MENU(id_filesaveas, TileSetPanel::onSaveAs)
-        EVT_MENU(id_importtiles, TileSetPanel::onImportTiles)
+        EVT_MENU(id_filesave, TilesetPanel::onSave)
+        EVT_MENU(id_filesaveas, TilesetPanel::onSaveAs)
+        EVT_MENU(id_importtiles, TilesetPanel::onImportTiles)
 
-        EVT_MENU(id_cuttile, TileSetPanel::onCutTile)
-        EVT_MENU(id_copytile, TileSetPanel::onCopyTile)
-        EVT_MENU(id_inserttile, TileSetPanel::onInsertTile)
-        EVT_MENU(id_pasteover, TileSetPanel::onPasteOver)
-        EVT_MENU(id_insertandpaste, TileSetPanel::onInsertAndPaste)
-        EVT_MENU(id_edittile, TileSetPanel::onEditTile)
+        EVT_MENU(id_cuttile, TilesetPanel::onCutTile)
+        EVT_MENU(id_copytile, TilesetPanel::onCopyTile)
+        EVT_MENU(id_inserttile, TilesetPanel::onInsertTile)
+        EVT_MENU(id_pasteover, TilesetPanel::onPasteOver)
+        EVT_MENU(id_insertandpaste, TilesetPanel::onInsertAndPaste)
+        EVT_MENU(id_edittile, TilesetPanel::onEditTile)
 
-        EVT_MENU(id_zoomnormal, TileSetPanel::onZoomNormal)
-        EVT_MENU(id_zoomin, TileSetPanel::onZoomIn)
-        EVT_MENU(id_zoomout, TileSetPanel::onZoomOut)
+        EVT_MENU(id_zoomnormal, TilesetPanel::onZoomNormal)
+        EVT_MENU(id_zoomin, TilesetPanel::onZoomIn)
+        EVT_MENU(id_zoomout, TilesetPanel::onZoomOut)
 
-        EVT_MENU(id_zoomin2x, TileSetPanel::onZoomIn2x)
-        EVT_MENU(id_zoomin4x, TileSetPanel::onZoomIn4x)
-        EVT_MENU(id_zoomout2x, TileSetPanel::onZoomOut2x)
-        EVT_MENU(id_zoomout4x, TileSetPanel::onZoomOut4x)
+        EVT_MENU(id_zoomin2x, TilesetPanel::onZoomIn2x)
+        EVT_MENU(id_zoomin4x, TilesetPanel::onZoomIn4x)
+        EVT_MENU(id_zoomout2x, TilesetPanel::onZoomOut2x)
+        EVT_MENU(id_zoomout4x, TilesetPanel::onZoomOut4x)
     END_EVENT_TABLE()
 
-    TileSetPanel::TileSetPanel(MainWindow* parentwnd, const std::string& fname)
+    TilesetPanel::TilesetPanel(MainWindow* parentwnd, const std::string& fname)
         : DocumentPanel(parentwnd, fname)
         , parent(parentwnd)
         , ywin(0)
     {
         Init();
 
-        tileSet = parent->vsp.get(fname);
+        tileset = parent->vsp.get(fname);
     }
 
-    TileSetPanel::TileSetPanel(MainWindow* parentwnd, int width, int height)
+    TilesetPanel::TilesetPanel(MainWindow* parentwnd, int width, int height)
         : DocumentPanel(parentwnd, "")
         , parent(parentwnd)
         , ywin(0)
     {
         Init();
 
-        tileSet = new Tileset(width, height, 0);
+        tileset = new Tileset(width, height, 0);
     }
 
-    TileSetPanel::~TileSetPanel() {
+    TilesetPanel::~TilesetPanel() {
         delete contextMenu;
 
-        parent->vsp.free(tileSet);
-        tileSet = 0;
+        parent->vsp.free(tileset);
+        tileset = 0;
     }
 
 
-    void TileSetPanel::init() {
+    void TilesetPanel::init() {
         SetIcon(wxIcon("vspicon", wxBITMAP_TYPE_ICO_RESOURCE));
 
-        graph = new TileSetFrame(this);
+        graph = new TilesetFrame(this);
         graph->SetSize(GetClientSize());
         wxMenuBar* menubar = parent->CreateBasicMenu();
 
@@ -159,11 +159,11 @@ namespace iked {
 
     // --------------------------------- events ---------------------------------
 
-    void TileSetPanel::onSave(wxCommandEvent& event) {
-        tileSet->save(getName());
+    void TilesetPanel::onSave(wxCommandEvent& event) {
+        tileset->save(getName());
     }
 
-    void TileSetPanel::onSaveAs(wxCommandEvent& event) {
+    void TilesetPanel::onSaveAs(wxCommandEvent& event) {
         wxFileDialog dlg(
             this,
             "Save CHR",
@@ -183,11 +183,11 @@ namespace iked {
         std::string newName = dlg.GetPath().c_str();
 
         if (oldName != newName) {
-            Tileset* clone = parent->vsp.clone(tileSet);
-            if (clone != tileSet) {
-                // TODO: revert tileSet to last saved state
+            Tileset* clone = parent->vsp.clone(tileset);
+            if (clone != tileset) {
+                // TODO: revert tileset to last saved state
                 wxASSERT_MSG(0, "NYI");
-                tileSet = clone;
+                tileset = clone;
             }
         }
 
@@ -197,25 +197,25 @@ namespace iked {
         onSave(event);
     }
 
-    void TileSetPanel::onPaint() {
-        if (!tileSet) {
+    void TilesetPanel::onPaint() {
+        if (!tileset) {
             return; // blech
         }
         render();
     }
 
-    void TileSetPanel::onSize(wxSizeEvent& event) {
+    void TilesetPanel::onSize(wxSizeEvent& event) {
         graph->SetSize(GetClientSize());
 
         updateScrollbar();
     }
 
-    void TileSetPanel::onScroll(wxScrollWinEvent& event) {
+    void TilesetPanel::onScroll(wxScrollWinEvent& event) {
         if (event.m_eventType == wxEVT_SCROLLWIN_TOP) {
             ywin = 0;                     
         } else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM) {
             // set ywin to a huge value: the usual scroll handler will clip it
-            ywin = tileSet->getCount();        
+            ywin = tileset->getCount();        
         } else if (event.m_eventType == wxEVT_SCROLLWIN_LINEUP) {
             ywin--;                     
         } else if (event.m_eventType == wxEVT_SCROLLWIN_LINEDOWN) {
@@ -232,41 +232,41 @@ namespace iked {
         }
     }
 
-    void TileSetPanel::onLeftClick(wxMouseEvent& event) {
+    void TilesetPanel::onLeftClick(wxMouseEvent& event) {
         int x, y;
         event.GetPosition(&x, &y);
 
         int t = getTileAt(x, y);
         if (t != -1) {
-            tileSet->setCurTile(t);
+            tileset->setCurTile(t);
             render();
         }
     }
 
-    void TileSetPanel::onRightClick(wxMouseEvent& event) {
+    void TilesetPanel::onRightClick(wxMouseEvent& event) {
         tileIndex = getTileAt(event.GetX(), event.GetY());
         PopupMenu(contextMenu, event.GetPosition());
     }
 
-    void TileSetPanel::onMouseWheel(wxMouseEvent& event) {
-        int t = tileSet->getCurTile() + tileSet->getCount();
+    void TilesetPanel::onMouseWheel(wxMouseEvent& event) {
+        int t = tileset->getCurTile() + tileset->getCount();
         if (event.GetWheelRotation() > 0) {
             t++;
         } else {
             t--;
         }
-        tileSet->setCurTile(t % tileSet->getCount());
+        tileset->setCurTile(t % tileset->getCount());
 
         render();
     }
 
     //---------------------------
 
-    void TileSetPanel::onImportTiles(wxCommandEvent&) {
+    void TilesetPanel::onImportTiles(wxCommandEvent&) {
         NYI();
         ImportFramesDlg dlg(this);
 
-        if (dlg.ShowModal(tileSet->getWidth(), tileSet->getHeight()) != wxID_OK) {
+        if (dlg.ShowModal(tileset->getWidth(), tileset->getHeight()) != wxID_OK) {
             return;
         }
 
@@ -276,13 +276,13 @@ namespace iked {
 
         std::vector<Canvas>& tiles = dlg.frames;
         for (uint i = 0; i < tiles.size(); i++) {
-            tileSet->append(tiles[i]);
+            tileset->append(tiles[i]);
         }
     }
 
-    void TileSetPanel::setZoomFactor(int factor) {
+    void TilesetPanel::setZoomFactor(int factor) {
         const int winWidth = GetClientSize().GetWidth();
-        const int maxZoom = (tileSet->getWidth() * 16 / winWidth) + 1;
+        const int maxZoom = (tileset->getWidth() * 16 / winWidth) + 1;
 
         int zoom = graph->Zoom() - factor;
         zoom = clamp(zoom, maxZoom, 255);
@@ -294,53 +294,53 @@ namespace iked {
         updateScrollbar();
     }
 
-    void TileSetPanel::onCutTile(wxCommandEvent&) {
+    void TilesetPanel::onCutTile(wxCommandEvent&) {
         NYI();
-        Clipboard::Set(tileSet->getCanvas(tileIndex));
-        tileSet->remove(tileIndex);
+        Clipboard::Set(tileset->getCanvas(tileIndex));
+        tileset->remove(tileIndex);
         render();
     }
 
-    void TileSetPanel::onCopyTile(wxCommandEvent&) {
-        Clipboard::Set(tileSet->getCanvas(tileIndex));
+    void TilesetPanel::onCopyTile(wxCommandEvent&) {
+        Clipboard::Set(tileset->getCanvas(tileIndex));
     }
 
-    void TileSetPanel::onInsertTile(wxCommandEvent&) {
+    void TilesetPanel::onInsertTile(wxCommandEvent&) {
         NYI();
-        Canvas blank(tileSet->getWidth(), tileSet->getHeight());
-        tileSet->insert(blank, tileIndex);
+        Canvas blank(tileset->getWidth(), tileset->getHeight());
+        tileset->insert(blank, tileIndex);
         render();
     }
 
-    void TileSetPanel::onPasteOver(wxCommandEvent&) {
+    void TilesetPanel::onPasteOver(wxCommandEvent&) {
         NYI();
         const Canvas& c = Clipboard::GetCanvas();
 
-        if (c.Width() == tileSet->getWidth() && c.Height() == tileSet->getHeight()) {
-            tileSet->setCanvas(c, tileIndex);
+        if (c.Width() == tileset->getWidth() && c.Height() == tileset->getHeight()) {
+            tileset->setCanvas(c, tileIndex);
         }
         render();
     }
 
-    void TileSetPanel::onInsertAndPaste(wxCommandEvent&) {
+    void TilesetPanel::onInsertAndPaste(wxCommandEvent&) {
         NYI();
         Canvas& c = const_cast<Canvas&>(Clipboard::GetCanvas());
 
-        if (c.Width() != tileSet->getWidth() || c.Height() != tileSet->getHeight()) {
+        if (c.Width() != tileset->getWidth() || c.Height() != tileset->getHeight()) {
             wxArrayString choices;
             choices.Add("Crop");
             choices.Add("Scale");
 
             std::string choice = wxGetSingleChoice(
-                va("The clipboard contains a %ix%i image, but the tileSet is %ix%i.\n"
-                "Choose an operation, or cancel to abort.", c.Width(), c.Height(), tileSet->getWidth(), tileSet->getHeight()),
+                va("The clipboard contains a %ix%i image, but the tileset is %ix%i.\n"
+                "Choose an operation, or cancel to abort.", c.Width(), c.Height(), tileset->getWidth(), tileset->getHeight()),
                 "Paste tile", choices, this, -1, -1, true);
 
             if (choice.empty()) {
                 return;
             }
 
-            Canvas d(tileSet->getWidth(), tileSet->getHeight());
+            Canvas d(tileset->getWidth(), tileset->getHeight());
             if (choice == "Crop") {
                 CBlitter<Opaque>::Blit(c, d, 0, 0);
             } else if (choice == "Scale") {
@@ -350,30 +350,30 @@ namespace iked {
             c = d;
         }
 
-        tileSet->insert(c, tileIndex);
+        tileset->insert(c, tileIndex);
         render();
     }
 
-    void TileSetPanel::onEditTile(wxCommandEvent&) {
+    void TilesetPanel::onEditTile(wxCommandEvent&) {
         NYI();
-        //parent->OpenDocument( new CImageView(parent, &tileSet->getCanvas(tileIndex)) );
+        //parent->OpenDocument( new CImageView(parent, &tileset->getCanvas(tileIndex)) );
     }
 
-    void TileSetPanel::onZoomNormal(wxCommandEvent&)    {   setZoomFactor(graph->Zoom() - 16);  }
-    void TileSetPanel::onZoomIn(wxCommandEvent&)        {   setZoomFactor( 1);   }
-    void TileSetPanel::onZoomOut(wxCommandEvent&)       {   setZoomFactor(-1);   }
-    void TileSetPanel::onZoomIn2x(wxCommandEvent&)      {   setZoomFactor( 2);   }
-    void TileSetPanel::onZoomOut2x(wxCommandEvent&)     {   setZoomFactor(-2);   }
-    void TileSetPanel::onZoomIn4x(wxCommandEvent&)      {   setZoomFactor( 4);   }
-    void TileSetPanel::onZoomOut4x(wxCommandEvent&)     {   setZoomFactor(-4);   }
+    void TilesetPanel::onZoomNormal(wxCommandEvent&)    {   setZoomFactor(graph->Zoom() - 16);  }
+    void TilesetPanel::onZoomIn(wxCommandEvent&)        {   setZoomFactor( 1);   }
+    void TilesetPanel::onZoomOut(wxCommandEvent&)       {   setZoomFactor(-1);   }
+    void TilesetPanel::onZoomIn2x(wxCommandEvent&)      {   setZoomFactor( 2);   }
+    void TilesetPanel::onZoomOut2x(wxCommandEvent&)     {   setZoomFactor(-2);   }
+    void TilesetPanel::onZoomIn4x(wxCommandEvent&)      {   setZoomFactor( 4);   }
+    void TilesetPanel::onZoomOut4x(wxCommandEvent&)     {   setZoomFactor(-4);   }
     //---------------------------
 
-    void TileSetPanel::render() {
+    void TilesetPanel::render() {
         const int w = graph->LogicalWidth();
         const int h = graph->LogicalHeight();
 
-        const int tx = tileSet->getWidth();
-        const int ty = tileSet->getHeight();
+        const int tx = tileset->getWidth();
+        const int ty = tileset->getHeight();
 
         const int tileWidth  = w / tx;
         const int tileHeight = (h / ty) + 1;
@@ -386,8 +386,8 @@ namespace iked {
         // x/y position to draw each tile at
         int x = 0;
         int y = 0;
-        while (tileIndex < tileSet->getCount() && x < w && y < h) {
-            graph->Blit(tileSet->getImage(tileIndex), x * tx, y * ty, false);
+        while (tileIndex < tileset->getCount() && x < w && y < h) {
+            graph->Blit(tileset->getImage(tileIndex), x * tx, y * ty, false);
 
             tileIndex++;
             x++;
@@ -401,29 +401,29 @@ namespace iked {
         }
 
         int cx, cy;
-        getTilePos(tileSet->getCurTile(), cx, cy);
+        getTilePos(tileset->getCurTile(), cx, cy);
         graph->Rect(cx - 1, cy - 1, tx + 1, ty + 1, RGBA(255, 255, 255));
 
         graph->ShowPage();
     }
 
-    void TileSetPanel::updateScrollbar() {
+    void TilesetPanel::updateScrollbar() {
         const int w = graph->LogicalWidth();
         const int h = graph->LogicalHeight();
 
-        const int tileWidth  = max(w / tileSet->getWidth(), 1);    
-        const int tileHeight = h / tileSet->getHeight();
+        const int tileWidth  = max(w / tileset->getWidth(), 1);    
+        const int tileHeight = h / tileset->getHeight();
 
-        const int totalHeight = tileSet->getCount() / tileWidth;
+        const int totalHeight = tileset->getCount() / tileWidth;
 
         ywin = clamp(0, totalHeight - tileHeight, ywin);
 
         SetScrollbar(wxVERTICAL, ywin, tileHeight, totalHeight, true);
     }
 
-    int TileSetPanel::getTileAt(int x, int y) const {
-        const int tx = tileSet->getWidth();
-        const int ty = tileSet->getHeight();
+    int TilesetPanel::getTileAt(int x, int y) const {
+        const int tx = tileset->getWidth();
+        const int ty = tileset->getHeight();
 
         const int tileWidth = max(graph->LogicalWidth() / tx, 1);
 
@@ -431,7 +431,7 @@ namespace iked {
 
         int t = (y + ywin) * tileWidth + x;
 
-        if (t <= tileSet->getCount()) {
+        if (t <= tileset->getCount()) {
             return t;
         } else {
             return -1;
@@ -439,14 +439,14 @@ namespace iked {
     }
 
     // Returns the position at which the tile is drawn at
-    void TileSetPanel::getTilePos(int tileidx, int& x, int& y) const {
-        int tileWidth = max(graph->LogicalWidth() / tileSet->getWidth(), 1);
+    void TilesetPanel::getTilePos(int tileidx, int& x, int& y) const {
+        int tileWidth = max(graph->LogicalWidth() / tileset->getWidth(), 1);
 
         x = tileidx % tileWidth;
         y = tileidx / tileWidth - ywin;
 
-        x *= tileSet->getWidth();
-        y *= tileSet->getHeight();
+        x *= tileset->getWidth();
+        y *= tileset->getHeight();
     }
 
 }

@@ -641,7 +641,7 @@ void CCHRfile::Loadv5CHR(File& f) {
         int length;
         f.Read(length);
 
-        ScopedArray<char> s = new char[length + 1];
+        ScopedArray<char> s(new char[length + 1]);
         f.Read(s.get(), length);
         s[length] = 0;
         moveScripts[scriptNames[i]] = s.get();
@@ -661,7 +661,7 @@ void CCHRfile::Loadv5CHR(File& f) {
         f.Read(nHotw);
         f.Read(nHoth);
 
-        ScopedArray<RGBA> pixels = new RGBA[x * y];
+        ScopedArray<RGBA> pixels(new RGBA[x * y]);
         f.ReadCompressed(pixels.get(), x * y * sizeof(RGBA));
         
         frame.push_back(new Canvas(pixels.get(), x, y));

@@ -15,26 +15,26 @@
 
 #undef USE_GROUP_JUJU
 
-TileSetState::TileSetState(Executor* e)
+TilesetState::TilesetState(Executor* e)
     : EditState(e)
     , _oldX(-1)
     , _oldY(-1)
     , _curGroup(0)
 {}
 
-void TileSetState::OnRenderCurrentLayer()
+void TilesetState::OnRenderCurrentLayer()
 {
     /*
     wxPoint mousePos = GetMapView()->ScreenToClient(::wxGetMousePosition());
     GetMapView()->ScreenToTile(mousePos.x, mousePos.y);	
 
-    int w = GetTileSet()->Width();
-    int h = GetTileSet()->Height();	
+    int w = GetTileset()->Width();
+    int h = GetTileset()->Height();	
     GetMapView()->GetVideo()->Rect(mousePos.x*w, mousePos.y*h, w, h, RGBA(255, 192, 192, 255));
     */
 }
 
-void TileSetState::OnMouseDown(wxMouseEvent& event)
+void TilesetState::OnMouseDown(wxMouseEvent& event)
 {
     if (event.ShiftDown())
     {
@@ -50,7 +50,7 @@ void TileSetState::OnMouseDown(wxMouseEvent& event)
     }
 }
 
-void TileSetState::OnMouseUp(wxMouseEvent& event)
+void TilesetState::OnMouseUp(wxMouseEvent& event)
 {
 	_oldX = _oldY = -1;
         // odd that the mouse button is able to go up without first going down
@@ -69,30 +69,30 @@ void TileSetState::OnMouseUp(wxMouseEvent& event)
 #endif
 }
 
-void TileSetState::OnMouseMove(wxMouseEvent& event)
+void TilesetState::OnMouseMove(wxMouseEvent& event)
 {
     if (event.LeftIsDown() && !event.ShiftDown())
         SetTile(event.m_x, event.m_y);
 }
 
-void TileSetState::OnMouseWheel(wxMouseEvent& event)
+void TilesetState::OnMouseWheel(wxMouseEvent& event)
 {
     int i = event.GetWheelRotation() / event.GetWheelDelta();
     uint curTile = GetCurTile();
 
     // _curTile is unsigned, so we need to check for wraparound before actually doing the math.
     // So we just add the tile count, then subtract it afterwards, if needed
-    curTile += GetTileSet()->Count();
+    curTile += GetTileset()->Count();
     curTile += i;
 
     // If we've gone over, wrap-around.
-    while (curTile >= GetTileSet()->Count()) 
-        curTile -= GetTileSet()->Count();
+    while (curTile >= GetTileset()->Count()) 
+        curTile -= GetTileset()->Count();
 
     SetCurTile(curTile);
 }
 
-void TileSetState::SetTile(int x, int y)
+void TilesetState::SetTile(int x, int y)
 {
     GetMapView()->ScreenToTile(x, y);
 
@@ -122,12 +122,12 @@ void TileSetState::SetTile(int x, int y)
 #endif
 }
 
-uint TileSetState::GetCurTile() const
+uint TilesetState::GetCurTile() const
 {
     return GetExecutor()->GetCurrentTile();
 }
 
-void TileSetState::SetCurTile(uint t)
+void TilesetState::SetCurTile(uint t)
 {
     GetExecutor()->SetCurrentTile(t);
 }

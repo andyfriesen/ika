@@ -6,29 +6,29 @@
 #include "tileset.h"
 #include "common/utility.h"
 
-BEGIN_EVENT_TABLE(TileSetView, VideoFrame)
-    EVT_SIZE(TileSetView::OnSize)
-    EVT_SCROLLWIN(TileSetView::OnScroll)
-    EVT_PAINT(TileSetView::OnPaint)
-    EVT_LEFT_DOWN(TileSetView::OnLeftClick)
+BEGIN_EVENT_TABLE(TilesetView, VideoFrame)
+    EVT_SIZE(TilesetView::OnSize)
+    EVT_SCROLLWIN(TilesetView::OnScroll)
+    EVT_PAINT(TilesetView::OnPaint)
+    EVT_LEFT_DOWN(TilesetView::OnLeftClick)
 END_EVENT_TABLE()
 
-TileSetView::TileSetView(Executor* e, wxWindow* parent)
+TilesetView::TilesetView(Executor* e, wxWindow* parent)
     : VideoFrame(parent)
     , _executor(e)
     , _ywin(0)
     , _pad(true)
 {}
 
-TileSetView::~TileSetView()
+TilesetView::~TilesetView()
 {}
 
-void TileSetView::OnSize(wxSizeEvent& event) {
+void TilesetView::OnSize(wxSizeEvent& event) {
     UpdateScrollBars();
     VideoFrame::OnSize(event);
 }
 
-void TileSetView::OnScroll(wxScrollWinEvent& event) {
+void TilesetView::OnScroll(wxScrollWinEvent& event) {
     struct Local {
         static void HandleEvent(int& val, int min, int max, int page, int pos, wxEventType et) {
             // Can't switch/case this. :\
@@ -47,7 +47,7 @@ void TileSetView::OnScroll(wxScrollWinEvent& event) {
         }
     };
 
-    const Tileset* ts = _executor->GetTileSet();
+    const Tileset* ts = _executor->GetTileset();
 
     Local::HandleEvent(
         _ywin, 
@@ -63,24 +63,24 @@ void TileSetView::OnScroll(wxScrollWinEvent& event) {
     ShowPage();
 }
 
-void TileSetView::OnPaint(wxPaintEvent&) {
+void TilesetView::OnPaint(wxPaintEvent&) {
     wxPaintDC dc(this);
 
     Render();
     ShowPage();
 }
 
-void TileSetView::OnLeftClick(wxMouseEvent& event) {
+void TilesetView::OnLeftClick(wxMouseEvent& event) {
     VideoFrame::OnMouseEvent(event);    // compensate for zoom.
 
     _executor->SetCurrentTile(PointToTile(event.m_x, event.m_y + _ywin));
 }
 
-void TileSetView::Render() {
+void TilesetView::Render() {
     SetCurrent();
     Clear();
 
-    Tileset* ts = _executor->GetTileSet();
+    Tileset* ts = _executor->GetTileset();
     assert(ts != 0);
 
     if (ts->Count() == 0) {
@@ -138,8 +138,8 @@ breakLoop:;
     }
 }
 
-void TileSetView::UpdateScrollBars() {
-    const Tileset* ts = _executor->GetTileSet();
+void TilesetView::UpdateScrollBars() {
+    const Tileset* ts = _executor->GetTileset();
 
     uint tileWidth  = ts->Width()  + (_pad ? 1 : 0);
     uint tileHeight = ts->Height() + (_pad ? 1 : 0);
@@ -147,17 +147,17 @@ void TileSetView::UpdateScrollBars() {
     SetScrollbar(wxVERTICAL, _ywin, LogicalHeight(), NumTileRows() * tileHeight);
 }
 
-void TileSetView::OnTileSetChange(const TileSetEvent& event) {
+void TilesetView::OnTilesetChange(const TilesetEvent& event) {
     Refresh();
 }
 
-void TileSetView::OnCurrentTileChange(uint newTile) {
+void TilesetView::OnCurrentTileChange(uint newTile) {
     Refresh();
     _executor->SetStatusBar(va("Tile: %3i", newTile), 2);
 }
 
-uint TileSetView::PointToTile(int x, int y) const {
-    const Tileset* ts = _executor->GetTileSet();
+uint TilesetView::PointToTile(int x, int y) const {
+    const Tileset* ts = _executor->GetTileset();
 
     uint tileWidth  = ts->Width()  + (_pad ? 1 : 0);
     uint tileHeight = ts->Height() + (_pad ? 1 : 0);
@@ -168,8 +168,8 @@ uint TileSetView::PointToTile(int x, int y) const {
     return y * TilesPerRow() + x;
 }
 
-void TileSetView::TileToPoint(uint index, int& x, int& y) const {
-    const Tileset* ts = _executor->GetTileSet();
+void TilesetView::TileToPoint(uint index, int& x, int& y) const {
+    const Tileset* ts = _executor->GetTileset();
 
     if (index > ts->Count()) {
         x = y = -1;
@@ -188,19 +188,19 @@ void TileSetView::TileToPoint(uint index, int& x, int& y) const {
     }
 }
 
-uint TileSetView::TilesPerRow() const {
-    if (_executor->GetTileSet()->Count() == 0) {
+uint TilesetView::TilesPerRow() const {
+    if (_executor->GetTileset()->Count() == 0) {
         return 1;
     } else {
-        int i = LogicalWidth() / (_executor->GetTileSet()->Width() + (_pad ? 1 : 0));
+        int i = LogicalWidth() / (_executor->GetTileset()->Width() + (_pad ? 1 : 0));
         return max(1, i);
     }
 }
 
-uint TileSetView::NumTileRows() const {
-    if (_executor->GetTileSet()->Count() == 0) {
+uint TilesetView::NumTileRows() const {
+    if (_executor->GetTileset()->Count() == 0) {
         return 0;
     } else {
-        return _executor->GetTileSet()->Count() / TilesPerRow() + 1;
+        return _executor->GetTileset()->Count() / TilesPerRow() + 1;
     }
 }
