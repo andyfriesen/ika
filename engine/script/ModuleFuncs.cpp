@@ -482,15 +482,15 @@ namespace Script
             "will cause entities to move around as if the engine was in control."
         },
 
-        { "SetcameraTarget", (PyCFunction)std_setcameraTarget,  METH_VARARGS,
-            "SetcameraTarget(entity)\n\n"
+        { "SetCameraTarget", (PyCFunction)std_setcameraTarget,  METH_VARARGS,
+            "SetCameraTarget(entity)\n\n"
             "Sets the camera target to the entity specified.  If None is passed instead, \n"
             "the camera remains stationary, and can be altered with the Map.xwin and Map.ywin\n"
             "properties."
         },
 
-        { "GetcameraTarget", (PyCFunction)std_getcameraTarget,  METH_NOARGS,
-            "GetcameraTarget() -> Entity\n\n"
+        { "GetCameraTarget", (PyCFunction)std_getcameraTarget,  METH_NOARGS,
+            "GetCameraTarget() -> Entity\n\n"
             "Returns the entity that the camera is following, or None if it is free."
         },
 
