@@ -186,11 +186,6 @@ void CEngine::Startup()
     // init a few values
     bShowfps        = cfg.Int("showfps") != 0 ;
     nFrameskip      = cfg.Int("frameskip");
-    tiles           = 0;
-    pPlayer         = 0;
-    pCameratarget   = 0;
-    bMaploaded      = false;
-    bKillFlag       = false;
 
     // Now the tricky stuff.
     try
@@ -217,13 +212,13 @@ void CEngine::Startup()
 #else
         video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
 #endif
-        SDL_WM_SetCaption("ika "VERSION, 0);
+        SDL_WM_SetCaption("ika " VERSION, 0);
 
 #ifdef WIN32
         {
             SDL_SysWMinfo info;
             SDL_VERSION(&info.version);
-            HWND hWnd = SDL_GetWMInfo(&info);
+            HWND hWnd = SDL_GetWMInfo(&info) ? info.window : 0;
             if (hWnd)
                 SetClassLong(hWnd, GCL_HICON, (long)LoadIcon(GetModuleHandle(0), "AppIcon"));
         }
@@ -766,6 +761,8 @@ CEngine::CEngine()
     , video(0)
     , pPlayer(0)
     , pCameratarget(0)
+    , bMaploaded(false)
+    , bKillFlag(false)
 {}
 
 int main(int argc, char* args[])

@@ -81,11 +81,11 @@ void CScriptEngine::Shutdown()
     
     // Clear hooks
     std::list<void*>::iterator i;
-    for (i=engine->pHookretrace.begin(); i!=engine->pHookretrace.end(); i++)
+    for (i = engine->pHookretrace.begin(); i != engine->pHookretrace.end(); i++)
         Py_XDECREF((PyObject*)*i);
     engine->pHookretrace.Clear();
     
-    for (i=engine->pHooktimer.begin(); i!=engine->pHooktimer.end(); i++)
+    for (i = engine->pHooktimer.begin(); i != engine->pHooktimer.end(); i++)
         Py_XDECREF((PyObject*)*i);
     engine->pHooktimer.Clear();
 
@@ -110,7 +110,7 @@ bool CScriptEngine::LoadSystemScripts(char* fname)
 {
     Py_XDECREF(sysmodule);                                            // free it if it's already allocated
     
-    sysmodule=PyImport_ImportModule("system");
+    sysmodule = PyImport_ImportModule("system");
     if (!sysmodule)
     {
         PyErr_Print();
@@ -124,12 +124,12 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
 {
     Py_XDECREF(mapmodule);
     
-    string sTemp=fname;
+    string sTemp = fname;
     
-    int nExtension=sTemp.find_last_of(".", sTemp.length());
+    int nExtension = sTemp.find_last_of(".", sTemp.length());
     sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
     
-    mapmodule=PyImport_ImportModule((char*)sTemp.c_str());
+    mapmodule = PyImport_ImportModule((char*)sTemp.c_str());
     
     if (!mapmodule)
     {
@@ -138,8 +138,8 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
     }
 
     // Now to execute an AutoExec function, if one exists
-    PyObject* pDict=PyModule_GetDict(mapmodule);
-    PyObject* pFunc=PyDict_GetItemString(pDict, "AutoExec");
+    PyObject* pDict = PyModule_GetDict(mapmodule);
+    PyObject* pFunc = PyDict_GetItemString(pDict, "AutoExec");
 
     if (!pFunc)
         return true; // No AutoExec?  No problem!

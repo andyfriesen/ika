@@ -367,7 +367,7 @@ void CMapView::Init()
     
     // If it's not an absolute path, then it is assumed to be relative to the map file.
     wxFileName tileSetName(pMap->GetVSPName().c_str());
-    if (!tileSetName.IsAbsolute())
+    if (!tileSetName.IsAbsolute() && !mapPath.empty())
         tileSetName.InsertDir(0, mapPath);
 
     pTileset = pParentwnd->vsp.Load(tileSetName.GetFullPath().c_str()); // load the VSP
@@ -384,7 +384,7 @@ void CMapView::Init()
     {
         // If it's not an absolute path, then it is assumed to be relative to the map file.
         wxFileName spriteName(pMap->GetEntity(i).sCHRname.c_str());
-        if (!spriteName.IsAbsolute())
+        if (!spriteName.IsAbsolute() && !mapPath.empty())
             spriteName.InsertDir(0, mapPath);
 
         pSprite.push_back(pParentwnd->spriteset.Load(spriteName.GetFullPath().c_str()));
@@ -591,11 +591,30 @@ void CMapView::OnShowScript(wxCommandEvent&)
 
 void CMapView::OnMoveLayerUp(wxCommandEvent&)
 {
-    
+    std::string s = pMap->GetRString();
+    char c = "1234567890"[nCurlayer];
+    int pos = s.find(c);
+    if (pos != std::string::npos && pos > 0)
+    {
+        s[pos] = s[pos - 1];
+        s[pos - 1] = c;
+        pMap->SetRString(s);
+        UpdateLayerList();
+    }
 }
 
 void CMapView::OnMoveLayerDown(wxCommandEvent&)
 {
+    std::string s = pMap->GetRString();
+    char c = "1234567890"[nCurlayer];
+    int pos = s.find(c);
+    if (pos != std::string::npos && pos < s.length() - 1)
+    {
+        s[pos] = s[pos + 1];
+        s[pos + 1] = c;
+        pMap->SetRString(s);
+        UpdateLayerList();
+    }
 }
 
 void CMapView::OnDeleteLayer(wxCommandEvent&)
@@ -604,10 +623,23 @@ void CMapView::OnDeleteLayer(wxCommandEvent&)
     if (result == wxYES)
     {
         // Find any reference to the layer in the render string, and annihilate it.
-        char c = '0' + nCurlayer;
+        char c = "1234567890"[nCurlayer]; // The character in the render string that represents this layer.
+
         std::string s = pMap->GetRString();
-        while (int p = s.find(c) != std::string::npos)
-            s.erase(p);
+        int i = 0;
+        while (i < s.length())
+        {
+            if (s[i] == c)
+            {
+                s.erase(s.begin() + i);
+                continue;
+            }
+            
+            if (s[i] > c && s[i] < '9')
+                s[i]--;
+            i++;
+        }
+        
         pMap->SetRString(s);
 
         pMap->DeleteLayer(nCurlayer);
