@@ -26,7 +26,20 @@ class CProjectTree : public wxTreeCtrl
 
     CLeaf*    pSelected;  // The context menus use this.
 
+    
+
+    void SetChanged()
+    {
+        if (!bChanged)
+            bChanged=true;
+
+        
+    }
+
 public:
+
+    bool bChanged; // bleh
+
     enum
     {
         id_filler=100,
@@ -56,8 +69,10 @@ public:
         foldermenu->Append(id_createsubfolder,"Create Sub&folder","");
         foldermenu->Append(id_delete,"&Delete","");
         foldermenu->Append(id_rename,"Rena&me","");
+        bChanged=false;
     }
 
+    
     void OnDoubleClick(wxMouseEvent& event)
     {
         wxTreeItemId id=HitTest(event.GetPosition());
@@ -126,6 +141,7 @@ public:
         wxTreeItemId id=pSelected->GetId();
         
         Delete(id);
+        SetChanged();
     }
     
     void OnRename(wxCommandEvent& event)
@@ -133,6 +149,7 @@ public:
         wxTreeItemId id=pSelected->GetId();
         
         EditLabel(id);
+        SetChanged();
     }
 
     void OnAdd(wxCommandEvent& event)
@@ -170,6 +187,7 @@ public:
             AddItem(id,sNames[i].c_str(),sPaths[i].c_str());
         Expand(id);
         Refresh();
+        SetChanged();
     }
     
     void OnCreateSubfolder(wxCommandEvent& event)
@@ -179,6 +197,7 @@ public:
         AppendItem(id,"New Folder",0,0,new CLeaf("New Folder",t_folder));
         Expand(id);
         Refresh();
+        SetChanged();
     }
 
     // ------------------ Tree management ------------------
@@ -210,11 +229,15 @@ public:
 
         // delete the old item
         Delete(id);
+        SetChanged();
     }
 
     wxTreeItemId AddFolder(const wxTreeItemId& parentid,const char* name)
     {
+        SetChanged();
+
         return AppendItem(parentid,name,0,0,new CLeaf( name, t_folder));
+        
     }
 
     wxTreeItemId AddItem(const wxTreeItemId& parentid,const char* name,const char* fname)
@@ -229,7 +252,9 @@ public:
         case t_map:     hIcon=4;    break;
         default:        hIcon=-1;   break;
         }
-        
+
+        SetChanged();
+
         return AppendItem(parentid,name,hIcon,hIcon,new CLeaf( fname, t));
     }
 
@@ -237,6 +262,7 @@ public:
 };
 
 BEGIN_EVENT_TABLE(CProjectTree,wxTreeCtrl)
+    
     EVT_LEFT_DCLICK(CProjectTree::OnDoubleClick)
     EVT_RIGHT_DOWN(CProjectTree::OnRightClick)
     EVT_TREE_END_LABEL_EDIT(CProjectTree::id_treectrl,CProjectTree::OnEndEdit)
@@ -253,6 +279,7 @@ END_EVENT_TABLE()
 //////////////////////////////////////////////////////////////////////
 
 BEGIN_EVENT_TABLE(CProjectWnd,wxMDIChildFrame)
+    EVT_CLOSE(CProjectWnd::OnClose)
     EVT_MENU(CProjectWnd::id_filesave,CProjectWnd::OnSave)
 END_EVENT_TABLE()
 
@@ -289,7 +316,7 @@ CProjectWnd::CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& p
 
     wxMenuBar* menu=parent->CreateBasicMenu();
     wxMenu* filemenu=menu->Remove(0);
-    filemenu->Insert(2,new wxMenuItem(filemenu,id_filesave,"&Save","Save the project."));
+    filemenu->Insert(2,new wxMenuItem(filemenu,id_filesave,"&Save Project","Save the project."));
     menu->Append(filemenu,"&File");
     SetMenuBar(menu);
 
@@ -304,9 +331,11 @@ CProjectWnd::~CProjectWnd()
 
 void CProjectWnd::OnSave(wxCommandEvent& event)
 {
-    wxFileDialog dlg(
+    if (!sFilename.length())
+    {
+        wxFileDialog dlg(
         this,
-        "Save File",
+        "Save Project",
         "",
         "",
         "Project files (*.ikaprj)|*.ikaprj|"
@@ -314,9 +343,20 @@ void CProjectWnd::OnSave(wxCommandEvent& event)
         wxSAVE
         );
 
-    int result=dlg.ShowModal();
-    if (result!=wxID_CANCEL)
-        Save(dlg.GetPath().c_str());
+        int result=dlg.ShowModal();
+        if (result!=wxID_CANCEL)
+        {
+            sFilename=dlg.GetPath().c_str();
+            Save(sFilename.c_str());
+        }
+    }
+
+    else
+    {
+        Save(sFilename.c_str());
+    }
+
+    SetTitle(sFilename.c_str());
 }
 
 void CProjectWnd::Load(const char* fname)
@@ -373,6 +413,7 @@ void CProjectWnd::Load(const char* fname)
     pTreectrl->DeleteAllItems();
     Local::ReadNode(f,pTreectrl,-1);
     fclose(f);
+    pTreectrl->bChanged=false;
 }
 
 void CProjectWnd::Save(const char* fname)
@@ -433,4 +474,32 @@ void CProjectWnd::Save(const char* fname)
     wxTreeItemId id=pTreectrl->GetRootItem();
     Local::WriteNode(f,pTreectrl,id);
     fclose(f);
+    pTreectrl->bChanged=false;
+}
+
+void CProjectWnd::OnClose(wxCommandEvent& event)
+{
+    if (pTreectrl->bChanged)
+    {
+        wxMessageDialog msgdlg
+            (
+                this,
+                "This project has been modified. Save?",
+                "iked",
+                wxYES_NO | wxCANCEL | wxICON_QUESTION,
+                wxDefaultPosition
+            );
+
+        int nDecision=msgdlg.ShowModal();
+
+        switch(nDecision)
+        {
+
+            case wxID_YES: OnSave(event); break;
+            case wxID_CANCEL: return;
+            //case wxID_NO:
+        }
+    }
+    
+    Destroy();
 }

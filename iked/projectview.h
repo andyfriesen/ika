@@ -17,6 +17,8 @@ class CProjectWnd : public wxMDIChildFrame
     wxMenu* filemenu;
     wxMenu* foldermenu;
 
+    
+
 public:
 
     enum
@@ -31,6 +33,7 @@ public:
 
     // events
     void OnSave(wxCommandEvent& event);
+    void OnClose(wxCommandEvent& event);
 
     // bleh
     void Load(const char* fname);           // load a project file into the window
