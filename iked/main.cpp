@@ -41,7 +41,7 @@ BEGIN_EVENT_TABLE(CMainWnd,wxMDIParentFrame)
 
     // Add more toolbar buttons as iked becomes more functional
     //   -- khross
-    EVT_MENU(CMainWnd::id_tool, CMainWnd::OnToolLeftClick)
+    EVT_MENU(-1, CMainWnd::OnToolLeftClick)
     EVT_TOOL(CMainWnd::id_toolopen,CMainWnd::OnToolBarOpen)
     EVT_TOOL(CMainWnd::id_toolnewscript,CMainWnd::OnToolBarNewScript)
     EVT_TOOL(CMainWnd::id_toolnewmap,CMainWnd::OnToolBarNewMap)
@@ -55,6 +55,7 @@ CMainWnd::CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
 
     wxToolBar* toolbar = CreateBasicToolBar();
     SetToolBar(toolbar);
+    toolbar->Realize();
 
     wxMenuBar* menu=CreateBasicMenu();
     SetMenuBar(menu);
@@ -237,7 +238,7 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
     wxToolBar* pToolbar = new wxToolBar
         (
             this,
-            id_tool,
+            -1,
             wxDefaultPosition,
             wxDefaultSize,
             wxTB_HORIZONTAL | wxNO_BORDER,
@@ -278,7 +279,7 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
         "Create map",
         "Create a new map.");
 
-    pToolbar->Realize();
+    //pToolbar->Realize();
     return pToolbar;
 }
 
