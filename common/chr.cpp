@@ -153,7 +153,7 @@ void CCHRfile::Load(const std::string& fname)
             if (!infoNode.get())
                 throw "<information> tag not found.";
 
-            XMLNodeList& nodes = infoNode->getChildren("meta");
+            XMLNodeList nodes = infoNode->getChildren("meta");
             for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
             {
                 std::string name = (*iter)->getAttribute("type");
@@ -182,8 +182,8 @@ void CCHRfile::Load(const std::string& fname)
             if (!scriptNode.get())
                 throw "<scripts> tag not found.";
 
-            XMLNodeList& nodes = scriptNode->getChildren("script");
-            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            const XMLNodeList nodes = scriptNode->getChildren("script");
+            for (XMLNodeList::const_iterator iter = nodes.begin(); iter != nodes.end(); iter++)
             {
                 std::string name((*iter)->getAttribute("label").getString());
                 if (name.empty())

@@ -77,6 +77,31 @@ public:
         return *this;
     }
 };
+template <class T>
+class ScopedArray
+{
+    T* _data;
+    ScopedArray(ScopedArray&){} // no copy!
+
+public:
+    ScopedArray(T* t)  : _data(t) {}
+    ScopedArray()      : _data(0) {}
+    ~ScopedArray()     { delete[] _data;  }
+
+    T& operator[](int i) { return _data[i]; }
+    T* operator ->() { return  _data; }
+    T& operator * () { return *_data; }
+    T* get()         { return  _data; }
+
+    operator bool () { return _data != 0; }
+  
+    ScopedArray& operator = (T* t)
+    {
+        delete[] _data;
+        _data = t;
+        return *this;
+    }
+};
 
 namespace Path
 {
