@@ -1,6 +1,7 @@
 /*
-error handling stuff
-*/
+ *  A little Python object that takes the place of sys.stdout and stderr, redirecting the
+ *  two to pyout.log instead.
+ */
 
 #include "ObjectDefs.h"
 #include "common/fileio.h"
@@ -10,12 +11,22 @@ namespace Script
 {
     namespace Error
     {
+        int softspace = 1;
+
         PyTypeObject type;
 
         PyMethodDef methods[] =
         {
             {   "write",    Error_Write,    1   },
             {   0   }
+        };
+
+        PyObject* getSoftSpace(PyObject* self);
+        PyObject* setSoftSpace(PyObject* self, PyObject* value);
+
+        PyGetSetDef properties[] =
+        {
+            { "softspace", (getter)getSoftSpace, (setter)setSoftSpace, "blah." }
         };
 
         void Init()
@@ -28,6 +39,7 @@ namespace Script
             type.tp_basicsize=sizeof type;
             type.tp_dealloc=(destructor)Destroy;
             type.tp_methods = methods;
+            type.tp_getset = properties;
             PyType_Ready(&type);
 
             remove("pyout.log");
@@ -76,6 +88,17 @@ namespace Script
         }
 
 #undef METHOD
+
+        PyObject* getSoftSpace(PyObject* self)
+        {
+            return PyInt_FromLong(softspace);
+        }
+
+        PyObject* setSoftSpace(PyObject* self, PyObject* value)
+        {
+            softspace = PyObject_IsTrue(value);
+            return 0;
+        }
 
     }
 }
