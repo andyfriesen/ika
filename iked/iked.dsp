@@ -188,6 +188,10 @@ SOURCE=.\imagebank.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\imageview.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\layervisibilitycontrol.cpp
 # End Source File
 # Begin Source File
@@ -253,6 +257,10 @@ SOURCE=.\graph.h
 # Begin Source File
 
 SOURCE=.\imagebank.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\imageview.h
 # End Source File
 # Begin Source File
 
@@ -442,6 +450,10 @@ SOURCE=.\vsp.ico
 # Begin Source File
 
 SOURCE=.\colours.bmp
+# End Source File
+# Begin Source File
+
+SOURCE=.\folder.ico
 # End Source File
 # End Target
 # End Project

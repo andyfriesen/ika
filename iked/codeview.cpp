@@ -66,7 +66,6 @@ void CCodeView::InitTextControl()
     pTextctrl->StyleClearAll();
 
     pTextctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
-    pTextctrl->SetProperty("fold","1");
 
     // defaults
     pTextctrl->StyleSetForeground(0,  wxColour(0x80, 0x80, 0x80));  // whitespace

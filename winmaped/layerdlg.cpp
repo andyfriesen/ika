@@ -7,13 +7,13 @@ void CLayerDlg::UpdateDialog(HWND hWnd)
 	SetDlgItemInt(hWnd,ID_EDMULTY,curdata.pmuly,false);
 	SetDlgItemInt(hWnd,ID_EDDIVY,curdata.pdivy,false);
 	
-	switch(curdata.nTransmode)
+	/*switch(curdata.nTransmode)
 	{
 	case 0:	CheckRadioButton(hWnd,ID_LUCENT0,ID_LUCENT4,ID_LUCENT0);	break;
 	case 1:	CheckRadioButton(hWnd,ID_LUCENT0,ID_LUCENT4,ID_LUCENT1);	break;
 	case 3:	CheckRadioButton(hWnd,ID_LUCENT0,ID_LUCENT4,ID_LUCENT3);	break;
 	case 4:	CheckRadioButton(hWnd,ID_LUCENT0,ID_LUCENT4,ID_LUCENT4);	break;
-	}
+	}*/
 	
 //	SetDlgItemInt(hWnd,ID_EDHLINE,curdata.hline,false);
 	

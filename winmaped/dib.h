@@ -34,7 +34,7 @@ public:
     inline int	Width() const { return nWidth; }
     inline int	Height() const { return nHeight;	}
     
-    operator = (const CPixelMatrix& s);										// more efficient than using the constructor implicitly
+    CDIB& operator = (const CPixelMatrix& s);										// more efficient than using the constructor implicitly
     
     void SetPixel(int x,int y,RGBA colour);
     

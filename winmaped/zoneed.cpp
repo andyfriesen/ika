@@ -8,7 +8,7 @@ int CZoneEdDlg::Execute(HINSTANCE hInst,HWND hWnd,int zone, Map* m)
 	return 0;
 }
 
-CZoneEdDlg::UpdateDialog(HWND hWnd)
+void CZoneEdDlg::UpdateDialog(HWND hWnd)
 {
 	pMap->GetZoneInfo(curdat,nCurzone);
 	SetDlgItemText(hWnd,IDC_EDNAME,curdat.sName.c_str());
@@ -27,7 +27,7 @@ CZoneEdDlg::UpdateDialog(HWND hWnd)
 	SetDlgItemText(hWnd,IDC_CURZONE, va("Zone: %d",nCurzone) );
 }
 
-CZoneEdDlg::UpdateData(HWND hWnd)
+void CZoneEdDlg::UpdateData(HWND hWnd)
 { 
 	char c[255];
 	GetDlgItemText(hWnd,IDC_EDNAME,c,255);			curdat.sName=c;

@@ -2,6 +2,22 @@
 #include "TileSetView.h"
 #include "main.h"
 
+#include "ImageView.h"
+
+namespace
+{
+    enum
+    {
+        id_deletetile=100,
+        id_inserttile,
+        id_copytile,
+        id_pasteinto,
+        id_pasteover,
+        id_insertandpaste,
+        id_edittile
+    };
+};
+
 BEGIN_EVENT_TABLE(CTileSetView,IDocView)
     EVT_SCROLLWIN(CTileSetView::OnScroll)
     EVT_SIZE(CTileSetView::OnSize)
@@ -11,6 +27,8 @@ BEGIN_EVENT_TABLE(CTileSetView,IDocView)
 
     EVT_LEFT_DOWN(CTileSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CTileSetView::OnRightClick)
+
+    EVT_MENU(id_edittile,CTileSetView::OnEditTile)
 END_EVENT_TABLE()
 
 CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
@@ -23,6 +41,21 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
     pTileset=pParent->vsp.Load(fname);
 
     ywin=0;
+
+    pContextmenu=new wxMenu();
+    pContextmenu->Append(id_deletetile,"Delete");
+    pContextmenu->Append(id_inserttile,"Insert");
+    pContextmenu->Append(id_copytile,"Copy");
+    pContextmenu->Append(id_pasteinto,"Paste into");
+    pContextmenu->Append(id_pasteover,"Paste over");
+    pContextmenu->Append(id_insertandpaste,"Insert and paste");
+    pContextmenu->AppendSeparator();
+    pContextmenu->Append(id_edittile,"Edit");
+}
+
+CTileSetView::~CTileSetView()
+{
+    delete pContextmenu;
 }
 
 // --------------------------------- events ---------------------------------
@@ -52,7 +85,7 @@ void CTileSetView::OnScroll(wxScrollWinEvent& event)
     switch (event.m_eventType)
     {
     case wxEVT_SCROLLWIN_TOP:       ywin=0;                     break;
-    case wxEVT_SCROLLWIN_BOTTOM:    ywin=pTileset->Count();  break;  // guaranteed to be too big, so that the usual scroll handler will clip it
+    case wxEVT_SCROLLWIN_BOTTOM:    ywin=pTileset->Count();     break;  // guaranteed to be too big, so that the usual scroll handler will clip it
     case wxEVT_SCROLLWIN_LINEUP:    ywin--;                     break;
     case wxEVT_SCROLLWIN_LINEDOWN:  ywin++;                     break;
     case wxEVT_SCROLLWIN_PAGEUP:    ywin-=GetScrollThumb(wxVERTICAL);   break;
@@ -82,6 +115,14 @@ void CTileSetView::OnLeftClick(wxMouseEvent& event)
 
 void CTileSetView::OnRightClick(wxMouseEvent& event)
 {
+    PopupMenu(pContextmenu,event.GetPosition());
+}
+
+//---------------------------
+
+void CTileSetView::OnEditTile(wxCommandEvent& event)
+{
+
 }
 
 //---------------------------

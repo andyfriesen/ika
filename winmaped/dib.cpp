@@ -67,7 +67,7 @@ CDIB::~CDIB()
     if (hBitmap)	DeleteObject(hBitmap);
 }
 
-CDIB::operator = (const CPixelMatrix& s)
+CDIB& CDIB::operator = (const CPixelMatrix& s)
 {
     CreateDIB(s.Width(),s.Height());
 
@@ -75,6 +75,8 @@ CDIB::operator = (const CPixelMatrix& s)
     
     for (int i=0; i<nWidth*nHeight; i++)
         pPixels[i]=*pSrc++;
+
+    return *this;
 }
 
 void CDIB::SetPixel(int x,int y,RGBA colour)
