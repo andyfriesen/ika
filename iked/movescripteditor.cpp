@@ -40,7 +40,7 @@ void CMovescriptEditor::InitControls()
 
     const wxSize editsize=wxSize(50,20);
     const wxSize bigedit=wxSize(300,20);
-    const wxSize labelsize=wxSize(68,20);
+    const wxSize labelsize=wxSize(64,20);
     const wxSize smalllabel=wxSize(14,20);
 
     for (int i=0; i<4; i++)
