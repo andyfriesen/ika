@@ -1,0 +1,15 @@
+Font format for ika
+
+Like everything, fonts are 32 bit ARGB.  Any character can be any width, and any height.
+
+6 byte			signature  "FONT27"
+1 byte			number of subsets
+1 byte			if set to 1, then there's authoring info following.  It's 256 bytes.
+
+256 characters 		author's name?  Unsure if there's any point to it.
+
+96 characters per subset.  Each being as follows:
+1 word			width
+1 word			height
+1 quad			amount of compressed shit (below)
+compressed shit		actual character data (32 bit ARGB)

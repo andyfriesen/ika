@@ -1,0 +1,443 @@
+/*
+OpenGL rendering engine
+*/
+
+#include <windows.h>
+#include <gl\gl.h>
+#include <gl\glaux.h>
+#include <gl\glu.h>
+#include <math.h>
+
+#define EXPORT __cdecl
+typedef unsigned int u32;
+typedef struct SImage* handle;
+
+struct SImage
+{
+    int nWidth,nHeight;
+    u32* pData;
+    
+    RECT rClip;
+    
+    GLuint	hTex;
+    int nTexwidth,nTexheight;
+    
+    bool bAltered;
+    bool bIsscreen;
+    
+    SImage():
+    nWidth(0),nHeight(0),
+	pData(NULL),hTex(0),
+	nTexwidth(0),nTexheight(0),
+	bAltered(false),bIsscreen(false)
+    {}
+};
+
+//------------------------------------- Prototypes --------------------------------------
+
+bool EXPORT gfxShutdown();
+handle EXPORT gfxCreateImage(int x,int y);
+void MakeClientFit();
+//-------------------------------------- Globals ----------------------------------------
+
+HWND hGLWnd;
+int xres,yres,gbpp;
+bool bFullscreen;
+HDC  hDC;
+HGLRC hRC;
+
+int nImages=0;																			// number of allocated images at any given moment.  Handy for debugging.
+int nMaxtexsize;																		// The biggest texture the card can handle
+
+handle hScreen;
+handle hRenderdest;
+
+//--------------------------------------- Code -------------------------------------------
+
+#include "stuff.h"
+#include "hardblits.h"
+
+int EXPORT gfxGetVersion()
+{
+    return 2;
+}
+
+bool EXPORT gfxInit(HWND hWnd,int x,int y,int bpp,bool fullscreen)
+{
+    GLuint nPixelformat;
+    RECT   rClient;
+    
+    hGLWnd=hWnd;
+    
+    xres=x;  yres=y;
+    gbpp=bpp;
+    
+    rClient.top=rClient.left=0;
+    rClient.right=xres;  rClient.bottom=yres;
+    
+    bFullscreen=fullscreen;
+    
+    try
+    {
+	if (fullscreen)
+	{
+	    DEVMODE mode;
+	    ZeroMemory(&mode,sizeof mode);
+	    mode.dmSize=sizeof mode;
+	    mode.dmPelsWidth=xres;
+	    mode.dmPelsHeight=yres;
+	    mode.dmBitsPerPel=bpp;
+	    mode.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT;
+	    
+	    int result=ChangeDisplaySettings(&mode,CDS_FULLSCREEN);
+	    if (result!=DISP_CHANGE_SUCCESSFUL)
+		throw "ChangeDisplaySettings failed";
+	    
+	    SetWindowLong(hWnd,GWL_STYLE,WS_POPUP);
+	    SetWindowLong(hWnd,GWL_EXSTYLE,WS_EX_APPWINDOW);
+	    SetWindowPos(hWnd,HWND_TOPMOST,0,0,xres,yres,SWP_SHOWWINDOW);
+	}
+	else
+	{
+	    MoveWindow(hWnd,0,0,xres,yres,true);
+	    MakeClientFit();
+	}
+	
+	PIXELFORMATDESCRIPTOR pfd;
+	int result;		
+	
+	ZeroMemory( &pfd, sizeof( pfd ) );
+	pfd.nSize = sizeof( pfd );
+	pfd.nVersion = 1;
+	pfd.dwFlags = PFD_DRAW_TO_WINDOW |
+	    PFD_SUPPORT_OPENGL | PFD_DOUBLEBUFFER;
+	pfd.iPixelType = PFD_TYPE_RGBA;
+	pfd.cColorBits = bpp;
+	pfd.cDepthBits = 16;
+	pfd.iLayerType = PFD_MAIN_PLANE;		
+	
+	hDC=GetDC(hWnd);
+	if (!hDC) throw "GetDC failed";
+	
+	nPixelformat=ChoosePixelFormat(hDC,&pfd);
+	if (!nPixelformat) throw "ChoosePixelFormat failed";
+	
+	result=SetPixelFormat(hDC,nPixelformat,&pfd);
+	if (!result) throw "SetPixelFormat failed";
+	
+	hRC=wglCreateContext(hDC);
+	if (!hRC) throw "CreateContect failed";
+	
+	result=wglMakeCurrent(hDC,hRC);
+	if (!result) throw "wglMakeCurrent failed";
+	
+	ShowWindow(hWnd,SW_SHOW);
+	SetForegroundWindow(hWnd);
+	SetFocus(hWnd);
+	SizeWindow(xres,yres);
+	
+	hScreen=gfxCreateImage(xres,yres);
+	hScreen->bIsscreen=true;
+	
+	InitGL();
+    }
+    catch (const char* s)
+    {
+	gfxShutdown();
+	MessageBox(hWnd,s,"OpenGL error",0);
+	return false;
+    }
+    
+    // Get the max texture size.
+    glGetIntegerv(GL_MAX_TEXTURE_SIZE,&nMaxtexsize);
+    
+    return true;
+}
+
+bool EXPORT gfxShutdown()
+{
+    if (bFullscreen)
+    {
+	DEVMODE dm;
+	
+	EnumDisplaySettings(NULL,ENUM_REGISTRY_SETTINGS,&dm);
+	dm.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
+	ChangeDisplaySettings(&dm,0);
+	ShowCursor(TRUE);
+    }
+    
+    if (hRC)
+    {
+	wglMakeCurrent(NULL,NULL);
+	
+	wglDeleteContext(hRC);
+	hRC=0;
+    }
+    
+    if (hDC)
+    {
+	ReleaseDC(hGLWnd,hDC);
+	hDC=0;
+    }
+    
+    if (nImages!=0)
+    {
+	// asdjfa;sldkfjas;dlf WTF?
+    }
+    
+    return true;
+}
+
+bool EXPORT gfxSwitchToWindowed()
+{
+    return false;
+}
+
+bool EXPORT gfxSwitchToFullScreen()
+{
+    return false;
+}
+
+handle EXPORT gfxCreateImage(int x,int y)
+{
+    handle i;
+    
+    nImages++;
+    
+    i=new SImage;
+    ZeroMemory(i,sizeof i);
+    
+    i->nWidth=x;
+    i->nHeight=y;
+    i->pData=new u32[x*y];
+    ZeroMemory(i->pData,x*y);
+    
+    return i;
+}
+
+bool EXPORT gfxFreeImage(handle img)
+{
+    if (img)
+    {
+	if (img->pData)
+	    delete[] img->pData;
+	if (img->hTex)
+	    glDeleteTextures(1,&img->hTex);
+	nImages--;
+	delete img;
+	return true;
+    }
+    return false;
+}
+
+handle EXPORT gfxCopyImage(handle img)
+{
+    bool EXPORT gfxCopyPixelData(handle,u32*,int,int);
+    
+    handle i=gfxCreateImage(img->nWidth,img->nHeight);
+    gfxCopyPixelData(i,img->pData,img->nWidth,img->nHeight);
+    
+    nImages++;
+    
+    return i;
+}
+
+bool EXPORT gfxCopyPixelData(handle img,u32* data,int width,int height)
+{
+    if (img->pData)
+	delete[] img->pData;
+    
+    img->nWidth=width;
+    img->nHeight=height;
+    img->pData=new u32[width*height];
+    memcpy(img->pData,data,width*height*sizeof(u32));
+    
+    int nTexwidth=1<<(int(ceil(log(width)/log(2))));
+    int nTexheight=1<<(int(ceil(log(height)/log(2))));
+    
+    if (width>nMaxtexsize || height>nMaxtexsize)
+    {
+	if (img->hTex)
+	    glDeleteTextures(1,&img->hTex);
+	img->hTex=0;
+	return true;		// :\  No textures for this image, it's too big.
+    }
+    
+    img->nTexwidth=nTexwidth;
+    img->nTexheight=nTexheight;
+    
+    if (!img->hTex)
+	glGenTextures(1,&img->hTex);
+    
+    u32* pTemp;
+    if (nTexwidth==width && nTexheight==height)
+	pTemp=data;
+    else
+    {
+	pTemp=new u32[nTexwidth*nTexheight];
+	ZeroMemory(pTemp,nTexwidth*nTexheight*sizeof(u32));
+	
+	for (int y=0; y<height; y++)
+	    memcpy(pTemp+y*nTexwidth,data+y*width,width*sizeof(u32));
+    }
+    
+    glBindTexture(GL_TEXTURE_2D,img->hTex);
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,pTemp);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    
+    if (nTexwidth!=width || nTexheight!=height)
+	delete[] pTemp;
+    
+    return true;
+}
+
+bool EXPORT gfxClipImage(handle img,RECT r)
+{
+    img->rClip=r;
+    if(img->bIsscreen) 
+	glScissor(r.left,yres-r.top,r.right-r.left,yres-(r.top-r.bottom));
+    return true;
+}
+
+handle EXPORT gfxGetScreenImage()
+{
+    return hScreen;
+}
+
+bool EXPORT gfxClipWnd(int x1,int y1,int x2,int y2)
+{
+    return false;
+}
+
+bool EXPORT gfxSwitchResolution(int x,int y)
+{
+    if (bFullscreen)
+    {
+	DEVMODE dm;
+	
+	EnumDisplaySettings(NULL,ENUM_REGISTRY_SETTINGS,&dm);
+	dm.dmFields=DM_BITSPERPEL | DM_PELSWIDTH | DM_PELSHEIGHT | DM_DISPLAYFLAGS | DM_DISPLAYFREQUENCY;
+	ChangeDisplaySettings(&dm,0);
+	ShowCursor(TRUE);
+    }
+    
+    if (hRC)
+    {
+	wglMakeCurrent(NULL,NULL);
+	
+	wglDeleteContext(hRC);
+	hRC=0;
+    }
+    
+    if (hDC)
+    {
+	ReleaseDC(hGLWnd,hDC);
+	hDC=0;
+    }
+    
+    gfxInit( hGLWnd,xres,yres,gbpp,bFullscreen);
+    
+    return true;
+}
+
+bool EXPORT gfxShowPage()
+{
+    return SwapBuffers(hDC)!=0;
+}
+
+bool EXPORT gfxPaletteMorph(int r,int g,int b)
+{
+    return false;
+}
+
+bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
+{
+    if (img->hTex && hRenderdest==hScreen)
+	RenderTexture(img,x,y,transparent);
+    return true;
+}
+
+bool EXPORT gfxScaleBlitImage(handle img,int x,int y,int w,int h,bool transparent)
+{
+    if (img->hTex && hRenderdest==hScreen)
+	ScaleRenderTexture(img,x,y,w,h,transparent);
+    return true;
+}
+
+bool EXPORT gfxRotScaleImage(handle img,int cx,int cy,float angle,int scale,bool transparent)
+{
+    if (img->hTex && hRenderdest==hScreen)
+	RotScaleRenderTexture(img,cx,cy,angle,scale,transparent);
+    return true;
+}
+
+bool EXPORT gfxCopyChan(handle,int,handle,int)
+{
+    return false;
+}
+
+bool EXPORT gfxSetPixel(handle img,int x,int y,u32 colour)
+{
+    if (hRenderdest==hScreen)
+	HardPoint(img,x,y,colour);
+    return false;
+}
+
+int EXPORT gfxGetPixel(handle img,int x,int y)
+{
+    int colour=0;
+    glReadPixels(x, y, 1, 1, GL_RGBA,  GL_BYTE, &colour);
+    return colour;
+}
+
+bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
+{
+    if (hRenderdest==hScreen)
+	HardLine(x1,y1,x2,y2,colour);
+    return true;
+}
+
+bool EXPORT gfxRect(handle img,int x1,int y1,int x2,int y2,u32 colour,bool filled)
+{
+    if (hRenderdest==hScreen)
+	HardRect(x1,y1,x2,y2,colour,filled);
+    return true;
+}
+
+bool EXPORT gfxEllipse(handle img,int cx,int cy,int rx,int ry,u32 colour,bool filled)
+{
+    return false;
+}
+
+bool EXPORT gfxFlatPoly(handle img,int x[3],int y[3],u32 colour[3])
+{
+    if (hRenderdest==hScreen)
+	HardPoly(img,x,y,colour);
+    return true;
+}
+
+bool EXPORT gfxSetRenderDest(handle newrenderdest)
+{
+    hRenderdest=newrenderdest;
+    return true;
+}
+
+handle EXPORT gfxGetRenderDest()
+{
+    return hRenderdest;
+}
+
+int EXPORT gfxImageWidth(handle img)
+{
+    if (img)
+	return img->nWidth;
+    return 0;
+}
+
+int EXPORT gfxImageHeight(handle img)
+{
+    if (img)
+	return img->nHeight;
+    return 0;
+}	

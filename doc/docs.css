@@ -1,0 +1,118 @@
+<!--
+body {
+    background : rgb(0,0,139);
+    font-size : 11pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    color : rgb(0,0,0);
+    margin : 0 0 50px;
+}
+a:link , a:visited {
+    background : rgb(65,105,225);
+    font-size : 12pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-decoration : none;
+    color : rgb(255,255,255);
+}
+a:active , a:hover {
+    background : rgb(65,105,225);
+    font-size : 12pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-decoration : underline;
+    color : rgb(154,205,50);
+}
+h4 {
+    background : rgb(0,0,0);
+    font-size : 20pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : center;
+    color : rgb(255,255,255);
+    padding-top : 10px;
+}
+h2 {
+    background : rgb(0,0,0);
+    font-size : 14pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : center;
+    color : rgb(255,255,255);
+    padding : 5px;
+}
+h1 {
+    background : rgb(176,196,222);
+    text-align : left;
+    font-size : 12pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    color : rgb(0,0,139);
+    border-bottom : 1px solid rgb(0,0,0);
+    padding-bottom : 3px;
+    margin-bottom : 3px;
+}
+td.main {
+    background : rgb(176,196,222);
+    font-size : 11pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : justify;
+    color : rgb(0,0,0);
+    padding : 20px 30px;
+}
+td.main a:link , td.main a:visited {
+    background : rgb(176,196,222);
+    font-size : 11pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-decoration : none;
+    color : rgb(255,255,255);
+}
+td.main a:active , td.main a:hover {
+    background : rgb(176,196,222);
+    font-size : 11pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-decoration : underline;
+    color : rgb(154,205,50);
+}
+table {
+    border : 5px solid rgb(0,0,0);
+    margin : 0 50px 20pt;
+}
+th {
+    background : rgb(0,0,0);
+    font-size : 14pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : center;
+    color : rgb(255,255,255);
+    padding : 10px;
+}
+td {
+    color : rgb(0,0,0);
+    background : rgb(65,105,225);
+    padding : 20px 20px 0;
+}
+.variable {
+    font-style : italic;
+}
+.note {
+    text-decoration : underline;
+    font-size : 8 pt;
+    vertical-align : super;
+}
+.optional {
+    color : rgb(64,64,64);
+}
+ol.main {
+    list-style-type : upper-roman;
+}
+ol.section {
+    list-style-type : decimal;
+}
+ul {
+    list-style-type : disc;
+}
+-->
