@@ -51,6 +51,18 @@ Package=<4>
 
 ###############################################################################
 
+Project: "iked"=.\iked\iked.dsp - Package Owner=<4>
+
+Package=<5>
+{{{
+}}}
+
+Package=<4>
+{{{
+}}}
+
+###############################################################################
+
 Project: "sfx_mikmod"=.\sfx_mikmod\sfx_mikmod.dsp - Package Owner=<4>
 
 Package=<5>
