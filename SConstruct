@@ -67,6 +67,7 @@ include('../common')
 libpath('../common')
 libs('common')
 
+env.Append(LINKFLAGS = '-Wl,--export-dynamic')
 ika = env.SConscript(dirs=['engine'])
 env.Alias('ika', ika)
 env.Default('ika')
