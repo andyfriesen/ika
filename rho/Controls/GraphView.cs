@@ -59,6 +59,7 @@ namespace rho.Controls
 
                     Redraw(this,new PaintEventArgs(graphics,r));
                     e.Graphics.DrawImage(buffer,r.X,r.Y);
+                    Console.WriteLine("!");
 				
                     r.X+=buffersize;
                 }

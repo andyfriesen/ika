@@ -23,7 +23,7 @@ namespace rho.MapEditor
         class EventProxy
         {
             MapView view;
-            IState state;
+            State state;
 
             public void OnSelect(object o,EventArgs e)
             {
@@ -35,7 +35,7 @@ namespace rho.MapEditor
                     m.Checked=(m==o);
             }
 
-            public EventProxy(MapView mv,IState s)
+            public EventProxy(MapView mv,State s)
             {
                 view=mv;
                 state=s;
@@ -54,9 +54,7 @@ namespace rho.MapEditor
         MainMenu   menu;
         protected MenuItem       statemenu;
 
-        IState     state;
-
-        object[][] states;
+        State     state;
 
         private void InitMenu()
         {
@@ -72,11 +70,11 @@ namespace rho.MapEditor
             filemenu.MergeOrder=1;
 
             statemenu=new MenuItem("&Mode");
-            foreach (object[] o in states)
+            foreach (State s in State.States)
                 statemenu.MenuItems.Add(
                     new MenuItem(
-                        o[0].ToString(),
-                        new EventHandler(new EventProxy(this,(IState)o[1]).OnSelect)
+                        s.Name,
+                        new EventHandler(new EventProxy(this,s).OnSelect)
                     )
                 );
 
@@ -97,6 +95,11 @@ namespace rho.MapEditor
 		
             graphview.OnHScroll+=new ScrollEventHandler(OnHScroll);
             graphview.OnVScroll+=new ScrollEventHandler(OnVScroll);
+
+            graphview.MouseDown+=new MouseEventHandler(OnMouseDown);
+            graphview.MouseUp+=new MouseEventHandler(OnMouseUp);
+            graphview.MouseWheel+=new MouseEventHandler(OnMouseWheel);
+            graphview.MouseMove+=new MouseEventHandler(OnMouseMove);
 
             statusbar=new StatusBar();
             statusbar.Dock=DockStyle.Bottom;
@@ -120,13 +123,6 @@ namespace rho.MapEditor
         // What a mess. -_-;
         private void Init(MainForm p,Map m,TileSet t)
         {
-            // When we add a new map editor state, just add another entry here.
-            // I have a handy dandy loop that converts this to menu items. :D
-            states=new object[][]
-            {
-                new object[]    {   "&Tiles",   new TileSetState(this)  },
-            };
-
             InitControls();
             InitMenu();
 
@@ -135,7 +131,8 @@ namespace rho.MapEditor
             tiles=t;
 		
             xwin=ywin=0;
-		
+
+            state=State.States[0];  // pick a state.  Any state!
         }
 
         public MapView(MainForm p)
@@ -204,8 +201,11 @@ namespace rho.MapEditor
             //    graphview.Invalidate();
         }
 	
+
         void Redraw(object o,PaintEventArgs e)
         {
+            Console.WriteLine(e.ClipRectangle);
+
             // Disable alpha blending for the first layer...
             e.Graphics.CompositingMode=CompositingMode.SourceCopy;
 		
@@ -351,33 +351,52 @@ namespace rho.MapEditor
             y/=tiles.Height;
         }
 
+        public void GetPixelCoords(ref int x,ref int y,int layer)
+        {
+            x*=tiles.Width;
+            y*=tiles.Height;
+            x-=XWin;
+            y-=YWin;
+
+            LayerInfo li=map.get_LayerInfo(layer);
+            if (li==null)
+                return;
+
+            x=x*li.pmulx/li.pdivx;
+            y=y*li.pmuly/li.pdivy;
+        }
+
+        public void GetPixelCoords(ref int x,ref int y)
+        {
+            x*=tiles.Width;
+            y*=tiles.Height;
+            x-=XWin;
+            y-=YWin;
+        }
+
         void SaveMap(object o,EventArgs e)
         {
 
         }
 
-        protected override void OnMouseDown(MouseEventArgs e)
+        protected void OnMouseDown(object o,MouseEventArgs e)
         {
-            state.MouseDown(e);
-            base.OnMouseDown(e);
+            state.MouseDown(this,e);
         }
 
-        protected override void OnMouseUp(MouseEventArgs e)
+        protected void OnMouseUp(object o,MouseEventArgs e)
         {
-            state.MouseUp(e);
-            base.OnMouseUp(e);
+            state.MouseUp(this,e);
         }
 
-        protected override void OnMouseWheel(MouseEventArgs e)
+        protected void OnMouseWheel(object o,MouseEventArgs e)
         {
-            state.MouseWheel(e);
-            base.OnMouseWheel(e);
+            state.MouseWheel(this,e);
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
+        protected void OnMouseMove(object o,MouseEventArgs e)
         {
-            state.MouseMove(e);
-            base.OnMouseMove(e);
+            state.MouseMove(this,e);
         }
     }
 

@@ -1,4 +1,6 @@
 using System;
+using System.Reflection;
+using System.Collections;
 
 namespace rho.MapEditor
 {
@@ -7,14 +9,46 @@ namespace rho.MapEditor
 	/// <summary>
 	/// Represents the current state of the map editor.
 	/// </summary>
-	interface IState
+	abstract class State
 	{
-        void MouseDown(MouseEventArgs e);
-        void MouseUp(MouseEventArgs e);
-        void MouseWheel(MouseEventArgs e);
-        void MouseMove(MouseEventArgs e);
+        public abstract string Name {   get;    }
 
-        void KeyDown(KeyEventArgs e);
-        void KeyUp(KeyEventArgs e);
+        public abstract void MouseDown(MapView view,MouseEventArgs e);
+        public abstract void MouseUp(MapView view,MouseEventArgs e);
+        public abstract void MouseWheel(MapView view,MouseEventArgs e);
+        public abstract void MouseMove(MapView view,MouseEventArgs e);
+
+        public abstract void KeyDown(MapView view,KeyEventArgs e);
+        public abstract void KeyUp(MapView view,KeyEventArgs e);
+
+        static State[] states;
+
+        public static State[] States
+        {
+            get {   return states;  }
+        }
+
+        static State()
+        {
+            ArrayList list=new ArrayList();
+
+            Type[] types=Assembly.GetExecutingAssembly().GetTypes();
+            Type statetype=typeof(State);
+
+            foreach (Type t in types)
+            {
+                if (statetype.IsAssignableFrom(t))
+                {
+                    ConstructorInfo c=t.GetConstructor(Type.EmptyTypes);
+                    if (c!=null)
+                        list.Add(c.Invoke(null));
+                }
+            }
+
+            states=new State[list.Count];
+            int i=0;
+            foreach (State s in list)
+                states[i++]=s;
+        }
     }
 }
