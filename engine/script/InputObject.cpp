@@ -16,12 +16,19 @@ namespace Script
 
         PyMethodDef methods[] =
         {
-            {   "Update",           (PyCFunction)Input_Update,   METH_NOARGS,
+            {   "Update",           (PyCFunction)Input_Update,      METH_NOARGS,
                 "Input.Update()\n\n"
                 "Updates the state of the mouse, and any attached input devices.\n"
                 "Also gives the OS a chance to do background tasks.  Continious\n"
                 "loops should call this occasionally to give the OS time to perform\n"
                 "its tasks."
+            },
+            {   "Unpress",          (PyCFunction)Input_Unpress,     METH_NOARGS,
+                "Input.Unpress()\n\n"
+                "Unsets the Pressed() property of all controls.  Has no effect on\n"
+                "their positions.\n"
+                "Individual controls can be unpressed by simply calling their Pressed()\n"
+                "method, then discarding the result."
             },
             {   "GetControl",       (PyCFunction)Input_GetControl,  METH_VARARGS,
                 "Input.GetControl(name -> string)\n\n"
@@ -95,6 +102,14 @@ namespace Script
         PyObject* Input_Update(InputObject* self)
         {
             engine->CheckMessages();
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        PyObject* Input_Unpress(InputObject* self)
+        {
+            self->input->Unpress();
 
             Py_INCREF(Py_None);
             return Py_None;

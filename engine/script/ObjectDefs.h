@@ -197,6 +197,7 @@ namespace Script
 
         // Methods
         METHOD1(Input_Update, InputObject);
+        METHOD1(Input_Unpress, InputObject);
         METHOD(Input_GetControl, InputObject);
 
         void Init();
