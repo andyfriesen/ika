@@ -45,10 +45,7 @@ namespace rho.MapEditor
                 }
             }
 
-            states=new State[list.Count];
-            int i=0;
-            foreach (State s in list)
-                states[i++]=s;
+            states=(State[])list.ToArray(typeof(State));
         }
     }
 }
