@@ -92,13 +92,6 @@ public:                                                        // too bad
     static PyObject* Entity_GetAttribute(PyObject* self,char* name);
     static int       Entity_SetAttribute(PyObject* self,char* name,PyObject* value);
 
-    // Music objects
-    void Init_Music();
-    static PyObject* Music_New(PyObject* self,PyObject* args);
-    static void      Music_Destroy(PyObject* self);
-    static PyObject* Music_GetAttribute(PyObject* self,char* name);
-    static int       Music_SetAttribute(PyObject* self,char* name,PyObject* value);
-
     // Sound (.WAV) objects
     void Init_Sound();
     static PyObject* Sound_New(PyObject* self,PyObject* args);
@@ -139,6 +132,9 @@ public:                                                        // too bad
     // Core API
     METHOD(std_log);
     METHOD(std_exit);
+    METHOD(std_getcaption);
+    METHOD(std_setcaption);
+    METHOD(std_getframerate);
     METHOD(std_wait);
     METHOD(std_delay);
     METHOD(std_gettime);
@@ -191,12 +187,9 @@ public:                                                        // too bad
     METHOD(entity_ismoving);
     METHOD(entity_detectcollision);
 
-    // Music methods
-    METHOD(music_play);
-    METHOD(music_pause);
-
-    // Sound method :)
+    // Sound methods
     METHOD(sound_play);
+    METHOD(sound_pause);
 
     // Font methods
     METHOD(font_print);

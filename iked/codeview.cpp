@@ -1,6 +1,6 @@
     
 // TODO: way too many magic numbers
-
+#include <cassert>
 
 #include "types.h"
 
@@ -25,10 +25,9 @@ BEGIN_EVENT_TABLE(CCodeView,IDocView)
     EVT_MENU(CCodeView::id_editcopy,CCodeView::OnCopy)
     EVT_MENU(CCodeView::id_editcut ,CCodeView::OnCut)
     EVT_MENU(CCodeView::id_editpaste,CCodeView::OnPaste)
-    EVT_MENU(CCodeView::id_optionsws,CCodeView::OnViewWhiteSpace)
     EVT_MENU(CCodeView::id_optionsfont,CCodeView::OnSyntaxHighlighting)
+    EVT_MENU(CCodeView::id_viewws,CCodeView::OnViewWhiteSpace)
 
-#ifdef WX232
     EVT_MENU(CCodeView::id_editfind,CCodeView::OnFind)
     EVT_MENU(CCodeView::id_editreplace,CCodeView::OnReplace)
     
@@ -37,7 +36,6 @@ BEGIN_EVENT_TABLE(CCodeView,IDocView)
     EVT_FIND_REPLACE(-1,CCodeView::DoFind)
     EVT_FIND_REPLACE_ALL(-1,CCodeView::DoFind)
     EVT_FIND_CLOSE(-1,CCodeView::DoFind)
-#endif
 
     EVT_CLOSE(CCodeView::OnClose)
 
@@ -55,11 +53,8 @@ void CCodeView::InitTextControl()
     // TODO: User syntax saving.  -- khross
 
     // dunno, the font sizes come out differently.  Compensating here.
-#ifdef WX232
     wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
-#else
-    wxFont font(8, wxMODERN, wxNORMAL, wxNORMAL, false);
-#endif
+
     pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     pTextctrl->StyleClearAll();
 
@@ -158,23 +153,22 @@ CCodeView::CCodeView(CMainWnd* parent,
     editmenu->Append(id_editcut,        "C&ut\tShift+Del","");
     editmenu->Append(id_editpaste,      "&Paste\tShift+Ins","");
     editmenu->Append(id_editselectall,  "Select &All\tCtrl+A","");
-#ifdef WX232
     editmenu->AppendSeparator();
     editmenu->Append(id_editfind,       "&Find...","");
     editmenu->Append(id_editreplace,    "Replace...","");
-#endif
     menubar->Append(editmenu,"&Edit");
 
-#ifndef WX232
     editmenu->Enable(id_editfind,false);
     editmenu->Enable(id_editreplace,false);
-#endif
 
     wxMenu* optionsmenu = new wxMenu;
     menubar->Append(optionsmenu,"&Options");
-    optionsmenu->Append(id_optionsws,"Visible Whitespace","",true);
-    optionsmenu->AppendSeparator();
     optionsmenu->Append(id_optionsfont,"Co&lors...","");
+
+    wxMenu* viewmenu = new wxMenu;
+    menubar->Append(viewmenu, "&View");
+    viewmenu->Append(id_viewws,"Visible Whitespace","",true);
+       
 
     SetMenuBar(menubar);
     
@@ -321,30 +315,23 @@ void CCodeView::OnViewWhiteSpace(wxCommandEvent& event)
 {
     wxMenuBar& menubar=*GetMenuBar();
 
-    wxMenu* pMenu = menubar.GetMenu(2);
-    int nId = menubar.FindMenuItem("Options","Visible Whitespace");
-    if (nId==wxNOT_FOUND)
-    {
-        // wtf?
-        return;
-    }
+    int nId = menubar.FindMenuItem("&View", "Visible Whitespace");
+    assert(nId != wxNOT_FOUND);
 
     if (pTextctrl->GetViewWhiteSpace() == wxSTC_WS_INVISIBLE)
     {
         pTextctrl->SetViewWhiteSpace(wxSTC_WS_VISIBLEALWAYS);
-        pMenu->Check(nId,true);
+        menubar.Check(nId, true);
     }
     else
     {
         pTextctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
-        pMenu->Check(nId,false);
+        menubar.Check(nId, false);
     }
 
     pTextctrl->Show(true);
     pTextctrl->SetFocus();
 }
-
-#ifdef WX232
 
 void CCodeView::OnFind(wxCommandEvent& event)
 {
@@ -427,8 +414,6 @@ void CCodeView::DoFind(wxFindDialogEvent& event)
     wxFindReplaceDialog *pDlg = event.GetDialog();
     pDlg->Destroy();
 }
-
-#endif
 
 void CCodeView::OnStyleNeeded(wxStyledTextEvent& event)
 {

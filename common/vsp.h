@@ -1,17 +1,17 @@
 /* 
-the Speed Bump's Spiffy VSP class object thingie (tm)
-Copyright (c) 2000 the Speed Bump
-Based on some crap that vecna made way back when. (c) 199x
+    the Speed Bump's Spiffy VSP class object thingie (tm)
+    Copyright (c) 2000 the Speed Bump
+    Based on some crap that vecna made way back when. (c) 199x
 
-Ihis is my first real attempt to make anything object-oriented, so it may
-look icky, but I'm kinda proud of it right now.
-  
-This has got to be the oldest code chunk I have that I still
-use. ^_~
---tSB May 2001
-    
-And it sucked!  Major revamp.
---andy Nov 2001
+    Ihis is my first real attempt to make anything object-oriented, so it may
+    look icky, but I'm kinda proud of it right now.
+      
+    This has got to be the oldest code chunk I have that I still
+    use. ^_~
+    --tSB May 2001
+        
+    And it sucked!  Major revamp.
+    --andy Nov 2001
 */
 
 // vsp.h

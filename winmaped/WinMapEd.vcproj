@@ -79,6 +79,7 @@
 			CharacterSet="2">
 			<Tool
 				Name="VCCLCompilerTool"
+				Optimization="3"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\common,$(PYTHON)\include,..\3rdparty"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"

@@ -1,18 +1,18 @@
+#include <windows.h>
+#include <mmsystem.h>
+
 #include "graph.h"
 #include "misc.h"
-#include "timer.h"
 #include "win32.h"
 #include "log.h"
 #include "configfile.h"
-#include "sound.h"
+
 
 const int TIME_PER_TEST = 1000;  // milliseconds
 const int RIGHT_RESULT_MARGIN = 180;
 
 namespace
 {
-    Timer timer;
-
     int testBlitImageEmpty()
     {
         RGBA* pTemp=new RGBA[16*16];
@@ -21,9 +21,9 @@ namespace
         handle img=gfxCreateImage(16,16);
         gfxCopyPixelData(img,(u32*)pTemp,16,16);
 
-        timer.t=0;
+        int t = timeGetTime();
         int count=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxBlitImage(img,0,0,true);
@@ -40,9 +40,9 @@ namespace
         handle img=gfxCreateImage(16,16);
         gfxCopyPixelData(img,(u32*)pTemp,16,16);
 
-        timer.t=0;
+        int t = timeGetTime();
         int count=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxBlitImage(img,0,0,true);
@@ -60,9 +60,9 @@ namespace
         handle img=gfxCreateImage(16,16);
         gfxCopyPixelData(img,(u32*)pTemp,16,16);
 
+        int t = timeGetTime();
         int count=0;
-        timer.t=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxBlitImage(img,0,0,true);
@@ -80,9 +80,9 @@ namespace
         handle scr=gfxGetScreenImage();
         RGBA c(255,255,255,128);
 
+        int t = timeGetTime();
         int count=0;
-        timer.t=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxSetPixel(scr,0,0,(u32)c);
@@ -97,9 +97,9 @@ namespace
         int x1=0    ,y1=0;
         int x2=319  ,y2=239;
 
+        int t = timeGetTime();
         int count=0;
-        timer.t=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxLine(scr,x1,y1,x2,y2,(u32)c);
@@ -122,9 +122,9 @@ namespace
 
         handle scr=gfxGetScreenImage();
 
+        int t = timeGetTime();
         int count=0;
-        timer.t=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxFlatPoly(scr,x,y,c);
@@ -136,11 +136,11 @@ namespace
     int testRectangles()
     {
         RGBA c(128,128,128,128);
-
         handle scr=gfxGetScreenImage();
+
+        int t = timeGetTime();
         int count=0;
-        timer.t=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxRect(scr,0,0,32,32,(u32)c,true);
@@ -151,9 +151,9 @@ namespace
 //    int testGradientRectangles();
     int testShowPage()
     {
+        int t = timeGetTime();
         int count=0;
-        timer.t=0;
-        while (timer.t<TIME_PER_TEST)
+        while (timeGetTime() - t < TIME_PER_TEST)
         {
             count++;
             gfxShowPage();
@@ -199,12 +199,9 @@ void Benchmark(HWND hwnd)
 {
     CConfigFile cfg("user.cfg");
 
-//    cfg.Read("user.cfg");
-    SetUpGraphics(cfg["graphdriver"].c_str());//cfg.sGraphplugin);
-    SetupSound("");
+    SetUpGraphics(cfg["graphdriver"].c_str());
 
     gfxInit(hwnd,320,240,32,false);
-    timer.Init(1000);
 
     int i;
     for (i=0; i<nTests; i++)

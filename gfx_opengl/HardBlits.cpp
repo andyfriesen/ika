@@ -81,7 +81,6 @@ void RenderTexture(IMAGE img,int x,int y,bool transparent)
     
     SwitchTexture(img->hTex);
     glBegin(GL_QUADS);
-    glColor4ub(255,255,255,255);
     glTexCoord2f(0.0f,0.0f);            glVertex2i(x            ,y             );
     glTexCoord2f(nTexendx,0.0f);        glVertex2i(x+img->nWidth,y             );
     glTexCoord2f(nTexendx,nTexendy);    glVertex2i(x+img->nWidth,y+img->nHeight);
@@ -101,7 +100,6 @@ void ScaleRenderTexture(IMAGE img,int x,int y,int width,int height,bool transpar
     
     SwitchTexture(img->hTex);
     glBegin(GL_QUADS);
-    glColor4ub(255,255,255,255);
     glTexCoord2f(0.0f,0.0f);            glVertex2i(x      ,y       );
     glTexCoord2f(nTexendx,0.0f);        glVertex2i(x+width,y       );
     glTexCoord2f(nTexendx,nTexendy);    glVertex2i(x+width,y+height);
@@ -118,14 +116,10 @@ void DistortRenderTexture(IMAGE img,int x[4],int y[4],bool transparent)
         glEnable(GL_BLEND);
     else
         glDisable(GL_BLEND);
-    
-    glDisable(GL_COLOR_MATERIAL);
 
-    //glBindTexture(GL_TEXTURE_2D,img->hTex);
     SwitchTexture(img->hTex);
 
     glBegin(GL_QUADS);
-
     glTexCoord2f(0.0f,0.0f);            glVertex2i(x[0],y[0]);
     glTexCoord2f(nTexendx,0.0f);        glVertex2i(x[1],y[1]);
     glTexCoord2f(nTexendx,nTexendy);    glVertex2i(x[2],y[2]);
@@ -137,20 +131,22 @@ void DistortRenderTexture(IMAGE img,int x[4],int y[4],bool transparent)
 
 void HardLine(int x1,int y1,int x2,int y2,u32 colour)
 {
+    const RGBA& c = *(RGBA*)&colour;
     SwitchTexture(0);
+
     glBegin(GL_LINES);
-    glColor4ub(colour&255,(colour>>8)&255,(colour>>16)&255,(colour>>24)&255);
+    glColor4ub(c.b, c.g, c.r, c.a);
     glVertex2i(x1,y1);
     glVertex2i(x2,y2);
-    glColor4ub(255,255,255,255);
     glEnd();
+
+    glColor4ub(255,255,255,255);
 }
 
 void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
 {
-    RGBA col=colour;
+    const RGBA& col = *(RGBA*)&colour;
 
-    //glBindTexture(GL_TEXTURE_2D,NULL);
     SwitchTexture(0);
     if (filled)
     {
@@ -160,13 +156,13 @@ void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
         glVertex2i(x2,y1);
         glVertex2i(x2,y2);
         glVertex2i(x1,y2);
-        glColor4ub(255,255,255,255);
         glEnd();
+        glColor4ub(255,255,255,255);
     }
     else
     {
         glBegin(GL_LINES);
-        glColor4ub(col.b,col.g,col.r,col.a & 255);
+        glColor4ub(col.b,col.g,col.r,col.a);
         glVertex2i(x1,y1);
         glVertex2i(x2,y1);
         
@@ -178,16 +174,18 @@ void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
         
         glVertex2i(x1,y2);
         glVertex2i(x1,y1);
-        glColor4ub(255,255,255,255);
         glEnd();
+        glColor4ub(255,255,255,255);
     }
 }
 
 void HardEllipse(int cx,int cy,int rx,int ry,u32 colour,bool filled)
 {
 	if(rx==0 || ry==0) return;
-	RGBA col=colour;
-	SwitchTexture(0);
+
+	const RGBA& col = *(RGBA*)&colour;
+	
+    SwitchTexture(0);
 	glColor4ub(col.b,col.g,col.r,col.a);
 	rx=abs(rx);	ry=abs(ry);
 	if(filled)
@@ -303,11 +301,13 @@ void HardPoly(IMAGE img,int x[3],int y[3],u32 colour[3])
     glBegin(GL_TRIANGLES);
     for (int i=0; i<3; i++)
     {
-        glColor4ub(colour[i]&255,(colour[i]>>8)&255,(colour[i]>>16)&255,(colour[i]>>24)&255);
+        const RGBA& col = *(RGBA*)&colour[i];
+        glColor4ub(col.b, col.g, col.r, col.a); //colour[i]&255,(colour[i]>>8)&255,(colour[i]>>16)&255,(colour[i]>>24)&255);
         glVertex2i(x[i],y[i]);
-        glColor4ub(255,255,255,255);
     }
     glEnd();
+
+    glColor4ub(255,255,255,255);
 }
 
 void HardPoint(IMAGE img,int x,int y,u32 colour)

@@ -277,33 +277,33 @@ int Engine::WMEProc(UINT msg,WPARAM wParam,LPARAM lParam)
 	    case ID_EDIT_MAPPROPERTIES:		{	CMapDlg mapdlg;					mapdlg.Execute(hInst,hWnd,&map);						}	break;
 	    case ID_EDIT_LAYERPROPERTIES:	{   CLayerDlg layerdlg;				layerdlg.Execute(hInst,hWnd,&map,pMapview->nCurlayer);	}	break;
 	    case ID_EDIT_ADDLAYER:
-		{
-		    map.AddLayer(10);
-		    pMapview->bLayertoggle.resize(map.NumLayers());;
-		    MessageBox(hWnd,"Don't forget to update the render string!","",0);				
-		}
-		break;
+		    {
+		        map.AddLayer(10);
+		        pMapview->bLayertoggle.resize(map.NumLayers());;
+		        MessageBox(hWnd,"Don't forget to update the render string!","",0);				
+		    }
+		    break;
 	    case ID_EDIT_VSP:	tilesel.Execute(hInst,hWnd,vsp);	break;
 		// Cool stuff
 	    case ID_EDIT_COOLSTUFF_OBSTRUCTIONTHINGIE:
 		{
 		    CObstructionThingieDlg otd;
 		    otd.Execute(hInst,hWnd,&map);
+    		break;
 		}
-		break;
 	    case ID_EDIT_COOLSTUFF_CHREDITOR:
 		{
 		    CCHReditor chredit;
 		    CCHRfile c;
 		    chredit.Execute(hInst,hWnd,&c);
+    		break;
 		}
-		break;
 	    case ID_EDIT_OPTIONS:
 		{
 		    CConfigDlg configdlg;
 		    configdlg.Execute(hInst,hWnd,config);
+    		break;
 		}
-		break;
 		// View menu
 		/*		case ID_VIEW_ZOOM1:	Zoom(1);		PostMessage(hWnd,WM_PAINT,0,0);	break;
 		case ID_VIEW_ZOOM2:	Zoom(2);		PostMessage(hWnd,WM_PAINT,0,0);	break;
@@ -332,7 +332,7 @@ int Engine::WMEProc(UINT msg,WPARAM wParam,LPARAM lParam)
 	    } 
 	    break;
 	    
-	    case WM_MOUSEWHEEL:
+	case WM_MOUSEWHEEL:
 		signed short int j;
 		j=HIWORD(wParam);
 		j/=WHEEL_DELTA;
@@ -340,11 +340,11 @@ int Engine::WMEProc(UINT msg,WPARAM wParam,LPARAM lParam)
 		if (j<0) pMapview->Mouse_PrevTile();
 		pMapview->HandleMouse(LOWORD(lParam),HIWORD(lParam),0);
 		return 0;
-		
-	    case WMU_SETLTILE:	pMapview->nLefttile=wParam;		break;
-	    case WMU_SETRTILE:	pMapview->nRighttile=wParam;	break;
+    	
+	case WMU_SETLTILE:	pMapview->nLefttile=wParam;		break;
+	case WMU_SETRTILE:	pMapview->nRighttile=wParam;	break;
 
-        default:
+    default:
 		return DefWindowProc(hWnd,msg,wParam,lParam);
 	}
 	return 0;

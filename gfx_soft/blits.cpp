@@ -2,7 +2,7 @@
 #include "blits.h"
 #include "log.h"
 
-//#define USE_ASM
+#define USE_ASM
 
 void SetBlitAsNull(handle img)
 {
@@ -98,10 +98,10 @@ bool OpaqueBlit(handle img,int x,int y)
 #ifndef USE_ASM
     while (ylen)
     {
-	memcpy(pDest,pSrc,xlen*nBytesperpixel);
-	pDest+=hRenderdest->nPitch;
-	pSrc+=img->nPitch;
-	--ylen;
+	    memcpy(pDest,pSrc,xlen*nBytesperpixel);
+	    pDest+=hRenderdest->nPitch;
+	    pSrc+=img->nPitch;
+	    --ylen;
     }
 #else
     /*
@@ -114,24 +114,24 @@ bool OpaqueBlit(handle img,int x,int y)
     int destinc=(hRenderdest->nPitch-xlen)*nBytesperpixel;
     __asm
     {
-	mov	esi,pSrc
-	    mov	edi,pDest
+    	mov	esi,pSrc;
+	    mov	edi,pDest;
 	    
-	    mov	edx,ylen
+	    mov	edx,ylen;
 	    
-yloop:
-	mov	ecx,xlen
-xloop:
-	lodsd			// grab a pixel
-	    stosd			// plot it
-	    dec		ecx
-	    jnz		xloop	// loop
+        yloop:
+	        mov	ecx,xlen;
+            xloop:
+	            lodsd;			// grab a pixel
+	            stosd;			// plot it
+	        dec		ecx;
+	        jnz		xloop;	    // loop
+    	    
+	        add		esi,srcinc;
+	        add		edi,destinc;
 	    
-	    add		esi,srcinc
-	    add		edi,destinc
-	    
-	    dec		edx
-	    jnz		yloop
+	    dec		edx;
+	    jnz		yloop;
     }
 #endif
     

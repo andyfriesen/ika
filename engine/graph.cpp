@@ -8,6 +8,7 @@
 #include "pixel_matrix.h"
 #include "fileio.h"
 #include "log.h"
+#include "FPSCounter.h"
 
 // =====================================Interface=======================================
 int (*gfxGetVersion)();                                                                                     // returns the version # of the driver
@@ -42,7 +43,9 @@ bool (*gfxFlatPoly)(handle img,int x[3],int y[3],int colour[3]);
 bool (*gfxSetRenderDest)(handle newrenderdest);                                                             // All subsequent blits go to this image, if it's valid
 handle (*gfxGetRenderDest)();
 
-bool (*gfxShowPage)();                                                                                      // copies the back buffer to the front.
+//bool (*gfxShowPage)();                                                                                      // copies the back buffer to the front.
+bool gfxShowPage();
+bool (*_gfxShowPage)();
 
 int  (*gfxImageWidth)(handle img);
 int  (*gfxImageHeight)(handle img);
@@ -55,11 +58,12 @@ HINSTANCE hGraph=0;
 
 // idea ripped from Sphere (thanks, Aegis!)
 template<typename T>
-static void Assign(T& dest,void* src)
+static void Assign(T& dest,const char* name)
 {
-    if (!src)
+    void* p = GetProcAddress(hGraph, name);
+    if (!p)
         throw 0;                    // This saves so much typing.
-    dest=(T&)src;
+    dest=(T&)p;
 }
 
 bool SetUpGraphics(const string& dllname)
@@ -70,40 +74,40 @@ bool SetUpGraphics(const string& dllname)
     
     try
     {
-        Assign(gfxGetVersion            ,GetProcAddress(hGraph,"gfxGetVersion"));
-        Assign(gfxInit                  ,GetProcAddress(hGraph,"gfxInit"));
-        Assign(gfxShutdown              ,GetProcAddress(hGraph,"gfxShutdown"));
-        Assign(gfxSwitchToFullScreen    ,GetProcAddress(hGraph,"gfxSwitchToFullScreen"));
-        Assign(gfxSwitchToWindowed      ,GetProcAddress(hGraph,"gfxSwitchToWindowed"));
-        Assign(gfxSwitchResolution      ,GetProcAddress(hGraph,"gfxSwitchResolution"));
+        Assign(gfxGetVersion            ,"gfxGetVersion");
+        Assign(gfxInit                  ,"gfxInit");
+        Assign(gfxShutdown              ,"gfxShutdown");
+        Assign(gfxSwitchToFullScreen    ,"gfxSwitchToFullScreen");
+        Assign(gfxSwitchToWindowed      ,"gfxSwitchToWindowed");
+        Assign(gfxSwitchResolution      ,"gfxSwitchResolution");
         
-        Assign(gfxCreateImage           ,GetProcAddress(hGraph,"gfxCreateImage"));
-        Assign(gfxFreeImage             ,GetProcAddress(hGraph,"gfxFreeImage"));
-        Assign(gfxCopyImage             ,GetProcAddress(hGraph,"gfxCopyImage"));
-        Assign(gfxCopyPixelData         ,GetProcAddress(hGraph,"gfxCopyPixelData"));
-        Assign(gfxClipWnd               ,GetProcAddress(hGraph,"gfxClipWnd"));
+        Assign(gfxCreateImage           ,"gfxCreateImage");
+        Assign(gfxFreeImage             ,"gfxFreeImage");
+        Assign(gfxCopyImage             ,"gfxCopyImage");
+        Assign(gfxCopyPixelData         ,"gfxCopyPixelData");
+        Assign(gfxClipWnd               ,"gfxClipWnd");
         
-        Assign(gfxClipImage             ,GetProcAddress(hGraph,"gfxClipImage"));
-        Assign(gfxGetScreenImage        ,GetProcAddress(hGraph,"gfxGetScreenImage"));
+        Assign(gfxClipImage             ,"gfxClipImage");
+        Assign(gfxGetScreenImage        ,"gfxGetScreenImage");
         
-        Assign(gfxBlitImage             ,GetProcAddress(hGraph,"gfxBlitImage"));
-        Assign(gfxScaleBlitImage        ,GetProcAddress(hGraph,"gfxScaleBlitImage"));
-        Assign(gfxDistortBlitImage      ,GetProcAddress(hGraph,"gfxDistortBlitImage"));
-        Assign(gfxSetPixel              ,GetProcAddress(hGraph,"gfxSetPixel"));
-        Assign(gfxGetPixel              ,GetProcAddress(hGraph,"gfxGetPixel"));
-        Assign(gfxLine                  ,GetProcAddress(hGraph,"gfxLine"));
-        Assign(gfxRect                  ,GetProcAddress(hGraph,"gfxRect"));
-        Assign(gfxEllipse               ,GetProcAddress(hGraph,"gfxEllipse"));
+        Assign(gfxBlitImage             ,"gfxBlitImage");
+        Assign(gfxScaleBlitImage        ,"gfxScaleBlitImage");
+        Assign(gfxDistortBlitImage      ,"gfxDistortBlitImage");
+        Assign(gfxSetPixel              ,"gfxSetPixel");
+        Assign(gfxGetPixel              ,"gfxGetPixel");
+        Assign(gfxLine                  ,"gfxLine");
+        Assign(gfxRect                  ,"gfxRect");
+        Assign(gfxEllipse               ,"gfxEllipse");
         
-        Assign(gfxSetRenderDest         ,GetProcAddress(hGraph,"gfxSetRenderDest"));
-        Assign(gfxGetRenderDest         ,GetProcAddress(hGraph,"gfxGetRenderDest"));
-        Assign(gfxShowPage              ,GetProcAddress(hGraph,"gfxShowPage"));
-        Assign(gfxImageWidth            ,GetProcAddress(hGraph,"gfxImageWidth"));
-        Assign(gfxImageHeight           ,GetProcAddress(hGraph,"gfxImageHeight"));
-        Assign(gfxPaletteMorph          ,GetProcAddress(hGraph,"gfxPaletteMorph"));
+        Assign(gfxSetRenderDest         ,"gfxSetRenderDest");
+        Assign(gfxGetRenderDest         ,"gfxGetRenderDest");
+        Assign(_gfxShowPage             ,"gfxShowPage");
+        Assign(gfxImageWidth            ,"gfxImageWidth");
+        Assign(gfxImageHeight           ,"gfxImageHeight");
+        Assign(gfxPaletteMorph          ,"gfxPaletteMorph");
         
-        Assign(gfxCopyChan              ,GetProcAddress(hGraph,"gfxCopyChan"));
-        Assign(gfxFlatPoly              ,GetProcAddress(hGraph,"gfxFlatPoly"));
+        Assign(gfxCopyChan              ,"gfxCopyChan");
+        Assign(gfxFlatPoly              ,"gfxFlatPoly");
     }
     catch(int)
     {
@@ -123,6 +127,20 @@ void UnloadGraphics()
         FreeLibrary(hGraph);
         hGraph=NULL;
     }
+}
+
+static FPSCounter counter;
+
+bool gfxShowPage()
+{
+    counter.Update();
+    _gfxShowPage();
+    return true;
+}
+
+int gfxGetFrameRate()
+{
+    return counter.FPS();
 }
 
 bool gfxLoadImage(handle hImage,const char* fname)

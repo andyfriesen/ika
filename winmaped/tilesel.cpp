@@ -72,11 +72,11 @@ void CTileSel::Scroll(int newoffset)
     int tx,ty;
     
     if (!pVsp) return;
-    
+
     GetClientRect(hWnd,&temprect);
     width=temprect.right; height=temprect.bottom;
     tx=pVsp->Width()+(bPad?1:0); ty=pVsp->Height()+(bPad?1:0);
-    
+
     int tilesperrow;
     int tilerowsonscreen;
     int numtilerows;
@@ -84,7 +84,7 @@ void CTileSel::Scroll(int newoffset)
     tilesperrow=width/tx;
     tilerowsonscreen=height/ty-1;
     numtilerows=pVsp->NumTiles()/tilesperrow+2;
-    
+
     if (newoffset>numtilerows-tilerowsonscreen) newoffset=numtilerows-tilerowsonscreen;
     if (newoffset<0) newoffset=0;
 		  
@@ -100,8 +100,6 @@ void CTileSel::Scroll(int newoffset)
     si.nPos=newoffset;
     si.nMax=numtilerows;
     SetScrollInfo(hWnd,SB_VERT,&si,true);
-		  
-    return;
 }
 
 void CTileSel::Execute(HINSTANCE hInst,HWND hParentWnd, VSP& v)
@@ -114,15 +112,14 @@ void CTileSel::Execute(HINSTANCE hInst,HWND hParentWnd, VSP& v)
         hMenu=LoadMenu(hInst,MAKEINTRESOURCE(IDR_ALTMENU));
         pGraph=new CGraphView(hWnd,CTileSel::RenderCallback,(void*)this);
     }
-    
-    pVsp=&v;	
-    //	i_vsp.CopyVSPData(&v); //v.GetDataPtr(),v.Pal(),v.TileX(),v.TileY(),v.NumTiles());
-    
+
+    pVsp=&v;
+
     SetWindowLong(hWnd,GWL_USERDATA,(long)this);							// the dialog we just created belongs to this object
     ShowWindow(hWnd,SW_SHOW);
     hWndParent=hParentWnd;
     hInstance=hInst;
-    
+
     active=true;
     pGraph->ForceShowPage();
 }
@@ -131,7 +128,6 @@ void CTileSel::Close()
 {
     ShowWindow(hWnd,SW_HIDE);
     active=false;
-    //	i_vsp.Free();
 }
 
 void CTileSel::Render(const RECT& r)
@@ -193,7 +189,7 @@ void CTileSel::SaveVSP()
     if (!GetSaveFileName(&ofn))
         return;
     
-    int result;
+    int result = 0;
     switch (ofn.nFilterIndex)
     {
         //		case 1:	result=pVsp->SaveOld(sFilename);	break;

@@ -9,6 +9,7 @@ Python/C++ interface
 #define METHOD(x) PyObject* CScriptEngine::x (PyObject* self,PyObject* args)
 
 #include "main.h"
+#include "timer.h"
 
 static CEngine* pEngine;
 
@@ -44,6 +45,37 @@ METHOD(std_exit)
     return Py_None;
 }
 
+METHOD(std_getcaption)
+{
+    if (!PyArg_ParseTuple(args,":GetCaption"))
+        return 0;
+
+    const char* s = pEngine->GetCaption();
+
+    return PyString_FromString(s);
+}
+
+METHOD(std_setcaption)
+{
+    char* s = "";
+
+    if (!PyArg_ParseTuple(args, "|s:SetCaption", &s))
+        return 0;
+
+    pEngine->SetCaption(s);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+METHOD(std_getframerate)
+{
+    if (!PyArg_ParseTuple(args, ":GetFrameRate"))
+        return 0;
+
+    return PyInt_FromLong(gfxGetFrameRate());
+}
+
 METHOD(std_delay)
 {
     int ticks;
@@ -51,13 +83,15 @@ METHOD(std_delay)
     if (!PyArg_ParseTuple(args,"i:delay",&ticks))
         return NULL;
     
-    ticks+=pEngine->timer.systime;
+    int endtime = ticks + GetTime();
     
     // Always check messages at least once.
     do
-    if (pEngine->CheckMessages())
-        return NULL;
-    while (ticks>pEngine->timer.systime);
+    {
+        if (pEngine->CheckMessages())
+            return 0;
+    }
+    while (endtime > GetTime());
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -65,31 +99,32 @@ METHOD(std_delay)
 
 METHOD(std_wait)
 {
-    int ticks;
-    
+    int ticks;    
     if (!PyArg_ParseTuple(args,"i:wait",&ticks))
         return NULL;
     
     CEntity* pSaveplayer=pEngine->pPlayer;
-    pEngine->pPlayer=0;                                // stop the player entity
+    pEngine->pPlayer=0;                             // stop the player entity
     
-    pEngine->timer.t=0;
+    int t = GetTime();
+    int endtime = ticks + t;
     
-    ticks+=pEngine->timer.systime;
-    while (ticks>pEngine->timer.systime)
+    while (endtime > GetTime())
     {
         if (pEngine->CheckMessages())
             return NULL;
-        while (pEngine->timer.t>0)
+
+        while (t < GetTime())
         {
-            pEngine->timer.t--;
+            t++;
             pEngine->GameTick();
         }
+
         pEngine->Render();
         gfxShowPage();
     }
     
-    pEngine->pPlayer=pSaveplayer;                                // restore the player
+    pEngine->pPlayer = pSaveplayer;                   // restore the player
     Py_INCREF(Py_None);
     return Py_None;
 }
@@ -99,7 +134,7 @@ METHOD(std_gettime)
     if (!PyArg_ParseTuple(args,""))
         return NULL;
     
-    return PyInt_FromLong((long)pEngine->timer.systime);
+    return PyInt_FromLong((long)GetTime());
 }
 
 METHOD(std_random)
@@ -315,8 +350,6 @@ METHOD(std_unhooktimer)
 
 // MASTA TABLE YO
 
-// WAH WAH MACROS ARE EVIL WAH WAH WAH.
-// I have no problem with this at all.  It's nice and clean looking.
 #define FUNCTION(x,y) { x,CScriptEngine::y,1}
 
 PyMethodDef standard_methods[] =
@@ -326,6 +359,9 @@ PyMethodDef standard_methods[] =
     // Misc
     FUNCTION("Log",std_log),
     FUNCTION("Exit",std_exit),
+    FUNCTION("GetCaption", std_getcaption),
+    FUNCTION("SetCaption", std_setcaption),
+    FUNCTION("GetFrameRate", std_getframerate),
     FUNCTION("Delay",std_delay),
     FUNCTION("Wait",std_wait),
     FUNCTION("GetTime",std_gettime),
@@ -356,7 +392,6 @@ PyMethodDef standard_methods[] =
     
     // Object constructors
     FUNCTION("Image",Image_New),
-    FUNCTION("Music",Music_New),
     FUNCTION("Sound",Sound_New),
     FUNCTION("Font",Font_New),
     FUNCTION("Entity",std_spawnentity),

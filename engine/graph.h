@@ -39,7 +39,9 @@ extern bool (*gfxFlatPoly)(handle img,int x[3],int y[3],int colour[3]);
 extern bool (*gfxSetRenderDest)(handle newrenderdest);                                              // All subsequent blits go to this image, if it's valid
 extern handle (*gfxGetRenderDest)();
 
-extern bool (*gfxShowPage)();                                                                       // copies the back buffer to the front.
+//extern bool (*gfxShowPage)();                                                                       // copies the back buffer to the front.
+bool gfxShowPage();
+int gfxGetFrameRate();
 
 extern int  (*gfxImageWidth)(handle img);
 extern int  (*gfxImageHeight)(handle img);

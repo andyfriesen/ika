@@ -5,7 +5,6 @@
 #include "python_stdlib.h"
 #include "py_image.h"
 #include "py_entity.h"
-#include "py_music.h"
 #include "py_sound.h"
 #include "py_font.h"
 #include "py_map.h"
@@ -44,7 +43,6 @@ void CScriptEngine::Init(CEngine* p)
     // Initialize objects
     Init_Image();
     Init_Entity();
-    Init_Music();
     Init_Sound();
     Init_Font();
     // singletons
@@ -217,6 +215,4 @@ void CScriptEngine::CallEvent(const char* sName)
     }
     
     Py_XDECREF(result);
-    
-    pEngine->timer.t=0;                                                        // a little icky, but meh
 }

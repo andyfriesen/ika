@@ -2,15 +2,11 @@
 #ifndef CODEVIEW_H
 #define CODEVIEW_H
 
-#define WX232
-
 #include "types.h"
 #include "wx\wx.h"
 #include "wx\colordlg.h"
 #include "wx\fontdlg.h"
-#ifdef WX232
 #include "wx\fdrepdlg.h"
-#endif
 #include "wx\stc\stc.h"
 #include "docview.h"
 
@@ -41,8 +37,9 @@ public:
         id_editreplace,
 
         id_options,
-        id_optionsws,
-        id_optionsfont
+        id_optionsfont,
+
+        id_viewws,
     };
 
     CCodeView(CMainWnd* parent,const string& name);
@@ -59,10 +56,8 @@ public:
     void OnCut (wxCommandEvent& event);
     void OnPaste(wxCommandEvent& event);
     void OnSelectAll(wxCommandEvent& event);
-#ifdef WX232
     void OnFind(wxCommandEvent& event);
     void OnReplace(wxCommandEvent& event);
-#endif
 
     void OnMarginClick(wxStyledTextEvent& event);
 
@@ -72,9 +67,7 @@ private:
 
     void SetSyntax(int,wxCommandEvent&);
 
-#ifdef WX232
     void DoFind(wxFindDialogEvent& event);
-#endif
 public:
 
     DECLARE_EVENT_TABLE()

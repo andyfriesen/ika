@@ -168,7 +168,7 @@ bool VSP::Load(const char *fname)
                 CreateTilesFromBuffer(pData,pal,nTiles,nTilex,nTiley);
             else
                 CreateTilesFromBuffer((RGBA*)pData,nTiles,nTilex,nTiley);
-            
+
             delete[] pBuffer;
             delete[] pData;
             break;

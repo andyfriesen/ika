@@ -10,7 +10,6 @@
 #include "misc.h"
 #include "graph.h"
 #include "input.h"
-#include "timer.h"
 #include "hooklist.h"
 
 // engine components
@@ -50,7 +49,6 @@ public:                                                                         
     CSpriteController               sprite;                                         //!< CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
     EntityList                      entities;                                       //!< entities ;P
     
-    Timer                           timer;                                          //!< timer-based callback type stuff
     Input                           input;                                          //!< keyboard/mouse (todo: joystick)
 
     bool                            bShowfps;                                       //!< Shows the current framerate in the window title if set.
@@ -66,8 +64,6 @@ public:                                                                         
     // Odds and ends
     handle                          hRenderdest;                                    //!< the current rendering destination.  It's only needed here so the renderer knows how many tiles to draw. ;P
     void*                           pBindings[nControls];                           //!< key bindings (TODO: remove the arbitrary size)
-//    std::list<void*>                pHookretrace;                                   //!< list of functions to be executed every retrace
-//    std::list<void*>                pHooktimer;                                     //!< list of functions to be executed every tick
     HookList                        pHookretrace;
     HookList                        pHooktimer;
     int                             nFrameskip;                                     //!< the map engine will skip no more than this amount of ticks per retrace
@@ -75,6 +71,8 @@ public:                                                                         
     // interface
     void      Sys_Error(const char* errmsg);                                        //!< bitches, and quits
     void      Script_Error();                                                       //!< also bitchy and quitty
+    const char* GetCaption();
+    void      SetCaption(const char* caption);
     int       CheckMessages();                                                      //!< Play nice with Mr. Gates
     
     void      GameTick();                                                           //!< 1/100th of a second's worth of AI
@@ -96,9 +94,7 @@ public:                                                                         
     
     void      LoadMap(const char* filename);                                        //!< switches maps
     
-    //void      HookTimer();                                                          //!< does junk to keep hooked scripts running at the proper rate
-    //void      HookRetrace();                                                        //!< calls each hookretraced script exactly once (if applicable)
-    void      DoHook(HookList& hooklist);                                               //!< Calls every function in the list, then flushes any pending adds/removals from said list
+    void      DoHook(HookList& hooklist);                                           //!< Calls every function in the list, then flushes any pending adds/removals from said list
 
     void      Startup(HWND hwnd, HINSTANCE hinst);                                  //!< Inits the engine
     void      Shutdown();                                                           //!< deinits the engine

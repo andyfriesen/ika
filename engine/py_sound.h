@@ -1,4 +1,6 @@
 
+#include "audiere.h"
+
 #include "sound.h"
 
 /*
@@ -10,12 +12,13 @@ TODO:
 struct v_SoundObject
 {
     PyObject_HEAD
-    Ssfx    psfx;
+    audiere::OutputStream* sound;
 };
 
 PyMethodDef CScriptEngine::sound_methods[] =
 {
-    {    "Play",    CScriptEngine::sound_play,  1   },
+    {   "Play",     CScriptEngine::sound_play,  1   },
+    {   "Pause",    CScriptEngine::sound_pause, 1   },
     {    NULL,      NULL                            }
 };
 
@@ -36,22 +39,22 @@ void CScriptEngine::Init_Sound()
 
 PyObject* CScriptEngine::Sound_New(PyObject* self,PyObject* args)
 {
-    char* sFilename;
+    char* filename;
     
-    if (!PyArg_ParseTuple(args,"s:newsound",&sFilename))
+    if (!PyArg_ParseTuple(args,"s:newsound",&filename))
         return NULL;
     
     v_SoundObject* sound;
     
     try
     {
-        if (!File::Exists(sFilename))                   throw va("%s does not exist",sFilename);
+        if (!File::Exists(filename))                    throw va("%s does not exist", filename);
         
         sound=PyObject_New(v_SoundObject,&soundtype);
-        if (!sound)                                     throw va("Can't load %s due to internal Python weirdness!  Very Bad!",sFilename);
+        if (!sound)                                     throw va("Can't load %s due to internal Python weirdness!  Very Bad!", filename);
         
-        sound->psfx=sfxLoadEffect(sFilename);
-        if (!sound->psfx)                               throw va("Failed to load %s",sFilename);
+        sound->sound = Sound::OpenSound(filename);
+        if (!sound->sound)                              throw va("Failed to load %s", filename);
     }
     catch(const char* s)
     {
@@ -64,29 +67,63 @@ PyObject* CScriptEngine::Sound_New(PyObject* self,PyObject* args)
 
 void CScriptEngine::Sound_Destroy(PyObject* self)
 {
-    sfxFreeEffect(((v_SoundObject*)self)->psfx);
+    ((v_SoundObject*)self)->sound->unref();
     PyObject_Del(self);
 }
 
 PyObject* CScriptEngine::Sound_GetAttribute(PyObject* self,char* name)
 {
-    return Py_FindMethod(sound_methods,self,name);
+    v_SoundObject* snd = (v_SoundObject*)self;
+
+    if (!strcmp(name,"volume"))
+        return PyFloat_FromDouble(snd->sound->getVolume());
+    else if (!strcmp(name,"pan"))
+        return PyFloat_FromDouble(snd->sound->getPan());
+    else if (!strcmp(name,"position"))
+        return PyInt_FromLong(snd->sound->getPosition());
+    else if (!strcmp(name,"pitchshift"))
+        return PyFloat_FromDouble(snd->sound->getPitchShift());
+    else if (!strcmp(name,"loop"))
+        return PyInt_FromLong(snd->sound->getRepeat());
+    else
+        return Py_FindMethod(sound_methods,self,name);
 }
 
 int CScriptEngine::Sound_SetAttribute(PyObject* self,char* name,PyObject* value)
 {
+    v_SoundObject* snd = (v_SoundObject*)self;
+
+    if (!strcmp(name,"volume"))
+        snd->sound->setVolume((float)PyFloat_AsDouble(value));
+    else if (!strcmp(name,"pan"))
+        snd->sound->setPan((float)PyFloat_AsDouble(value));
+    else if (!strcmp(name,"position"))
+        snd->sound->setPosition(PyInt_AsLong(value));
+    else if (!strcmp(name,"pitchshift"))
+        snd->sound->setPitchShift((float)PyFloat_AsDouble(value));
+    else if (!strcmp(name,"loop"))
+        snd->sound->setRepeat(PyInt_AsLong(value) != 0);
+
     return 0;
 }
 
 METHOD(sound_play)
 {
-    int nVol=255;
-    int nPan=128;
-    
-    if (!PyArg_ParseTuple(args,"|ii:Sound.Play",&nVol,&nPan))
+    if (!PyArg_ParseTuple(args,""))
         return NULL;
     
-    sfxPlayEffect(((v_SoundObject*)self)->psfx,nVol,nPan);
+    ((v_SoundObject*)self)->sound->play();
+    
+    Py_INCREF(Py_None);
+    return Py_None;
+}
+
+METHOD(sound_pause)
+{
+    if (!PyArg_ParseTuple(args,""))
+        return NULL;
+    
+    ((v_SoundObject*)self)->sound->stop();
     
     Py_INCREF(Py_None);
     return Py_None;

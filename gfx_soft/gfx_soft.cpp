@@ -4,6 +4,7 @@
 #include "types.h"
 
 #undef RGB // win32 is gay
+#define USE_ASM // ASM is gay too, but at least it's fast.
 
 // DirectDraw for fullscreen rendering
 LPDIRECTDRAW		lpdd=NULL;						// Main DirectDraw object
@@ -37,11 +38,24 @@ int nImagecount=0;							// Running count of images, for debugging purposes
 bool bInited=false;
 bool swapbr=false;                          // if true, the physical screen pixel format has red and blue swapped.
 
-inline u32 SwapBR(u32 c)
+inline u32 SwapBR(u32 colour)
 {
+#ifndef USE_ASM
     u32 r=c&0x00FF0000;
     u32 b=c&0x000000FF;
     return (c&0xFF00FF00)|(r>>16)|(b<<16);
+#else
+    // At long last, I have managed to outsmart VC7's optimizer. (if only by a tiny bit)
+    __asm
+    {
+        mov eax, colour;
+        mov ebx, eax;
+        and eax, 0xFF00FF00;
+        and ebx, 0x00FF00FF;
+        rol ebx, 16;
+        or  eax, ebx;
+    }
+#endif
 }
 
 inline void ValidateClipRect(handle& img)
@@ -67,6 +81,12 @@ inline u32 Blend_Pixels(u32 c1,u32 c2)
     c|=255<<24;							// max out alpha
     
     return c;
+}
+
+inline void keepinrange(int& i,int min,int max)
+{
+    if (i<min) i=min;
+    if (i>max) i=max;
 }
 
 void logdderr(HRESULT dderr)
@@ -160,7 +180,7 @@ bool gfxInit(HWND hWnd,int x,int y,int,bool fullscreen)
             memset(&ddpf,0,sizeof ddpf);
             ddpf.dwSize=sizeof ddpf;
             mainsurface->GetPixelFormat(&ddpf);
-            if (ddpf.dwBBitMask!=0x000000FF)
+            if (ddpf.dwBBitMask==0x000000FF)
                 swapbr=true;
 
             SetWindowLong(hWnd,GWL_STYLE,WS_POPUP);
@@ -415,9 +435,8 @@ bool gfxShowPage()
             for (int y=yres; y; y--)
             {
                 for (int x=xres; x; x--)
-                {
                     *d32++=SwapBR(*pSrc++);
-                }
+
                 d32+=inc;
             }
         }
@@ -440,19 +459,21 @@ bool gfxShowPage()
             Log::Write("flipfail");
             return false;
         }
+
+        return true;
     }
     else
     {
         int xlen=xres*sizeof(u32);
         int ylen=yres;
         
-        u8* pDest=(u8*)pBackbuffer;
-        u8* pSrc=(u8*)hScreen->pData;
-        
+        u32* pDest=(u32*)pBackbuffer;
+        u32* pSrc =(u32*)hScreen->pData;
+
         while (ylen--)
         {
-            memcpy(pDest,pSrc,xlen);
-            pDest+=xlen;			pSrc+=xlen;
+            for (int x = xres; x; x--)
+                *pDest++ = SwapBR(*pSrc++);
         }
 
         HDC hCurWndDC=GetDC(hCurWnd);
@@ -461,7 +482,6 @@ bool gfxShowPage()
         
         return true;
     }
-    return false; // should never execute, but MSVC is a bitch
 }
 
 bool gfxBlitImage(handle img,int x,int y,bool transparent)
@@ -584,12 +604,6 @@ bool gfxPaletteMorph(int r,int g,int b)
 
 ////////////////////// Implementation helper function type things /////////////////////////
 
-void keepinrange(int& i,int min,int max)
-{
-    if (i<min) i=min;
-    if (i>max) i=max;
-}
-
 #include "primitives.h"
 
 void MakeClientFit()
@@ -620,25 +634,3 @@ void MakeClientFit()
     
     MoveWindow(hCurWnd,window.left,window.top,window.right-window.left,window.bottom-window.top,true);
 }
-
-/*LPDIRECTDRAWSURFACE CreateOffScreenSurface(int x,int y)
-// Creates an off-screen surface, and returns a pointer to it. ;)
-// width and height are the dimensions.  The pixel format is the same as the primary surface's.
-{
-LPDIRECTDRAWSURFACE temp;
-DDSURFACEDESC ddsd;
-HRESULT result;
-temp=NULL;
-
-  ddsd.dwSize=sizeof ddsd;
-  ddsd.dwFlags=DDSD_CAPS | DDSD_HEIGHT | DDSD_WIDTH;
-  ddsd.dwWidth=x;
-  ddsd.dwHeight=y;
-  ddsd.ddsCaps.dwCaps=DDSCAPS_OFFSCREENPLAIN;
-  result=lpdd->CreateSurface(&ddsd,&temp,NULL);
-  
-    if (result==DD_OK)
-    return temp;
-    else
-    return NULL;
-}*/

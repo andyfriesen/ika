@@ -1,7 +1,7 @@
-#include "main.h"
 #include <algorithm>
 
-const int timerate = 100;
+#include "main.h"
+#include "timer.h"
 
 void CEngine::Sys_Error(const char* errmsg)
 {
@@ -38,6 +38,18 @@ void CEngine::Script_Error()
     return;
 }
 
+const char* CEngine::GetCaption()
+{
+    static char caption[255];
+    GetWindowText(hWnd, caption, 254);
+    return caption;
+}
+
+void CEngine::SetCaption(const char* caption)
+{
+    SetWindowText(hWnd, caption);
+}
+
 int CEngine::CheckMessages()
 {
     CDEBUG("checkmessages");
@@ -60,9 +72,6 @@ int CEngine::CheckMessages()
             DispatchMessage(&msg);
         }
 
-        //if (!bActive)                                       // Are we ready to rock?
-        //    WaitMessage();                                  // Nope, wait for something to happen.
-        
     } while (!bActive);
     
     return 0;
@@ -71,42 +80,40 @@ int CEngine::CheckMessages()
 void CEngine::MainLoop()
 {
     CDEBUG("mainloop");
-    static int numframes, t, fps = 0;                           // frame counter stuff (Why do these need to be static?)
-   
+    static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
+    
+    CFont font;
+    bool result = font.LoadFNT("system.fnt");
+    if (!result)
+        bShowfps = false;
+
+    int now = GetTime();
+    int lasttick = now;
+
     while(1)
     {
         CheckMessages();
         
-        int nFramesskipped = 0;
-        t += timer.t;
-        
-        while (timer.t > 0 && ++nFramesskipped <= nFrameskip)
+        int skipcount = 0;
+
+        for (int i = 0; (i < now - lasttick) && (++skipcount <= nFrameskip); i++)
         {
-            timer.t--;
-            
-            if (!bKillFlag)
-                GameTick();
-            else
+            if (bKillFlag)
                 return;
+
+            GameTick();
         }
-        
-        
-        timer.t = 0;
-        
-        if (t > timerate)                                     // update the frame counter
-        {
-            fps = numframes;
-            numframes = 0;
-            t -= timerate;
-            if (bShowfps)
-                SetWindowText(hWnd, va("ika - %ifps", fps));
-        }
-        numframes++;
-        
+
+        lasttick = now;
+        now = GetTime();
+
         Render();
-        
-        //font.PrintString(0, 0, va("Fps: ~3%i", fps));
-        
+
+        if (bShowfps)
+        {
+            font.PrintString(0, 0, va("FPS: %i", gfxGetFrameRate()));
+        }
+
         gfxShowPage();
     }
 }
@@ -155,11 +162,13 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     }
     Log::Write("... OK");
     
-    Log::Writen("Initing sound");
-    a = SetupSound(cfg["sounddriver"].c_str());
-    if (!a)
-        Log::Write("Sound initialization failed.  Disabling audio.");
-    Log::Write("... OK");
+    if (!cfg.Int("nosound"))
+    {
+        Log::Writen("Initing sound");
+        if (!Sound::Init())
+            Log::Write("\nSound initialization failed.  Disabling audio.");
+        Log::Write("... OK");
+    }
     
     Log::Writen("Initing input");
     if (!input.Init(hinst, hwnd))
@@ -172,14 +181,6 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
         input.HideMouse();
     
     memset(pBindings, 0, nControls*sizeof(void*));            // Clear key bindings
-    Log::Write("... OK");
-    
-    Log::Writen("Initing timer");
-    if (!timer.Init(timerate))
-    {
-        Sys_Error("timer.Init failed");
-        return;
-    }
     Log::Write("... OK");
     
     pPlayer = 0;
@@ -221,12 +222,11 @@ void CEngine::Shutdown()
     
     Log::Write("---- shutdown ----");
     map.Free();
-    timer.Shutdown();
     tiles.Free();
+    Sound::Shutdown();
     script.Shutdown();
     
     UnloadGraphics();
-    ShutdownSound();
     input.ShutDown();
 }
 
@@ -362,7 +362,7 @@ void CEngine::Render(const char* sTemprstring)
     
     if (!bMaploaded)    return;
     
-    tiles.UpdateAnimation(timer.systime);
+    tiles.UpdateAnimation(GetTime());
     
     if (pCameratarget)
     {        
