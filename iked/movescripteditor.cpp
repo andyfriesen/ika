@@ -4,7 +4,7 @@
 #include "spritesetview.h"
 #include "chr.h"
 
-//#include <wx\resource.h>
+//#include "wx\resource.h"
 
 BEGIN_EVENT_TABLE(CMovescriptEditor,wxDialog)
     EVT_CLOSE(CMovescriptEditor::OnClose)

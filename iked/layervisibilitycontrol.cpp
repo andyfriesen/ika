@@ -1,7 +1,7 @@
 
 #include "layervisibilitycontrol.h"
-#include <wx\wx.h>
-#include <wx\listctrl.h>
+#include "wx\wx.h"
+#include "wx\listctrl.h"
 #include "mapview.h"
 
 BEGIN_EVENT_TABLE(CLayerVisibilityControl,wxCheckListBox)

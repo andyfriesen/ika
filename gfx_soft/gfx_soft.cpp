@@ -3,6 +3,8 @@
 #include "log.h"
 #include "types.h"
 
+#undef RGB // win32 is gay
+
 // DirectDraw for fullscreen rendering
 LPDIRECTDRAW		lpdd=NULL;						// Main DirectDraw object
 LPDIRECTDRAWSURFACE	mainsurface=NULL;				// front buffer
@@ -31,8 +33,9 @@ Rect maincliprect;
 
 int nScreensurfacewidth,nScreensurfaceheight;		// width/height of the screen surface. (we have to remember this)
 
-static int nImagecount=0;							// Running count of images, for debugging purposes
-static bool bInited=false;
+int nImagecount=0;							// Running count of images, for debugging purposes
+bool bInited=false;
+bool swapbr=false;                          // if true, the physical screen pixel format has red and blue swapped.
 
 inline u32 SwapBR(u32 c)
 {
@@ -152,6 +155,16 @@ bool gfxInit(HWND hWnd,int x,int y,int,bool fullscreen)
                 lpgamma->GetGammaRamp(0,&normalgamma);
                 lpgamma->GetGammaRamp(0,&currentgamma);
             }
+
+            DDPIXELFORMAT ddpf;
+            memset(&ddpf,0,sizeof ddpf);
+            ddpf.dwSize=sizeof ddpf;
+            mainsurface->GetPixelFormat(&ddpf);
+            if (ddpf.dwBBitMask!=0x000000FF)
+                swapbr=true;
+
+            SetWindowLong(hWnd,GWL_STYLE,WS_POPUP);
+            SetWindowLong(hWnd,GWL_EXSTYLE,0);
         }
         catch(HRESULT hr)
         {
@@ -394,11 +407,28 @@ bool gfxShowPage()
         
         int xlen=xres;
         xlen*=sizeof(u32);
-        for (int y=yres; y; y--)
+        if (swapbr)
         {
-            memcpy(pDest,pSrc,xlen);
-            pSrc+=hScreen->nWidth;
-            pDest+=ddsd.lPitch;
+            u32* d32=(u32*)pDest;
+            int inc=ddsd.lPitch/sizeof(u32)-xres;
+
+            for (int y=yres; y; y--)
+            {
+                for (int x=xres; x; x--)
+                {
+                    *d32++=SwapBR(*pSrc++);
+                }
+                d32+=inc;
+            }
+        }
+        else
+        {
+            for (int y=yres; y; y--)
+            {
+                memcpy(pDest,pSrc,xlen);
+                pSrc+=hScreen->nWidth;
+                pDest+=ddsd.lPitch;
+            }
         }
         
         result=backsurf->Unlock(ddsd.lpSurface);
@@ -424,7 +454,7 @@ bool gfxShowPage()
             memcpy(pDest,pSrc,xlen);
             pDest+=xlen;			pSrc+=xlen;
         }
-        
+
         HDC hCurWndDC=GetDC(hCurWnd);
         BitBlt(hCurWndDC,0,0,xres,yres,hDC,0,0,SRCCOPY);
         ReleaseDC(hCurWnd,hCurWndDC);
@@ -560,7 +590,7 @@ void keepinrange(int& i,int min,int max)
     if (i>max) i=max;
 }
 
-#include "primatives.h"
+#include "primitives.h"
 
 void MakeClientFit()
 {

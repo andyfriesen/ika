@@ -14,7 +14,7 @@
 #include "imageview.h"
 #include "spritesetview.h"
 
-#include <wx\resource.h>
+#include "wx\resource.h"
 #include "controller.h"
 
 IMPLEMENT_APP(CApp);

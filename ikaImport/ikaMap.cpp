@@ -44,9 +44,11 @@ namespace Import
         {
             return net_str(map->GetRString().c_str());
         }
+
         void Map::set_RenderString(String* val)
         {
             map->SetRString(c_str(val));
+            raise_PropertiesChanged(this);
         }
 
         String* Map::get_Music()
@@ -57,6 +59,7 @@ namespace Import
         void Map::set_Music(String* s)
         {
             map->SetMusic(c_str(s));
+            raise_PropertiesChanged(this);
         }
 
         String* Map::get_TileSetName()
@@ -67,6 +70,7 @@ namespace Import
         void Map::set_TileSetName(String* s)
         {
             map->SetVSPName(c_str(s));
+            raise_PropertiesChanged(this);
         }
 
         int Map::get_NumLayers()
@@ -100,6 +104,7 @@ namespace Import
         void Map::set_Tile(int x,int y,int lay,int idx)
         {
             map->SetTile(x,y,lay,(u32)idx);
+            raise_LayerChanged(this,lay,Rectangle(x,y,1,1));
         }
 
         bool Map::get_Obs(int x,int y)
@@ -146,6 +151,7 @@ namespace Import
             l.pdivy=li->pdivy;
 
             map->SetLayerInfo(l,idx);
+            raise_PropertiesChanged(this);
         }
 
         ::Import::ika::ZoneInfo* Map::get_ZoneInfo(int idx)
@@ -176,6 +182,8 @@ namespace Import
             z.sEntactscript=c_str(zi->entactscript);
 
             map->SetZoneInfo(z,idx);
+
+            raise_PropertiesChanged(this);
         }
 
         String* Map::get_MoveScript(int idx)
@@ -186,6 +194,7 @@ namespace Import
         void Map::set_MoveScript(int idx,String* s)
         {
             map->SetMScript(c_str(s),idx);
+            raise_PropertiesChanged(this);
         }
 
         EntityInfo* Map::get_Entity(int idx)
@@ -253,17 +262,22 @@ namespace Import
             ent.sZone=c_str(ei->zone);
             ent.sChasetarget=c_str(ei->chasetarget);
             ent.nChasedist=ei->chasedist;
+
+            raise_EntityChanged(this,idx);
         }
 
         EntityInfo* Map::CreateEntity(int& idx)
         {
             idx=map->CreateEntity(0,0);
+            raise_EntityChanged(this,idx);
+
             return get_Entity(idx);
         }
 
         void Map::DestroyEntity(int idx)
         {
             map->DestroyEntity(idx);
+            raise_EntityChanged(this,-1);
         }
 
         int Map::EntityAt(int x,int y)
@@ -274,11 +288,13 @@ namespace Import
         int Map::AddLayer()
         {
             map->AddLayer(map->NumLayers()-1);
+            raise_PropertiesChanged(this);
             return map->NumLayers()-1;
         }
 
         void Map::RemoveLayer(int idx)
         {
+            raise_PropertiesChanged(this);
             map->DeleteLayer(idx);
         }
 
@@ -291,6 +307,9 @@ namespace Import
 
         void Map::Paste(Array* src,int x,int y,int layer)
         {
+            int blah __gc[,]=(int __gc[,])src;
+
+            raise_LayerChanged(this,layer,Rectangle(x,y,blah->GetLength(0),blah->GetLength(1)));
             throw new System::Exception(S"Not yet implemented!");
         }
     };

@@ -68,6 +68,12 @@ namespace Import
             int         chasedist;                                 // how close (if state==mc_chase)
         };
 
+        public __gc class Map;
+
+        public __delegate void LayerChangedHandler(Map* m,int lay,Rectangle r);
+        public __delegate void EntityChangedHandler(Map* m,int idx);
+        public __delegate void MapChangedHandler(Map* m);
+
         public __gc class Map
         {
             ::Map* map;
@@ -130,6 +136,10 @@ namespace Import
             // I'm returning an Array* and not an int __gc[,] because of a bug in the VC++.NET compiler.  Die MS, die.
             Array* Copy(int x,int y,int width,int height,int layer);    // copies tiles from the specified layer, and returns an int[,] containing them.
             void Paste(Array* src,int x,int y,int layer);               // pastes tiles from the passed int[,], on the specified layer, at the specified position
+
+            __event LayerChangedHandler*    LayerChanged;
+            __event EntityChangedHandler*   EntityChanged;
+            __event MapChangedHandler*      PropertiesChanged;
         };
     };
 };

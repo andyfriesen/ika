@@ -17,6 +17,12 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
 
+typedef unsigned int uint;
+
+#ifdef MSVC6
+#  define for if (0); else for
+#endif
+
 //! Everybody has their own Rect struct.  This is mine.
 struct Rect
 {
@@ -138,6 +144,10 @@ struct RGB
     
     RGB(const RGBA& c)
         : r(c.r),g(c.g),b(c.b)
+    {}
+
+    RGB(u8 R,u8 G,u8 B,u8 A=0)
+        : r(R),g(G),b(B)
     {}
 };
 

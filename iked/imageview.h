@@ -6,7 +6,7 @@
 #define IMAGEVIEW_H
 
 #include "types.h"
-#include <wx\wx.h>
+#include "wx\wx.h"
 #include "docview.h"
 
 class CMainWnd;

@@ -152,7 +152,7 @@
 				RelativePath=".\gfx_soft.h">
 			</File>
 			<File
-				RelativePath=".\primatives.h">
+				RelativePath="primitives.h">
 			</File>
 		</Filter>
 		<Filter

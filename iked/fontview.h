@@ -2,8 +2,8 @@
 #ifndef FONTVIEW_H
 #define FONTVIEW_H
 
-#include <wx\wx.h>
-#include <wx\colordlg.h>
+#include "wx\wx.h"
+#include "wx\colordlg.h"
 
 #include "types.h"
 #include "docview.h"

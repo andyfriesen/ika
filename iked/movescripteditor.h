@@ -2,7 +2,7 @@
 #ifndef MOVESCRIPTEDITOR_H
 #define MOVESCRIPTEDITOR_H
 
-#include <wx\wx.h>
+#include "wx\wx.h"
 #include "types.h"
 
 class CCHRfile;

@@ -2,7 +2,7 @@
 #ifndef ENTITYEDITOR_H
 #define ENTITYEDITOR_H
 
-#include <wx\wx.h>
+#include "wx\wx.h"
 
 class CMapView;
 class Map;

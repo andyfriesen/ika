@@ -14,6 +14,16 @@ BEGIN_EVENT_TABLE(CGraphFrame,wxGLCanvas)
     EVT_MOUSE_EVENTS(CGraphFrame::OnMouseEvent)
 END_EVENT_TABLE()
 
+static void SetTex(uint tex)
+{
+    static uint last=0;
+
+    if (tex==last)
+        return;
+    glBindTexture(GL_TEXTURE_2D,tex);
+    last=tex;
+}
+
 std::set<CGraphFrame*> CGraphFrame::pInstances;
 
 CGraphFrame::CGraphFrame(wxWindow* parent)
@@ -61,10 +71,6 @@ void CGraphFrame::OnSize(wxSizeEvent& event)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0f,w,h,0.0f,-1.0f,1.0f);
-/*
-    glMatrixMode(GL_MODELVIEW);
-    glLoadIdentity();
-*/
 
     glViewport(0,0,w,h);
 
@@ -89,7 +95,7 @@ void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
     h=h*nZoomscale/nZoom;
 
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
-    glBindTexture(GL_TEXTURE_2D,0);
+    SetTex(0);
 
     glBegin(GL_LINE_LOOP);
 
@@ -108,7 +114,7 @@ void CGraphFrame::RectFill(int x,int y,int w,int h,RGBA colour)
     w=w*nZoomscale/nZoom;
     h=h*nZoomscale/nZoom;
 
-    glBindTexture(GL_TEXTURE_2D,0);
+    SetTex(0);
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
 
     glBegin(GL_QUADS);
@@ -138,8 +144,11 @@ void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
     GLfloat nTexendx=1.0f*src.nWidth/src.nTexwidth;
     GLfloat nTexendy=1.0f*src.nHeight/src.nTexheight;
 
-    glBindTexture(GL_TEXTURE_2D,src.hTex);
-    glColor4f(1,1,1,1);
+    SetTex(src.hTex);
+    if (trans)
+        glEnable(GL_BLEND);
+    else
+        glDisable(GL_BLEND);
 
     glBegin(GL_QUADS);
 
@@ -206,7 +215,7 @@ void CImage::Update(const CPixelMatrix& src)
     CPixelMatrix tmp(src);
     tmp.Resize(nTexwidth,nTexheight);
 
-    glBindTexture(GL_TEXTURE_2D,hTex);
+    SetTex(hTex);
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)tmp.GetPixelData());
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);

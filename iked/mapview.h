@@ -16,7 +16,7 @@
 
 #include "types.h"
 #include <map>
-#include <wx\wx.h>
+#include "wx\wx.h"
 #include "docview.h"
 
 class Map;

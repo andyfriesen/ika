@@ -1,5 +1,5 @@
 //{{NO_DEPENDENCIES}}
-// Microsoft Developer Studio generated include file.
+// Microsoft Visual C++ generated include file.
 // Used by winmaped.rc
 //
 #define IDR_MAINMENU                    101
@@ -16,6 +16,7 @@
 #define IDR_TILESELMENU                 118
 #define IDR_CHREDMENU                   121
 #define IDB_BACKGROUND                  125
+#define ID_EDIT_PAD                     126
 #define ID_TILEANIMED                   1005
 #define IDC_SCROLLBAR1                  1006
 #define IDC_LUMINABAR                   1006
@@ -248,7 +249,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        126
+#define _APS_NEXT_RESOURCE_VALUE        127
 #define _APS_NEXT_COMMAND_VALUE         40071
 #define _APS_NEXT_CONTROL_VALUE         1093
 #define _APS_NEXT_SYMED_VALUE           101

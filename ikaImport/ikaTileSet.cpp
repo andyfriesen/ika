@@ -36,13 +36,25 @@ namespace Import
             changed=new std::set<int>;
         }
 
-        TileSet::~TileSet()
+        TileSet::~TileSet() { Dispose(); }
+
+        void TileSet::Dispose()
         {
+            delete vsp;
             delete changed;
+            vsp=0;
+            changed=0;
+
+            for (int i=0; i<bitmaps->Count; i++)
+                if (bitmaps->get_Item(i))
+                    __try_cast<IDisposable*>(bitmaps->get_Item(i))->Dispose();
         }
 
         void TileSet::Sync(int idx)
         {
+            if (idx>=bitmaps->Count)
+                idx=0;
+
             Bitmap* bmp=__try_cast<Bitmap*>(bitmaps->get_Item(idx));
             if (!bmp)   return;
 
@@ -90,6 +102,9 @@ namespace Import
 
         Bitmap* TileSet::get_Item(int idx)
         {
+            if (idx<0 || idx>=vsp->NumTiles())
+                return 0;
+
             // make sure the ArrayList is long enough
             while (bitmaps->Count<vsp->NumTiles())
                 bitmaps->Add(0);
@@ -140,6 +155,11 @@ namespace Import
         int TileSet::get_Height()
         {
             return vsp->Height();
+        }
+
+        int TileSet::get_NumTiles()
+        {
+            return vsp->NumTiles();
         }
 
         void TileSet::Save(String* filename)

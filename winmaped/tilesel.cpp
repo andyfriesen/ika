@@ -297,7 +297,13 @@ BOOL CTileSel::MainProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 animdlg.Execute(hInstance,hWnd,pVsp);
                 return false;
             }
-            
+
+        case ID_EDIT_PAD:
+            {
+                bPad=!bPad;
+                break;
+            }
+
             // popup menu
         case ID_INSERTTILE:
             pVsp->InsertTile(t);

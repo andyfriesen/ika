@@ -4,7 +4,7 @@
 
 #include "ImageView.h"
 
-#include <wx/event.h>
+#include "wx/event.h"
 
 namespace
 {
@@ -76,9 +76,11 @@ void CTileSetView::OnPaint()
 
 void CTileSetView::OnSize(wxSizeEvent& event)
 {
+    Log::Write("Size");
     pGraph->SetSize(GetClientSize());
 
     UpdateScrollbar();
+    Log::Write("endsize");
 }
 
 void CTileSetView::OnScroll(wxScrollWinEvent& event)
@@ -132,6 +134,7 @@ void CTileSetView::OnEditTile(wxCommandEvent& event)
 
 void CTileSetView::Render()
 {
+    Log::Write("   Render");
     int w,h;
     GetClientSize(&w,&h);
 
@@ -164,13 +167,9 @@ void CTileSetView::Render()
         }
     }
 
-    int x;
-#ifndef MSVC
-    int y;          // VC6 is retarded.  It doesn't handle for loop scoping right.
-#endif
-
-    TilePos(pTileset->CurTile(),x,y);
-    pGraph->Rect(x-1,y-1,tx+1,ty+1,RGBA(255,255,255));
+    int cx,cy;
+    TilePos(pTileset->CurTile(),cx,cy);
+    pGraph->Rect(cx-1,cy-1,tx+1,ty+1,RGBA(255,255,255));
 
     pGraph->ShowPage();
 }

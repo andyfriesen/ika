@@ -3,16 +3,19 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 
-using Import.ika;
+using ika=Import.ika;
 
 using rho;
 using rho.Controls;
+
+using Cataract.Video;
 
 namespace rho.MapEditor
 {
 
     class MapView : Form, IDocView
     {
+        #region EventProxy
         /// <summary>
         /// A little proxy class used so that I don't have to generate a billion little dork functions
         /// for setting each and every single map editor state there is.
@@ -28,9 +31,20 @@ namespace rho.MapEditor
             public void OnSelect(object o,EventArgs e)
             {
                 view.state=this.state;
+                Menu menu;
 
                 // Check the menuitem just selected.  Uncheck all others.
-                Menu menu=((MenuItem)o).Parent;
+                // This won't work if something other than a menuitem triggered the event, obviously
+                // so we just bomb out if the cast turns out to be invalid.
+                try
+                {
+                    menu=((MenuItem)o).Parent;
+                }
+                catch (InvalidCastException)
+                {
+                    return;
+                }
+
                 foreach (MenuItem m in menu.MenuItems)
                     m.Checked=(m==o);
             }
@@ -41,21 +55,24 @@ namespace rho.MapEditor
                 state=s;
             }
         }
+        #endregion
 
         TileSet tiles;
-        Map map;
+        ika.Map map;
         int xwin,ywin;
         MainForm parent;
         string filename;
 	
-        StatusBar  statusbar;
-        GraphView  graphview;
-        ListView   layercontrol;
-        MainMenu   menu;
-        protected MenuItem       statemenu;
+        StatusBar    statusbar;
+        ScrollWindow scrollwnd;
+        OpenGLGraph  gfx;
+        ListView     layercontrol;
+        MainMenu     menu;
+        protected MenuItem statemenu;
 
         State     state;
 
+        #region Menu initialization
         private void InitMenu()
         {
             menu=new MainMenu();
@@ -85,21 +102,31 @@ namespace rho.MapEditor
             Menu=menu;
         }
 
+        #endregion
+
+        #region Control initialization
         void InitControls()
         {
-            graphview=new GraphView();
-            graphview.Dock=DockStyle.Fill;
-            graphview.Redraw+=new PaintEventHandler(Redraw);
-            Controls.Add(graphview);
-            graphview.Show();
-		
-            graphview.OnHScroll+=new ScrollEventHandler(OnHScroll);
-            graphview.OnVScroll+=new ScrollEventHandler(OnVScroll);
+            scrollwnd=new ScrollWindow();
+            scrollwnd.Dock=DockStyle.Fill;
+            Controls.Add(scrollwnd);
 
-            graphview.MouseDown+=new MouseEventHandler(OnMouseDown);
-            graphview.MouseUp+=new MouseEventHandler(OnMouseUp);
-            graphview.MouseWheel+=new MouseEventHandler(OnMouseWheel);
-            graphview.MouseMove+=new MouseEventHandler(OnMouseMove);
+            gfx=new OpenGLGraph(scrollwnd.Width,scrollwnd.Height,32);
+            gfx.Dock=DockStyle.Fill;
+            gfx.Paint+=new PaintEventHandler(Redraw);
+            scrollwnd.Controls.Add(gfx);
+		
+            scrollwnd.OnHScroll  +=new ScrollEventHandler(OnHScroll);
+            scrollwnd.OnVScroll  +=new ScrollEventHandler(OnVScroll);
+
+            gfx.MouseDown        +=new MouseEventHandler(OnMouseDown);
+            gfx.MouseUp          +=new MouseEventHandler(OnMouseUp);
+            gfx.MouseWheel       +=new MouseEventHandler(OnMouseWheel);
+            gfx.MouseMove        +=new MouseEventHandler(OnMouseMove);
+
+            map.EntityChanged    +=new ika.EntityChangedHandler(EntityChanged);
+            map.LayerChanged     +=new ika.LayerChangedHandler(LayerChanged);
+            map.PropertiesChanged+=new ika.MapChangedHandler(PropertiesChanged);
 
             statusbar=new StatusBar();
             statusbar.Dock=DockStyle.Bottom;
@@ -119,32 +146,34 @@ namespace rho.MapEditor
 				
             Resize+=new EventHandler(OnResize);
         }
+        #endregion
 
-        // What a mess. -_-;
-        private void Init(MainForm p,Map m,TileSet t)
+        private void Init(MainForm p,ika.Map m,TileSet t)
         {
-            InitControls();
-            InitMenu();
-
             parent=p;
             map=m;
             tiles=t;
 		
             xwin=ywin=0;
 
-            state=State.States[0];  // pick a state.  Any state!
+            state=State.States[0];  // pick a state.  Any state!  It doesn't matter, as long as it's not null!
+
+            InitControls();
+            InitMenu();
+
         }
 
         public MapView(MainForm p)
         {
-            Map m=new Map(100,100);
+            ika.Map m=new ika.Map(100,100);
             m.AddLayer();
+            m.RenderString="";
+
+            Init(p,m,null);
+
             m.RenderString="1";
-
             TileSet t=new TileSet();
-            //t.AppendTile();
-
-            Init(p,m,t);
+            tiles=t;
 
             filename="";
             Text="Untitled map";
@@ -154,7 +183,7 @@ namespace rho.MapEditor
 	
         public MapView(MainForm p,string fn) : base()
         {
-            Map m=(Map)p.maps.Load(fn);
+            ika.Map m=(ika.Map)p.maps.Load(fn);
 
             string path=System.IO.Path.GetDirectoryName(fn);            // Get the directory that the map is in...
             TileSet t=(TileSet)p.tilesets.Load(path+"/"+m.TileSetName); // And read the VSP from that directory.
@@ -169,7 +198,7 @@ namespace rho.MapEditor
 	
         void UpdateScrollBars()
         {
-            graphview.AutoScrollMinSize=new Size(map.Width*tiles.Width,map.Height*tiles.Height);	
+            scrollwnd.AutoScrollMinSize=new Size(map.Width*tiles.Width,map.Height*tiles.Height);	
         }
 	
         void OnHScroll(object o,ScrollEventArgs e)
@@ -179,7 +208,7 @@ namespace rho.MapEditor
 				
             XWin=e.NewValue;
 		
-            graphview.Invalidate();
+            Redraw();
         }
 	
         void OnVScroll(object o,ScrollEventArgs e)
@@ -189,27 +218,40 @@ namespace rho.MapEditor
 		
             YWin=e.NewValue;
 
-            graphview.Invalidate();
+            Invalidate();
         }
 	
         void OnResize(object o,EventArgs e)
         {
             UpdateScrollBars();
-
-            // Need a way to find out how big the window was before now.
-            // Then we have at most two skinny rects that need to be redrawn.
-            //    graphview.Invalidate();
+            Invalidate();
         }
 	
+        void EntityChanged(ika.Map m,int idx)
+        {}
+
+        void LayerChanged(ika.Map m,int idx,Rectangle r)
+        {
+            r.X=(r.X-XWin)*tiles.Width;
+            r.Y=(r.Y-ywin)*tiles.Height;
+            r.Width*=tiles.Width;
+            r.Height*=tiles.Height;
+            Redraw();
+        }
+
+        void PropertiesChanged(ika.Map m)
+        {}
 
         void Redraw(object o,PaintEventArgs e)
         {
-            Console.WriteLine(e.ClipRectangle);
+            Redraw();
+        }
 
-            // Disable alpha blending for the first layer...
-            e.Graphics.CompositingMode=CompositingMode.SourceCopy;
-		
+        void Redraw()
+        {
             int n=0;
+
+            gfx.Clear();
 		
             foreach (char c in map.RenderString)
             {
@@ -217,28 +259,22 @@ namespace rho.MapEditor
 			
                 if (i>=0 && i<map.NumLayers)
                 {
-                    DrawLayer(i,e,n!=0);
-
-                    if (n==0)
-                        // ... and enable it for all subsequent layers
-                        e.Graphics.CompositingMode=CompositingMode.SourceOver;
-
+                    DrawLayer(i,n!=0);
                     n++;
                 }	
             }
+
+            gfx.ShowPage();
         }
-	
-        void DrawLayer(int layer,PaintEventArgs e,bool trans)
+
+	    // This is WAY too slow.  TODO: either OpenGL, or C++ (neither option is very attractive, sadly)
+        void DrawLayer(int layer,bool trans)
         {
-            LayerInfo li=map.get_LayerInfo(layer);
+            ika.LayerInfo li=map.get_LayerInfo(layer);
 
             // parallax
             int xw=(int)(1.0 * xwin * li.pmulx / li.pdivx);
             int yw=(int)(1.0 * ywin * li.pmuly / li.pdivy);				
-		
-            // Only drawing the specified rect.  Dirty rectangles are fast. :D
-            xw+=e.ClipRectangle.Left;
-            yw+=e.ClipRectangle.Top;
 		
             // first tile to be drawn
             int xtile= xw / tiles.Width;
@@ -249,8 +285,8 @@ namespace rho.MapEditor
             int yadj = - ( yw % tiles.Height );
 				
             // How many tiles to draw on each axis
-            int xlen = e.ClipRectangle.Width / tiles.Width  + 2;
-            int ylen = e.ClipRectangle.Height/ tiles.Height + 2;
+            int xlen = gfx.XRes / tiles.Width  + 2;
+            int ylen = gfx.YRes / tiles.Height + 2;
 		
             // Clip
             if (xtile+xlen>map.Width)		xlen=map.Width-xtile;
@@ -258,8 +294,11 @@ namespace rho.MapEditor
 		
             // now we loop, and draw
             int xt=xtile;	// need this later
+            
+            int sy=yadj;    // Screen Y.  The spot where the next tile is drawn.
             for (int y=0; y<ylen; y++)
             {
+                int sx=xadj;    // Screen X.
                 for (int x=0; x<xlen; x++)
                 {
                     int t=map.get_Tile(xtile,ytile,layer);
@@ -267,13 +306,19 @@ namespace rho.MapEditor
                     if (trans && t==0)
                     {
                         xtile++;
+                        sx+=tiles.Height;
                         continue;
                     }
 					
-                    e.Graphics.DrawImage(tiles[t], x*tiles.Width+xadj, y*tiles.Height+yadj);
+                    gfx.Blit(tiles.Images[t], sx,sy,trans);
 				
+                    sx+=tiles.Width;
                     xtile++;
                 }
+                
+                sx=xadj;
+                sy+=tiles.Height;
+
                 ytile++;
                 xtile=xt;
             }
@@ -299,8 +344,8 @@ namespace rho.MapEditor
             {
                 xwin=value;
                 if (xwin<0) xwin=0;
-                if (xwin>map.Width*tiles.Width-graphview.ClientSize.Width)
-                    xwin=map.Width*tiles.Width-graphview.ClientSize.Width;
+                if (xwin>map.Width*tiles.Width-gfx.XRes)
+                    xwin=map.Width*tiles.Width-gfx.XRes;
             }
         }
 
@@ -311,11 +356,12 @@ namespace rho.MapEditor
             {
                 ywin=value;
                 if (ywin<0) ywin=0;
-                if (ywin>map.Width*tiles.Width-graphview.ClientSize.Width)
-                    ywin=map.Width*tiles.Width-graphview.ClientSize.Width;        }
+                if (ywin>map.Height*tiles.Height-gfx.YRes)
+                    ywin=map.Height*tiles.Height-gfx.YRes;
+            }
         }
 
-        public Map Map
+        public ika.Map Map
         {
             get {   return map; }
         }
@@ -334,9 +380,9 @@ namespace rho.MapEditor
         {
             // Possible performance issue: we create a new LayerInstance info every time we call this.
             // Deal with it later.
-            LayerInfo li=map.get_LayerInfo(layer);
-            x-=(XWin*li.pmulx/li.pdivx);
-            y-=(YWin*li.pmuly/li.pdivy);
+            ika.LayerInfo li=map.get_LayerInfo(layer);
+            x+=(XWin*li.pmulx/li.pdivx);
+            y+=(YWin*li.pmuly/li.pdivy);
 
             x/=tiles.Width;
             y/=tiles.Height;
@@ -344,8 +390,8 @@ namespace rho.MapEditor
 
         public void GetTileCoords(ref int x,ref int y)
         {
-            x-=XWin;
-            y-=YWin;
+            x+=XWin;
+            y+=YWin;
 
             x/=tiles.Width;
             y/=tiles.Height;
@@ -358,7 +404,7 @@ namespace rho.MapEditor
             x-=XWin;
             y-=YWin;
 
-            LayerInfo li=map.get_LayerInfo(layer);
+            ika.LayerInfo li=map.get_LayerInfo(layer);
             if (li==null)
                 return;
 

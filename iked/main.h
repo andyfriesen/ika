@@ -6,9 +6,9 @@
 #define MAIN_H
 
 #include "types.h"
-#include <wx/wx.h>
-#include <wx/toolbar.h>
-#include <wx/bitmap.h>
+#include "wx/wx.h"
+#include "wx/toolbar.h"
+#include "wx/bitmap.h"
 #include <set>
 
 // Resource objects

@@ -1,5 +1,6 @@
 //! class for a ref counting resource holding thingie
 
+using System;
 using System.Collections;
 
 namespace rho
@@ -50,7 +51,10 @@ namespace rho
                 {
                     r.refcount--;
                     if (r.refcount==0)
+                    {
+                        ((IDisposable)o).Dispose();
                         resources.Remove(r);	// now the GCer can clean up at its leisure.
+                    }
 				
                     return;
                 }

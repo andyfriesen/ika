@@ -1,8 +1,8 @@
 
 #pragma warning (disable:4786)
 
-#include <wx/wx.h>
-#include <wx/checklst.h>
+#include "wx/wx.h"
+#include "wx/checklst.h"
 #include <vector>
 
 class wxListEvent;

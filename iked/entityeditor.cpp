@@ -4,7 +4,7 @@
 #include "entityeditor.h"
 #include "map.h"
 
-//#include <wx\resource.h>
+//#include "wx\resource.h"
 
 BEGIN_EVENT_TABLE(CEntityEditor,wxDialog)
     EVT_LISTBOX(id_entlist,CEntityEditor::OnSelectEntity)

@@ -14,10 +14,10 @@
 #include <gl\glu.h>
 
 #include <list>
-#include <wx\laywin.h>
-#include <wx\sashwin.h>
-#include <wx\checklst.h>
-#include <wx\minifram.h>
+#include "wx\laywin.h"
+#include "wx\sashwin.h"
+#include "wx\checklst.h"
+#include "wx\minifram.h"
 
 /*
 
@@ -303,11 +303,15 @@ void CMapView::OnSize(wxSizeEvent& event)
     wxLayoutAlgorithm layout;
     layout.LayoutWindow(this,pRightbar);
 
-    UpdateScrollbars();
+    if (pMap)
+        UpdateScrollbars();
 }
 
 void CMapView::OnScroll(wxScrollWinEvent& event)
 {
+    if (!pMap)
+        return;
+
     switch (event.GetOrientation())
     {
     case wxHORIZONTAL:  xwin=event.GetPosition();   break;
@@ -328,6 +332,7 @@ void CMapView::OnClose()
     for (std::vector<CSpriteSet*>::iterator i=pSprite.begin(); i!=pSprite.end(); i++)
         pParentwnd->spriteset.Release(*i);
     
+    pSprite.clear();
     pMap=0;
     pTileset=0;
 

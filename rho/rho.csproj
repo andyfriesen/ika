@@ -15,7 +15,7 @@
                 DefaultHTMLPageLayout = "Grid"
                 DefaultTargetSchema = "IE50"
                 DelaySign = "false"
-                OutputType = "Exe"
+                OutputType = "WinExe"
                 RootNamespace = "rho"
                 StartupObject = ""
             >
@@ -92,6 +92,16 @@
                     Project = "{E522652F-513B-4694-9518-8760F2F17F4C}"
                     Package = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
                 />
+                <Reference
+                    Name = "Cataract"
+                    AssemblyName = "Cataract"
+                    HintPath = "..\..\src\corncob\Cataract\bin\Release\Cataract.dll"
+                />
+                <Reference
+                    Name = "csgl"
+                    AssemblyName = "csgl"
+                    HintPath = "..\..\src\csgl\lib\csgl.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -136,11 +146,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Controls\GraphView.cs"
-                    SubType = "Component"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Controls\ScrollWindow.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
@@ -164,6 +169,11 @@
                     RelPath = "MapEditor\MapView.resx"
                     DependentUpon = "MapView.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MapEditor\TileSet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
                     RelPath = "MapEditor\TileSetState.cs"

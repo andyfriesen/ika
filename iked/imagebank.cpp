@@ -22,15 +22,15 @@ void CImageBank::SyncAll()
 
     bitmaps.resize(Count());
 
-    for (int i=0; i<Count(); i++)
+/*    for (int i=0; i<Count(); i++)
     {
         bitmaps[i]=new CImage(Get(i));
-    }
+    }*/
 }
 
 void CImageBank::FreeBitmaps()
 {
-    for (int i=0; i<bitmaps.size(); i++)
+    for (uint i=0; i<bitmaps.size(); i++)
     {
         delete bitmaps[i];
     }
@@ -55,7 +55,11 @@ CImage& CImageBank::GetImage(int idx)
     }
 
     if (idx<0 || idx>=Count())
-        return *bitmaps[0];
+        idx=0;
+
+    // lazy allocation
+    if (bitmaps[idx]==0)
+        bitmaps[idx]=new CImage(Get(idx));
 
     return *bitmaps[idx];
 }

@@ -2,13 +2,14 @@
 // At least these classes are simple.
 namespace rho
 {
-    using Import.ika;
+    using MapEditor;
+    using ika=Import.ika;
 
     class TileSetController : ResourceController
     {
         public override object Load(string fname)
         {
-            return TileSet.Load(fname);
+            return new TileSet(ika.TileSet.Load(fname));
         }
     }
 
@@ -16,7 +17,7 @@ namespace rho
     {
         public override object Load(string fname)
         {
-            return Map.Load(fname);
+            return ika.Map.Load(fname);
         }
     }
 

@@ -21,7 +21,7 @@ namespace Import
         using System::Reflection::DefaultMemberAttribute;
 
         [DefaultMember("Item")]
-        public __gc class TileSet
+        public __gc class TileSet : public System::IDisposable
         {
             VSP* vsp;
 
@@ -49,11 +49,14 @@ namespace Import
             TileSet();
             ~TileSet();
 
+            void Dispose();
+
             __property Bitmap* get_Item(int idx);
             __property void    set_Item(int idx,Bitmap* bmp);
 
             __property int get_Width();
             __property int get_Height();
+            __property int get_NumTiles();
 
             void Save(String* filename);
         };

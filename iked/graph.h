@@ -8,8 +8,8 @@
 #include "types.h"
 #include "pixel_matrix.h"
 #include <set>
-#include <wx\wx.h>
-#include <wx\glcanvas.h>
+#include "wx/wx.h"
+#include "wx/glcanvas.h"
 
 // win32 is retarded -- andy
 #ifdef WIN32
@@ -64,7 +64,7 @@ public:
 
 class CImage
 {
-    friend CGraphFrame; // :x
+    friend CGraphFrame;
 protected:
     GLuint hTex;
     int nWidth,nHeight;

@@ -3,13 +3,13 @@
 #define CODEVIEW_H
 
 #include "types.h"
-#include <wx\wx.h>
-#include <wx\colordlg.h>
-#include <wx\fontdlg.h>
+#include "wx\wx.h"
+#include "wx\colordlg.h"
+#include "wx\fontdlg.h"
 #ifdef WX232
-#include <wx\fdrepdlg.h>
+#include "wx\fdrepdlg.h"
 #endif
-#include <wx\stc\stc.h>
+#include "wx\stc\stc.h"
 #include "docview.h"
 
 class CMainWnd;
