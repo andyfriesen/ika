@@ -34,3 +34,13 @@ int CSpriteSet::Count() const
 {
     return pCHR->NumFrames();
 }
+
+int CSpriteSet::Width() const
+{
+    return pCHR?pCHR->Width():0;
+}
+
+int CSpriteSet::Height() const
+{
+    return pCHR?pCHR->Height():0;
+}
