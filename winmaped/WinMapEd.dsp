@@ -350,14 +350,6 @@ SOURCE=..\common\types.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\common\v_config.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\v_config.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\common\vector.h
 # End Source File
 # Begin Source File
