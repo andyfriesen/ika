@@ -357,6 +357,49 @@
 				RelativePath="opengl\Image.h">
 			</File>
 		</Filter>
+		<Filter
+			Name="Soft32"
+			Filter="">
+			<File
+				RelativePath="soft32\Driver.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="soft32\Driver.h">
+			</File>
+			<File
+				RelativePath="soft32\Image.cpp">
+				<FileConfiguration
+					Name="Release|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Debug|Win32">
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)/$(InputName)1.obj"/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="soft32\Image.h">
+			</File>
+			<File
+				RelativePath="soft32\Misc.h">
+			</File>
+		</Filter>
 	</Files>
 	<Globals>
 	</Globals>

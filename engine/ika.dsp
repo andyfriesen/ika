@@ -43,8 +43,8 @@ RSC=rc.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /GX /O2 /D "WIN32" /D "NDEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /c
-# ADD CPP /nologo /W3 /GX /O2 /I "..\common" /I "$(PYTHON)\include" /I "..\3rdparty" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSVC" /D "INLINE_ASM" /FD /c
-# SUBTRACT CPP /YX
+# ADD CPP /nologo /MD /W3 /GX /O2 /I ".." /I "..\3rdparty" /I "..\common" /I "..\3rdparty\include" /I "..\3rdparty\lib" /I "..\3rdparty\python" /I "G:\ika\src\engine" /D "NDEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSVC" /D "INLINE_ASM" /D "MSVC6" /D "OPENGL_VIDEO" /FD /c
+# SUBTRACT CPP /X /YX
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x1009 /d "NDEBUG"
@@ -54,7 +54,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386
-# ADD LINK32 dinput.lib dxguid.lib winmm.lib libpng.lib zlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /machine:I386 /libpath:"..\common\\" /libpath:"$(PYTHON)\libs" /libpath:"..\3rdparty"
+# ADD LINK32 winmm.lib G:\Ika\src\3rdparty\zlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib corona.lib sdl.lib sdlmain.lib audiere.lib opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /out:"G:\Ika\Ika.exe" /libpath:"..\common\\" /libpath:"$(PYTHON)\libs" /libpath:"..\3rdparty"
+# SUBTRACT LINK32 /nodefaultlib
 
 !ELSEIF  "$(CFG)" == "ika - Win32 Debug"
 
@@ -70,7 +71,7 @@ LINK32=link.exe
 # PROP Ignore_Export_Lib 0
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /W3 /Gm /GX /ZI /Od /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "_MBCS" /YX /FD /GZ /c
-# ADD CPP /nologo /W3 /Gm /GX /ZI /Od /I "..\common" /I "..\python" /I "$(PYTHON)\include" /I "..\3rdparty" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSVC" /D "INLINE_ASM" /FD /GZ /c
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I ".." /I "..\3rdparty" /I "..\common" /I "..\3rdparty\include" /I "..\3rdparty\lib" /I "..\3rdparty\python" /I "G:\ika\src\engine" /D "_DEBUG" /D "WIN32" /D "_WINDOWS" /D "_MBCS" /D "MSVC" /D "INLINE_ASM" /D "MSVC6" /D "SOFT32_VIDEO" /FD /GZ /c
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /win32
 # ADD BASE RSC /l 0x1009 /d "_DEBUG"
@@ -80,8 +81,8 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept
-# ADD LINK32 dinput.lib dxguid.lib winmm.lib libpng.lib zlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /nologo /subsystem:windows /debug /machine:I386 /pdbtype:sept /libpath:"..\common\\" /libpath:"$(PYTHON)\libs" /libpath:"..\3rdparty"
-# SUBTRACT LINK32 /pdb:none
+# ADD LINK32 winmm.lib G:\Ika\src\3rdparty\zlib.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib corona.lib sdl.lib sdlmain.lib audiere.lib opengl32.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /out:"G:\ika\ikadebug.exe" /pdbtype:sept /libpath:"..\common\\" /libpath:"$(PYTHON)\libs" /libpath:"..\3rdparty"
+# SUBTRACT LINK32 /pdb:none /nodefaultlib
 
 !ENDIF 
 
@@ -103,6 +104,14 @@ SOURCE=.\entity.cpp
 # Begin Source File
 
 SOURCE=.\font.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\FPSCounter.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\graph.cpp
 # End Source File
 # Begin Source File
 
@@ -132,10 +141,6 @@ SOURCE=.\tileset.cpp
 
 SOURCE=.\timer.cpp
 # End Source File
-# Begin Source File
-
-SOURCE=.\win32.cpp
-# End Source File
 # End Group
 # Begin Group "Header Files"
 
@@ -146,11 +151,31 @@ SOURCE=.\benchmark.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\video\Driver.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\entity.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\font.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\FPSCounter.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\graph.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\hooklist.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\video\Image.h
 # End Source File
 # Begin Source File
 
@@ -180,10 +205,6 @@ SOURCE=.\tileset.h
 
 SOURCE=.\timer.h
 # End Source File
-# Begin Source File
-
-SOURCE=.\win32.h
-# End Source File
 # End Group
 # Begin Group "Resource Files"
 
@@ -200,6 +221,18 @@ SOURCE=.\icon1.ico
 # Begin Group "Common"
 
 # PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=..\common\Canvas.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\Canvas.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\CanvasBlitter.h
+# End Source File
 # Begin Source File
 
 SOURCE=..\common\chr.cpp
@@ -234,22 +267,6 @@ SOURCE=..\common\fontfile.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\common\graph.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\graph.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\importpng.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\importpng.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\common\log.cpp
 # End Source File
 # Begin Source File
@@ -266,23 +283,19 @@ SOURCE=..\common\map.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\mem.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\mem.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\common\misc.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=..\common\misc.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\pixel_matrix.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\pixel_matrix.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\pixel_matrix_blitter.h
 # End Source File
 # Begin Source File
 
@@ -302,6 +315,10 @@ SOURCE=..\common\vergepal.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\vergepal.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\common\vsp.cpp
 # End Source File
 # Begin Source File
@@ -314,39 +331,183 @@ SOURCE=..\common\vsp.h
 # PROP Default_Filter "py*.*"
 # Begin Source File
 
-SOURCE=.\py_entity.h
+SOURCE=.\script\CanvasObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\py_error.h
+SOURCE=.\script\ControlObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\py_font.h
+SOURCE=.\script\EntityObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\py_image.h
+SOURCE=.\script\ErrorObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\py_input.h
+SOURCE=.\script\FontObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\py_map.h
+SOURCE=.\script\ImageObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\py_music.h
+SOURCE=.\script\InputObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\py_sound.h
+SOURCE=.\script\MapObject.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=.\python_stdlib.h
+SOURCE=.\script\ModuleFuncs.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\script\ObjectDefs.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\script\SoundObject.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\script\VideoObject.cpp
+# End Source File
+# End Group
+# Begin Group "GL"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\opengl\Driver.cpp
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\opengl"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\opengl"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\opengl\Driver.h
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\opengl"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\opengl"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\opengl\Image.cpp
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\opengl"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\opengl"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\opengl\Image.h
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\opengl"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\opengl"
+
+!ENDIF 
+
+# End Source File
+# End Group
+# Begin Group "Soft32"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\soft32\Driver.cpp
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\soft32"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\soft32"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\soft32\Driver.h
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\soft32"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\soft32"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\soft32\Image.cpp
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\soft32"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\soft32"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\soft32\Image.h
+
+!IF  "$(CFG)" == "ika - Win32 Release"
+
+# PROP Intermediate_Dir "Release\soft32"
+
+!ELSEIF  "$(CFG)" == "ika - Win32 Debug"
+
+# PROP Intermediate_Dir "Debug\soft32"
+
+!ENDIF 
+
+# End Source File
+# Begin Source File
+
+SOURCE=.\soft32\Misc.h
 # End Source File
 # End Group
 # End Target

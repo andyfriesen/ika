@@ -5,6 +5,7 @@
 #include "timer.h"
 
 #include "opengl/Driver.h"
+#include "soft32/Driver.h"
 
 void CEngine::Sys_Error(const char* errmsg)
 {
@@ -145,8 +146,13 @@ void CEngine::Startup()
     // Now the tricky stuff.
     try
     {
+#ifdef _DEBUG
+        if (cfg.Int("log"))
+            Log::Init("ikadebug.log");
+#else
         if (cfg.Int("log"))
             Log::Init("ika.log");
+#endif
         
         Log::Write("ika " VERSION " startup");
         Log::Write("Built on " __DATE__);
@@ -160,7 +166,11 @@ void CEngine::Startup()
             );
           
         Log::Write("Initializing Video");
+#if 1 || defined OPENGL_VIDEO
         video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+#else
+        video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+#endif
         SDL_WM_SetCaption("ika "VERSION, 0);
 
         if (!cfg.Int("nosound"))
@@ -274,7 +284,7 @@ void CEngine::RenderEntities()
         CSprite& s = *e.pSprite;
         
         int frame = e.nSpecframe ? e.nSpecframe : e.nCurframe;
-        
+       
         video->BlitImage(s.GetFrame(frame), e.x - xwin - s.nHotx, e.y - ywin - s.nHoty);
     }
 }
