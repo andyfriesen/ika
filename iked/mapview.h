@@ -37,6 +37,10 @@ class CMapView : public IDocView
         id_zoomin=100,
         id_zoomout,
         id_zoomnormal,
+        id_zoomin2x,
+        id_zoomin4x,
+        id_zoomout2x,
+        id_zoomout4x,
 
         id_filesave,
         id_filesaveas,
@@ -94,6 +98,10 @@ public:
 
     void OnZoomIn(wxCommandEvent& event);
     void OnZoomOut(wxCommandEvent& event);
+    void OnZoomIn2x(wxCommandEvent& event);
+    void OnZoomIn4x(wxCommandEvent& event);
+    void OnZoomOut2x(wxCommandEvent& event);
+    void OnZoomOut4x(wxCommandEvent& event);
     void OnZoomNormal(wxCommandEvent& event);
 
     void OnClose();
@@ -126,6 +134,7 @@ private:
 
     void Render();
     void RenderLayer(int lay);
+    void Zoom(const int& nZoomscale);
 
     bool Save(const char* fname);
 };

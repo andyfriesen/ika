@@ -105,6 +105,11 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_MENU(CMapView::id_zoomout,CMapView::OnZoomOut)
     EVT_MENU(CMapView::id_zoomnormal,CMapView::OnZoomNormal)
 
+    EVT_MENU(CMapView::id_zoomin2x,CMapView::OnZoomIn2x)
+    EVT_MENU(CMapView::id_zoomin4x,CMapView::OnZoomIn4x)
+    EVT_MENU(CMapView::id_zoomout2x,CMapView::OnZoomOut2x)
+    EVT_MENU(CMapView::id_zoomout4x,CMapView::OnZoomOut4x)
+
     EVT_MENU(CMapView::id_filesave,CMapView::OnSave)
     EVT_MENU(CMapView::id_filesaveas,CMapView::OnSaveAs)
     EVT_MENU(CMapView::id_fileclose,CMapView::OnClose)
@@ -216,9 +221,19 @@ void CMapView::InitMenu()
     menubar->Append(filemenu,"&File");
 
     wxMenu* viewmenu=new wxMenu;
+    
+    viewmenu->Append(id_zoomnormal,"Zoom %&100","");
+    viewmenu->AppendSeparator();
+    
     viewmenu->Append(id_zoomin,"Zoom &In\t+","");
     viewmenu->Append(id_zoomout,"Zoom &Out\t-","");
-    viewmenu->Append(id_zoomnormal,"Zoom %&100","");
+
+    viewmenu->Append(id_zoomin2x,"Zoom In 2x","");
+    viewmenu->Append(id_zoomout2x,"Zoom Out 2x","");
+
+    viewmenu->Append(id_zoomin4x,"Zoom In 4x","");
+    viewmenu->Append(id_zoomout4x,"Zoom Out 4x","");
+
     menubar->Append(viewmenu,"&View");
 
     SetMenuBar(menubar);
@@ -310,6 +325,24 @@ void CMapView::OnZoomOut(wxCommandEvent& event)
     UpdateScrollbars();
     Render();   pGraph->ShowPage();
 }
+
+void CMapView::Zoom(const int& nZoomscale)
+{
+    int nTest=nZoom;
+    nTest+=nZoomscale;
+
+    if (nTest>32)   nTest=32;
+    if (nTest<=0)   nTest=1;
+
+    nZoom=nTest;
+    UpdateScrollbars();
+    Render();   pGraph->ShowPage();
+}
+
+void CMapView::OnZoomIn2x(wxCommandEvent& event) { Zoom(2); }
+void CMapView::OnZoomIn4x(wxCommandEvent& event) { Zoom(4); }
+void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
+void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
 
 void CMapView::OnZoomNormal(wxCommandEvent& event)
 {
