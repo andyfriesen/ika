@@ -127,8 +127,8 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     pMap=pParentwnd->map.Load(fname);                                   // load the map
     pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());                  // load the VSP
 
-    pRightbar->SetScrollbar(wxVERTICAL,0,100,pMap->Height()*pTileset->Height());
-    pRightbar->SetScrollbar(wxHORIZONTAL,0,100,pMap->Width()*pTileset->Width());
+    pRightbar->SetScrollbar(wxVERTICAL,0,w,pMap->Height()*pTileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL,0,h,pMap->Width()*pTileset->Width());
     xwin=ywin=0;
 
     InitLayerVisibilityControl();
@@ -180,10 +180,13 @@ void CMapView::OnSize(wxSizeEvent& event)
 {
     wxLayoutAlgorithm layout;
     layout.LayoutWindow(this,pRightbar);
-    
+
+    // FIXME: w is coming out too big; you can scroll right past the end of the map.
     int w,h;
     pRightbar->GetClientSize(&w,&h);
-    pGraph->SetSize(w,h);
+
+    pRightbar->SetScrollbar(wxVERTICAL,xwin,w,pMap->Height()*pTileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL,ywin,h,pMap->Width()*pTileset->Width());  
 }
 
 void CMapView::OnScroll(wxScrollWinEvent& event)
