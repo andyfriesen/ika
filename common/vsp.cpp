@@ -221,7 +221,7 @@ int VSP::Save(const char* fname)
     f.Write(sDesc, 64);			// description. (authoring info, whatever)
     
     z_stream stream;
-    int nDatasize = tiles.size()*_width * _height * bpp;
+    int nDatasize = tiles.size() * _width * _height * bpp;
     
     cb = new u8[(nDatasize * 11)/10 + 12];
     

@@ -6,6 +6,8 @@
 #include "rle.h"
 #include "misc.h"
 
+//#define USE_XML_GOODNESS
+
 #ifdef USE_XML_GOODNESS
 #   include "compression.h"
 #   include "base64.h"
@@ -200,36 +202,29 @@ bool CCHRfile::Load(const char* fname)
                 nHotw = atoi(hsNode->getAttribute("width").getString().c_str());
                 nHoth = atoi(hsNode->getAttribute("height").getString().c_str());
             }
-
-#ifdef DEBUG
-            {
-                // I assume that vector stores bytes consecutively
-                // so as to avoid copying things around, or changing
-                // the base64 interface.
-                // Hopefully, this assertion will never be tested.
-                std::vector<u8> v(2);
-                assert((v.begin() + 1) - v.begin() == sizeof(u8));
-            }
-#endif
             
             {
                 XMLNodePtr dataNode = framesNode->getChild("data");
                 if (!dataNode.get())
                     throw "<data> tag not found.";
 
+                std::string compressionScheme = dataNode->getAttribute("format");
+                if (Lower(compressionScheme) != "zlib")
+                    throw va("Unsupported data format %s", compressionScheme.c_str());
+
                 XMLNodePtr n(dataNode->getChildren().front());
                 if (!n.get() || n->getType() != xml_nt_cdata)
                     throw va("No pixel data!");
 
-                std::string s = n->getCdata();
-                // This line won't work if vector doesn't store the bytes consecutively.
+                std::string cdata = n->getCdata();
 
-                std::vector<u8> compressed;
-                base64::decode(std::vector<u8>(&*s.begin(), &*s.end()), compressed); // compressed binary data
+                ScopedPtr<u8> compressed(new u8[cdata.length()]); // the actual number should be 3/4ths as long as cdata.length, but I don't see a reason to take chances
 
-                ScopedPtr<u8> pixels(new u8[nWidth * nHeight * frameCount]);
+                int compressedSize = base64::decode(cdata, compressed.get(), cdata.length());
 
-                Compression::decompress(&*compressed.begin(), compressed.size(), pixels.get(), nWidth * nHeight * frameCount);
+                ScopedPtr<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
+
+                Compression::decompress(compressed.get(), compressedSize, pixels.get(), nWidth * nHeight * frameCount * sizeof(RGBA));
 
                 frame.clear();
                 frame.reserve(frameCount);
@@ -441,14 +436,15 @@ void CCHRfile::Save(const char* fname)
 
                 ScopedPtr<u8> uncompressed(new u8[uncompressedBlockSize]);
                 ScopedPtr<u8> compressed(new u8[compressedBlockSize]);
-                std::vector<u8> d64; // base64 encoded data
 
                 // pack the uncompressed data into one big block
-                RGBA* p = (RGBA*)uncompressed.get();
+                RGBA* dest = reinterpret_cast<RGBA*>(uncompressed.get());
                 for (int i = 0; i < frame.size(); i++)
                 {
-                    std::copy(frame[i].GetPixels(), frame[i].GetPixels() + nWidth * nHeight, p);
-                    p += nWidth * nHeight;
+                    RGBA* src = frame[i].GetPixels();
+                    memcpy(dest, src, nWidth * nHeight * sizeof(RGBA));
+                    
+                    dest += nWidth * nHeight;
                 }
 
                 // compress
@@ -457,14 +453,12 @@ void CCHRfile::Save(const char* fname)
                     compressed.get(), compressedBlockSize);
 
                 // base64
-                base64::encode(
-                    std::vector<u8>(compressed.get(), compressed.get() + compressSize), // ugh
-                    d64);
-                d64.push_back(0); // null termination for ASCIIZ
+                std::string d64 = base64::encode(compressed.get(), compressSize);
 
                 XMLNodePtr dataNode(new XMLNode(context));
                 dataNode->setName("data");
-                dataNode->addChild(CData(context, (const char*)&*d64.begin()));
+                dataNode->setAttribute("format", "zlib");
+                dataNode->addChild(CData(context, d64.c_str()));
                 
                 framesNode->addChild(dataNode);
             }

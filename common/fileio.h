@@ -49,6 +49,7 @@ public:
     void ReadString(char* dest);
     void ReadToken(char* dest);
     void ReadCompressed(void* dest, int numbytes);
+    std::string ReadAll();
     
     void Write(const void* source, int numbytes);
     void Write(const char* source);

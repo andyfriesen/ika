@@ -186,6 +186,14 @@ void File::ReadString(char* dest)
     dest[nLen]=0;
 }
 
+void File::ReadToken(char* dest)
+{
+    if (!dest)				return;
+    if (mode!=open_read)	return;
+    
+    fscanf(f, "%s", dest);
+}
+
 void File::ReadCompressed(void* dest, int numbytes)
 {
     z_stream stream;
@@ -213,12 +221,17 @@ void File::ReadCompressed(void* dest, int numbytes)
     delete[] cb;
 }
 
-void File::ReadToken(char* dest)
+std::string File::ReadAll()
 {
-    if (!dest)				return;
-    if (mode!=open_read)	return;
-    
-    fscanf(f, "%s", dest);
+    int size = Size();
+    char* c = new char[size + 1];
+    c[size] = 0;
+    Seek(0);
+    Read(c, size);
+
+    std::string s(c);
+    delete[] c;
+    return s;
 }
 
 void File::Write(const void* source, int numbytes)

@@ -46,8 +46,9 @@ int sgn(int x);
 int Random(int min, int max);
 char* va(char* format, ...);
 
-const string Trim(string s);
+const string Trim(const std::string& s);
 
+string Lower(const string& s);
 string Upper(const string& s);
 
 string ToString(int i);

@@ -55,36 +55,36 @@ int Random(int min, int max)
 #include <string>
 #include <sstream>
 
-const string Trim(string s)
+const string Trim(const std::string& s)
 {
-    for (unsigned int i = 0; i < s.length(); i++)
-    {
-        if (s[i]!=' ')
-        {
-            s = s.substr(i);
-            break;
-        }
-    }
+    uint start = 0, end = s.length() - 1;
 
-    for (unsigned int j = s.length()-1; j; j--)
-    {
-        if (s[j]!=' ')
-        {
-            s = s.substr(0, j + 1);
-            break;
-        }
-    }
+    while (s[start] == ' ' && start < s.length()) start++;
+    while (s[end] == ' ' && end > 0) end--;
+    if (start >= end) 
+        return "";
+    else
+        return s.substr(start, start - end);
+}
 
-    return s;
+string Lower(const string& s)
+{
+    string t(s);
+
+    for (uint i = 0; i < t.length(); i++)
+        if (t[i] >= 'A' && t[i] <= 'Z')
+            t[i] ^= 32;
+    
+    return t;
 }
 
 string Upper(const string& s)
 {
-    string t = s;
+    string t(s);
 
-    for (unsigned int i = 0; i < s.length(); i++)
-        if (t[i]>='a' && t[i]<='z')
-            t[i]^=32;
+    for (uint i = 0; i < t.length(); i++)
+        if (t[i] >= 'a' && t[i] <= 'z')
+            t[i] ^= 32;
 
     return t;
 }

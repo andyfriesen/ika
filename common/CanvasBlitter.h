@@ -178,11 +178,11 @@ class CBlitter : public Blender
             ylen = rClip.bottom - y;
     }
 
-    static inline void keepinrange(int& i, int min, int max)
+    /*static inline void keepinrange(int& i, int min, int max)
     {
         if (i < min) i = min;
         if (i > max) i = max;
-    }
+    }*/
 
 public:
 
@@ -281,7 +281,32 @@ public:
         }
     }
 
-    // ------------------------------------ Primatives ------------------------------------
+    
+    static void WrapBlit(Canvas& src, Canvas& dest, int startX, int startY, int w, int h, int offsetX, int offsetY)
+    {
+        Rect oldClipRect = dest.GetClipRect();
+        dest.SetClipRect(Rect(startX, startY, startX + w, startY + h));
+
+        int curX = startX % src.Width() + offsetX;
+        int curY = startY % src.Height() + offsetY;
+        int lenX = w % src.Width();
+        int lenY = h % src.Height();
+
+        for (int y = 0; y < lenY; y++)
+        {
+            for (int x = 0; x < lenX; x++)
+            {
+                Blit(src, dest, curX, curY);
+                curX += src.Width();
+            }
+            curX -= src.Width() * lenX;
+            curY += src.Height();
+        }
+
+        dest.SetClipRect(oldClipRect);
+    }
+
+    // ------------------------------------ Primitives ------------------------------------
 
     //! Draws a dot on the image.
     static inline void SetPixel(Canvas& img, int x, int y, RGBA colour)
@@ -302,8 +327,10 @@ public:
         if (x1 > x2)
             swap(x1, x2);      
 
-        keepinrange(x1, r.left, r.right - 1);
-        keepinrange(x2, r.left, r.right - 1);
+        //keepinrange(x1, r.left, r.right - 1);
+        //keepinrange(x2, r.left, r.right - 1);
+        x1 = clamp(x1, r.left, r.right - 1);
+        x2 = clamp(x2, r.left, r.right - 1);
         
         RGBA* p = img.GetPixels()+(y * img.Width())+x1;
         
@@ -327,8 +354,10 @@ public:
         if (y1 > y2)
             swap(y1, y2);
         
-        keepinrange(y1, r.top, r.bottom - 1);
-        keepinrange(y2, r.top, r.bottom - 1);
+        //keepinrange(y1, r.top, r.bottom - 1);
+        //keepinrange(y2, r.top, r.bottom - 1);
+        y1 = clamp(y1, r.top, r.bottom - 1);
+        y2 = clamp(y2, r.top, r.bottom - 1);
         
         RGBA* p = img.GetPixels()+(y1 * img.Width())+x;
         
