@@ -183,7 +183,7 @@ void HardPoly(handle img,int x[3],int y[3],u32 colour[3])
     glBegin(GL_TRIANGLES);
     for (int i=0; i<3; i++)
     {
-        glColor4ub(colour&255,(colour>>8)&255,(colour>>16)&255,(colour>>24)&255);
+        glColor4ub(colour[i]&255,(colour[i]>>8)&255,(colour[i]>>16)&255,(colour[i]>>24)&255);
         glVertex2i(x[i],y[i]);
         glColor4ub(255,255,255,255);
     }

@@ -18,11 +18,11 @@
 
 #include "misc.h"
 #include <map>
-#include <string>
+#include "types.h"
 
 class CConfigFile
 {
-    typedef std::map<std::string,std::string> ConfigMap;
+    typedef std::map<string,string> ConfigMap;
     
     ConfigMap keys;
 
@@ -30,9 +30,9 @@ public:
     CConfigFile() {}
     CConfigFile(const char* fname);
 
-    void        Add(const std::string& key,const std::string& value);
-    std::string Get(const std::string& key);
-    int         GetInt(const std::string& key);
+    void        Add(const string& key,const string& value);
+    string Get(const string& key);
+    int         GetInt(const string& key);
 
     void        Load(const char* fname);
     void        Save(const char* fname);

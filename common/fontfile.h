@@ -5,7 +5,7 @@ Font file
 #ifndef FONTFILE_H
 #define FONTFILE_H
 
-#include <vector>
+#include "types.h"
 #include "pixel_matrix.h"
 
 class File;

@@ -1,8 +1,7 @@
     
 // TODO: way too many magic numbers
 
-#include <string>
-#include <vector>
+#include "types.h"
 
 #include "main.h"
 #include "codeview.h"

@@ -2,7 +2,7 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#include <string>
+#include "types.h"
 #include "python.h"
 
 /*
@@ -19,9 +19,11 @@
 
 class CEngine;                                                // proto
 
+using std::string;
+
 class CScriptEngine
 {
-    std::string sCurmapscript;
+    string sCurmapscript;
 
     static CEngine* pEngine;
 

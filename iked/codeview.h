@@ -11,7 +11,7 @@ class CMainWnd;
 class CCodeWnd : public wxMDIChildFrame
 {
     wxStyledTextCtrl*   pTextctrl;
-    std::string    sFilename;
+    string    sFilename;
 public:
 
     enum        // commands specific to this window

@@ -31,7 +31,7 @@ void CScriptEngine::Init(CEngine* p)
     
     Py_Initialize();
     
-    string_k s(".;");                                           // The delimiter is platform dependant.
+    string s(".;");                                             // The delimiter is platform dependant.
     s.append(Py_GetPath());
     PySys_SetPath((char*)s.c_str());
     
@@ -116,7 +116,7 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
 {
     Py_XDECREF(pMapmodule);
     
-    std::string sTemp=fname;
+    string sTemp=fname;
     
     int nExtension=sTemp.find_last_of(".",sTemp.length());
     sTemp.erase(nExtension,sTemp.length());                    // nuke the extension

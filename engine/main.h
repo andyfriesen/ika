@@ -70,9 +70,9 @@ public:                                                                         
     int                             nFrameskip;                                     // the map engine will skip no more than this amount of ticks per retrace
     
     // interface
-    void Sys_Error(const char* errmsg);                                             // bitches, and quits
-    void Script_Error();                                                            // also bitchy and quitty
-    int  CheckMessages();                                                           // Play nice with Mr. Gates
+    void      Sys_Error(const char* errmsg);                                             // bitches, and quits
+    void      Script_Error();                                                            // also bitchy and quitty
+    int       CheckMessages();                                                           // Play nice with Mr. Gates
     
     void      GameTick();                                                           // 1/100th of a second's worth of AI
     void      CheckKeyBindings();                                                   // checks to see if any bound keys are pressed

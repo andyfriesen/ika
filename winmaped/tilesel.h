@@ -1,6 +1,5 @@
 // blah!
 #include <windows.h>
-#include <vector>
 #include "vsp.h"
 #include "map.h"
 #include "graph.h"

@@ -457,7 +457,7 @@ bool Map::Importv2Map(File& f)
         entity[i]=e2;
     }
     
-    std::vector<string_k>    sMovescripts;
+    std::vector<string>    sMovescripts;
     char nMovescripts;
     int nCount;
     unsigned int nOfstbl[100];
@@ -882,22 +882,22 @@ void Map::SetLayerInfo(const SMapLayerInfo& nfo,int layidx)
     }
 }
 
-const string_k& Map::GetRString()
+const string& Map::GetRString()
 { return sRenderstring; }
 
-void Map::SetRString(const string_k& s)
-{ sRenderstring=s.upper(); }
+void Map::SetRString(const string& s)
+{ sRenderstring=s;}//.upper(); }
 
-const string_k& Map::GetMusic()
+const string& Map::GetMusic()
 { return sMusicname; }
 
-void Map::SetMusic(const string_k& s)
+void Map::SetMusic(const string& s)
 { sMusicname=s; }
 
-const string_k& Map::GetVSPName()
+const string& Map::GetVSPName()
 { return sVSPname; }
 
-void Map::SetVSPName(const string_k& s)
+void Map::SetVSPName(const string& s)
 { sVSPname=s; }
 
 const char* Map::GetCHREntry(int idx)

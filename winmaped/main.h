@@ -15,7 +15,6 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#include <vector>
 #include "winmaped.h"
 #include "graph.h"
 #include "map.h"
@@ -52,7 +51,7 @@ private:
     bool	bActive;			// don't do anything if this isn't set
     
     // UI variables
-    string_k	sLastopenedmap;
+    string	sLastopenedmap;
     // filename of the last map that was opened.  For the SaveMap() function
     // helper funtion thingies
     HWND CreateMainWindow(HINSTANCE hInst,int nCmdShow);

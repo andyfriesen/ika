@@ -14,7 +14,8 @@
 #include "types.h"
 #include "fileio.h"
 #include "rle.h"
-#include "strk.h"
+
+using std::vector;
 
 // Legacy structs for loading v2 stuff
 struct layer_r
@@ -76,13 +77,13 @@ struct movescript_r
 // New stuff
 struct SMapZone
 {
-    string_k        sName;                          // purely for the developer's benefit (for now)
-    string_k        sDescription;                   // purely for the developer's benefit
-    string_k        sActscript;                     // name of script to execute when teh zone is activated
+    string        sName;                          // purely for the developer's benefit (for now)
+    string        sDescription;                   // purely for the developer's benefit
+    string        sActscript;                     // name of script to execute when teh zone is activated
     int             nActchance;                     // probability (out of 100) that the zone will activate when stepped upon
     int             nActdelay;                      // Number of steps before the actscript gets run
     bool            bAdjacentactivation;            // if true, the player entity has to activate the zone directly
-    string_k        sEntactscript;                  // called if nonplayer entities step on the zone
+    string        sEntactscript;                  // called if nonplayer entities step on the zone
     
     SMapZone() 
         : nActchance(0),nActdelay(0),
@@ -92,23 +93,23 @@ struct SMapZone
 
 struct SMapEntity
 {
-    string_k        sName;                          // entity's name
-    string_k        sDescription;                   // description (purely for the developer's use)
+    string        sName;                          // entity's name
+    string        sDescription;                   // description (purely for the developer's use)
     int             x,y;                            // position
     int             direction;                      // the direction the entity is initially facing
     int             nSpeed;                         // speed, in pixels per second (100 is normal)
     bool            bMapobs;                        // if true, the entity is obstructed by the map
     bool            bEntobs;                        // if true, the entity is obstructed by other entities
     bool            bIsobs;                         // if true, the entity can block other entities
-    string_k        sCHRname;                       // name of the spriteset to use
+    string        sCHRname;                       // name of the spriteset to use
     bool            bAdjacentactivation;            // if true, the entity activates itself when it bumps into the player
-    string_k        sActscript;                     // script to run when the entity is activated
+    string        sActscript;                     // script to run when the entity is activated
     MoveCode        state;                          // what the entity is initially doing
-    string_k        sMovescript;                    // initial move script (if state==mc_script)
+    string        sMovescript;                    // initial move script (if state==mc_script)
     int             nWandersteps,nWanderdelay;      // wander stuff (if state==mc_wander*)
     Rect            wanderrect;                     // Rect the entity is restricted to (if state==mc_wanderrect)
-    string_k        sZone;                          // name of zone to wander on if state==mc_wanderzone
-    string_k        sChasetarget;                   // the entity that this entity wants to be close to (c'est amore!) if state==mc_chase
+    string        sZone;                          // name of zone to wander on if state==mc_wanderzone
+    string        sChasetarget;                   // the entity that this entity wants to be close to (c'est amore!) if state==mc_chase
     int             nChasedist;                     // how close (if state==mc_chase)
     
     SMapEntity()    :
@@ -144,8 +145,8 @@ class MapClip                                       // a chunk of map (that isn'
     friend class Map;
 private:
     int             nLayers;
-    std::vector<u32*> pData;                        // info on any tile layers we've grabbed up
-    std::vector<bool> bUsed;                        // true if the specified layer has valid tile data
+    vector<u32*> pData;                        // info on any tile layers we've grabbed up
+    vector<bool> bUsed;                        // true if the specified layer has valid tile data
     char*           pObstruct;                      // obstruction data
     char*           pZone;                          // zone data
     
@@ -169,8 +170,8 @@ public:
 class Map
 {
 private:   
-    std::vector<SMapLayerInfo>    info;
-    std::vector<u32*>        pData;
+    vector<SMapLayerInfo>    info;
+    vector<u32*>        pData;
     
     int             nLayers;
     int             nWidth,nHeight;                 // map dimensions, in tiles
@@ -178,12 +179,12 @@ private:
     u8*             pObstruct;
     u32*            pZone;
     
-    string_k        sVSPname;
-    string_k        sMusicname;
-    string_k        sRenderstring;
+    string        sVSPname;
+    string        sMusicname;
+    string        sRenderstring;
     
-    std::vector<SMapZone> zoneinfo;
-    std::vector<SMapEntity> entity;
+    vector<SMapZone> zoneinfo;
+    vector<SMapEntity> entity;
     
     int             nStartx,nStarty;                // unused (TODO: expose these to the scripter)
     bool            bWrap;                          // unused for now
@@ -215,12 +216,12 @@ public:
     void SetLayerInfo(const SMapLayerInfo&  nfo,int layidx);// sets the properties of the specified layer according to nfo
     
     // General map properties
-    const string_k& GetRString(void);                       // returns the render string
-    void            SetRString(const string_k& s);          // sets the render string
-    const string_k& GetMusic(void);                         // returns the music played on this map
-    void            SetMusic(const string_k& s);            // sets the music file used
-    const string_k& GetVSPName(void);                       // returns the name of the VSP used on this map
-    void            SetVSPName(const string_k& s);          // sets the VSP file used
+    const string& GetRString(void);                       // returns the render string
+    void            SetRString(const string& s);          // sets the render string
+    const string& GetMusic(void);                         // returns the music played on this map
+    void            SetMusic(const string& s);            // sets the music file used
+    const string& GetVSPName(void);                       // returns the name of the VSP used on this map
+    void            SetVSPName(const string& s);          // sets the VSP file used
     
     // CHR list
     int      CountCHRs(void);

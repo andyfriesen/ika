@@ -2,7 +2,8 @@
 #ifndef CHRED_H
 #define CHRED_H
 
-#include "strk.h"
+#include "types.h"
+
 #include "chr.h"
 #include "pix_edit.h"
 #include "dialog.h"
@@ -10,7 +11,7 @@
 class CCHReditor : public CEdit
 {
 protected:
-	string_k sLastfilename;
+	string sLastfilename;
 
 	CCHRfile* pChar;
 	int nCurframe;

@@ -14,7 +14,7 @@
 static int logging=0;
 
 #ifdef _CALLBACK
-std::string CDebuggingthing::callback;
+string CDebuggingthing::callback;
 
 CDebuggingthing::CDebuggingthing(const char* s)
 {

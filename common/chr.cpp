@@ -253,10 +253,10 @@ bool CCHRfile::Loadv2CHR(File& f)
     // Get the idle frames
     char c[10];
     int i;
-    f.Read(i);        sMovescript[8+face_left]    =string_k("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_right]    =string_k("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_up]        =string_k("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_down]    =string_k("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_left]    =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_right]    =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_up]        =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_down]    =string("F")+itoa(i,c,10)+"W10";
     
     for (int b=0; b<4; b++)
     {
@@ -304,10 +304,10 @@ bool CCHRfile::Loadv4CHR(File& f)
     // Get the idle frames
     char c[10];
     u16 i;
-    f.Read(i);        sMovescript[8+face_left]    =string_k("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_right]    =string_k("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_up]        =string_k("F")+itoa(i,c,10)+"W10";
-    f.Read(i);        sMovescript[8+face_down]    =string_k("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_left]    =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_right]    =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_up]        =string("F")+itoa(i,c,10)+"W10";
+    f.Read(i);        sMovescript[8+face_down]    =string("F")+itoa(i,c,10)+"W10";
     
     f.Read(i);
     int nFrames=i;                // frame count

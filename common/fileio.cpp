@@ -1,6 +1,7 @@
 #include "fileio.h"
 #include "zlib.h"
 #include <stdio.h>
+
 /* 
     fileio.cpp
     my own little custom class for file I/O der...
@@ -8,15 +9,15 @@
     TODO: Pack files
 */
 
-std::vector<File::SDirectoryInfo> File::directoryinfo;
+vector<File::SDirectoryInfo> File::directoryinfo;
 
-std::string File::GetRealPath(const std::string& fname)
+string File::GetRealPath(const string& fname)
 {
     if (fname.substr(0,2)==".\\" || fname.substr(0,2)=="./")	// absolute path specified
         return fname;
     
-    std::string sExtension=fname;
-    std::string sResult=fname;
+    string sExtension=fname;
+    string sResult=fname;
     
     int i=sExtension.length()-1;
     do
@@ -54,7 +55,7 @@ std::string File::GetRealPath(const std::string& fname)
     return sResult;
 }
 
-void File::AddPath(std::string sExtension,std::string sPath)
+void File::AddPath(string sExtension,string sPath)
 {
     SDirectoryInfo di;
    
@@ -106,7 +107,7 @@ bool File::OpenRead(const char *fname,bool bBinary)
     if (!strlen(fname))
         return false;
     
-    std::string sFilename=GetRealPath(std::string(fname));
+    string sFilename=GetRealPath(string(fname));
     
     if (bBinary)
         f=fopen(sFilename.c_str(),"rb");
@@ -128,7 +129,7 @@ bool File::OpenAppend(const char *fname,bool bBinary)
     if (!strlen(fname))
         return false;
     
-    std::string sFilename=GetRealPath(fname);
+    string sFilename=GetRealPath(fname);
     
     if (bBinary)
         f=fopen(sFilename.c_str(),"ab");

@@ -62,7 +62,7 @@ CEntity::CEntity(CEngine* njin,const SMapEntity& e) :
     sActscript          (e.sActscript)
 {}
 
-static int get_int(string_k s,int& offset)
+static int get_int(const string& s,int& offset)
 // Grabs the next howevermany numerical characters from s, starting at offset.  On exit, offset is equal 
 // to the next non-numeric character in the string.
 {
@@ -73,7 +73,7 @@ static int get_int(string_k s,int& offset)
         if (s[offset]>='0' && s[offset]<='9')
             offset++;
         else
-            return atoi(s.mid(start,offset-start).c_str());
+            return atoi(s.substr(start).c_str());
     }
 }
 
@@ -111,7 +111,7 @@ void CEntity::UpdateAnimation()
         animscriptct--;
 }
 
-void CEntity::SetAnimScript(const string_k& newscript)
+void CEntity::SetAnimScript(const string& newscript)
 {
     curanimscript=newscript;
     animscriptofs=0;
@@ -119,7 +119,7 @@ void CEntity::SetAnimScript(const string_k& newscript)
     UpdateAnimation();									// and immediately update the frame
 }
 
-void CEntity::SetMoveScript(const string_k& newscript)
+void CEntity::SetMoveScript(const string& newscript)
 {
     curmovescript=newscript;
     movescriptofs=0;

@@ -1,8 +1,7 @@
 #ifndef FILEIO_H
 #define FILEIO_H
 
-#include <vector>
-#include <string>
+#include "types.h"
 
 class File
 {
@@ -15,16 +14,16 @@ class File
     
     struct SDirectoryInfo
     {
-        std::string sExtension;
-        std::string sPath;
+        string sExtension;
+        string sPath;
     };
     
     // Directory structure handling things
 private:
     static std::vector<SDirectoryInfo> directoryinfo;
-    std::string GetRealPath(const std::string& fname);
+    string GetRealPath(const string& fname);
 public:
-    static void AddPath(std::string sExtension,std::string sPath);
+    static void AddPath(string sExtension,string sPath);
     static void ClearPaths();
     
     // Misc handy file stuff

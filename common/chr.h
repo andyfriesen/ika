@@ -8,24 +8,20 @@
 #ifndef CHR_H
 #define CHR_H
 
-#include <vector>
-#include "strk.h"
 #include "types.h"
 #include "pixel_matrix.h"
 
-#pragma warning (disable:4786)                      // identifier too long (stupid compiler)
-
 class CCHRfile
 {
-    std::vector<CPixelMatrix>    frame;             // frame data
+    vector<CPixelMatrix>    frame;             // frame data
 
     int        nWidth,nHeight;
     int        nHotx,nHoty;                         // hotspot position
     int        nHotw,nHoth;                         // hotspot width/height
 
 public:
-    std::vector<string_k>    sMovescript;           // movement scripts
-    string_k    sDescription;                       // authoring information?  I dunno, but it's here.
+    vector<string>    sMovescript;           // movement scripts
+    string    sDescription;                       // authoring information?  I dunno, but it's here.
     
     CCHRfile();
 

@@ -19,9 +19,9 @@ void CSprite::Free()
     hFrame.clear();
 }
 
-string_k& CSprite::Script(int s)
+string& CSprite::Script(int s)
 {
-    static string_k dummy;
+    static string dummy;
 
     if (s<0 || s>sScript.size())
         return dummy;

@@ -5,27 +5,26 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#pragma warning (disable:4786)
-
-#include <vector>
-#include <list>
+#include "types.h"
 #include "graph.h"
 #include "fileio.h"
-#include "strk.h"
+
+#include <list>
+using std::list;
 
 class CSprite
 {
-    std::vector<string_k>	sScript;		// move scripts
+    vector<string>  sScript;                            // move scripts
 
     int nFramex,nFramey;                                // frame size
 
 public:
-    string_k sFilename;
+    string sFilename;
 
     short int	nHotx,nHoty;		                // hotspot position
     short int	nHotw,nHoth;		                // hotspot size
 
-    std::vector<handle> hFrame;
+    vector<handle> hFrame;
 
     CSprite() {}
     CSprite(const char* fname);
@@ -38,7 +37,7 @@ public:
 
     inline int Width() const { return nFramex; }
     inline int Height() const { return nFramey; }
-    string_k& Script(int s);
+    string& Script(int s);
 };
 
 class CSpriteController
@@ -50,7 +49,7 @@ class CSpriteController
         CRefCountedSprite(const char* fname) : CSprite(fname) {}
     };
 
-    typedef std::list<CRefCountedSprite*> SpriteList;
+    typedef list<CRefCountedSprite*> SpriteList;
 
     SpriteList sprite;
 

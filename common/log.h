@@ -20,7 +20,7 @@ extern void logok(void);
 extern void initlog(const char* s);
 
 #ifdef _CALLBACK
-#include <string>
+#include "types.h"
 extern void callback_log(const char* s,...);
 
 class CDebuggingthing

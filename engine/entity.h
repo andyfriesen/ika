@@ -11,7 +11,6 @@
 #define ENTITY_H
 
 #include "types.h"
-#include "strk.h"
 #include "map.h"
 
 const entspeed_normal=100;
@@ -23,11 +22,11 @@ class CEntity
 {
     CEngine&    engine;                                            // engine instance.  This allows the entity to gather information about its surroundings
 public:
-    string_k    curanimscript;                                      // a copy of the last frame animation script assigned to this entity
+    std::string      curanimscript;                                      // a copy of the last frame animation script assigned to this entity
     int         animscriptofs;                                      // current offset in the current anim script
     int         animscriptct;                                       // delay counter
     
-    string_k    curmovescript;                                      // a copy of the last movement script assigned to this entity
+    string      curmovescript;                                      // a copy of the last movement script assigned to this entity
     int         movescriptofs;                                      // the current position within the script.
     int         movescriptct;                                       // delay counter for move scripts
     
@@ -46,7 +45,7 @@ public:
     bool        bEntobs;                                            // if true, the entity cannot walk on entities whose bIsobs flag is set
     bool        bIsobs;                                             // if true, the entity obstructs entities whose bEntobs flag is set
     
-    string_k    sName;                                              // the entity's name
+    std::string    sName;                                           // the entity's name
     
     // Behavior flags and variables
     MoveCode    movecode;                                           // Describes how the entity behaves (see the mc_xxxx enums)
@@ -58,7 +57,7 @@ public:
     int         nMinchasedist;                                      // chasing:    how close to the target the entity wants to be
     
     bool        bAdjacentactivate;                                  // if this is true, the entity should activate whenever it's adjacent to the player.
-    string_k    sActscript;                                         // event to be called when the entity is activated
+    std::string    sActscript;                                      // event to be called when the entity is activated
     
     CEntity(CEngine* njin);
     CEntity(CEngine* njin,const SMapEntity& e);                     // converting map entities
@@ -67,8 +66,8 @@ public:
     void        Free();                                             // cleanup
     
     void        UpdateAnimation();                                  // update the entity's frame based on its active animation script
-    void        SetAnimScript(const string_k& newscript);           // makes the entity animate according to the specified script (if animscriptidx!=idx)
-    void        SetMoveScript(const string_k& newscript);           // makes the entity move according to the specified script
+    void        SetAnimScript(const string& newscript);             // makes the entity animate according to the specified script (if animscriptidx!=idx)
+    void        SetMoveScript(const string& newscript);             // makes the entity move according to the specified script
 
     void        SetFace(Direction d);                               // Makes the entity face the specified direction. (if it's currently moving, then it'll start moving in that direction instead)
 

@@ -7,13 +7,13 @@
 #ifndef TILESET_H
 #define TILESET_H
 
+#include "types.h"
 #include "graph.h"
 #include "vsp.h"
-#include <vector>
 
 class CTileSet
 {
-    std::vector<handle> hFrame;
+    vector<handle> hFrame;
     int nFrames;
     int nFramex,nFramey;
 
@@ -25,11 +25,11 @@ class CTileSet
         flip
     };
 
-    std::vector<int>    nTileidx;
-    std::vector<bool>   bFlip;
+    vector<int>    nTileidx;
+    vector<bool>   bFlip;
     
     // tile animation data
-    std::vector<VSP::AnimState>    animstate;
+    vector<VSP::AnimState>    animstate;
 
     int nAnimtimer;                                     // used by updateanimation
    

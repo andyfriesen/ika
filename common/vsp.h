@@ -19,7 +19,6 @@ And it sucked!  Major revamp.
 #ifndef VSP_H
 #define VSP_H
 
-#include <vector>
 #include "types.h"
 #include "pixel_matrix.h"
 
@@ -51,12 +50,12 @@ public:
     };
     
 private:
-    std::vector<CPixelMatrix>   tiles;  // tile images
+    vector<CPixelMatrix>   tiles;  // tile images
     
     char sDesc[64];
     char sName[64];		// the VSPs filename
     
-    std::vector<AnimState>  vspanim;
+    vector<AnimState>  vspanim;
     
     int nTilex,nTiley;
     

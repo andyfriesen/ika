@@ -2,9 +2,9 @@
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
 
-#include <vector>
 #include <wx\wx.h>
 #include <wx\image.h>
+#include "types.h"
 #include "map.h"
 #include "vsp.h"
 

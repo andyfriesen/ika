@@ -142,6 +142,14 @@ SOURCE=.\resource.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\common\configfile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\configfile.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\ika\common\fileio.cpp
 # End Source File
 # Begin Source File
@@ -195,6 +203,17 @@ SOURCE=.\icon1.ico
 # Begin Source File
 
 SOURCE=.\iked.rc
+
+!IF  "$(CFG)" == "iked - Win32 Release"
+
+!ELSEIF  "$(CFG)" == "iked - Win32 Debug"
+
+# ADD BASE RSC /l 0x1009
+# ADD RSC /l 0x1009
+# SUBTRACT RSC /i "\wx2\include\msw\wx.rc"
+
+!ENDIF 
+
 # End Source File
 # Begin Source File
 

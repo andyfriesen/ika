@@ -7,9 +7,9 @@
 	globals, I'm not sure.  It just *feels* right)
 
 	There's lots of other misc dialogs here too. (hence the filename)
-
-	TODO: Make these not dumb by deriving them from the CDialog class.
 */
+
+#include "types.h"
 
 #include <windows.h>
 #include "map.h"
@@ -23,7 +23,7 @@
 struct SNewMapInfo
 {
 	bool bLoadvsp;
-	string_k sVspname;
+	string sVspname;
 	int tilex,tiley;
 	int mapx,mapy;
 };
