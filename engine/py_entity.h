@@ -295,7 +295,8 @@ METHOD(entity_detectcollision)
     while (PyDict_Next(pEntitydict,&nCount,&pKey,&pValue))
     {
         CEntity& e2=*((v_EntityObject*)pValue)->pEnt;
-        
+        if (&e1==&e2)   continue;
+
         if (x1>e2.x+e2.pSprite->nHotw)    continue;
         if (y1>e2.y+e2.pSprite->nHoth)    continue;
         if (x2<e2.x)    continue;

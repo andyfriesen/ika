@@ -461,13 +461,13 @@ bool gfxCopyChan(handle src,int nSrcchan,handle dest,int nDestchan)
 #ifdef _DEBUG
     if (!src || !dest)
     {
-        log("dfasdfasdfdfasdfasdfasdf");
+        log("CopyChan: eeeeeeeeeeeeeeeeeeeeek!");
         return false;
     }
 #endif
     
-    int xlen=src->nWidth>dest->nWidth?src->nWidth:dest->nWidth;									// whichever is smaller
-    int ylen=src->nHeight>dest->nHeight?src->nHeight:dest->nHeight;
+    int xlen=src->nWidth  < dest->nWidth   ?  src->nWidth  : dest->nWidth;									// whichever is smaller
+    int ylen=src->nHeight < dest->nHeight  ?  src->nHeight : dest->nHeight;
     int srcinc=(src->nPitch-src->nWidth)*4;
     int destinc=(dest->nPitch-dest->nWidth)*4;
     

@@ -140,7 +140,6 @@ void CEntity::Stop()
         return;
 
     bMoving=false;
-    movecode=mc_nothing;
     SetAnimScript(pSprite->Script((int)direction+8));
 }
 
@@ -164,8 +163,18 @@ void CEntity::Move(Direction d)
     if (bMapobs && engine.DetectMapCollision(newx,newy,pSprite->nHotw,pSprite->nHoth))
     {   Stop(); return; }
 
-    if (bEntobs && engine.DetectEntityCollision(*this))
-    {   Stop(); return; }
+    if (bEntobs)
+    {
+        CEntity* pEnt=engine.DetectEntityCollision(this,newx,newy,pSprite->nHotw,pSprite->nHoth);
+        if (pEnt)
+        {
+            if (this==engine.pPlayer && pEnt->bAdjacentactivate)                                    // Adjacent activation
+                engine.script.CallEvent(pEnt->sActscript.c_str());
+        
+            Stop(); 
+            return;
+        }
+    }
 
     x=newx; y=newy;
 
@@ -175,8 +184,6 @@ void CEntity::Move(Direction d)
         direction=d;
         SetAnimScript(pSprite->Script((int)direction));
     }
-    else
-        newy++;
 }
 
 Direction CEntity::Wander()
@@ -186,7 +193,7 @@ Direction CEntity::Wander()
         if (!bMoving)
         {            
             movescriptct=nWandersteps;
-            return (Direction)Random(0,8);
+            return (Direction)Random(0,4);
         }
         else
         {
@@ -196,7 +203,8 @@ Direction CEntity::Wander()
     }
     else
         movescriptct--;
-    return direction;
+
+    return bMoving?direction:face_nothing;
 }
 
 Direction CEntity::GetMoveScriptCommand()
@@ -305,8 +313,8 @@ void CEntity::Update()
         }
 
     if (newdir==face_nothing)
-    {   
-        Stop();     
+    {
+        Stop();
         return;
     }
 

@@ -513,47 +513,35 @@ bool CEngine::DetectMapCollision(int x,int y,int w,int h)
     int tx=tiles.Width();
     int ty=tiles.Height();
     
-    if (h)
-    {
-        int y2=(y+h-1)/ty;
-        
-        x/=tiles.Width();
-        y/=tiles.Height();
-        for (int i=y; i<=y2; i++)
-            if (map.IsObs(x,i))
+    int y2=(y+h-1)/ty;
+    int x2=(x+w-1)/tx;
+    x/=tiles.Width();
+    y/=tiles.Height();
+
+    for (int cy=y; cy<=y2; cy++)
+        for(int cx=x; cx<=x2; cx++)
+            if (map.IsObs(cx,cy))
                 return true;
-    }
-    else if (w)
-    {
-        int x2=(x+w-1)/tx;
-        
-        x/=tiles.Width();
-        y/=tiles.Height();
-        for (int i=x; i<=x2; i++)
-            if (map.IsObs(i,y))
-                return true;
-    }
     
     return false;
 }
 
-CEntity* CEngine::DetectEntityCollision(const CEntity& ent)
+CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h)
 // returns the entity colliding with the specified entity, or 0 if none.
 {
     CDEBUG("detectentitycollision");
-    CSprite& sprite=*ent.pSprite;
     
     for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
     {
         CEntity& e=**i;
         CSprite& s=*e.pSprite;
 
-        if (&e==&ent || !e.bEntobs)             continue;
+        if (&e==ent || !e.bEntobs)          continue;
         
-        if (ent.x               > e.x+s.nHotw)  continue;
-        if (ent.y               > e.y+s.nHoth)  continue;
-        if (ent.x+sprite.nHotw  < e.x)          continue;
-        if (ent.y+sprite.nHoth  < e.y)          continue;
+        if (x1              >= e.x+s.nHotw)  continue;
+        if (y1              >= e.y+s.nHoth)  continue;
+        if (x1+w            <= e.x)          continue;
+        if (y1+h            <= e.y)          continue;
         
         return &e;
     }

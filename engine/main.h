@@ -92,8 +92,8 @@ public:                                                                         
     
     // Entity handling
     int  EntityAt(int x,int y,int w,int h);				        // index of entity within the specified rect, or -1 if none
-    bool DetectMapCollision(int x1,int y1,int w,int h);
-    CEntity* DetectEntityCollision(const CEntity& ent);
+    bool     DetectMapCollision(int x1,int y1,int w,int h);
+    CEntity* DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h);
     void ProcessEntities();							// one tick of AI for each entity
     Direction HandlePlayer();							// one tick of player-controlledness
     Direction HandleWanderingEntity(CEntity& ent);		                // entity wanders for one tick

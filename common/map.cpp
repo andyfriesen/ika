@@ -448,7 +448,7 @@ bool Map::LoadOld(File& f)
         e2.state=(MoveCode)e1.movecode;
         nScriptidx[i]=e1.movescript;    // blargh
         e2.nWanderdelay=e1.delay;
-        e2.nWandersteps=e1.step;
+        e2.nWandersteps=e1.step*16;
         e2.wanderrect.left=e1.data1;
         e2.wanderrect.top=e1.data2;
         e2.wanderrect.right=e1.data3;
