@@ -25,6 +25,7 @@ private:
 public:
 
     TileSet();
+    ~TileSet();
 
     bool Load(const std::string& fileName);
     bool Save(const std::string& fileName);

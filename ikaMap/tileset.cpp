@@ -8,6 +8,11 @@ TileSet::TileSet()
 {
 }
 
+TileSet::~TileSet()
+{
+    delete pVsp;
+}
+
 bool TileSet::Load(const std::string& fileName)
 {
     VSP* pNewvsp = new VSP;
