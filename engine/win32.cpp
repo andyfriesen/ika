@@ -6,7 +6,9 @@ win32.cpp
     There's also some handy lil' functions, that don't really fit in a class, but are uberhandy to have around.
 */
 
-#pragma warning (disable:4786)
+#ifdef MSVC
+#   pragma warning (disable:4786)
+#endif
 
 #include <windows.h>
 #include "main.h"

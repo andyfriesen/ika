@@ -54,8 +54,6 @@ class CMapView : public IDocView
     Map*                pMap;
     CTileSet*           pTileset;
 
-    CursorMode          csrmode;
-
 public:
     CMapView(CMainWnd* parent,const string& fname);
 
@@ -72,9 +70,6 @@ public:
 
 //------------------------------------------------------------
 
-    void HandleLayerEdit(wxMouseEvent& event);
-    void HandleMouse(wxMouseEvent& event);
-
 //------------------------------------------------------------
 
     DECLARE_EVENT_TABLE()
@@ -89,8 +84,15 @@ public:
 private:
     int xwin,ywin;
     int nCurlayer;
+    // old mouse coords
+    int oldx,oldy;
+    CursorMode          csrmode;
     map<int,int> nLayertoggle;
 
+    void ScreenToMap(int& x,int& y);
+    void HandleLayerEdit(wxMouseEvent& event);
+    void HandleMouse(wxMouseEvent& event);
+    
     void Render();
     void RenderLayer(int lay);
 

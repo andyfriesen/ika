@@ -112,9 +112,6 @@ void CFont::PrintString(int startx,int starty,const char* s)
             PrintChar(x,y,cursubset,s[i]);
         }
     }
-    
-    if (i!=strlen(s))
-        __asm int 3
 }
 
 int CFont::StringWidth(const char* s) const
@@ -124,7 +121,7 @@ int CFont::StringWidth(const char* s) const
     
     for (int i=0; i<strlen(s); i++)
     {
-        char c=s[i];
+        unsigned char c=s[i];
         
         switch (c)
         {

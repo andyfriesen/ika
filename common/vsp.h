@@ -22,17 +22,16 @@ And it sucked!  Major revamp.
 #include "types.h"
 #include "pixel_matrix.h"
 
-enum    // VSP animation modes
-{
-    linear,
-    reverse,
-    random,
-    flip
-};
-
 class VSP
 {
 public:
+    enum    // VSP animation modes
+    {
+        linear,
+            reverse,
+            random,
+            flip
+    };
     
     struct AnimState
     {

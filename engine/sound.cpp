@@ -16,7 +16,7 @@ void (*sfxSetMusicVolume)(SMusic m,int newvol);                         // sets 
 Ssfx (*sfxLoadEffect)(const char* fname);                               // loads the .wav file into s
 bool (*sfxFreeEffect)(Ssfx s);
 
-bool (*sfxPlayEffect)(Ssfx* s,int vol,int pan);                         // vol is 0-255, pan is 0 (left) - 255 (right)
+bool (*sfxPlayEffect)(Ssfx s,int vol,int pan);                          // vol is 0-255, pan is 0 (left) - 255 (right)
 
 void (*sfxUpdate)();
 

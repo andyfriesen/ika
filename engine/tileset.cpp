@@ -41,7 +41,6 @@ void CTileSet::TBlitFrame(int x,int y,int frame)
     }
 #endif
 
-    handle h=hFrame[frame];
     gfxBlitImage(hFrame[frame],x,y,true);
 }
 
@@ -76,10 +75,11 @@ bool CTileSet::LoadVSP(const char* fname)
     }
     
     // Next up, set up the tile animation stuff
+    int i;
     
     nTileidx.resize(nFrames);                                   // Make the vectors fit
     bFlip.resize(nFrames);
-    for (int i=0; i<nFrames; i++)
+    for (i=0; i<nFrames; i++)
     {
         nTileidx[i]=i;                                          // set initial values for the vectors
         bFlip[i]=false;

@@ -167,7 +167,7 @@ METHOD(std_rgb)
     int r,g,b,a=255;
     
     if (!PyArg_ParseTuple(args,"iii|i:RGB",&r,&g,&b,&a))
-        return false;
+        return NULL;
     
     return PyInt_FromLong(RGBA(r,g,b,a));
 }

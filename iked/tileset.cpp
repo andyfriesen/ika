@@ -4,7 +4,7 @@
 #include "graph.h"
 
 CTileSet::CTileSet()
-: pVsp(0)
+: pVsp(0),nCurtile(0)
 {
 }
 

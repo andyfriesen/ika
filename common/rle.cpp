@@ -7,7 +7,7 @@ void ReadCompressedLayer1(u8 *dest,int numbytes,u8 *src)
     u8 w;
     u8 *buf;
     
-    buf=src; n=0;
+    buf=src;
     do
     {
         w=*buf; buf++;

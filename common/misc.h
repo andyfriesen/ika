@@ -10,7 +10,7 @@ Things that just don't fit anywhere else, but are handy to have around.
 #include <string>
 
 template <typename T>
-void swap(T& a,T& b)
+inline void swap(T& a,T& b)
 {
     T c;
     c=a;

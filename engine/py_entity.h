@@ -434,6 +434,6 @@ METHOD(std_getcameratarget)
         Py_INCREF(pCameratarget);
         return pCameratarget;
     }
-    
-    return NULL; // !!
+
+    // execution never gets here
 }

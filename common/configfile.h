@@ -17,8 +17,13 @@
 #pragma warning (disable:4786)
 
 #include "misc.h"
-#include <map>
 #include "types.h"
+
+#ifdef MSVC
+#   include <map>
+#else
+#   include <\bcc\include\map.h>
+#endif
 
 class CConfigFile
 {

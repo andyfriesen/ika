@@ -86,10 +86,10 @@ void CVSPAnimDlg::UpdateDialog(HWND hWnd)
     int radioidx;
     switch (curdata.mode)
     {
-    case linear:	radioidx=IDC_ANIMFORWARDS;		break;
-    case reverse:	radioidx=IDC_ANIMBACKWARDS;		break;
-    case random:	radioidx=IDC_ANIMRANDOM;		break;
-    case flip:		radioidx=IDC_ANIMFLIP;		break;
+    case VSP::linear:   radioidx=IDC_ANIMFORWARDS;		break;
+    case VSP::reverse:  radioidx=IDC_ANIMBACKWARDS;		break;
+    case VSP::random:   radioidx=IDC_ANIMRANDOM;		break;
+    case VSP::flip:     radioidx=IDC_ANIMFLIP;		break;
     }
     CheckRadioButton(hWnd,IDC_ANIMFORWARDS,IDC_ANIMFLIP,radioidx);
 }
@@ -101,10 +101,10 @@ int CVSPAnimDlg::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
     case WM_COMMAND:
         switch(LOWORD(wParam))
         {
-        case IDC_ANIMFORWARDS:	curdata.mode=linear;	break;
-        case IDC_ANIMBACKWARDS:	curdata.mode=reverse;	break;
-        case IDC_ANIMRANDOM:	curdata.mode=random;	break;
-        case IDC_ANIMFLIP:	curdata.mode=flip;		break;
+        case IDC_ANIMFORWARDS:	curdata.mode=VSP::linear;	break;
+        case IDC_ANIMBACKWARDS:	curdata.mode=VSP::reverse;	break;
+        case IDC_ANIMRANDOM:	curdata.mode=VSP::random;	break;
+        case IDC_ANIMFLIP:	curdata.mode=VSP::flip;		break;
             
         case IDC_NEXT:
             UpdateData(hWnd);

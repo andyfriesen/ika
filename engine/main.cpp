@@ -276,12 +276,8 @@ void CEngine::RenderEntities()
     
     for (int j=0; j<nEntsonscreen; j++)
     {
-        int hx,hy;
         CEntity& e=*drawlist[j];
         CSprite& s=*e.pSprite;
-        
-        hx=s.nHotx;
-        hy=s.nHoty;
         
         int frame=e.nSpecframe?e.nSpecframe:e.nCurframe;
         
@@ -552,7 +548,6 @@ void CEngine::TestActivate(const CEntity& player)
     CDEBUG("testactivate");
     static int    nOldtx=-1;
     static int    nOldty=-1;
-    static int    nOldzone=-1;
     SMapZone zone;
     CSprite& sprite=*player.pSprite;
     
@@ -664,7 +659,7 @@ void CEngine::LoadMap(const char* filename)
 {
     CDEBUG("loadmap");
     char    temp[255];
-    char*   extension;
+//    char*   extension;
     
     try
     {
@@ -687,7 +682,7 @@ void CEngine::LoadMap(const char* filename)
             entities.push_back(pEnt);
             
             strcpy(temp,ent.sCHRname.c_str());
-            extension=temp+strlen(temp)-3;                                  // get the extension
+//            extension=temp+strlen(temp)-3;                                  // get the extension
             
             pEnt->pSprite=sprite.Load(temp);                                // wee
             if (pEnt->pSprite==0)                                           // didn't load?

@@ -129,8 +129,8 @@ struct SMapLayerInfo
     int            nTransmode;                      // for v2 maps
 
     SMapLayerInfo()
-    :   pmulx(0),pmuly(0),
-        pdivx(0),pdivy(0),
+    :   pmulx(1),pmuly(1),
+        pdivx(1),pdivy(1),
         nTransmode(0)
     {}
 

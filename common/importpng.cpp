@@ -73,7 +73,7 @@ bool PNG::Load(CPixelMatrix& dest,const char* filename)
     png_set_read_fn(png_ptr, &file, PNG_read_function);
     
     png_set_sig_bytes(png_ptr, 8);
-    int png_transform = PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_PACKSWAP;
+//    int png_transform = PNG_TRANSFORM_STRIP_16 | PNG_TRANSFORM_PACKING | PNG_TRANSFORM_PACKSWAP;
     png_read_png(png_ptr, info_ptr, NULL, NULL);
     
     // initialize the png_image members

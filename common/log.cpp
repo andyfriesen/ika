@@ -3,6 +3,7 @@
 #include <stdarg.h>
 #include <fstream>
 #include <ios>
+#include <stdio.h>
 
 using std::ios;
 

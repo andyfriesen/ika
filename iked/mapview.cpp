@@ -142,6 +142,7 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     InitLayerVisibilityControl();
 
     nCurlayer=0;
+    csrmode=mode_normal;
 
     Show();
 }
@@ -223,23 +224,47 @@ void CMapView::OnClose()
 
 //------------------------------------------------------------
 
+void CMapView::ScreenToMap(int& x,int& y)
+{
+    SMapLayerInfo l;
+    pMap->GetLayerInfo(l,nCurlayer);
+
+    x+=(xwin*l.pmulx/l.pdivx);
+    y+=(ywin*l.pmuly/l.pdivy);
+}
+
 void CMapView::HandleLayerEdit(wxMouseEvent& event)
 {
+    if (!event.LeftIsDown()) return;
+
+    int x=event.GetPosition().x;
+    int y=event.GetPosition().y;
+    ScreenToMap(x,y);
+
+    if (x==oldx && y==oldy) return;
+    oldx=x; oldy=y;
+
+    SMapLayerInfo l;
+    pMap->GetLayerInfo(l,nCurlayer);
+
+
+    int tilex=(x*l.pmulx/l.pdivx) / pTileset->Width();
+    int tiley=(y*l.pmuly/l.pdivy) / pTileset->Height();
+
     switch (csrmode)
     {
     case mode_normal:
+        pMap->SetTile(tilex,tiley,nCurlayer,pTileset->GetCurTile());
         break;
     }
+
+    Render();
+    pGraph->ShowPage();
 }
 
 void CMapView::HandleMouse(wxMouseEvent& event)
 {
-    wxPoint p=event.GetPosition();
-
-    int x=(p.x+xwin)/pTileset->Width();
-    int y=(p.y+ywin)/pTileset->Height();
-
-    switch (nCurlayer)
+    switch (csrmode)
     {
     case lay_entity:
     case lay_zone:
@@ -247,13 +272,9 @@ void CMapView::HandleMouse(wxMouseEvent& event)
         // NYI
         break;
     default:
-        // Set a tile (for now)
-        pMap->SetTile(x,y,nCurlayer,0);
+        HandleLayerEdit(event);
         break;
     }
-
-    Render();
-    pGraph->ShowPage();
 }
 
 void CMapView::OnLayerChange(int lay)

@@ -263,7 +263,7 @@ METHOD(image_ellipse)
 METHOD(image_setpixel)
 {
     int x,y,colour;
-    int trans=1;
+//    int trans=1;
     
     if (!PyArg_ParseTuple(args,"iii:Image.SetPixel",&x,&y,&colour))
         return NULL;

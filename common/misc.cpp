@@ -42,23 +42,24 @@ int Random(int min,int max)
 
 void ChangeDirectory(const char* s)
 {
-    _chdir(s);
+//    _chdir(s);
 }
 
 char* GetCurrentDirectory()
 {
-    static char s[255];
+/*    static char s[255];
     _getcwd(s,255);
-    return s;
+    return s;*/return 0;
 }
 
 #include <string>
 
 const std::string Trim(std::string s)
 {
-    int pos=std::string::npos;
+//    int pos=std::string::npos;
+    int i;
 
-    for (int i=0; i<s.length(); i++)
+    for (i=0; i<s.length(); i++)
     {
         if (s[i]!=' ')
         {
