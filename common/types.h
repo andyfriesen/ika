@@ -106,7 +106,7 @@ union RGBA
         : r(_r), g(_g), b(_b), a(_a)
     {}
 
-    operator u32() { return i; }
+    operator u32() const { return i; }
 };
 
 #pragma pack (pop)

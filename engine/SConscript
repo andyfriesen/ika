@@ -20,6 +20,7 @@ ika = env.Program('ika',
         timer.cpp
         script/CanvasObject.cpp
         script/ControlObject.cpp
+        script/ColoursObject.cpp
         script/EntityObject.cpp
         script/ErrorObject.cpp
         script/FontObject.cpp
@@ -37,6 +38,7 @@ ika = env.Program('ika',
         opengl/Image.cpp
         soft32/Driver.cpp
         soft32/Image.cpp
+        video/ColourHandler.cpp
         ''')
     )
 

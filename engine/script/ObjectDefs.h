@@ -30,6 +30,8 @@ namespace Video
     class Image;
 }
 
+class ColourHandler;
+
 /// Contains implementations of Python binding things.
 namespace Script
 {
@@ -331,6 +333,28 @@ namespace Script
 
         // Method table
         extern PyMethodDef methods[];
+        extern PyTypeObject type;
+    }
+    
+    namespace Colours
+    {
+        // Object type
+        struct ColoursObject
+        {
+            PyObject_HEAD
+            ::ColourHandler* handler;
+        };
+        
+        METHOD(Colours_HasKey, ColoursObject);
+        METHOD1(Colours_Keys, ColoursObject);
+        METHOD1(Colours_Copy, ColoursObject);
+        METHOD1(Colours_Items, ColoursObject);
+        
+        void Init();
+        PyObject* New(::ColourHandler* device);
+        void Destroy(ColoursObject* self);
+
+        // Method table
         extern PyTypeObject type;
     }
 

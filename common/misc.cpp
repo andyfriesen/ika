@@ -113,7 +113,7 @@ std::string ToString(int i)
     return s.str();
 }
 
-uint hexToInt(const std::string& s)
+bool hexToInt(const std::string& s, uint *ret)
 {
     const std::string digits = "0123456789ABCDEF";
     std::string t = Upper(s);
@@ -123,11 +123,12 @@ uint hexToInt(const std::string& s)
     {
         int digit = digits.find(t[i]);
         if (digit == std::string::npos)
-            return value;
+            return 0;
 
         value = (value << 4) | digit;
     }
-    return value;
+    *ret = value;
+    return 1;
 }
 
 //---------------------------------------

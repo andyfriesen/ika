@@ -2,6 +2,7 @@
 #define VIDEO_DRIVER_H
 
 #include "Image.h"
+#include "ColourHandler.h"
 
 #include "common/types.h"
 #include "common/Canvas.h"
@@ -28,7 +29,7 @@ namespace Video
     };
 
     /// Base interface for all ika video drivers.
-    class Driver
+    class Driver : public ColourHandler
     {
     public:
         virtual ~Driver(){}
@@ -112,6 +113,7 @@ namespace Video
 
         /// Returns the number of times ShowPage() has been called in the past second.
         virtual int GetFrameRate() const = 0;
+
     };
 }
 

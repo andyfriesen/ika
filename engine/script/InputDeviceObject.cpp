@@ -77,7 +77,7 @@ namespace Script
         {
             char* s;
 
-            if (!PyArg_ParseTuple(args, "s|GetControl", &s))
+            if (!PyArg_ParseTuple(args, "s:GetControl", &s))
                 return 0;
 
             return ::Script::Control::New(self->device->GetControl(s));

@@ -147,12 +147,14 @@ namespace Script
 #define GET(x) PyObject* get ## x(VideoObject* self)
         GET(XRes) { return PyInt_FromLong(self->video->GetResolution().x);  }
         GET(YRes) { return PyInt_FromLong(self->video->GetResolution().y);  }
+        GET(Colours) { return ::Script::Colours::New(self->video);  }
 #undef GET
 
         PyGetSetDef properties[] =
         {
             {   "xres",     (getter)getXRes,    0,  "Gets the horizontal resolution of the current display mode, in pixels."    },
             {   "yres",     (getter)getYRes,    0,  "Gets the vertical resolution of the current display mode, in pixels."      },
+            {   "colours",  (getter)getColours, 0,  "Gets a mapping containing the currently-defined colours by name."      },
             {   0   }
         };
 

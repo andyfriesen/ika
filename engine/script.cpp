@@ -44,6 +44,7 @@ void ScriptEngine::Init(Engine* njin)
     Script::Joystick::Init();
     // singletons
     Script::Video::Init();
+    Script::Colours::Init();
     Script::Map::Init();
     Script::Input::Init();
     Script::Error::Init();

@@ -123,8 +123,8 @@ namespace Ika
         int x = startx;
         int y = starty;
         uint len = s.length();
-        RGBA colour(255, 255, 255);
-    
+        RGBA colour(255,255,255,255);
+
         _video->SetBlendMode(Video::Normal);
         for (uint i=0; i < len; i++)
         {
@@ -168,16 +168,8 @@ namespace Ika
                         break;
                     }
                     std::string t(s.substr(i + 1, pos - i - 1));
-                    
-                    // #[123] becomes #[112233]
-                    // #[1234] becomes #[11223344]
-                    // #[123456] becomes #[123456]
-                    if (t.length() == 3)
-                        t = std::string() + t[0] + t[0] + t[1] + t[1] + t[2] + t[2];
-                    else if (t.length() == 4)
-                        t = std::string() + t[0] + t[0] + t[1] + t[1] + t[2] + t[2] + t[3] + t[3];
-
-                    colour = hexToInt(t);
+                    if(!_video->findColour(t, &colour))
+                        _video->hexColour(t, &colour);
                     i = pos + 1;
                 }
             };
