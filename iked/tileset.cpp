@@ -8,43 +8,6 @@ CTileSet::CTileSet()
 {
 }
 
-CTileSet::~CTileSet()
-{
-    FreeBitmaps();
-}
-
-void CTileSet::Sync()
-{
-    for (std::set<int>::iterator i=altered.begin(); i!=altered.end(); i++)
-    {
-        bitmaps[*i]->Update(pVsp->GetTile(*i));
-    }
-
-    altered.clear();
-}
-
-void CTileSet::SyncAll()
-{
-    FreeBitmaps();
-
-    bitmaps.resize(pVsp->NumTiles());
-
-    for (int i=0; i<pVsp->NumTiles(); i++)
-    {
-        bitmaps[i]=new CImage(pVsp->GetTile(i));
-    }
-}
-
-void CTileSet::FreeBitmaps()
-{
-    for (int i=0; i<bitmaps.size(); i++)
-    {
-        delete bitmaps[i];
-    }
-
-    bitmaps.clear();
-}
-
 bool CTileSet::Load(const char* fname)
 {
     VSP* pNewvsp=new VSP;
@@ -69,29 +32,17 @@ bool CTileSet::Save(const char* fname)
     return true;
 }
 
-const CPixelMatrix& CTileSet::GetTile(int tileidx)
+const CPixelMatrix& CTileSet::Get(int tileidx)
 {
     return pVsp->GetTile(tileidx);
 }
 
-void CTileSet::SetTile(int tileidx,const CPixelMatrix& newtile)
+void CTileSet::SetImage(const CPixelMatrix& newtile,int tileidx)
 {
-    if (tileidx<0 || tileidx>=pVsp->NumTiles())
-        return;
-
     pVsp->GetTile(tileidx)=newtile;
-    altered.insert(tileidx);
 }
 
-CImage& CTileSet::GetImage(int tileidx) const
-{
-    if (tileidx<0 || tileidx>=bitmaps.size())
-        return *bitmaps[0];
-
-    return *bitmaps[tileidx];
-}
-
-int CTileSet::NumTiles() const
+int CTileSet::Count() const
 {
     return pVsp?pVsp->NumTiles() : 0;
 }

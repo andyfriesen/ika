@@ -112,21 +112,21 @@ void CEntityEditor::UpdateList()
     }
 
     pEntlist->SetSelection(nCurrent);
-    nOldidx=-1;
+    nCurentidx=-1;
     UpdateDlg();
 }
 
 void CEntityEditor::UpdateData()
 {
-    if (nOldidx==-1) return;
+    if (nCurentidx==-1) return;
 
-    SMapEntity& e=pMap->GetEntity(nOldidx);
+    SMapEntity& e=pMap->GetEntity(nCurentidx);
 
     if (e.sName!=pName->GetValue().c_str())
     {
         wxString bleh=pName->GetValue().c_str();
-        pEntlist->InsertItems(1,&bleh,nOldidx);
-        pEntlist->Delete(nOldidx+1);
+        pEntlist->InsertItems(1,&bleh,nCurentidx);
+        pEntlist->Delete(nCurentidx+1);
     }
 
     e.sName             =pName->GetValue().c_str();
@@ -170,6 +170,6 @@ void CEntityEditor::UpdateDlg()
 void CEntityEditor::OnSelectEntity(wxCommandEvent& event)
 {
     UpdateData();
-    nOldidx=event.GetInt();
+    nCurentidx=event.GetInt();
     UpdateDlg();
 }

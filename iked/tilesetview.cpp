@@ -52,7 +52,7 @@ void CTileSetView::OnScroll(wxScrollWinEvent& event)
     switch (event.m_eventType)
     {
     case wxEVT_SCROLLWIN_TOP:       ywin=0;                     break;
-    case wxEVT_SCROLLWIN_BOTTOM:    ywin=pTileset->NumTiles();  break;  // guaranteed to be too big, so that the usual scroll handler will clip it
+    case wxEVT_SCROLLWIN_BOTTOM:    ywin=pTileset->Count();  break;  // guaranteed to be too big, so that the usual scroll handler will clip it
     case wxEVT_SCROLLWIN_LINEUP:    ywin--;                     break;
     case wxEVT_SCROLLWIN_LINEDOWN:  ywin++;                     break;
     case wxEVT_SCROLLWIN_PAGEUP:    ywin-=GetScrollThumb(wxVERTICAL);   break;
@@ -112,7 +112,7 @@ void CTileSetView::Render()
 
             nTile++;
 
-            if (nTile>pTileset->NumTiles())
+            if (nTile>pTileset->Count())
             {
                 y=nTileheight;  // hack, so that we bomb out of the outer loop too.
                 break;
@@ -139,7 +139,7 @@ void CTileSetView::UpdateScrollbar()
     int nTilewidth =w/pTileset->Width();
     int nTileheight=h/pTileset->Height();
 
-    int nTotalheight=pTileset->NumTiles()/nTilewidth;
+    int nTotalheight=pTileset->Count()/nTilewidth;
 
     if (ywin>nTotalheight-nTileheight)  ywin=nTotalheight-nTileheight;
     if (ywin<0)                         ywin=0;
@@ -158,7 +158,7 @@ int CTileSetView::TileAt(int x,int y) const
 
     int t=(y+ywin)*nTilewidth+x;
 
-    if (t>pTileset->NumTiles()) return 0;
+    if (t>pTileset->Count()) return 0;
     return t;
 }
 

@@ -16,7 +16,7 @@ class CEntityEditor : public wxDialog
 
     CMapView*   pParent;
     Map*        pMap;
-    int         nOldidx;
+    int         nCurentidx;
 
     // Convenience pointers to dialog elements
     wxListBox*  pEntlist;
