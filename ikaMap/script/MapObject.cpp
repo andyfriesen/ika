@@ -23,56 +23,56 @@ namespace ScriptObject
         PyMethodDef methods[] =
         {
             {   "GetTile",      (PyCFunction)Map_GetTile,       METH_VARARGS,
-                "Map.GetTile(x, y, layer) -> int\n\n"
+                "GetTile(x, y, layer) -> int\n\n"
                 "Returns the index of the tile at (x, y) on the layer specified."
             },
 
             {   "SetTile",      (PyCFunction)Map_SetTile,       METH_VARARGS,
-                "Map.SetTile(x, y, layer, tile)\n\n"
+                "SetTile(x, y, layer, tile)\n\n"
                 "Sets the tile at (x, y) of the layer specified."
             },
 
             {   "GetObs",       (PyCFunction)Map_GetObs,        METH_VARARGS,
-                "Map.GetObs(x, y, layerIndex) -> int\n\n"
+                "GetObs(x, y, layerIndex) -> int\n\n"
                 "Returns 1 if the tile at (x, y) is obstructed, or 0 if not."
             },
 
             {   "SetObs",       (PyCFunction)Map_SetObs,        METH_VARARGS,
-                "Map.SetObs(x, y, layerIndex, obs)\n\n"
+                "SetObs(x, y, layerIndex, obs)\n\n"
                 "If obs is nonzero, the tile at (x, y) is obstructed, else it is\n"
                 "unobstructed."
             },
 
             {   "GetMetaData",  (PyCFunction)Map_GetMetaData,   METH_NOARGS,
-                "Map.GetMetaData() -> dict\n\n"
+                "GetMetaData() -> dict\n\n"
                 "Creates a dictionary containing the map's metadata, and returns it."
             },
 
             {   "SetMetaData", (PyCFunction)Map_SetMetaData, METH_VARARGS,
-                "Map.SetMetaData(metaData)\n\n"
+                "SetMetaData(metaData)\n\n"
                 "Copies the dict into the map's metadata.  The dict must contain nothing\n"
                 "but strings for both keys and values."
             },
 
 
             {   "GetLayerName", (PyCFunction)Map_GetLayerName,  METH_VARARGS,
-                "Map.GetLayerName(layerIndex) -> string\n\n"
+                "GetLayerName(layerIndex) -> string\n\n"
                 "Returns the name of the layer with the given index."
             },
 
             {   "GetLayerSize", (PyCFunction)Map_GetLayerSize,  METH_VARARGS,
-                "Map.GetLayerSize(layerIndex) -> (x,y)\n\n"
+                "GetLayerSize(layerIndex) -> (x,y)\n\n"
                 "Returns a tuple containing the size of the layer."
             },
 
             {   "FindLayerByName", (PyCFunction)Map_FindLayerByName,    METH_VARARGS,
-                "Map.FindLayerByName(name) -> integer\n\n"
+                "FindLayerByName(name) -> integer\n\n"
                 "Returns the index of the first layer with the given name, or None if no such layer\n"
                 "exists."
             },
 
             {   "GetParallax",  (PyCFunction)Map_GetParallax,   METH_VARARGS,
-                "Map.GetParallax(layer) -> (int, int, int, int)\n\n"
+                "GetParallax(layer) -> (int, int, int, int)\n\n"
                 "Returns a 4-tuple containing parallax settings for the layer specified.\n"
                 "Its contents are as follows:\n"
                 "( parallax X multiplier, \n"
@@ -82,7 +82,7 @@ namespace ScriptObject
             },
 
             {   "SetParallax",  (PyCFunction)Map_SetParallax,   METH_VARARGS,
-                "Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)\n\n"
+                "SetParallax(layer, xmul, xdiv, ymul, ydiv)\n\n"
                 "Sets the specified layer's parallax settings according to the multipliers\n"
                 "and divisors given.  If either of the divisors are zero, a parallax value of 0/1\n"
                 "will be used for that axis."
