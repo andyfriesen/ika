@@ -1,5 +1,6 @@
 #include "fileio.h"
 #include "zlib.h"
+#include <stdio.h>
 /* 
     fileio.cpp
     my own little custom class for file I/O der...
@@ -9,19 +10,20 @@
 
 std::vector<File::SDirectoryInfo> File::directoryinfo;
 
-string_k File::GetRealPath(string_k fname)
+std::string File::GetRealPath(const std::string& fname)
 {
-    if (fname.left(2)==".\\" || fname.left(2)=="./")	// absolute path specified
+    if (fname.substr(0,2)==".\\" || fname.substr(0,2)=="./")	// absolute path specified
         return fname;
     
-    string_k sExtension=fname;
+    std::string sExtension=fname;
+    std::string sResult=fname;
     
     int i=sExtension.length()-1;
     do
     {
         if (sExtension[i]=='.')
         {
-            sExtension=sExtension.right(sExtension.length()-i-1);
+            sExtension.erase(0,i+1);
             break;
         }
     } while (i-->0);
@@ -33,31 +35,31 @@ string_k File::GetRealPath(string_k fname)
     
     for (i=0; i<directoryinfo.size(); i++)				// now, we know the extension of the file, so we search the directory list for a match
     {
-        if (directoryinfo[i].sExtension=='*')
+        if (directoryinfo[i].sExtension=="*")
         {
             nSavepositionofdefaultdirectory=i;
             continue;
         }
-        if (sExtension.lower()==directoryinfo[i].sExtension.lower())
+        if (sExtension==directoryinfo[i].sExtension)
         {
             nSavepositionofdefaultdirectory=-1;
-            fname=directoryinfo[i].sPath+fname;
+            sResult=directoryinfo[i].sPath+fname;
             break;
         }
     }
     
     if (nSavepositionofdefaultdirectory!=-1)			// couldn't find an exact match, but we found a default
-        fname=directoryinfo[nSavepositionofdefaultdirectory].sPath+fname;
+        sResult=directoryinfo[nSavepositionofdefaultdirectory].sPath+fname;
     
-    return fname;
+    return sResult;
 }
 
-void File::AddPath(string_k sExtension,string_k sPath)
+void File::AddPath(std::string sExtension,std::string sPath)
 {
     SDirectoryInfo di;
-    
+   
     if (sPath[sPath.length()-1]!='\\')
-        sPath+='\\';
+        sPath+="\\";
     
     for (int i=0; i<directoryinfo.size(); i++)
         if (directoryinfo[i].sExtension==sExtension)
@@ -66,9 +68,9 @@ void File::AddPath(string_k sExtension,string_k sPath)
             return;
         }
         
-        di.sExtension=sExtension;
-        di.sPath=sPath;
-        directoryinfo.push_back(di);
+    di.sExtension=sExtension;
+    di.sPath=sPath;
+    directoryinfo.push_back(di);
 }
 
 void File::ClearPaths()
@@ -104,7 +106,7 @@ bool File::OpenRead(const char *fname,bool bBinary)
     if (!strlen(fname))
         return false;
     
-    string_k sFilename=GetRealPath(string_k(fname));
+    std::string sFilename=GetRealPath(std::string(fname));
     
     if (bBinary)
         f=fopen(sFilename.c_str(),"rb");
@@ -126,7 +128,7 @@ bool File::OpenAppend(const char *fname,bool bBinary)
     if (!strlen(fname))
         return false;
     
-    string_k sFilename=GetRealPath(string_k(fname));
+    std::string sFilename=GetRealPath(fname);
     
     if (bBinary)
         f=fopen(sFilename.c_str(),"ab");
@@ -220,12 +222,19 @@ void File::ReadToken(char* dest)
 
 void File::Write(const void* source,int numbytes)
 {
-    if (numbytes==closed)	return;
+    if (numbytes==0)    	return;
     if (source==NULL)		return;
     if (mode!=open_write)	return;
     
     fwrite(source,1,numbytes,f);
     fflush(f);
+}
+
+void File::Write(const char* source)
+{
+    if (mode!=open_write)       return;
+    if (!source)                return;
+    fprintf(f,"%s",source);
 }
 
 void File::WriteString(const char* source)

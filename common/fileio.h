@@ -1,10 +1,8 @@
 #ifndef FILEIO_H
 #define FILEIO_H
-#include <stdio.h>
 
 #include <vector>
-#include "strk.h"
-
+#include <string>
 
 class File
 {
@@ -17,16 +15,16 @@ class File
     
     struct SDirectoryInfo
     {
-        string_k sExtension;
-        string_k sPath;
+        std::string sExtension;
+        std::string sPath;
     };
     
     // Directory structure handling things
 private:
     static std::vector<SDirectoryInfo> directoryinfo;
-    string_k GetRealPath(string_k fname);
+    std::string GetRealPath(const std::string& fname);
 public:
-    static void AddPath(string_k sExtension,string_k sPath);
+    static void AddPath(std::string sExtension,std::string sPath);
     static void ClearPaths();
     
     // Misc handy file stuff
@@ -53,7 +51,7 @@ public:
     void ReadCompressed(void* dest,int numbytes);
     
     void Write(const void* source,int numbytes);
-    //	void Write(const char* source);
+    void Write(const char* source);
     template <typename T>
         void Write(const T& dest)
     {	Write(&dest,sizeof dest);	}

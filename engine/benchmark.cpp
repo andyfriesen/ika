@@ -3,7 +3,7 @@
 #include "timer.h"
 #include "win32.h"
 #include "log.h"
-#include "v_config.h"
+#include "configfile.h"
 #include "sound.h"
 
 const int TIME_PER_TEST = 1000;  // milliseconds
@@ -197,10 +197,10 @@ namespace
 
 void Benchmark(HWND hwnd)
 {
-    SUserConfig cfg;
+    CConfigFile cfg("user.cfg");
 
-    cfg.Read("user.cfg");
-    SetUpGraphics(cfg.sGraphplugin);
+//    cfg.Read("user.cfg");
+    SetUpGraphics(cfg.Get("graphdriver").c_str());//cfg.sGraphplugin);
     SetupSound("");
 
     gfxInit(hwnd,320,240,32,false);

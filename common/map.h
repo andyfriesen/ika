@@ -14,6 +14,7 @@
 #include "types.h"
 #include "fileio.h"
 #include "rle.h"
+#include "strk.h"
 
 // Legacy structs for loading v2 stuff
 struct layer_r

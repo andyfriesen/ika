@@ -1,7 +1,6 @@
 // gah... code bloat
 
 #include "main.h"
-#include "v_config.h"
 
 const char wintitle[]="WinMapEd";
 const char mapfilter[]="Map files\0*.map\0\0";
@@ -155,10 +154,6 @@ bool Engine::Init(HINSTANCE hInstance,int nCmdShow)
 	return false;
     }
     log("Created main window");
-    
-    SUserConfig cfg;
-    cfg.Read("user.cfg");
-    log("user.cfg parsed");
     
     SizeWindow(initxsize,initysize);							// Inits correct clipping and whatnot
     vsp.New();

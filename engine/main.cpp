@@ -82,7 +82,7 @@ void CEngine::MainLoop()
         int nFramesskipped=0;
         t+=timer.t;
         
-        while (timer.t>0 && ++nFramesskipped<=cfg.nMaxframeskip)
+        while (timer.t>0 && ++nFramesskipped<=nFrameskip)
         {
             timer.t--;
             
@@ -119,9 +119,11 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     
     hWnd=hwnd;        hInst=hinst;
     
-    cfg.Read("user.cfg");
+    CConfigFile cfg("user.cfg");
 
-    if (cfg.bLog)
+    nFrameskip=cfg.GetInt("frameskip");
+
+    if (cfg.GetInt("log"))
         initlog("ika.log");
     
     log("%s startup",VERSION);
@@ -130,14 +132,20 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     
     bKillFlag=false;
       
-    if (!SetUpGraphics(cfg.sGraphplugin))
+    if (!SetUpGraphics(cfg.Get("graphdriver").c_str()))
     {
         Sys_Error("Unable to load graphics driver.");
         return;
     }
     
     logp("Initing graphics");
-    bool a=gfxInit(hWnd,cfg.nInitxres,cfg.nInityres,cfg.nInitbpp,cfg.bFullscreen);
+    bool a=gfxInit(
+        hWnd,
+        cfg.GetInt("xres"),
+        cfg.GetInt("yres"),
+        cfg.GetInt("bitdepth"),
+        cfg.GetInt("fullscreen")!=0
+        );
     if (!a)
     {
         Sys_Error("gfxInit failed.\nThis could mean that you're trying to set a video mode that your hardware cannot handle.");
@@ -146,7 +154,7 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     logok();
     
     logp("Initing sound");
-    a=SetupSound(cfg.bSound?cfg.sSoundplugin:"");
+    a=SetupSound(cfg.Get("sounddriver").c_str());
     if (!a)
         log("Sound initialization failed.  Disabling audio.");
     logok();
@@ -157,11 +165,11 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
         Sys_Error("input.Init failed");
         return;
     }
-    input.ClipMouse(0,0,cfg.nInitxres,cfg.nInityres);
-    if (cfg.bFullscreen)        input.HideMouse();
+    input.ClipMouse(0,0,cfg.GetInt("xres"),cfg.GetInt("yres"));
+    if (cfg.GetInt("fullscreen"))        input.HideMouse();
     // Clear key bindings
-    ZeroMemory(pBindings,nControls*sizeof(void*));                  // It has come to my attention that I have far too few goofy comments in this source tree.
-    logok();                                                        // I AM PEANUT
+    ZeroMemory(pBindings,nControls*sizeof(void*));
+    logok();
     
     logp("Initing timer");
     if (!timer.Init(timerate))

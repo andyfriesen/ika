@@ -29,7 +29,7 @@
 #include "sprite.h"
 #include "entity.h"
 #include "font.h"
-#include "v_config.h"
+#include "configfile.h"
 
 class CEngine
 {
@@ -43,8 +43,6 @@ class CEngine
 public:                                                                             // Too many components need access to this class.  Kinda sucks. :/
     HWND hWnd;
     HINSTANCE hInst;
-    
-    SUserConfig                     cfg;
     
     Map                             map;                                            // tile placement and stuff
     CTileSet                        tiles;                                          // Images.  Of Tiles.
@@ -69,6 +67,7 @@ public:                                                                         
     void*                           pBindings[nControls];                           // key bindings
     std::list<void*>                pHookretrace;                                   // list of functions to be executed every retrace
     std::list<void*>                pHooktimer;                                     // list of functions to be executed every tick
+    int                             nFrameskip;                                     // the map engine will skip no more than this amount of ticks per retrace
     
     // interface
     void Sys_Error(const char* errmsg);                                             // bitches, and quits

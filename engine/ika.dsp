@@ -210,6 +210,14 @@ SOURCE=..\common\chr.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\configfile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\configfile.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\common\fileio.cpp
 # End Source File
 # Begin Source File
@@ -295,14 +303,6 @@ SOURCE=..\common\strk.h
 # Begin Source File
 
 SOURCE=..\common\types.h
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\v_config.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\v_config.h
 # End Source File
 # Begin Source File
 
