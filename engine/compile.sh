@@ -7,7 +7,6 @@ g++ \
    ../common/{Canvas,chr,configfile,fileio,fontfile,log,map,misc,rle,vergepal,vsp}.cpp \
    -I.  -I..  \
    `sdl-config --cflags --libs` \
-   `python-config` \
+   -I/usr/include/python`python -c "import sys; print sys.version[:3]"` \
    -lz -lcorona -laudiere -lutil -lGL -lGLU \
-   -rdynamic \
    -o ika

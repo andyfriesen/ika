@@ -2,19 +2,59 @@
 #include <SDL/SDL.h>
 
 #include "main.h"
+#include <SDL/SDL_syswm.h>
+
 #include "timer.h"
 
 #include "opengl/Driver.h"
 #include "soft32/Driver.h"
 
+#if 0 && (defined WIN32)
+// SDL_GetWMInfo doesn't seem to want to cooperate. :(
 void CEngine::Sys_Error(const char* errmsg)
 {
-/*    CDEBUG("sys_error");
-    Shutdown();
+    CDEBUG("sys_error");
+    
+    SDL_SysWMinfo info;
+	SDL_GetWMInfo(&info);
+
     if (strlen(errmsg))
-        MessageBox(hWnd, errmsg, "", 0);
-    PostQuitMessage(0);
-    bKillFlag = true;*/
+        MessageBox(info.window, errmsg, "", 0);
+
+    Shutdown();
+    exit(-1);
+}
+
+void CEngine::Script_Error()
+{
+    CDEBUG("script_error");
+
+    SDL_SysWMinfo info;
+	int i = SDL_GetWMInfo(&info);
+
+    File f;
+    if (f.OpenRead("pyout.log"))
+    {
+        int nSize = f.Size();
+        char* c = new char[nSize + 1];
+        memset(c, 0, nSize + 1);
+        f.Read(c, nSize);
+        f.Close();
+        MessageBox(info.window, c, "Script error", 0);
+        delete[] c;
+    }
+    else
+        MessageBox(info.window, "Unknown error!", "Script error", 0);
+    
+    Shutdown();
+    
+    exit(-1);
+    return;
+}
+#else
+void CEngine::Sys_Error(const char* errmsg)
+{
+    CDEBUG("sys_error");
     printf("%s", errmsg);
     exit(-1);
 }
@@ -32,17 +72,16 @@ void CEngine::Script_Error()
         memset(c, 0, nSize + 1);
         f.Read(c, nSize);
         f.Close();
-        //MessageBox(hWnd, c, "Script error", 0);
         printf("%s", c);
         delete[] c;
     }
     else
-        printf("%s", "oh no. :(");
-        //MessageBox(hWnd, "Unknown error!", "Script error", 0);
+        printf("%s", "Nonspecific script error.  Truly, the Tao is not with us in these dark times.");
     
     exit(-1);
     return;
 }
+#endif
 
 void CEngine::CheckMessages()
 {
@@ -594,7 +633,12 @@ void CEngine::TestActivate(const CEntity& player)
     }
     
     // Activating a zone?
-    const SMapZone& zone = map.Zones()[map.GetZone(tx / tiles->Width(), ty / tiles->Height())];
+    int z = map.GetZone(tx / tiles->Width(), ty / tiles->Height());
+    
+    if (z >= map.Zones().size())
+        return; // invalid zone
+
+    const SMapZone& zone = map.Zones()[z];
     
     if (zone.bAdjacentactivation)
     {
