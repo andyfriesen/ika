@@ -140,6 +140,7 @@ private:
     void ScreenToMap(int& x, int& y);
     void LayerEdit(wxMouseEvent& event);
     void HandleMouse(wxMouseEvent& event);
+    void HandleMouseWheel(wxMouseEvent& event);
     void UpdateScrollbars();
     void UpdateLayerList();
 

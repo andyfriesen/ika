@@ -524,17 +524,9 @@ void CMapView::LayerEdit(wxMouseEvent& event)
 
 void CMapView::HandleMouse(wxMouseEvent& event)
 {
-    if (int delta = event.GetWheelRotation())
+    if (event.GetWheelRotation())
     {
-        int t = pTileset->CurTile() + pTileset->Count();    // add the tile count so that we don't go negative
-        if (delta > 0)  t++;
-        else            t--;
-        pTileset->SetCurTile(t % pTileset->Count());        // then drop it.  This is just a cheap way to do wrap - around.
-
-        // And redraw the tileset window, if one is open.
-        CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(pTileset);
-        if (tsv)    tsv->Render();
-
+        HandleMouseWheel(event);
         return;
     }
     
@@ -559,6 +551,31 @@ void CMapView::HandleMouse(wxMouseEvent& event)
     default:
         wxASSERT(0);
         break;
+    }
+}
+
+void CMapView::HandleMouseWheel(wxMouseEvent& event)
+{
+    const int delta = event.GetWheelRotation();
+
+    if (event.ControlDown())
+    {
+        // zoom!
+        if (delta > 0)  Zoom(1);
+        else            Zoom(-1);
+    }
+    else
+    {
+        // Change the current tile
+
+        int t = pTileset->CurTile() + pTileset->Count();    // add the tile count so that we don't go negative
+        if (delta > 0)  t++;
+        else            t--;
+        pTileset->SetCurTile(t % pTileset->Count());        // then drop it.  This is just a cheap way to do wrap - around.
+
+        // And redraw the tileset window, if one is open.
+        CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(pTileset);
+        if (tsv)    tsv->Render();
     }
 }
 
