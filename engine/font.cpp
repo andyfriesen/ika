@@ -171,8 +171,6 @@ void Font::PaintString(int startx, int starty, const std::string& s, Printer& pr
                 // #[123456] becomes #[123456]
                 if (t.length() == 3 || t.length() == 4)
                     t = std::string() + t[0] + t[0] + t[1] + t[1] + t[2] + t[2];
-                if (t.length() == 6)
-                    t = std::string("FF") + t;
 
                 colour = hexToInt(t);
                 i = pos + 1;
