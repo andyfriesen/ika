@@ -154,7 +154,11 @@ namespace aries
         const NodeList& getChildren() const;                    ///< ditto
 
         DataNodeList getChildren(const std::string& name) const; ///< Returns all data nodes with the specified node name
-        DataNode* getChild(const std::string& name) const;      ///< Returns the first data node with the specified name, or 0 if no such node exists
+        DataNode* getChild(const std::string& name) const;      ///< Returns the first data node with the specified name.  Throws a std::runtime_error if the child does not exist.
+        DataNode* getChild(const std::string& name, DataNode* defaultValue) const;
+                                                                ///< Returns the first data node with the specified name, or defaultValue if the node cannot be found.
+
+        bool hasChild(const std::string& name) const;                 ///< Returns true if the node has a child by this name.
 
         std::string getName() const;                            ///< Returns the name of the node
 

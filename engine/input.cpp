@@ -257,6 +257,11 @@ public:
         bool b = (SDL_GetMouseState(0, 0) & _mask) != 0;
         return b ? 1.0f : 0.0f;
     }
+
+    virtual bool Pressed()
+    {
+        return Delta() > 0;
+    }
 };
 
 Input::Input()
@@ -282,8 +287,8 @@ Input::Input()
     _controls["MOUSEX"] = new MouseAxisX(this);
     _controls["MOUSEY"] = new MouseAxisY(this);
     _controls["MOUSEL"] = new MouseButton(this, 1);
-    _controls["MOUSER"] = new MouseButton(this, 2);
-    _controls["MOUSEM"] = new MouseButton(this, 3);
+    _controls["MOUSER"] = new MouseButton(this, 3);
+    _controls["MOUSEM"] = new MouseButton(this, 2);
 }
 
 Input::~Input()

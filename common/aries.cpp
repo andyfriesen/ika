@@ -219,6 +219,24 @@ namespace aries
 
     DataNode* DataNode::getChild(const std::string& name) const
     {
+        DataNode* n = getChild(name, 0);
+        if (!n)
+            throw std::runtime_error(std::string("Unable to find node ") + name);
+        else
+            return n;
+        /*for (NodeList::const_iterator i = _children.begin(); i != _children.end(); i++)
+        {
+            Node* n = *i;
+            if (!n->isString() &&
+                reinterpret_cast<DataNode*>(n)->getName() == name)
+                return reinterpret_cast<DataNode*>(n);
+        }
+
+        throw std::runtime_error(std::string("Unable to find node ") + name);*/
+    }
+
+    DataNode* DataNode::getChild(const std::string& name, DataNode* defaultValue) const
+    {
         for (NodeList::const_iterator i = _children.begin(); i != _children.end(); i++)
         {
             Node* n = *i;
@@ -227,7 +245,19 @@ namespace aries
                 return reinterpret_cast<DataNode*>(n);
         }
 
-        throw std::runtime_error(std::string("Unable to find node ") + name);
+        return defaultValue;
+    }
+
+    bool DataNode::hasChild(const std::string& name) const
+    {
+        for (NodeList::const_iterator i = _children.begin(); i != _children.end(); i++)
+        {
+            Node* n = *i;
+            if (!n->isString() &&
+                reinterpret_cast<DataNode*>(n)->getName() == name)
+                return true;
+        }
+        return false;
     }
 
     std::string DataNode::getName() const
