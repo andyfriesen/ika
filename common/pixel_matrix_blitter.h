@@ -23,22 +23,24 @@ namespace
     {
         static inline RGBA Blend(RGBA src,RGBA dest)
         {
-#if !defined(MSVC) || !defined(INLINE_ASM)
-            // Not endian independant.  Must fix.
+#if 1 || !defined(MSVC) || !defined(INLINE_ASM)
+            // Not as fast as it could be
+            if (!src.a) return dest;
+            if (src.a==255) return src;
 
-	    u32 c;
-	    d=(u32*)*pDest;
-	    
-	    s=(u32*)*pSrc;
-	    
-	    c =( a*((s&255)-(d&255))/256 + (d&255) );
-	    s>>=8; d>>=8;
-	    c|=( a*((s&255)-(d&255))/256 + (d&255) )<<8;
-	    s>>=8; d>>=8;
-	    c|=( a*((s&255)-(d&255))/256 + (d&255) )<<16;
-            return RGBA(c);
+            u8  a=src.a;
+            
+            RGBA col;
+            col.a=a;
+
+            col.r=  ( (src.r*a) + (dest.r*(255-a)) ) >>8;
+            col.g=  ( (src.g*a) + (dest.g*(255-a)) ) >>8;
+            col.b=  ( (src.b*a) + (dest.b*(255-a)) ) >>8;
+
+            return col;
 #else
             // not portable at all, but pretty fast
+            // Bleh.  Broken, because I can no longer figure out how the hell this thing ever worked in the first place. ;P
             u32 s,d,c;
             u8 a=src.a;
             __asm
@@ -46,8 +48,6 @@ namespace
                     mov         ebx,[src]
                     mov		s,ebx			// s=*pSrc
                     mov         eax,[dest]
-//                    mov		edx,[pDest]
-//                    mov		eax,dword ptr[edx]
                     mov		d,eax			// d=*pDest
                     
                     // Mix the blue channel
@@ -58,11 +58,13 @@ namespace
                     xor		ah,ah
                     mov		al,a
                     sub		bx,cx			// bx=(s&255-d&255)
-                    mul		bx				// eax=bx*ax (where bx is set above, and ax is equal to the alpha)
+                    mul		bx			// eax=bx*ax (where bx is set above, and ax is equal to the alpha)
                     
                     shr		ax,8			// ax= a*(s&255-d&255)/256
                     add		ax,cx			// al= a*(s&255-d&255)/256+d&255
                     and		eax,255
+                    
+                    shl         eax,16                  // temp
                     
                     mov		c,eax			// save the blue chan
                     
@@ -80,7 +82,7 @@ namespace
                     xor		ax,ax
                     mov		al,a
                     sub		bx,cx			// bl=(s&255-d&255)
-                    imul	bx				// ax=bl*al (where bl is set above, and al is equal to the alpha)
+                    imul	bx			// ax=bl*al (where bl is set above, and al is equal to the alpha)
                     
                     shl		cx,8
                     add		ax,cx			// ax= a*(s&255-d&255)+(d&255*256)
@@ -100,7 +102,7 @@ namespace
                     xor		ax,ax
                     mov		al,a
                     sub		bx,cx			// bl=(s&255-d&255)
-                    imul	bx				// ax=bl*al (where bl is set above, and al is equal to the alpha)
+                    imul	bx			// ax=bl*al (where bl is set above, and al is equal to the alpha)
                     
                     shl		cx,8
                     add		ax,cx			// ax= a*(s&255-d&255)+(d&255*256)
@@ -108,7 +110,9 @@ namespace
                     shl		eax,8
                     
                     or		c,eax			// mix in the red chan
-                    
+
+                    shr         eax,16
+                   
                     mov		eax,c
             }
             return RGBA(c);

@@ -76,7 +76,7 @@ public:
     void AppendTiles(int count=1);
     void CopyTile(CPixelMatrix& tb,int pos); // Copies the tile into a buffer.
     void PasteTile(const CPixelMatrix& tb,int pos); // pastes the tile from a buffer
-    void TPasteTile(const CPixelMatrix& tb,int pos); // transparently pastes the tile from a buffer
+    void TPasteTile(CPixelMatrix& tb,int pos); // transparently pastes the tile from a buffer
     void To32bpp();
     
     void SetPixel(int x,int y,int tileidx,int c);
@@ -92,6 +92,7 @@ public:
     
     inline const char* Name() const { return (const char*)sName; }
     
+private:
     void CreateTilesFromBuffer(u8* data,u8* pal,int numtiles,int tilex,int tiley);
     void CreateTilesFromBuffer(u16* data,int numtiles,int tilex,int tiley);
     void CreateTilesFromBuffer(RGBA* data,int numtiles,int tilex,int tiley);

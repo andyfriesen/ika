@@ -240,7 +240,7 @@ BOOL CTileSel::MainProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
     int t;
     static int x,y;
-    CPixelMatrix copybuffer;
+    static CPixelMatrix copybuffer;
     
     switch(msg)
     {

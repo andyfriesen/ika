@@ -282,7 +282,7 @@ bool AlphaBlit(handle img,int x,int y)
     __asm
     {
 beginloop:
-    mov		eax,[pSrc]
+        mov		eax,[pSrc]
 	mov		eax,dword ptr[eax]		// eax=*pSrc
 	mov		ebx,eax			// ebx=*pSrc
 	shr		eax,24			// al = alpha
@@ -296,7 +296,7 @@ beginloop:
 	jmp		skipalpha
 	
 alphablend:
-    cmp		al,0			// alpha=0, no blend at all
+        cmp		al,0			// alpha=0, no blend at all
 	je		skipalpha
 	
 	mov		s,ebx			// s=*pSrc
@@ -369,7 +369,7 @@ alphablend:
 	
 skipalpha:
     
-    add		pSrc,4			// ++pDest
+        add		pSrc,4			// ++pDest
 	add		pDest,4			// ++pSrc
 	mov		eax,x			// --x
 	dec		eax
