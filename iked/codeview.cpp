@@ -247,6 +247,7 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
 
         pTextctrl->StyleSetFont(font.GetStyle(),font);
         pTextctrl->StyleSetForeground(nWhich,color);
+        
         pTextctrl->StyleSetFontAttr(nWhich,         
 #ifndef WX232
             // Compensate for wx2.2.9's fruity way of messing up the point sizes.
@@ -255,14 +256,18 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
             font.GetPointSize(),
 #endif
             font.GetFaceName(),
-            font.GetStyle()&wxBOLD!=0,
-            font.GetStyle()&wxITALIC!=0,
+            font.GetWeight()==wxBOLD,
+            font.GetStyle()==wxITALIC,
             font.GetUnderlined());
-/*        pTextctrl->StyleSetBold(nWhich,(font.GetStyle()==wxBOLD)?true:false);
+        
+        /*
+        pTextctrl->StyleSetBold(nWhich,(font.GetWeight()==wxBOLD)?true:false);
         pTextctrl->StyleSetItalic(nWhich,(font.GetStyle()==wxITALIC)?true:false);
         pTextctrl->StyleSetUnderline(nWhich,font.GetUnderlined());
+
         pTextctrl->StyleSetSize(nWhich,font.GetPointSize());
-        pTextctrl->StyleSetFaceName(nWhich,font.GetFaceName());*/
+        pTextctrl->StyleSetFaceName(nWhich,font.GetFaceName());
+        */
        
         pTextctrl->Show(true);
         pTextctrl->SetFocus();
