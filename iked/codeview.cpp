@@ -8,6 +8,10 @@
 #include "codeview.h"
 #include "fileio.h"
 
+#ifdef WX232
+#   include <wx\fdrepdlg.h>
+#endif
+
 namespace
 {
     enum    {   linecountmargin, foldmargin };
@@ -29,6 +33,7 @@ BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
     EVT_MENU(CCodeWnd::id_editpaste,CCodeWnd::OnPaste)
     EVT_MENU(CCodeWnd::id_optionsfont,CCodeWnd::OnSyntaxHighlighting)
 
+#ifdef WX232
     EVT_MENU(CCodeWnd::id_editfind,CCodeWnd::OnFind)
     EVT_MENU(CCodeWnd::id_editreplace,CCodeWnd::OnReplace)
     
@@ -37,6 +42,7 @@ BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
     EVT_FIND_REPLACE(-1,CCodeWnd::DoFind)
     EVT_FIND_REPLACE_ALL(-1,CCodeWnd::DoFind)
     EVT_FIND_CLOSE(-1,CCodeWnd::DoFind)
+#endif
 
 END_EVENT_TABLE()
 
@@ -86,6 +92,8 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
     pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     pTextctrl->StyleClearAll();
+
+    pTextctrl->SetProperty("fold","1");
 
     // defaults
     pTextctrl->StyleSetForeground(0,  wxColour(0x80, 0x80, 0x80));  // whitespace
@@ -257,6 +265,7 @@ void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
 
 void CCodeWnd::OnFind(wxCommandEvent& event)
 {
+#ifdef WX232
     wxFindReplaceData fdata;
 
     wxFindReplaceDialog* pDialog = new wxFindReplaceDialog
@@ -267,10 +276,12 @@ void CCodeWnd::OnFind(wxCommandEvent& event)
             
         );
     pDialog->Show(true);
+#endif
 }
 
 void CCodeWnd::OnReplace(wxCommandEvent& event)
 {
+#ifdef WX232
     wxFindReplaceData fdata;
 
     wxFindReplaceDialog* pDialog = new wxFindReplaceDialog
@@ -281,8 +292,10 @@ void CCodeWnd::OnReplace(wxCommandEvent& event)
             wxFR_REPLACEDIALOG
         );
     pDialog->Show(true);
+#endif
 }
 
+#ifdef WX232
 void CCodeWnd::DoFind(wxFindDialogEvent& event)
 {
     // Handles find/replace stuff.
@@ -335,10 +348,8 @@ void CCodeWnd::DoFind(wxFindDialogEvent& event)
 
     wxFindReplaceDialog *pDlg = event.GetDialog();
     pDlg->Destroy();
-
 }
-
-
+#endif
 
 void CCodeWnd::OnStyleNeeded(wxStyledTextEvent& event)
 {

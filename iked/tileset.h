@@ -3,17 +3,18 @@
 #define TILESET_H
 
 #include "types.h"
-#include <wx\wx.h>
+//#include <wx\wx.h>
 
-class VSP;
 class CPixelMatrix;
 class CGraphFactory;
 class CGraphFrame;
 class CImage;
 
+class VSP;
+
 class CTileSet
 {
-    CGraphFactory&      graphfactory;  // we use this to make images, basically
+    CGraphFactory*      pGraphfactory;  // we use this to make images, basically
     VSP*                pVsp;
     vector<bool>        bAltered;   // true if a tile has been tweaked
     vector<CImage*>     bitmaps;    // hardware dependant copies of the tiles
@@ -23,8 +24,10 @@ class CTileSet
 
 public:
 
-    CTileSet(CGraphFactory& f,VSP& v);
+    CTileSet(CGraphFactory* f=0);
     ~CTileSet();
+
+    void SetFactory(CGraphFactory* p) { pGraphfactory=p; }
 
     bool Load(const char* fname);
     bool Save(const char* fname);

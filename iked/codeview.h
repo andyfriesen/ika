@@ -4,7 +4,6 @@
 
 #include "types.h"
 #include <wx\wx.h>
-#include <wx\fdrepdlg.h>
 #include <wx\colordlg.h>
 #include <wx\fontdlg.h>
 #include <wx\stc\stc.h>
@@ -60,7 +59,9 @@ public:
     void OnSyntaxHighlighting(wxCommandEvent& event); // syntax highlighting dialog
 private:
     void SetSyntax(int,wxCommandEvent&);
+#ifdef WX232
     void DoFind(wxFindDialogEvent& event);
+#endif
 public:
 
     DECLARE_EVENT_TABLE()

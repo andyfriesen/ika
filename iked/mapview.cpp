@@ -24,14 +24,15 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
 
     // Get resources
     pMap=pParentwnd->map.Load(fname);
-    pVsp=pParentwnd->vsp.Load(pMap->GetVSPName());
-    pTileset=new CTileSet(pParentwnd->graphfactory,*pVsp);
+//    pVsp=pParentwnd->vsp.Load(pMap->GetVSPName());
+//    pTileset=new CTileSet(pParentwnd->graphfactory);
+    pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());
 }
 
 CMapView::~CMapView()
 {
     pParentwnd->map.Release(pMap);
-    pParentwnd->vsp.Release(pVsp);
+    pParentwnd->vsp.Release(pTileset);
     delete pTileset;
 }
 

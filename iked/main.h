@@ -9,7 +9,7 @@
 
 // Resource objects
 #include "map.h"
-#include "vsp.h"
+#include "tileset.h"
 #include "graph.h"
 
 #include "controller.h"
@@ -86,7 +86,7 @@ public:
     CGraphFactory graphfactory; // image/frame factory class
 
     CController<Map> map;
-    CController<VSP> vsp;
+    CController<CTileSet> vsp;
     // TODO: fonts, sprites, scripts, anything else that comes to mind
 
 public:

@@ -6,7 +6,6 @@
 #include <wx\wx.h>
 
 class Map;
-class VSP;
 
 class CMainWnd;
 class CGraphFrame;
@@ -17,7 +16,6 @@ class CMapView : public wxMDIChildFrame
     CMainWnd*    pParentwnd;
     CGraphFrame* pGraph;
     Map*         pMap;
-    VSP*         pVsp;
 
     CTileSet*    pTileset;
 

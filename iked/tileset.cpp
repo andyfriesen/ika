@@ -3,10 +3,9 @@
 #include "pixel_matrix.h"
 #include "graph.h"
 
-CTileSet::CTileSet(CGraphFactory& f,VSP& v)
-: graphfactory(f)
+CTileSet::CTileSet(CGraphFactory* p)
+: pGraphfactory(p)
 {
-    pVsp=&v;
 }
 
 CTileSet::~CTileSet()
@@ -48,7 +47,7 @@ bool CTileSet::Load(const char* fname)
 
     for (int i=0; i<pVsp->NumTiles(); i++)
     {
-        bitmaps[i]=graphfactory.CreateImage(pVsp->GetTile(i));
+        bitmaps[i]=pGraphfactory->CreateImage(pVsp->GetTile(i));
     }
 
     return true;
