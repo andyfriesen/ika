@@ -77,7 +77,7 @@ struct movescript_r
 // New stuff
 struct SMapZone
 {
-    string        sName;                                    // purely for the developer's benefit (for now)
+    string        name;                                    // purely for the developer's benefit (for now)
     string        sDescription;                             // purely for the developer's benefit
     string        sActscript;                               // name of script to execute when teh zone is activated
     int           nActchance;                               // probability (out of 100) that the zone will activate when stepped upon
@@ -94,7 +94,7 @@ struct SMapZone
 //! Mapfile representation of an entity.
 struct SMapEntity
 {
-    string      sName;                                      //!< entity's name
+    string      name;                                      //!< entity's name
     string      sDescription;                               //!< description (purely for the developer's use)
     int         x,y;                                        //!< position
     int         direction;                                  //!< the direction the entity is initially facing

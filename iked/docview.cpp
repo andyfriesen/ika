@@ -8,7 +8,7 @@ END_EVENT_TABLE()
 
 IDocView::IDocView(CMainWnd* parent,const string& fname)
     :   wxMDIChildFrame(parent,-1,fname.c_str(),wxDefaultPosition,wxDefaultSize),
-        pParent(parent),    sName(fname),   bChanged(false)
+        pParent(parent),    name(fname),   bChanged(false)
 {
     SetTitle(fname.length()?
             fname.c_str()   :   "Untitled"
@@ -28,7 +28,7 @@ void IDocView::OnClose(wxCommandEvent& event)
             (
                 this,
                 "This file has been modified. Save?",
-                sName.c_str(),
+                name.c_str(),
                 wxYES_NO | wxCANCEL | wxICON_QUESTION,
                 wxDefaultPosition
             );

@@ -360,8 +360,8 @@ void CMapView::OnClose()
 
 void CMapView::OnSave(wxCommandEvent& event)
 {
-    if (sName.length())
-        pMap->Save(sName.c_str());
+    if (name.length())
+        pMap->Save(name.c_str());
     else
         OnSaveAs(event);
 }
@@ -382,8 +382,8 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
     if (result == wxID_CANCEL)
         return;
 
-    sName = dlg.GetFilename().c_str();
-    SetTitle(sName.c_str());
+    name = dlg.GetFilename().c_str();
+    SetTitle(name.c_str());
 
     OnSave(event);
 }
@@ -438,7 +438,7 @@ void CMapView::OnNewLayer(wxCommandEvent& event)
 
 void CMapView::OnShowScript(wxCommandEvent& event)
 {
-    pParent->Open(Path::ReplaceExtension(sName, "py"));
+    pParent->Open(Path::ReplaceExtension(name, "py"));
 }
 
 //------------------------------------------------------------

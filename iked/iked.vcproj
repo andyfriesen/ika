@@ -365,6 +365,9 @@
 				RelativePath=".\resource.h">
 			</File>
 			<File
+				RelativePath="sprite.ico">
+			</File>
+			<File
 				RelativePath=".\vsp.ico">
 			</File>
 		</Filter>

@@ -52,7 +52,7 @@ private:
     vector<Canvas>   tiles;   // tile images
     
     char sDesc[64];
-    char sName[64];		    // the VSPs filename
+    char name[64];		    // the VSPs filename
     
     vector<AnimState>  vspanim;
     
@@ -87,7 +87,7 @@ public:
     inline int Height() const { return nTiley; }
     inline uint NumTiles() const { return tiles.size(); }
     
-    inline const char* Name() const { return (const char*)sName; }
+    inline const char* Name() const { return (const char*)name; }
     
 private:
     void CreateTilesFromBuffer(u8* data,u8* pal,uint numtiles,int tilex,int tiley);

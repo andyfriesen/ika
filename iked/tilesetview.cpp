@@ -122,7 +122,7 @@ CTileSetView::~CTileSetView()
 
 void CTileSetView::OnSave(wxCommandEvent& event)
 {
-    pTileset->Save(sName.c_str());
+    pTileset->Save(name.c_str());
 }
 
 void CTileSetView::Paint()

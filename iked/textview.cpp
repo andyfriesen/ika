@@ -90,7 +90,7 @@ CTextView::CTextView(CMainWnd* parent,const string& name):IDocView(parent,name)
             delete[] c;
             f.Close();
 
-            sName=name;
+            this->name = name;
         } 
     }
 
@@ -283,14 +283,14 @@ void CTextView::OnCharAdded(wxStyledTextEvent& event)
 
 void CTextView::OnSave(wxCommandEvent& event)
 {
-    if (sName.length()==0)
+    if (name.length()==0)
     {
         OnSaveAs(event);
         return;
     }
 
     File f;
-    if (!f.OpenWrite(sName.c_str()))
+    if (!f.OpenWrite(name.c_str()))
         return;
 
     int nSize=pTextctrl->GetTextLength();
@@ -319,7 +319,7 @@ void CTextView::OnSave(wxCommandEvent& event)
     if (bChanged)
     {
         bChanged=false;
-        SetTitle(sName.c_str());   // remove the * from the title
+        SetTitle(name.c_str());   // remove the * from the title
     }
 }
 
@@ -338,8 +338,8 @@ void CTextView::OnSaveAs(wxCommandEvent& event)
     if (result==wxID_CANCEL)
         return;
 
-    sName=dlg.GetFilename().c_str();
-    SetTitle(sName.c_str());
+    name=dlg.GetFilename().c_str();
+    SetTitle(name.c_str());
 
     OnSave(event);
 }

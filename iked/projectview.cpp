@@ -4,17 +4,17 @@
 
 struct CLeaf : public wxTreeItemData
 {
-    string sName;                           // the filename
+    string name;                           // the filename
     FileType   type;                        // the kind of resource
     CLeaf()
     {}
     
     CLeaf(const CLeaf& l)
-        : sName(l.sName), type(l.type)
+        : name(l.name), type(l.type)
     {}
     
     CLeaf(const string& n, FileType t)
-        : sName(n), type(t)
+        : name(n), type(t)
     {}
 };
 
@@ -73,6 +73,7 @@ public:
         rootmenu=new wxMenu;
         rootmenu->Append(id_add, "&Add", "");
         rootmenu->Append(id_createsubfolder, "Create Sub&folder", "");
+        rootmenu->Append(id_rename, "Rena&me", "");
         bChanged=false;
     }
 
@@ -86,23 +87,37 @@ public:
         if (pSel->type==t_folder)
             Expand(id);
         else
-            pMainwnd->Open(pSel->sName);
+            pMainwnd->Open(pSel->name);
     }
 
     void OnRightClick(wxMouseEvent& event)
     {
         int flags=0;
-        wxTreeItemId id=HitTest(event.GetPosition(), flags);
-        SelectItem(id);
+        wxTreeItemId id;
+        wxPoint pos = event.GetPosition();
+
+        if (pos != wxPoint(-1, -1))
+        {
+            id = HitTest(event.GetPosition(), flags);
+            SelectItem(id);
+        }
+        else    // menu key
+        {
+            id = GetSelection();
+            wxRect r;
+            GetBoundingRect(id, r);
+            pos = r.GetPosition();
+        }
+
         pSelected=(CLeaf*)GetItemData(id);
         if (!pSelected) return;
 
-        if (id==GetRootItem())
-            PopupMenu(rootmenu, event.GetPosition());
-        else if (pSelected->type==t_folder)
-            PopupMenu(foldermenu, event.GetPosition());
+        if (id == GetRootItem())
+            PopupMenu(rootmenu, pos);
+        else if (pSelected->type == t_folder)
+            PopupMenu(foldermenu, pos);
         else
-            PopupMenu(filemenu, event.GetPosition());
+            PopupMenu(filemenu, pos);
     }
 
     void OnEndEdit(wxTreeEvent& event)
@@ -110,7 +125,7 @@ public:
         wxTreeItemId id=event.GetItem();
         CLeaf* pData=(CLeaf*)GetItemData(event.GetItem());
 
-        pData->sName=event.GetLabel().c_str();
+        pData->name=event.GetLabel().c_str();
     }
 
     void OnBeginDrag(wxTreeEvent& event)
@@ -140,7 +155,7 @@ public:
     
     void OnOpen(wxCommandEvent& event)
     {
-        pMainwnd->Open(pSelected->sName.c_str());
+        pMainwnd->Open(pSelected->name.c_str());
     }
     
     void OnDelete(wxCommandEvent& event)
@@ -185,13 +200,14 @@ public:
             return;
 
         // TODO: Get the lowest-common-denominator path, so the project file can be moved around easier
-        wxArrayString sNames;
+        wxArrayString names;
         wxArrayString sPaths;
-        dlg.GetFilenames(sNames);
+        dlg.GetFilenames(names);
         dlg.GetPaths(sPaths);
         
-        for (uint i=0; i<sNames.Count(); i++)
-            AddItem(id, sNames[i].c_str(), sPaths[i].c_str());
+        for (uint i=0; i<names.Count(); i++)
+            AddItem(id, names[i].c_str(), sPaths[i].c_str());
+
         Expand(id);
         Refresh();
         SetChanged();
@@ -253,11 +269,12 @@ public:
         int hIcon;
         switch (t)
         {
-        case t_script:  hIcon=1;    break;
-        case t_vsp:     hIcon=2;    break;
-        case t_font:    hIcon=3;    break;
-        case t_map:     hIcon=4;    break;
-        default:        hIcon=-1;   break;
+        case t_script:  hIcon = 1;  break;
+        case t_vsp:     hIcon = 2;  break;
+        case t_font:    hIcon = 3;  break;
+        case t_map:     hIcon = 4;  break;
+        case t_chr:     hIcon = 5;  break;
+        default:        hIcon = -1; break;
         }
 
         SetChanged();
@@ -272,6 +289,7 @@ BEGIN_EVENT_TABLE(CProjectTree, wxTreeCtrl)
     
     EVT_LEFT_DCLICK(CProjectTree::OnDoubleClick)
     EVT_RIGHT_DOWN(CProjectTree::OnRightClick)
+//    EVT_CONTEXT_MENU(CProjectTree::OnContextMenu)
     EVT_TREE_END_LABEL_EDIT(CProjectTree::id_treectrl, CProjectTree::OnEndEdit)
     EVT_TREE_BEGIN_DRAG(CProjectTree::id_treectrl, CProjectTree::OnBeginDrag)
     EVT_TREE_END_DRAG(CProjectTree::id_treectrl, CProjectTree::OnEndDrag)
@@ -299,7 +317,7 @@ CProjectView::CProjectView(CMainWnd* parent, const string& name)
     if (name.length())
     {
         Load(name.c_str());
-        sName=name;
+        this->name = name;
     }
 
     else
@@ -320,6 +338,7 @@ CProjectView::CProjectView(CMainWnd* parent, const string& name)
     pImagelist->Add(wxIcon("vspicon"   , wxBITMAP_TYPE_ICO_RESOURCE));
     pImagelist->Add(wxIcon("fonticon"  , wxBITMAP_TYPE_ICO_RESOURCE));
     pImagelist->Add(wxIcon("mapicon"   , wxBITMAP_TYPE_ICO_RESOURCE));
+    pImagelist->Add(wxIcon("spriteicon", wxBITMAP_TYPE_ICO_RESOURCE));
     // chr
     pTreectrl->SetImageList(pImagelist);
 
@@ -344,14 +363,14 @@ CProjectView::~CProjectView()
 
 void CProjectView::OnSave(wxCommandEvent& event)
 {
-    if (sName.length()==0)
+    if (name.length()==0)
     {
         OnSaveAs(event);
         return;
     }
 
-    Save(sName.c_str());
-    SetTitle(sName.c_str());
+    Save(name.c_str());
+    SetTitle(name.c_str());
 }
 
 void CProjectView::OnSaveAs(wxCommandEvent& event)
@@ -370,9 +389,9 @@ void CProjectView::OnSaveAs(wxCommandEvent& event)
     int result=dlg.ShowModal();
     if (result!=wxID_CANCEL)
     {
-        sName=dlg.GetPath().c_str();
-        Save(sName.c_str());
-        SetTitle(sName.c_str());
+        name=dlg.GetPath().c_str();
+        Save(name.c_str());
+        SetTitle(name.c_str());
     }
     
 }
@@ -381,7 +400,7 @@ void CProjectView::Load(const char* fname)
 {
     struct Local
     {
-        static void ReadNode(const string& sProjectroot, FILE* f, CProjectTree* pTreectrl, const wxTreeItemId& parentid)
+        static void ReadNode(const string& sProjectroot, FILE* f, CProjectTree* tree, const wxTreeItemId& parentid)
         {
             char s[1024];           
 
@@ -400,16 +419,16 @@ void CProjectView::Load(const char* fname)
                 p=sLine.rfind("FOLDER");
                 if (p!=std::string::npos)
                 {
-                    std::string sName=Trim(sLine.substr(0, p-1));
+                    std::string name=Trim(sLine.substr(0, p-1));
 
                     wxTreeItemId id;
 
-                    if (parentid==-1)
-                        id=pTreectrl->AddRoot("Project", -1, -1, new CLeaf("Project", t_folder));
+                    if (!tree->GetRootItem().IsOk())
+                        id=tree->AddRoot(name.c_str(), -1, -1, new CLeaf(name.c_str(), t_folder));
                     else
-                        id=pTreectrl->AddFolder(parentid, sName.c_str());
+                        id=tree->AddFolder(parentid, name.c_str());
 
-                    ReadNode(sProjectroot, f, pTreectrl, id);
+                    ReadNode(sProjectroot, f, tree, id);
 
                     continue;
                 }
@@ -417,10 +436,10 @@ void CProjectView::Load(const char* fname)
                 p=sLine.rfind("FILE");
                 if (p!=std::string::npos)
                 {
-                    string sName=Trim(sLine.substr(0, p-1));
-                    string sPath=Path::Directory(sName, sProjectroot).substr(1); // nuke the leading slash
+                    string name=Trim(sLine.substr(0, p-1));
+                    string sPath=Path::Directory(name, sProjectroot).substr(1); // nuke the leading slash
 
-                    pTreectrl->AddItem(parentid, sPath+Path::Filename(sName), sName);
+                    tree->AddItem(parentid, sPath+Path::Filename(name), name);
                 }
             }
         }
@@ -433,6 +452,7 @@ void CProjectView::Load(const char* fname)
         return;
 
     pTreectrl->DeleteAllItems();
+
     Local::ReadNode(sProjectroot, f, pTreectrl, -1);
     fclose(f);
     pTreectrl->bChanged=false;
@@ -442,7 +462,7 @@ void CProjectView::Save(const char* fname)
 {
     struct Local
     {
-        static void WriteIndentation(FILE* f, int amount)
+        static void WriteIndentation(FILE* f, const int amount)
         {
             char* c=new char[amount+1];
             memset(c, 32, amount);
@@ -451,38 +471,30 @@ void CProjectView::Save(const char* fname)
             delete[] c;
         }
 
-        static void WriteNode(FILE* f, CProjectTree* pTreectrl, wxTreeItemId id, int indentlevel=0)
+        static void WriteNode(CProjectTree* tree, const wxTreeItemId& item, FILE* f, const int indent = 0)
         {
-            CLeaf* pLeaf=(CLeaf*)pTreectrl->GetItemData(id);
-            
-            WriteIndentation(f, indentlevel);
-            fprintf(f, "%s  ", pLeaf->sName.c_str());
+            CLeaf* leaf = (CLeaf*)tree->GetItemData(item);
+            WriteIndentation(f, indent);
 
-            if (pLeaf->type!=t_folder)
-                fprintf(f, "FILE\n");
+            if (tree->ItemHasChildren(item))
+            {
+                fprintf(f, "%s   FOLDER\n", leaf->name.c_str());
+
+                long cookie;
+                wxTreeItemId child = tree->GetFirstChild(item, cookie);
+
+                while (child.IsOk())
+                {
+                    WriteNode(tree, child, f, indent + 4);
+                    child = tree->GetNextSibling(child);
+                }
+
+                WriteIndentation(f, indent);
+                fprintf(f, "END\n");
+            }
             else
             {
-                // wacky recursion
-                fprintf(f, "FOLDER\n");
-
-                int nChildren=pTreectrl->GetChildrenCount(id, false);
-                if (nChildren)
-                {
-                    long l;
-                    wxTreeItemId child=pTreectrl->GetFirstChild(id, l);
-                    
-                    int c=0;
-                    while (c<nChildren)
-                    {
-                        WriteNode(f, pTreectrl, child, indentlevel+4);
-                        c++;                        // YAY.  or something
-
-                        child=pTreectrl->GetNextChild(id, l);
-                    }
-                }
-                
-                WriteIndentation(f, indentlevel);
-                fprintf(f, "END\n");
+                fprintf(f, "%s   FILE\n", leaf->name.c_str());
             }
         }
     };
@@ -490,11 +502,9 @@ void CProjectView::Save(const char* fname)
     // ---------
 
     FILE* f=fopen(fname, "w");
-    if (!f)
-        return;
+    if (!f) return;
 
-    wxTreeItemId id=pTreectrl->GetRootItem();
-    Local::WriteNode(f, pTreectrl, id);
+    Local::WriteNode(pTreectrl, pTreectrl->GetRootItem(), f);
     fclose(f);
     pTreectrl->bChanged=false;
 }

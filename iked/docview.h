@@ -15,7 +15,7 @@ class IDocView : public wxMDIChildFrame
 {
 protected:
     CMainWnd* pParent;
-    string sName;
+    string name;
 
     bool bChanged;
 
@@ -26,7 +26,7 @@ public:
     virtual void OnClose(wxCommandEvent& event);
     virtual void OnSave(wxCommandEvent& event)=0;
 
-    const string& GetFileName() { return sName; }
+    const string& GetFileName() { return name; }
 
     DECLARE_EVENT_TABLE()
 };

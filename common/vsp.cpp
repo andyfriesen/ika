@@ -36,7 +36,7 @@ bool VSP::Load(const char *fname)
         return false;
     }
     
-    strcpy(sName,fname);
+    strcpy(name,fname);
     
     u16 ver;
     f.Read(&ver,2);

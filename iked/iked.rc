@@ -1,4 +1,4 @@
-//Microsoft Developer Studio generated resource script.
+// Microsoft Visual C++ generated resource script.
 //
 #include "resource.h"
 
@@ -26,18 +26,18 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
 // Dialog
 //
 
-WXRESIZEABLEDIALOG DIALOG DISCARDABLE  34, 22, 144, 75
+WXRESIZEABLEDIALOG DIALOG  34, 22, 144, 75
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU | WS_THICKFRAME
 BEGIN
 END
 
-WXCAPTIONDIALOG DIALOG DISCARDABLE  34, 22, 144, 75
+WXCAPTIONDIALOG DIALOG  34, 22, 144, 75
 STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
 CAPTION "Dummy dialog"
 BEGIN
 END
 
-WXNOCAPTIONDIALOG DIALOG DISCARDABLE  34, 22, 144, 75
+WXNOCAPTIONDIALOG DIALOG  34, 22, 144, 75
 STYLE WS_POPUP
 BEGIN
 END
@@ -48,7 +48,7 @@ END
 // Menu
 //
 
-WXWINDOWMENU MENU DISCARDABLE 
+WXWINDOWMENU MENU 
 BEGIN
     POPUP "&Window"
     BEGIN
@@ -69,11 +69,12 @@ END
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
-FOLDERICON              ICON    DISCARDABLE     "folder.ico"
-VSPICON                 ICON    DISCARDABLE     "vsp.ico"
-PYICON                  ICON    DISCARDABLE     "py.ico"
-FONTICON                ICON    DISCARDABLE     "font.ico"
-MAPICON                 ICON    DISCARDABLE     "map.ico"
+FOLDERICON              ICON                    "folder.ico"
+VSPICON                 ICON                    "vsp.ico"
+PYICON                  ICON                    "py.ico"
+FONTICON                ICON                    "font.ico"
+MAPICON                 ICON                    "map.ico"
+SPRITEICON              ICON                    "sprite.ico"
 
 #ifdef APSTUDIO_INVOKED
 /////////////////////////////////////////////////////////////////////////////
@@ -81,18 +82,18 @@ MAPICON                 ICON    DISCARDABLE     "map.ico"
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE DISCARDABLE 
+1 TEXTINCLUDE 
 BEGIN
     "resource.h\0"
 END
 
-2 TEXTINCLUDE DISCARDABLE 
+2 TEXTINCLUDE 
 BEGIN
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE DISCARDABLE 
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"
@@ -106,14 +107,14 @@ END
 // TEXT
 //
 
-DIALOGS                 TEXT    DISCARDABLE     "dlg.wxr"
+DIALOGS                 TEXT                    "dlg.wxr"
 
 /////////////////////////////////////////////////////////////////////////////
 //
 // Bitmap
 //
 
-WXBITMAP_STD_COLOURS             BITMAP  DISCARDABLE     "colours.bmp"
+WXBITMAP_STD_COLOURS    BITMAP                  "colours.bmp"
 #endif    // English (Canada) resources
 /////////////////////////////////////////////////////////////////////////////
 

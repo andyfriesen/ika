@@ -376,7 +376,7 @@ bool Map::Importv2Map(File& f)
         
         f.Read(&z,sizeof(z));                                            // these magic numbers frighten me.
         
-        zoneinfo[i].sName=va("Zone%i",i);
+        zoneinfo[i].name=va("Zone%i",i);
         zoneinfo[i].sDescription=z.name;
         
         if (z.script)       zoneinfo[i].sActscript=va("event%i",(int)z.script);
@@ -412,7 +412,7 @@ bool Map::Importv2Map(File& f)
         
         f.Read(e1);
         
-        e2.sName=va("Ent%i",i);
+        e2.name=va("Ent%i",i);
         e2.sDescription=e1.desc;
         
         e2.x=e1.x*16;        e2.y=e1.y*16;
@@ -648,7 +648,7 @@ bool Map::Load(const char* fname)
     for (i=0; i<nZones; i++)
     {
         char c[1024];
-        f.ReadString(c);    zoneinfo[i].sName=c;
+        f.ReadString(c);    zoneinfo[i].name=c;
         f.ReadString(c);    zoneinfo[i].sDescription=c;
         f.ReadString(c);    zoneinfo[i].sActscript=c;
         f.ReadString(c);    zoneinfo[i].sEntactscript=c;
@@ -669,7 +669,7 @@ bool Map::Load(const char* fname)
         SMapEntity& e=entity[i];
         
         char c[1024];
-        f.ReadString(c);        e.sName=c;
+        f.ReadString(c);        e.name=c;
         f.Read(e.x);
         f.Read(e.y);
         f.Read(e.direction);
@@ -740,7 +740,7 @@ bool Map::Save(const char* fname)
     
     for (int i=0; i<zoneinfo.size(); i++)
     {
-        f.WriteString(zoneinfo[i].sName.c_str());
+        f.WriteString(zoneinfo[i].name.c_str());
         f.WriteString(zoneinfo[i].sDescription.c_str());
         f.WriteString(zoneinfo[i].sActscript.c_str());
         f.WriteString(zoneinfo[i].sEntactscript.c_str());
@@ -754,7 +754,7 @@ bool Map::Save(const char* fname)
     for (u32 i=0; i<entity.size(); i++)
     {
         
-        f.WriteString(entity[i].sName.c_str());
+        f.WriteString(entity[i].name.c_str());
         f.Write(entity[i].x);
         f.Write(entity[i].y);
         f.Write(entity[i].direction);

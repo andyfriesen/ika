@@ -26,7 +26,7 @@ void ZoneEditor::UpdateList()
 
     for (uint i = 0; i < _map->Zones().size(); i++)
     {
-        _zonelist->Append(_map->Zones()[i].sName.c_str());
+        _zonelist->Append(_map->Zones()[i].name.c_str());
     }
 
     _zonelist->SetSelection(pos);
@@ -37,10 +37,10 @@ void ZoneEditor::UpdateData()
 {
     SMapZone& zone = _map->Zones()[_curzone];
 
-    //if (zone.sName != _nameedit->GetValue().c_str())
+    //if (zone.name != _nameedit->GetValue().c_str())
         _zonelist->SetString(_curzone, _nameedit->GetValue().c_str());
 
-    zone.sName                  = _nameedit->GetValue().c_str();
+    zone.name                  = _nameedit->GetValue().c_str();
     zone.sDescription           = _descedit->GetValue().c_str();
     zone.sActscript             = _scriptedit->GetValue().c_str();
     //zone.sEntactscript          = _entscriptedit->GetValue().c_str();
@@ -53,7 +53,7 @@ void ZoneEditor::UpdateDlg()
 {
     SMapZone& zone = _map->Zones()[_curzone];
 
-    _nameedit->SetValue(zone.sName.c_str());
+    _nameedit->SetValue(zone.name.c_str());
     _descedit->SetValue(zone.sDescription.c_str());
     _scriptedit->SetValue(zone.sActscript.c_str());
     _chanceedit->SetValue(ToString(zone.nActchance).c_str());
@@ -123,7 +123,7 @@ void ZoneEditor::OnClose(wxCommandEvent& event)
 void ZoneEditor::OnNewZone(wxCommandEvent& event)
 {
     SMapZone zone;
-    zone.sName = "New Zone";
+    zone.name = "New Zone";
     _map->Zones().push_back(zone);
     
     UpdateData();
@@ -156,7 +156,7 @@ void ZoneEditor::OnDelZone(wxCommandEvent& event)
     {
         // Not allowed to delete the first zone.  Re-initialize it instead.
         SMapZone& zone = _map->Zones()[0];
-        zone.sName = "Default zone";
+        zone.name = "Default zone";
         zone.sDescription = "";
         zone.sActscript = "";
         zone.nActchance = 0;

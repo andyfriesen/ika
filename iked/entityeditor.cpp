@@ -107,7 +107,7 @@ void CEntityEditor::UpdateList()
     {
         const SMapEntity& e=pMap->GetEntity(i);
 
-        pEntlist->Append(e.sName.c_str());
+        pEntlist->Append(e.name.c_str());
     }
 
     if (nCurrent != -1)
@@ -122,14 +122,14 @@ void CEntityEditor::UpdateData()
 
     SMapEntity& e=pMap->GetEntity(nCurentidx);
 
-    if (e.sName!=pName->GetValue().c_str())
+    if (e.name!=pName->GetValue().c_str())
     {
         wxString bleh=pName->GetValue().c_str();
         pEntlist->InsertItems(1, &bleh, nCurentidx);
         pEntlist->Delete(nCurentidx+1);
     }
 
-    e.sName             =pName->GetValue().c_str();
+    e.name             =pName->GetValue().c_str();
     e.x                 =atoi(pX->GetValue().c_str());
     e.y                 =atoi(pY->GetValue().c_str());
     e.sCHRname          =pSprite->GetValue().c_str();
@@ -153,7 +153,7 @@ void CEntityEditor::UpdateDlg()
 {
     const SMapEntity& e=pMap->GetEntity(pEntlist->GetSelection());
 
-    pName       ->SetValue(e.sName.c_str());
+    pName       ->SetValue(e.name.c_str());
     pX          ->SetValue(ToString(e.x).c_str());
     pY          ->SetValue(ToString(e.y).c_str());
     pSprite     ->SetValue(e.sCHRname.c_str());

@@ -206,8 +206,8 @@ void CFontView::OnSaveAs(wxCommandEvent& event)
     if (result==wxID_CANCEL)
         return;
 
-    sName=dlg.GetFilename().c_str();
-    SetTitle(sName.c_str());
+    name=dlg.GetFilename().c_str();
+    SetTitle(name.c_str());
 
     OnSave(event);
 }

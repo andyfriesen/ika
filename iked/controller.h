@@ -60,28 +60,26 @@ private:
 
 public:
 
-    T* Load(const string& name)
+    T* Load(string name)
     {
 #ifdef WIN32
-        const string sName=Upper(name);
-#else
-        const string& sName=name;
+        name=Upper(name);
 #endif
 
-        Resource* ri=Find(sName);
+        Resource* ri=Find(name);
 
         if (ri)
         {
-            Log::Write("Addref       %s",sName.c_str());
+            Log::Write("Addref       %s",name.c_str());
             ri->nRefcount++;
             return ri->pData;
         }
         else
         {
             T* pData=new T;
-            LoadFromFile(pData,sName);
+            LoadFromFile(pData,name);
 
-            rsrc.push_back(Resource(sName,pData));
+            rsrc.push_back(Resource(name,pData));
 
             return pData;
         }
