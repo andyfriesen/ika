@@ -28,3 +28,4 @@ namespace OpenGL
         return _height;
     }
 }
+

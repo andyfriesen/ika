@@ -2,8 +2,8 @@
 Python interface for input.
 */
 
-#include "common/misc.h"
 #include "ObjectDefs.h"
+#include "common/misc.h"
 #include "input.h"
 #include "main.h"
 

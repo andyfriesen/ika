@@ -1,9 +1,9 @@
-#include <stdexcept>
-
 #include "ObjectDefs.h"
 #include "common/Canvas.h"
 #include "common/log.h"
 #include "font.h"
+
+#include <stdexcept>
 
 namespace Script
 {

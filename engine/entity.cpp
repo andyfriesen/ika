@@ -83,7 +83,7 @@ void Entity::UpdateAnimation()
     else
         defaultAnim.update(1);
     if (specFrame != -1)
-        curFrame = -1;
+        curFrame = specFrame;
     else if (useSpecAnim)
         curFrame = specAnim.getCurFrame();
     else

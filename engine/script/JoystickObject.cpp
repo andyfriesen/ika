@@ -1,8 +1,8 @@
-
-#include <cassert>
 #include "ObjectDefs.h"
 #include "input.h"
 #include "joystick.h"
+
+#include <cassert>
 
 namespace Script
 {

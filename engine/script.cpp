@@ -1,5 +1,5 @@
-#include <cassert>
 #include "Python.h"
+#include <cassert>
 
 #include "script.h"
 

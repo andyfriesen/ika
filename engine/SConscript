@@ -2,6 +2,7 @@ Import('*')
 
 ika = env.Program('ika',
     source = Split('''
+        animscript.cpp
         benchmark.cpp
         entity.cpp
         font.cpp

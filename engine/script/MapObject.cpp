@@ -1,10 +1,11 @@
 /*
 Map manipulation junque.
 */
-#include <cassert>
 #include "ObjectDefs.h"
 #include "main.h"
 #include "common/fileio.h"
+
+#include <cassert>
 
 namespace Script
 {

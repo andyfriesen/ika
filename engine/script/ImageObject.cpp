@@ -1,10 +1,10 @@
-#include <stdexcept>
-
 #include "ObjectDefs.h"
 #include "video/Driver.h"
 #include "video/Image.h"
 #include "common/log.h"
 #include "main.h"
+
+#include <stdexcept>
 
 namespace Script
 {

@@ -4,9 +4,9 @@
 #define METHOD(x, type) PyObject* x(type* self, PyObject* args)
 #define METHOD1(x, type) PyObject* x(type* self)
 
+#include "Python.h"
 #include <sstream>
 #include <map>
-#include "Python.h"
 
 // Rain of prototypes
 namespace Ika {  // X11 fix

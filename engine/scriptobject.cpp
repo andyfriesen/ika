@@ -1,5 +1,5 @@
-#include "scriptobject.h"
 #include "Python.h"
+#include "scriptobject.h"
 
 std::set<ScriptObject*> ScriptObject::_instances;
 

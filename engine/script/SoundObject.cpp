@@ -1,11 +1,10 @@
-
+#include "ObjectDefs.h"
 #include "audiere.h"
 #include "common/log.h"
 
 #include "common/fileio.h"
 #include "common/misc.h"
 #include "sound.h"
-#include "ObjectDefs.h"
 
 namespace Script
 {

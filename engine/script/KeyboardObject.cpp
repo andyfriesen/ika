@@ -1,9 +1,9 @@
-
-#include <cassert>
 #include "ObjectDefs.h"
 #include "input.h"
 #include "keyboard.h"
 #include "common/misc.h"
+
+#include <cassert>
 
 namespace Script
 {

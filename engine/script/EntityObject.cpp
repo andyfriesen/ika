@@ -7,11 +7,11 @@
  * being garbage collected)    
  */
 
-#include <set>
-
 #include "ObjectDefs.h"
 #include "main.h"
 #include "entity.h"
+
+#include <set>
 
 namespace Script
 {
