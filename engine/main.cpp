@@ -35,13 +35,13 @@ void CEngine::Script_Error()
     CDEBUG("script_error");
     Shutdown();
 
-    std::string err;
+    std::string err = script.GetErrorMessage();
     
-    File f;
+    /*File f;
     if (f.OpenRead("pyout.log"))
         err = f.ReadAll();
     else
-        err = "Nonspecific script error.  Truly, the Tao is not with us in these dark times.";
+        err = "Nonspecific script error.  Truly, the Tao is not with us in these dark times.";*/
 
 #if (defined WIN32)
     if (!err.empty())
@@ -288,7 +288,7 @@ void CEngine::RenderEntities(uint layerIndex)
 
     std::vector<Entity*>     drawlist;
     const Point res = video->GetResolution();
-    const Map::Layer* layer = &map.GetLayer(layerIndex);
+    const Map::Layer* layer = map.GetLayer(layerIndex);
    
     // first, get a list of entities onscreen
     int width, height;
@@ -342,7 +342,7 @@ void CEngine::RenderLayer(uint layerIndex)
     int        firstX, firstY;        // x/y start
     int        adjustX, adjustY;    // sub-tile offset
     int        xw, yw;
-    const Map::Layer* layer = &map.GetLayer(layerIndex);
+    const Map::Layer* layer = map.GetLayer(layerIndex);
 
     int layerWidth = layer->Width() * tiles->Width();
     int layerHeight = layer->Height() * tiles->Height();
@@ -413,7 +413,7 @@ void CEngine::Render()
     
     if (cameraTarget)
     {        
-        const Map::Layer* layer = &map.GetLayer(cameraTarget->layerIndex);
+        const Map::Layer* layer = map.GetLayer(cameraTarget->layerIndex);
 
         SetCamera(Point(
             cameraTarget->x - res.x / 2 + layer->x,
@@ -442,7 +442,7 @@ void CEngine::Render(const std::vector<uint>& list)
     
     if (cameraTarget)
     {        
-        const Map::Layer* layer = &map.GetLayer(cameraTarget->layerIndex);
+        const Map::Layer* layer = map.GetLayer(cameraTarget->layerIndex);
 
         SetCamera(Point(
             cameraTarget->x - res.x / 2 + layer->x,
@@ -466,15 +466,11 @@ void CEngine::Render(const std::vector<uint>& list)
 
 void CEngine::DoHook(HookList& hooklist)
 {
-    bool result;
     hooklist.Flush(); // handle any pending insertions/deletions
 
     for (HookList::List::iterator i = hooklist.begin(); i != hooklist.end(); i++)
     {
-        result = script.ExecObject(*i);
-
-        if (!result)
-            Script_Error();
+        script.ExecObject(*i);
     }
 }
 
@@ -528,7 +524,7 @@ bool CEngine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
     CDEBUG("detectmapcollision");
     int tx = tiles->Width();
     int ty = tiles->Height();
-    Map::Layer* layer = &map.GetLayer(layerIndex);
+    Map::Layer* layer = map.GetLayer(layerIndex);
     
     int y2 = (y + h - 1) / ty;
     int x2 = (x + w - 1) / tx;
@@ -568,12 +564,39 @@ Entity* CEngine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w,
     return 0;
 }
 
+// Warning: Brute force.
+Map::Layer::Zone* CEngine::TestZoneCollision(const Entity* ent)
+{
+    Map::Layer* layer = map.GetLayer(ent->layerIndex);
+
+    assert(ent);
+    assert(ent->sprite);
+
+    int x  = ent->x;
+    int y  = ent->y;
+    int x2 = x + ent->sprite->nHotw;
+    int y2 = y + ent->sprite->nHoth;
+
+    for (std::vector<Map::Layer::Zone>::iterator
+        iter = layer->zones.begin();
+        iter != layer->zones.end();
+        iter++)
+    {
+        if (x > iter->position.left &&
+            y > iter->position.top &&
+            x2 < iter->position.right &&
+            y2 < iter->position.bottom)
+            return &*iter; // hurk
+    }
+
+    return 0;
+}
+
 void CEngine::TestActivate(const Entity* player)
-// checks to see if we're supposed to run some VC, due to the player's actions.
-// Thus far, that's one of three things.
-// 2) the player steps on a zone
-// 1) the player talks to an entity
-// 3) the player activates a zone whose aaa (has nothing to do with AA) property is set.
+// checks to see if we're supposed to run some a script, due to the player's actions.
+// Thus far, that's one of two things.
+// 1) the player steps on a zone, or
+// 2) the player activates to an entity.
 
 // This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
 {
@@ -584,6 +607,21 @@ void CEngine::TestActivate(const Entity* player)
     
     int tx = (player->x + sprite->nHotw / 2) / tiles->Width();
     int ty = (player->y + sprite->nHoth / 2) / tiles->Height();
+
+    Map::Layer::Zone* zone = TestZoneCollision(player);
+    if (zone)
+    {
+        if (map.zones.count(zone->label))
+        {
+            Map::Zone& bluePrint = map.zones[zone->label];
+            if (!bluePrint.scriptName.empty())
+                script.CallScript(bluePrint.scriptName);
+        }
+        else
+        {
+            Log::Write("No blueprint %s exists!", zone->label.c_str());
+        }
+    }
     
     /*int n = map.GetZone(tx, ty);
     // stepping on a zone?
@@ -705,7 +743,7 @@ void CEngine::LoadMap(const std::string& filename)
         // for each layer, create entities
         for (uint curLayer = 0; curLayer < map.NumLayers(); curLayer++)
         {
-            const Map::Layer* lay = &map.GetLayer(curLayer);
+            const Map::Layer* lay = map.GetLayer(curLayer);
             const std::vector<Map::Entity>& ents = lay->entities;
 
             for (uint curEnt = 0; curEnt < ents.size(); curEnt++)
@@ -760,4 +798,4 @@ int main(int argc, char* args[])
     
     return 0;
 }
- 
+

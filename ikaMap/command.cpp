@@ -43,8 +43,8 @@ void SetTileCommand::Do(MainWindow* m)
 {
     Map* map = m->GetMap();
 
-    _oldTileIndex = map->GetLayer(_layerIndex).tiles(_tileX, _tileY);
-    map->GetLayer(_layerIndex).tiles(_tileX, _tileY) = _tileIndex;
+    _oldTileIndex = map->GetLayer(_layerIndex)->tiles(_tileX, _tileY);
+    map->GetLayer(_layerIndex)->tiles(_tileX, _tileY) = _tileIndex;
     m->GetMapView()->Refresh();
 }
 
@@ -52,7 +52,7 @@ void SetTileCommand::Undo(MainWindow* m)
 {
     Map* map = m->GetMap();
 
-    map->GetLayer(_layerIndex).tiles(_tileX, _tileY) = _oldTileIndex;
+    map->GetLayer(_layerIndex)->tiles(_tileX, _tileY) = _oldTileIndex;
     m->GetMapView()->Refresh();
 }
 
@@ -67,7 +67,7 @@ PasteTilesCommand::PasteTilesCommand(int x, int y, uint layerIndex, const Matrix
 
 void PasteTilesCommand::Do(MainWindow* m)
 {
-    Matrix<uint>& dest = m->GetMap()->GetLayer(m->GetMapView()->GetCurLayer()).tiles;
+    Matrix<uint>& dest = m->GetMap()->GetLayer(m->GetMapView()->GetCurLayer())->tiles;
 
     for (uint y = 0; y < _tiles.Height(); y++)
     {
@@ -101,7 +101,7 @@ SetObstructionCommand::SetObstructionCommand(uint x, uint y, uint layerIndex, u8
 
 void SetObstructionCommand::Do(MainWindow* m)
 {
-    Matrix<u8>& obs = m->GetMap()->GetLayer(_layerIndex).obstructions;
+    Matrix<u8>& obs = m->GetMap()->GetLayer(_layerIndex)->obstructions;
 
     _oldValue = obs(_x, _y);
     obs(_x, _y) = _set;
@@ -110,7 +110,7 @@ void SetObstructionCommand::Do(MainWindow* m)
 
 void SetObstructionCommand::Undo(MainWindow* m)
 {
-    m->GetMap()->GetLayer(_layerIndex).obstructions(_x, _y) = _oldValue;
+    m->GetMap()->GetLayer(_layerIndex)->obstructions(_x, _y) = _oldValue;
     m->GetMapView()->Refresh();
 }
 
@@ -158,7 +158,7 @@ void DestroyLayerCommand::Do(MainWindow* m)
 {
     Map* map = m->GetMap();
 
-    _savedLayer = new Map::Layer(map->GetLayer(_index)); // save the layer so we can restore it later
+    _savedLayer = new Map::Layer(*map->GetLayer(_index)); // save the layer so we can restore it later
     map->DestroyLayer(_index);
 
     m->UpdateLayerList();
@@ -213,7 +213,7 @@ CloneLayerCommand::CloneLayerCommand(uint index)
 
 void CloneLayerCommand::Do(MainWindow* m)
 {
-    Map::Layer* newLay = new Map::Layer(m->GetMap()->GetLayer(_index));
+    Map::Layer* newLay = new Map::Layer(*m->GetMap()->GetLayer(_index));
     m->GetMap()->InsertLayer(newLay, _index + 1);
 
     m->UpdateLayerList();
@@ -239,7 +239,7 @@ ResizeLayerCommand::ResizeLayerCommand(uint index, uint newWidth, uint newHeight
 
 void ResizeLayerCommand::Do(MainWindow* m)
 {
-    Map::Layer* lay = &m->GetMap()->GetLayer(_index);
+    Map::Layer* lay = m->GetMap()->GetLayer(_index);
 
     if (!_savedLayer)
         _savedLayer = new Map::Layer(*lay);
@@ -251,7 +251,7 @@ void ResizeLayerCommand::Do(MainWindow* m)
 void ResizeLayerCommand::Undo(MainWindow* m)
 {
     // Possible bottleneck here.
-    m->GetMap()->GetLayer(_index) = *_savedLayer;
+    *m->GetMap()->GetLayer(_index) = *_savedLayer;
 
     m->GetMapView()->Refresh();
 }
@@ -339,7 +339,7 @@ ChangeEntityPropertiesCommand::ChangeEntityPropertiesCommand(
 void ChangeEntityPropertiesCommand::Do(MainWindow* m)
 {
     Map* map = m->GetMap();
-    Map::Layer* lay = &map->GetLayer(_layerIndex);
+    Map::Layer* lay = map->GetLayer(_layerIndex);
 
     _oldData = lay->entities[_entityIndex];
 
@@ -351,7 +351,7 @@ void ChangeEntityPropertiesCommand::Do(MainWindow* m)
 void ChangeEntityPropertiesCommand::Undo(MainWindow* m)
 {
     Map* map = m->GetMap();
-    Map::Layer* lay = &map->GetLayer(_layerIndex);
+    Map::Layer* lay = map->GetLayer(_layerIndex);
 
     lay->entities[_entityIndex] = _oldData;
 
@@ -368,7 +368,7 @@ CreateEntityCommand::CreateEntityCommand(uint layerIndex, int x, int y)
 
 void CreateEntityCommand::Do(MainWindow* m)
 {
-    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    Map::Layer* lay = m->GetMap()->GetLayer(_layerIndex);
     _entityIndex = lay->entities.size();
     lay->entities.push_back(Map::Entity());
     lay->entities[_entityIndex].x = _x;
@@ -379,7 +379,7 @@ void CreateEntityCommand::Do(MainWindow* m)
 
 void CreateEntityCommand::Undo(MainWindow* m)
 {
-    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    Map::Layer* lay = m->GetMap()->GetLayer(_layerIndex);
     lay->entities.erase(lay->entities.begin() + _entityIndex);
 
     m->GetMapView()->Refresh();
@@ -394,7 +394,7 @@ DestroyEntityCommand::DestroyEntityCommand(uint layerIndex, uint entityIndex)
 
 void DestroyEntityCommand::Do(MainWindow* m)
 {
-    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    Map::Layer* lay = m->GetMap()->GetLayer(_layerIndex);
     
     _oldData = lay->entities[_entityIndex];
     
@@ -405,7 +405,7 @@ void DestroyEntityCommand::Do(MainWindow* m)
 
 void DestroyEntityCommand::Undo(MainWindow* m)
 {
-    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    Map::Layer* lay = m->GetMap()->GetLayer(_layerIndex);
     lay->entities.insert(lay->entities.begin() + _entityIndex, _oldData);
 
     m->GetMapView()->Refresh();
@@ -599,13 +599,13 @@ void PlaceZoneCommand::Do(MainWindow* m)
     Map::Layer::Zone z;
     z.position = _position;
 
-    m->GetMap()->GetLayer(_layerIndex).zones.push_back(z);
+    m->GetMap()->GetLayer(_layerIndex)->zones.push_back(z);
     m->GetMapView()->Refresh();
 }
 
 void PlaceZoneCommand::Undo(MainWindow* m)
 {
-    m->GetMap()->GetLayer(_layerIndex).zones.pop_back();
+    m->GetMap()->GetLayer(_layerIndex)->zones.pop_back();
     m->GetMapView()->Refresh();
 }
 
@@ -619,15 +619,15 @@ ChangeZoneCommand::ChangeZoneCommand(uint layerIndex, uint zoneIndex, const Map:
 
 void ChangeZoneCommand::Do(MainWindow* m)
 {
-    Map::Layer& layer = m->GetMap()->GetLayer(_layerIndex);
-    _oldZone = layer.zones[_zoneIndex];
-    layer.zones[_zoneIndex] = _newZone;
+    Map::Layer* layer = m->GetMap()->GetLayer(_layerIndex);
+    _oldZone = layer->zones[_zoneIndex];
+    layer->zones[_zoneIndex] = _newZone;
     m->GetMapView()->Refresh();
 }
 
 void ChangeZoneCommand::Undo(MainWindow* m)
 {
-    m->GetMap()->GetLayer(_layerIndex).zones[_zoneIndex] = _oldZone;
+    m->GetMap()->GetLayer(_layerIndex)->zones[_zoneIndex] = _oldZone;
     m->GetMapView()->Refresh();
 }
 
@@ -640,17 +640,17 @@ DestroyZoneCommand::DestroyZoneCommand(uint layerIndex, uint zoneIndex)
 
 void DestroyZoneCommand::Do(MainWindow* m)
 {
-    Map::Layer& layer = m->GetMap()->GetLayer(_layerIndex);
+    Map::Layer* layer = m->GetMap()->GetLayer(_layerIndex);
 
-    _oldZone = layer.zones[_zoneIndex];
-    layer.zones.erase(layer.zones.begin() + _zoneIndex);
+    _oldZone = layer->zones[_zoneIndex];
+    layer->zones.erase(layer->zones.begin() + _zoneIndex);
     m->GetMapView()->Refresh();
 }
 
 void DestroyZoneCommand::Undo(MainWindow* m)
 {
-    Map::Layer& layer = m->GetMap()->GetLayer(_layerIndex);
+    Map::Layer* layer = m->GetMap()->GetLayer(_layerIndex);
 
-    layer.zones.insert(layer.zones.begin() + _zoneIndex, _oldZone);
+    layer->zones.insert(layer->zones.begin() + _zoneIndex, _oldZone);
     m->GetMapView()->Refresh();
 }

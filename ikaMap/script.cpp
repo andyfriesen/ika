@@ -90,7 +90,11 @@ Script::Script(const std::string& fileName)
 
     // Meta!
     _name = name;
-    _desc = PyString_AsString(PyDict_GetItemString(dict, "__doc__"));
+    PyObject* docString = PyDict_GetItemString(dict, "__doc__");
+    if (docString != Py_None)
+        _desc = PyString_AsString(docString);
+    else
+        _desc = "No description available";
 }
 
 Script::~Script()

@@ -3,19 +3,22 @@
 
 #include <string>
 #include <map>
+#include <hash_map>
 #include <queue>
+
+#include "common/misc.h"  // for Hash
 
 // >_<
 #include "script.h"
+
+class KeyControl;
+class ScriptObject;
 
 /**
  *  Main input class.
  *
  *  Encapsulates all input devices, and presents a single, unified interface.
  */
-class KeyControl;
-class ScriptObject;
-
 class Input
 {
     friend class Control;
@@ -25,6 +28,7 @@ public:
     {
     private:
         Input* _parent;
+        float  _oldPos; // for Pressed and Delta
 
     protected:
         Control(Input* p) 
@@ -34,9 +38,10 @@ public:
         {}
 
     public:
-        virtual bool  Pressed()  = 0;
+        virtual bool  Pressed();
         virtual float Position() = 0;
-        virtual float Delta()    = 0;
+        virtual float Delta();
+        virtual float PeekDelta();
         virtual ~Control(){}
 
     public:
@@ -48,8 +53,12 @@ public:
     };
 
 private:
-    static std::map<std::string, int> _keyMap;
-    static bool _keyMapInitted;
+    typedef std::map<std::string, int> KeyTableMap;
+    typedef std::map<std::string, Control*> ControlMap;
+    typedef std::map<int, KeyControl*> KeyMap;
+
+    static KeyTableMap _keyTable;
+    static bool _staticInit;
 
     ScriptObject*    _hookQueue;
     std::queue<char> _keyQueue;
@@ -62,23 +71,12 @@ private:
     Control* _cancel;
 
 protected:
-    std::map<std::string, Control*> _controls;  // Name : control pairs.
+    ControlMap _controls;  // Name : control pairs.
     
     // keyboard things go here.  They can be handled efficiently if we can get them efficiently through their keysym.
     // Something to point out is that this is considered strictly aggregate.  _controls holds *all* input controls.
     // This essentially boils down to a speed hack. (it also simplifies the KeyUp and KeyDown methods considerably.
-    std::map<int, KeyControl*> _keys;
-
-    // Mouse
-    Control* _mouseX;
-    Control* _mouseY;
-    Control* _mouseWheel;
-    Control* _mouseL;
-    Control* _mouseR;
-    Control* _mouseM;
-
-    // Joysticks
-    //--
+    KeyMap _keys;
 
 public: 
     Input();
@@ -103,7 +101,7 @@ public:
     char GetKey();
     void ClearKeyQueue();
 
-    typedef std::map<std::string, Control*>::iterator iterator;
+    typedef ControlMap::iterator iterator;
     iterator begin() { return _controls.begin(); }
     iterator end()   { return _controls.end();   }
 

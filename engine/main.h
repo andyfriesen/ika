@@ -85,7 +85,7 @@ public:
                                     int x1, int y1, int w, int h, 
                                     uint layerIndex, bool wantobstructable = false);  
     void      ProcessEntities();                                                    ///< one tick of AI for each entity
-  
+    Map::Layer::Zone* TestZoneCollision(const Entity* ent);                         ///< returns the first zone touching the entity, or 0 if the entity touches no zones.
     void      TestActivate(const Entity* player);                                   ///< checks to see if the player has talked to an entity, stepped on a zone, etc...
 
     Entity*   SpawnEntity();                                                        ///< Creates an entity, and returns it

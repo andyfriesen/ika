@@ -641,7 +641,7 @@ void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
     if (result == wxID_OK)
     {
         HandleCommand(new ChangeLayerPropertiesCommand(
-            &_map->GetLayer(_mapView->GetCurLayer()),
+            _map->GetLayer(_mapView->GetCurLayer()),
             dlg.label,
             dlg.wrapx,
             dlg.wrapy,
@@ -663,6 +663,12 @@ void MainWindow::OnConfigureScripts(wxCommandEvent&)
 
     dlg.ShowModal();
     // easy. :D
+
+    // We gave the script state a pointer, remember.  Need to make sure that it's nuked.
+    // Dirty hack, I know. -_-
+    // Maybe I should give ScriptState a reference to the list of scripts and an index
+    // Then it could get the pointer straight from the horse's mouth, so to speak.
+    _mapView->Cock();
 }
 
 void MainWindow::OnCursorUp(wxCommandEvent&)
@@ -773,7 +779,7 @@ void MainWindow::UpdateLayerList()
     _mapView->Freeze();                                         // stops the map view from refreshing every time we check something.
 
     for (uint i = 0; i < _map->NumLayers(); i++)
-        _layerList->Append(_map->GetLayer(i).label.c_str());
+        _layerList->Append(_map->GetLayer(i)->label.c_str());
 
     for (uint i = 0; i < _map->NumLayers(); i++)
         _layerList->Check(i);

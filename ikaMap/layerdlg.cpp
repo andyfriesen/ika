@@ -35,7 +35,7 @@ void LayerDlg::OnOk(wxCommandEvent& event)
     x     = atoi(Ctrl<wxTextCtrl>("edit_x")->GetValue().c_str());
     y     = atoi(Ctrl<wxTextCtrl>("edit_y")->GetValue().c_str());
 
-    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(_layerIndex);
+    Map::Layer* lay = _mainWnd->GetMap()->GetLayer(_layerIndex);
 
     if (label != lay->label ||
         wrapx != lay->wrapx ||
@@ -72,7 +72,7 @@ LayerDlg::LayerDlg(MainWindow* parent, uint layerIndex)
     : _layerIndex(layerIndex)
     , _mainWnd(parent)
 {
-    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layerIndex);
+    Map::Layer* lay = _mainWnd->GetMap()->GetLayer(layerIndex);
 
     wxXmlResource::Get()->LoadDialog(this, parent, "dialog_layer");
 

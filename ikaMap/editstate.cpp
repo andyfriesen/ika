@@ -20,7 +20,7 @@ Map::Layer* EditState::GetCurLayer() const
     if (_mainWindow->GetMap()->NumLayers() == 0)
         return 0;
     else
-        return &_mainWindow->GetMap()->GetLayer(_mainWindow->GetMapView()->GetCurLayer());
+        return _mainWindow->GetMap()->GetLayer(_mainWindow->GetMapView()->GetCurLayer());
 }
 
 uint EditState::GetCurLayerIndex() const

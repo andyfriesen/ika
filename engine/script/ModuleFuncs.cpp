@@ -14,10 +14,11 @@ namespace Script
     PyObject*   entityDict;
     PyObject*   playerent;
     PyObject*   cameraTarget;
-    PyObject*   errorHandler;
 
     PyObject*   sysModule;                         // the system scripts (system.py)
     PyObject*   mapModule;                         // scripts for the currently loaded map
+
+    std::stringstream pyOutput;
 
     METHOD(std_log)
     {

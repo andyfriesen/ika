@@ -3,9 +3,11 @@
 #define MAP_H
 
 #include "types.h"
+#include "misc.h"
 #include "matrix.h"
 
 #include <string>
+#include <hash_map>
 #include <map>
 
 // Partial tile obstruction stuff.
@@ -120,7 +122,7 @@ struct Map
     uint width, height;
     std::string tileSetName;
 
-    typedef std::map<std::string, Zone> ZoneMap;
+    typedef std::hash_map<std::string, Zone, Hash<std::string> > ZoneMap;
     typedef std::map<std::string, WayPoint> WayPointMap;
     
     ZoneMap             zones;
@@ -141,15 +143,15 @@ public:
     bool Load(const std::string& filename); 
     void Save(const std::string& filename);
 
-    Layer& GetLayer(uint index);
-    uint LayerIndex(Layer& lay) const;
+    Layer* GetLayer(uint index);
+    uint LayerIndex(Layer* lay) const;
     uint LayerIndex(const std::string& label) const;
 
-    Map::Layer& AddLayer(const std::string& label = "", uint width = 0, uint height = 0);
+    Map::Layer* AddLayer(const std::string& label = "", uint width = 0, uint height = 0);
     void AddLayer(Layer* lay);                  // Assumes ownership of lay.  Careful.
     void InsertLayer(Layer* lay, uint index);   // Also assumes ownership.  The layer is inserted BEFORE index.
     void DestroyLayer(uint index);
-    void DestroyLayer(Layer& lay);
+    void DestroyLayer(Layer* lay);
     void SwapLayers(uint i, uint j);
     uint NumLayers() const;
 };

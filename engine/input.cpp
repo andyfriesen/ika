@@ -3,9 +3,14 @@
 
 #include "input.h"
 #include "common/log.h"
+#include "common/misc.h"
 
-std::map<std::string, int> Input::_keyMap;
-bool Input::_keyMapInitted = false;
+#ifdef _MSC_VER
+#  pragma warning(disable:4355)   // 'this' used in base member initializer list.  I am a bad, bad boy.
+#endif
+
+Input::KeyTableMap Input::_keyTable;
+bool Input::_staticInit = false;
 
 namespace
 {
@@ -141,7 +146,34 @@ namespace
         {"LSUPER", SDLK_LSUPER},
         {"RSUPER", SDLK_RSUPER},
         {"MODE", SDLK_MODE},
+
+        /* Nonkey controls
+         * MOUSEX - Mouse X axis
+         * MOUSEY - Mouse Y axis
+         * MOUSEL - Mouse Left button
+         * MOUSER - Mouse Right button
+         * MOUSEM - Mouse Middle button
+         */
     };
+}
+
+bool Input::Control::Pressed()
+{
+    return Delta() != 0.0f;
+}
+
+float Input::Control::Delta()
+{
+    float pos = Position();
+    float delta = pos - _oldPos;
+    _oldPos = pos;
+    
+    return delta;
+}
+
+float Input::Control::PeekDelta()
+{
+    return Position() - _oldPos;
 }
 
 class KeyControl : public Input::Control
@@ -180,23 +212,50 @@ public:
 
 class MouseAxisX : public Input::Control
 {
-    float _old;
 public:
     MouseAxisX(Input* p)
         : Control(p)
-        , _old(0)
     {}
-
-    virtual bool Pressed()
-    {
-        bool b = Position() == _old;
-        _old = Position();
-        return b;
-    }
 
     virtual float Position()
     {
+        int x;
+        SDL_GetMouseState(&x, 0);
+        return (float)x;
+    }
+};
 
+class MouseAxisY : public Input::Control
+{
+public:
+    MouseAxisY(Input* p)
+        : Control(p)
+    {}
+
+    virtual float Position()
+    {
+        int y;
+        SDL_GetMouseState(0, &y);
+        return (float)y;
+    }
+};
+
+class MouseButton : public Input::Control
+{
+private:
+    uint _mask; // SDL returns a bitfield.  We just mask out the bits we don't care about.
+
+public:
+    MouseButton(Input* p, uint index)
+        : Control(p)
+        , _mask(SDL_BUTTON(index))
+    {}
+
+    virtual float Position()
+    {
+        int i = SDL_GetMouseState(0, 0);
+        bool b = (SDL_GetMouseState(0, 0) & _mask) != 0;
+        return b ? 1.0f : 0.0f;
     }
 };
 
@@ -208,30 +267,38 @@ public:
 Input::Input()
     : _hookQueue(0)
 {
-    if (!_keyMapInitted)
+    if (!_staticInit)
     {
-        const int len = sizeof(keys) / sizeof(keys[0]);
+        const int len = lengthof(keys);
         for (int i = 0; i < len; i++)
-            _keyMap[keys[i].name] = keys[i].code;
+            _keyTable[keys[i].name] = keys[i].code;
 
-        _keyMapInitted = true;
+        _staticInit = true;
     }
 
-    // hurk.  Gay.
+    // hurk.
     _up     = GetControl("UP");
     _down   = GetControl("DOWN");
     _left   = GetControl("LEFT");
     _right  = GetControl("RIGHT");
     _enter  = GetControl("RETURN");
     _cancel = GetControl("ESCAPE");
+
+    _controls["MOUSEX"] = new MouseAxisX(this);
+    _controls["MOUSEY"] = new MouseAxisY(this);
+    _controls["MOUSEL"] = new MouseButton(this, 1);
+    _controls["MOUSER"] = new MouseButton(this, 2);
+    _controls["MOUSEM"] = new MouseButton(this, 3);
 }
 
 Input::~Input()
 {
-    for (std::map<int, KeyControl*>::iterator i = _keys.begin(); i != _keys.end(); i++)
+    for (ControlMap::iterator
+        iter  = _controls.begin(); 
+        iter != _controls.end();
+        iter++)
     {
-        KeyControl* kc = i->second;
-        delete kc;
+        delete iter->second;
     }
 }
 
@@ -239,10 +306,10 @@ void Input::KeyDown(int key)
 {
     if (key < 255)
         _keyQueue.push(key);
-
-    KeyControl* c = _keys[key];
-    if (c)
+    
+    if (_keys.count(key))
     {
+        KeyControl* c = _keys[key];
         c->Press();
 
         if (_hookQueue == 0)
@@ -264,9 +331,11 @@ void Input::KeyUp(int key)
 
 Input::Control* Input::GetControl(const std::string& name)
 {
-    int i = _keyMap[name];
-    if (i)
+    if (_keyTable.count(name))
     {
+        // Key controls are created on demand.
+
+        int i = _keyTable[name];
         KeyControl* c = _keys[i];
         if (!c)
         {
@@ -276,6 +345,8 @@ Input::Control* Input::GetControl(const std::string& name)
         }
         return c;
     }
+    else if (_controls.count(name))
+        return _controls[name];
 
     return 0;
 }
@@ -329,7 +400,7 @@ void Input::Unpress(int i)
 
 void Input::Unpress()
 {
-    for (std::map<std::string, Control*>::iterator i = _controls.begin(); i != _controls.end(); i++)
+    for (ControlMap::iterator i = _controls.begin(); i != _controls.end(); i++)
         i->second->Pressed();
 }
 

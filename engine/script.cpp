@@ -85,7 +85,6 @@ void ScriptEngine::Shutdown()
     Py_XDECREF(entityDict);
     Py_XDECREF(cameraTarget);
     
-    Py_XDECREF(errorHandler);
     Py_XDECREF(sysModule);
     Py_XDECREF(mapModule);
     
@@ -140,23 +139,24 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
     return true;
 }
 
-bool ScriptEngine::ExecObject(const ScriptObject& func)
+void ScriptEngine::ExecObject(const ScriptObject& func)
 {
     CDEBUG("ScriptEngine::ExecObject");
     
     if (!func.get())
-        return false;
+    {
+        Log::Write("Attempt to call null object");
+        return;
+    }
     
     PyObject* result = PyEval_CallObject((PyObject*)func.get(), 0); 
     if (!result)
     {
         PyErr_Print();
-        return false;
+        engine->Script_Error();
     }
     
     Py_DECREF(result);
-    
-    return true;
 }
 
 void ScriptEngine::ClearEntityList()
@@ -185,16 +185,16 @@ void ScriptEngine::CallScript(const std::string& name)
 
     engine->input.Unpress();
     
-    PyObject* pDict=PyModule_GetDict(mapModule);
-    PyObject* pFunc=PyDict_GetItemString(pDict, const_cast<char*>(name.c_str()));
+    PyObject* dict = PyModule_GetDict(mapModule);
+    PyObject* func = PyDict_GetItemString(dict, const_cast<char*>(name.c_str()));
     
-    if (!pFunc)
+    if (!func)
     {
         Log::Write("CallScript, no such event \"%s\"", name);
         return;                                                                // no such event
     }
 
-    PyObject* result=PyEval_CallObject(pFunc, 0);
+    PyObject* result = PyEval_CallObject(func, 0);
     
     if (!result)
     {
@@ -207,11 +207,7 @@ void ScriptEngine::CallScript(const std::string& name)
 
 void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
 {
-    if (!Script::Entity::instances.count(const_cast<::Entity*>(ent)))
-    {
-        Log::Write("ScriptEngine::CallScript(name, ent) weirdness. (this should never actually happen)");
-        return;
-    }
+    assert(Script::Entity::instances.count(const_cast<::Entity*>(ent)));
 
     Script::Entity::EntityObject* entObject = Script::Entity::instances[const_cast<::Entity*>(ent)];
 
@@ -235,6 +231,11 @@ void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
     }
     else
         Py_DECREF(result);
+}
+
+std::string ScriptEngine::GetErrorMessage()
+{
+    return Script::pyOutput.str();
 }
 
 //-

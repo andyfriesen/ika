@@ -8,6 +8,7 @@ Things that just don't fit anywhere else, but are handy to have around.
 #define MISC_H
 
 #include "types.h"
+#include <string>
 
 #undef min  // GAAAAAAAAAY
 #undef max

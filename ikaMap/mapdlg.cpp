@@ -55,7 +55,7 @@ void MapDlg::OnAutoSize(wxCommandEvent&)
 
     for (uint i = 0; i < map->NumLayers(); i++)
     {
-        Map::Layer* lay = &map->GetLayer(i);
+        Map::Layer* lay = map->GetLayer(i);
 
         width  = max(width,  lay->x + lay->Width()  * tileSet->Width());
         height = max(height, lay->y + lay->Height() * tileSet->Height());

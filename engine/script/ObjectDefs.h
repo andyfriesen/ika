@@ -4,9 +4,11 @@
 #define METHOD(x, type) PyObject* x(type* self, PyObject* args)
 #define METHOD1(x, type) PyObject* x(type* self)
 
-// Rain of prototypes
+#include <sstream>
 #include <Python.h>
 #include "input.h"
+
+// Rain of prototypes
 class CFont;
 class Entity;
 class CEngine;
@@ -79,6 +81,7 @@ namespace Script
         {
             PyObject_HEAD
             Input::Control* control;
+            std::string name;
         };
 
         // Methods
@@ -297,10 +300,11 @@ namespace Script
     extern PyObject*   entityDict;
     extern PyObject*   playerEnt;
     extern PyObject*   cameraTarget;
-    extern PyObject*   errorHandler;
 
-    extern PyObject*   sysModule;                         // the system scripts (system.py)
-    extern PyObject*   mapModule;                         // scripts for the currently loaded map
+    extern PyObject*   sysModule;                           // the system scripts (system.py)
+    extern PyObject*   mapModule;                           // scripts for the currently loaded map
+
+    extern std::stringstream  pyOutput;                     // Python's sys.stdout and sys.stderr go here (defined in ModuleFuncs.cpp)
 
     METHOD(std_log, PyObject);
     METHOD(std_exit, PyObject);

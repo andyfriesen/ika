@@ -23,7 +23,7 @@ EntityDlg::EntityDlg(MainWindow* mw, uint layer, uint index)
 
     Map* map = mw->GetMap();
 
-    newData = map->GetLayer(layer).entities[index];
+    newData = map->GetLayer(layer)->entities[index];
 
     UpdateDlg();
 }

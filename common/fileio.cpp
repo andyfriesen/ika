@@ -225,7 +225,8 @@ std::string File::ReadAll()
 {
     int size = Size();
     char* c = new char[size + 1];
-    c[size] = 0;
+    memset(c, 0, size + 1);
+    //c[size] = 0;
     Seek(0);
     Read(c, size);
 

@@ -448,17 +448,17 @@ void Map::Save(const std::string& filename)
     delete rootNode;
 }
 
-Map::Layer& Map::GetLayer(uint index)
+Map::Layer* Map::GetLayer(uint index)
 {
     assert(index >= 0 && index < layers.size());
-    return *layers[index];
+    return layers[index];
 }
 
-uint Map::LayerIndex(Map::Layer& lay) const
+uint Map::LayerIndex(Map::Layer* lay) const
 {
     for (uint i = 0; i < layers.size(); i++)
     {
-        if (&lay == layers[i])
+        if (lay == layers[i])
             return i;
     }
     return -1;
@@ -474,11 +474,11 @@ uint Map::LayerIndex(const std::string& label) const
     return -1;
 }
 
-Map::Layer& Map::AddLayer(const std::string& name, uint width, uint height)
+Map::Layer* Map::AddLayer(const std::string& name, uint width, uint height)
 {
     Map::Layer* lay = new Layer(name, width, height);
     AddLayer(lay);
-    return *lay;
+    return lay;
 }
 
 void Map::AddLayer(Map::Layer* lay)
@@ -503,7 +503,7 @@ void Map::DestroyLayer(uint index)
     layers.erase(layers.begin() + index);
 }
 
-void Map::DestroyLayer(Map::Layer& lay)
+void Map::DestroyLayer(Map::Layer* lay)
 {
     DestroyLayer(LayerIndex(lay));
 }

@@ -7,6 +7,7 @@ BEGIN_EVENT_TABLE(ScriptDlg, wxDialog)
     EVT_BUTTON(XRCID("button_addscript"), ScriptDlg::OnAddScript)
     EVT_BUTTON(XRCID("button_reloadscript"), ScriptDlg::OnReloadScript)
     EVT_BUTTON(XRCID("button_unloadscript"), ScriptDlg::OnUnloadScript)
+    EVT_BUTTON(XRCID("button_activatescript"), ScriptDlg::OnActivateScript)
     EVT_LISTBOX(XRCID("list_scripts"), ScriptDlg::OnSelectScript)
 END_EVENT_TABLE()
 
@@ -80,6 +81,14 @@ void ScriptDlg::OnUnloadScript(wxCommandEvent&)
     wxASSERT(script == 0);
 
     RefreshScriptList();
+}
+
+void ScriptDlg::OnActivateScript(wxCommandEvent&)
+{
+    Script* script = reinterpret_cast<Script*>(_scriptList->GetClientData(_scriptList->GetSelection()));
+
+    script->OnActivated();  // can we do this?
+    EndModal(wxID_OK);
 }
 
 void ScriptDlg::OnSelectScript(wxCommandEvent& event)

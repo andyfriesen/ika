@@ -272,7 +272,7 @@ namespace Script
                 return 0;
             }
 
-            return PyInt_FromLong(engine->map.GetLayer(lay).tiles(x, y));
+            return PyInt_FromLong(engine->map.GetLayer(lay)->tiles(x, y));
         }
 
         METHOD(Map_SetTile)
@@ -289,7 +289,7 @@ namespace Script
                 return 0;
             }
 
-            engine->map.GetLayer(lay).tiles(x, y) = tile;
+            engine->map.GetLayer(lay)->tiles(x, y) = tile;
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -309,7 +309,7 @@ namespace Script
                 return 0;
             }
 
-            return PyInt_FromLong(engine->map.GetLayer(lay).obstructions(x, y));
+            return PyInt_FromLong(engine->map.GetLayer(lay)->obstructions(x, y));
         }
 
         METHOD(Map_SetObs)
@@ -326,7 +326,7 @@ namespace Script
                 return 0;
             }
 
-            engine->map.GetLayer(lay).obstructions(x, y) = set != 0;
+            engine->map.GetLayer(lay)->obstructions(x, y) = set != 0;
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -368,7 +368,7 @@ namespace Script
                 return 0;
             }
 
-            return PyString_FromString(engine->map.GetLayer(index).label.c_str());
+            return PyString_FromString(engine->map.GetLayer(index)->label.c_str());
         }
 
         METHOD(Map_SetLayerName)
@@ -385,7 +385,7 @@ namespace Script
                 return 0;
             }
 
-            engine->map.GetLayer(index).label = newName;
+            engine->map.GetLayer(index)->label = newName;
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -400,7 +400,7 @@ namespace Script
 
             for (uint i = 0; i < engine->map.NumLayers(); i++)
             {
-                if (engine->map.GetLayer(i).label == name)
+                if (engine->map.GetLayer(i)->label == name)
                     return PyInt_FromLong(i);
             }
 
@@ -421,13 +421,13 @@ namespace Script
                 return 0;
             }
 
-            ::Map::Layer& layer = engine->map.GetLayer(lay);
+            ::Map::Layer* layer = engine->map.GetLayer(lay);
 
             return Py_BuildValue("(iiii)",
-                layer.parallax.mulx,
-                layer.parallax.divx,
-                layer.parallax.muly,
-                layer.parallax.divy
+                layer->parallax.mulx,
+                layer->parallax.divx,
+                layer->parallax.muly,
+                layer->parallax.divy
                 );
         }
 
@@ -450,11 +450,11 @@ namespace Script
             if (pdivy == 0)
                 pmuly = 0, pdivy = 1;
 
-            ::Map::Layer& layer = engine->map.GetLayer(lay);
-            layer.parallax.mulx = pmulx;
-            layer.parallax.divx = pdivx;
-            layer.parallax.muly = pmulx;
-            layer.parallax.divy = pdivy;
+            ::Map::Layer* layer = engine->map.GetLayer(lay);
+            layer->parallax.mulx = pmulx;
+            layer->parallax.divx = pdivx;
+            layer->parallax.muly = pmulx;
+            layer->parallax.divy = pdivy;
 
             Py_INCREF(Py_None);
             return Py_None;

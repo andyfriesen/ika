@@ -1,24 +1,32 @@
 #include "ObjectDefs.h"
 #include "input.h"
+#include <map>
 
 namespace Script
 {
     namespace Control
     {
+        // A simple way to make sure that multiple control objects aren't created for the same control.
+        std::map<std::string, ControlObject*> _instances;
+
         PyTypeObject type;
 
         PyMethodDef methods[] =
         {
             {   "Pressed",  (PyCFunction)Control_Pressed,    METH_NOARGS,   
                 "Control.Pressed() -> int\n\n"
-                "Returns nonzero if the key has been pressed since the last time Pressed() or Delta() have been called" },
+                "Returns nonzero if the key has been pressed since the last time Pressed() or Delta() have been called"
+            },
             {   "Position", (PyCFunction)Control_Position,   METH_NOARGS,   
                 "Control.Position() -> float\n\n"
-                "Returns the position of the control, as a float between 0 and 1. (1 being pressed all the way, 0 being\n"
-                "unpressed" },
+                "Returns the position of the control.  Most controls are normalized, meaning that their value is in the\n"
+                "range of 0 through 1. (1 being pressed all the way, 0 being unpressed)\n\n"
+                "The mouse axis are the only exception to this.  Their range is equal to the screen resolution."
+            },
             {   "Delta",    (PyCFunction)Control_Delta,      METH_NOARGS,   
                 "Control.Delta() -> float\n\n"
-                "Returns the change in position of the control since the last time Pressed() or Delta() were called" },
+                "Returns the change in position of the control since the last time Pressed() or Delta() was called."
+            },
             {   0, 0    }
         };
 
@@ -89,18 +97,30 @@ namespace Script
  
         PyObject* New(::Input& input, const char* name)
         {
+            if (_instances.count(name))
+            {
+                ControlObject* c = _instances[name];
+                Py_INCREF(c);
+                return (PyObject*)c;
+            }
+
             ::Input::Control* c = input[name];
             if (!c)
                 return 0;
 
             ControlObject* ctrl = PyObject_New(ControlObject, &type);
             ctrl->control = c;
+            ctrl->name = name;
+
+            _instances[name] = ctrl;
 
             return (PyObject*)ctrl;
         }
 
         void Destroy(ControlObject* self)
         {
+            _instances.erase(self->name);
+
             PyObject_Del(self);
         }
 

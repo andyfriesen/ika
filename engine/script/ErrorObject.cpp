@@ -43,19 +43,18 @@ namespace Script
             type.tp_getset = properties;
             PyType_Ready(&type);
 
-            remove("pyout.log");
-
             // replace stdout and stderr with our error object
-            PyObject* pSysmodule=PyImport_ImportModule("sys");
-            if (!pSysmodule)            {   Log::Write("Could not get sys module."); return; }
+            PyObject* pSysmodule = PyImport_ImportModule("sys");
+            if (!pSysmodule)    {   Log::Write("Could not get sys module.");    return; }
 
-            PyObject* pSysdict=PyModule_GetDict(pSysmodule);
+            PyObject* pSysdict = PyModule_GetDict(pSysmodule);
             if (!pSysdict)      {   Log::Write("Could not init sys module.");   return; }
 
-            errorHandler = New();
+            PyObject* errorHandler = New();
             PyDict_SetItemString(pSysdict, "stdout", errorHandler);
             PyDict_SetItemString(pSysdict, "stderr", errorHandler);
-
+            
+            Py_DECREF(errorHandler);
             Py_DECREF(pSysmodule);
         }
 
@@ -78,11 +77,8 @@ namespace Script
             if (!PyArg_ParseTuple(args, "s:Error.Write", &msg))
                 return NULL;
 
-            File f;
-
-            f.OpenAppend("pyout.log");
-            f.Write(msg, strlen(msg));
-            f.Close();
+            Log::Writen(msg);
+            pyOutput << msg;
 
             Py_INCREF(Py_None);
             return Py_None;

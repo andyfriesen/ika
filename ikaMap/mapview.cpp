@@ -153,11 +153,11 @@ void MapView::Render()
     {
         if (_mainWnd->IsLayerVisible(i))
         {
-            Map::Layer& lay = map->GetLayer(i);
+            Map::Layer* lay = map->GetLayer(i);
 
             // TODO: Parallax, and possibly wrapping.
-            RenderLayer(&lay, _xwin - lay.x, _ywin - lay.y);
-            RenderEntities(&lay, _xwin - lay.x, _ywin - lay.y);
+            RenderLayer(lay, _xwin - lay->x, _ywin - lay->y);
+            RenderEntities(lay, _xwin - lay->x, _ywin - lay->y);
 
             if (i == _curLayer) _editState->OnRenderCurrentLayer();
         }
@@ -409,7 +409,7 @@ void MapView::ScreenToLayer(int& x, int& y, uint layer) const
 
     ScreenToMap(x, y);
 
-    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+    Map::Layer* lay = _mainWnd->GetMap()->GetLayer(layer);
 
     x -= lay->x;
     y -= lay->y;
@@ -443,7 +443,7 @@ void MapView::TileToScreen(int& x, int& y, uint layer) const
     wxASSERT(_mainWnd->GetTileSet());
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+    Map::Layer* lay = _mainWnd->GetMap()->GetLayer(layer);
 
     x = (x * _mainWnd->GetTileSet()->Width()) + lay->x - _xwin;
     y = (y * _mainWnd->GetTileSet()->Height()) + lay->y - _ywin;
@@ -460,7 +460,7 @@ void MapView::MapToTile(int& x, int& y, uint layer) const
     wxASSERT(_mainWnd->GetTileSet());
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+    Map::Layer* lay = _mainWnd->GetMap()->GetLayer(layer);
 
     x = (x + lay->x) * lay->parallax.mulx / lay->parallax.divx;
     y = (y + lay->y) * lay->parallax.muly / lay->parallax.divy;
@@ -479,7 +479,7 @@ void MapView::TileToMap(int& x, int& y, uint layer) const
     wxASSERT(_mainWnd->GetTileSet());
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+    Map::Layer* lay = _mainWnd->GetMap()->GetLayer(layer);
 
     x = (x * lay->parallax.divx / lay->parallax.mulx) - lay->x;
     y = (y * lay->parallax.divy / lay->parallax.muly) - lay->y;
@@ -500,7 +500,7 @@ uint MapView::EntityAt(int x, int y, uint layer)
 {
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    std::vector<Map::Entity>& ents = _mainWnd->GetMap()->GetLayer(layer).entities;
+    std::vector<Map::Entity>& ents = _mainWnd->GetMap()->GetLayer(layer)->entities;
 
     for (uint i = 0; i < ents.size(); i++)
     {
@@ -528,7 +528,7 @@ uint MapView::ZoneAt(int x, int y, uint layer)
 {
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    std::vector<Map::Layer::Zone>& zones = _mainWnd->GetMap()->GetLayer(layer).zones;
+    std::vector<Map::Layer::Zone>& zones = _mainWnd->GetMap()->GetLayer(layer)->zones;
 
     for (uint i = 0; i < zones.size(); i++)
     {
