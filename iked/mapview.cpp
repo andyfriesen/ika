@@ -166,7 +166,9 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
 
     for (int i=0; i<pMap->NumEnts(); i++)
     {
-        pSprite.push_back(pParentwnd->spriteset.Load(pMap->GetEntity(i).sCHRname.c_str()));
+        // Get the absolute path.  I'm paranoid.
+        string sFilename=Path::Directory(name) + pMap->GetEntity(i).sCHRname;
+        pSprite.push_back(pParentwnd->spriteset.Load(sFilename));
     }
 
     // --
