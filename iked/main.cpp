@@ -84,6 +84,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     wxMenuBar* menu = CreateBasicMenu();
     SetMenuBar(menu);
 
+    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
 
     CreateStatusBar();
 

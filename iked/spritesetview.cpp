@@ -291,47 +291,36 @@ void CSpriteSetView::Render()
     if (!pSprite)
         return;
 
-    int nWidth, nHeight;
-    GetClientSize(&nWidth, &nHeight);
-
+    int nWidth = pGraph->LogicalWidth();
+    int nHeight = pGraph->LogicalHeight();
 
     int tx = pSprite->Width();
     int ty = pSprite->Height();
-
 
     int nSpritewidth = nWidth / tx;
     int nSpriteheight=(nHeight / ty)+1;
     int nSprite = ywin * nSpritewidth;
 
-
     pGraph->SetCurrent();
     pGraph->Clear();     
-
 
     for(int y = 0; y < nSpriteheight; y++)
     {
         for(int x = 0; x < nSpritewidth; x++)
         {
-            
             Canvas& rBitmap = pSprite->Get(nSprite);
-
             CImage img(rBitmap);
-            
             pGraph->Blit(img, x * tx, y * ty, true);
-
             nSprite++;
 
-
             if (nSprite >= pSprite->Count()) 
-            {
-                y = nSpriteheight + 1;
-                break;
-            }
+                goto breakloop;
 
             nSpritewidth = nWidth / tx;
             nSpriteheight=(nHeight / ty)+1;
         }
     }
+breakloop:
 
     int x2, y2;
     tx = pSprite->Width();
@@ -341,18 +330,17 @@ void CSpriteSetView::Render()
     pGraph->Rect(x2 - 1, y2 - 1, tx + 1, ty + 1, RGBA(255, 255, 255));
 
     pGraph->ShowPage();
-
 }
 
 void CSpriteSetView::UpdateScrollbar()
 {
-    int w, h;
-    GetClientSize(&w, &h);
+    const int w = pGraph->LogicalWidth();
+    const int h = pGraph->LogicalHeight();
 
     int nSpritewidth = w / pSprite->Width();
     int nSpriteheight = h / pSprite->Height();
 
-    int nTotalheight = pSprite->Count() / nSpritewidth;
+    int nTotalheight = pSprite->Count() / nSpritewidth + 1;
 
     if (ywin > nTotalheight - nSpriteheight)    ywin = nTotalheight - nSpriteheight;
     if (ywin < 0)                               ywin = 0;

@@ -190,6 +190,9 @@
 				RelativePath=".\main.h">
 			</File>
 			<File
+				RelativePath="resource.h">
+			</File>
+			<File
 				RelativePath=".\script.h">
 			</File>
 			<File
@@ -213,6 +216,9 @@
 			</File>
 			<File
 				RelativePath=".\icon1.ico">
+			</File>
+			<File
+				RelativePath="ika.ico">
 			</File>
 		</Filter>
 		<Filter

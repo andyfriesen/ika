@@ -393,6 +393,9 @@
 		<File
 			RelativePath="folderopen.ico">
 		</File>
+		<File
+			RelativePath="iked.ico">
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

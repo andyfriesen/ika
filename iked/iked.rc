@@ -28,6 +28,7 @@ LANGUAGE LANG_NEUTRAL, SUBLANG_NEUTRAL
 
 // Icon with lowest ID value placed first to ensure application icon
 // remains consistent on all systems.
+APPICON                 ICON                    "iked.ico"
 FOLDERICON              ICON                    "folder.ico"
 VSPICON                 ICON                    "vsp.ico"
 FONTICON                ICON                    "font.ico"
