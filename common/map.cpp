@@ -1015,14 +1015,14 @@ void Map::SetEntInfo(const SMapEntity& info,int entidx)
         entity[entidx]=info;
 }*/
 
-const SMapEntity& Map::GetEntity(int idx) const
+SMapEntity& Map::GetEntity(int idx) const
 {
     static SMapEntity dummy;
 
     if (idx<0 || idx>=entity.size())
         return dummy;
 
-    return entity[idx];
+    return const_cast<SMapEntity&>(entity[idx]);
 }
 
 void Map::SetEntity(SMapEntity& e,int idx)

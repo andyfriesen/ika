@@ -9,8 +9,14 @@ class Map;
 
 class CEntityEditor : public wxDialog
 {
+    enum
+    {
+        id_entlist=100,
+    };
+
     CMapView*   pParent;
     Map*        pMap;
+    int         nOldidx;
 
     // Convenience pointers to dialog elements
     wxListBox*  pEntlist;
@@ -43,7 +49,13 @@ private:
     void InitControls();
 
 public:
-    void Update();
+    void UpdateList();
+    void UpdateData();
+    void UpdateDlg();
+
+    DECLARE_EVENT_TABLE()
+
+    void OnSelectEntity(wxCommandEvent& event);
 };
 
 #endif

@@ -5,6 +5,10 @@
 
 //#include <wx\resource.h>
 
+BEGIN_EVENT_TABLE(CEntityEditor,wxDialog)
+    EVT_LISTBOX(id_entlist,CEntityEditor::OnSelectEntity)
+END_EVENT_TABLE()
+
 CEntityEditor::CEntityEditor(CMapView* parent,Map* m)
 : wxDialog((wxWindow*)parent,-1,"Entities",wxDefaultPosition,wxSize(600,285))
 {
@@ -14,7 +18,7 @@ CEntityEditor::CEntityEditor(CMapView* parent,Map* m)
 
     InitControls();
 
-    Update();
+    UpdateList();
 }
 
 void CEntityEditor::InitControls()
@@ -47,7 +51,7 @@ void CEntityEditor::InitControls()
     const wxSize labelsize=wxSize(70,20);
     const wxSize smalllabel=wxSize(14,20);
 
-    pEntlist=new wxListBox(this,-1,wxPoint(5,5),wxSize(140,245));
+    pEntlist=new wxListBox(this,id_entlist,wxPoint(5,5),wxSize(140,245));
     pMovepattern=new wxRadioBox(this,-1,"Movement pattern",wxPoint(350,5),wxSize(140,140),6,sPatterns,1);
 
     pIsobs=new wxCheckBox(this,-1,"Entity &Obstructs other entities",wxPoint(347,150),wxSize(200,10));
@@ -94,8 +98,10 @@ void CEntityEditor::InitControls()
 #endif
 }
 
-void CEntityEditor::Update()
+void CEntityEditor::UpdateList()
 {
+    int nCurrent=pEntlist->GetSelection();
+
     pEntlist->Clear();
 
     for (int i=0; i<pMap->NumEnts(); i++)
@@ -105,7 +111,45 @@ void CEntityEditor::Update()
         pEntlist->Append(e.sName.c_str());
     }
 
-    const SMapEntity& e=pMap->GetEntity(0);//pEntlist->GetSelection());
+    pEntlist->SetSelection(nCurrent);
+    nOldidx=-1;
+    UpdateDlg();
+}
+
+void CEntityEditor::UpdateData()
+{
+    if (nOldidx==-1) return;
+
+    SMapEntity& e=pMap->GetEntity(nOldidx);
+
+    if (e.sName!=pName->GetValue().c_str())
+    {
+        wxString bleh=pName->GetValue().c_str();
+        pEntlist->InsertItems(1,&bleh,nOldidx);
+        pEntlist->Delete(nOldidx+1);
+    }
+
+    e.sName             =pName->GetValue().c_str();
+    e.x                 =atoi(pX->GetValue().c_str());
+    e.y                 =atoi(pY->GetValue().c_str());
+    e.sCHRname          =pSprite->GetValue().c_str();
+    e.nSpeed            =atoi(pY->GetValue().c_str());
+    e.sActscript        =pActscript->GetValue().c_str();
+    e.sMovescript       =pMovescript->GetValue().c_str();
+    e.nWandersteps      =atoi(pSteps->GetValue().c_str());
+    e.nWanderdelay      =atoi(pDelay->GetValue().c_str());
+    e.wanderrect.left   =atoi(pX1->GetValue().c_str());
+    e.wanderrect.top    =atoi(pY1->GetValue().c_str());
+    e.wanderrect.right  =atoi(pX2->GetValue().c_str());
+    e.wanderrect.bottom =atoi(pY2->GetValue().c_str());
+    e.sZone             =pZone->GetValue().c_str();
+    e.sChasetarget      =pChasetarget->GetValue().c_str();
+}
+
+void CEntityEditor::UpdateDlg()
+{
+    const SMapEntity& e=pMap->GetEntity(pEntlist->GetSelection());
+
     pName       ->SetValue(e.sName.c_str());
     pX          ->SetValue(ToString(e.x).c_str());
     pY          ->SetValue(ToString(e.y).c_str());
@@ -121,4 +165,11 @@ void CEntityEditor::Update()
     pY2         ->SetValue(ToString(e.wanderrect.bottom).c_str());
     pZone       ->SetValue(e.sZone.c_str());
     pChasetarget->SetValue(e.sChasetarget.c_str());
+}
+
+void CEntityEditor::OnSelectEntity(wxCommandEvent& event)
+{
+    UpdateData();
+    nOldidx=event.GetInt();
+    UpdateDlg();
 }

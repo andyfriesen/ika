@@ -253,7 +253,7 @@ public:
     int  EntityAt(int x,int y);                             // returns the index of the entity at the specified coords, -1 if no entity is there
 //    void GetEntInfo(SMapEntity& info,int entidx);           // fills info with information about the specified entity
 //    void SetEntInfo(const SMapEntity& info,int entidx);     // sets the specified entity's properties based on the contents of info
-    const SMapEntity& GetEntity(int idx) const;
+    SMapEntity& GetEntity(int idx) const;
     void SetEntity(SMapEntity& e,int idx);
     int  CreateEntity(int x,int y);                         // creates a new entity at (x,y) and returns its index.
     void DestroyEntity(int entidx);                         // destroys the specified entity
