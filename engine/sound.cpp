@@ -1,35 +1,34 @@
 #include <windows.h>
 #include "sound.h"
 
-bool (*sfxInit)();		// inits the whole thing, returns true on success
-void (*sfxShutdown)();	// shuts everything down
+bool (*sfxInit)();                                                      // inits the whole thing, returns true on success
+void (*sfxShutdown)();                                                  // shuts everything down
 
-SMusic (*sfxLoadMusic)(const char* fname);	// Loads the music into m
-bool (*sfxFreeMusic)(SMusic m);						// stops playing and deallocates the music file
-bool (*sfxPlayMusic)(SMusic m);						// plays the music file
-void (*sfxStopMusic)(SMusic m);						// stops playback. (play can be called again to resume playback)
+SMusic (*sfxLoadMusic)(const char* fname);                              // Loads the music into m
+bool (*sfxFreeMusic)(SMusic m);                                         // stops playing and deallocates the music file
+bool (*sfxPlayMusic)(SMusic m);                                         // plays the music file
+void (*sfxStopMusic)(SMusic m);                                         // stops playback. (play can be called again to resume playback)
 int  (*sfxGetMusicPos)(SMusic m);
 void (*sfxSetMusicPos)(SMusic m,long newpos);
 int  (*sfxGetMusicVolume)(SMusic m);
-void (*sfxSetMusicVolume)(SMusic m,int newvol);		// sets the volume.  0-255
+void (*sfxSetMusicVolume)(SMusic m,int newvol);                         // sets the volume.  0-255
 
-Ssfx (*sfxLoadEffect)(const char* fname);		// loads the .wav file into s
+Ssfx (*sfxLoadEffect)(const char* fname);                               // loads the .wav file into s
 bool (*sfxFreeEffect)(Ssfx s);
 
-bool (*sfxPlayEffect)(Ssfx* s,int vol,int pan);		// vol is 0-255, pan is 0 (left) - 255 (right)
+bool (*sfxPlayEffect)(Ssfx* s,int vol,int pan);                         // vol is 0-255, pan is 0 (left) - 255 (right)
 
 void (*sfxUpdate)();
 
 static void SetupNullSoundDriver();
+static HINSTANCE hSoundlib=0;
 
 template<typename T>
 static void Assign(T& dest,void* src)
 {
-    if (!src) throw 0;					// This saves so much typing.
+    if (!src) throw 0;                                                  // This saves so much typing.
     dest=(T&)src;
 }
-
-HINSTANCE hSoundlib=0;
 
 bool SetupSound(const char* dllname)
 {

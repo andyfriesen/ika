@@ -159,8 +159,8 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     input.ClipMouse(0,0,cfg.nInitxres,cfg.nInityres);
     if (cfg.bFullscreen)        input.HideMouse();
     // Clear key bindings
-    ZeroMemory(pBindings,nControls*sizeof(void*));                // It has come to my attention that I have far too few goofy comments in this source tree.
-    logok();                                                    // I AM PEANUT
+    ZeroMemory(pBindings,nControls*sizeof(void*));                  // It has come to my attention that I have far too few goofy comments in this source tree.
+    logok();                                                        // I AM PEANUT
     
     logp("Initing timer");
     if (!timer.Init(timerate))
@@ -211,7 +211,6 @@ void CEngine::Shutdown()
     map.Free();
     timer.Shutdown();
     tiles.Free();
-    //    sprite.Free();
     script.Shutdown();
     
     UnloadGraphics();
@@ -269,7 +268,7 @@ void CEngine::RenderEntities()
     {
         int hx,hy;
         CEntity& e=*drawlist[j];
-        CSprite& s=*e.pSprite;;
+        CSprite& s=*e.pSprite;
         
         hx=s.nHotx;
         hy=s.nHoty;
@@ -382,7 +381,6 @@ void CEngine::Render(const char* sTemprstring)
     
     p=rstring;
     numlayers=0;
-    //gfxRect(hRenderdest,0,0,320,240,0,true);
     
     while (*p)
     {
@@ -455,14 +453,15 @@ void CEngine::CheckKeyBindings()
     {
         if (c<0 || c>nControls)
         {
-            log("CEngine::CheckKeyBindings");
+            log("CEngine::CheckKeyBindings control out of range");
             return;
         }
+
         if (pBindings[c]!=NULL)
         {
             input.control[c]=0;
             script.ExecFunction(pBindings[c]);
-            input.ClearControls();                // Not the perfect end result, but it'll have to do.  Don't want to call a script if one's already running
+            input.ClearControls();                // Not the perfect end result, but it'll have to do.  Don't want to call a script if one's already running.
         }
     }
 }
@@ -553,89 +552,6 @@ CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,i
     }
     return 0;
 }
-
-/*Direction CEngine::HandleWanderingEntity(CEntity& ent)
-{
-    if (ent.movescriptct<1)
-    {
-        if (ent.thedirectionImgoinginnow==face_nothing)                    // are we through with a non-walking period?
-        {
-            ent.thedirectionImgoinginnow=face_down;//(Direction)(rand()%4);                            // 1-4 (up, down, left, or right)
-            ent.movescriptct=ent.nWandersteps;
-            return ent.thedirectionImgoinginnow;
-        }
-        else
-        {
-            ent.thedirectionImgoinginnow=face_nothing;
-            ent.movescriptct=ent.nWanderdelay;
-            return face_nothing;
-        }
-    }
-    
-    ent.movescriptct--;
-    
-    switch(ent.movecode)
-    {
-    case mc_wanderrect:
-        switch(ent.thedirectionImgoinginnow)
-        {
-        case face_up:        if (ent.y-1<ent.wanderrect.top)            ent.thedirectionImgoinginnow=face_nothing;    break;
-        case face_down:        if (ent.y+1>ent.wanderrect.bottom)        ent.thedirectionImgoinginnow=face_nothing;    break;
-        case face_left:        if (ent.x-1<ent.wanderrect.left)        ent.thedirectionImgoinginnow=face_nothing;    break;
-        case face_right:    if (ent.x+1>ent.wanderrect.right)        ent.thedirectionImgoinginnow=face_nothing;    break;
-            
-        case face_upleft:    if (ent.y-1<ent.wanderrect.top || ent.x-1<ent.wanderrect.left)    ent.thedirectionImgoinginnow=face_nothing;    break;
-        case face_upright:    if (ent.y-1<ent.wanderrect.top || ent.x+1>ent.wanderrect.right)    ent.thedirectionImgoinginnow=face_nothing;    break;
-        case face_downleft:    if (ent.y+1>ent.wanderrect.top || ent.x-1<ent.wanderrect.left)    ent.thedirectionImgoinginnow=face_nothing;    break;
-        case face_downright:if (ent.y+1>ent.wanderrect.top || ent.x+1>ent.wanderrect.right)    ent.thedirectionImgoinginnow=face_nothing;    break;
-        }
-        break;
-    }
-    
-    
-    return ent.thedirectionImgoinginnow;
-}//*/
-
-/*#include <math.h>
-Direction CEngine::HandleChasingEntity(CEntity& ent)
-// TODO: Make this chase algorithm not suck. (Bresenham's line algorithm or something)
-{
-    int nDeltax,nDeltay;
-    int nTarget;
-    Direction d;
-    nTarget=ent.nEntchasetarget;
-    
-    nDeltax=entities[nTarget].x-ent.x;
-    nDeltay=entities[nTarget].y-ent.y;
-    
-    int distance=(int)sqrt(nDeltax*nDeltax+nDeltay*nDeltay);
-    if (distance<ent.nMinchasedist)    return face_nothing;    // The entity is close enough, and is thus content to be where it is.
-    
-    if (nDeltax<0) 
-    {
-        if (nDeltay<0)
-            d=face_upleft;
-        else if (nDeltay>0)
-            d=face_downleft;
-        else
-            d=face_left;
-    }
-    else if (nDeltax>0)
-    {
-        if (nDeltay<0)
-            d=face_upright;
-        else if (nDeltay>0)
-            d=face_downright;
-        else
-            d=face_right;
-    }
-    else if (nDeltay<0)
-        d=face_up;
-    else if (nDeltay>0)
-        d=face_down;
-    
-    return d;
-}//*/
 
 void CEngine::TestActivate(const CEntity& player)
 // checks to see if we're supposed to run some VC, due to the player's actions.
@@ -750,17 +666,14 @@ void CEngine::DestroyEntity(CEntity* e)
             return;
         }
         
-    // gwa!  In a Perfect Worlid his should never execute.
+    // In a Perfect World, this will never execute.
     log("Attempt to unallocate invalid entity!!!");
 }
 
 // --------------------------------- Misc (interface with old file formats, etc...) ----------------------
 
 void CEngine::LoadMap(const char* filename)
-/*
-Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure.
-Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
-*/
+// Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure.
 {
     CDEBUG("loadmap");
     char    temp[255];
@@ -794,8 +707,6 @@ Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
                 Sys_Error(va("Unable to load CHR file \"%s\"",temp));       // wah
             
             script.AddEntityToList(pEnt);
-
-            //log("%s",temp);
         }
         
         xwin=ywin=0;                                                        // just in case

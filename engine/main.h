@@ -29,7 +29,6 @@
 #include "sprite.h"
 #include "entity.h"
 #include "font.h"
-#include "controller.h"
 #include "v_config.h"
 
 class CEngine
@@ -62,8 +61,7 @@ public:                                                                         
     CScriptEngine                   script;                                         // c0de
     
     CSpriteController               sprite;                                         // CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
-    EntityList                      entities;                                       // you know what this is, I hope
-    CController<CFont>              font;                                           // because I sure as hell don't!
+    EntityList                      entities;                                       // entities ;P
     
     Timer                           timer;                                          // timer-based callback type stuff
     Input                           input;                                          // keyboard/mouse (todo: joystick)
@@ -91,12 +89,9 @@ public:                                                                         
     void      CheckKeyBindings();                                                   // checks to see if any bound keys are pressed
     
     // Entity handling
-    int       EntityAt(int x,int y,int w,int h);                                    // index of entity within the specified rect, or -1 if none
     bool      DetectMapCollision(int x1,int y1,int w,int h);
     CEntity*  DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h);
     void      ProcessEntities();                                                    // one tick of AI for each entity
-//    Direction HandleWanderingEntity(CEntity& ent);                                  // entity wanders for one tick
-//    Direction HandleChasingEntity(CEntity& ent);                                    // entity spends one tick chasing another entity
   
     void      TestActivate(const CEntity& player);                                  // checks to see if the player has talked to an entity, stepped on a zone, etc...
 

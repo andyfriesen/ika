@@ -17,23 +17,21 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     if (!e)
 	return DefWindowProc(hwnd,message,wParam,lParam);
     
-    switch (message)					// handle the messages
+    switch (message)					        // handle the messages
     {
-	// Do Not Remove - Begin Insert 3
-	// Do Not Remove - End   Insert 3
     case WM_ACTIVATEAPP:
     case WM_ACTIVATE:
 	if (LOWORD(wParam)==WA_INACTIVE)
 	{
 	    e->bActive=false;
-	    WaitMessage();				// being deactivated?  Then we stop until something happens.
+	    WaitMessage();				        // being deactivated?  Then we stop until something happens.
 	}
 	else
 	    e->bActive=true;
 	return 0;
 	
     case WM_DESTROY:           
-	PostQuitMessage(0);				// send a WM_QUIT to the message queue
+	PostQuitMessage(0);				        // send a WM_QUIT to the message queue
 	break;
 	
     default:							// for messages that we don't deal with           

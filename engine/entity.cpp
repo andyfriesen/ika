@@ -77,8 +77,6 @@ static int get_int(string_k s,int& offset)
     }
 }
 
-//#include "log.h"	// temp debugging code
-
 void CEntity::UpdateAnimation()
 {
     if (animscriptct<1)

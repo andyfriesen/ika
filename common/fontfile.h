@@ -16,7 +16,7 @@ public:
     // ------------------ Types --------------------
     struct SSubSet
     {
-        int	nGlyphtbl[256];						// glyph -> character table		
+        int nGlyphtbl[256];                                 // glyph -> character table		
     };
     
 private:
@@ -37,9 +37,9 @@ public:
     void Save(const char* fname);
     
     // ---------------- Accessors ------------------
-    int                     NumSubSets()    const                   {       return set.size();                              }
-    SSubSet&        GetSubSet(int subset)   const   {       return (SSubSet&)set[subset];   }
-    CPixelMatrix& GetGlyph(int glyphidx) const      {       return (CPixelMatrix&)glyph[glyphidx];                  }
+    int           NumSubSets()           const { return set.size();                     }
+    SSubSet&      GetSubSet(int subset)  const { return (SSubSet&)set[subset];          }
+    CPixelMatrix& GetGlyph(int glyphidx) const { return (CPixelMatrix&)glyph[glyphidx]; }
 };
 
 #endif

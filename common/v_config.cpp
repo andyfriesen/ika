@@ -8,9 +8,8 @@ SUserConfig::SUserConfig()
     bFullscreen=true;
     bSound=true;
     nMaxframeskip=10;
-    sGraphplugin[0]=0; sSoundplugin[0]=0;	// just to be sure that any garbage that they contained will be ignored by the C string ops.
-    strcpy(sGraphplugin,"SYS\\GFX_DD7.DLL");
-    strcpy(sSoundplugin,"SYS\\SFX_MIKMOD.DLL");
+    strcpy(sGraphplugin,"sys\\gfx_soft.dll");
+    strcpy(sSoundplugin,"sys\\sfx_mikmod.dll");
 }
 
 bool SUserConfig::Read(const char* fname)
@@ -45,18 +44,18 @@ bool SUserConfig::Read(const char* fname)
         
         else if (!stricmp(c,"vidmode"))
         {
-            f.ReadToken(c);		nInitxres=atoi(c);
-            f.ReadToken(c);		nInityres=atoi(c);
+            f.ReadToken(c); nInitxres=atoi(c);
+            f.ReadToken(c); nInityres=atoi(c);
         }
         
         else if (!stricmp(c,"bitdepth"))
-            f.ReadToken(c),	nInitbpp=atoi(c);
+            f.ReadToken(c), nInitbpp=atoi(c);
         
         else if (!stricmp(c,"window"))
             bFullscreen=false;
         
         else if (!stricmp(c,"frameskip"))
-            f.ReadToken(c),	nMaxframeskip=atoi(c);
+            f.ReadToken(c), nMaxframeskip=atoi(c);
         
         else if (!stricmp(c,"nosound"))
             bSound=false;
@@ -73,7 +72,7 @@ bool SUserConfig::Read(const char* fname)
     if (nInitxres<1) nInitxres=1;
     if (nInityres<1) nInityres=1;
     if (nInitbpp!=15 && nInitbpp!=16 && nInitbpp!=24 && nInitbpp!=32)
-        nInitbpp=16;
+        nInitbpp=32;
     
     f.Close();
     
@@ -83,8 +82,6 @@ bool SUserConfig::Read(const char* fname)
 void SGameConfig::Read(const char* fname)
 {
     File f;
-    
-    File::ClearPaths();
     
     if (strlen(fname))
     {

@@ -24,26 +24,26 @@
 
 static byte key_ascii_tbl[128] =
 {
-    0,   0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',   8,   9,
-        'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']',  13,   0, 'a', 's',
-        'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',  39, '`',   0,  92, 'z', 'x', 'c', 'v',
-        'b', 'n', 'm', ',', '.', '/',   0, '*',   0, ' ',   0,   3,   3,   3,   3,   3,
-        3,   3,   3,   3,   3,   0,   0,   0,   0,   0, '-',   0,   0,   0, '+',   0,
-        0,   0,   0, 127,   0,   0,  92,   3,   3,   0,   0,   0,   0,   0,   0,   0,
-        13,   0, '/',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   127,
-        0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '/',   0,   0,   0,   0,   0
+      0,   0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',   8,   9,
+    'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']',  13,   0, 'a', 's',
+    'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',  39, '`',   0,  92, 'z', 'x', 'c', 'v',
+    'b', 'n', 'm', ',', '.', '/',   0, '*',   0, ' ',   0,   3,   3,   3,   3,   3,
+      3,   3,   3,   3,   3,   0,   0,   0,   0,   0, '-',   0,   0,   0, '+',   0,
+      0,   0,   0, 127,   0,   0,  92,   3,   3,   0,   0,   0,   0,   0,   0,   0,
+     13,   0, '/',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 127,
+      0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '/',   0,   0,   0,   0,   0
 };
 
 static byte key_shift_tbl[128] =
 {
-    0,   0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',   8,   9,
-        'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}',  13,   0, 'A', 'S',
-        'D', 'F', 'G', 'H', 'J', 'K', 'L', ':','\"', '~',   0, '|', 'Z', 'X', 'C', 'V',
-        'B', 'N', 'M', '<', '>', '?',   0, '*',   0,   1,   0,   1,   1,   1,   1,   1,
-        1,   1,   1,   1,   1,   0,   0,   0,   0,   0, '-',   0,   0,   0, '+',   0,
-        0,   0,   1, 127,   0,   0,   0,   1,   1,   0,   0,   0,   0,   0,   0,   0,
-        13,   0, '/',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 127,
-        0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '/',   0,   0,   0,   0,   0
+      0,   0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',   8,   9,
+    'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}',  13,   0, 'A', 'S',
+    'D', 'F', 'G', 'H', 'J', 'K', 'L', ':','\"', '~',   0, '|', 'Z', 'X', 'C', 'V',
+    'B', 'N', 'M', '<', '>', '?',   0, '*',   0,   1,   0,   1,   1,   1,   1,   1,
+      1,   1,   1,   1,   1,   0,   0,   0,   0,   0, '-',   0,   0,   0, '+',   0,
+      0,   0,   1, 127,   0,   0,   0,   1,   1,   0,   0,   0,   0,   0,   0,   0,
+     13,   0, '/',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 127,
+      0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '/',   0,   0,   0,   0,   0
 };
 
 Input::Input() : 
@@ -97,40 +97,49 @@ Input::Input() :
         
         hInst=hinst;
         hWnd=hwnd;
-        
-        result=DirectInputCreate(hinst,DIRECTINPUT_VERSION,&lpdi,NULL);
-        if (!Test(result,"DI:DInputCreate")) return 0;
-        
-        // -------------keyboard initizlization------------
-        result=lpdi->CreateDevice(GUID_SysKeyboard,&keybd,NULL);
-        if (!Test(result,"DI:CreateDevice")) return 0;
-        
-        result=keybd->SetDataFormat(&c_dfDIKeyboard);
-        if (!Test(result,"DI:SetDataFormat")) return 0;
-        
-        result=keybd->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-        if (!Test(result,"DI:SetCo-oplevel")) return 0;
-        
-        dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-        dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        dipdw.diph.dwObj = 0;
-        dipdw.diph.dwHow = DIPH_DEVICE;
-        dipdw.dwData = 128;
-        result=keybd->SetProperty(DIPROP_BUFFERSIZE,&dipdw.diph);
-        if (!Test(result,"DI:SetProperty")) return 0;
-        
-        keybd->Acquire();
-        kb_start=kb_end=0;
-        
-        // ---------------mouse-----------------
-        result=lpdi->CreateDevice(GUID_SysMouse,&mouse,NULL);
-        if (!Test(result,"DI:CreateMouseDevice")) return 0;
-        
-        result=mouse->SetDataFormat(&c_dfDIMouse);
-        if (!Test(result,"DI:SetMouseDataFormat")) return 0;
-        
-        result=mouse->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-        if (!Test(result,"DI:SetMouseCoOpLevel")) return 0;
+    
+        try
+        {
+            result=DirectInputCreate(hinst,DIRECTINPUT_VERSION,&lpdi,NULL);
+            if (FAILED(result)) throw "DI:DInputCreate";
+            
+            // -------------keyboard initizlization------------
+            result=lpdi->CreateDevice(GUID_SysKeyboard,&keybd,NULL);
+            if (FAILED(result)) throw "DI:CreateDevice";
+            
+            result=keybd->SetDataFormat(&c_dfDIKeyboard);
+            if (FAILED(result)) throw "DI:SetDataFormat";
+            
+            result=keybd->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+            if (FAILED(result)) throw "DI:SetCooplevel";
+            
+            dipdw.diph.dwSize = sizeof(DIPROPDWORD);
+            dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
+            dipdw.diph.dwObj = 0;
+            dipdw.diph.dwHow = DIPH_DEVICE;
+            dipdw.dwData = 128;
+            result=keybd->SetProperty(DIPROP_BUFFERSIZE,&dipdw.diph);
+            if (FAILED(result)) throw "DI:SetProperty";
+            
+            keybd->Acquire();
+            kb_start=kb_end=0;
+            
+            // ---------------mouse-----------------
+            result=lpdi->CreateDevice(GUID_SysMouse,&mouse,NULL);
+            if (FAILED(result)) throw "DI:CreateMouseDevice";
+            
+            result=mouse->SetDataFormat(&c_dfDIMouse);
+            if (FAILED(result)) throw "DI:SetMouseDataFormat";
+            
+            result=mouse->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+            if (FAILED(result)) throw "DI:SetMouseCoOpLevel";
+        }
+        catch (const char* s)
+        {
+            log("Input init failed: %s",s);
+            ShutDown();
+            return 0;
+        }
         
         mclip.top=mclip.left=0;
         mclip.right=320;
@@ -234,8 +243,7 @@ Input::Input() :
         keys[nKeycode].bIsbound=false;
     }
     
-    int Input::GetKey()
-        // gets the next key from the buffer, or 0 if there isn't one
+    int Input::GetKey()                 // gets the next key from the buffer, or 0 if there isn't one
     {
         if (kb_start==kb_end) return 0; // nope!  nuthin here
         
@@ -250,17 +258,13 @@ Input::Input() :
         key_buffer[kb_end++]=key;
     }
     
-    void Input::ClearKeys()
-        // clears the keyboard buffer (duh!)
+    void Input::ClearKeys()             // clears the keyboard buffer (duh!)
     {
         kb_end=kb_start=0;
     }
     
     int Input::NextControl()
     {
-        //	if (ctl_start==ctl_end)	return -1;	// 0 is a valid control index. :(
-        
-        //	return ctl_buffer[ctl_start++];
         if (controlbuffer.empty())
             return -1;
         else
@@ -274,7 +278,6 @@ Input::Input() :
     
     void Input::ClearControls()
     {
-        //	ctl_start=ctl_end=0;
         while (!controlbuffer.empty())
             controlbuffer.pop();
     }
