@@ -32,7 +32,7 @@ void CSpriteSet::SetImage(const CPixelMatrix& img,int idx)
     pCHR->GetFrame(idx)=img;
 }
 
-CPixelMatrix& CSpriteSet::Get(int idx)
+Canvas& CSpriteSet::Get(int idx)
 {
     return pCHR->GetFrame(idx);
 }

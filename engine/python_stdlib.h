@@ -158,13 +158,6 @@ METHOD(std_showpage)
     return Py_None;
 }
 
-METHOD(std_getscreenimage)
-{
-    if (!PyArg_ParseTuple(args,""))
-        return NULL;
-    return 0;//pScreenobject;
-}
-
 METHOD(std_palettemorph)
 {
     int r=255,g=255,b=255;
@@ -364,11 +357,7 @@ PyMethodDef standard_methods[] =
     FUNCTION("Random",std_random),
     
     // Video
-    FUNCTION("LoadImage",std_loadimage),
     FUNCTION("ShowPage",std_showpage),
-    FUNCTION("SetRenderDest",std_setrenderdest),
-    FUNCTION("GetRenderDest",std_getrenderdest),
-    FUNCTION("GetScreenImage",std_getscreenimage),
     FUNCTION("RGB",std_rgb),
     FUNCTION("GetRGB",std_getrgb),
     FUNCTION("PaletteMorph",std_palettemorph),

@@ -207,7 +207,7 @@ int VSP::Save(const char* fname)
     
     // copy all the tile data into one big long buffer that we can write to disk
     for (unsigned int j=0; j<tiles.size(); j++)
-        memcpy(pTemp+(j*nTilex*nTiley),tiles[j].GetPixelData(),nTilex*nTiley*sizeof(RGBA));
+        memcpy(pTemp+(j*nTilex*nTiley),tiles[j].GetPixels(),nTilex*nTiley*sizeof(RGBA));
     
     const char bpp=4;
     
@@ -300,13 +300,13 @@ void VSP::DeleteTile(uint pos)
 
 void VSP::AppendTiles(uint count)
 {
-    CPixelMatrix dummy(nTilex,nTiley);
+    Canvas dummy(nTilex,nTiley);
     
     for (uint i=0; i<count; i++)
         tiles.push_back(dummy);
 }
 
-void VSP::CopyTile(CPixelMatrix& tb,uint pos)
+void VSP::CopyTile(Canvas& tb,uint pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
@@ -314,7 +314,7 @@ void VSP::CopyTile(CPixelMatrix& tb,uint pos)
     tb=tiles[pos];
 }
 
-void VSP::PasteTile(const CPixelMatrix& tb,uint pos)
+void VSP::PasteTile(const Canvas& tb,uint pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
@@ -322,7 +322,7 @@ void VSP::PasteTile(const CPixelMatrix& tb,uint pos)
     tiles[pos]=tb;
 }
 
-void VSP::TPasteTile(CPixelMatrix& tb,uint pos)
+void VSP::TPasteTile(Canvas& tb,uint pos)
 {
     CBlitter<Alpha>::Blit(tb,tiles[pos],0,0);
     // NYI
@@ -337,7 +337,7 @@ VSP::AnimState& VSP::Anim(uint strand)
     return vspanim[strand];
 }
 
-CPixelMatrix& VSP::GetTile(uint tileidx)
+Canvas& VSP::GetTile(uint tileidx)
 {
     if (tileidx<0 || tileidx>tiles.size())
         tileidx=0;

@@ -1,8 +1,8 @@
 #ifndef ENTITY_H
 #define ENTITY_H
 
-#include "types.h"
-#include "map.h"
+#include "common/types.h"
+#include "common/map.h"
 
 //! Normal entity speed
 const entspeed_normal=100;

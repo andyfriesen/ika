@@ -1,9 +1,14 @@
 #ifndef TILESET_H
 #define TILESET_H
 
-#include "types.h"
-#include "graph.h"
-#include "vsp.h"
+#include "common/types.h"
+#include "common/vsp.h"
+
+namespace Video
+{
+    class Driver;
+    class Image;
+}
 
 struct TileSetException{};
 

@@ -2,7 +2,7 @@
 #ifndef HOOKLIST_H
 #define HOOKLIST_H
 
-#include "types.h"
+#include "common/types.h"
 #include <list>
 
 class HookList

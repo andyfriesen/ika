@@ -1,7 +1,7 @@
+#include "common/misc.h"
+#include "common/log.h"
 #include "entity.h"
-#include "misc.h"
 #include "sprite.h"
-#include "log.h"
 #include "main.h"
 
 CEntity::CEntity(CEngine* njin) :

@@ -1,6 +1,10 @@
 #include "tileset.h"
-#include "log.h"
-#include "misc.h"
+
+#include "common/log.h"
+#include "common/misc.h"
+
+#include "video/Driver.h"
+#include "video/Image.h"
 
 CTileSet::CTileSet(const char* fname, Video::Driver* v)
     : video(v)

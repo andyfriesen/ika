@@ -6,7 +6,7 @@ Font file
 #define FONTFILE_H
 
 #include "types.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 
 class File;
 
@@ -25,7 +25,7 @@ public:
 private:
     // ------------------ Data ---------------------
     std::vector<SSubSet>    set;                            //!< font subsets.
-    std::vector<CPixelMatrix>       glyph;                  //!< Actual font glyphs.
+    std::vector<Canvas>       glyph;                  //!< Actual font glyphs.
 
     int nWidth,nHeight;                                     //!< For convenience only.  The width and height of the largest characters in the font.
     
@@ -44,7 +44,7 @@ public:
     // ---------------- Accessors ------------------
     int           NumSubSets()           const { return set.size();                     }   //!< Returns the number of subsets.
     SSubSet&      GetSubSet(int subset)  const { return (SSubSet&)set[subset];          }   //!< Returns the specified subset table.
-    CPixelMatrix& GetGlyph(int glyphidx) const { return (CPixelMatrix&)glyph[glyphidx]; }   //!< Returns the specified glyph.
+    Canvas& GetGlyph(int glyphidx) const { return (Canvas&)glyph[glyphidx]; }   //!< Returns the specified glyph.
     int           NumGlyphs()            const { return glyph.size();                   }   //!< Returns the number of glyphs in the font.
 
     int           Width()                const { return nWidth;                         }   //!< Returns the width of the widest character in the font

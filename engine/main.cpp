@@ -4,6 +4,8 @@
 #include "main.h"
 #include "timer.h"
 
+#include "opengl/Driver.h"
+
 void CEngine::Sys_Error(const char* errmsg)
 {
 /*    CDEBUG("sys_error");
@@ -154,7 +156,7 @@ void CEngine::Startup()
             );
           
         Log::Write("Initializing Video");
-        video = new Video::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+        video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
 
         if (!cfg.Int("nosound"))
         {
@@ -232,6 +234,7 @@ void CEngine::RenderEntities()
 {
     CDEBUG("renderentities");
     std::vector < CEntity*>     drawlist;
+    const Point res = video->GetResolution();
     
     // first, get a list of entities onscreen
     int width, height;
@@ -247,8 +250,8 @@ void CEngine::RenderEntities()
         int x = e.x-sprite.nHotx;
         int y = e.y-sprite.nHoty;
         
-        if (x+width-xwin > 0        && y+height-ywin > 0        &&
-            x-xwin < video->XRes()  && y-ywin < video->YRes()   &&
+        if (x+width-xwin > 0 && y+height-ywin > 0 &&
+            x-xwin < res.x   && y-ywin < res.y    &&
             e.bVisible)
             drawlist.push_back(&e);                                                         // the entity is onscreen, tag it.
     }
@@ -266,7 +269,7 @@ void CEngine::RenderEntities()
         
         int frame = e.nSpecframe ? e.nSpecframe : e.nCurframe;
         
-        video->DrawImage(s.GetFrame(frame), e.x - xwin - s.nHotx, e.y - ywin - s.nHoty);
+        video->BlitImage(s.GetFrame(frame), e.x - xwin - s.nHotx, e.y - ywin - s.nHoty, true);
     }
 }
 
@@ -293,8 +296,9 @@ void CEngine::RenderLayer(int lay, bool transparent)
     xofs =- (xw % tiles->Width());
     yofs =- (yw % tiles->Height());
     
-    xl = video->XRes() / tiles->Width() + 1;
-    yl = video->YRes() / tiles->Height() + 2;
+    const Point res = video->GetResolution();
+    xl = res.x / tiles->Width() + 1;
+    yl = res.y / tiles->Height() + 2;
     
     if (xs+xl > map.Width()) xl = map.Width() - xs;        // clip yo
     if (ys+yl > map.Height()) yl = map.Height() - ys;
@@ -311,8 +315,8 @@ void CEngine::RenderLayer(int lay, bool transparent)
             for (int x = 0; x < xl; x++)
             {
                 if (*t)
-                    video->DrawImage(tiles->GetTile(*t), curx, cury);
-                    //tiles->TBlitFrame(curx, cury, *t);
+                    video->BlitImage(tiles->GetTile(*t), curx, cury, true);
+
                 curx += tiles->Width();
                 t++;
             }
@@ -327,8 +331,8 @@ void CEngine::RenderLayer(int lay, bool transparent)
         {
             for (int x = 0; x < xl; x++)
             {
-                video->DrawImage(tiles->GetTile(*t), curx, cury);
-                //tiles->TBlitFrame(curx, cury, *t);
+                video->BlitImage(tiles->GetTile(*t), curx, cury, true);
+
                 curx += tiles->Width();
                 t++;
             }
@@ -342,6 +346,7 @@ void CEngine::RenderLayer(int lay, bool transparent)
 void CEngine::Render(const char* sTemprstring)
 {
     CDEBUG("render");
+    const Point res = video->GetResolution();
     char    rstring[255];
     char*   p;
     int     numlayers;
@@ -352,16 +357,12 @@ void CEngine::Render(const char* sTemprstring)
     
     if (pCameratarget)
     {        
-        xwin = pCameratarget->x - video->XRes() / 2;               // Move the camera...
-        ywin = pCameratarget->y - video->YRes() / 2;
+        SetCamera(Point(
+            pCameratarget->x - res.x / 2,
+            pCameratarget->y - res.y / 2));
         
-        int maxx=(map.Width()  * tiles->Width() ) - video->XRes();   // and make sure it's still in range
-        int maxy=(map.Height() * tiles->Height()) - video->YRes();
-        
-        if (xwin >= maxx)    xwin = maxx - 1;
-        if (ywin >= maxy)    ywin = maxy - 1;
-        if (xwin < 0)        xwin = 0;
-        if (ywin < 0)        ywin = 0;
+        int maxx=(map.Width()  * tiles->Width() ) - res.x;   // and make sure it's still in range
+        int maxy=(map.Height() * tiles->Height()) - res.y;
     }
     
     if (!sTemprstring)
@@ -679,6 +680,18 @@ void CEngine::LoadMap(const char* filename)
     {    Sys_Error(va("Failed to load %s", msg));    }
     catch (...)
     {    Sys_Error(va("Unknown error loading map %s", filename));    }
+}
+
+Point CEngine::GetCamera()
+{
+    return Point(xwin, ywin);
+}
+
+void CEngine::SetCamera(Point p)
+{
+    Point res = video->GetResolution();
+    xwin = clamp(p.x, 0, map.Width()  * tiles->Width()  - res.x - 1);   // (tile width * number of tiles) - resolution - 1
+    ywin = clamp(p.y, 0, map.Height() * tiles->Height() - res.y - 1);
 }
 
 int main(int argc, char* args[])

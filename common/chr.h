@@ -3,7 +3,7 @@
 #define CHR_H
 
 #include "types.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 
 /*!
     Hardware independant representation of a sprite.
@@ -13,7 +13,7 @@
 */
 class CCHRfile
 {
-    vector<CPixelMatrix>    frame;              //!< frame data
+    vector<Canvas>    frame;              //!< frame data
 
     int        nWidth,nHeight;
     int        nHotx,nHoty;                     //!< hotspot position
@@ -28,8 +28,8 @@ public:
     
     CCHRfile();
 
-    CPixelMatrix& GetFrame(int frame) const;
-    void UpdateFrame(const CPixelMatrix& newdata,int nFrame);
+    Canvas& GetFrame(int frame) const;
+    void UpdateFrame(const Canvas& newdata,int nFrame);
     inline int Width(int nFrame=0)  const   {   return frame[nFrame].Width();   }
     inline int Height(int nFrame=0) const   {   return frame[nFrame].Height();  }
     inline int NumFrames()          const   {   return frame.size();            }
@@ -42,7 +42,7 @@ public:
 
     void AppendFrame();                                                 //!< Adds a new, empty frame.
     void InsertFrame(int i);                                            //!< Inserts a new, empty frame at the specified position.
-    void InsertFrame(int i,CPixelMatrix& p);                            //!< Inserts the image as a new frame at the specified position.
+    void InsertFrame(int i,Canvas& p);                            //!< Inserts the image as a new frame at the specified position.
     void DeleteFrame(int i);                                            //!< Removes the specified frame.
 
     void New(int framex,int framey);                                    //!< Creates a new sprite of the specified dimensions.

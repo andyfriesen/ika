@@ -38,6 +38,17 @@ struct Rect
     Rect() : left(0),right(0),top(0),bottom(0) {}
 };
 
+struct Point
+{
+    int x;
+    int y;
+
+    Point(int _x = 0, int _y = 0)
+        : x(_x)
+        , y(_y)
+    {}
+};
+
 enum Direction											// directions an entity can be facing
 {
     face_up,

@@ -86,7 +86,7 @@ PyObject* CScriptEngine::Map_GetAttribute(PyObject* self,char* name)
 
 int CScriptEngine::Map_SetAttribute(PyObject* self,char* name,PyObject* value)
 {
-    if (!strcmp(name,"xwin"))
+/*    if (!strcmp(name,"xwin"))
     {
         int i=PyInt_AsLong(value);
         int maxx=pEngine->map.Width()*pEngine->tiles->Width()-pEngine->video->XRes();
@@ -103,7 +103,7 @@ int CScriptEngine::Map_SetAttribute(PyObject* self,char* name,PyObject* value)
         if (i>maxy) i=maxy;
         
         pEngine->ywin=i;
-    }
+    }*/
     
     if (!strcmp(name,"numtiles"))
     {

@@ -3,11 +3,14 @@ Font stuff.
 You know the drill. --tSB
 */
 
+#include "common/fontfile.h"
+#include "common/fileio.h"
+#include "common/rle.h"
+#include "common/log.h"
+#include "video/Driver.h"
+#include "video/Image.h"
+
 #include "font.h"
-#include "fontfile.h"
-#include "fileio.h"
-#include "rle.h"
-#include "log.h"
 
 static const char subsetmarker='~';
 
@@ -33,7 +36,7 @@ CFont::CFont(const char* filename, Video::Driver* video)
             
             int nGlyphidx = s.nGlyphtbl[nGlyph + 32];
             
-            CPixelMatrix& glyph = f.GetGlyph(nGlyphidx);
+            Canvas& glyph = f.GetGlyph(nGlyphidx);
 
             set[nSet].glyph[nGlyph] = video->CreateImage(glyph);
             
@@ -64,8 +67,8 @@ void CFont::PrintChar(int& x, int y, int subset, char c)
         return;
     
     Video::Image* img = set[subset].glyph[c];
-    video->DrawImage(img, x, y);
-    x += img->getWidth();
+    video->BlitImage(img, x, y, true);
+    x += img->Width();
 }
 
 void CFont::PrintString(int startx, int starty, const char* s)
@@ -127,7 +130,7 @@ int CFont::StringWidth(const char* s) const
         case subsetmarker:
             i++;
             if (s[i] == subsetmarker)
-                nWidth += set[nCursubset].glyph[subsetmarker - 32]->getWidth();
+                nWidth += set[nCursubset].glyph[subsetmarker - 32]->Width();
             else if (s[i] >= '0' && s[i] <= '0' + set.size())                       // valid subset number?
                 nCursubset = s[i] - '0';
             break;
@@ -135,7 +138,7 @@ int CFont::StringWidth(const char* s) const
         default:
             if (c < 32 || c > 32 + 96)
                 continue;                                                           // invalid char, skip it.
-            nWidth += set[nCursubset].glyph[c - 32]->getWidth();
+            nWidth += set[nCursubset].glyph[c - 32]->Width();
         }
     }
     return nWidth;

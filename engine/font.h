@@ -1,11 +1,16 @@
 #ifndef FONT_H
 #define FONT_H
 
-#include "types.h"
+#include "common/types.h"
 #include "tileset.h"
-#include "graph.h"
 
 class File;
+
+namespace Video
+{
+    class Driver;
+    class Image;
+}
 
 struct FontException{};
 

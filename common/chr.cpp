@@ -12,17 +12,17 @@ CCHRfile::CCHRfile()
     AppendFrame();
 }
 
-CPixelMatrix& CCHRfile::GetFrame(int nFrame) const
+Canvas& CCHRfile::GetFrame(int nFrame) const
 {
-    static CPixelMatrix dummy;
+    static Canvas dummy;
     
     if (nFrame < 0 || nFrame >= frame.size())
         return dummy;
     
-    return (CPixelMatrix&)frame[nFrame];
+    return (Canvas&)frame[nFrame];
 }
 
-void CCHRfile::UpdateFrame(const CPixelMatrix& newdata,int nFrame)
+void CCHRfile::UpdateFrame(const Canvas& newdata,int nFrame)
 {
     if (nFrame<0 || nFrame>=frame.size())
         return;
@@ -32,7 +32,7 @@ void CCHRfile::UpdateFrame(const CPixelMatrix& newdata,int nFrame)
 
 void CCHRfile::AppendFrame()
 {
-    frame.push_back(CPixelMatrix(nWidth,nHeight));
+    frame.push_back(Canvas(nWidth,nHeight));
 }
 
 void CCHRfile::InsertFrame(int idx)
@@ -46,7 +46,7 @@ void CCHRfile::InsertFrame(int idx)
     if (idx<0)
         idx=0;
     
-    CPixelMatrix p(frame[frame.size()-1]);        // copy the last frame
+    Canvas p(frame[frame.size()-1]);        // copy the last frame
     
     for (int i=idx; i<frame.size(); i++)
         frame[i+1]=frame[i];
@@ -54,7 +54,7 @@ void CCHRfile::InsertFrame(int idx)
     InsertFrame(frame.size(),p);                    // and tack it on the end.
 }
 
-void CCHRfile::InsertFrame(int idx,CPixelMatrix& p)
+void CCHRfile::InsertFrame(int idx,Canvas& p)
 {
     if (idx<0)
         idx=0;
@@ -167,7 +167,7 @@ bool CCHRfile::Load(const char* fname)
         RGBA* pTemp=new RGBA[x*y];
         f.ReadCompressed(pTemp,x*y*sizeof(RGBA));
         
-        frame.push_back(CPixelMatrix(pTemp,x,y));
+        frame.push_back(Canvas(pTemp,x,y));
         
         delete[] pTemp;
     }
@@ -209,7 +209,7 @@ void CCHRfile::Save(const char* fname)
         f.Write(nHoth);
         
         f.WriteCompressed(
-            frame[i].GetPixelData(),
+            frame[i].GetPixels(),
             frame[i].Width()*frame[i].Height()*sizeof(RGBA));
     }
     

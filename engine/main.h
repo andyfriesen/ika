@@ -6,21 +6,21 @@
 
 // low level components/containers/etc..
 #include <list>
-#include "log.h"
-#include "misc.h"
-#include "graph.h"
+#include "common/log.h"
+#include "common/misc.h"
+#include "video/Driver.h"
 #include "input.h"
 #include "hooklist.h"
 
 // engine components
+#include "common/configfile.h"
+#include "common/map.h"
 #include "script.h"
 #include "tileset.h"
 #include "sound.h"
-#include "map.h"
 #include "sprite.h"
 #include "entity.h"
 #include "font.h"
-#include "configfile.h"
 
 
 /*!
@@ -55,7 +55,9 @@ public:                                                                         
     bool                            bActive;                                        ///< set to false if we're supposed to sleep
     bool                            bMaploaded;                                     ///< true if a map is... loaded. -_-
     
+private:
     int                             xwin,ywin;                                      ///< world coordinates of the viewport
+public:
     CEntity*                        pPlayer;                                        ///< Points to the current player entity
     CEntity*                        pCameratarget;                                  ///< Points to the current camera target
     
@@ -93,6 +95,9 @@ public:                                                                         
     void      Startup();                                                            ///< Inits the engine
     void      Shutdown();                                                           ///< deinits the engine
     void      MainLoop();                                                           ///< runs the engine
+
+    Point     GetCamera();                                                          ///< Returns the position of the camera. (the point returned is the upper left corner)
+    void      SetCamera(Point p);                                                   ///< Moves the camera to the position specified.  Any necessary clipping is performed.
 
     CEngine(){}
 };

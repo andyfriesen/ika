@@ -3,7 +3,7 @@
 #define SCRIPT_H
 
 #include "python.h"
-#include "types.h"
+#include "common/types.h"
 
 /*!
     Python API encapsulation class.
@@ -32,8 +32,8 @@ class CScriptEngine
     static PyObject*    pCameratarget;
     static PyObject*    pErrorhandler;
 
-    static PyObject*    pSysmodule;
-    static PyObject*    pMapmodule;
+    static PyObject*    pSysmodule;                         // the system scripts (system.py)
+    static PyObject*    pMapmodule;                         // scripts for the currently loaded map
 
     bool bInited;
 
@@ -56,6 +56,8 @@ public:
     // ----------------------- OBJECTS AND STUFF -----------------------
 private:
     // Object definition structs
+    static PyMethodDef  video_methods[];
+    static PyTypeObject videotype;
     static PyMethodDef  image_methods[];
     static PyTypeObject imagetype;
     static PyMethodDef  entity_methods[];
@@ -105,6 +107,13 @@ public:                                                        // too bad
     static int       Font_SetAttribute(PyObject* self,char* name,PyObject* value);
 
     // Singleton objects
+    // video
+    void Init_Video();
+    static PyObject* Video_New();
+    static void      Video_Destroy(PyObject* self);
+    static PyObject* Video_GetAttribute(PyObject* self,char* name);
+    static int       Video_SetAttribute(PyObject* self,char* name,PyObject* value);
+
     // map
     void Init_Map();
     static PyObject* Map_New();
@@ -138,12 +147,7 @@ public:                                                        // too bad
     METHOD(std_gettime);
     METHOD(std_random);
 
-    METHOD(std_loadimage);
-
     METHOD(std_showpage);
-    METHOD(std_setrenderdest);
-    METHOD(std_getrenderdest);
-    METHOD(std_getscreenimage);
     METHOD(std_palettemorph);
     METHOD(std_rgb);
     METHOD(std_getrgb);
@@ -162,19 +166,10 @@ public:                                                        // too bad
     METHOD(std_unhooktimer);
 
     // Image methods
-    METHOD(image_load);
-    METHOD(image_copy);
     METHOD(image_blit);
     METHOD(image_scaleblit);
     METHOD(image_distortblit);
-    METHOD(image_copychannel);
     METHOD(image_clip);
-    METHOD(image_line);
-    METHOD(image_rect);
-    METHOD(image_ellipse);
-    METHOD(image_setpixel);
-    METHOD(image_getpixel);
-    METHOD(image_flatpoly);
 
     // Entity methods
     METHOD(entity_move);
@@ -194,6 +189,15 @@ public:                                                        // too bad
     METHOD(font_centerprint);
     METHOD(font_rightprint);
     METHOD(font_stringwidth);
+
+    // Video
+    METHOD(video_blit);
+    METHOD(video_scaleblit);
+    METHOD(video_distortblit);
+    METHOD(video_drawline);
+    METHOD(video_drawrect);
+    METHOD(video_drawellipse);
+    METHOD(video_drawpixel);
 
     // Map methods
     METHOD(map_switch);

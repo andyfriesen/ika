@@ -7,6 +7,11 @@ look at misc.h :P
 #include <stdio.h>
 #include "misc.h"
 
+bool IsPowerOf2(int i)
+{
+    return (i & (i-1)) == 0;
+}
+
 int sgn(int x)
 {
     if (x<0) return -1;

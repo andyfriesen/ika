@@ -1,6 +1,9 @@
 #include "sprite.h"
-#include "chr.h"
-#include "log.h"
+
+#include "common/log.h"
+#include "common/chr.h"
+#include "video/Driver.h"
+#include "video/Image.h"
 
 CSprite::CSprite(const char* fname, Video::Driver* v)
     : video(v)

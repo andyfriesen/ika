@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="sdl.lib sdlmain.lib winmm.lib zlib.lib corona.lib audiere.lib"
+				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib opengl32.lib glu32.lib"
 				OutputFile=".\Release/ika.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\common,..\3rdparty\include,C:\src\python\dist\src\Include,c:\src\python\dist\src\PC"
+				AdditionalIncludeDirectories=".,..,..\3rdparty\include,C:\src\python\dist\src\Include,c:\src\python\dist\src\PC"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -96,7 +96,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib"
+				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib opengl32.lib glu32.lib"
 				OutputFile=".\Debug/ika.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -144,9 +144,6 @@
 				RelativePath=".\font.cpp">
 			</File>
 			<File
-				RelativePath="graph.cpp">
-			</File>
-			<File
 				RelativePath=".\input.cpp">
 			</File>
 			<File
@@ -182,9 +179,6 @@
 			</File>
 			<File
 				RelativePath=".\font.h">
-			</File>
-			<File
-				RelativePath="graph.h">
 			</File>
 			<File
 				RelativePath="hooklist.h">
@@ -228,6 +222,15 @@
 			Name="Common"
 			Filter="">
 			<File
+				RelativePath="..\common\Canvas.cpp">
+			</File>
+			<File
+				RelativePath="..\common\Canvas.h">
+			</File>
+			<File
+				RelativePath="..\common\CanvasBlitter.h">
+			</File>
+			<File
 				RelativePath="..\common\chr.cpp">
 			</File>
 			<File
@@ -268,15 +271,6 @@
 			</File>
 			<File
 				RelativePath="..\common\misc.h">
-			</File>
-			<File
-				RelativePath="..\common\pixel_matrix.cpp">
-			</File>
-			<File
-				RelativePath="..\common\pixel_matrix.h">
-			</File>
-			<File
-				RelativePath="..\common\pixel_matrix_blitter.h">
 			</File>
 			<File
 				RelativePath="..\common\rle.cpp">
@@ -322,7 +316,36 @@
 				RelativePath=".\py_sound.h">
 			</File>
 			<File
+				RelativePath="py_video.h">
+			</File>
+			<File
 				RelativePath=".\python_stdlib.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Video"
+			Filter="">
+			<File
+				RelativePath="video\Driver.h">
+			</File>
+			<File
+				RelativePath="video\Image.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="OpenGL"
+			Filter="">
+			<File
+				RelativePath="opengl\Driver.cpp">
+			</File>
+			<File
+				RelativePath="opengl\Driver.h">
+			</File>
+			<File
+				RelativePath="opengl\Image.cpp">
+			</File>
+			<File
+				RelativePath="opengl\Image.h">
 			</File>
 		</Filter>
 	</Files>

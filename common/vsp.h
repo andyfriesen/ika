@@ -20,7 +20,7 @@
 #define VSP_H
 
 #include "types.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 
 class VSP
 {
@@ -49,7 +49,7 @@ public:
     };
     
 private:
-    vector<CPixelMatrix>   tiles;   // tile images
+    vector<Canvas>   tiles;   // tile images
     
     char sDesc[64];
     char sName[64];		    // the VSPs filename
@@ -72,16 +72,16 @@ public:
     void DeleteTile(uint pos);
     inline void AppendTile() { AppendTiles(1); }
     void AppendTiles(uint count=1);
-    void CopyTile(CPixelMatrix& tb,uint pos);        // Copies the tile into a buffer.
-    void PasteTile(const CPixelMatrix& tb,uint pos); // pastes the tile from a buffer
-    void TPasteTile(CPixelMatrix& tb,uint pos);      // transparently pastes the tile from a buffer
+    void CopyTile(Canvas& tb,uint pos);        // Copies the tile into a buffer.
+    void PasteTile(const Canvas& tb,uint pos); // pastes the tile from a buffer
+    void TPasteTile(Canvas& tb,uint pos);      // transparently pastes the tile from a buffer
     
     void SetPixel(int x,int y,uint tileidx,int c);
     int  GetPixel(int x,int y,uint tileidx);
     
     AnimState& Anim(uint strand);
 
-    CPixelMatrix& GetTile(uint tileidx);
+    Canvas& GetTile(uint tileidx);
 
     inline int Width() const { return nTilex; }
     inline int Height() const { return nTiley; }

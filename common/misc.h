@@ -9,6 +9,9 @@ Things that just don't fit anywhere else, but are handy to have around.
 
 #include "types.h"
 
+#undef min  // GAAAAAAAAAY
+#undef max
+
 template <typename T>
 inline void swap(T& a,T& b)
 {
@@ -17,6 +20,26 @@ inline void swap(T& a,T& b)
     a=b;
     b=c;
 }
+
+template <typename T>
+inline T& min(T a, T b)
+{
+    return a < b ? a : b;
+}
+
+template <typename T>
+inline T& max(T a, T b)
+{
+    return a > b ? a : b;
+}
+
+template <typename T>
+inline T clamp(T val, T lower, T upper)
+{
+    return max(min(lower, val), upper);
+}
+
+bool IsPowerOf2(int i);
 
 int sgn(int x);
 int Random(int min,int max);

@@ -1,12 +1,17 @@
 #ifndef SPRITE_H
 #define SPRITE_H
 
-#include "types.h"
-#include "graph.h"
-#include "fileio.h"
+#include "common/types.h"
+#include "common/fileio.h"
 
 #include <list>
 using std::list;
+
+namespace Video
+{
+    class Driver;
+    class Image;
+}
 
 struct SpriteException{};
 
