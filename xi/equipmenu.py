@@ -19,20 +19,18 @@ import widget
 import item
 
 from menu import Menu
+from transition import *
 
 from menuwindows import *
 from misc import *
 
 class EquipMenu(object):
-    def __init__(_):
+    def __init__(_, statbar):
         _.equipwindow = EquipWindow()
         _.portraitwindow = PortraitWindow()
         _.statwindow = StatusWindow()
         _.itemlist = InventoryWindow()
-        _.statbar = StatusBar()
-        _.statbar.Refresh()
-        _.statbar.AutoSize()
-        _.statbar.DockTop().DockRight()
+        _.statbar = statbar
         _.charidx = 0
         _.slotidx = 0
         _.itemlist.active = False
@@ -43,15 +41,16 @@ class EquipMenu(object):
 
     CurChar = property(lambda _: party.party[_.charidx])        
 
-    def StartShow(_, trans):
+    def StartShow(_):
         _.Refresh(_.CurChar)
+        
         trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
         trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
         trans.AddWindowReverse(_.description, (_.description.x, -_.description.height))
         trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
         trans.AddWindowReverse(_.itemlist, (_.itemlist.x, YRes()))
         
-    def StartHide(_, trans):
+    def StartHide(_):
         trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
         trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
         trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True)

@@ -15,11 +15,13 @@ import party
 import equipmenu
 
 from ika import input
+from party import party
+
+from transition import *
 
 from menuwindows import StatusWindow, PortraitWindow, StatusBar, EquipWindow, SkillWindow
 from misc import *
 
-from party import party
 
 class StatusMenu(object):
     def __init__(_, statbar):
@@ -32,14 +34,16 @@ class StatusMenu(object):
         
     CurChar = property(lambda _: party[_.charidx])
     
-    def StartShow(_, trans):
+    def StartShow(_):
         _.Refresh(_.CurChar)
+        
+        trans = Transition()
         trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
         trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
         trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
         trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, YRes()))
         
-    def StartHide(_, trans):
+    def StartHide(_):
         trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
         trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
         trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)

@@ -15,7 +15,7 @@ from menu import Menu
 from statelessproxy import StatelessProxy
 
 from menuwindows import StatusBar
-from transition import Transition
+from transition import *
 from misc import *
 import statusmenu
 import itemmenu
@@ -40,7 +40,7 @@ class MainMenu(StatelessProxy):
         dummy = Dummy()
         self.submenu = [ itemmenu.ItemMenu(self.statbar),
 			 skillmenu.SkillMenu(self.statbar),
-                         equipmenu.EquipMenu(),
+                         equipmenu.EquipMenu(self.statbar),
                          statusmenu.StatusMenu(self.statbar),
                          dummy,
                          dummy,
@@ -55,41 +55,38 @@ class MainMenu(StatelessProxy):
     def Update(self):
         return self.mainmenu.Update()
         
-    def Show(self, trans):
+    def Show(self):
         self.statbar.DockRight().DockTop()
         self.mainmenu.DockLeft().DockTop()
 
         trans.AddWindowReverse(self.statbar, (self.statbar.Left, YRes()))
         trans.AddWindowReverse(self.mainmenu, (-self.mainmenu.width, self.mainmenu.Top))
         trans.Execute()
-        print trans.windows[self.statbar]
         
-    def Hide(self, trans):
+    def Hide(self):
         trans.AddWindow(self.statbar, (self.statbar.Left, -self.statbar.height) )
         trans.AddWindow(self.mainmenu, (XRes(), self.mainmenu.y) )
         trans.Execute()
         
-    def RunMenu(self, menu, trans):
+    def RunMenu(self, menu):
         # hold onto this so we can put the menu back later
         r = self.mainmenu.Rect
         
         trans.AddWindow(self.mainmenu, (XRes(), self.mainmenu.y) )
-        menu.StartShow(trans)
+        menu.StartShow()
         trans.Execute()
         
         result = menu.Execute()
         
-        menu.StartHide(trans)
-        self.mainmenu.x = -self.mainmenu.width
+        menu.StartHide()
+        self.mainmenu.x = -self.mainmenu.width  # put the menu at stage left
         trans.AddWindow(self.mainmenu, r)       # restore the menu's position
         trans.Execute()
 
         return result
 
     def Execute(self):
-        trans = Transition(30)
-        
-        self.Show(trans)
+        self.Show()
         
         self.statbar.Refresh()
         
@@ -105,13 +102,13 @@ class MainMenu(StatelessProxy):
                 done = 1
             
             elif result != None:
-                result = self.RunMenu(self.submenu[result], trans)
+                result = self.RunMenu(self.submenu[result])
                 ika.input.enter = 0
                 ika.input.cancel = 0
                 if not result:
                     break
 
-        self.Hide(trans)
+        self.Hide()
 
 #------------------------------------------------------------------------------
 

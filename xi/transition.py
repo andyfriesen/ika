@@ -12,13 +12,21 @@
 # In this particular file, an underscore is being used
 # in place of the traditional 'self'.
 
-# Second note: List comprehensions are so awesome.
+# Second note: Functional stuff is so nifty.
 
 import ika
+from statelessproxy import *
 
-class Transition(object):
-    def __init__(_, time = 0):
-        _.time = time
+DEFAULT_TIME = 30
+
+class Transition(StatelessProxy):
+    def __init__(_):
+        StatelessProxy.__init__(_)
+        
+        if len(_.__dict__) != 0:
+            return
+        
+        _.time = DEFAULT_TIME
         _.curtime = 0
         _.windows = {}  # window : (start, end)
         _.killqueue = []
@@ -43,6 +51,17 @@ class Transition(object):
     def RemoveWindow(_, window):
         del _.windows[window]
         
+            
+    def Finish(_):
+        _.curtime = _.time
+        for wnd in _.windows.keys():
+            start, end = _.windows[wnd]
+            wnd.Rect = end
+            _.windows[wnd] = (end, end)
+            
+        while len(_.killqueue):
+            del _.windows[_.killqueue.pop()]
+
     def Update(_, dt):
         if dt == 0:
             return
@@ -55,29 +74,20 @@ class Transition(object):
             
         factor = float(dt) / _.time
         for wnd, (start, end) in _.windows.items():
-            delta = [ (y - x) for x, y in zip(start, end) ]
-            wnd.Rect = [ (x + factor * y) for x, y in zip(wnd.Rect, delta) ]
+            delta = map(lambda x, y: y - x, start, end)
+            wnd.Rect = map(lambda x, y: x + factor * y, wnd.Rect, delta)
             
     def Draw(_):
         for wnd in _.windows.keys():
             wnd.Draw()
-            
-    def Finish(_):
-        _.curtime = _.time
-        for wnd in _.windows.keys():
-            start, end = _.windows[wnd]
-            wnd.Rect = end
-            _.windows[wnd] = (end, end)
-            
-        while len(_.killqueue):
-            del _.windows[_.killqueue.pop()]
-            
+
     def Execute(_):
         _.curtime = 0
         t = ika.GetTime()
         while not _.Done:
-            dt = ika.GetTime() - t
-            t = ika.GetTime()
+            t2 = ika.GetTime()
+            dt = t2 - t
+            t = t2
             
             ika.map.Render()
             
@@ -89,3 +99,5 @@ class Transition(object):
                 ika.input.Update()
             
     Done = property(lambda _: _.curtime == _.time)
+
+trans = Transition()

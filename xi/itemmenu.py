@@ -17,6 +17,7 @@ import item
 import mainmenu
 from menuwindows import *
 from misc import *
+from transition import *
 
 class ItemMenu(object):
     def __init__(_, statbar):
@@ -35,18 +36,18 @@ class ItemMenu(object):
 
     #--------------------------------------------
     
-    def StartShow(_, trans):
+    def StartShow(_):
         _.description.DockTop().DockLeft()
         _.menu.DockLeft().DockTop(_.description)
         _.description.Right = _.statbar.x - _.statbar.border * 2
         _.Refresh()
-        
+
         trans.AddWindowReverse(_.description, (_.description.x, -_.description.height) )
         trans.AddWindowReverse(_.menu, (_.menu.x, YRes()) )
 
     #--------------------------------------------
     
-    def StartHide(_, trans):
+    def StartHide(_):
         trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True )
         trans.AddWindow(_.menu, (_.menu.x, YRes()), remove = True )
 

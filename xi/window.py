@@ -95,18 +95,18 @@ class Window:
         y1 -= b
         x2 += b
         y2 += b
-        self.iTopleft.Blit(x1-self.iTopleft.width, y1-self.iTopleft.height)
+        self.iTopleft.Blit(x1 - self.iTopleft.width, y1 - self.iTopleft.height)
         self.iTopright.Blit(x2, y1-self.iTopright.height)
-        self.iBottomleft.Blit(x1-self.iBottomleft.width, y2)
+        self.iBottomleft.Blit(x1 - self.iBottomleft.width, y2)
         self.iBottomright.Blit(x2, y2)
 
-        self.iLeft.ScaleBlit (x1-self.iLeft.width, y1, self.iLeft.width, y2-y1)
+        self.iLeft.ScaleBlit (x1 - self.iLeft.width, y1, self.iLeft.width, y2 - y1)
         self.iRight.ScaleBlit(x2, y1, self.iRight.width, y2-y1)
 
-        self.iTop.ScaleBlit   (x1, y1-self.iTop.height, x2-x1, self.iTop.height)
-        self.iBottom.ScaleBlit(x1, y2, x2-x1, self.iBottom.height)
+        self.iTop.ScaleBlit   (x1, y1 - self.iTop.height, x2 - x1, self.iTop.height)
+        self.iBottom.ScaleBlit(x1, y2, x2 - x1, self.iBottom.height)
         #self.iCentre.ScaleBlit(x1, y1, 900,900)
-        self.iCentre.ScaleBlit(x1, y1, x2-x1, y2-y1)
+        self.iCentre.ScaleBlit(x1, y1, x2 - x1, y2 - y1)
 
     """Left   = property( lambda self: self.iLeft.width )
     Right  = property( lambda self: self.iRight.width )

@@ -19,6 +19,7 @@ import widget
 from menu import Menu
 
 from menuwindows import *
+from transition import *
 from misc import *
 
 class SkillMenu(object):
@@ -35,14 +36,15 @@ class SkillMenu(object):
 
     CurChar = property(lambda _: party.party[_.charidx])     
 
-    def StartShow(_, trans):
+    def StartShow(_):
         _.Refresh(_.CurChar)
+        
         trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
         trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
         trans.AddWindowReverse(_.description, (_.description.x, -_.description.height))
         trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, YRes()))
         
-    def StartHide(_, trans):
+    def StartHide(_):
         trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
         trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
         trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True)
