@@ -167,11 +167,16 @@ void CEntity::Move(Direction d)
     if (bEntobs && engine.DetectEntityCollision(*this))
     {   Stop(); return; }
 
-    if (direction!=d)
+    x=newx; y=newy;
+
+    if (direction!=d || !bMoving)
     {
+        bMoving=true;
         direction=d;
         SetAnimScript(pSprite->Script((int)direction));
     }
+    else
+        newy++;
 }
 
 Direction CEntity::Wander()
@@ -255,24 +260,55 @@ Direction CEntity::GetMoveScriptCommand()
     return bMoving?direction:face_nothing;
 }
 
+Direction CEntity::HandlePlayer()
+{
+    Input& input=engine.input;
+    input.Update();
+
+    if (input.up)
+    {
+	if (input.left)		return face_upleft;
+	if (input.right)	return face_upright;
+	return face_up;
+    }
+    if (input.down)
+    {
+	if (input.left)		return face_downleft;
+	if (input.right)	return face_downright;
+	return face_down;
+    }
+    if (input.left) return face_left;					// by this point, the diagonal possibilities are already taken care of
+    if (input.right)return face_right;
+    
+    return face_nothing;
+}
+
 void CEntity::Update()
 {
     Direction newdir;
 
-    switch (movecode)
-    {
-    case mc_nothing:    newdir=face_nothing;            break;
-    case mc_wander:
-    case mc_wanderzone:
-    case mc_wanderrect: newdir=Wander();                break;
-    case mc_script:     newdir=GetMoveScriptCommand();  break;
-    default:
-        log("CEntity::Update: Internal error -- bogus movecode");
-        return;     // O_O;
-    }
+    UpdateAnimation();
+
+    if (this==engine.pPlayer)
+        newdir=HandlePlayer();
+    else
+        switch (movecode)
+        {
+        case mc_nothing:    newdir=face_nothing;            break;
+        case mc_wander:
+        case mc_wanderzone:
+        case mc_wanderrect: newdir=Wander();                break;
+        case mc_script:     newdir=GetMoveScriptCommand();  break;
+        default:
+            log("CEntity::Update: Internal error -- bogus movecode");
+            return;     // O_O;
+        }
 
     if (newdir==face_nothing)
-    {   Stop();     return; }
+    {   
+        Stop();     
+        return;
+    }
 
     Move(newdir);
 }

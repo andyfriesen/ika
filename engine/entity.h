@@ -1,4 +1,4 @@
-/*
+    /*
   Entity stuff.
 
   AI has to be processed in the main module.  So!  This will have lots of handy-dandy methods for getting
@@ -76,6 +76,7 @@ public:
     void        Move(Direction d);                                  // Cause the entity to try to move one pixel in a given direction
 
 //----------------------------------------- AI -----------------------------------------------------
+    Direction   HandlePlayer();
     Direction   GetMoveScriptCommand();                             // what do I want to do next?
     Direction   Wander();
     Direction   Chase();
