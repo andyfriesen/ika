@@ -30,22 +30,57 @@ namespace
             : wxSashLayoutWindow(parent,id)
         {}
 
+        void ScrollRel(wxScrollWinEvent& event,int amount)
+        {
+            int max=GetScrollRange(event.GetOrientation());
+            int thumbsize=GetScrollThumb(event.GetOrientation());
+
+            amount+=GetScrollPos(event.GetOrientation());//event.GetPosition();
+            if (amount<0) amount=0;
+            if (amount>max-thumbsize)
+                amount=max-thumbsize;
+
+            ((CMapView*)GetParent())->OnScroll(wxScrollWinEvent(-1,amount,event.GetOrientation()));
+        }
+
+        void ScrollTo(wxScrollWinEvent& event,int pos)
+        {
+            int max=GetScrollRange(event.GetOrientation());
+            int thumbsize=GetScrollThumb(event.GetOrientation());
+
+            if (pos<0) pos=0;
+            if (pos>max-thumbsize)
+                pos=max-thumbsize;
+
+            ((CMapView*)GetParent())->OnScroll(wxScrollWinEvent(-1,pos,event.GetOrientation()));
+        }
+
+        void ScrollTop(wxScrollWinEvent& event)         {   ScrollTo(event,0);    }
+        void ScrollBottom(wxScrollWinEvent& event)      {   ScrollTo(event,GetScrollRange(event.GetOrientation()));    }
+        
+        void ScrollLineUp(wxScrollWinEvent& event)      {   ScrollRel(event,-1);       }
+        void ScrollLineDown(wxScrollWinEvent& event)    {   ScrollRel(event,+1);    }
+
+        void ScrollPageUp(wxScrollWinEvent& event)      {   ScrollRel(event,-GetScrollThumb(event.GetOrientation()));    }
+        void ScrollPageDown(wxScrollWinEvent& event)    {   ScrollRel(event,+GetScrollThumb(event.GetOrientation()));    }
+
         void OnScroll(wxScrollWinEvent& event)
         {
             ((CMapView*)GetParent())->OnScroll(event);
+           
         }
 
         DECLARE_EVENT_TABLE()
     };
 
     BEGIN_EVENT_TABLE(CMapSash,wxSashLayoutWindow)
-        EVT_SCROLLWIN(CMapSash::OnScroll)
-        EVT_SCROLLWIN_TOP(CMapSash::OnScroll)
-        EVT_SCROLLWIN_BOTTOM(CMapSash::OnScroll)
-        EVT_SCROLLWIN_LINEUP(CMapSash::OnScroll)
-        EVT_SCROLLWIN_LINEDOWN(CMapSash::OnScroll)
-        EVT_SCROLLWIN_PAGEUP(CMapSash::OnScroll)
-        EVT_SCROLLWIN_PAGEDOWN(CMapSash::OnScroll)
+       // EVT_SCROLLWIN(CMapSash::OnScroll)
+        EVT_SCROLLWIN_TOP(CMapSash::ScrollTop)
+        EVT_SCROLLWIN_BOTTOM(CMapSash::ScrollBottom)
+        EVT_SCROLLWIN_LINEUP(CMapSash::ScrollLineUp)
+        EVT_SCROLLWIN_LINEDOWN(CMapSash::ScrollLineDown)
+        EVT_SCROLLWIN_PAGEUP(CMapSash::ScrollPageUp)
+        EVT_SCROLLWIN_PAGEDOWN(CMapSash::ScrollPageDown)
         EVT_SCROLLWIN_THUMBTRACK(CMapSash::OnScroll)
         EVT_SCROLLWIN_THUMBRELEASE(CMapSash::OnScroll)
     END_EVENT_TABLE()
@@ -84,8 +119,8 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     pMap=pParentwnd->map.Load(fname);
     pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());
 
-    pRightbar->SetScrollbar(wxVERTICAL,10,10,pMap->Height()*pTileset->Height());
-    pRightbar->SetScrollbar(wxHORIZONTAL,10,10,pMap->Width()*pTileset->Width());
+    pRightbar->SetScrollbar(wxVERTICAL,1,100,pMap->Height()*pTileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL,1,100,pMap->Width()*pTileset->Width());
 }
 
 void CMapView::OnPaint()
