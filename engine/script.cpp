@@ -34,8 +34,6 @@ void CScriptEngine::Init(CEngine* p)
     string_k s(".;");                                           // The delimiter is platform dependant.
     s.append(Py_GetPath());
     PySys_SetPath((char*)s.c_str());
-
-    log("PyPath: %s",s.c_str());
     
     PyImport_AddModule("std");
     PyObject* module=Py_InitModule("std",standard_methods);

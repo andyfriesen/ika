@@ -249,7 +249,14 @@ int VSP::Save(const char* fname)
     delete[] cb;
     delete[] pTemp;
     
-    f.Write(&vspanim,sizeof vspanim);
+    for (int k=0; k<100; k++)
+    {
+        f.Write(&vspanim[k].nStart,2);
+        f.Write(&vspanim[k].nFinish,2);
+        f.Write(&vspanim[k].nDelay,2);
+        f.Write(&vspanim[k].mode,2);
+    }
+
     f.Close();
     
     return true;
