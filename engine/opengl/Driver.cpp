@@ -2,8 +2,8 @@
 #include <vector>
 #include <math.h>
 
-//#include "SDL/SDL_opengl.h"
-#include "GL/gl.h"
+#include "SDL/SDL_opengl.h"
+//#include "GL/gl.h"
 
 #include "Driver.h"
 #include "Image.h"
@@ -54,6 +54,7 @@ namespace OpenGL
 #endif
 
         glClearColor(0, 0, 0, 0);
+        glClear(GL_COLOR_BUFFER_BIT);
 
         glDisable(GL_DEPTH_TEST);
 
@@ -398,7 +399,7 @@ namespace OpenGL
         glColor4ubv((u8*)&colour);
 
         glBegin(GL_POINTS);
-        glVertex2f(float(x) + 0.5f, float(y) + 0.5f);
+        glVertex2f(float(x) + 0.375f, float(y) + 0.375f);
         glEnd();
 
         glEnable(GL_TEXTURE_2D);
@@ -408,7 +409,7 @@ namespace OpenGL
     void Driver::DrawLine(int x1, int y1, int x2, int y2, u32 colour)
     {
         glPushMatrix();
-        glTranslatef(0.5f, 0.5f, 0);
+        glTranslatef(0.375f, 0.375f, 0);
 
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
@@ -425,7 +426,7 @@ namespace OpenGL
     void Driver::DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled)
     {
         glPushMatrix();
-        glTranslatef(0.5f, 0.5f, 0);
+        glTranslatef(0.375f, 0.375f, 0);
 
         //glDisable(GL_TEXTURE_2D);
 		SwitchTexture(0);
@@ -457,7 +458,7 @@ namespace OpenGL
     void Driver::DrawEllipse(int cx, int cy, int rx, int ry, u32 colour, bool filled)
     {
         glPushMatrix();
-        glTranslatef(0.5f, 0.5f, 0);
+        glTranslatef(0.375f, 0.375f, 0);
 
         // Kudos to Dante for coding this.
         if(rx==0 || ry==0) return;

@@ -113,7 +113,19 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
 
     int nExtension = sTemp.find_last_of(".", sTemp.length());
     sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
-    // TODO: replace / and \ with dots, so python will search for a package with the correct path.
+
+    // replace path delimiters with dots, so python will search for a package with the correct path.
+    for (uint i = 0; i < sTemp.length(); i++)
+    {
+        if (sTemp[i] == '/'
+#ifdef WIN32
+            || sTemp[i] == '\\'
+#endif
+            )
+        {
+            sTemp[i] = '.';
+        }
+    }
 
     mapModule = PyImport_ImportModule((char*)sTemp.c_str());
 
