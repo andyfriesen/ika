@@ -1,8 +1,20 @@
+#include <cassert>
+
 #include "chr.h"
 #include "fileio.h"
 #include "vergepal.h"
 #include "rle.h"
 #include "misc.h"
+
+#ifdef USE_XML_GOODNESS
+#   include "compression.h"
+#   include "base64.h"
+#   include "xmlutil.h"
+#   include <cppdom/cppdom.h>
+#   include <fstream>
+using namespace cppdom;
+
+#endif
 
 CCHRfile::CCHRfile(int width, int height)
 {
@@ -113,6 +125,141 @@ void CCHRfile::New(int framex, int framey)
 }
 
 bool CCHRfile::Load(const char* fname)
+#ifdef USE_XML_GOODNESS
+{
+    XMLContextPtr context(new XMLContext);
+    XMLDocument document;
+
+    try
+    {
+        document.load(std::ifstream(fname), context);
+        XMLNodePtr rootNode = document.getChild("ika-sprite");
+        if (!rootNode.get())
+            throw "No document root!";
+
+        {
+            XMLNodePtr infoNode = rootNode->getChild("information");
+            if (!infoNode.get())
+                throw "<information> tag not found.";
+
+            // grab <information> elements that we care about
+        }
+
+        {
+            XMLNodePtr headerNode = rootNode->getChild("header");
+            if (!headerNode.get())
+                throw "<header> tag not found.";
+
+            // grab header stuff
+        }
+
+        {
+            XMLNodePtr scriptNode = rootNode->getChild("scripts");
+            if (!scriptNode.get())
+                throw "<scripts> tag not found.";
+
+            XMLNodeList nodes = scriptNode->getChildren("script");
+            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            {
+                std::string name((*iter)->getAttribute("label").getString());
+                if (name.empty())
+                    throw "<script> tag lacking label attribute.";
+                
+                XMLNodePtr n((*iter)->getChildren().front());
+                if (!n.get() || n->getType() != xml_nt_cdata)
+                    throw va("Script \"%s\" has no cdata", name.c_str());
+
+                // TODO: deal with the names
+                sMovescript.push_back(n->getCdata());
+            }
+        }
+
+        {
+            XMLNodePtr framesNode = rootNode->getChild("frames");
+            if (!framesNode.get())
+                throw "<frames> tag not found.";
+
+            int frameCount = atoi(framesNode->getAttribute("count").getString().c_str());
+
+            {
+                XMLNodePtr dimNode = framesNode->getChild("dimensions");
+                if (!dimNode.get())
+                    throw "<dimensions> tag not found.";
+
+                nWidth  = atoi(dimNode->getAttribute("width").getString().c_str());
+                nHeight = atoi(dimNode->getAttribute("height").getString().c_str());
+            }
+
+            {
+                XMLNodePtr hsNode = framesNode->getChild("hotspot");
+                if (!hsNode.get())
+                    throw "<hotspot> tag not found.";
+
+                nHotx = atoi(hsNode->getAttribute("x").getString().c_str());
+                nHoty = atoi(hsNode->getAttribute("y").getString().c_str());
+                nHotw = atoi(hsNode->getAttribute("width").getString().c_str());
+                nHoth = atoi(hsNode->getAttribute("height").getString().c_str());
+            }
+
+#ifdef DEBUG
+            {
+                // I assume that vector stores bytes consecutively
+                // so as to avoid copying things around, or changing
+                // the base64 interface.
+                // Hopefully, this assertion will never be tested.
+                std::vector<u8> v(2);
+                assert((v.begin() + 1) - v.begin() == sizeof(u8));
+            }
+#endif
+            
+            {
+                XMLNodePtr dataNode = framesNode->getChild("data");
+                if (!dataNode.get())
+                    throw "<data> tag not found.";
+
+                XMLNodePtr n(dataNode->getChildren().front());
+                if (!n.get() || n->getType() != xml_nt_cdata)
+                    throw va("No pixel data!");
+
+                std::string s = n->getCdata();
+                // This line won't work if vector doesn't store the bytes consecutively.
+
+                std::vector<u8> compressed;
+                base64::decode(std::vector<u8>(&*s.begin(), &*s.end()), compressed); // compressed binary data
+
+                ScopedPtr<u8> pixels(new u8[nWidth * nHeight * frameCount]);
+
+                Compression::decompress(&*compressed.begin(), compressed.size(), pixels.get(), nWidth * nHeight * frameCount);
+
+                frame.clear();
+                frame.reserve(frameCount);
+                RGBA* ptr = (RGBA*)pixels.get();
+                for (int i = 0; i < frameCount; i++)
+                {
+                    frame.push_back(Canvas(ptr, nWidth, nHeight));
+                    ptr += nWidth * nHeight;
+                }
+            }
+        }
+
+        return true;
+    }
+    catch (XMLError)
+    {
+        throw std::runtime_error(va("Unable to load %s.", fname));
+    }
+    catch (const char* s)
+    {
+        throw std::runtime_error(va("CHRFile::Load(%s): %s", fname, s));
+    }
+
+    // Execution only gets here if an exception of some sort was raised.
+    // Clear the sprite.
+    frame.clear();
+    nWidth = nHeight = 0;
+    return false;
+}
+#else
 // eek @_@;
 {
     File f;
@@ -192,8 +339,152 @@ bool CCHRfile::Load(const char* fname)
     f.Close();
     return true;
 }
+#endif
 
 void CCHRfile::Save(const char* fname)
+#ifdef USE_XML_GOODNESS
+{
+    XMLContextPtr context(new XMLContext);
+    XMLDocument document;
+    XMLNodePtr rootNode(new XMLNode(context));
+    rootNode->setName("ika-sprite");
+    rootNode->setAttribute("version", "1.0");
+
+    try
+    {
+        {
+            XMLNodePtr infoNode(new XMLNode(context));
+            infoNode->setName("information");
+            
+            {
+                XMLNodePtr titleNode(new XMLNode(context));
+                titleNode->setName("title");
+                titleNode->addChild(CData(context, "Untitled")); // FIXME
+
+                infoNode->addChild(titleNode);
+            }
+
+            // Fill this in later.
+            infoNode->addChild(MetaNode(context, "author", "Andy"));
+            infoNode->addChild(MetaNode(context, "date", "A longass time ago"));
+            infoNode->addChild(MetaNode(context, "description", "Wouldn't you like to know."));
+            infoNode->addChild(MetaNode(context, "url", "http://ikagames.com"));
+            infoNode->addChild(MetaNode(context, "email", "theamazing@explodinguterus.com"));
+
+            rootNode->addChild(infoNode);
+        }
+
+        {
+            XMLNodePtr headerNode(new XMLNode(context));
+            headerNode->setName("header");
+
+            {
+                XMLNodePtr depthNode(new XMLNode(context));
+                depthNode->setName("depth");
+                depthNode->addChild(CData(context, "32")); // Don't expect to do anything but 32bpp for awhile
+
+                headerNode->addChild(depthNode);
+            }
+
+            rootNode->addChild(headerNode);
+        }
+
+        {
+            XMLNodePtr scriptNode(new XMLNode(context));
+            scriptNode->setName("scripts");
+
+            for (int i = 0; i < sMovescript.size(); i++)
+            {
+                if (!sMovescript[i].empty())
+                {
+                    XMLNodePtr n(new XMLNode(context));
+                    n->setName("script");
+                    n->setAttribute("label", va("script%i", i));
+                    
+                    n->addChild(CData(context, sMovescript[i].c_str()));
+
+                    scriptNode->addChild(n);
+                }
+            }
+
+            rootNode->addChild(scriptNode);
+        }
+
+        {
+            XMLNodePtr framesNode(new XMLNode(context));
+            framesNode->setName("frames");
+            framesNode->setAttribute("count", va("%i", frame.size()));
+
+            {
+                XMLNodePtr dimNode(new XMLNode(context));
+                dimNode->setName("dimensions");
+                dimNode->setAttribute("width", va("%i", nWidth));
+                dimNode->setAttribute("height", va("%i", nHeight));
+
+                framesNode->addChild(dimNode);
+            }
+
+            {
+                XMLNodePtr hsNode(new XMLNode(context));
+                hsNode->setName("hotspot");
+                hsNode->setAttribute("x", va("%i", nHotx));
+                hsNode->setAttribute("y", va("%i", nHoty));
+                hsNode->setAttribute("width", va("%i", nHotw));
+                hsNode->setAttribute("height", va("%i", nHoth));
+
+                framesNode->addChild(hsNode);
+            }
+
+            {
+                const int uncompressedBlockSize = nWidth * nHeight * frame.size() * sizeof(RGBA);
+                const int compressedBlockSize = uncompressedBlockSize * 4 / 3; // more than is needed.  Way more
+
+                ScopedPtr<u8> uncompressed(new u8[uncompressedBlockSize]);
+                ScopedPtr<u8> compressed(new u8[compressedBlockSize]);
+                std::vector<u8> d64; // base64 encoded data
+
+                // pack the uncompressed data into one big block
+                RGBA* p = (RGBA*)uncompressed.get();
+                for (int i = 0; i < frame.size(); i++)
+                {
+                    std::copy(frame[i].GetPixels(), frame[i].GetPixels() + nWidth * nHeight, p);
+                    p += nWidth * nHeight;
+                }
+
+                // compress
+                int compressSize = Compression::compress(
+                    uncompressed.get(), uncompressedBlockSize, 
+                    compressed.get(), compressedBlockSize);
+
+                // base64
+                base64::encode(
+                    std::vector<u8>(compressed.get(), compressed.get() + compressSize), // ugh
+                    d64);
+                d64.push_back(0); // null termination for ASCIIZ
+
+                XMLNodePtr dataNode(new XMLNode(context));
+                dataNode->setName("data");
+                dataNode->addChild(CData(context, (const char*)&*d64.begin()));
+                
+                framesNode->addChild(dataNode);
+            }
+
+            rootNode->addChild(framesNode);
+        }
+
+        document.addChild(rootNode);
+        document.save(std::ofstream(fname));
+    }
+    catch (XMLError)
+    {
+        throw std::runtime_error(va("Unable to write %s.", fname));
+    }
+    catch (const char* s)
+    {
+        throw std::runtime_error(va("CHRFile::Save(%s): %s", fname, s));
+    }
+}
+#else
 {
     File f;
     
@@ -233,6 +524,7 @@ void CCHRfile::Save(const char* fname)
     
     f.Close();
 }
+#endif
 
 bool CCHRfile::Loadv2CHR(File& f)
 {

@@ -24,7 +24,7 @@ class CCHRfile
 
 public:
     std::vector<std::string>  sMovescript;      ///< movement scripts
-    std::string     sDescription;               ///< authoring information?  I dunno, but it's here.
+    std::string               sDescription;     ///< authoring information?  I dunno, but it's here.
     
     CCHRfile(int width = 16, int height = 16);
 

@@ -37,7 +37,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="rpcrt4.lib comctl32.lib wsock32.lib winmm.lib wxmswd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib opengl32.lib glu32.lib stcd.lib regexd.lib corona.lib wxxrcd.lib"
+				AdditionalDependencies="rpcrt4.lib comctl32.lib wsock32.lib winmm.lib wxmswd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib opengl32.lib glu32.lib stcd.lib regexd.lib corona.lib wxxrcd.lib cppdom_d.lib"
 				OutputFile=".\Debug/iked.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -98,7 +98,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib opengl32.lib glu32.lib corona.lib wxxrc.lib"
+				AdditionalDependencies="comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib opengl32.lib glu32.lib corona.lib wxxrc.lib cppdom.lib"
 				OutputFile=".\Release/iked.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -304,10 +304,22 @@
 				RelativePath="..\common\CanvasBlitter.h">
 			</File>
 			<File
+				RelativePath="..\common\base64.cpp">
+			</File>
+			<File
+				RelativePath="..\common\base64.h">
+			</File>
+			<File
 				RelativePath="..\common\chr.cpp">
 			</File>
 			<File
 				RelativePath="..\common\chr.h">
+			</File>
+			<File
+				RelativePath="..\common\compression.cpp">
+			</File>
+			<File
+				RelativePath="..\common\compression.h">
 			</File>
 			<File
 				RelativePath="..\common\configfile.cpp">
@@ -365,6 +377,9 @@
 			</File>
 			<File
 				RelativePath="..\common\vsp.h">
+			</File>
+			<File
+				RelativePath="..\common\xmlutil.h">
 			</File>
 		</Filter>
 		<Filter
