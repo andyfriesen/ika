@@ -54,6 +54,7 @@ private:
     std::stack<::Command*> _redoList;
 
     std::string _curMapName;
+    bool _changed;
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
     static void ClearList(std::stack<::Command*>& list);
@@ -121,6 +122,8 @@ public:
     void UpdateLayerList();
     void UpdateTitle();
     void UpdateScriptMenu();
+
+    void SetChanged(bool changed);
 
     bool IsLayerVisible(uint index) const;
     void ShowLayer(uint index, bool show = true);

@@ -159,6 +159,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _map(0)
     , _tileSet(0)
     , _curScript(0)
+    , _changed(false)
 {
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
 
@@ -387,23 +388,26 @@ void MainWindow::OnNewMap(wxCommandEvent&)
                 newTileSet->Load(dlg.tileSetName);
             else
                 newTileSet->New(dlg.tileWidth, dlg.tileHeight);
+
+            _curMapName = "";
+            _changed = false;
+            UpdateTitle();
+
+            delete _map;        _map = newMap;
+            delete _tileSet;    _tileSet = newTileSet;
+
+            _mapView->UpdateScrollBars();       _mapView->Refresh();
+            _tileSetView->UpdateScrollBars();   _tileSetView->Refresh();
+
+            ClearList(_undoList);
+            ClearList(_redoList);
+
+            UpdateLayerList();
         }
         catch (std::runtime_error& error)
         {
             wxMessageBox(va("Unable to create new map:\n%s", error.what()), "Error", wxOK | wxCENTER, this);
         }
-
-        delete _map;        _map = newMap;
-        delete _tileSet;    _tileSet = newTileSet;
-
-        _mapView->UpdateScrollBars();       _mapView->Refresh();
-        _tileSetView->UpdateScrollBars();   _tileSetView->Refresh();
-
-        ClearList(_undoList);
-        ClearList(_redoList);
-
-        UpdateLayerList();
-        UpdateTitle();
     }
 }
 
@@ -429,6 +433,7 @@ void MainWindow::OnOpenMap(wxCommandEvent&)
     LoadMap(filename);
     UpdateLayerList();
 
+    _changed = false;
     UpdateTitle();
 }
 
@@ -440,6 +445,8 @@ void MainWindow::OnSaveMap(wxCommandEvent& event)
         {
             _map->Save(_curMapName);
             _tileSet->Save(_map->tileSetName);
+            _changed = false;
+            UpdateTitle();
         }
         catch (std::runtime_error err)
         {
@@ -847,7 +854,9 @@ void MainWindow::UpdateTitle()
         _curMapName.length() ?  _curMapName :
                                 "Untitled Map";
 
-    SetTitle(va("ikaMap %s - [ %s ]", IKA_VERSION, name.c_str()));
+    const char* asterisk = _changed ? "* " : "";
+
+    SetTitle(va("ikaMap %s - %s[ %s ]", IKA_VERSION, asterisk, name.c_str()));
 }
 
 void MainWindow::UpdateScriptMenu()
@@ -874,6 +883,15 @@ void MainWindow::UpdateScriptMenu()
     toolMenu->Destroy(id_scriptlist);
     toolMenu->Append(id_scriptlist, "&Scripts", scriptMenu);
     _curScript = 0;
+}
+
+void MainWindow::SetChanged(bool changed)
+{
+    if (changed != _changed)
+    {
+        _changed = changed;
+        UpdateTitle();
+    }
 }
 
 bool MainWindow::IsLayerVisible(uint index) const
@@ -931,6 +949,7 @@ void MainWindow::HandleCommand(::Command* cmd)
 
     cmd->Do(this);
     _undoList.push(cmd);
+    SetChanged(true);
 }
 
 void MainWindow::Undo()
@@ -1002,6 +1021,7 @@ void MainWindow::LoadMap(const std::string& fileName)
     _mapView->Refresh();
     _tileSetView->Refresh();
 
+    _changed = false;
     UpdateTitle();
 }
 

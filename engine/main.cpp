@@ -747,10 +747,16 @@ void Engine::LoadMap(const std::string& filename)
     {
         Log::Write("Loading map \"%s\"", filename.c_str());
 
+        std::string oldTileSetName = map.tileSetName;
+
         if (!map.Load(filename)) throw filename;                        // actually load the map
 
-        delete tiles;                                                   // nuke the old tileset
-        tiles = new CTileSet(map.tileSetName, video);                   // load up them tiles
+        // Only load the tileset if it's different
+        if (map.tileSetName != oldTileSetName)
+        {
+            delete tiles;                                               // nuke the old tileset
+            tiles = new CTileSet(map.tileSetName, video);               // load up them tiles
+        }
 
         script.ClearEntityList();                                       // DEI
 
