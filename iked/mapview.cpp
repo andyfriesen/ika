@@ -9,6 +9,8 @@
 #include "log.h"
 #include "layervisibilitycontrol.h"
 #include "entityeditor.h"
+#include "tilesetview.h"
+#include "vsp.h"
 #include <gl\glu.h>
 
 #include <list>
@@ -118,6 +120,7 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_MENU(CMapView::id_zoomout4x,CMapView::OnZoomOut4x)
 
     EVT_MENU(CMapView::id_mapentities,CMapView::OnShowEntityEditor)
+    EVT_MENU(CMapView::id_vsp,CMapView::OnShowVSP)
 
     EVT_MENU(CMapView::id_filesave,CMapView::OnSave)
     EVT_MENU(CMapView::id_filesaveas,CMapView::OnSaveAs)
@@ -270,6 +273,7 @@ void CMapView::InitMenu()
 
     wxMenu* mapmenu=new wxMenu;
 
+    mapmenu->Append(id_vsp,"&VSP");
     mapmenu->Append(id_mapentities,"&Entities...");
 
     menubar->Append(mapmenu,"&Map");
@@ -388,6 +392,12 @@ void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(16-nZoom); }  // >:D
 void CMapView::OnShowEntityEditor(wxCommandEvent& event)
 {
     pEntityeditor->Show(true);
+}
+
+void CMapView::OnShowVSP(wxCommandEvent& event)
+{
+    VSP& v=pTileset->GetVSP();
+    pParent->OpenDocument(new CTileSetView(pParent,v.Name()));
 }
 
 //------------------------------------------------------------

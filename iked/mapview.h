@@ -51,6 +51,7 @@ class CMapView : public IDocView
         id_fileclose,
 
         id_mapentities,
+        id_vsp
     };
 
     enum
@@ -118,6 +119,7 @@ public:
     void OnZoomNormal(wxCommandEvent& event);
 
     void OnShowEntityEditor(wxCommandEvent& event);
+    void OnShowVSP(wxCommandEvent& event);
 
     void OnClose();
 
