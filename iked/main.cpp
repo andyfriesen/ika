@@ -15,6 +15,7 @@
 #include "imageview.h"
 #include "spritesetview.h"
 
+#include "newprojectdlg.h"
 #include "newmapdlg.h"
 #include "newspritedlg.h"
 
@@ -127,7 +128,11 @@ void CMainWnd::FileQuit(wxCommandEvent& event)
 
 void CMainWnd::NewProject(wxCommandEvent& event)
 {
-    _project->New();
+    NewProjectDlg dlg(this);
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        _project->New(dlg.FileName());
+    }
 }
 
 void CMainWnd::NewMap(wxCommandEvent& event)
@@ -240,7 +245,7 @@ void CMainWnd::Open(const std::string& fname)
     case t_map:         pWnd = new CMapView(this, fname.c_str());     break;
     case t_vsp:         pWnd = new CTileSetView(this, fname.c_str()); break;
     case t_font:        pWnd = new CFontView(this, fname.c_str());    break;
-    case t_unknown:
+    //case t_unknown:
     case t_text:
     case t_dat:         pWnd = new CTextView(this, fname.c_str());    break;
     case t_chr:         pWnd = new CSpriteSetView(this, fname.c_str()); break;
@@ -415,7 +420,7 @@ FileType CMainWnd::GetFileType(const std::string& fname)
         "dat"
     };
 
-    const int nExt = sizeof(ext);
+    const int nExt = sizeof(ext) / sizeof(char*);
 
     std::string sExt = Path::Extension(fname);
     

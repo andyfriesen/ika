@@ -82,9 +82,7 @@ ProjectView::ProjectView(CMainWnd* parent, const wxPoint& pos, const wxSize& siz
         _imageList->Add(wxIcon(names[i], wxBITMAP_TYPE_ICO_RESOURCE));
     SetImageList(_imageList);
 
-    New();   // initial folders and things
-
-    Expand(GetRootItem());
+    //Expand(GetRootItem());
     Show();
 }
 
@@ -253,6 +251,43 @@ void ProjectView::OnCreateSubfolder(wxCommandEvent& event)
     _changed = true;
 }
 
+Leaf* ProjectView::FindItem(const std::string& fileName)
+{
+    struct Local
+    {
+        static Leaf* FindItem(ProjectView* tree, const std::string& fileName, const wxTreeItemId& id)
+        {
+            long cookie;
+            wxTreeItemId child = tree->GetFirstChild(id, cookie);
+
+            while (child.IsOk())
+            {
+                Leaf* leaf = (Leaf*)tree->GetItemData(child);
+                if (leaf->type == t_folder)
+                {
+                    leaf = FindItem(tree, fileName, child);
+                    if (leaf != 0)
+                        return leaf;
+                }
+                else if (leaf->type != t_project && leaf->name == fileName)
+                    return leaf;
+
+                child = tree->GetNextChild(child, cookie);
+            }
+
+            return 0;
+        }
+    };
+    
+    wxFileName name(fileName.c_str());
+    std::string p = GetProjectPath();
+    if (name.IsAbsolute())
+        name.MakeRelativeTo(GetProjectPath().c_str());
+    std::string n = name.GetFullPath().c_str();
+
+    return Local::FindItem(this, name.GetFullPath().c_str(), GetRootItem());
+}
+
 void ProjectView::MoveItem(const wxTreeItemId& id, const wxTreeItemId& newparent) // Moves a tree item, and all its children, to newparent
 {
     // copy the node
@@ -290,8 +325,12 @@ wxTreeItemId ProjectView::AddFolder(const wxTreeItemId& parentid, const char* na
     return AppendItem(parentid, name, 1, 2, new Leaf( name, t_folder));
 }
 
-wxTreeItemId ProjectView::AddItem(const wxTreeItemId& parentid, const string& name, const string& fname)
+void ProjectView::AddItem(const wxTreeItemId& parentid, const string& name, const string& fname)
 {
+    Leaf* leaf = FindItem(fname);
+    if (leaf != 0)
+        return;
+
     FileType t = _parent->GetFileType(fname);
     int hIcon;
     switch (t)
@@ -306,7 +345,7 @@ wxTreeItemId ProjectView::AddItem(const wxTreeItemId& parentid, const string& na
 
     _changed = true;
 
-    return AppendItem(parentid, name.c_str(), hIcon, hIcon, new Leaf( fname, t));
+    AppendItem(parentid, name.c_str(), hIcon, hIcon, new Leaf( name, t));
 }
 
 void ProjectView::Save(const std::string& fname)
@@ -413,7 +452,7 @@ void ProjectView::Load(const std::string& fname)
                     if (fullName.IsAbsolute())
                         fullName.InsertDir(0, tree->GetProjectPath().c_str());
 
-                    tree->AddItem(parentid, Path::Filename(name), fullName.GetFullPath().c_str());
+                    tree->AddItem(parentid, /*Path::Filename(name)*/ fullName.GetFullPath().c_str(), fullName.GetFullPath().c_str());
                 }
             }
         }
@@ -435,7 +474,7 @@ void ProjectView::Load(const std::string& fname)
     Expand(GetRootItem());
 }
 
-void ProjectView::New()
+void ProjectView::New(const std::string& fname)
 {
     DeleteAllItems();
 
@@ -448,13 +487,17 @@ void ProjectView::New()
     AddFolder(root, "Sprites");
     Expand(root);
 
-    _changed = false;
-    this->_fileName = "";
+    Save(fname);
 }
 
 std::string ProjectView::GetProjectPath() const
 {
-    wxFileName projectPath(_fileName.c_str());
-    projectPath.MakeRelativeTo(wxFileName::GetCwd());
-    return projectPath.GetPath(true).c_str();
+    if (_fileName.empty())
+        return (wxFileName::GetCwd() + "/").c_str();
+    else
+    {
+        wxFileName projectPath(_fileName.c_str());
+        //projectPath.MakeRelativeTo(wxFileName::GetCwd());
+        return projectPath.GetPath(true).c_str();
+    }
 }
