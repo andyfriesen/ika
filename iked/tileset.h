@@ -14,7 +14,7 @@ class CTileSet : public CImageBank
 {
     VSP* pVsp;
 
-    virtual void SetImage(const CPixelMatrix& img,int idx);
+    virtual void SetImage(const Canvas& img,int idx);
 private:
 
     // Don't think this is the Right Thing.  UI stuff doesn't belong here.
@@ -29,7 +29,7 @@ public:
     bool Load(const char* fname);
     bool Save(const char* fname);
 
-    virtual CPixelMatrix&   Get(int idx);                 // returns the pixel data for the tile
+    virtual Canvas&   Get(int idx);                 // returns the pixel data for the tile
     virtual int   Count() const;
     int  Width() const;
     int  Height() const;

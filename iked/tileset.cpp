@@ -1,6 +1,6 @@
 #include "tileset.h"
 #include "vsp.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 #include "graph.h"
 
 CTileSet::CTileSet()
@@ -32,12 +32,12 @@ bool CTileSet::Save(const char* fname)
     return true;
 }
 
-CPixelMatrix& CTileSet::Get(int tileidx)
+Canvas& CTileSet::Get(int tileidx)
 {
     return pVsp->GetTile(tileidx);
 }
 
-void CTileSet::SetImage(const CPixelMatrix& newtile,int tileidx)
+void CTileSet::SetImage(const Canvas& newtile,int tileidx)
 {
     pVsp->GetTile(tileidx)=newtile;
 }

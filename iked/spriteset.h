@@ -8,7 +8,7 @@ class CCHRfile;
 
 class CSpriteSet : public CImageBank
 {
-    virtual void SetImage(const CPixelMatrix& img,int idx);
+    virtual void SetImage(const Canvas& img,int idx);
 
     CCHRfile* pCHR;
 
@@ -19,7 +19,7 @@ public:
     bool Load(const char* fname);
     bool Save(const char* fname);
 
-    virtual CPixelMatrix& Get(int idx);
+    virtual Canvas& Get(int idx);
     virtual int Count() const;   
     int Width() const;
     int Height() const;

@@ -6,7 +6,7 @@
 #define GRAPHWIDGET_H
 
 #include "types.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 #include <set>
 #include "wx/wx.h"
 #include "wx/glcanvas.h"
@@ -72,10 +72,10 @@ protected:
     int nTexwidth,nTexheight;
 
 public:
-    CImage(const CPixelMatrix& src);
+    CImage(const Canvas& src);
     ~CImage();
 
-    void Update(const CPixelMatrix& src);
+    void Update(const Canvas& src);
 };
 
 #endif

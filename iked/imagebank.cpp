@@ -37,7 +37,7 @@ void CImageBank::FreeBitmaps()
     bitmaps.clear();
 }
 
-void CImageBank::Set(CPixelMatrix& img,int idx)
+void CImageBank::Set(Canvas& img,int idx)
 {
     if (idx<0 || idx>=Count())
         return;

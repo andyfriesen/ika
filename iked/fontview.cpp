@@ -119,7 +119,7 @@ void CFontView::Render()
             //  -- khross
 
             // Too slow. -- andy
-            CPixelMatrix& rBitmap = pFontfile->GetGlyph(nFont);
+            Canvas& rBitmap = pFontfile->GetGlyph(nFont);
             CImage rImage(rBitmap);
             pGraph->ScaleBlit(rImage, x * tx + 1, y * ty + 1,
                 rBitmap.Width(), rBitmap.Height(), true);
@@ -239,7 +239,7 @@ void CFontView::OnScroll(wxScrollWinEvent& event)
 
 void CFontView::UpdateScrollbar()
 {
-    CPixelMatrix& rGlyph=pFontfile->GetGlyph(nCurfont);
+    Canvas& rGlyph=pFontfile->GetGlyph(nCurfont);
     int nWidth,nHeight;
     GetClientSize(&nWidth, &nHeight);
 

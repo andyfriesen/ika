@@ -6,7 +6,7 @@ BEGIN_EVENT_TABLE(CImageView,IDocView)
     EVT_PAINT(CImageView::OnPaint)
 END_EVENT_TABLE()
 
-CImageView::CImageView(CMainWnd* parent,CPixelMatrix* img)
+CImageView::CImageView(CMainWnd* parent,Canvas* img)
     : IDocView(parent,"image"), pData(img)
 {
     SetSize(-1,-1,340,340);

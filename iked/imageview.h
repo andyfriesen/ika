@@ -12,7 +12,7 @@
 class CMainWnd;
 class CGraphFrame;
 class CImage;
-class CPixelMatrix;
+class Canvas;
 
 class CImageView : public IDocView
 {
@@ -20,12 +20,12 @@ protected:
     CMainWnd*       pParent;
     CGraphFrame*    pGraph;     // the main editing grid
 
-    CPixelMatrix*   pData;      // the image we're editing (real pixel data)
+    Canvas*   pData;      // the image we're editing (real pixel data)
     CImage*         pImage;     // hardware dependant copy of the image
 
 public:
 
-    CImageView(CMainWnd* parent,CPixelMatrix* img);
+    CImageView(CMainWnd* parent,Canvas* img);
     virtual ~CImageView();
 
     // events

@@ -54,7 +54,7 @@ static char *ConfigDlg = "dialog(name = 'ConfigDlg',\
   use_dialog_units = 1,\
   use_system_defaults = 0,\
   font = [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg'],\
-  control = [102, wxStaticBox, 'Graphics Driver', '0', 'Resolution', 0, 0, 113, 85,\
+    control = [102, wxStaticBox, 'Graphics Driver', '0', 'Resolution', 0, 0, 113, 85,\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\
   control = [20005, wxListBox, '', 'wxLB_EXTENDED', 'graphdriver', 1, 8, 108, 75, [],\
       [8, 'wxSWISS', 'wxNORMAL', 'wxNORMAL', 0, 'MS Shell Dlg']],\

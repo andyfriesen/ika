@@ -138,7 +138,6 @@ namespace Script
         {
             int x, y;
             u32 colour;
-            int filled = 0;
 
             if (!PyArg_ParseTuple(args, "iii:Video.DrawPixel", &x, &y, &colour))
                 return 0;

@@ -307,7 +307,7 @@ void CSpriteSetView::Render()
         for(int x=0; x<nSpritewidth; x++)
         {
             
-            CPixelMatrix& rBitmap=pSprite->Get(nSprite);
+            Canvas& rBitmap=pSprite->Get(nSprite);
 
             CImage img(rBitmap);
             

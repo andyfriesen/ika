@@ -317,34 +317,6 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(std_hookbutton)
-    {
-        /*    int nButton;
-        PyObject* pFunc;
-
-        if (!PyArg_ParseTuple(args, "iO:HookButton", &nButton, &pFunc))
-        return NULL;
-
-        if (pFunc==Py_None)
-        engine->pBindings[nButton]=NULL;
-        else
-        {
-        if (!PyCallable_Check(pFunc))
-        {
-        PyErr_SetString(PyExc_TypeError, "Hookbutton requires None or a function to be hooked");
-        return NULL;
-        }
-
-        Py_INCREF(pFunc);
-        Py_XDECREF((PyObject*)engine->pBindings[nButton]);
-
-        engine->pBindings[nButton]=pFunc;
-        }*/
-
-        Py_INCREF(Py_None);
-        return Py_None;
-    }
-
     METHOD(std_hookretrace)
     {
         PyObject*    pFunc;
@@ -480,7 +452,7 @@ namespace Script
         FUNCTION("ShowPage",            (PyCFunction)std_showpage),
         FUNCTION("RGB",                 (PyCFunction)std_rgb),
         FUNCTION("GetRGB",              (PyCFunction)std_getrgb),
-        FUNCTION("PaletteMorph",        (PyCFunction)std_palettemorph),
+        //FUNCTION("PaletteMorph",        (PyCFunction)std_palettemorph),
 
         // Entity
         FUNCTION("ProcessEntities",     (PyCFunction)std_processentities),
@@ -490,7 +462,6 @@ namespace Script
         FUNCTION1("GetPlayer",          (PyCFunction)std_getplayer),
         FUNCTION("EntityAt",            (PyCFunction)std_entityat),
 
-        FUNCTION("HookButton",          (PyCFunction)std_hookbutton),
         FUNCTION("HookRetrace",         (PyCFunction)std_hookretrace),
         FUNCTION("UnhookRetrace",       (PyCFunction)std_unhookretrace),
         FUNCTION("HookTimer",           (PyCFunction)std_hooktimer),

@@ -27,7 +27,7 @@ bool CSpriteSet::Save(const char* fname)
     return true;
 }
 
-void CSpriteSet::SetImage(const CPixelMatrix& img,int idx)
+void CSpriteSet::SetImage(const Canvas& img,int idx)
 {
     pCHR->GetFrame(idx)=img;
 }

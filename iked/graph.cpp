@@ -196,7 +196,7 @@ void CGraphFrame::Zoom(int z)
     nZoom=z;
 }
 
-CImage::CImage(const CPixelMatrix& src)
+CImage::CImage(const Canvas& src)
 {
     glGenTextures(1, &hTex);
     Update(src);
@@ -207,7 +207,7 @@ CImage::~CImage()
     glDeleteTextures(1, &hTex);
 }
 
-void CImage::Update(const CPixelMatrix& src)
+void CImage::Update(const Canvas& src)
 {
     nWidth=src.Width();
     nHeight=src.Height();
@@ -218,11 +218,11 @@ void CImage::Update(const CPixelMatrix& src)
     while (nTexwidth<nWidth) nTexwidth<<=1;
     while (nTexheight<nHeight) nTexheight<<=1;
 
-    CPixelMatrix tmp(src);
+    Canvas tmp(src);
     tmp.Resize(nTexwidth, nTexheight);
 
     SetTex(hTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nTexwidth, nTexheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (u32*)tmp.GetPixelData());
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nTexwidth, nTexheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (u32*)tmp.GetPixels());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
