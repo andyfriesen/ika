@@ -27,7 +27,8 @@ namespace Script
             type.tp_name="ErrorHandler";
             type.tp_basicsize=sizeof type;
             type.tp_dealloc=(destructor)Destroy;
-            type.tp_getattr=(getattrfunc)GetAttr;
+            type.tp_methods = methods;
+            PyType_Ready(&type);
 
             remove("pyout.log");
 
@@ -53,11 +54,6 @@ namespace Script
         void Destroy(PyObject* self)
         {
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(PyObject* self, char* name)
-        {
-            return Py_FindMethod(methods, self, name);
         }
 
 #define METHOD(x) PyObject* x(PyObject* self, PyObject* args)

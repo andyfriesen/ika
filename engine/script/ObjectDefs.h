@@ -39,9 +39,8 @@ namespace Script
         METHOD(Image_Clip, ImageObject);
 
         void Init();
-        void Destroy(ImageObject* self);
-        PyObject* GetAttr(ImageObject* self, char* name);
         PyObject* New(PyObject* self, PyObject* args);
+        void Destroy(ImageObject* self);
 
         // Method table
         extern PyMethodDef methods[];
@@ -64,8 +63,6 @@ namespace Script
         void Init();
         PyObject* New(PyObject* self, PyObject* args);
         void Destroy(SoundObject* self);
-        PyObject* GetAttr(SoundObject* self, char* name);
-        int SetAttr(SoundObject* self, char* name, PyObject* value);
 
         // Method table
         extern PyMethodDef methods[];
@@ -88,8 +85,6 @@ namespace Script
 
         void Init();
         void Destroy(ControlObject* self);
-        PyObject* GetAttr(ControlObject* self, char* name);
-        int SetAttr(ControlObject* self, char* name, PyObject* value);
         PyObject* New(Input& input, const char* name);
 
         // Method table
@@ -122,7 +117,6 @@ namespace Script
         void Init();
         PyObject* New(PyObject* self, PyObject* args);
         void Destroy(CanvasObject* self);
-        PyObject* GetAttr(CanvasObject* self, char* name);
     }
 
     /// Reflects a bitmap font. (maybe a vector font later on)
@@ -144,8 +138,6 @@ namespace Script
         void Init();
         PyObject* New(PyObject* self, PyObject* args);
         void Destroy(FontObject* self);
-        PyObject* GetAttr(FontObject* self, char* name);
-        int SetAttr(FontObject* self, char* name, PyObject* value);
 
         // Method table
         extern PyMethodDef methods[];
@@ -176,8 +168,6 @@ namespace Script
         PyObject* New(CEntity* ent);
         PyObject* New(PyObject* self, PyObject* args);
         void Destroy(EntityObject* self);
-        PyObject* GetAttr(EntityObject* self, char* name);
-        int SetAttr(EntityObject* self, char* name, PyObject* value);
 
         // Method table
         extern PyMethodDef methods[];
@@ -200,7 +190,6 @@ namespace Script
         void Init();
         PyObject* New(::Input& i);
         void Destroy(InputObject* self);
-        PyObject* GetAttr(InputObject* self, char* name);
 
         // Method table
         extern PyMethodDef methods[];
@@ -228,7 +217,6 @@ namespace Script
         void Init();
         PyObject* New(::Video::Driver* v);
         void Destroy(VideoObject* self);
-        PyObject* GetAttr(VideoObject* self, char* name);
 
         // Method table
         extern PyMethodDef methods[];
@@ -254,8 +242,6 @@ namespace Script
         void Init();
         PyObject* New();
         void Destroy(PyObject* self);
-        PyObject* GetAttr(PyObject* self, char* name);
-        int SetAttr(PyObject* self, char* name, PyObject* value);
 
         // Method table
         extern PyMethodDef methods[];
@@ -272,7 +258,6 @@ namespace Script
         void Init();
         PyObject* New();
         void Destroy(PyObject* self);
-        PyObject* GetAttr(PyObject* self, char* name);
 
         // Method table
         extern PyMethodDef methods[];

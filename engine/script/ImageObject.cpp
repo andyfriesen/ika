@@ -20,6 +20,19 @@ namespace Script
             {   NULL,    NULL }
         };
 
+#define GET(x) PyObject* get ## x(ImageObject* self)
+#define SET(x) PyObject* set ## x(ImageObject* self, PyObject* value)
+        GET(Width) { return PyInt_FromLong(self->img->Width()); }
+        GET(Height) { return PyInt_FromLong(self->img->Height()); }
+#undef GET
+#undef SET
+
+        PyGetSetDef properties[] =
+        {
+            {   "width",    (getter)getWidth,   0,  "Gets the width of the image."  },
+            {   "height",   (getter)getHeight,  0,  "Gets the height of the image." },
+        };
+
         void Init()
         {
             memset(&type, 0, sizeof type);
@@ -29,7 +42,8 @@ namespace Script
             type.tp_name="Image";
             type.tp_basicsize=sizeof type;
             type.tp_dealloc=(destructor)Destroy;
-            type.tp_getattr=(getattrfunc)GetAttr;
+            type.tp_methods = methods;
+            type.tp_getset = properties;
             type.tp_doc="A hardware-dependant image.";
         }
 
@@ -37,16 +51,6 @@ namespace Script
         {
             delete ((ImageObject*)self)->img;
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(ImageObject* self, char* name)
-        {
-            if (!strcmp(name, "width"))
-                return PyInt_FromLong(self->img->Width());
-            if (!strcmp(name, "height"))
-                return PyInt_FromLong(self->img->Height());
-
-            return Py_FindMethod(methods, (PyObject*)self, name);
         }
 
         PyObject* New(PyObject* self,PyObject* args)

@@ -29,9 +29,11 @@ namespace Script
             type.ob_type = &PyType_Type;
             type.tp_name = "Video";
             type.tp_basicsize = sizeof type;
-            type.tp_getattr = (getattrfunc)GetAttr;
+            type.tp_methods = methods;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_doc = "Interface for ika's graphics engine.";
+
+            PyType_Ready(&type);
         }
 
         PyObject* New(::Video::Driver* v)
@@ -45,11 +47,6 @@ namespace Script
         void Destroy(VideoObject* self)
         {
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(VideoObject* self, char* name)
-        {
-            return Py_FindMethod(methods, (PyObject*)self, name);
         }
 
 #define METHOD(x) PyObject* x(VideoObject* self,PyObject* args)

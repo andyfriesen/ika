@@ -19,6 +19,31 @@ namespace Script
             {   0, 0   }
         };
 
+#define GET(x) PyObject* get ## x(SoundObject* self)
+#define SET(x) PyObject* set ## x(SoundObject* self, PyObject* value)
+
+        GET(Volume)     { return PyFloat_FromDouble(self->sound->getVolume()); }
+        GET(Pan)        { return PyFloat_FromDouble(self->sound->getPan()); }
+        GET(Position)   { return PyInt_FromLong(self->sound->getPosition()); }
+        GET(PitchShift) { return PyFloat_FromDouble(self->sound->getPitchShift()); }
+        GET(Loop)       { return PyInt_FromLong(self->sound->getRepeat()); }
+        SET(Volume)     { self->sound->setVolume((float)PyFloat_AsDouble(value));       return 0;   }
+        SET(Pan)        { self->sound->setPan((float)PyFloat_AsDouble(value));          return 0;   }
+        SET(Position)   { self->sound->setPosition(PyInt_AsLong(value));                return 0;   }
+        SET(PitchShift) { self->sound->setPitchShift((float)PyFloat_AsDouble(value));   return 0;   }
+        SET(Loop)       { self->sound->setRepeat(PyInt_AsLong(value) != 0);             return 0;   }
+
+#undef GET
+#undef SET
+
+        PyGetSetDef properties[] =
+        {
+            {   "volume",       (getter)getVolume,      (setter)setVolume,      "The volume of the sound.  Ranges from 0 to 1, with 1 being full volume."   },
+            {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  0 is left.  2 is right.  1 is centre."   },
+            {   "position",     (getter)getPosition,    (setter)setPosition,    "The chronological position of the sound, in milliseconds." },
+            {   "loop",         (getter)getLoop,        (setter)setLoop,        "If nonzero, the sound loops.  If zero, then the sound stops playing when it reaches the end."  },
+        };
+
         void Init()
         {
             memset(&type, 0, sizeof type);
@@ -28,8 +53,8 @@ namespace Script
             type.tp_name="Sound";
             type.tp_basicsize=sizeof type;
             type.tp_dealloc=(destructor)Destroy;
-            type.tp_getattr=(getattrfunc)GetAttr;
-            type.tp_setattr=(setattrfunc)SetAttr;
+            type.tp_methods = methods;
+            type.tp_getset = properties;
             type.tp_doc="A hunk of sound data, like a sound effect, or a piece of music.";
         }
 
@@ -65,38 +90,6 @@ namespace Script
         {
             self->sound->unref();
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(SoundObject* self, char* name)
-        {
-            if (!strcmp(name, "volume"))
-                return PyFloat_FromDouble(self->sound->getVolume());
-            else if (!strcmp(name, "pan"))
-                return PyFloat_FromDouble(self->sound->getPan());
-            else if (!strcmp(name, "position"))
-                return PyInt_FromLong(self->sound->getPosition());
-            else if (!strcmp(name, "pitchshift"))
-                return PyFloat_FromDouble(self->sound->getPitchShift());
-            else if (!strcmp(name, "loop"))
-                return PyInt_FromLong(self->sound->getRepeat());
-            else
-                return Py_FindMethod(methods, (PyObject*)self, name);
-        }
-
-        int SetAttr(SoundObject* self, char* name, PyObject* value)
-        {
-            if (!strcmp(name, "volume"))
-                self->sound->setVolume((float)PyFloat_AsDouble(value));
-            else if (!strcmp(name, "pan"))
-                self->sound->setPan((float)PyFloat_AsDouble(value));
-            else if (!strcmp(name, "position"))
-                self->sound->setPosition(PyInt_AsLong(value));
-            else if (!strcmp(name, "pitchshift"))
-                self->sound->setPitchShift((float)PyFloat_AsDouble(value));
-            else if (!strcmp(name, "loop"))
-                self->sound->setRepeat(PyInt_AsLong(value) != 0);
-
-            return 0;
         }
 
 #define METHOD(x) PyObject* x(SoundObject* self)

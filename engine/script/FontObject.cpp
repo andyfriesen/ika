@@ -21,6 +21,23 @@ namespace Script
             {   NULL,           NULL    }
         };
 
+#define GET(x) PyObject* get ## x(FontObject* self)
+#define SET(x) PyObject* set ## x(FontObject* self, PyObject* value)
+        GET(Width)   { return PyInt_FromLong(self->font->Width()); }
+        GET(Height)  { return PyInt_FromLong(self->font->Height()); }
+        GET(TabSize) { return PyInt_FromLong(self->font->TabSize()); }
+        SET(TabSize) { self->font->SetTabSize(PyInt_AsLong(value)); return 0; }
+#undef GET
+#undef SET
+
+        PyGetSetDef properties[] =
+        {
+            {   "width",    (getter)getWidth,       0,                  "Gets the width of the widest glyph in the font."   },
+            {   "height",   (getter)getHeight,      0,                  "Gets the height of the font."  },
+            {   "tabsize",  (getter)getTabSize,     (setter)setTabSize, "Gets or sets the tab size of the font."    },
+            {   0,          0   }
+        };
+
         void Init()
         {
             memset(&type, 0, sizeof type);
@@ -30,9 +47,11 @@ namespace Script
             type.tp_name="Font";
             type.tp_basicsize=sizeof type;
             type.tp_dealloc=(destructor)Destroy;
-            type.tp_getattr=(getattrfunc)GetAttr;
-            type.tp_setattr=(setattrfunc)SetAttr;
+            type.tp_methods = methods;
+            type.tp_getset = properties;
             type.tp_doc="An ika font.\nTODO: say something interesting in here. :P";
+
+            PyType_Ready(&type);
         }
 
         PyObject* New(PyObject* self, PyObject* args)
@@ -64,26 +83,6 @@ namespace Script
             delete self->font;
 
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(FontObject* self, char* name)
-        {
-            if (!strcmp(name, "width"))
-                return PyInt_FromLong(self->font->Width());
-            if (!strcmp(name, "height"))
-                return PyInt_FromLong(self->font->Height());
-            if (!strcmp(name, "tabsize"))
-                return PyInt_FromLong(self->font->TabSize());
-
-            return Py_FindMethod(methods, (PyObject*)self, name);
-        }
-
-        int SetAttr(FontObject* self, char* name, PyObject* value)
-        {
-            if (!strcmp(name, "tabsize"))
-                self->font->SetTabSize(PyInt_AsLong(value));
-
-            return 0;
         }
 
 #define METHOD(x) PyObject* x(FontObject* self, PyObject* args)

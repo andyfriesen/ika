@@ -45,6 +45,9 @@ namespace Script
         SET(Music)      { engine->map.SetMusic(PyString_AsString(value));       return 0;   }
         GET(Entities)   { Py_INCREF(entitydict); return entitydict; }
 
+#undef GET
+#undef SET
+
         PyGetSetDef properties[] =
         {
             {   "xwin",         (getter)getXWin,            (setter)setXWin,    "Gets or sets the X coordinate of the camera"   },

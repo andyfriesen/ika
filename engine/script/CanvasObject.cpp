@@ -29,13 +29,13 @@ namespace Script
             {   0,  0   }
         };
 
-        PyObject* Width(CanvasObject* self)  { return PyInt_FromLong(self->canvas->Width());  }
-        PyObject* Height(CanvasObject* self) { return PyInt_FromLong(self->canvas->Height()); }
+        PyObject* getWidth(CanvasObject* self)  { return PyInt_FromLong(self->canvas->Width());  }
+        PyObject* getHeight(CanvasObject* self) { return PyInt_FromLong(self->canvas->Height()); }
 
         PyGetSetDef properties[] =
         {
-            {   "width",    (getter)Width, 0, "Gets the width of the canvas" },
-            {   "height",   (getter)Height,0, "Gets the height of the canvas" },
+            {   "width",    (getter)getWidth, 0, "Gets the width of the canvas" },
+            {   "height",   (getter)getHeight,0, "Gets the height of the canvas" },
         };
 
         void Init()
@@ -50,7 +50,7 @@ namespace Script
             type.tp_getset  = &properties[0];
             type.tp_methods = &methods[0];
             type.tp_doc = "A software representation of an image that can be manipulated easily.";
-            type.tp_new = New;
+            //type.tp_new = New;
             PyType_Ready(&type);
         }
         
@@ -154,6 +154,11 @@ namespace Script
 
             if (!PyArg_ParseTuple(args, "ii:Resize", &x, &y))
                 return 0;
+
+            self->canvas->Resize(x, y);
+
+            Py_INCREF(Py_None);
+            return Py_None;
         }
 
         METHOD1(Canvas_Rotate)

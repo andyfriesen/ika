@@ -29,6 +29,72 @@ namespace Script
             {    NULL,              NULL    },                        // end of list
         };
 
+#define GET(x) PyObject* get ## x(EntityObject* self)
+#define SET(x) PyObject* set ## x(EntityObject* self, PyObject* value)
+            GET(X)                  { return PyInt_FromLong(self->ent->x); }
+            GET(Y)                  { return PyInt_FromLong(self->ent->y); }
+            GET(Speed)              { return PyInt_FromLong(self->ent->nSpeed); }
+            GET(Direction)          { return PyInt_FromLong(self->ent->direction); }
+            GET(CurFrame)           { return PyInt_FromLong(self->ent->nCurframe); }
+            GET(SpecFrame)          { return PyInt_FromLong(self->ent->nSpecframe); }
+            GET(Visible)            { return PyInt_FromLong(self->ent->bVisible?1:0); }
+            GET(Name)               { return PyString_FromString(self->ent->sName.c_str()); }
+            GET(ActScript)          { return PyString_FromString(self->ent->sActscript.c_str()); }
+            GET(AdjacentActivate)   { return PyInt_FromLong(self->ent->bAdjacentactivate?1:0); }
+            GET(IsObs)              { return PyInt_FromLong(self->ent->bIsobs?1:0); }
+            GET(MapObs)             { return PyInt_FromLong(self->ent->bMapobs?1:0); }
+            GET(EntObs)             { return PyInt_FromLong(self->ent->bEntobs?1:0); }
+            GET(Sprite)             { return PyString_FromString(self->ent->pSprite->sFilename.c_str()); }
+            GET(HotX)               { return PyInt_FromLong(self->ent->pSprite->nHotx); }
+            GET(HotY)               { return PyInt_FromLong(self->ent->pSprite->nHoty); }
+            GET(HotWidth)           { return PyInt_FromLong(self->ent->pSprite->nHotw); }
+            GET(HotHeight)          { return PyInt_FromLong(self->ent->pSprite->nHoth); }
+            SET(X)                  { self->ent->x = PyInt_AsLong(value); return 0; }
+            SET(Y)                  { self->ent->y = PyInt_AsLong(value); return 0; }
+            SET(Speed)              { self->ent->nSpeed = PyInt_AsLong(value); return 0; }
+            SET(Direction)          { self->ent->direction = (Direction)PyInt_AsLong(value);    return 0; } // I dislike this 
+            SET(SpecFrame)          { self->ent->nSpecframe = PyInt_AsLong(value); return 0; }
+            SET(Visible)            { self->ent->bVisible = PyInt_AsLong(value)!=0 ; return 0; }
+            SET(Name)               { self->ent->sName = PyString_AsString(value); return 0; }
+            SET(ActScript)          { self->ent->sActscript = PyString_AsString(value); return 0; }
+            SET(AdjacentActivate)   { self->ent->bAdjacentactivate = (PyInt_AsLong(value) != 0); return 0; }
+            SET(IsObs)              { self->ent->bIsobs = (PyInt_AsLong(value)!=0) ; return 0; }
+            SET(MapObs)             { self->ent->bMapobs = (PyInt_AsLong(value)!=0) ; return 0; }
+            SET(EntObs)             { self->ent->bEntobs = (PyInt_AsLong(value)!=0) ; return 0; }
+            SET(Sprite)
+            {
+                engine->sprite.Free(self->ent->pSprite);
+
+                self->ent->pSprite=engine->sprite.Load(PyString_AsString(value), engine->video);
+                self->ent->SetAnimScript(va("F%i",self->ent->nCurframe));
+                return 0;
+            }
+#undef SET
+#undef GET
+
+        PyGetSetDef properties[] =
+        {
+            {   "x",                (getter)getX,                   (setter)setX,               "Gets or sets the entity's X position. (in pixels)" },
+            {   "y",                (getter)getY,                   (setter)setY,               "Gets or sets the entity's Y position. (in pixels)" },
+            {   "speed",            (getter)getSpeed,               (setter)setSpeed,           "Gets or sets the entity's speed, in pixels/second" },
+            {   "direction",        (getter)getDirection,           (setter)setDirection,       "Gets or sets the entity's direction"   },
+            {   "curframe",         (getter)getCurFrame,            0,                          "Gets the entity's currently displayed frame"   },
+            {   "specframe",        (getter)getSpecFrame,           (setter)setSpecFrame,       "If nonzeno, this frame is displayed instead of the normal animation" },
+            {   "visible",          (getter)getVisible,             (setter)setVisible,         "If nonzero, the entity is drawn when onscreen" },
+            {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
+            {   "actscript",        (getter)getActScript,           (setter)setActScript,       "Gets or sets the name of the function called when the entity is activated."    },
+            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate,"If nonzero, the entity will activate when it touches the player entity. (not implemented)" },
+            {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
+            {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
+            {   "entobs",           (getter)getEntObs,              (setter)setEntObs,          "If nonzero, the entity is unable to walk through entities whose isobs property is set."    },
+            {   "sprite",           (getter)getSprite,              (setter)setSprite,          "Gets or sets the sprite used to display the entity."   },
+            {   "hotx",             (getter)getHotX,                0,                          "Gets the X position of the entity's hotspot."  },
+            {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
+            {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
+            {   "hotheight",        (getter)getHotHeight,           0,                          "Gets the height of the entity's hotspot."  },
+            {   0,  0   }
+        };
+
         void Init()
         {
             memset(&type, 0, sizeof type);
@@ -38,9 +104,11 @@ namespace Script
             type.tp_name="Entity";
             type.tp_basicsize=sizeof(EntityObject);
             type.tp_dealloc=(destructor)Destroy;
-            type.tp_getattr=(getattrfunc)GetAttr;
-            type.tp_setattr=(setattrfunc)SetAttr;
+            type.tp_methods = methods;
+            type.tp_getset = properties;
             type.tp_doc="Represents an entity in the ika game engine.";
+
+            PyType_Ready(&type);
         }
 
         PyObject* New(CEntity* e)
@@ -78,7 +146,7 @@ namespace Script
             ent->ent->pSprite = sprite;
 
             return (PyObject*)ent;
-         }
+        }
 
         void Destroy(EntityObject* self)
         {
@@ -88,117 +156,6 @@ namespace Script
                 Log::Write("Entity_Destroy weirdness");
 
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(EntityObject* self,char* name)
-        {
-            // Get a pointer to the entity, to make the below code nicer. :)
-            CEntity& ent=*self->ent;
-
-            // I wonder how heavy a toll this exacts.  Maybe replace it with a hash table.
-            if (!strcmp(name,"x"))
-                return PyInt_FromLong(ent.x);
-            if (!strcmp(name,"y"))
-                return PyInt_FromLong(ent.y);
-
-            if (!strcmp(name,"speed"))
-                return PyInt_FromLong(ent.nSpeed);
-
-            if (!strcmp(name,"direction"))
-                return PyInt_FromLong(ent.direction);
-
-            if (!strcmp(name,"curframe"))
-                return PyInt_FromLong(ent.nCurframe);
-            if (!strcmp(name,"specframe"))
-                return PyInt_FromLong(ent.nSpecframe);
-            if (!strcmp(name,"visible"))
-                return PyInt_FromLong(ent.bVisible?1:0);
-            if (!strcmp(name,"name"))
-                return PyString_FromString(ent.sName.c_str());
-            if (!strcmp(name,"actscript"))
-                return PyString_FromString(ent.sActscript.c_str());
-            if (!strcmp(name,"adjacentactivate"))
-                return PyInt_FromLong(ent.bAdjacentactivate?1:0);
-
-            if (!strcmp(name,"isobs"))
-                return PyInt_FromLong(ent.bIsobs?1:0);
-            if (!strcmp(name,"mapobs"))
-                return PyInt_FromLong(ent.bMapobs?1:0);
-            if (!strcmp(name,"entobs"))
-                return PyInt_FromLong(ent.bEntobs?1:0);
-
-            if (!strcmp(name,"sprite"))
-                return PyString_FromString(ent.pSprite->sFilename.c_str());
-            if (!strcmp(name,"hotx"))
-                return PyInt_FromLong(ent.pSprite->nHotx);
-            if (!strcmp(name,"hoty"))
-                return PyInt_FromLong(ent.pSprite->nHoty);
-            if (!strcmp(name,"hotwidth"))
-                return PyInt_FromLong(ent.pSprite->nHotw);
-            if (!strcmp(name,"hotheight"))
-                return PyInt_FromLong(ent.pSprite->nHoth);
-
-            return Py_FindMethod(methods, (PyObject*)self, name);                // this would appear to be the default behaviour.  Too bad we can't use it.*/
-        }
-
-        int SetAttr(EntityObject* self,char* name,PyObject* value)
-        {
-            // Get a pointer to the entity, to make the below code nicer. :)
-            CEntity& ent=*self->ent;
-
-            if (!strcmp(name,"x"))
-                ent.x=PyInt_AsLong(value);
-            if (!strcmp(name,"y"))
-                ent.y=PyInt_AsLong(value);
-
-            if (!strcmp(name,"speed"))
-                ent.nSpeed=PyInt_AsLong(value);
-
-            if (!strcmp(name,"direction"))
-                ent.direction=(Direction)PyInt_AsLong(value);    // I dislike this
-
-            if (!strcmp(name,"curframe"))                        // you's isn't allowed to alter this one
-            {
-                PyErr_SetString(PyExc_TypeError,"Entity.curframe is read only!");
-                return -1;
-            }
-            if (!strcmp(name,"specframe"))
-                ent.nSpecframe=PyInt_AsLong(value);
-            if (!strcmp(name,"visible"))
-                ent.bVisible= PyInt_AsLong(value)!=0 ;
-            if (!strcmp(name,"name"))
-                ent.sName=PyString_AsString(value);
-            if (!strcmp(name,"actscript"))
-                ent.sActscript=PyString_AsString(value);
-            if (!strcmp(name,"adjacentactivate"))
-                ent.bAdjacentactivate=(PyInt_AsLong(value)!=0);
-
-
-            if (!strcmp(name,"isobs"))
-                ent.bIsobs= (PyInt_AsLong(value)!=0) ;
-            if (!strcmp(name,"mapobs"))
-                ent.bMapobs= (PyInt_AsLong(value)!=0) ;
-            if (!strcmp(name,"entobs"))
-                ent.bEntobs= (PyInt_AsLong(value)!=0) ;
-
-            if (!strcmp(name,"sprite"))
-            {
-                engine->sprite.Free(ent.pSprite);
-
-                ent.pSprite=engine->sprite.Load(PyString_AsString(value), engine->video);
-                ent.SetAnimScript(va("F%i",ent.nCurframe));
-            }
-            if (!strcmp(name,"hotx") || !strcmp(name,"hoty") || 
-                !strcmp(name,"hotwidth") || !strcmp(name,"hotheight"))
-            {
-                PyErr_SetString(PyExc_SyntaxError,va("Entity.%s is read-only",name));
-                return -1;
-            }    
-
-            // FIXME: you can't add properties yet
-            return 0;
-
-            //    return PyDict_SetItem(self->pDict,name,value);*/
         }
 
 #define METHOD(x) PyObject* x(EntityObject* self, PyObject* args)

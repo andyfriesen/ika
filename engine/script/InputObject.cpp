@@ -35,9 +35,11 @@ namespace Script
             type.tp_name = "Input";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
-            type.tp_getattr = (getattrfunc)GetAttr;
+            type.tp_methods = methods;
             type.tp_as_mapping = &mappingmethods;
             type.tp_doc = "Interface for hardware input devices. (such as the keyboard and mouse)";
+
+            PyType_Ready(&type);
         }
         PyObject* New(::Input& i)
         {
@@ -54,11 +56,6 @@ namespace Script
         void Destroy(InputObject* self)
         {
             PyObject_Del(self);
-        }
-
-        PyObject* GetAttr(InputObject* self,char* name)
-        {
-            return Py_FindMethod(methods, (PyObject*)self, name);
         }
 
         PyObject* Input_Update(InputObject* self)

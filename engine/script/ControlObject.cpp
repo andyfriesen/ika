@@ -24,9 +24,10 @@ namespace Script
             type.tp_name = "Control";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
-            type.tp_getattr = (getattrfunc)GetAttr;
-            type.tp_setattr = (setattrfunc)SetAttr;
+            type.tp_methods = methods;
             type.tp_doc = "Represents a single button or axis. (such as a key, or a joystick button)";
+
+            PyType_Ready(&type);
         }
  
         PyObject* New(::Input& input, const char* name)
@@ -59,16 +60,6 @@ namespace Script
         PyObject* Control_Delta(ControlObject* self)
         {
             return PyFloat_FromDouble(self->control->Delta());
-        }
-
-        PyObject* GetAttr(ControlObject* self, char* name)
-        {
-            return Py_FindMethod(methods, (PyObject*)self, name);
-        }
-
-        int SetAttr(ControlObject* self, char* name, PyObject* value)
-        {
-            return -1;
         }
    }
 }
