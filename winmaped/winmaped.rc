@@ -741,14 +741,14 @@ VS_VERSION_INFO VERSIONINFO
 BEGIN
     BLOCK "StringFileInfo"
     BEGIN
-        BLOCK "100904b0"
+        BLOCK "000004b0"
         BEGIN
-            VALUE "Comments", "I AM PEANUT\0"
-            VALUE "CompanyName", "tSB's basement Inc.\0"
-            VALUE "FileDescription", "Map Editor for v2.x\0"
+            VALUE "Comments", "\0"
+            VALUE "CompanyName", "Andy Friesen\0"
+            VALUE "FileDescription", "Map Editor for ika\0"
             VALUE "FileVersion", "0.999999\0"
             VALUE "InternalName", "winmaped.exe\0"
-            VALUE "LegalCopyright", "Copyright © 2001\0"
+            VALUE "LegalCopyright", "Copyright © 2001 Andy Friesen\0"
             VALUE "LegalTrademarks", "\0"
             VALUE "OriginalFilename", "winmaped.exe\0"
             VALUE "PrivateBuild", "\0"
@@ -759,7 +759,7 @@ BEGIN
     END
     BLOCK "VarFileInfo"
     BEGIN
-        VALUE "Translation", 0x1009, 1200
+        VALUE "Translation", 0x0, 1200
     END
 END
 
