@@ -145,3 +145,12 @@ string Path::Filename(const string& s)
     if (p==string::npos) return s;
     return s.substr(p+1);
 }
+
+bool Path::Compare(const string& s, const string& t)
+{
+#ifdef WIN32
+    return Upper(s) == Upper(t);
+#else
+    return s == t;
+#endif
+}

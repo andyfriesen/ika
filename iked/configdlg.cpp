@@ -19,7 +19,7 @@ BEGIN_EVENT_TABLE(CConfigDlg, wxDialog)
     EVT_BUTTON(wxID_CANCEL, CConfigDlg::OnCancel)
 END_EVENT_TABLE()
 
-// tiny converter thing
+// tiny converter thing.  Bad name?  Yup.  Don't care.  It's isolated.
 #define C(p) ConvertDialogToPixels(p)
 
 CConfigDlg::CConfigDlg(wxWindow* parent,
@@ -45,7 +45,7 @@ CConfigDlg::CConfigDlg(wxWindow* parent,
     SetFont(wxFont(8, wxSWISS, wxNORMAL, wxNORMAL));
     SetSize(C(wxSize(225, 100)));
 
-    //LoadFromResource(parent, "ConfigDlg");
+    //LoadFromResource(parent, "ConfigDlg");  // Doesn't work. >:(
     new wxStaticBox(this, -1, "Graphics Driver", C(wxPoint(0, 0)), C(wxSize(113, 85)), 0, "Resolution");
     pGraphdriverselector =  new wxListBox(this, -1, C(wxPoint(1, 8)), C(wxSize(108, 75)), numDrivers, driverChoices, wxLB_SINGLE, wxDefaultValidator, "graphdriver");
     pPixeldepthselector  =  new wxRadioBox(this, -1, "Pixel Depth", C(wxPoint(116, 33)), C(wxSize(56, 34)), pixelDepths, pixelDepthChoices, wxVERTICAL, wxSIMPLE_BORDER | wxRA_SPECIFY_ROWS, wxDefaultValidator, "pixeldepth");

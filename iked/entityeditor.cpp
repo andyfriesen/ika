@@ -146,6 +146,9 @@ void CEntityEditor::UpdateData()
     e.wanderrect.bottom =atoi(pY2->GetValue().c_str());
     e.sZone             =pZone->GetValue().c_str();
     e.sChasetarget      =pChasetarget->GetValue().c_str();
+    e.bIsobs            =pIsobs->GetValue();
+    e.bMapobs           =pMapobs->GetValue();
+    e.bEntobs           =pEntobs->GetValue();
 }
 
 void CEntityEditor::UpdateDlg()
@@ -167,6 +170,9 @@ void CEntityEditor::UpdateDlg()
     pY2         ->SetValue(ToString(e.wanderrect.bottom).c_str());
     pZone       ->SetValue(e.sZone.c_str());
     pChasetarget->SetValue(e.sChasetarget.c_str());
+    pIsobs      ->SetValue(e.bIsobs);
+    pMapobs     ->SetValue(e.bMapobs);
+    pEntobs     ->SetValue(e.bEntobs);
 }
 
 void CEntityEditor::OnSelectEntity(wxCommandEvent& event)

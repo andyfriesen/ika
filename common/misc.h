@@ -65,6 +65,8 @@ namespace Path
     string Directory(const string& s,const string& relativeto=""); 
 
     string Filename(const string& s);           // same idea, but just returns the filename
+
+    bool Compare(const string& s, const string& t); // returns true if the two paths are the same.  Disregards case in win32.
 };
 
 #endif

@@ -422,8 +422,7 @@ void CMapView::OnShowEntityEditor(wxCommandEvent& event)
 
 void CMapView::OnShowVSP(wxCommandEvent& event)
 {
-    VSP& v = pTileset->GetVSP();
-    pParent->OpenDocument(new CTileSetView(pParent, v.Name()));
+    pParent->Open(pTileset->GetVSP().Name());
 }
 
 //------------------------------------------------------------

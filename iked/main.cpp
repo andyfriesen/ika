@@ -1,6 +1,7 @@
 #include "main.h"
 
 #include "resource.h"
+#include "misc.h"
 #include "log.h"
 
 // Document windows
@@ -192,6 +193,18 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
 
 void CMainWnd::Open(const std::string& fname)
 {
+    // First, see if the document is already open
+    for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+    {
+        // FIXME?  Windows filenames are not case sensitive.
+        if (Path::Compare((*i)->GetFileName(), fname))
+        {
+            (*i)->Activate();
+            return;
+        }
+    }
+
+    // okay.  It's not open.  Open it.
     FileType type=GetFileType(fname);
 
     IDocView* pWnd=0;
