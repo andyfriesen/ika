@@ -39,6 +39,13 @@ bool CApp::OnInit()
 {
     extern void InitXmlResource(); // resource.cpp
 
+    wxXmlResource::Get()->InitAllHandlers();
+#if 0 && defined(DEBUG)
+    wxXmlResource::Get()->Load("resource.xrc");
+#else
+    InitXmlResource();
+#endif
+
     Log::Init("iked.log");
     CMainWnd* mainwnd = new CMainWnd(NULL, -1, "iked",
         wxPoint(-1, -1),
@@ -48,13 +55,6 @@ bool CApp::OnInit()
     mainwnd->Show(TRUE);
     
     SetTopWindow(mainwnd);
-
-    wxXmlResource::Get()->InitAllHandlers();
-#if 0 && defined(DEBUG)
-    wxXmlResource::Get()->Load("resource.xrc");
-#else
-    InitXmlResource();
-#endif
   
     return TRUE;
 }
@@ -115,6 +115,13 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     wxAcceleratorTable table(accel.size(), &*accel.begin());
 
     SetAcceleratorTable(table);
+
+    int argc = wxGetApp().argc;
+    char** argv = wxGetApp().argv;
+    for (int i = 1; i < argc; i++)
+    {
+        Open(argv[i]);
+    }
 }
 
 CMainWnd::~CMainWnd()
