@@ -435,7 +435,11 @@ void CEngine::HookRetrace()
     
     std::list<void*>::iterator i;
     for (i=pHookretrace.begin(); i!=pHookretrace.end(); i++)
+    {
         script.ExecFunction(*i);
+        if (pHookretrace.size()==0)
+            break;
+    }
 }
 
 // ----------------------------------------- AI -------------------------------------------------

@@ -207,7 +207,11 @@ void CMapView::InitLayerVisibilityControl()
             nLayertoggle[c]=visible;
         }
         else if (c=='E')
+        {
             pLayerlist->AppendItem("Entities",lay_entity);
+            pLayerlist->Check(pLayerlist->Number()-1);
+            nLayertoggle[lay_entity]=visible;
+        }
 //        else if (c=='R')
 //            pLayerlist->AppendItem("HookRetrace",-1);  // we don't do anything when the hookretrace "layer" is selected.
     }

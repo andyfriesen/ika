@@ -232,10 +232,9 @@ METHOD(std_unhookretrace)
         std::list<void*>::iterator i;
         
         for (i=pEngine->pHookretrace.begin(); i!=pEngine->pHookretrace.end(); i++)
-        {
             Py_DECREF((PyObject*)*i);										// dereference
-            pEngine->pHookretrace.remove(*i);								// destroy
-        }
+
+        pEngine->pHookretrace.clear();
     }
     else
     {	

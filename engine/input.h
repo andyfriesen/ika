@@ -1,6 +1,8 @@
 #ifndef INPUT_H
 #define INPUT_H
 
+#define DIRECTINPUT_VERSION 0x0500  // moved from input.cpp because the compiler was bitching --andy
+
 #include <windows.h>
 #include <dinput.h>
 #include <queue>

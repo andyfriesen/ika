@@ -80,6 +80,17 @@ const string Trim(string s)
     return s;
 }
 
+string Upper(const string& s)
+{
+    string t=s;
+
+    for (int i=0; i<s.length(); i++)
+        if (t[i]>='a' && t[i]<='z')
+            t[i]^=32;
+
+    return t;
+}
+
 string ToString(int i)
 {
     std::strstream s;

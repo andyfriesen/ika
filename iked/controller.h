@@ -25,7 +25,7 @@ class CController
 
         virtual ~Resource()
         {
-            //T::~T();  // wah, don't want to have to tweak existing classes. ;_;
+//            ~T();  // wah, don't want to have to tweak existing classes. ;_;
         }
     };
 
@@ -44,8 +44,15 @@ class CController
 public:
 
     T* Load(const string& name)
-    {        
-        Resource* pRsrc=resources[name];
+    { 
+        // win32 isn't case sensitive to filenames, so in win32, we convert filenames to uppercase.
+#ifdef __WIN32__
+        string sName=Upper(name);
+#else
+        string sName=name;
+#endif
+
+        Resource* pRsrc=resources[sName];
 
         if (pRsrc)
         {
@@ -55,7 +62,7 @@ public:
          
         pRsrc=new Resource(name);
 
-        bool result=LoadFromFile(pRsrc,name);
+        bool result=LoadFromFile(pRsrc,sName);
         if (!result)
         {
             delete pRsrc;

@@ -7,8 +7,7 @@ Things that just don't fit anywhere else, but are handy to have around.
 #ifndef MISC_H
 #define MISC_H
 
-#include <string>
-using std::string;
+#include "types.h"
 
 template <typename T>
 inline void swap(T& a,T& b)
@@ -26,6 +25,8 @@ void ChangeDirectory(const char* s);
 char* GetCurrentDirectory();
 
 const string Trim(string s);
+
+string Upper(const string& s);
 
 string ToString(int i);
 

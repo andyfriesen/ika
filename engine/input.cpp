@@ -17,8 +17,6 @@ This was originally used in v2.6, but I thought "what the hell", and copied it. 
     
 */
 
-#define DIRECTINPUT_VERSION 0X0500
-#include <dinput.h>
 #include "input.h" // woo!  no dependencies! :D
 #include "log.h"
 
