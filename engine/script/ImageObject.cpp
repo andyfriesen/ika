@@ -1,3 +1,4 @@
+#include <stdexcept>
 
 #include "ObjectDefs.h"
 #include "video/Driver.h"
