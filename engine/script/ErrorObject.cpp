@@ -14,8 +14,8 @@ namespace Script
 
         PyMethodDef methods[] =
         {
-            {	"write",	Error_Write,	1	},
-            {	NULL,	NULL	}
+            {   "write",    Error_Write,    1   },
+            {   0   }
         };
 
         void Init()
@@ -37,7 +37,7 @@ namespace Script
             if (!pSysmodule)            {   Log::Write("Could not get sys module."); return; }
 
             PyObject* pSysdict=PyModule_GetDict(pSysmodule);
-            if (!pSysdict)		{   Log::Write("Could not init sys module.");   return; }
+            if (!pSysdict)      {   Log::Write("Could not init sys module.");   return; }
 
             errorhandler = New();
             PyDict_SetItemString(pSysdict, "stdout", errorhandler);
@@ -48,7 +48,7 @@ namespace Script
 
         PyObject* New()
         {
-            return (PyObject*)PyObject_New(PyObject, &type);	
+            return (PyObject*)PyObject_New(PyObject, &type);    
         }
 
         void Destroy(PyObject* self)

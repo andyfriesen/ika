@@ -89,6 +89,15 @@ Canvas::~Canvas()
 }
 
 
+void Canvas::Save(const char* fname)
+{
+    corona::Image* img = corona::CreateImage(Width(), Height(), corona::PF_R8G8B8A8);
+    RGBA* dest = (RGBA*)img->getPixels();
+    std::copy(_pixels, _pixels + _width * _height, dest);
+    corona::SaveImage(fname, corona::FF_PNG, img);
+    delete img;
+}
+
 Canvas& Canvas::operator = (const Canvas& rhs)
 {
     if (this==&rhs)

@@ -92,7 +92,7 @@ namespace Script
             {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
             {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
             {   "hotheight",        (getter)getHotHeight,           0,                          "Gets the height of the entity's hotspot."  },
-            {   0,  0   }
+            {   0   }
         };
 
         void Init()

@@ -28,6 +28,8 @@ public:
     Canvas(const Canvas& src);
     Canvas(const char* fname);
     virtual ~Canvas(); // why did I make this virtual? O_o
+
+    void Save(const char* fname);
     
     // The basics
     void CopyPixelData(u8* data,int width,int height,u8* pal);  ///< Copies raw, palettized pixel data into the image

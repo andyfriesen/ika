@@ -19,6 +19,7 @@ namespace Script
             {   "DrawRect",     (PyCFunction)Video_DrawRect,    1   },
             {   "DrawEllipse",  (PyCFunction)Video_DrawEllipse, 1   },
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   1   },
+            {   0   }
         };
 
         void Init()

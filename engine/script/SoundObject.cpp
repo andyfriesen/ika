@@ -42,6 +42,7 @@ namespace Script
             {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  0 is left.  2 is right.  1 is centre."   },
             {   "position",     (getter)getPosition,    (setter)setPosition,    "The chronological position of the sound, in milliseconds." },
             {   "loop",         (getter)getLoop,        (setter)setLoop,        "If nonzero, the sound loops.  If zero, then the sound stops playing when it reaches the end."  },
+            {   0   }
         };
 
         void Init()

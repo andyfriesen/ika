@@ -16,7 +16,7 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Update",           (PyCFunction)Input_Update,   METH_NOARGS   },
-            {   NULL,NULL   }
+            {   0   }
         };
 
         // proto

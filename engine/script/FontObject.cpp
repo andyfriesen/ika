@@ -35,7 +35,7 @@ namespace Script
             {   "width",    (getter)getWidth,       0,                  "Gets the width of the widest glyph in the font."   },
             {   "height",   (getter)getHeight,      0,                  "Gets the height of the font."  },
             {   "tabsize",  (getter)getTabSize,     (setter)setTabSize, "Gets or sets the tab size of the font."    },
-            {   0,          0   }
+            {   0   }
         };
 
         void Init()

@@ -31,6 +31,7 @@ namespace Script
         {
             {   "width",    (getter)getWidth,   0,  "Gets the width of the image."  },
             {   "height",   (getter)getHeight,  0,  "Gets the height of the image." },
+            {   0   }
         };
 
         void Init()
@@ -45,6 +46,7 @@ namespace Script
             type.tp_methods = methods;
             type.tp_getset = properties;
             type.tp_doc="A hardware-dependant image.";
+            PyType_Ready(&type);
         }
 
         void Destroy(ImageObject* self)
@@ -55,26 +57,46 @@ namespace Script
 
         PyObject* New(PyObject* self,PyObject* args)
         {
-            char* filename;
+            PyObject* obj;
 
-            if (!PyArg_ParseTuple(args,"s:newimage",&filename))
+            if (!PyArg_ParseTuple(args,"O:newimage",&obj))
                 return NULL;
 
-            try
+            if (obj->ob_type == &PyString_Type)
             {
-                ::Canvas img(filename);
+                try
+                {
+                    const char* filename = PyString_AsString(obj);
 
-                ImageObject* image=PyObject_New(ImageObject,&type);
+                    ::Canvas img(filename);
+
+                    ImageObject* image=PyObject_New(ImageObject,&type);
+                    if (!image)
+                        return 0;
+
+                    image->img = engine->video->CreateImage(img);
+
+                    return (PyObject*)image;
+                }
+                catch (std::runtime_error e)
+                {
+                    Log::Write(e.what());
+                    return 0;
+                }
+            }
+            else if (obj->ob_type == &Script::Canvas::type)
+            {
+                ImageObject* image = PyObject_New(ImageObject, &type);
                 if (!image)
                     return 0;
 
-                image->img = engine->video->CreateImage(img);
+                image->img = engine->video->CreateImage(*((Script::Canvas::CanvasObject*)obj)->canvas);
 
                 return (PyObject*)image;
             }
-            catch (std::runtime_error e)
+            else
             {
-                Log::Write(e.what());
+                PyErr_SetString(PyExc_TypeError, "Image constructor accepts a string (filename) or a Canvas object.");
                 return 0;
             }
         }

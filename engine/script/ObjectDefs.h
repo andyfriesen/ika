@@ -106,6 +106,9 @@ namespace Script
         extern PyMethodDef methods[];
         
         // Methods
+        METHOD(Canvas_Save, CanvasObject);
+        METHOD(Canvas_Blit, CanvasObject);
+        METHOD(Canvas_ScaleBlit, CanvasObject);
         METHOD(Canvas_GetPixel, CanvasObject);
         METHOD(Canvas_SetPixel, CanvasObject);
         METHOD(Canvas_Clear, CanvasObject);

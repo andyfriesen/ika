@@ -502,7 +502,7 @@ namespace Script
         FUNCTION("Font",                Script::Font::New),
         FUNCTION("Entity",              Script::Entity::New),
         FUNCTION("Canvas",              Script::Canvas::New),
-        {    NULL,    NULL    }                        // sentinel?  (end of list marker, I think)
+        {    0    }
     };
 
 #undef FUNCTION

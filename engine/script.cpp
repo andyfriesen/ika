@@ -33,6 +33,7 @@ void CScriptEngine::Init(CEngine* p)
     Script::Entity::Init();
     Script::Sound::Init();
     Script::Font::Init();
+    Script::Canvas::Init();
     // singletons
     Script::Video::Init();
     Script::Map::Init();
@@ -52,6 +53,10 @@ void CScriptEngine::Init(CEngine* p)
     PyObject* video = Script::Video::New(engine->video);
     PyDict_SetItemString(dict, "Video", video);
     Py_DECREF(video);
+
+    PyModule_AddIntConstant(module, "Opaque", 0);
+    PyModule_AddIntConstant(module, "Matte", 1);
+    PyModule_AddIntConstant(module, "AlphaBlend", 2);
     
     // Create entity dictionary
     entitydict=PyDict_New();

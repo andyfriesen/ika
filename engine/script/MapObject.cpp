@@ -22,7 +22,7 @@ namespace Script
             {   "SetZone",      (PyCFunction)Map_SetZone,       1   },
             {   "GetParallax",  (PyCFunction)Map_GetParallax,   1   },
             {   "SetParallax",  (PyCFunction)Map_SetParallax,   1   },
-            {   NULL,       NULL    }   // end of list
+            {   0   }   // end of list
         };
 
 #define GET(x) PyObject* get ## x(PyObject* self)
@@ -61,20 +61,21 @@ namespace Script
             {   "vspname",      (getter)getVSPName,         (setter)setVSPName, "Gets or sets the name of the current tileset"  },
             {   "defaultmusic", (getter)getMusic,           (setter)setMusic,   "Gets or sets the default music of the current map" },
             {   "entities",     (getter)getEntities,        0,                  "Gets a dictionary of entities currently tied to the map"   },
+            {   0   }
         };
 
         void Init()
         {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt=1;
-            type.ob_type=&PyType_Type;
-            type.tp_name="Map";
-            type.tp_basicsize=sizeof type;
-            type.tp_dealloc=(destructor)Destroy;
+            type.ob_refcnt = 1;
+            type.ob_type = &PyType_Type;
+            type.tp_name = "Map";
+            type.tp_basicsize = sizeof type;
+            type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset  = properties;
-            type.tp_doc="Represents the current map";
+            type.tp_doc = "Represents the current map";
 
             PyType_Ready(&type);
         }
