@@ -8,9 +8,7 @@
 #include "codeview.h"
 #include "fileio.h"
 
-#ifdef WX232
-#   include <wx\fdrepdlg.h>
-#endif
+
 
 namespace
 {
@@ -78,6 +76,11 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     editmenu->Append(id_editfind,"&Find...","");
     editmenu->Append(id_editreplace,"Replace...","");
     menubar->Append(editmenu,"&Edit");
+
+#ifndef WX232
+    editmenu->Enable(id_editfind,false);
+    editmenu->Enable(id_editreplace,false);
+#endif
 
     wxMenu* optionsmenu = new wxMenu;
     menubar->Append(optionsmenu,"&Options");

@@ -6,6 +6,9 @@
 #include <wx\wx.h>
 #include <wx\colordlg.h>
 #include <wx\fontdlg.h>
+#ifdef WX232
+#include <wx\fdrepdlg.h>
+#endif
 #include <wx\stc\stc.h>
 
 class CMainWnd;
