@@ -1,4 +1,4 @@
-#include "SDL/SDL_opengl.h"
+//#include "SDL/SDL_opengl.h"
 #include "Image.h"
 #include "common/log.h"
 

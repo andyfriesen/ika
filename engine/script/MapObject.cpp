@@ -565,7 +565,7 @@ namespace Script
             PyObject* list = PyList_New(Script::Entity::instances.size());
 
             int i = 0;
-            for (std::map<::Entity*, Script::Entity::EntityObject*>::iterator iter = Script::Entity::instances.begin();
+            for (std::map< ::Entity*, Script::Entity::EntityObject*>::iterator iter = Script::Entity::instances.begin();
                 iter != Script::Entity::instances.end();
                 iter++)
             {

@@ -87,7 +87,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..,\src\audiere\src,..\3rdparty\include,../3rdparty/include/python"
+				AdditionalIncludeDirectories=".,..,..\3rdparty\include,../3rdparty/include/python"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

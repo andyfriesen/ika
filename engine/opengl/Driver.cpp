@@ -2,7 +2,8 @@
 #include <vector>
 #include <math.h>
 
-#include "SDL/SDL_opengl.h"
+//#include "SDL/SDL_opengl.h"
+#include "gl/gl.h"
 
 #include "Driver.h"
 #include "Image.h"
@@ -19,6 +20,13 @@ static void glBlendEquationStub(int){}
 
 namespace OpenGL
 {
+#ifndef GL_FUNC_REVERSE_SUBTRACT_EXT
+    const uint GL_FUNC_REVERSE_SUBTRACT_EXT = 0x800B;
+#endif
+#ifndef GL_FUNC_ADD_EXT
+    const uint GL_FUNC_ADD_EXT = 0x8006;
+#endif
+
     Driver::Driver(int xres, int yres, int bpp, bool fullscreen)
         : _lasttex(0)
         , _xres(xres)

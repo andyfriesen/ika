@@ -1,0 +1,38 @@
+Import('*')
+
+ikamap = env.Program('ikamap',
+    source = Split('''
+        command.cpp
+        copypastestate.cpp
+        editstate.cpp
+        entitydlg.cpp
+        entitystate.cpp
+        ikamap.cpp
+        imagebank.cpp
+        importtilesdlg.cpp
+        layerdlg.cpp
+        mainwindow.cpp
+        mapdlg.cpp
+        mapview.cpp
+        newmapdlg.cpp
+        obstructionstate.cpp
+        resource.cpp
+        script.cpp
+        scriptdlg.cpp
+        scriptengine.cpp
+        scriptstate.cpp
+        settilestate.cpp
+        spriteset.cpp
+        tileset.cpp
+        tilesetview.cpp
+        video.cpp
+        zoneeditstate.cpp
+        zonepropertiesdlg.cpp
+        script/EditorObject.cpp
+        script/ErrorObject.cpp
+        script/MapObject.cpp
+        script/ModuleFuncs.cpp
+        ''')
+    )
+
+Return('ikamap')

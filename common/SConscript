@@ -1,0 +1,22 @@
+Import('*')
+
+lib = StaticLibrary('common',
+    source = Split('''
+        aries.cpp
+        base64.cpp
+        Canvas.cpp
+        chr.cpp
+        compression.cpp
+        configfile.cpp
+        fileio.cpp
+        fontfile.cpp
+        log.cpp
+        map.cpp
+        misc.cpp
+        rle.cpp
+        vergepal.cpp
+        vsp.cpp
+        ''')
+    )
+
+Return('lib')

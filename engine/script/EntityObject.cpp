@@ -17,7 +17,7 @@ namespace Script
 {
     namespace Entity
     {
-        std::map<::Entity*, Script::Entity::EntityObject*> instances;   // all entity instances
+        std::map< ::Entity*, Script::Entity::EntityObject*> instances;   // all entity instances
 
         PyTypeObject type; 
         
@@ -329,7 +329,7 @@ namespace Script
             int x2 = x1 + e1->sprite->nHotw;
             int y2 = y1 + e1->sprite->nHoth;
 
-            for (std::map<::Entity*, EntityObject*>::iterator iter = instances.begin(); iter != instances.end(); iter++)
+            for (std::map< ::Entity*, EntityObject*>::iterator iter = instances.begin(); iter != instances.end(); iter++)
             {
                 EntityObject* entObj = iter->second;
                 const ::Entity* e2 = iter->first;

@@ -1,0 +1,35 @@
+Import('*')
+
+ika = env.Program('ika',
+    source = Split('''
+        benchmark.cpp
+        entity.cpp
+        font.cpp
+        FPSCounter.cpp
+        input.cpp
+        main.cpp
+        script.cpp
+        scriptobject.cpp
+        sound.cpp
+        sprite.cpp
+        tileset.cpp
+        timer.cpp
+        script/CanvasObject.cpp
+        script/ControlObject.cpp
+        script/EntityObject.cpp
+        script/ErrorObject.cpp
+        script/FontObject.cpp
+        script/ImageObject.cpp
+        script/InputObject.cpp
+        script/MapObject.cpp
+        script/ModuleFuncs.cpp
+        script/SoundObject.cpp
+        script/VideoObject.cpp
+        opengl/Driver.cpp
+        opengl/Image.cpp
+        soft32/Driver.cpp
+        soft32/Image.cpp
+        ''')
+    )
+
+Return('ika')
