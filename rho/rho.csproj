@@ -20,7 +20,7 @@
                 PostBuildEvent = ""
                 RootNamespace = "rho"
                 RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = "rho.Dialogs.ImportFramesDialog"
+                StartupObject = "rho.MainForm"
             >
                 <Config
                     Name = "Debug"
