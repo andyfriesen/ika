@@ -122,13 +122,6 @@ void CTextView::InitTextControl()
     pTextctrl->SetMarginType        (linecountmargin,wxSTC_MARGIN_NUMBER);
     pTextctrl->SetMarginSensitive   (linecountmargin,false);
 
-    pTextctrl->SetMarginWidth       (foldmargin,10);
-    pTextctrl->SetMarginType        (foldmargin,wxSTC_MARGIN_SYMBOL);
-    pTextctrl->SetMarginSensitive   (foldmargin,true);
-    pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
-    pTextctrl->SetModEventMask      (wxSTC_MOD_CHANGEFOLD);
-
-
     bChanged=false;
 }
 
