@@ -84,7 +84,6 @@ BEGIN_EVENT_TABLE(CSpriteSetView, IDocView)
     EVT_SIZE(CSpriteSetView::OnSize)
     
     EVT_PAINT(CSpriteSetView::OnPaint)
-    EVT_CLOSE(CSpriteSetView::OnClose)
 
     EVT_LEFT_DOWN(CSpriteSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CSpriteSetView::OnRightClick)
@@ -121,6 +120,7 @@ CSpriteSetView::CSpriteSetView(CMainWnd* parentwnd, int width, int height)
 
 CSpriteSetView::~CSpriteSetView()
 {
+    _parent->spriteset.Release(_sprite);
     delete _contextMenu;
 }
 
@@ -161,14 +161,6 @@ void CSpriteSetView::OnSaveAs(wxCommandEvent& event)
     }
 }
 
-void CSpriteSetView::OnClose(wxCommandEvent& event)
-{
-    _parent->spriteset.Release(_sprite);
-    _sprite = 0;
-
-    Destroy();
-}
-
 const void* CSpriteSetView::GetResource() const
 {
     return _sprite;
@@ -198,18 +190,18 @@ void CSpriteSetView::Render()
     int xstep = framex + (_pad ? 1 : 0);
     int ystep = framey + (_pad ? 1 : 0);
 
-    int nSpritewidth = nWidth / xstep;
-    if (nSpritewidth < 1) nSpritewidth = 1;
+    int cols = nWidth / xstep;
+    if (cols < 1) cols = 1;
 
-    int nSpriteheight=(nHeight / ystep)+1;
-    int nSprite = _ywin * nSpritewidth;
+    int rows = (nHeight / ystep) + 1;
+    int nSprite = _ywin * cols;
 
     _graph->SetCurrent();
     _graph->Clear();
 
-    for(int y = 0; y < nSpriteheight; y++)
+    for(int y = 0; y < rows; y++)
     {
-        for(int x = 0; x < nSpritewidth; x++)
+        for(int x = 0; x < cols; x++)
         {
             Canvas& rBitmap = _sprite->Get(nSprite);
             CImage img(rBitmap);
@@ -258,29 +250,24 @@ void CSpriteSetView::OnScroll(wxScrollWinEvent& event)
 
 void CSpriteSetView::OnLeftClick(wxMouseEvent& event)
 {    
-    int x = event.GetPosition().x;
-    int y = event.GetPosition().y;
-
-    const int framex = _sprite->Width();
-    const int framey = _sprite->Height();
-
-    int nSpritewidth = GetClientSize().GetWidth()/framex;
-
-    x /= framex;      
-    y /= framey;
-
-    int t = (y + _ywin) * nSpritewidth + x;
-
-    if (t > _sprite->Count()) t = 0;
+    int t = FrameAt(event.GetPosition().x, event.GetPosition().y);
    
-    _curFrame = t;
-
-    Render();
+    if (t != -1)
+    {
+        _curFrame = t;
+        Render();
+    }
 }
 
 void CSpriteSetView::OnRightClick(wxMouseEvent& event)
 {
-    PopupMenu(_contextMenu, event.GetPosition());
+    int t = FrameAt(event.GetPosition().x, event.GetPosition().y);
+    if (t != -1)
+    {
+        _curFrame = t;
+        Render();
+        PopupMenu(_contextMenu, event.GetPosition());
+    }
 }
 
 void CSpriteSetView::OnEditFrame(wxCommandEvent& event)
@@ -316,17 +303,17 @@ void CSpriteSetView::UpdateScrollbar()
     const int w = _graph->LogicalWidth();
     const int h = _graph->LogicalHeight();
 
-    int nSpritewidth = w / _sprite->Width();
-    int nSpriteheight = h / _sprite->Height();
+    int cols = w / _sprite->Width();
+    int rows = h / _sprite->Height();
 
-    if (nSpritewidth < 1) nSpritewidth = 1;
+    if (cols < 1) cols = 1;
 
-    int nTotalheight = _sprite->Count() / nSpritewidth + 1;
+    int nTotalheight = _sprite->Count() / cols + 1;
 
-    if (_ywin > nTotalheight - nSpriteheight)    _ywin = nTotalheight - nSpriteheight;
-    if (_ywin < 0)                               _ywin = 0;
+    if (_ywin > nTotalheight - rows)    _ywin = nTotalheight - rows;
+    if (_ywin < 0)                      _ywin = 0;
 
-    SetScrollbar(wxVERTICAL, _ywin, nSpriteheight, nTotalheight, true);
+    SetScrollbar(wxVERTICAL, _ywin, rows, nTotalheight, true);
 }
 
 void CSpriteSetView::OnShowMovescriptEditor(wxCommandEvent& event)
@@ -406,8 +393,9 @@ void CSpriteSetView::InitMenu()
     _contextMenu->Append(id_pasteinto, "Paste into");
     _contextMenu->Append(id_pasteover, "Paste over");
     _contextMenu->Append(id_insertandpaste, "Insert and paste");
-    _contextMenu->AppendSeparator();
-    _contextMenu->Append(id_editframe, "Edit");
+    // Until the pixel editor is up and running
+    //_contextMenu->AppendSeparator();
+    //_contextMenu->Append(id_editframe, "Edit");
 }
 
 void CSpriteSetView::InitAccelerators()
@@ -428,13 +416,31 @@ void CSpriteSetView::InitAccelerators()
 
 void CSpriteSetView::SpritePos(int idx, int& x, int& y) const
 {
-    int w = GetClientSize().GetWidth()/_sprite->Width();
-    
-    x = idx % w;
-    y = idx / w - _ywin;
+    int xstep = _sprite->Width()  + (_pad ? 1 : 0);
+    int ystep = _sprite->Height() + (_pad ? 1 : 0);
 
-    x *= _sprite->Width();
-    y *= _sprite->Height();
+    int cols = max(_graph->LogicalWidth() / xstep, 1);
+
+    x = idx % cols;
+    y = idx / cols - _ywin;
+
+    x *= xstep;
+    y *= ystep;
+}
+
+int CSpriteSetView::FrameAt(int x, int y) const
+{
+    const int xstep = _sprite->Width()  + (_pad ? 1 : 0);
+    const int ystep = _sprite->Height() + (_pad ? 1 : 0);
+
+    const int cols = max(_graph->LogicalWidth() / xstep, 1);
+
+    x /= xstep;      y /= ystep;
+
+    int t = (y + _ywin) * cols + x;
+
+    if (t >= _sprite->Count()) return -1;
+    return t;
 }
 
 void CSpriteSetView::Zoom(int nZoomscale)

@@ -20,7 +20,6 @@ public:
 
     virtual void OnSave(wxCommandEvent& event);
     void OnSaveAs(wxCommandEvent& event);
-    virtual void OnClose(wxCommandEvent& event);
 
     virtual const void* GetResource() const;
 
@@ -53,6 +52,7 @@ private:
     void InitMenu();
     void InitAccelerators();
     void SpritePos(int idx, int& x, int& y) const;
+    int  FrameAt(int x, int y) const;
     void Zoom(int nZoomscale);
 
     CMainWnd*           _parent;

@@ -158,8 +158,8 @@ void CTileSetView::Init()
     //pContextmenu->Append(id_pasteinto, "Paste into");
     pContextmenu->Append(id_pasteover, "Paste over");
     pContextmenu->Append(id_insertandpaste, "Insert and paste");
-    pContextmenu->AppendSeparator();
-    pContextmenu->Append(id_edittile, "Edit");
+    //pContextmenu->AppendSeparator();
+    //pContextmenu->Append(id_edittile, "Edit");
 }
 
 // --------------------------------- events ---------------------------------
@@ -245,8 +245,12 @@ void CTileSetView::OnLeftClick(wxMouseEvent& event)
     int x, y;
     event.GetPosition(&x, &y);
 
-    pTileset->SetCurTile(TileAt(x, y));
-    Render();
+    int t = TileAt(x, y);
+    if (t != -1)
+    {
+        pTileset->SetCurTile(t);
+        Render();
+    }
 }
 
 void CTileSetView::OnRightClick(wxMouseEvent& event)
@@ -436,7 +440,7 @@ int CTileSetView::TileAt(int x, int y) const
 
     int t = (y + ywin) * nTilewidth + x;
 
-    if (t > pTileset->Count()) return 0;
+    if (t > pTileset->Count()) return -1;
     return t;
 }
 

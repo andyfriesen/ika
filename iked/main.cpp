@@ -24,7 +24,7 @@
 
 #include "controller.h"
 
-// HACK
+// HACK.  This shouldn't be needed in release mode. -_-
 #ifndef DEBUG
 void __cdecl wxAssert(int, char const*, int, char const*, char const*)
 {
@@ -120,8 +120,6 @@ CMainWnd::~CMainWnd()
 {
 }
 
-// creates the base menu items that apply to all app windows.
-// This is here because wxWindows won't let me just tack on an extra menu depending on the active MDI child. ;P
 void CMainWnd::FileQuit(wxCommandEvent& event)
 {
     Close(TRUE);
@@ -316,7 +314,8 @@ void CMainWnd::OnChildClose(IDocView* child)
     pDocuments.erase(child);
 }
 
-
+// creates the base menu items that apply to all app windows.
+// This is here because wxWindows won't let me just tack on an extra menu depending on the active MDI child. ;P
 wxMenuBar* CMainWnd::CreateBasicMenu()
 {
     wxMenuBar* menu = new wxMenuBar;
