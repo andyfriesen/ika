@@ -168,6 +168,10 @@ SOURCE=.\configdlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\docview.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\graph.cpp
 # End Source File
 # Begin Source File
@@ -205,6 +209,10 @@ SOURCE=.\configdlg.h
 # Begin Source File
 
 SOURCE=.\controller.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\docview.h
 # End Source File
 # Begin Source File
 

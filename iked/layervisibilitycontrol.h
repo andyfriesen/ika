@@ -2,8 +2,7 @@
 #pragma warning (disable:4786)
 
 #include <wx\checklst.h>
-#include <map>
-#include <string>
+#include <vector>
 
 class wxListEvent;
 
@@ -13,12 +12,13 @@ class CLayerVisibilityControl : public wxCheckListBox
 {
     CMapView* pMapview;
 
-    std::map<std::string,int> sLayxlat;
+    std::vector<int> layidx;
 
 public:
     CLayerVisibilityControl(wxWindow* parent,int id,CMapView* mapview);
 
     void AppendItem(const std::string& name,int idx);
+    void CheckItem(int idx);
 
     void OnDrag(wxListEvent& event);
     void OnEndDrag(wxListEvent& event);

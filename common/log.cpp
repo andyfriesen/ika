@@ -12,6 +12,8 @@ namespace Log
 {
     bool bLogging=false;
     string sLogname;
+
+    std::ofstream logfile;
 };
 
 // -----------------------
@@ -24,6 +26,8 @@ void Log::Init(const char* fname)
     remove(fname);
 
     sLogname=fname;
+
+    logfile.open(fname);
 
 #ifdef LOG_CALLBACK
     remove("callback.log");
@@ -40,9 +44,10 @@ void Log::Writen(const char* s,...)
     va_start(lst,s);
     vsprintf(sTemp,s,lst);
     va_end(lst);
-    
-    std::ofstream f(sLogname.c_str(),ios::app);
-    f << sTemp;
+  
+    logfile << sTemp;
+//    std::ofstream f(sLogname.c_str(),ios::app);
+//    f << sTemp;
 }
 
 void Log::Write(const char* s,...)
@@ -56,8 +61,9 @@ void Log::Write(const char* s,...)
     vsprintf(sTemp,s,lst);
     va_end(lst);
 
-    std::ofstream f(sLogname.c_str(),ios::app);
-    f << sTemp << std::endl;
+    logfile << sTemp;
+//    std::ofstream f(sLogname.c_str(),ios::app);
+//    f << sTemp << std::endl;
 }
 
 // -----------------------

@@ -47,6 +47,7 @@ public:
 
     void OnErase(wxEraseEvent&) {}
     void OnSize(wxSizeEvent& event);
+    void OnMouseEvent(wxMouseEvent& event);
 
     DECLARE_EVENT_TABLE()
 };

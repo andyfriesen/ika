@@ -74,10 +74,17 @@ namespace
            
         }
 
+        void OnMouseEvent(wxMouseEvent& event)
+        {
+            wxPostEvent(GetParent(),event);
+        }
+
         DECLARE_EVENT_TABLE()
     };
 
     BEGIN_EVENT_TABLE(CMapSash,wxSashLayoutWindow)
+        EVT_MOUSE_EVENTS(CMapSash::OnMouseEvent)
+
         EVT_SCROLLWIN_TOP(CMapSash::ScrollTop)
         EVT_SCROLLWIN_BOTTOM(CMapSash::ScrollBottom)
         EVT_SCROLLWIN_LINEUP(CMapSash::ScrollLineUp)
@@ -96,8 +103,11 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_ERASE_BACKGROUND(CMapView::OnErase)
     EVT_SIZE(CMapView::OnSize)
     EVT_SCROLLWIN(CMapView::OnScroll)
-
     EVT_CLOSE(CMapView::OnClose)
+
+    EVT_LEFT_DOWN(CMapView::OnLeftDown)
+    EVT_MOTION(CMapView::OnMouseMove)
+
 END_EVENT_TABLE()
 
 CMapView::CMapView(CMainWnd* parent,const string& name)
@@ -132,6 +142,8 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     xwin=ywin=0;
 
     InitLayerVisibilityControl();
+
+    nCurlayer=0;
 
     Show();
 }
@@ -211,6 +223,36 @@ void CMapView::OnClose()
     Destroy();
 }
 
+//------------------------------------------------------------
+
+void CMapView::OnLeftDown(wxMouseEvent& event)
+{
+    wxPoint p=event.GetPosition();
+
+    int x=(p.x+xwin)/pTileset->Width();
+    int y=(p.y+ywin)/pTileset->Height();
+
+    switch (nCurlayer)
+    {
+    case lay_entity:
+    case lay_zone:
+    case lay_obstruction:
+        // NYI
+        break;
+    default:
+        // Set a tile (for now)
+        pMap->SetTile(x,y,nCurlayer,0);
+        break;
+    }
+
+    Render();
+    pGraph->ShowPage();
+}
+
+void CMapView::OnMouseMove(wxMouseEvent& event)
+{
+}
+
 void CMapView::OnLayerChange(int lay)
 {
     nCurlayer=lay;
@@ -219,6 +261,7 @@ void CMapView::OnLayerChange(int lay)
         nLayertoggle[lay]=visible;
         Render();
         pGraph->ShowPage();
+        pLayerlist->CheckItem(lay);
     }
 }
 

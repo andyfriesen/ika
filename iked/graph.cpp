@@ -7,6 +7,9 @@
 BEGIN_EVENT_TABLE(CGraphFrame,wxGLCanvas)
     EVT_ERASE_BACKGROUND(CGraphFrame::OnErase)
     EVT_SIZE(CGraphFrame::OnSize)
+
+    // hack -- GraphFrames Send all mouse events to their parent window.
+    EVT_MOUSE_EVENTS(CGraphFrame::OnMouseEvent)
 END_EVENT_TABLE()
 
 std::set<CGraphFrame*> CGraphFrame::pInstances;
@@ -63,6 +66,11 @@ void CGraphFrame::OnSize(wxSizeEvent& event)
     glViewport(0,0,w,h);
 
     glScissor(0, 0, w,h);
+}
+
+void CGraphFrame::OnMouseEvent(wxMouseEvent& event)
+{
+    wxPostEvent(GetParent(),event);
 }
 
 void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)

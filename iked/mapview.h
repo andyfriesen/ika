@@ -63,6 +63,15 @@ public:
 
     void OnClose();
 
+//------------------------------------------------------------
+
+    void SetTile(int x,int y);
+
+    void OnLeftDown(wxMouseEvent& event);
+    void OnMouseMove(wxMouseEvent& event);
+
+//------------------------------------------------------------
+
     DECLARE_EVENT_TABLE()
 
 public:
