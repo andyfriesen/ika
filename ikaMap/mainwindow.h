@@ -36,7 +36,8 @@ private:
     MapView* _mapView;
     TileSetView* _tileSetView;
     
-    std::map<std::string, SpriteSet*> _sprites;
+    typedef std::map<std::string, SpriteSet*> SpriteMap;
+    SpriteMap _sprites;
     
     std::stack<::Command*> _undoList;
     std::stack<::Command*> _redoList;
@@ -93,6 +94,7 @@ public:
     void OnSetTilePaintState(wxCommandEvent&);
     void OnSetCopyPasteState(wxCommandEvent&);
     void OnSetObstructionState(wxCommandEvent&);
+    void OnSetZoneState(wxCommandEvent&);
     void OnSetEntityState(wxCommandEvent&);
 
     void OnNewLayer(wxCommandEvent&);

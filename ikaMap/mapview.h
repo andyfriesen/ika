@@ -10,6 +10,7 @@
 #include "copypastestate.h"
 #include "obstructionstate.h"
 #include "entitystate.h"
+#include "zoneeditstate.h"
 
 class SpriteSet;
 
@@ -42,6 +43,7 @@ private:
     CopyPasteState _copyPasteState;
     ObstructionState _obstructionState;
     EntityState _entityState;
+    ZoneEditState _zoneEditState;
     //-
 
 public:
@@ -87,6 +89,7 @@ public:
     int  GetYWin() const { return _ywin; }
 
     uint EntityAt(int x, int y, uint layer);
+    uint ZoneAt(int x, int y, uint layer);
 
     SpriteSet*  GetEntitySpriteSet(Map::Entity* ent) const;
     VideoFrame* GetVideo() const;
@@ -108,10 +111,12 @@ public:
     aegisz: just call it cock() and be done with it
     andys evil clone: hah.
     */
+    void SetEditState(EditState* newState);
     void Cock();    // Sets the default tile-setting state.  Thanks aegis!
     void SetCopyPasteState();
     void SetObstructionState();
     void SetEntityState();
+    void SetZoneState();
 
     DECLARE_EVENT_TABLE()
 };

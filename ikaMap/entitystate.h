@@ -20,6 +20,7 @@ public:
     virtual void OnMouseWheel(wxMouseEvent& event);
 
     virtual void OnRenderCurrentLayer();
+    virtual void OnSwitchLayers(uint oldLayer, uint newLayer);
 };
 
 #endif

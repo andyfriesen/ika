@@ -46,12 +46,12 @@ void TileSet::New(int width, int height)
     SyncAll();
 }
 
-Canvas& TileSet::Get(int tileidx)
+Canvas& TileSet::Get(uint tileidx)
 {
     return pVsp->GetTile(tileidx);
 }
 
-void TileSet::SetImage(const Canvas& newtile, int tileidx)
+void TileSet::SetImage(const Canvas& newtile, uint tileidx)
 {
     pVsp->GetTile(tileidx)=newtile;
 }

@@ -167,6 +167,12 @@
 			<File
 				RelativePath="video.cpp">
 			</File>
+			<File
+				RelativePath="zoneeditstate.cpp">
+			</File>
+			<File
+				RelativePath="zonepropertiesdlg.cpp">
+			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
@@ -233,6 +239,12 @@
 			</File>
 			<File
 				RelativePath="wxinc.h">
+			</File>
+			<File
+				RelativePath="zoneeditstate.h">
+			</File>
+			<File
+				RelativePath="zonepropertiesdlg.h">
 			</File>
 		</Filter>
 		<Filter

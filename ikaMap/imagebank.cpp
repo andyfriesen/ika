@@ -33,16 +33,16 @@ void ImageBank::FreeBitmaps()
     bitmaps.clear();
 }
 
-void ImageBank::Set(const Canvas& img, int idx)
+void ImageBank::Set(const Canvas& img, uint idx)
 {
-    if (idx < 0 || idx >= Count())
+    if (idx >= Count())
         return;
 
     SetImage(img, idx);
     altered.insert(idx);
 }
 
-Image& ImageBank::GetImage(int idx)
+Image& ImageBank::GetImage(uint idx)
 {
     if (altered.find(idx) != altered.end() && bitmaps[idx])   // has this image been altered?
     {
@@ -50,8 +50,7 @@ Image& ImageBank::GetImage(int idx)
         altered.erase(idx);
     }
 
-    uint c = Count();
-    if (idx < 0 || idx >= Count())
+    if (idx >= Count())
         idx = 0;
 
     // lazy allocation

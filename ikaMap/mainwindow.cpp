@@ -112,6 +112,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
     EVT_BUTTON(id_copypaste, MainWindow::OnSetCopyPasteState)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
+    EVT_BUTTON(id_zoneedit, MainWindow::OnSetZoneState)
     EVT_BUTTON(id_entityedit, MainWindow::OnSetEntityState)
 
     EVT_BUTTON(id_newlayer, MainWindow::OnNewLayer)
@@ -292,7 +293,7 @@ MainWindow::~MainWindow()
     delete _map;
     delete _tileSet;
 
-    for (std::map<std::string, SpriteSet*>::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
+    for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
         delete iter->second;
     _sprites.clear();
 
@@ -675,6 +676,12 @@ void MainWindow::OnSetObstructionState(wxCommandEvent&)
     _mapView->SetObstructionState();
 }
 
+void MainWindow::OnSetZoneState(wxCommandEvent&)
+{
+    HighlightToolButton(id_zoneedit);
+    _mapView->SetZoneState();
+}
+
 void MainWindow::OnSetEntityState(wxCommandEvent&)
 {
     HighlightToolButton(id_entityedit);
@@ -857,19 +864,9 @@ void MainWindow::LoadMap(const std::string& fileName)
     delete _tileSet;    _tileSet = ts;
 
     // Free spritesets used by the old map.
-    for (std::map<std::string, SpriteSet*>::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
+    for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
         delete iter->second;
     _sprites.clear();
-
-    // Load spritesets needed by this map.
-    /*for (std::map<std::string, Map::Entity>::iterator iter = newMap->entities.begin(); iter != newMap->entities.end(); iter++)
-    {
-        std::string spriteName = iter->second.spriteName;
-        SpriteSet* ss = new SpriteSet;//_spriteController.Load(spriteName);
-        ss->Load(spriteName);
-        if (ss != 0)
-            _sprites[spriteName] = ss;
-    }*/
 
     UpdateLayerList();
 

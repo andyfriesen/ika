@@ -8,7 +8,7 @@ class CCHRfile;
 
 class SpriteSet : public ImageBank
 {
-    virtual void SetImage(const Canvas& img, int idx);
+    virtual void SetImage(const Canvas& img, uint idx);
 
     CCHRfile* _chr;
 
@@ -20,7 +20,7 @@ public:
     bool Load(const std::string& fname);
     bool Save(const std::string& fname);
 
-    virtual Canvas& Get(int idx);
+    virtual Canvas& Get(uint idx);
     virtual uint Count() const;   
     int Width() const;
     int Height() const;

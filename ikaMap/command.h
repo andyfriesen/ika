@@ -15,6 +15,8 @@ class MainWindow; // bleh. ;P
  * If the number of commands grows too much, move them all into 
  * their own separate source files, so we don't wind up with a
  * single monstrous source file.
+ *
+ * I wonder if I should put this all in a namespace.
  */
 class Command
 {
@@ -260,7 +262,6 @@ public:
     virtual void Undo(MainWindow* m);
 };
 
-// should change this to InsertTilesCommand
 class InsertTilesCommand : public Command
 {
 private:
@@ -270,7 +271,7 @@ private:
 public:
     // FIXME?  All this canvas copying may get a bit slow.
     // Start throwing pointers around instead?
-    InsertTilesCommand(uint startPos, std::vector<Canvas >& tiles);
+    InsertTilesCommand(uint startPos, std::vector<Canvas>& tiles);
 
     virtual void Do(MainWindow* m);
     virtual void Undo(MainWindow* m);
@@ -301,6 +302,80 @@ private:
 
 public:
     ResizeTileSetCommand(uint newWidth, uint newHeight);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class DefineZoneBluePrintCommand : public Command
+{
+private:
+    enum Mode
+    {
+        create,
+        destroy,
+        update
+    };
+
+    Map::Zone _newZone;
+    Map::Zone _oldZone;
+
+    Mode _mode;
+
+public:
+    // I am a bad, bad man.  But this allows me to pretend that references
+    // behave like java or python, and pass 0 as a "null reference".  Hurray for
+    // self delusion.
+    DefineZoneBluePrintCommand(Map::Zone& newZone, Map::Zone& oldZone);
+    DefineZoneBluePrintCommand(Map::Zone& newZone, int);
+    DefineZoneBluePrintCommand(int, Map::Zone& oldZone);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class PlaceZoneCommand : public Command
+{
+private:
+    Rect        _position;
+    std::string _bluePrint;
+    uint        _layerIndex;
+
+public:
+    PlaceZoneCommand(const Rect& position, uint layerIndex, const std::string& bluePrint);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class ChangeZoneCommand : public Command
+{
+private:
+    uint _layerIndex;
+    uint _zoneIndex;
+
+    Map::Layer::Zone _oldZone;
+    Map::Layer::Zone _newZone;
+
+public:
+    ChangeZoneCommand(uint layerIndex, uint zoneIndex, const Map::Layer::Zone& newZone);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+//-----------------------------------------------------------------------------
+
+class DestroyZoneCommand : public Command
+{
+private:
+    uint _layerIndex;
+    uint _zoneIndex;
+
+    Map::Layer::Zone _oldZone;
+
+public:
+    DestroyZoneCommand(uint layerIndex, uint zoneIndex);
 
     virtual void Do(MainWindow* m);
     virtual void Undo(MainWindow* m);

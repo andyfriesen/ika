@@ -46,12 +46,12 @@ bool SpriteSet::Save(const std::string& fname)
     return true;
 }
 
-void SpriteSet::SetImage(const Canvas& img, int idx)
+void SpriteSet::SetImage(const Canvas& img, uint idx)
 {
     _chr->GetFrame(idx) = img;
 }
 
-Canvas& SpriteSet::Get(int idx)
+Canvas& SpriteSet::Get(uint idx)
 {
     return _chr->GetFrame(idx);
 }

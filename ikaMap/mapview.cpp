@@ -26,10 +26,13 @@ END_EVENT_TABLE()
 MapView::MapView(MainWindow* mw, wxWindow* parent)
     : wxPanel(parent)
     , _mainWnd(mw)
+
     , _tileSetState(mw)
     , _copyPasteState(mw)
     , _obstructionState(mw)
     , _entityState(mw)
+    , _zoneEditState(mw)
+
     , _editState(&_tileSetState)
 
     , _xwin(0)
@@ -352,8 +355,8 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
         firstY = 0;
     }
 
-    if ((uint)(firstX + lenX > lay->Width()))  lenX = lay->Width()  - firstX;
-    if ((uint)(firstY + lenY > lay->Height())) lenY = lay->Height() - firstY;
+    if ((uint)(firstX + lenX) > lay->Width())  lenX = lay->Width()  - firstX;
+    if ((uint)(firstY + lenY) > lay->Height()) lenY = lay->Height() - firstY;
 
     for (int y = 0; y < lenY; y++)
     {
@@ -476,6 +479,25 @@ uint MapView::EntityAt(int x, int y, uint layer)
     return -1;
 }
 
+uint MapView::ZoneAt(int x, int y, uint layer)
+{
+    wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
+
+    std::vector<Map::Layer::Zone>& zones = _mainWnd->GetMap()->GetLayer(layer).zones;
+
+    for (uint i = 0; i < zones.size(); i++)
+    {
+        Map::Layer::Zone& zone = zones[i];
+
+        if (zone.position.left   <= x &&
+            zone.position.top    <= y &&
+            zone.position.right  >= x &&
+            zone.position.bottom >= y)
+            return i;
+    }
+    return -1;
+}
+
 SpriteSet* MapView::GetEntitySpriteSet(Map::Entity* ent) const
 {
     return _mainWnd->GetSprite(ent->spriteName);
@@ -486,41 +508,36 @@ VideoFrame* MapView::GetVideo() const
     return _video;
 }
 
-void MapView::Cock()
+void MapView::SetEditState(EditState* newState)
 {
     _editState->OnEndState();
-    _editState = &_tileSetState;
+    _editState = newState;
     _editState->OnBeginState();
 
     Render();
     ShowPage();
+}
+
+void MapView::Cock()
+{
+    SetEditState(&_tileSetState);
 }
 
 void MapView::SetCopyPasteState()
 {
-    _editState->OnEndState();
-    _editState = &_copyPasteState;
-    _editState->OnBeginState();
-
-    Render();
-    ShowPage();
+    SetEditState(&_copyPasteState);
 }
 
 void MapView::SetObstructionState()
 {
-    _editState->OnEndState();
-    _editState = &_obstructionState;
-    _editState->OnBeginState();
-
-    Render();
-    ShowPage();
+    SetEditState(&_obstructionState);
 }
 void MapView::SetEntityState()
 {
-    _editState->OnEndState();
-    _editState = &_entityState;
-    _editState->OnBeginState();
+    SetEditState(&_entityState);
+}
 
-    Render();
-    ShowPage();
+void MapView::SetZoneState()
+{
+    SetEditState(&_zoneEditState);
 }

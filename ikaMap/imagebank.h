@@ -17,7 +17,7 @@ protected:
     std::vector<Image*> bitmaps;
     std::set<int> altered;
 
-    virtual void SetImage(const Canvas& img, int idx)=0;
+    virtual void SetImage(const Canvas& img, uint idx) = 0;
 public:
     virtual ~ImageBank();
 
@@ -25,12 +25,12 @@ public:
     void SyncAll();
     void FreeBitmaps();
 
-    virtual Canvas& Get(int idx)=0;
-    void Set(const Canvas& img, int idx);
+    virtual Canvas& Get(uint idx) = 0;
+    void Set(const Canvas& img, uint idx);
 
     virtual uint Count() const = 0;
 
-    Image& GetImage(int idx);
+    Image& GetImage(uint idx);
 };
 
 #endif

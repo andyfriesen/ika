@@ -15,7 +15,7 @@ class TileSet : public ImageBank
 private:
     VSP* pVsp;
 
-    virtual void SetImage(const Canvas& img, int idx);
+    virtual void SetImage(const Canvas& img, uint idx);
 
 public:
 
@@ -26,7 +26,7 @@ public:
     bool Save(const std::string& fileName);
     void New(int width, int height);
 
-    virtual Canvas&   Get(int idx);                 // returns the pixel data for the tile
+    virtual Canvas&   Get(uint idx);                // returns the pixel data for the tile
     virtual uint   Count() const;
     int  Width() const;
     int  Height() const;

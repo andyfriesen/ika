@@ -69,15 +69,8 @@ struct Map
     {
         struct Zone
         {
-            int x, y;
-            int width, height;
+            Rect position;
             std::string label;
-            Zone()
-                : x(0)
-                , y(0)
-                , width(0)
-                , height(0)
-            {}
         };
 
         struct ParallaxInfo

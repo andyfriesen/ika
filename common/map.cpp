@@ -236,10 +236,16 @@ bool Map::Load(const std::string& filename)
                     {
                         Layer::Zone z;
                         z.label = Local::getStringNode(*iter, "label");
-                        z.x = Local::getIntNode(*iter, "x");
-                        z.y = Local::getIntNode(*iter, "y");
-                        z.width = Local::getIntNode(*iter, "width");
-                        z.height = Local::getIntNode(*iter, "height");
+                        z.position = Rect(
+                            Local::getIntNode(*iter, "x"),
+                            Local::getIntNode(*iter, "y"),
+                            Local::getIntNode(*iter, "width"),
+                            Local::getIntNode(*iter, "height"));
+
+                        // rect constructor is x1y1 x2y2.  Not xy width height.  Deal with it.
+                        z.position.right += z.position.left;
+                        z.position.bottom += z.position.top;
+
                         lay->zones.push_back(z);
                     }
                 }
@@ -426,10 +432,10 @@ void Map::Save(const std::string& filename)
                 {
                     zoneNode->addChild(newNode("zone")
                         ->addChild(newNode("label")->addChild(iter->label))
-                        ->addChild(newNode("x")->addChild(iter->x))
-                        ->addChild(newNode("y")->addChild(iter->y))
-                        ->addChild(newNode("width")->addChild(iter->width))
-                        ->addChild(newNode("height")->addChild(iter->height))
+                        ->addChild(newNode("x")->addChild(iter->position.left))
+                        ->addChild(newNode("y")->addChild(iter->position.top))
+                        ->addChild(newNode("width")->addChild(iter->position.Width()))
+                        ->addChild(newNode("height")->addChild(iter->position.Height()))
                         );
                 }
             }

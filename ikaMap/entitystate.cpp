@@ -47,6 +47,11 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
             HandleCommand(new CreateEntityCommand(GetCurLayerIndex(), x, y));
         }
     } // create a new entity etc
+    else    // deselect
+    {
+        entIndex = -1;
+        GetMapView()->Refresh();
+    }
 }
 
 void EntityState::OnMouseUp(wxMouseEvent& event)
@@ -70,8 +75,6 @@ void EntityState::OnRenderCurrentLayer()
     if (!layer)
         return;
 
-    // This is more work than I think it should be, largely due to the whole stupid entity "blueprint" bullshit.
-    // I should nuke that shit and be done with it.
     for (std::vector<Map::Entity>::iterator iter = layer->entities.begin();
         iter != layer->entities.end();
         iter++)
@@ -113,4 +116,8 @@ void EntityState::OnRenderCurrentLayer()
                 height,
                 RGBA(255, 255, 255, 128));
     }
+}
+void EntityState::OnSwitchLayers(uint oldLayer, uint newLayer)
+{
+    _entIndex = -1;
 }

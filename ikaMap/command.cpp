@@ -547,3 +547,110 @@ void ResizeTileSetCommand::Undo(MainWindow* m)
 
     _savedTiles.clear();    // free up all that memory.  We don't need it anymore anyway.
 }
+
+//-----------------------------------------------------------------------------
+
+DefineZoneBluePrintCommand::DefineZoneBluePrintCommand(Map::Zone& newZone, Map::Zone& oldZone)
+    : _newZone(newZone)
+    , _oldZone(oldZone)
+    , _mode(update)
+{}
+
+DefineZoneBluePrintCommand::DefineZoneBluePrintCommand(int, Map::Zone& oldZone)
+    : _oldZone(oldZone)
+    , _mode(destroy)
+{}
+
+DefineZoneBluePrintCommand::DefineZoneBluePrintCommand(Map::Zone& newZone, int)
+    : _newZone(newZone)
+    , _mode(create)
+{}
+
+void DefineZoneBluePrintCommand::Do(MainWindow* m)
+{
+    switch (_mode)
+    {
+    case create:    // fallthrough
+    case update:    m->GetMap()->zones[_newZone.label] = _newZone;    break;  // already have the old zone data
+    case destroy:   m->GetMap()->zones.erase(_oldZone.label);   break;        
+    }
+}
+
+void DefineZoneBluePrintCommand::Undo(MainWindow* m)
+{
+    switch (_mode)
+    {
+    case create:    m->GetMap()->zones.erase(_newZone.label);       break;
+    case update:    // fallthrough
+    case destroy:   m->GetMap()->zones[_oldZone.label] = _oldZone;  break;
+    }
+}
+
+//-----------------------------------------------------------------------------
+
+PlaceZoneCommand::PlaceZoneCommand(const Rect& position, uint layerIndex, const std::string& bluePrint)
+    : _position(position)
+    , _layerIndex(layerIndex)
+    , _bluePrint(bluePrint)
+{}
+
+void PlaceZoneCommand::Do(MainWindow* m)
+{
+    Map::Layer::Zone z;
+    z.position = _position;
+
+    m->GetMap()->GetLayer(_layerIndex).zones.push_back(z);
+    m->GetMapView()->Refresh();
+}
+
+void PlaceZoneCommand::Undo(MainWindow* m)
+{
+    m->GetMap()->GetLayer(_layerIndex).zones.pop_back();
+    m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
+ChangeZoneCommand::ChangeZoneCommand(uint layerIndex, uint zoneIndex, const Map::Layer::Zone& newZone)
+    : _layerIndex(layerIndex)
+    , _zoneIndex(zoneIndex)
+    , _newZone(newZone)
+{}
+
+void ChangeZoneCommand::Do(MainWindow* m)
+{
+    Map::Layer& layer = m->GetMap()->GetLayer(_layerIndex);
+    _oldZone = layer.zones[_zoneIndex];
+    layer.zones[_zoneIndex] = _newZone;
+    m->GetMapView()->Refresh();
+}
+
+void ChangeZoneCommand::Undo(MainWindow* m)
+{
+    m->GetMap()->GetLayer(_layerIndex).zones[_zoneIndex] = _oldZone;
+    m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
+DestroyZoneCommand::DestroyZoneCommand(uint layerIndex, uint zoneIndex)
+    : _layerIndex(layerIndex)
+    , _zoneIndex(zoneIndex)
+{}
+
+void DestroyZoneCommand::Do(MainWindow* m)
+{
+    Map::Layer& layer = m->GetMap()->GetLayer(_layerIndex);
+
+    _oldZone = layer.zones[_zoneIndex];
+    layer.zones.erase(layer.zones.begin() + _zoneIndex);
+    m->GetMapView()->Refresh();
+}
+
+void DestroyZoneCommand::Undo(MainWindow* m)
+{
+    Map::Layer& layer = m->GetMap()->GetLayer(_layerIndex);
+
+    layer.zones.insert(layer.zones.begin() + _zoneIndex, _oldZone);
+    m->GetMapView()->Refresh();
+}
