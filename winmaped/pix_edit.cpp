@@ -36,8 +36,12 @@ void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src)
     
     MakeSwatchImage();
 
+    HBITMAP hBmp=LoadBitmap(hInst,MAKEINTRESOURCE(IDB_BACKGROUND));
+    hBrush=CreatePatternBrush(hBmp);
+//    DeleteObject(hBmp);
+
     StartDlg(hInst,hWndParent,"PixEdDlg");
-    
+
     // Cleanup code
     delete iCurrent;
     delete iSwatch;
@@ -135,6 +139,24 @@ void CEdit::DrawSwatch()
     SetDlgItemText(hWnd,IDC_CURRENTCOLOUR,sTemp);
 }
 
+void CEdit::DrawBlownUpImage()
+{
+    SelectObject(iBackbuffer->GetDC(),hBrush);
+
+    Rectangle(iBackbuffer->GetDC(),0,0,rBigimage.right-rBigimage.left,rBigimage.bottom-rBigimage.top);
+
+/*    StretchBlt(iBackbuffer->GetDC(),
+        0,0,
+        rBigimage.right-rBigimage.left,
+        rBigimage.bottom-rBigimage.top,
+        iCurrent->GetDC(),
+        0,
+        0,
+        iCurrent->Width(),
+        iCurrent->Height(),
+        SRCCOPY);*/
+}
+
 // ugh
 void CEdit::Redraw()
 {
@@ -143,46 +165,9 @@ void CEdit::Redraw()
     DrawSwatch();
     
     HDC hDC=GetDC(hWnd);
-    
-#ifdef ALPHA_BLIT
-    BLENDFUNCTION blendfunc =
-    {
-        AC_SRC_OVER,
-        0,
-        255,
-        1
-    };
 
-
-    AlphaBlend(iBackbuffer->GetDC(),
-/*        rBigimage.left,
-        rBigimage.top,*/
-        0,0,
-        rBigimage.right-rBigimage.left,
-        rBigimage.bottom-rBigimage.top,
-        iCurrent->GetDC(),
-        0,
-        0,
-        iCurrent->Width(),
-        iCurrent->Height(),
-        blendfunc);
-
-#else
-    // nasty
-    StretchBlt(iBackbuffer->GetDC(),
-/*        rBigimage.left,
-        rBigimage.top,*/
-        0,0,
-        rBigimage.right-rBigimage.left,
-        rBigimage.bottom-rBigimage.top,
-        iCurrent->GetDC(),
-        0,
-        0,
-        iCurrent->Width(),
-        iCurrent->Height(),
-        SRCCOPY);
-#endif
-
+    DrawBlownUpImage();
+ 
     BitBlt(hDC,
         rBigimage.left,
         rBigimage.top,

@@ -719,6 +719,7 @@ END
 //
 
 IDB_TOOLBUTTONS         BITMAP  DISCARDABLE     "bitmap1.bmp"
+IDB_BACKGROUND          BITMAP  DISCARDABLE     "bitmap2.bmp"
 
 #ifndef _MAC
 /////////////////////////////////////////////////////////////////////////////

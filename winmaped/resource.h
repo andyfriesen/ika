@@ -15,6 +15,7 @@
 #define IDI_ICON1                       109
 #define IDR_TILESELMENU                 118
 #define IDR_CHREDMENU                   121
+#define IDB_BACKGROUND                  125
 #define ID_TILEANIMED                   1005
 #define IDC_SCROLLBAR1                  1006
 #define IDC_LUMINABAR                   1006
@@ -137,7 +138,6 @@
 #define ID_SHOWZONE                     40040
 #define ID_SHOWENT                      40041
 #define ID_NEXTTILE                     40042
-#define ID_EDIT_OPTIONS                 40119
 #define ID_PREVTILE                     40043
 #define ID_REDRAWMAP                    40044
 #define ID_EDMUSIC                      40045
@@ -235,6 +235,7 @@
 #define ID_TPASTETILE                   40116
 #define ID_IPASTETILE                   40117
 #define ID_EDITTILE                     40118
+#define ID_EDIT_OPTIONS                 40119
 #define ID_APPLY                        41000
 #define ID_PREV                         41001
 #define ID_NEXT                         41002
@@ -245,7 +246,7 @@
 #ifdef APSTUDIO_INVOKED
 #ifndef APSTUDIO_READONLY_SYMBOLS
 #define _APS_NO_MFC                     1
-#define _APS_NEXT_RESOURCE_VALUE        125
+#define _APS_NEXT_RESOURCE_VALUE        126
 #define _APS_NEXT_COMMAND_VALUE         40071
 #define _APS_NEXT_CONTROL_VALUE         1091
 #define _APS_NEXT_SYMED_VALUE           101

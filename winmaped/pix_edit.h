@@ -25,6 +25,8 @@ protected:
     std::list<CPixelMatrix> RedoList;
     int         nMaxUndos;
     bool        bAltered;
+
+    HBRUSH      hBrush;
     
     CDIB*       iCurrent;               // the image of the graphic we're editing
     CDIB*       iSwatch;                // The colour field
@@ -52,6 +54,7 @@ protected:
     void Redo();
     
     void DrawSwatch();
+    void DrawBlownUpImage();
     void Redraw();
     
     RGBA CalcColour(int nLumina,RGBA chroma);

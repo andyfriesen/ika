@@ -73,7 +73,7 @@ struct RGBA
         {
             return (a<<24) | (r<<16) | (g<<8) | b;
         }
-//	RGBA(const BGRA& c);	
+//	RGBA(const BGRA& c);
 };
 
 struct BGRA

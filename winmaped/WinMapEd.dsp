@@ -250,6 +250,10 @@ SOURCE=.\bitmap1.bmp
 # End Source File
 # Begin Source File
 
+SOURCE=.\bitmap2.bmp
+# End Source File
+# Begin Source File
+
 SOURCE=.\resource.h
 # End Source File
 # Begin Source File
