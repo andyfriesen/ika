@@ -77,7 +77,7 @@ struct VSP {
     
 private:
     VSP(VSP& v);
-    operator =(VSP& rhs);
+    VSP& operator =(VSP& rhs);
 
     void CreateTilesFromBuffer(u8* data, u8* pal, uint numtiles, int tilex, int tiley);
     void CreateTilesFromBuffer(u16* data, uint numtiles, int tilex, int tiley);

@@ -20,7 +20,7 @@
                 PostBuildEvent = ""
                 RootNamespace = "rho"
                 RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = "rho.Controls.Tests.SizerTest"
+                StartupObject = "rho.MainForm"
             >
                 <Config
                     Name = "Debug"
@@ -120,6 +120,11 @@
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "FilterBuilder.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -355,6 +360,11 @@
                 />
                 <File
                     RelPath = "SpriteEditor\ReplaceFrameCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\ResizeSpriteCommand.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

@@ -12,10 +12,12 @@ common = env.StaticLibrary('common',
         fontfile.cpp
         log.cpp
         map.cpp
+        oldbase64.cpp
         utility.cpp
         rle.cpp
         vergemap.cpp
         vergepal.cpp
+        version.cpp
         vsp.cpp
         ''')
     )

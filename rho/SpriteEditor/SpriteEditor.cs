@@ -174,7 +174,15 @@ namespace rho.SpriteEditor {
                 DialogResult result = dlg.ShowDialog();
 
                 if (result == DialogResult.OK) {
-                    MessageBox.Show(this, "Not yet implemented!!");
+                    Bitmap[] frames = dlg.ImportFrames();
+                    
+                    // Build monster command thing
+                    GroupCommand cmd = new GroupCommand();
+                    for (int i = 0; i < frames.Length; i++) {
+                        cmd.AddCommand(new InsertFrameCommand(document.Frames.Count + i, frames[i]));
+                    }
+
+                    document.SendCommand(cmd);
                 }
             }
         }

@@ -23,13 +23,16 @@ if sys.platform == 'win32':
     # Win32 specific configuration
     include('#/3rdparty/include')
     libpath('#/3rdparty/lib')
-    libs('mingw32', 'opengl32', 'SDLmain')
+    libs('opengl32', 'SDLmain')
 
     if 'msvc' in env['TOOLS']:
         env.Append(CXXFLAGS = '/EHsc /MD')
         env.Append(LINKFLAGS = ' /SUBSYSTEM:CONSOLE')
+        libs('zlib', 'python23')
     elif 'mingw' in env['TOOLS']:
+        libs('mingw32')
         env.Append(LINKFLAGS = ' -mwindows')
+        libs('z', 'python2.3')
 else:
     # *nix specific configuration
     libpath('/usr/X11R6/lib')

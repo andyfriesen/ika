@@ -52,6 +52,7 @@ namespace rho.SpriteEditor {
                 return sprite.Metadata;
             }
         }
+
         ikaSprite sprite;
     }
 }

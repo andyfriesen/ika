@@ -22,6 +22,10 @@ namespace rho.Documents {
             }
         }
 
+        public void AddCommand(Command cmd) {
+            commands.Add(cmd);
+        }
+
         readonly ArrayList commands = new ArrayList();
     }
 }

@@ -243,3 +243,9 @@ void KeyControl::KeyUp() {
 float KeyControl::GetPosition() {
     return _pressed ? 1.0f : 0.0f;
 }
+
+bool KeyControl::GetPressed() {
+    bool pressed = _pressed;
+    _pressed = false;
+    return pressed;
+}

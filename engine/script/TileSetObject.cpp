@@ -5,6 +5,7 @@
 
 #include "main.h"
 
+#include <stdexcept>
 #include <cassert>
 
 namespace Script {

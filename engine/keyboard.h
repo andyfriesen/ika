@@ -41,6 +41,7 @@ struct KeyControl : public InputControl {
     void KeyUp();
 
 protected:
+    virtual bool GetPressed();
     virtual float GetPosition();
 
 private:
