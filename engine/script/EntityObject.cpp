@@ -294,7 +294,23 @@ namespace Script
             int x2 = x1 + e1->sprite->nHotw;
             int y2 = y1 + e1->sprite->nHoth;
 
-            int count = 0;
+            for (std::map<::Entity*, EntityObject*>::iterator iter = instances.begin(); iter != instances.end(); iter++)
+            {
+                EntityObject* entObj = iter->second;
+                const ::Entity* e2 = iter->first;
+                
+                if ((e1 != e2)                        &&
+                    (x1 <= e2->x + e2->sprite->nHotw) &&
+                    (y1 <= e2->y + e2->sprite->nHoth) &&
+                    (x2 >= e2->x)                     &&
+                    (y2 >= e2->y))
+                {
+                    Py_INCREF(entObj);
+                    return (PyObject*)entObj;
+                }
+            }
+
+            /*int count = 0;
             PyObject* key = 0;
             PyObject* value = 0;
             while (PyDict_Next(entityDict, &count, &key, &value))
@@ -309,7 +325,7 @@ namespace Script
 
                 Py_INCREF(value);
                 return value;
-            }
+            }*/
 
             Py_INCREF(Py_None);
             return Py_None;
