@@ -23,6 +23,7 @@ class CScriptEngine
 	static PyObject*	pScreenobject;
 	static PyObject*	pEntitydict;
 	static PyObject*	pRenderdest;
+        static PyObject*        pPlayerent;
 	static PyObject*	pCameratarget;
 	static PyObject*	pErrorhandler;
 
@@ -43,7 +44,7 @@ public:
 	bool ExecFunction(void* pFunc);
 
 	void ClearEntityList();
-	void AddEntityToList(int nEnt);
+	void AddEntityToList(class CEntity* e);
 
 	void CallEvent(const char* sName);
 
@@ -62,8 +63,8 @@ private:
 	static PyTypeObject fonttype;
 
 	// Singleton interface thingies
-	static PyMethodDef	map_methods[];
-	static PyTypeObject	maptype;
+	static PyMethodDef  map_methods[];
+	static PyTypeObject maptype;
 	static PyMethodDef  input_methods[];
 	static PyTypeObject inputtype;
 	static PyMethodDef  error_methods[];
@@ -79,7 +80,7 @@ public:														// too bad
 
 	// Entity objects
 	void Init_Entity();
-	static PyObject* Entity_New(PyObject* self,PyObject* args);
+	static PyObject* Entity_New(class CEntity* e);                                      // never called by Python, only in C++
 	static void Entity_Destroy(PyObject* self);
 	static PyObject* Entity_GetAttribute(PyObject* self,char* name);
 	static int Entity_SetAttribute(PyObject* self,char* name,PyObject* value);

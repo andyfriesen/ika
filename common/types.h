@@ -28,21 +28,25 @@ struct Rect
 
 enum Direction											// directions an entity can be facing
 {
-    face_up,face_down,face_left,face_right,
-        face_upleft,face_upright,face_downleft,face_downright,
-        face_nothing,										// a special case, entity::getcommand returns this if the entity in question isn't walking
+    face_up,
+    face_down,
+    face_left,
+    face_right,
+    face_upleft,
+    face_upright,
+    face_downleft,
+    face_downright,
+    face_nothing,										// a special case, entity::getcommand returns this if the entity in question isn't walking
 };
 
 enum MoveCode											// entity movecodes
 {
     mc_nothing=0,										// entity just stands there
-        mc_wander,											// entity wanders around like an idiot
-        mc_wanderrect,										// ditto, but the entity is restricted to a rectangular region
-        mc_wanderzone,										// ditto again, but the entity is restricted to a particular zone
-        mc_script,											// entity follows its script
-        mc_chase,											// the entity is following another entity
-        
-        mc_make32bits=0xFFFFFFFF							// forces this enum to be 32 bits wide
+    mc_wander,											// entity wanders around like an idiot
+    mc_wanderrect,										// ditto, but the entity is restricted to a rectangular region
+    mc_wanderzone,										// ditto again, but the entity is restricted to a particular zone
+    mc_script,											// entity follows its script
+    mc_chase,											// the entity is following another entity
 };
 
 #pragma pack (push,1)

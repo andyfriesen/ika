@@ -1,112 +1,66 @@
 #include "entity.h"
+#include "misc.h"
+#include "sprite.h"
+#include "log.h"
+#include "main.h"
 
-// TODO: make sure entities never have a negative speed
+CEntity::CEntity(CEngine* njin) :
+    engine              (*njin),
+    animscriptofs       (0),
+    animscriptct        (0),
+    movescriptofs       (0),
+    movescriptct        (0),
+    x                   (0),
+    y                   (0),
+    nSpeed              (entspeed_normal),
+    nSpeedcount         (0),
+    pSprite             (0),
+    direction           (face_down),
+    bMoving             (false),
+    movecode            (mc_nothing),
+    bVisible            (true),
+    
+    nCurframe           (0),
+    nSpecframe          (0),
+    
+    nWandersteps        (0),
+    nWanderdelay        (0),
+    bAdjacentactivate   (false),
+    bIsobs              (true),
+    bMapobs             (true),
+    bEntobs             (true)
+{}
 
-CEntity::CEntity()
-{
-    animscriptidx=0;
-    animscriptofs=0;
-    animscriptct=0;
-    movescriptofs=0;
-    movescriptct=0;
-    thedirectionImgoinginnow=face_nothing;
-    x=0;
-    y=0;
-    nSpeed=entspeed_normal;
-    nSpeedcount=0;
-    pSprite=0;
-    facing=face_down;
-    bMoving=false;
-    movecode=mc_nothing;
-    bVisible=true;
-    nFramect=0;
-    nCurframe=0;
-    nSpecframe=0;
-    nWandersteps=0;
-    bAdjacentactivate=false;
-    bIsobs=true;
-    bMapobs=true;
-    bEntobs=true;
-}
+CEntity::CEntity(CEngine* njin,const SMapEntity& e) :
+    engine(*njin),
+    animscriptofs       (0),
+    animscriptct        (0),
+    movescriptofs       (0),
+    movescriptct        (0),
+    x                   (e.x),
+    y                   (e.y),
+    nSpeed              (e.nSpeed),
+    nSpeedcount         (0),
+    pSprite             (0),
+    direction           ((Direction)e.direction),
+    bMoving             (false),
+    movecode            (e.state),
+    bVisible            (true),
+    
+    nCurframe           (0),
+    nSpecframe          (0),
+    
+    nWandersteps        (e.nWandersteps),
+    nWanderdelay        (e.nWanderdelay),
+    wanderrect          (e.wanderrect),
+    bAdjacentactivate   (false),
+    bIsobs              (e.bIsobs),
+    bMapobs             (e.bMapobs),
+    bEntobs             (e.bEntobs),
 
-CEntity::CEntity(const Sv2entity& e)
-{
-    x=e.x;
-    y=e.y;
-    nCurframe=0;
-    //pActscript=e.actscript;
-    bAdjacentactivate=e.actm?true:false;
-    
-    nWandersteps=e.step;
-    nWanderdelay=e.delay;
-    nSpeed=100;
-    nSpeedcount=0;
-    facing=face_down;
-    bVisible=true;
-    
-    movecode=(MoveCode)e.movecode;	
-    
-    sName=string_k(e.desc);
-}
-
-CEntity::CEntity(const SMapEntity& e)
-{
-    animscriptidx=0;
-    animscriptofs=0;
-    animscriptct=0;
-    movescriptofs=0;
-    movescriptct=0;
-    thedirectionImgoinginnow=face_nothing;
-    nSpeedcount=0;
-    pSprite=0;
-    facing=face_down;
-    bMoving=false;
-    bVisible=true;
-    nFramect=0;
-    nCurframe=0;
-    nSpecframe=0;
-    nWandersteps=0;
-    bAdjacentactivate=false;
-    bIsobs=e.bIsobs;
-    bMapobs=e.bMapobs;
-    bEntobs=e.bEntobs;
-    
-    x=e.x;
-    y=e.y;
-    sName=e.sName;
-    facing=(Direction)e.direction;
-    nSpeed=e.nSpeed;
-    movecode=mc_nothing;//e.state;
-    sActscript=e.sActscript;
-    movecode=e.state;
-    
-    nWandersteps=e.nWandersteps;
-    nWanderdelay=e.nWanderdelay;
-    
-    wanderrect.left=e.nWanderrect[0];
-    wanderrect.top=e.nWanderrect[1];
-    wanderrect.right=e.nWanderrect[2];
-    wanderrect.bottom=e.nWanderrect[3];
-}
-
-void CEntity::Init()
-{
-    x=y=0;
-    movecode=mc_nothing;
-    nSpeed=entspeed_normal;
-    nCurframe=0;
-    bVisible=true;
-    animscriptct=1;
-    movescriptct=1;
-    nSpeed=100;
-    nSpeedcount=0;
-    facing=face_down;
-}
-
-void CEntity::Free()
-{
-    bVisible=false;
-}
+    sName               (e.sName),
+    sActscript          (e.sActscript)
+{}
 
 static int get_int(string_k s,int& offset)
 // Grabs the next howevermany numerical characters from s, starting at offset.  On exit, offset is equal 
@@ -159,6 +113,87 @@ void CEntity::UpdateAnimation()
         animscriptct--;
 }
 
+void CEntity::SetAnimScript(const string_k& newscript)
+{
+    curanimscript=newscript;
+    animscriptofs=0;
+    animscriptct=0;
+    UpdateAnimation();									// and immediately update the frame
+}
+
+void CEntity::SetMoveScript(const string_k& newscript)
+{
+    curmovescript=newscript;
+    movescriptofs=0;
+    movescriptct=0;
+}
+
+void CEntity::SetFace(Direction d)
+{
+    if (d==direction)
+        return;
+}
+
+void CEntity::Stop()
+{
+    if (!bMoving)
+        return;
+
+    bMoving=false;
+    movecode=mc_nothing;
+    SetAnimScript(pSprite->Script((int)direction+8));
+}
+
+void CEntity::Move(Direction d)
+{
+    int newx=x,newy=y;
+
+    switch (d)
+    {
+    case face_up:           newy--; break;
+    case face_down:         newy++; break;
+    case face_left:         newx--; break;
+    case face_right:        newx++; break;
+       
+    case face_upleft:       newy--; newx--; break;
+    case face_upright:      newy--; newx++; break;
+    case face_downleft:     newy++; newx--; break;
+    case face_downright:    newy++; newx++; break;
+    }
+
+    if (bMapobs && engine.DetectMapCollision(newx,newy,pSprite->nHotw,pSprite->nHoth))
+    {   Stop(); return; }
+
+    if (bEntobs && engine.DetectEntityCollision(*this))
+    {   Stop(); return; }
+
+    if (direction!=d)
+    {
+        direction=d;
+        SetAnimScript(pSprite->Script((int)direction));
+    }
+}
+
+Direction CEntity::Wander()
+{
+    if (movescriptct<1)
+    {
+        if (!bMoving)
+        {            
+            movescriptct=nWandersteps;
+            return (Direction)Random(0,8);
+        }
+        else
+        {
+            movescriptct=nWanderdelay;
+            return face_nothing;
+        }
+    }
+    else
+        movescriptct--;
+    return direction;
+}
+
 Direction CEntity::GetMoveScriptCommand()
 {
     // TODO: check for diagonals here.
@@ -172,10 +207,8 @@ Direction CEntity::GetMoveScriptCommand()
             
             if (movescriptofs>curmovescript.length())			// if we've reached the end of the move script,
             {
-                movescriptofs=0;
-                curmovescript="";								// nuke it, the entity's task has been finished
-                thedirectionImgoinginnow=face_nothing;
-                return thedirectionImgoinginnow;
+                Stop();
+                return direction;
             }
             
         } while (c==' ');
@@ -184,101 +217,62 @@ Direction CEntity::GetMoveScriptCommand()
         
         switch(c)
         {
-        case 'U':
-            thedirectionImgoinginnow=face_up;
-            movescriptct=get_int(curmovescript,movescriptofs);
-            break;
-        case 'D':
-            thedirectionImgoinginnow=face_down;
-            movescriptct=get_int(curmovescript,movescriptofs);
-            break;
-        case 'L':
-            thedirectionImgoinginnow=face_left;
-            movescriptct=get_int(curmovescript,movescriptofs);
-            break;
-        case 'R':
-            thedirectionImgoinginnow=face_right;
-            movescriptct=get_int(curmovescript,movescriptofs);
-            break;
-        case 'F':
-            thedirectionImgoinginnow=(Direction)get_int(curmovescript,movescriptofs);
-            break;
+        case 'U': bMoving=true;  direction=face_up;                 movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'D': bMoving=true;  direction=face_down;               movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'L': bMoving=true;  direction=face_left;               movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'R': bMoving=true;  direction=face_right;              movescriptct=get_int(curmovescript,movescriptofs);  break;
+        case 'F': bMoving=false; direction=(Direction)get_int(curmovescript,movescriptofs);                             break;
+        case 'Z': bMoving=false; nSpecframe=get_int(curmovescript,movescriptofs);                                       break;
+        case 'W': bMoving=false; movescriptct=get_int(curmovescript,movescriptofs);                                     break;
+    
         case 'X':
             {
                 int destx=get_int(curmovescript,movescriptofs);
-                if (x>destx)
-                {
-                    thedirectionImgoinginnow=face_left;
-                    movescriptct=x-destx;
-                }
-                else if (x<destx)
-                {
-                    thedirectionImgoinginnow=face_right;
-                    movescriptct=destx-x;
-                }
-                else
-                {
-                    thedirectionImgoinginnow=face_nothing;
-                    movescriptct=1;
-                }
+                if      (x>destx)  {    bMoving=true;               direction=face_left;                        movescriptct=x-destx;   }
+                else if (x<destx)  {    bMoving=true;               direction=face_right;                       movescriptct=destx-x;   }
+                else               {    bMoving=false;                                                          movescriptct=1;         }
                 break;
             }
         case 'Y':
             {
                 int desty=get_int(curmovescript,movescriptofs);
-                if (y>desty)
-                {
-                    thedirectionImgoinginnow=face_down;
-                    movescriptct=y-desty;
-                }
-                else if (y<desty)
-                {
-                    thedirectionImgoinginnow=face_up;
-                    movescriptct=desty-y;
-                }
-                else
-                {
-                    thedirectionImgoinginnow=face_nothing;
-                    movescriptct=1;
-                }
+                if      (y>desty)  {    bMoving=true;               direction=face_down;                        movescriptct=y-desty;   }
+                else if (y<desty)  {    bMoving=true;               direction=face_up;                          movescriptct=desty-y;   }
+                else               {    bMoving=false;                                                          movescriptct=1;         } 
                 break;
             }
-        case 'Z':
-            nSpecframe=get_int(curmovescript,movescriptofs);
-            break;
-            
-        case 'W':
-            movescriptct=get_int(curmovescript,movescriptofs);
-            thedirectionImgoinginnow=face_nothing;
-            break;
             
         case 'B':
             movescriptofs=0;										// start over
             movescriptct=0;
-            thedirectionImgoinginnow=face_nothing;					// the entity will get a new command next tick, so make it stand still for this one
+            bMoving=false;					// the entity will get a new command next tick, so make it stand still for this one
             break;
         }
     }
     else
         movescriptct--;
-    
-    return thedirectionImgoinginnow;
+
+    return bMoving?direction:face_nothing;
 }
 
-void CEntity::SetAnimScript(const string_k& newscript,int idx)
+void CEntity::Update()
 {
-    //	if (idx==animscriptidx && animscriptidx!=-1)		// by remembering the index, we avoid redundantly setting the strand, without having to do string comparisons. @_@ --tSB
-    //		return;
-    curanimscript=newscript;
-    animscriptidx=idx;
-    animscriptofs=0;
-    animscriptct=0;
-    UpdateAnimation();									// and immediately update the frame
-}
+    Direction newdir;
 
-void CEntity::SetMoveScript(const string_k& newscript)
-{
-    curmovescript=newscript;
-    movescriptofs=0;
-    movescriptct=0;
+    switch (movecode)
+    {
+    case mc_nothing:    newdir=face_nothing;            break;
+    case mc_wander:
+    case mc_wanderzone:
+    case mc_wanderrect: newdir=Wander();                break;
+    case mc_script:     newdir=GetMoveScriptCommand();  break;
+    default:
+        log("CEntity::Update: Internal error -- bogus movecode");
+        return;     // O_O;
+    }
+
+    if (newdir==face_nothing)
+    {   Stop();     return; }
+
+    Move(newdir);
 }

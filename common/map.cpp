@@ -12,10 +12,10 @@ Copyright me and stuff, so ph33r.
 
 MapClip::MapClip()
 {
-    nWidth=0;		nHeight=0;
+    nWidth=0;           nHeight=0;
     nLayers=0;
-    pObstruct=NULL;	bObstruct=false;
-    pZone=NULL;		bZone=false;
+    pObstruct=NULL;     bObstruct=false;
+    pZone=NULL;         bZone=false;
 }
 
 MapClip::~MapClip()
@@ -43,11 +43,11 @@ void MapClip::Free()
     bMegaclip=false;
 }
 
-void Map::Copy(MapClip &mc,RECT r,int layer)
+void Map::Copy(MapClip &mc,Rect r,int layer)
 // copies a single map layer to the clip
 {
-    int xl,yl;	// x,y length
-    int xs,ys;	// x,y start
+    int xl,yl;    // x,y length
+    int xs,ys;    // x,y start
     
     xl=r.right-r.left;
     yl=r.bottom-r.top;
@@ -58,29 +58,29 @@ void Map::Copy(MapClip &mc,RECT r,int layer)
     if (xs+xl>=nWidth) xl=nWidth-xs;
     if (ys+yl>=nHeight) yl=nHeight-ys;
     
-    if (xs<0 || ys<0) return;	// uh.... o_O
-    if (xl<1 || yl<1) return;	// caca
+    if (xs<0 || ys<0) return;    // uh.... o_O
+    if (xl<1 || yl<1) return;    // caca
     
     mc.Free();
     
     mc.bMegaclip=false;
     mc.pData.resize(1);
     mc.bUsed.resize(1);
-    mc.bUsed[0]=true;	// dump it in layer 0 of the clip	
+    mc.bUsed[0]=true;    // dump it in layer 0 of the clip    
     mc.pData[0]=new u32[yl*xl];
     mc.bUsed[0]=true;
     mc.nWidth=xl;  mc.nHeight=yl;
     
     for (int ay=0; ay<yl; ay++)
         for (int ax=0; ax<xl; ax++)
-            mc.pData[0][ay*xl+ax]=pData[layer][(ay+r.top)*nWidth+ax+r.left];	// buah... I'm not concerned with speed.  Not here.
+            mc.pData[0][ay*xl+ax]=pData[layer][(ay+r.top)*nWidth+ax+r.left];    // buah... I'm not concerned with speed.  Not here.
 }
 
-void Map::Copy(MapClip &mc,RECT r)
+void Map::Copy(MapClip &mc,Rect r)
 // mass copier.  Copies all layers at once.
 {
-    int xl,yl;	// x/y length
-    int xs,ys;	// x/y start
+    int xl,yl;    // x/y length
+    int xs,ys;    // x/y start
     
     xs=r.left;
     ys=r.top;
@@ -97,21 +97,21 @@ void Map::Copy(MapClip &mc,RECT r)
     mc.Free();
     
     mc.bMegaclip=true;
-    mc.nWidth=xl;	mc.nHeight=yl;
+    mc.nWidth=xl;    mc.nHeight=yl;
     mc.pData.resize(NumLayers());
     mc.bUsed.resize(NumLayers());
     
     for (int curlayer=0; curlayer<nLayers; curlayer++)
     {
-        //		if (layertoggle[curlayer])
-        //		{
+        //        if (layertoggle[curlayer])
+        //        {
         mc.bUsed[curlayer]=true;
         mc.pData[curlayer]=new u32[yl*xl];
         
         for (int ay=0; ay<yl; ay++)
             for (int ax=0; ax<xl; ax++)
-                mc.pData[curlayer][ay*xl+ax]=pData[curlayer][(ay+r.top)*nWidth+ax+r.left];	// buah... I'm not concerned with speed.  Not here.
-            //		}
+                mc.pData[curlayer][ay*xl+ax]=pData[curlayer][(ay+r.top)*nWidth+ax+r.left];    // buah... I'm not concerned with speed.  Not here.
+            //        }
     }
 }
 
@@ -138,15 +138,15 @@ void Map::Paste(MapClip &mc,int xs,int ys,int sourcelayer,int destlayer,bool tra
 
 void Map::Paste(MapClip &mc,int x,int y,int destlayer)
 {
-    if (!mc.bMegaclip)	// only one layer here?
+    if (!mc.bMegaclip)    // only one layer here?
     {
-        Paste(mc,x,y,0,destlayer,false);		// then paste it on the specified dest layer
+        Paste(mc,x,y,0,destlayer,false);        // then paste it on the specified dest layer
         return;
     }
     
-    for (int i=0; i<mc.pData.size(); i++)	// else
+    for (int i=0; i<mc.pData.size(); i++)    // else
         if (mc.bUsed[i])
-            Paste(mc,x,y,i,i,true);		// copy whichever layer to wherever
+            Paste(mc,x,y,i,i,true);        // copy whichever layer to wherever
 }
 
 // --------------------------======================================-----------------------------
@@ -156,13 +156,13 @@ static const char sNewmapsig[] = "MAPù6";
 
 // heh, con/destructors
 Map::Map()
-    : nEnts(0), pObstruct(0), pZone(0), nLayers(0), nWidth(0), nHeight(0)
+    : pObstruct(0), pZone(0), nLayers(0), nWidth(0), nHeight(0)
 {
     New();
 }
 
 Map::Map(const char* fname)
-    : nEnts(0), pObstruct(0), pZone(0), nLayers(0), nWidth(0), nHeight(0)
+    : pObstruct(0), pZone(0), nLayers(0), nWidth(0), nHeight(0)
 {
     Load(fname);
 }
@@ -176,12 +176,12 @@ Map::~Map()
 
 int Map::CountMoveScripts()
 {
-/*	int i;
+/*    int i;
 
   i=99;
   while (i)
   {
-		if (strlen(movescript[i].t)) break;
+        if (strlen(movescript[i].t)) break;
                 i--;
                 }
     return i+1;*/
@@ -190,12 +190,12 @@ int Map::CountMoveScripts()
 
 int Map::CountCHRs()
 {
-/*	int i;
+/*    int i;
 
   i=99;
   while (i)
   {
-		if (strlen(chrlist[i].t)) break;
+        if (strlen(chrlist[i].t)) break;
                 i--;
                 }
     return i+1;*/
@@ -205,12 +205,12 @@ int Map::CountCHRs()
 int Map::CountUsedZones()
 // basicly, it starts at the top, and stops as soon as it finds an unempty zone entry.
 {
-/*	int i;
+/*    int i;
 
   i=255;
   while (i)
   {
-		if (zoneinfo[i].script)       break;
+        if (zoneinfo[i].script)       break;
                 if (zoneinfo[i].percent)      break;
                 if (zoneinfo[i].delay)        break;
                 if (zoneinfo[i].aaa)          break;
@@ -259,8 +259,8 @@ void Map::New()
     pData.resize(1);
     info.resize(1);
     nLayers=1;
-    pData[0]=new u32[nWidth*nHeight];					// layer data
-    ZeroMemory(pData[0],nWidth*nHeight*sizeof(u32));	// clear it
+    pData[0]=new u32[nWidth*nHeight];                    // layer data
+    ZeroMemory(pData[0],nWidth*nHeight*sizeof(u32));    // clear it
     
     pObstruct=new u8[nWidth*nHeight];
     pZone=new u32[nWidth*nHeight];
@@ -269,7 +269,7 @@ void Map::New()
     ZeroMemory(pZone,nWidth*nHeight*sizeof(u32));
     
     info[0].pmulx = info[0].pdivx=1;
-    info[0].pmuly = info[0].pdivy=1;	
+    info[0].pmuly = info[0].pdivy=1;    
     sMusicname="";
     sVSPname="untitled.vsp";
     SetRString("1ER");
@@ -294,18 +294,18 @@ void Map::Free()
 bool Map::LoadOld(File& f)
 {
     int i;
-    u8	cTemp;
-    u16	wTemp;
+    u8    cTemp;
+    u16    wTemp;
     
     f.Read(i);
     
     char c[255];
-    f.Read(c,60);	sVSPname=c;
-    f.Read(c,60);	sMusicname=c;
-    f.Read(c,20);	sRenderstring=c;
-    f.Read(wTemp);	nStartx=wTemp;
-    f.Read(wTemp);	nStarty=wTemp;
-    f.Read(c,51);						// don't ask me!
+    f.Read(c,60);    sVSPname=c;
+    f.Read(c,60);    sMusicname=c;
+    f.Read(c,20);    sRenderstring=c;
+    f.Read(wTemp);    nStartx=wTemp;
+    f.Read(wTemp);    nStarty=wTemp;
+    f.Read(c,51);                        // don't ask me!
     
     f.Read(cTemp);
     nLayers=cTemp;
@@ -314,7 +314,7 @@ bool Map::LoadOld(File& f)
     {
         layer_r templay;
         
-        f.Read(&templay,12);			// WHAT THE BLOODY FUCK
+        f.Read(&templay,12);            // WHAT THE BLOODY FUCK
         
         // If any maps exist which have different layer sizes, this could cause problems.
         nWidth=templay.sizex;
@@ -382,16 +382,16 @@ bool Map::LoadOld(File& f)
     {
         zoneinfo_r z;
         
-        f.Read(&z,sizeof(z));											// these magic numbers frighten me.
+        f.Read(&z,sizeof(z));                                            // these magic numbers frighten me.
         
         zoneinfo[i].sName=va("Zone%i",i);
         zoneinfo[i].sDescription=z.name;
         
-        if (z.script)				zoneinfo[i].sActscript=va("event%i",(int)z.script);
-        else						zoneinfo[i].sActscript="";
+        if (z.script)                zoneinfo[i].sActscript=va("event%i",(int)z.script);
+        else                        zoneinfo[i].sActscript="";
         
-        if (z.entityscript)			zoneinfo[i].sEntactscript=va("event%i",(int)z.entityscript);
-        else						zoneinfo[i].sEntactscript="";
+        if (z.entityscript)            zoneinfo[i].sEntactscript=va("event%i",(int)z.entityscript);
+        else                        zoneinfo[i].sEntactscript="";
         
         zoneinfo[i].nActchance=z.percent;
         zoneinfo[i].nActdelay=z.delay;
@@ -406,10 +406,10 @@ bool Map::LoadOld(File& f)
         f.Read(sChrlist[i],60);
     
     f.Read(cTemp);
-    nEnts=cTemp;
+    int nEnts=cTemp;
     
     // grargh
-    std::vector<int>	nScriptidx;
+    std::vector<int>    nScriptidx;
     nScriptidx.resize(nEnts);
     entity.resize(nEnts);
     
@@ -423,18 +423,18 @@ bool Map::LoadOld(File& f)
         e2.sName=va("Ent%i",i);
         e2.sDescription=e1.desc;
         
-        e2.x=e1.x*16;		e2.y=e1.y*16;
+        e2.x=e1.x*16;        e2.y=e1.y*16;
         e2.direction=e1.facing;
         switch (e1.speed)
         {
-        case 1:	e2.nSpeed=12;		break;
-        case 2:	e2.nSpeed=25;		break;
-        case 3:	e2.nSpeed=50;		break;
-        case 4:	e2.nSpeed=100;		break;
-        case 5:	e2.nSpeed=200;		break;
-        case 6:	e2.nSpeed=400;		break;
-        case 7:	e2.nSpeed=800;		break;
-        case 8:	e2.nSpeed=0;		break;
+        case 1:    e2.nSpeed=12;        break;
+        case 2:    e2.nSpeed=25;        break;
+        case 3:    e2.nSpeed=50;        break;
+        case 4:    e2.nSpeed=100;        break;
+        case 5:    e2.nSpeed=200;        break;
+        case 6:    e2.nSpeed=400;        break;
+        case 7:    e2.nSpeed=800;        break;
+        case 8:    e2.nSpeed=0;        break;
         default:
             e2.nSpeed=100;
         }
@@ -446,13 +446,13 @@ bool Map::LoadOld(File& f)
         e2.bAdjacentactivation=e1.actm!=0;
         e2.sActscript=va("event%i",e1.actscript);
         e2.state=(MoveCode)e1.movecode;
-        nScriptidx[i]=e1.movescript;	// blargh
+        nScriptidx[i]=e1.movescript;    // blargh
         e2.nWanderdelay=e1.delay;
         e2.nWandersteps=e1.step;
-        e2.nWanderrect[0]=e1.data1;
-        e2.nWanderrect[1]=e1.data2;
-        e2.nWanderrect[2]=e1.data3;
-        e2.nWanderrect[3]=e1.data4;
+        e2.wanderrect.left=e1.data1;
+        e2.wanderrect.top=e1.data2;
+        e2.wanderrect.right=e1.data3;
+        e2.wanderrect.bottom=e1.data4;
         //e2.sZone=? :P
         //e2.sChasetarget="";
         //e2.nChasedist=0;
@@ -460,7 +460,7 @@ bool Map::LoadOld(File& f)
         entity[i]=e2;
     }
     
-    std::vector<string_k>	sMovescripts;
+    std::vector<string_k>    sMovescripts;
     char nMovescripts;
     int nCount;
     unsigned int nOfstbl[100];
@@ -499,17 +499,17 @@ bool Map::Load(const char* fname)
     char c[1024];
     
     f.Read(c,6);
-    c[6]=0;	// just in case?
+    c[6]=0;    // just in case?
     if (!strcmp(c,sOldmapsig))
         return LoadOld(f);
     else if (strcmp(c,sNewmapsig)!=0)
-        return false;	// unrecognized map signature
+        return false;    // unrecognized map signature
     
     Free();
     
-    f.ReadString(c);	sVSPname=c;
-    f.ReadString(c);	sMusicname=c;
-    f.ReadString(c);	sRenderstring=c;
+    f.ReadString(c);    sVSPname=c;
+    f.ReadString(c);    sMusicname=c;
+    f.ReadString(c);    sRenderstring=c;
     
     f.Read(nWidth);
     f.Read(nHeight);
@@ -551,22 +551,23 @@ bool Map::Load(const char* fname)
     for (i=0; i<nZones; i++)
     {
         char c[1024];
-        f.ReadString(c);	zoneinfo[i].sName=c;
-        f.ReadString(c);	zoneinfo[i].sDescription=c;
-        f.ReadString(c);	zoneinfo[i].sActscript=c;
-        f.ReadString(c);	zoneinfo[i].sEntactscript=c;
+        f.ReadString(c);    zoneinfo[i].sName=c;
+        f.ReadString(c);    zoneinfo[i].sDescription=c;
+        f.ReadString(c);    zoneinfo[i].sActscript=c;
+        f.ReadString(c);    zoneinfo[i].sEntactscript=c;
         f.Read(zoneinfo[i].nActchance);
         f.Read(zoneinfo[i].nActdelay);
         f.Read(zoneinfo[i].bAdjacentactivation);
     }
     
+    int nEnts;
     f.Read(nEnts);
     
     for (i=0; i<nEnts; i++)
     {
         SMapEntity e;
         char c[1024];
-        f.ReadString(c);		e.sName=c;
+        f.ReadString(c);        e.sName=c;
         f.Read(e.x);
         f.Read(e.y);
         f.Read(e.direction);
@@ -574,16 +575,21 @@ bool Map::Load(const char* fname)
         f.Read(e.bMapobs);
         f.Read(e.bEntobs);
         f.Read(e.bIsobs);
-        f.ReadString(c);		e.sCHRname=c;
+        f.ReadString(c);        e.sCHRname=c;
         f.Read(e.bAdjacentactivation);
-        f.ReadString(c);		e.sActscript=c;
+        f.ReadString(c);        e.sActscript=c;
         f.Read(e.state);
-        f.ReadString(c);		e.sMovescript=c;
+        f.ReadString(c);        e.sMovescript=c;
         f.Read(e.nWandersteps);
         f.Read(e.nWanderdelay);
-        f.Read(e.nWanderrect,4*sizeof(u32));
-        f.ReadString(c);		e.sZone=c;
-        f.ReadString(c);		e.sChasetarget=c;
+
+        f.Read(e.wanderrect.left);
+        f.Read(e.wanderrect.top);
+        f.Read(e.wanderrect.right);
+        f.Read(e.wanderrect.bottom);
+        
+        f.ReadString(c);        e.sZone=c;
+        f.ReadString(c);        e.sChasetarget=c;
         f.Read(e.nChasedist);
         
         entity.push_back(e);
@@ -645,9 +651,9 @@ bool Map::Save(const char* fname)
         f.Write(zoneinfo[i].bAdjacentactivation);
     }
     
-    f.Write(nEnts);
+    f.Write(entity.size());
     
-    for (i=0; i<nEnts; i++)
+    for (i=0; i<entity.size(); i++)
     {
         
         f.WriteString(entity[i].sName.c_str());
@@ -665,7 +671,12 @@ bool Map::Save(const char* fname)
         f.WriteString(entity[i].sMovescript.c_str());
         f.Write(entity[i].nWandersteps);
         f.Write(entity[i].nWanderdelay);
-        f.Write(entity[i].nWanderrect,4*sizeof(u32));
+
+        f.Write(entity[i].wanderrect.left);
+        f.Write(entity[i].wanderrect.top);
+        f.Write(entity[i].wanderrect.right);
+        f.Write(entity[i].wanderrect.bottom);
+
         f.WriteString(entity[i].sZone.c_str());
         f.WriteString(entity[i].sChasetarget.c_str());
         f.Write(entity[i].nChasedist);
@@ -683,30 +694,31 @@ This is directly ported from MapEd 2+i
 
   Coming back to this after howevermany months of not looking at it, I think
   "dude... this is ugly", and yet I can't think of any way to clean it up.
-  *shrugs*																*/
+  *shrugs*                                                                
+*/
 {
     
-    int maxx,maxy;													// how many tiles in each axis to be copied
+    int maxx,maxy;                                                    // how many tiles in each axis to be copied
     int oldx,oldy;
-    int x,y;														// loop counters
+    int x,y;                                                        // loop counters
     
     oldx=nWidth; oldy=nHeight;
     
     maxx=(oldx<newx)?oldx:newx;
-    maxy=(oldy<newy)?oldy:newy;										// whichever is smaller
+    maxy=(oldy<newy)?oldy:newy;                                        // whichever is smaller
     
-    u32* pTemp=new u32[newx*newy];										// first the zone layer
+    u32* pTemp=new u32[newx*newy];                                        // first the zone layer
     memset(pTemp,0,newx*newy*sizeof(u32));
     for (y=0; y<maxy; y++)
     {
         for (x=0; x<maxx; x++)
             pTemp[y*newx+x] = pZone[y*oldx+x];
     }
-    delete[] pZone;													// dump the old data
-    pZone=pTemp;													// and use the new data instead
+    delete[] pZone;                                                    // dump the old data
+    pZone=pTemp;                                                    // and use the new data instead
     
     
-    u8* pcTemp=new u8[newx*newy];								// now the obstructions
+    u8* pcTemp=new u8[newx*newy];                                // now the obstructions
     memset(pcTemp,0,newx*newy);
     for (y=0; y<maxy; y++)
     {
@@ -717,7 +729,7 @@ This is directly ported from MapEd 2+i
     pObstruct=pcTemp;
     
     
-    for (int curlayer=0; curlayer<NumLayers(); curlayer++)			// and finally, the tile layers
+    for (int curlayer=0; curlayer<NumLayers(); curlayer++)            // and finally, the tile layers
     {
         
         u32* pTemp=new u32[newx*newy];
@@ -730,21 +742,21 @@ This is directly ported from MapEd 2+i
             pData[curlayer]=pTemp;
             
     }
-    this->nWidth=newx; this->nHeight=newy;							// whoops, one must be careful to not clog one's namespace up. >_<
+    this->nWidth=newx; this->nHeight=newy;                            // whoops, one must be careful to not clog one's namespace up. >_<
 }
 
 void Map::AddLayer(int pos)
 {
     // TODO: make this actually use the pos variable. :P
-    //	if (nLayerss) return;									// TODO: Remove this
+    //    if (nLayerss) return;                                    // TODO: Remove this
     
     SMapLayerInfo newlay;
     
-    ZeroMemory(&newlay,sizeof newlay);								// set everything to 0, just in case.
+    ZeroMemory(&newlay,sizeof newlay);                                // set everything to 0, just in case.
     newlay.pmulx = newlay.pdivx = 1;
     newlay.pmuly = newlay.pdivy = 1;
     u32* pTemp=new u32[nWidth*nHeight];
-    ZeroMemory(pTemp,nWidth*nHeight*sizeof(u32));					// make sure the new layer is empty
+    ZeroMemory(pTemp,nWidth*nHeight*sizeof(u32));                    // make sure the new layer is empty
     
     info.push_back(newlay);
     pData.push_back(pTemp);
@@ -767,8 +779,8 @@ void Map::SetLayerInfo(const SMapLayerInfo& nfo,int layidx)
     if (layidx>=0 && layidx<nLayers)
     {
         info[layidx]=nfo;
-        if (!info[layidx].pdivx) {	info[layidx].pdivx=1;	info[layidx].pmulx=0;	}
-        if (!info[layidx].pdivy) {	info[layidx].pdivy=1;	info[layidx].pmuly=0;	}
+        if (!info[layidx].pdivx) {    info[layidx].pdivx=1;    info[layidx].pmulx=0;    }
+        if (!info[layidx].pdivy) {    info[layidx].pdivy=1;    info[layidx].pmuly=0;    }
     }
 }
 
@@ -792,7 +804,7 @@ void Map::SetVSPName(const string_k& s)
 
 const char* Map::GetCHREntry(int idx)
 {
-/*	if (idx>=0 && idx<100)
+/*    if (idx>=0 && idx<100)
 return chrlist[idx].t;
     else*/
     return NULL;
@@ -800,14 +812,14 @@ return chrlist[idx].t;
 
 void Map::SetCHREntry(const char* newchr,int idx)
 {
-    //	if (idx>=0 && idx<100)
-    //		strcpy(chrlist[idx].t,newchr);
+    //    if (idx>=0 && idx<100)
+    //        strcpy(chrlist[idx].t,newchr);
     return;
 }
 
 const char* Map::GetMScript(int idx)
 {
-/*	if (idx>=0 && idx<100)
+/*    if (idx>=0 && idx<100)
 return movescript[idx].t;
     else*/
     return NULL;
@@ -815,8 +827,8 @@ return movescript[idx].t;
 
 void Map::SetMScript(const char* newscript,int idx)
 {
-    //	if (idx>=0 && idx<100)
-    //		strcpy(movescript[idx].t,newscript);
+    //    if (idx>=0 && idx<100)
+    //        strcpy(movescript[idx].t,newscript);
     return;
 }
 
@@ -831,7 +843,7 @@ void Map::SetObs(int x,int y,bool mode)
 bool Map::IsObs(int x,int y)
 {
     if (x<0 || x>=nWidth) return true;
-    if (y<0 || y>=nHeight) return true;	// outside the map?  HELL YES ITS OBSTRUCTED!  DON'T GO THERE!
+    if (y<0 || y>=nHeight) return true;    // outside the map?  HELL YES ITS OBSTRUCTED!  DON'T GO THERE!
     
     if (pObstruct[y*nWidth+x]) return true;
     return false;
@@ -886,7 +898,7 @@ int Map::EntityAt(int x,int y)
     const int nHoty=16;
     int i;
     
-    for (i=0; i<nEnts; i++)
+    for (i=0; i<entity.size(); i++)
         if (x>=entity[i].x && y>=entity[i].y &&
             x<=entity[i].x+nHotx && y<=entity[i].y+nHoty)
             return i;
@@ -895,13 +907,13 @@ int Map::EntityAt(int x,int y)
 
 void Map::GetEntInfo(SMapEntity& info,int entidx)
 {
-    if (entidx>=0 && entidx<nEnts)
+    if (entidx>=0 && entidx<entity.size())
         memcpy(&info,&entity[entidx],sizeof info);
 }
 
 void Map::SetEntInfo(const SMapEntity& info,int entidx)
 {
-    if (entidx>=0 && entidx<nEnts)
+    if (entidx>=0 && entidx<entity.size())
         memcpy(&entity[entidx],&info,sizeof info);
 }
 
@@ -912,24 +924,23 @@ int Map::CreateEntity(int x,int y)
     ent.nSpeed=100;
     entity.push_back(ent);
     
-    return nEnts++;
+    return entity.size()-1;
 }
 
 void Map::DestroyEntity(int entidx)
 {
     int i;
     
-    for (i=entidx; i<nEnts-1; i++)
+    for (i=entidx; i<entity.size()-1; i++)
         entity[i]=entity[i+1];
     //memcpy(&entity[i],&entity[i+1],sizeof entity[i]);
     
     entity.pop_back();
-    nEnts--;
 }
 
 int Map::NumEnts() const
 {
-    return nEnts;
+    return entity.size();
 }
 
 /*void Map::SetWin(int xw,int yw)

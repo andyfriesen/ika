@@ -11,7 +11,7 @@ Main module thingie.
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "ika"
+#define VERSION "ika 0.11 alpha"
 
 // low level components/containers/etc..
 #include <list>
@@ -34,6 +34,7 @@ Main module thingie.
 
 class CEngine
 {
+    // -_-;
     friend LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
     friend class CScriptEngine;
     
@@ -46,8 +47,11 @@ class CEngine
         b_enter,
         b_cancel,
     };
+
+    typedef std::list<CEntity*>      EntityList;
+    typedef EntityList::iterator    EntityIterator;
     
-protected:
+public:                                                                         // Too many components need access to this class.  Kinda sucks. :/
     HWND hWnd;
     HINSTANCE hInst;
     
@@ -57,8 +61,8 @@ protected:
     CTileSet			tiles;						// Images.  Of Tiles.
     CScriptEngine		script;						// c0de
     
-    CSpriteController	        sprite; 					// CHR files (TODO: annhiliate this)
-    CController<CEntity>	entities;					// you know what this is, I hope
+    CSpriteController	        sprite; 					// CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
+    EntityList                  entities;                                       // you know what this is, I hope
     CController<CFont>		font;						// because I sure as hell don't!
     
     Timer			timer;						// timer-based callback type stuff
@@ -69,8 +73,8 @@ protected:
     bool			bMaploaded;					// true if a map is... loaded. -_-
     
     int				xwin,ywin;					// world coordinates of the viewport
-    int				player;						// player handle (-1 if not applicable)
-    int				hCameratarget;	                                // the camera points to this entity (equal to -1 if the camera is free)
+    CEntity*                    pPlayer;
+    CEntity*                    pCameratarget;
     
     // Odds and ends
     handle			hRenderdest;
@@ -88,16 +92,18 @@ protected:
     
     // Entity handling
     int  EntityAt(int x,int y,int w,int h);				        // index of entity within the specified rect, or -1 if none
-    bool DetectMapCollision(CEntity* e,int x1,int y1,int w,int h);
-    int  DetectEntityCollision(int x1,int y1,int w,int h,int entidx);
+    bool DetectMapCollision(int x1,int y1,int w,int h);
+    CEntity* DetectEntityCollision(const CEntity& ent);
     void ProcessEntities();							// one tick of AI for each entity
-    void ProcessEntity(int entidx);						// one tick of AI for one entity
     Direction HandlePlayer();							// one tick of player-controlledness
     Direction HandleWanderingEntity(CEntity& ent);		                // entity wanders for one tick
     Direction HandleChasingEntity(CEntity& ent);		                // entity spends one tick chasing another entity
-    
+  
     void TestActivate();							// checks to see if the player has talked to an entity, stepped on a zone, etc...
-    
+
+    CEntity*    SpawnEntity();
+    void        DestroyEntity(CEntity* e);
+
     void RenderEntities();							// Draws entities
     void RenderLayer(int lay,bool transparent);			                // renders a single layer
     void Render(const char* sTemprstring=NULL);			                // renders everything
@@ -106,7 +112,7 @@ protected:
     
     void HookTimer();								// does junk to keep hooked scripts running at the proper rate
     void HookRetrace();								// calls each hookretraced script exactly once (if applicable)
-public:
+
     void Startup(HWND hwnd, HINSTANCE hinst);			                // Inits the engine
     void Shutdown();								// deinits the engine
     void MainLoop();								// runs the engine

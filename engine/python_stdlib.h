@@ -70,7 +70,7 @@ METHOD(std_wait)
 	if (!PyArg_ParseTuple(args,"i:wait",&ticks))
 		return NULL;
 
-	int i=pEngine->player;
+/*	int i=pEngine->player;
 	pEngine->player=-1;								// stop the player entity
 
 	pEngine->timer.t=0;
@@ -90,7 +90,7 @@ METHOD(std_wait)
 	}
 
 	pEngine->player=i;								// restore the player
-
+*/
 	Py_INCREF(Py_None);
 	return Py_None;
 }

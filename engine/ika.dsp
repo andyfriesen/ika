@@ -254,14 +254,6 @@ SOURCE=..\common\map.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\common\mem.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=..\common\mem.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\common\misc.cpp
 # End Source File
 # Begin Source File

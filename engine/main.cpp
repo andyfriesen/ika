@@ -131,7 +131,7 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     
     if (!SetUpGraphics(cfg.sGraphplugin))
     {
-	Sys_Error("unable to load graphics dll");
+	Sys_Error("Unable to load graphics driver.");
 	return;
     }
     
@@ -214,8 +214,6 @@ void CEngine::Shutdown()
     
     UnloadGraphics();
     ShutdownSound();
-    // Do Not Remove - Begin Insert 2
-    // Do Not Remove - End   Insert 2
     input.ShutDown();
 }
 
@@ -224,54 +222,51 @@ void CEngine::Shutdown()
 void CEngine::RenderEntities()
 {
     CDEBUG("renderentities");
-    const int           nMaxentities=entities.Count();
-    std::vector<int>    nEnt;
-    int                 i;		// loop counter
+    std::vector<CEntity*>    drawlist;
     
-    nEnt.clear();
+    drawlist.clear();
     // first, get a list of entities onscreen
     int width,height;
-    for (i=0; i<nMaxentities; i++)
-    {
-	if (!entities.IsValid(i))	continue;
-	
-        CEntity& e=entities[i];        
-        CSprite& sprite=*(e.pSprite);
+    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
+    {	
+        CEntity& e=**i;
+        CSprite& sprite=*e.pSprite;
 
 	width =sprite.Width();
 	height=sprite.Height();
 	
+        // get the coodinates at which the sprite would be drawn
 	int x=e.x-sprite.nHotx;
 	int y=e.y-sprite.nHoty;
 	
 	if (x+width-xwin>0                      && y+height-ywin>0 &&
 	    x-xwin<gfxImageWidth(hRenderdest)   && y-ywin<gfxImageHeight(hRenderdest) &&
 	    e.bVisible)
-	    nEnt.push_back(i);                                                              // the entity is onscreen, tag it.
+	    drawlist.push_back(&e);                                                         // the entity is onscreen, tag it.
     }
     
-    if (!nEnt.size())
+    if (!drawlist.size())
 	return;                                                                             // nobody onscreen?  Easy out!
     
-    int nEntsonscreen=nEnt.size();
+    int nEntsonscreen=drawlist.size();
     bool blarg;
     do                                                                                      // quick n' dirty bubble sort
     {
 	blarg=false;
-	for (i=0; i<nEntsonscreen; i++)
+	for (int i=0; i<nEntsonscreen; i++)
 	    for (int j=i+1; j<nEntsonscreen; j++)
-		if (entities[nEnt[i]].y>entities[nEnt[j]].y)                                // FIXME:  is this a gigantic bottleneck?
+                if (drawlist[i]->y>drawlist[j]->y)                                          // FIXME:  is this a gigantic bottleneck?  Quicksort?
 		{
-		    swap(nEnt[i],nEnt[j]);
+		    swap(drawlist[i],drawlist[j]);
 		    blarg=true;
 		}			
     } while (blarg);
     
     
-    for (i=0; i<nEntsonscreen; i++)
+    for (int j=0; j<nEntsonscreen; j++)
     {
 	int hx,hy;
-	CEntity& e=entities[nEnt[i]];
+	CEntity& e=*drawlist[j];
         CSprite& s=*e.pSprite;;
 	
 	hx=s.nHotx;
@@ -360,11 +355,11 @@ void CEngine::Render(const char* sTemprstring)
     if (!bMaploaded)	return;
     
     tiles.UpdateAnimation(timer.systime);
-    
-    if (entities.IsValid(hCameratarget))													// centre the camera over whoever it should be centred around
+
+    if (pCameratarget)
     {		
-	xwin=entities[hCameratarget].x- gfxImageWidth(hRenderdest)/2;						// Move the camera...
-	ywin=entities[hCameratarget].y- gfxImageHeight(hRenderdest)/2;
+	xwin=pCameratarget->x- gfxImageWidth(hRenderdest)/2;						// Move the camera...
+	ywin=pCameratarget->y- gfxImageHeight(hRenderdest)/2;
 	
 	int maxx=(map.Width() *tiles.Width() ) - gfxImageWidth (hRenderdest);				// and make sure it's still in range
 	int maxy=(map.Height()*tiles.Height()) - gfxImageHeight(hRenderdest);
@@ -469,16 +464,20 @@ void CEngine::CheckKeyBindings()
 
 void CEngine::ProcessEntities()
 {
-    for (int i=0; i<entities.Count(); i++)
-	if (entities.IsValid(i))	// eep
-	{
-	    entities[i].nSpeedcount+=entities[i].nSpeed;
-	    while (entities[i].nSpeedcount>100)
-	    {
-		ProcessEntity(i);
-		entities[i].nSpeedcount-=100;
-	    }
-	}
+    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
+    {
+        if (*i==pPlayer)
+            continue;
+
+        CEntity& ent=**i;
+
+        ent.nSpeedcount+=ent.nSpeed;
+        while (ent.nSpeedcount>=100)
+        {
+            ent.Update();
+            ent.nSpeedcount-=100;
+        }
+    }
 }
 
 // --------------------------------------- Entity Handling --------------------------------------
@@ -488,7 +487,7 @@ int  CEngine::EntityAt(int x,int y,int w,int h)
 // Returns -1 if there is no entity there.
 {
     CDEBUG("entityat");
-    CEntity* e;
+/*    CEntity* e;
     CSprite* s;
     
     for (int i=0; i<entities.Count(); i++)
@@ -502,27 +501,17 @@ int  CEngine::EntityAt(int x,int y,int w,int h)
 	    if (e->x+s->nHotw<=x)       continue;
 	    if (e->y+s->nHoth<=y)       continue;
 	    return i;
-	}
-	return -1;
+	}*/
+    return -1;
 }
 
-bool CEngine::DetectMapCollision(CEntity* e,int x,int y,int w,int h)
+bool CEngine::DetectMapCollision(int x,int y,int w,int h)
 // returns true if there is an obstructed map square anywhere along a specified vertical or horizontal line
 // Also TODO: think up a better obstruction system
 {
     CDEBUG("detectmapcollision");
     int tx=tiles.Width();
     int ty=tiles.Height();
-    
-    
-    if (!e->bMapobs)
-    {
-	if (x>map.Width()*tx || y>map.Height()*ty ||
-	    x<0 || y<0)
-	    return true; 
-	
-	return false;
-    }
     
     if (h)
     {
@@ -548,122 +537,27 @@ bool CEngine::DetectMapCollision(CEntity* e,int x,int y,int w,int h)
     return false;
 }
 
-int CEngine::DetectEntityCollision(int x1,int y1,int w,int h,int entidx)
-// returns index of the entity in the specified rect, or -1 if none.
+CEntity* CEngine::DetectEntityCollision(const CEntity& ent)
+// returns the entity colliding with the specified entity, or 0 if none.
 {
     CDEBUG("detectentitycollision");
-    CEntity* e;
-    CSprite* s;
-    
-    int nEnts=entities.Count();
-    for (int i=0; i<nEnts; i++)
-	if (entities.IsValid(i) && i!=entidx)
-	{
-	    e=&entities[i];
-	    
-	    if (!e->bEntobs)            continue;
-	    
-	    s=e->pSprite;
-	    
-	    if (x1   > e->x+s->nHotw)   continue;	// nope
-	    if (y1   > e->y+s->nHoth)   continue;
-	    if (x1+w < e->x)            continue;
-	    if (y1+h < e->y)            continue;
-	    return i;
-	}
-	
-	return -1;
-}
+    CSprite& sprite=*ent.pSprite;
 
-void CEngine::ProcessEntity(int entidx)
-// I am unhappy with this.  Rewrite later.
-{
-    CDEBUG("processentity");
-    CEntity*    e;										// points to the entity in question. (to reduce indirection)
-    CSprite*    s;										// points to the spriteset
-    Direction   d;										// holds the direction that the entity would like to go (face_nothing if it wants to stay put)
-    Direction   olddir;										// the direction the entity was moving in before	
-    int newx,newy;										// the position that the entity wants to be at
-    
-    e=&entities[entidx];									// set up our temp pointers
-    s=e->pSprite;
-    
-    olddir=e->facing;
-    
-    e->UpdateAnimation();
-    
-    // Figure out where the entity "wants" to go.
-    if (entidx!=player)
+    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
     {
-	switch (e->movecode)
-	{
-	case mc_nothing:	return;
-	case mc_wander:		
-	case mc_wanderrect:	d=HandleWanderingEntity(entities[entidx]);	break;
-	case mc_chase:		d=HandleChasingEntity(entities[entidx]);	break;
-	case mc_script:		d=e->GetMoveScriptCommand();				break;
-	default:		
-	    log("processentity:  !!! %i",(int)e->movecode);
-	    return;
-	}
+        CEntity& e=**i;
+        CSprite& s=*e.pSprite;
+
+        if (!e.bEntobs)           continue;
+        
+        if (ent.x               > e.x+s.nHotw)  continue;
+        if (ent.y               > e.y+s.nHoth)  continue;
+        if (ent.x+sprite.nHotw  > e.x)          continue;
+        if (ent.y+sprite.nHoth  > e.y)          continue;
+
+        return &e;
     }
-    else
-	d=HandlePlayer();
-    
-    newx=e->x;			newy=e->y;
-    
-    // This looks ugly, but all it does is updates the coordinates based on the direction and checks for an obstruction in the direction the 
-    // entity is moving. (instead of checking the entire bounding box, which would be simpler, but gay)
-    switch(d)
-    {
-    case face_up:           if (!DetectMapCollision(e,newx,newy-1,s->nHotw,0))          newy--; break;
-    case face_down:         if (!DetectMapCollision(e,newx,newy+s->nHoth,s->nHoth,0))   newy++; break;
-    case face_left:         if (!DetectMapCollision(e,newx-1,newy,0,s->nHoth))          newx--; break;
-    case face_right:	    if (!DetectMapCollision(e,newx+s->nHotw,newy,0,s->nHoth))   newx++; break;
-	
-    case face_upleft:
-	if (!DetectMapCollision(e,newx,newy-1,s->nHotw,0))                      newy--;
-	if (!DetectMapCollision(e,newx-1,newy,0,s->nHoth))                      newx--; break;
-    case face_upright:
-	if (!DetectMapCollision(e,newx,newy-1,s->nHotw,0))                      newy--;
-	if (!DetectMapCollision(e,newx+s->nHotw,newy,0,s->nHoth))               newx++; break;
-    case face_downleft:
-	if (!DetectMapCollision(e,newx,newy+s->nHoth,s->nHotw,0))               newy++;
-	if (!DetectMapCollision(e,newx-1,newy,0,s->nHoth))                      newx--; break;
-    case face_downright:
-	if (!DetectMapCollision(e,newx,newy+s->nHoth,s->nHotw,0))               newy++;
-	if (!DetectMapCollision(e,newx+s->nHotw,newy,0,s->nHoth))               newx++; break;
-	
-    case face_nothing:
-	if (e->bMoving)
-	{
-	    e->bMoving=false;
-	    e->SetAnimScript(s->Script(e->facing+8),e->facing+8);
-	}
-	return;
-    default:
-	log("ProcessEntity: Unknown entity command %i",d);
-	return;
-    }
-    
-    if ((e->bEntobs && DetectEntityCollision(newx,newy,s->nHotw,s->nHoth,entidx)!=-1) ||
-	(newx==e->x && newy==e->y))                     // Is there something in the way?
-    {
-	e->facing=d;
-	e->SetAnimScript(s->Script(d+8),d+8);          // move scripts are from 8-15 (that's what the +8 is)
-	e->bMoving=false;
-	return;
-    }
-    
-    // finally!  Actually move and animate!!
-    if (!e->bMoving || d!=olddir)                       // do we need to change the animation strand?
-    {
-	e->bMoving=true;
-	e->SetAnimScript(s->Script(d),d);              // yes, do so
-    }
-    e->facing=d;
-    e->x=newx;
-    e->y=newy;
+    return 0;
 }
 
 Direction CEngine::HandlePlayer()
@@ -695,11 +589,11 @@ Direction CEngine::HandlePlayer()
 
 Direction CEngine::HandleWanderingEntity(CEntity& ent)
 {
-    if (ent.movescriptct<1)
+/*    if (ent.movescriptct<1)
     {
 	if (ent.thedirectionImgoinginnow==face_nothing)					// are we through with a non-walking period?
 	{
-	    ent.thedirectionImgoinginnow=(Direction)(rand()%4);							// 1-4 (up, down, left, or right)
+	    ent.thedirectionImgoinginnow=face_down;//(Direction)(rand()%4);							// 1-4 (up, down, left, or right)
 	    ent.movescriptct=ent.nWandersteps;
 	    return ent.thedirectionImgoinginnow;
 	}
@@ -732,14 +626,15 @@ Direction CEngine::HandleWanderingEntity(CEntity& ent)
     }
     
     
-    return ent.thedirectionImgoinginnow;
+    return ent.thedirectionImgoinginnow;*/
+    return face_nothing;
 }
 
 #include <math.h>
 Direction CEngine::HandleChasingEntity(CEntity& ent)
 // TODO: Make this chase algorithm not suck. (Bresenham's line algorithm or something)
 {
-    int nDeltax,nDeltay;
+/*    int nDeltax,nDeltay;
     int nTarget;
     Direction d;
     nTarget=ent.nEntchasetarget;
@@ -773,7 +668,8 @@ Direction CEngine::HandleChasingEntity(CEntity& ent)
     else if (nDeltay>0)
 	d=face_down;
     
-    return d;
+    return d;*/
+    return face_nothing;
 }
 
 void CEngine::TestActivate()
@@ -785,7 +681,7 @@ void CEngine::TestActivate()
 
 // This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
 {
-    CDEBUG("testactivate");
+/*    CDEBUG("testactivate");
     static int	nOldtx=-1;
     static int	nOldty=-1;
     static int	nOldzone=-1;
@@ -852,7 +748,48 @@ void CEngine::TestActivate()
     {
 	script.CallEvent(zone.sActscript.c_str());
 	input.enter=false;
-    }
+    }*/
+}
+
+CEntity* CEngine::SpawnEntity()
+{
+    CEntity* e=new CEntity(this);
+
+    entities.push_back(e);
+
+    return e;
+}
+
+void CEngine::DestroyEntity(CEntity* e)
+{
+    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
+        if (e==(*i))
+        {
+            entities.remove(*i);
+            sprite.Free(e->pSprite);
+
+            // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
+            if (pCameratarget==e)   pCameratarget=0;
+            if (pPlayer==e)         pPlayer=0;
+
+            // Sadly, this probably gets pretty slow.
+            for (EntityIterator ii=entities.begin(); ii!=entities.end(); ii++)
+            {
+                CEntity& e=*(*ii);
+
+                if (e.pChasetarget==(*i))
+                    e.pChasetarget=0, e.movecode=mc_nothing;
+
+                // TODO: add others, if needed
+            }
+
+            // actually nuke it
+            delete e;
+            return;
+        }
+
+    // gwa!  In a Perfect Worlid his should never execute.
+    log("Attempt to unallocate invalid entity!!!");
 }
 
 // --------------------------------- Misc (interface with old file formats, etc...) ----------------------
@@ -865,7 +802,7 @@ Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
 {
     CDEBUG("loadmap");
     char	temp[255];
-    char*	extension;
+//    char*	extension;
     
     try
     {
@@ -879,7 +816,7 @@ Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
 	
 	script.ClearEntityList();									// DEI
 	
-	for (int i=0; i<map.NumEnts(); i++)
+/*	for (int i=0; i<map.NumEnts(); i++)
 	{
 	    int		nEnt=0;
 	    SMapEntity	ent;
@@ -887,7 +824,7 @@ Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
 	    nEnt=entities.GetNew();
 	    
 	    map.GetEntInfo(ent,i);
-	    entities[nEnt]=ent;										// convert the old entity struct into the new one.
+	    entities[nEnt]=CEntity(this,ent);								// convert the old entity struct into the new one.
 	    
 	    strcpy(temp,ent.sCHRname.c_str());
 	    extension=temp+strlen(temp)-3;								// get the extension
@@ -897,7 +834,7 @@ Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
 		Sys_Error(va("Unable to load CHR file %s",temp));					// wah
 	    
 	    script.AddEntityToList(nEnt);
-	}
+	}*/
 	
 	xwin=ywin=0;	// just in case
 	bMaploaded=true;
