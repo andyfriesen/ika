@@ -33,6 +33,8 @@ enum FileType
     t_font,
     t_map,
     t_config,
+    t_text,
+    t_dat
 };
 
 //////////////////////////////////////////

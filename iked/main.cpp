@@ -10,6 +10,7 @@
 #include "projectview.h"
 #include "codeview.h"
 #include "configdlg.h"
+#include "textview.h"
 
 #include <wx\resource.h>
 #include "controller.h"
@@ -163,13 +164,15 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
         "Open File",
         "",
         "",
-        "All known|*.ikaprj;*.py;*.map;*.vsp;*.chr;*.fnt|"
+        "All known|*.ikaprj;*.py;*.map;*.vsp;*.chr;*.fnt;*.txt;*.dat|"
         "Iked Projects (*.ikaprj)|*.ikaprj|"
         "Python Scripts (*.py)|*.py|"
         "Maps (*.map)|*.map|"
         "VSP Tilesets (*.vsp)|*.vsp|"
         "Sprites (*.chr)|*.chr|"
         "Fonts (*.fnt)|*.fnt|"
+        "Text (*.txt)|*.txt|"
+        "Dat Files (*.dat)|*.dat|"
         "All files (*.*)|*.*",
         wxOPEN | wxMULTIPLE
         );
@@ -198,6 +201,8 @@ void CMainWnd::Open(const std::string& fname)
     case t_map:         pWnd=new CMapView(this,fname.c_str());  break;
     case t_vsp:         pWnd=new CTileSetView(this,fname.c_str());  break;
     case t_font:        pWnd=new CFontView(this,fname.c_str()); break;
+    case t_text:
+    case t_dat:         pWnd=new CTextView(this,fname.c_str()); break;
 
     case t_config:
         {
@@ -225,7 +230,7 @@ void CMainWnd::Open(const std::string& fname)
 
 FileType CMainWnd::GetFileType(const std::string& fname)
 {
-    const int nExt=9;
+    
     char* ext[] =
     {
         "",
@@ -237,7 +242,11 @@ FileType CMainWnd::GetFileType(const std::string& fname)
         "fnt",
         "map",
         "cfg",
+        "txt",
+        "dat"
     };
+
+    const int nExt=sizeof(ext);
 
     int idx=fname.rfind(".")+1;
 
