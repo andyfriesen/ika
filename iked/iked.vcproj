@@ -393,6 +393,12 @@
 				RelativePath="..\common\misc.h">
 			</File>
 			<File
+				RelativePath="..\common\oldbase64.cpp">
+			</File>
+			<File
+				RelativePath="..\common\oldbase64.h">
+			</File>
+			<File
 				RelativePath="..\common\rle.cpp">
 			</File>
 			<File

@@ -9,6 +9,7 @@
 #include "log.h"
 
 #include "compression.h"
+#include "oldbase64.h"
 #include "base64.h"
 #include "aries.h"
 #include <fstream>
@@ -171,6 +172,8 @@ void CCHRfile::Load(const std::string& fname)
 
         DataNode* rootNode = document->getChild("ika-sprite");
 
+        std::string ver = rootNode->getChild("version")->getString();
+
         {
             DataNode* infoNode = rootNode->getChild("information");
 
@@ -230,9 +233,20 @@ void CCHRfile::Load(const std::string& fname)
             if (dataNode->getChild("format")->getString() != "zlib")
                 throw std::runtime_error("Unsupported data format");
 
-            std::string cdata = dataNode->getString();
-            ScopedArray<u8> compressed(new u8[cdata.length()]); // way more than enough.
-            int compressedSize = base64::decode(cdata, compressed.get(), cdata.length());
+            std::string d64 = dataNode->getString();
+            ScopedArray<u8> compressed(new u8[d64.length()]); // way more than enough.
+            int compressedSize;
+            if (ver == "1.0")
+            {
+                compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
+            }
+            else if (ver == "1.1")
+            {
+                std::string un64 = base64::decode(d64);
+                std::copy((u8*)(un64.c_str()), (u8*)(un64.c_str() + un64.length()), compressed.get());
+                compressedSize = un64.length();
+            }
+
             ScopedArray<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
             Compression::decompress(compressed.get(), compressedSize, pixels.get(), nWidth * nHeight * frameCount * sizeof(RGBA));
 
@@ -264,7 +278,7 @@ void CCHRfile::Save(const std::string& fname)
     }
 
     DataNode* rootNode = newNode("ika-sprite");
-    rootNode->addChild(newNode("version")->addChild("1.0"));
+    rootNode->addChild(newNode("version")->addChild("1.1"));
 
     DataNode* infoNode = newNode("information");
     rootNode->addChild(infoNode);
@@ -341,7 +355,8 @@ void CCHRfile::Save(const std::string& fname)
             compressed.get(), compressedBlockSize);
 
         // base64
-        std::string d64 = base64::encode(compressed.get(), compressSize);
+        //std::string d64 = base64::encode(compressed.get(), compressSize);
+        std::string d64 = base64::encode(std::string(compressed.get(), compressed.get() + compressSize));
 
         frameNode->addChild(newNode("data")
             ->addChild(newNode("format")->addChild("zlib"))

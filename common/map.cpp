@@ -2,6 +2,7 @@
 #include "map.h"
 #include "log.h"
 #include "compression.h"
+#include "oldbase64.h"
 #include "base64.h"
 #include "misc.h"
 
@@ -84,6 +85,8 @@ bool Map::Load(const std::string& filename)
     try
     {
         DataNode* realRoot = rootNode->getChild("ika-map");
+
+        const std::string ver = realRoot->getChild("version")->getString();
 
         {
             DataNode* infoNode = realRoot->getChild("information");
@@ -194,7 +197,18 @@ bool Map::Load(const std::string& filename)
 
                     std::string d64 = dataNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
-                    int compressedSize = base64::decode(d64, compressed.get(), d64.length());
+                    int compressedSize;
+                        
+                    if (ver == "1.0")
+                    {
+                        compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
+                    }
+                    else if (ver == "1.1")
+                    {
+                        std::string un64 = base64::decode(d64);
+                        std::copy((u8*)un64.c_str(), (u8*)un64.c_str() + un64.length(), compressed.get());
+                        compressedSize = un64.length();
+                    }
                     ScopedArray<uint> tiles(new uint[width * height]);
                     Compression::decompress(compressed.get(), compressedSize, reinterpret_cast<u8*>(tiles.get()), width * height * sizeof(uint));
                     lay->tiles = Matrix<uint>(width, height, tiles.get());
@@ -202,12 +216,22 @@ bool Map::Load(const std::string& filename)
 
                 {
                     DataNode* obsNode = (*iter)->getChild("obstructions");
-                    if (Local::getStringNode(obsNode, "format") != "tile")
-                        throw std::runtime_error("Unrecognized obstruction style.");
 
                     std::string d64 = obsNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
-                    int compressedSize = base64::decode(d64, compressed.get(), d64.length());
+                    int compressedSize;
+
+                    if (ver == "1.0")
+                    {
+                        compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
+                    }
+                    else if (ver == "1.1")
+                    {
+                        std::string un64 = base64::decode(d64);
+                        std::copy((u8*)(un64.c_str()), (u8*)(un64.c_str() + un64.length()), compressed.get());
+                        compressedSize = un64.length();
+                    }
+
                     ScopedArray<u8> obs(new u8[width * height]);
                     Compression::decompress(compressed.get(), compressedSize, obs.get(), width * height);
                     lay->obstructions = Matrix<u8>(width, height, obs.get());
@@ -286,7 +310,7 @@ void Map::Save(const std::string& filename)
 {
     DataNode* rootNode = newNode("ika-map");
 
-    rootNode->addChild(newNode("version")->addChild("1.0"));
+    rootNode->addChild(newNode("version")->addChild("1.1"));
 
     {
         DataNode* infoNode = newNode("information")
@@ -360,8 +384,8 @@ void Map::Save(const std::string& filename)
             DataNode* layNode = newNode("layer");
             layerNode->addChild(layNode);
             layNode
-                ->addChild(newNode("type")->addChild("tile"))
                 ->addChild(newNode("label")->addChild(lay->label))
+                ->addChild(newNode("type")->addChild("tile"))
                 ->addChild(newNode("dimensions")
                     ->addChild(newNode("width")->addChild(lay->Width()))
                     ->addChild(newNode("height")->addChild(lay->Height()))
@@ -390,7 +414,8 @@ void Map::Save(const std::string& filename)
                     compressed.get(),
                     dataSize);
 
-                std::string d64 = base64::encode(reinterpret_cast<u8*>(compressed.get()), compressSize);
+                //std::string d64 = base64::encode(reinterpret_cast<u8*>(compressed.get()), compressSize);
+                std::string d64 = base64::encode(std::string(compressed.get(), compressed.get() + compressSize));
 
                 layNode->addChild(newNode("data")
                     ->addChild(newNode("format")->addChild("zlib"))
@@ -406,10 +431,11 @@ void Map::Save(const std::string& filename)
                     compressed.get(),
                     lay->Width() * lay->Height());
 
-                std::string d64 = base64::encode(compressed.get(), compressSize);
+                std::string d64 = base64::encode(std::string(compressed.get(), compressed.get() + compressSize));
 
                 layNode->addChild(newNode("obstructions")
-                    ->addChild(newNode("format")->addChild("tile"))
+                    ->addChild(newNode("style")->addChild("tile"))
+                    ->addChild(newNode("format")->addChild("zlib"))
                     ->addChild(d64)
                     );
             }

@@ -16,7 +16,7 @@ int main(int c, char **args) {
         ss >> numAcross;
     }
 
-    CFontFile font;
+    FontFile font;
     font.Load(args[1]);
     int fntw = font.Width() + 1, fnth = font.Height() + 1; // adjusted for spacer
     uint numGlyphs = font.NumGlyphs();
@@ -25,7 +25,7 @@ int main(int c, char **args) {
     // debug: check font subset data
     /*int ns = font.NumSubSets();
     for(int j = 0; j < ns; j++) {
-        CFontFile::SSubSet &s = font.GetSubSet(j);
+        FontFile::SSubSet &s = font.GetSubSet(j);
         for(int i = 0; i < 256; i++)
             std::cout << s.glyphIndex[i] << ", ";
         std::cout << std::endl << std::endl;

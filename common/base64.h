@@ -1,10 +1,24 @@
-#include <string>
-#include "types.h"
 
-namespace base64
+//*********************************************************************
+//* C_Base64 - a simple base64 encoder and decoder.
+//*
+//*     Copyright (c) 1999, Bob Withers - bwit@pobox.com
+//*
+//* This code may be freely used for any purpose, either personal
+//* or commercial, provided the authors copyright notice remains
+//* intact.
+//*********************************************************************
+
+#ifndef Base64_H
+#define Base64_H
+
+#include <string>
+
+class base64
 {
-    //void encode(std::vector<u8>& instream, std::vector<u8>& outstream);
-    //void decode(std::vector<u8>& instream, std::vector<u8>& outstream);
-    std::string encode(u8* instream, uint size);
-    int decode(const std::string& instream, u8* outstream, uint size);
-}
+public:
+    static std::string encode(const std::string& data);
+    static std::string decode(const std::string& data);
+};
+
+#endif
