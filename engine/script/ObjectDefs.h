@@ -6,7 +6,7 @@
 
 // Rain of prototypes
 #include <python.h>
-#include "Input.h"
+#include "input.h"
 class CFont;
 class CEntity;
 class CEngine;

@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "corona.h"
 
 #include "canvas.h"
