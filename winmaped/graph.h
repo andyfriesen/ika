@@ -12,6 +12,7 @@
 #define GRAPH_H
 
 #include <windows.h>
+#include <set>
 #include "pixel_matrix.h"
 #include "dib.h"
 #include "types.h"
@@ -24,6 +25,10 @@ private:
 	{
 		int x,y;
 		point(int initx,int inity) { x=initx; y=inity; }
+        bool operator < (const point& p) const
+        {
+            return y < p.y;
+        }
 	};
 	typedef void(*renderfunc)(void* pThis,const RECT& r);
 
@@ -34,7 +39,7 @@ private:
 
 	void* pThis;
 		
-	vector<point> dirtyrects;                                                                   // And a list of blocks that have been altered
+    std::set<point> dirtyrects;                                                                 // a list of blocks that have been altered
 	void AddBlock(int x,int y);                                                                 // just in case we want to get fancy and avoid redundantly setting a block later on
 	void AlphaBlit(const CPixelMatrix& src,int x,int y);                                        // just so that we don't have both opaque and transparent crap being blitted in one long, ugly function :)
 	void CGraphView::DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen);

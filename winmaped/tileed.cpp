@@ -36,8 +36,6 @@ void CTileEd::GoPrev()
     curimage=pVsp->GetTile(nCurtile);
     PurgeUndo();
     PurgeRedo();
-    //	curimage.CopyToImage(iCurrent);
-    //	iCurrent.CopyPixelData(curimage.GetPixelData(),curimage.Pal(),curimage.Width(),curimage.Height());
     bAltered=false;
 }
 
@@ -61,8 +59,6 @@ void CTileEd::GoNext()
     curimage=pVsp->GetTile(nCurtile);
     PurgeUndo();
     PurgeRedo();
-    //	curimage.CopyToImage(iCurrent);
-    //	iCurrent.CopyPixelData(curimage.GetPixelData(),curimage.Pal(),curimage.Width(),curimage.Height());
     bAltered=false;
 }
 
@@ -75,7 +71,7 @@ int CTileEd::HandleCommand(HWND hWnd,int wParam)
 {
     switch (LOWORD(wParam))
     {
-    case ID_TILEED_UPDATE:	UpdateData();	bAltered=false; return 0;		//vsp->PasteTile(curimage,tileidx);	return 0;
+    case ID_TILEED_UPDATE:	UpdateData();	bAltered=false; return 0;
     case ID_TILEED_UPDATEANDEXIT:
         UpdateData();
         bAltered=false;

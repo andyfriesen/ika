@@ -420,23 +420,6 @@ void CMapView::Redraw()
     pGraph->ForceShowPage();
 }
 
-/*void CMapView::UpdateVSP(int tileidx)                                                                    // Updates the tileimages vector
-{
-    if (tileidx<0 || tileidx>=pVsp->NumTiles())
-    {
-        tileimages.resize(pVsp->NumTiles());
-        
-        for (int i=0; i<pVsp->NumTiles(); i++)
-        {
-            tileimages[i].CopyPixelData((RGBA*)pVsp->GetPixelData(i),pVsp->Width(),pVsp->Height());
-        }
-    }
-    else
-    {
-        tileimages[tileidx].CopyPixelData((RGBA*)pVsp->GetPixelData(tileidx),pVsp->Width(),pVsp->Height());
-    }
-}*/
-
 // Scrolls the viewport to (x,y)
 void CMapView::ScrollWin(int x,int y)
 {
@@ -547,14 +530,12 @@ void CMapView::DrawObstructions(const RECT& r)
         {
             if (pMap->IsObs(x+xt,y+yt))
                 pGraph->Stipple(x*pVsp->Width()+xofs,y*pVsp->Height()+yofs,pVsp->Width(),pVsp->Height(),0);
-            //                stipple.Blit(tilewidth*x+xofs,tileheight*y+yofs);
         }
 }
 
 // Draws zone information
 void CMapView::DrawZones(const RECT& r)
 {
-    //    if (!pMap->IsLayerVisible(lay_zone)) return;
     if (!bZonetoggle)    return;
     
     int xt,yt,xofs,yofs;
@@ -577,7 +558,6 @@ void CMapView::DrawZones(const RECT& r)
         {
             if (pMap->GetZone(x+xt,y+yt))//pMap->zone[(y+yt)*pMap->info[0].sizex+x+xt])
                 pGraph->Stipple(x*pVsp->Width()+xofs,y*pVsp->Height()+yofs,pVsp->Width(),pVsp->Height(),0);
-            //    stipple.Blit((x*pVsp->Width())+xofs,(y*pVsp->Height())+yofs);
         }
 }
 
@@ -588,7 +568,6 @@ void CMapView::DrawEntities(const RECT& r)
     const int hotx=16;        // todo: change this
     const int hoty=16;
     
-    //    if (!pMap->IsLayerVisible(lay_ent)) return;
     if (!bEnttoggle)    return;
     
     int idx;
@@ -624,14 +603,10 @@ void CMapView::DrawSelection(const RECT& r)
     if (x2<x1)
     {
         i=x1; x1=x2; x2=i;
-        
-        //        x2++;  x1--;
     }
     if (y2<y1)
     {
         i=y1; y1=y2; y2=i;
-        
-        //        y2++; y1--;
     }
     
     
@@ -648,9 +623,6 @@ void CMapView::Render(const RECT& r)
     char *s;
     char renderstring[50];
     int  laycount=0;
-    
-//    if (tileimages.size()!=pVsp->NumTiles())
-//        UpdateVSP();
     
     strcpy(renderstring,pMap->GetRString().c_str());
     
@@ -682,8 +654,6 @@ void CMapView::Render(const RECT& r)
     DrawZones(r);
     DrawEntities(r);
     DrawSelection(r);
-    
-    //    gfxShowPage();
 }
 
 //-----------------Callbacks---------------------

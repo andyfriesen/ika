@@ -79,7 +79,7 @@ HWND Engine::CreateToolbar(HINSTANCE hInst)
     tbb[13].idCommand= ID_SHOWENT;
     tbb[13].fsState  = TBSTATE_ENABLED;
     
-    // Note: look up the TB_SETSTATE message for changing the button states dynamicALly
+    // Note: look up the TB_SETSTATE message for changing the button states dynamically
     HBITMAP hbm=LoadBitmap(hInst,MAKEINTRESOURCE(IDB_TOOLBUTTONS));
     
     // Create the toolbar
@@ -343,11 +343,8 @@ int Engine::WMEProc(UINT msg,WPARAM wParam,LPARAM lParam)
 		
 	    case WMU_SETLTILE:	pMapview->nLefttile=wParam;		break;
 	    case WMU_SETRTILE:	pMapview->nRighttile=wParam;	break;
-//	    case WMU_REBUILDVSP:
-//		pMapview->UpdateVSP(wParam);
-//		break;
-		
-	    default:
+
+        default:
 		return DefWindowProc(hWnd,msg,wParam,lParam);
 	}
 	return 0;
@@ -392,10 +389,6 @@ void Engine::UpdateToolbar()
 	    PostMessage(hToolbar,TB_SETSTATE,ID_SHOWLAY1+i,0);													// deactivate the button, 'cuz there is no layer there
 	else
 	    PostMessage(hToolbar,TB_SETSTATE,ID_SHOWLAY1+i,MAKELONG(TBSTATE_ENABLED | (pMapview->bLayertoggle[i]?TBSTATE_PRESSED:0),0));
-	    /*		else if (bLayertoggle[i])
-	    PostMessage(hToolbar,TB_SETSTATE,ID_SHOWLAY1+i,MAKELONG(TBSTATE_ENABLED | TBSTATE_PRESSED,0));		// push the button if the layer is visible
-	    else
-	PostMessage(hToolbar,TB_SETSTATE,ID_SHOWLAY1+i,MAKELONG(TBSTATE_ENABLED,0));						// enable the button if there is a layer there*/
 	
 	PostMessage(hToolbar,TB_SETSTATE,ID_SHOWOBS ,MAKELONG(TBSTATE_ENABLED |
 	    (pMapview->bObstoggle?TBSTATE_PRESSED:0)							// push the button if the layer is visible
@@ -444,8 +437,8 @@ void Engine::UpdateStatbar(int cursorx,int cursory)
 	    
 	    map.GetZoneInfo(tempz,pMapview->nCurzone);
 	    SetStatbarText(2, va("#%i: %s",pMapview->nCurzone,tempz.sName.c_str()) );
+    	break;
 	}
-	break;
 	
     case lay_ent:
 	{
@@ -461,13 +454,13 @@ void Engine::UpdateStatbar(int cursorx,int cursory)
 		SetStatbarText(1,"");
 		SetStatbarText(2,"");
 	    }
+    	break;
 	}
-	break;
 	
     default: 
-	SetStatbarText(1,va("Left tile: %i  Right tile: %i",pMapview->nLefttile,pMapview->nRighttile)); // we're editing a tile layer
-	SetStatbarText(2,va("Tile under cursor: %i",map.GetTile(cursorx,cursory,nCurlayer)));
-	break;
+	    SetStatbarText(1,va("Left tile: %i  Right tile: %i",pMapview->nLefttile,pMapview->nRighttile)); // we're editing a tile layer
+	    SetStatbarText(2,va("Tile under cursor: %i",map.GetTile(cursorx,cursory,nCurlayer)));
+	    break;
     }
 }
 
@@ -489,8 +482,6 @@ void Engine::NewMap()
 	vsp.Load(newmapdlg.info.sVspname.c_str());
     else
 	vsp.New(newmapdlg.info.tilex,newmapdlg.info.tiley);
-    
-    //	vspimage.CopyVSPData(&vsp);
     
     pMapview->SetActiveLayer(0);
     //	tilesel.Close();
@@ -531,7 +522,6 @@ bool Engine::LoadMap()
     SetWindowText(hWnd,va("%s - [%s]",wintitle,filename));
     tilesel.Close();
     pMapview->SetActiveLayer(0);
-//    pMapview->UpdateVSP();
     pMapview->Redraw();
     return true;
 }
@@ -558,7 +548,6 @@ bool Engine::LoadVSP()
 	int result=vsp.Load(filename);
 	
 	pMapview->SetActiveLayer(0);
-//	pMapview->UpdateVSP();
 	pMapview->Redraw();
 	pMapview->ScrollWin(pMapview->xwin,pMapview->ywin);
 	
@@ -619,5 +608,3 @@ bool Engine::SaveMapAs()
     SetWindowText(hWnd,va("%s - [%s]",wintitle,filename));
     return true;
 }
-
-// -----------------------------=================== Rendering ================----------------------
