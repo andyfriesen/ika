@@ -63,7 +63,7 @@ namespace OpenGL
             for (int y = 0; y < src.Height(); y++)
             {
                 memcpy(
-                    pixels + (y * src.Width()), 
+                    pixels + (y * texwidth), 
                     src.GetPixels() + (y * src.Width()),
                     src.Width() * sizeof(RGBA));
             }
