@@ -37,9 +37,6 @@ namespace OpenGL
         /// deleting the image is safe.
         virtual void FreeImage(Video::Image* img);
 
-        /// Creates a copy of the provided image.
-        //virtual Video::Image* CopyImage(Video::Image* img);
-
         /// Clips the image to the provided rectangle.
         virtual void ClipImage(Video::Image* img, Rect& r) NYI
 
@@ -65,7 +62,7 @@ namespace OpenGL
         virtual void DrawLine(int x1, int y1, int x2, int y2, u32 color) NYI
 
         /// Draws a rectangle on the screen.
-        virtual void DrawRect(int x1, int y1, int x2, int y2, u32 color, bool filled) NYI
+        virtual void DrawRect(int x1, int y1, int x2, int y2, u32 color, bool filled);
 
         /// Draws an ellipse on the screen.
         virtual void DrawEllipse(int cx, int cy, int rx, int ry, u32 color, bool filled) NYI

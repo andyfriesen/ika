@@ -119,6 +119,26 @@ namespace OpenGL
         glEnd();
     }
 
+    void Driver::DrawRect(int x1, int y1, int x2, int y2, u32 color, bool filled)
+    {
+        RGBA& c = *(RGBA*)&color;   // >:D
+
+        glDisable(GL_TEXTURE_2D);
+        glColor4f(c.r, c.g, c.b, c.a);
+        if (filled)
+            glBegin(GL_QUADS);
+        else
+            glBegin(GL_LINE_LOOP);
+
+        glVertex2i(x1, y1);
+        glVertex2i(x2, y1);
+        glVertex2i(x2, y2);
+        glVertex2i(x1, y2);
+        glEnd();
+        glColor4f(1, 1, 1, 1);
+        glEnable(GL_TEXTURE_2D);
+    }
+
     Point Driver::GetResolution() const
     {
         return Point(_xres, _yres);

@@ -58,6 +58,10 @@ void CEngine::CheckMessages()
             // bottom line screenshot if F11 is pressed
 //            if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
 //                ScreenShot();
+
+            // alt-F4.  Quit.
+            if (event.key.keysym.sym == SDLK_F4 && SDL_GetModState() & (KMOD_LALT | KMOD_RALT))
+                bKillFlag = true;
             break;
 
         case SDL_KEYUP:
@@ -546,17 +550,14 @@ void CEngine::TestActivate(const CEntity& player)
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
         {
             script.CallEvent(zone.sActscript.c_str());
-            //input.enter = false;
         }
     }
     
     nOldtx = tx; nOldty = ty;
     
-    // TODO: adjacent activation
-    // This probably isn't the best place for that sort of thing.  Maybe in ProcessEntities, in the clause that
-    // executes when an entity is obstructed.  That'd be both more efficient, and accurate.
+    // adjacent activation
     
-    //if (!input.enter) return;                                // From this point on, the only time we'd have to check this crap is if b1 was pressed.
+    if (!input.Enter()) return;                                // From this point on, the only time we'd have to check this crap is if enter was pressed.
     
     tx = player.x; ty = player.y;
     // entity activation
@@ -579,7 +580,6 @@ void CEngine::TestActivate(const CEntity& player)
         if (!pEnt->bAdjacentactivate && pEnt->sActscript.length() != 0)
         {
             script.CallEvent(pEnt->sActscript.c_str());
-//            input.enter = false;
             return;
         }
     }
@@ -590,7 +590,6 @@ void CEngine::TestActivate(const CEntity& player)
     if (zone.bAdjacentactivation)
     {
         script.CallEvent(zone.sActscript.c_str());
-//        input.enter = false;
     }
 }
 

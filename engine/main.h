@@ -2,10 +2,11 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "ika 0.22"
+#define VERSION "ika 0.40alpha"
 
 // low level components/containers/etc..
 #include <list>
+
 #include "common/log.h"
 #include "common/misc.h"
 #include "video/Driver.h"
