@@ -13,7 +13,7 @@ VSP::VSP() : _width(0), _height(0)
     New();
 }
 
-VSP::VSP(const char* fname)
+VSP::VSP(const std::string& fname)
 {
     Load(fname);
 }
@@ -23,20 +23,20 @@ VSP::~VSP()
     Free();
 }
 
-bool VSP::Load(const char *fname)
+bool VSP::Load(const std::string& fname)
 {
     File f;
     int nTiles = 0;
     
     Free(); // nuke any existing VSP data
     
-    if (!f.OpenRead(fname))
+    if (!f.OpenRead(fname.c_str()))
     {
         Log::Write("Error opening %s", fname);
         return false;
     }
     
-    strcpy(name, fname);
+    name = fname;
     
     u16 ver;
     f.Read(&ver, 2);
@@ -134,7 +134,10 @@ bool VSP::Load(const char *fname)
             f.Read(&_height, 2);
             f.Read(&nTiles, 4);
             
-            f.Read(sDesc, 64);
+            char buffer[64];
+            f.Read(buffer, 64);
+            buffer[63] = 0;
+            desc = buffer;
             
             if (bpp==1)
             {
@@ -191,13 +194,13 @@ bool VSP::Load(const char *fname)
     return true;
 }
 
-int VSP::Save(const char* fname)
+int VSP::Save(const std::string& fname)
 {
     File f;
     int i;
     u8 *cb;
     
-    if (!f.OpenWrite(fname))
+    if (!f.OpenWrite(fname.c_str()))
     {
         Log::Write("Error writing to %s", fname);
         return 0;
@@ -218,7 +221,9 @@ int VSP::Save(const char* fname)
     f.Write(&_height, 2);
     f.Write((int)tiles.size());
     
-    f.Write(sDesc, 64);			// description. (authoring info, whatever)
+    char buffer[64];
+    strncpy(buffer, desc.c_str(), 63);
+    f.Write(buffer, 64);			// description. (authoring info, whatever)
     
     z_stream stream;
     int nDatasize = tiles.size() * _width * _height * bpp;
@@ -228,7 +233,7 @@ int VSP::Save(const char* fname)
     stream.next_in=(Bytef*)pTemp;
     stream.avail_in = nDatasize;
     stream.next_out=(Bytef*)cb;
-    stream.avail_out=(nDatasize * 11)/10 + 12;	// +10% and 12 u8s
+    stream.avail_out=(nDatasize * 11)/10 + 12;	// +10% and 12 bytes
     stream.data_type = Z_BINARY;
     
     stream.zalloc = NULL;

@@ -49,10 +49,10 @@ public:
     };
     
 private:
-    vector<Canvas>   tiles;   // tile images
+    vector<Canvas>   tiles;     // tile images
     
-    char sDesc[64];
-    char name[64];		    // the VSPs filename
+    std::string desc;
+    std::string name;           // the VSPs filename
     
     vector<AnimState>  vspanim;
     
@@ -60,11 +60,11 @@ private:
     
 public:
     VSP();
-    VSP(const char* fname);
+    VSP(const std::string& fname);
     ~VSP();
     
-    bool Load(const char* fname);
-    int  Save(const char* fname);
+    bool Load(const std::string& fname);
+    int  Save(const std::string& fname);
     void Free();
     void New(int xsize = 16, int ysize = 16, int numtiles = 100);
     
@@ -87,7 +87,7 @@ public:
     inline int Height() const { return _height; }
     inline uint NumTiles() const { return tiles.size(); }
     
-    inline const char* Name() const { return (const char*)name; }
+    inline const std::string& Name() const { return name; }
     
 private:
     void CreateTilesFromBuffer(u8* data, u8* pal, uint numtiles, int tilex, int tiley);

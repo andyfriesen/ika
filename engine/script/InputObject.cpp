@@ -28,7 +28,7 @@ namespace Script
                 "Unsets the Pressed() property of all controls.  Has no effect on\n"
                 "their positions.\n"
                 "Individual controls can be unpressed by simply calling their Pressed()\n"
-                "method, then discarding the result."
+                "method, discarding the result."
             },
             {   "GetControl",       (PyCFunction)Input_GetControl,  METH_VARARGS,
                 "Input.GetControl(name -> string)\n\n"
