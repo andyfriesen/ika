@@ -18,6 +18,9 @@ class CCodeView : public IDocView
 {
     wxStyledTextCtrl*   pTextctrl;
     bool                bChanged;
+
+    void InitTextControl();
+    void InitAccelerators();
 public:
 
     enum        // commands specific to this window

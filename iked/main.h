@@ -1,3 +1,6 @@
+/*
+    Main application window.
+*/
 
 #ifndef MAIN_H
 #define MAIN_H
@@ -52,7 +55,7 @@ public:
         id_filenewscript,
         id_fileopen,
 
-        id_tool=31373, // >;D
+        id_tool,                // Have to keep this low.  IDs above 100 are reserved for individual application windows.  (though they may overlap with each other, they must not overlap with these)
         id_toolnewscript,
         id_toolnewmap,
         id_toolopen
@@ -79,6 +82,16 @@ public:
     void OnChildClose(IDocView* child);
 
     wxMenuBar*  CreateBasicMenu();
+/*
+
+    This isn't quite as "correct" as it should be.
+    Instead of using a C array, I stuff it in a std::vector, and assume that vectors store things
+    in a sequential, continuous stream.  Should be okay, provided that the accelerator entry is copy
+    safe. ^_^  Personally, I think it's quite elegant, but it is skirting the rules a bit.
+
+*/
+    vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
+
 private:
     wxToolBar* CreateBasicToolBar();
     

@@ -77,7 +77,7 @@ LINK32=link.exe
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "\ika\common" /I "\ika\3rdparty" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D DEBUG=1 /D "__WXDEBUG__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /FD /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
 # ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\common" /I "..\3rdparty" /I "$(WXWIN)\include" /I "$(WXWIN)\contrib\include" /D "_DEBUG" /D DEBUG=1 /D "__WXDEBUG__" /D "MSVC" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /FD /c
-# SUBTRACT CPP /YX /Yc /Yu
+# SUBTRACT CPP /Fr /YX /Yc /Yu
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /d "_DEBUG"

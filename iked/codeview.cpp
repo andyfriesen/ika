@@ -46,6 +46,83 @@ BEGIN_EVENT_TABLE(CCodeView,wxMDIChildFrame)
 
 END_EVENT_TABLE()
 
+// I highly detest extremely imperative code like this. --andy
+void CCodeView::InitTextControl()
+{
+    pTextctrl=new wxStyledTextCtrl(this,id_ed);
+    pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
+    pTextctrl->SetProperty("fold","1");
+
+    // TODO: User syntax saving.  -- khross
+
+    // dunno, the font sizes come out differently.  Compensating here.
+#ifdef WX232
+    wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
+#else
+    wxFont font(8, wxMODERN, wxNORMAL, wxNORMAL, false);
+#endif
+    pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
+    pTextctrl->StyleClearAll();
+
+    pTextctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
+    pTextctrl->SetProperty("fold","1");
+
+    // defaults
+    pTextctrl->StyleSetForeground(0,  wxColour(0x80, 0x80, 0x80));  // whitespace
+    pTextctrl->StyleSetForeground(1,  wxColour(0x00, 0x7F, 0x00));  // code comments
+    pTextctrl->StyleSetForeground(2,  wxColour(0x00, 0x7f, 0x00));  // numeric constants
+    pTextctrl->StyleSetForeground(3,  wxColour(0x7f, 0x7f, 0x7f));  // " style string literals
+    pTextctrl->StyleSetForeground(4,  wxColour(0x00, 0x7f, 0x7f));  // ' style string literals
+    pTextctrl->StyleSetForeground(5,  wxColour(0x00, 0x00, 0x7f));  // keyword
+    pTextctrl->StyleSetForeground(6,  wxColour(0x7f, 0x00, 0x7f));  // ''' strings
+    pTextctrl->StyleSetForeground(7,  wxColour(0x7f, 0x00, 0x7f));  // """ strings
+    pTextctrl->StyleSetForeground(8,  wxColour(0x00, 0x7f, 0x7f));  // class declaration name
+    pTextctrl->StyleSetForeground(9,  wxColour(0x00, 0x7f, 0xFF));  // function declarations
+    pTextctrl->StyleSetForeground(10, wxColour(0x7F, 0x00, 0xFF));  // operators
+    pTextctrl->StyleSetForeground(11, wxColour(0x00, 0x00, 0x00));  // identifiers
+    pTextctrl->StyleSetBold(5,  true);
+    pTextctrl->StyleSetBold(10, true);
+    pTextctrl->StyleSetItalic(1,true);
+    
+    pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
+
+    pTextctrl->SetKeyWords(0,
+        "def lambda class return yield try raise except pass for while if else elif break continue "
+        "global as import finally exec del print in is assert from and not or None"
+        );
+
+    // init the margins
+    pTextctrl->SetMarginWidth       (linecountmargin,40);    // current line
+    pTextctrl->SetMarginType        (linecountmargin,wxSTC_MARGIN_NUMBER);
+    pTextctrl->SetMarginSensitive   (linecountmargin,false);
+
+    pTextctrl->SetMarginWidth       (foldmargin,10);
+    pTextctrl->SetMarginType        (foldmargin,wxSTC_MARGIN_SYMBOL);
+    pTextctrl->SetMarginSensitive   (foldmargin,true);
+    pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
+    pTextctrl->SetModEventMask      (wxSTC_MOD_CHANGEFOLD);
+
+    // fold marker thingies
+    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN, wxSTC_MARK_MINUS);
+    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDER, wxSTC_MARK_PLUS);
+
+    bChanged=false;
+}
+
+void CCodeView::InitAccelerators()
+{
+    vector<wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
+
+    int p=accel.size();                 // where we start appending to the table
+    accel.resize(accel.size()+2);
+
+    accel[p++].Set(wxACCEL_CTRL,(int)'S',id_filesave);
+    accel[p++].Set(wxACCEL_CTRL,(int)'W',id_fileclose);
+
+    wxAcceleratorTable table(accel.size(),&*accel.begin());
+    SetAcceleratorTable(table);
+}
+
 CCodeView::CCodeView(CMainWnd* parent,
                    const string& name)
                    : IDocView(parent,name)
@@ -89,69 +166,9 @@ CCodeView::CCodeView(CMainWnd* parent,
     optionsmenu->Append(id_optionsfont,"Co&lors...","");
 
     SetMenuBar(menubar);
-
-    // --- Set up the text control ---
-    pTextctrl=new wxStyledTextCtrl(this,id_ed);
-    pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
-    pTextctrl->SetProperty("fold","1");
-
-    // TODO: User syntax saving.  -- khross
-
-    // dunno, the font sizes come out differently.  Compensating here.
-#ifdef WX232
-    wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
-#else
-    wxFont font(8, wxMODERN, wxNORMAL, wxNORMAL, false);
-#endif
-    pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
-    pTextctrl->StyleClearAll();
-
-    pTextctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
-    pTextctrl->SetProperty("fold","1");
-
-
-    // defaults
-    pTextctrl->StyleSetForeground(0,  wxColour(0x80, 0x80, 0x80));  // whitespace
-    pTextctrl->StyleSetForeground(1,  wxColour(0x00, 0x7F, 0x00));  // code comments
-    pTextctrl->StyleSetForeground(2,  wxColour(0x00, 0x7f, 0x00));  // numeric constants
-    pTextctrl->StyleSetForeground(3,  wxColour(0x7f, 0x7f, 0x7f));  // " style string literals
-    pTextctrl->StyleSetForeground(4,  wxColour(0x00, 0x7f, 0x7f));  // ' style string literals
-    pTextctrl->StyleSetForeground(5,  wxColour(0x00, 0x00, 0x7f));  // keyword
-    pTextctrl->StyleSetForeground(6,  wxColour(0x7f, 0x00, 0x7f));  // ''' strings
-    pTextctrl->StyleSetForeground(7,  wxColour(0x7f, 0x00, 0x7f));  // """ strings
-    pTextctrl->StyleSetForeground(8,  wxColour(0x00, 0x7f, 0x7f));  // class declaration name
-    pTextctrl->StyleSetForeground(9,  wxColour(0x00, 0x7f, 0xFF));  // function declarations
-    pTextctrl->StyleSetForeground(10, wxColour(0x7F, 0x00, 0xFF));  // operators
-    pTextctrl->StyleSetForeground(11, wxColour(0x00, 0x00, 0x00));  // identifiers
-    pTextctrl->StyleSetBold(5,  true);
-    pTextctrl->StyleSetBold(10, true);
-    pTextctrl->StyleSetItalic(1,true);
-
-
     
-    pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
-
-    pTextctrl->SetKeyWords(0,
-        "def lambda class return yield try raise except pass for while if else elif break continue "
-        "global as import finally exec del print in is assert from and not or None"
-        );
-
-    // init the margins
-    pTextctrl->SetMarginWidth       (linecountmargin,40);    // current line
-    pTextctrl->SetMarginType        (linecountmargin,wxSTC_MARGIN_NUMBER);
-    pTextctrl->SetMarginSensitive   (linecountmargin,false);
-
-    pTextctrl->SetMarginWidth       (foldmargin,10);
-    pTextctrl->SetMarginType        (foldmargin,wxSTC_MARGIN_SYMBOL);
-    pTextctrl->SetMarginSensitive   (foldmargin,true);
-    pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
-    pTextctrl->SetModEventMask      (wxSTC_MOD_CHANGEFOLD);
-
-    // fold marker thingies
-    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN, wxSTC_MARK_MINUS);
-    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDER, wxSTC_MARK_PLUS);
-
-    bChanged=false;
+    InitTextControl();                  // set up the text control
+    InitAccelerators();
 
     if (name.length())
     {
