@@ -2,7 +2,7 @@
 #include "graph.h"
 #include "log.h"
 
-
+static const int nZoomscale=16;
 
 //-------------------------------------------------------
 
@@ -17,7 +17,7 @@ END_EVENT_TABLE()
 std::set<CGraphFrame*> CGraphFrame::pInstances;
 
 CGraphFrame::CGraphFrame(wxWindow* parent)
-:   wxGLCanvas(parent,pInstances.empty() ? (wxGLCanvas*)0 : *pInstances.begin())
+:   wxGLCanvas(parent,pInstances.empty() ? (wxGLCanvas*)0 : *pInstances.begin()),nZoom(16)
 {
     int w,h;
     GetClientSize(&w,&h);
@@ -73,11 +73,23 @@ void CGraphFrame::OnSize(wxSizeEvent& event)
 
 void CGraphFrame::OnMouseEvent(wxMouseEvent& event)
 {
+    // Tweak the mouse position, so that the parent doesn't have to compensate for interacting with the frame.
+//    ScreenToClient(&event.m_x,&event.m_y);
+    event.m_x=event.m_x*nZoomscale/nZoom;
+    event.m_y=event.m_y*nZoomscale/nZoom;
+//    ClientToScreen(&event.m_x,&event.m_y);
+
+    // Relay to the parent.
     wxPostEvent(GetParent(),event);
 }
 
 void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
 {
+    x=x*nZoomscale/nZoom;
+    y=y*nZoomscale/nZoom;
+    w=w*nZoomscale/nZoom;
+    h=h*nZoomscale/nZoom;
+
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
     glBindTexture(GL_TEXTURE_2D,0);
 
@@ -93,6 +105,11 @@ void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
 
 void CGraphFrame::RectFill(int x,int y,int w,int h,RGBA colour)
 {
+    x=x*nZoomscale/nZoom;
+    y=y*nZoomscale/nZoom;
+    w=w*nZoomscale/nZoom;
+    h=h*nZoomscale/nZoom;
+
     glBindTexture(GL_TEXTURE_2D,0);
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
 
@@ -113,6 +130,13 @@ void CGraphFrame::Blit(CImage& src,int x,int y,bool trans)
 
 void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
 {
+    x=x*nZoomscale/nZoom;
+    y=y*nZoomscale/nZoom;
+    w=w*nZoomscale/nZoom;
+    h=h*nZoomscale/nZoom;
+
+    w++; h++;
+
     GLfloat nTexendx=1.0f*src.nWidth/src.nTexwidth;
     GLfloat nTexendy=1.0f*src.nHeight/src.nTexheight;
 
@@ -137,6 +161,16 @@ void CGraphFrame::Clear()
 void CGraphFrame::ShowPage()
 {
     SwapBuffers();
+}
+
+int CGraphFrame::Zoom() const
+{
+    return nZoom;
+}
+
+void CGraphFrame::Zoom(int z)
+{
+    nZoom=z;
 }
 
 CImage::CImage(const CPixelMatrix& src)

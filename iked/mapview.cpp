@@ -1,3 +1,6 @@
+// Note to self: Tweak this so that it uses the new CGraphFrame zooming stuff, and not its present hacked crap.
+// Further note: delete these notes afterwards.
+
 #include "mapview.h"
 #include "main.h"
 #include "graph.h"
@@ -99,7 +102,7 @@ namespace
         EVT_SCROLLWIN_THUMBRELEASE(CMapSash::OnScroll)
     END_EVENT_TABLE()
 
-    const int nZoomscale=16;
+//    const int nZoomscale=16;
 };
 
 //-------------------------------------------------------------------------------------
@@ -354,11 +357,14 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
 }
 
 
-void CMapView::Zoom(const int& nZoomscale)
+void CMapView::Zoom(int nZoomscale)
 {
-    nZoom+=nZoomscale;
+    int nZoom=pGraph->Zoom()+nZoomscale;
+
     if (nZoom<1) nZoom=1;
     if (nZoom>255) nZoom=255;
+
+    pGraph->Zoom(nZoom);
 
     UpdateScrollbars();
     Render();   pGraph->ShowPage();
@@ -385,8 +391,8 @@ void CMapView::ScreenToMap(int& x,int& y)
     SMapLayerInfo l;
     pMap->GetLayerInfo(l,nCurlayer);
 
-    x=x*nZoomscale/nZoom;
-    y=y*nZoomscale/nZoom;
+/*    x=x*nZoomscale/nZoom;
+    y=y*nZoomscale/nZoom;*/
 
     x+=(xwin*l.pmulx/l.pdivx);
     y+=(ywin*l.pmuly/l.pdivy);
@@ -460,10 +466,8 @@ void CMapView::UpdateScrollbars()
     pGraph->GetClientSize(&w,&h);
 
     // not using *= here for a reason.  Integer math, remember. ;)
-    w=w*nZoomscale/nZoom;
-    h=h*nZoomscale/nZoom;
-
-    int a=nZoomscale;
+/*    w=w*nZoomscale/nZoom;
+    h=h*nZoomscale/nZoom;*/
 
     int maxx=pMap->Width()*pTileset->Width();
     int maxy=pMap->Height()*pTileset->Height();
@@ -556,8 +560,8 @@ void CMapView::RenderInfoLayer(int lay)
 
     pGraph->GetClientSize(&nWidth,&nHeight);
 
-    nWidth=nWidth*nZoomscale/nZoom;
-    nHeight=nHeight*nZoomscale/nZoom;
+/*    nWidth=nWidth*nZoomscale/nZoom;
+    nHeight=nHeight*nZoomscale/nZoom;*/
 
     int xw=xwin;
     int yw=ywin;
@@ -574,12 +578,12 @@ void CMapView::RenderInfoLayer(int lay)
     if (nFirstx+nLenx>pMap->Width())  nLenx=pMap->Width()-nFirstx;
     if (nFirsty+nLeny>pMap->Height()) nLeny=pMap->Height()-nFirsty;
 
-    int nAdjx=(xw%tx)*nZoom/nZoomscale;
-    int nAdjy=(yw%ty)*nZoom/nZoomscale;
-
+    int nAdjx=(xw%tx);//*nZoom/nZoomscale;
+    int nAdjy=(yw%ty);//*nZoom/nZoomscale;
+/*
     tx=tx*nZoom/nZoomscale;
     ty=ty*nZoom/nZoomscale;
-
+*/
     if (lay==lay_obstruction)
     {
         for (int y=0; y<nLeny; y++)
@@ -622,8 +626,8 @@ void CMapView::RenderLayer(int lay)
 
     pGraph->GetClientSize(&nWidth,&nHeight);
 
-    nWidth=nWidth*nZoomscale/nZoom;
-    nHeight=nHeight*nZoomscale/nZoom;
+/*    nWidth=nWidth*nZoomscale/nZoom;
+    nHeight=nHeight*nZoomscale/nZoom;*/
 
     SMapLayerInfo l;
     pMap->GetLayerInfo(l,lay);
@@ -643,11 +647,11 @@ void CMapView::RenderLayer(int lay)
     if (nFirstx+nLenx>pMap->Width())  nLenx=pMap->Width()-nFirstx;
     if (nFirsty+nLeny>pMap->Height()) nLeny=pMap->Height()-nFirsty;
 
-    int nAdjx=(xw%tx)*nZoom/nZoomscale;
-    int nAdjy=(yw%ty)*nZoom/nZoomscale;
+    int nAdjx=(xw%tx);//*nZoom/nZoomscale;
+    int nAdjy=(yw%ty);//*nZoom/nZoomscale;
 
-    tx=tx*nZoom/nZoomscale;
-    ty=ty*nZoom/nZoomscale;
+/*    tx=tx*nZoom/nZoomscale;
+    ty=ty*nZoom/nZoomscale;*/
 
     for (int y=0; y<nLeny; y++)
     {

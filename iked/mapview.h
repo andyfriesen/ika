@@ -151,7 +151,7 @@ private:
     void RenderEntities();
     void RenderInfoLayer(int lay);
     void RenderLayer(int lay);
-    void Zoom(const int& nZoomscale);
+    void Zoom(int nZoomscale);
 
     bool Save(const char* fname);
 };

@@ -292,6 +292,14 @@ SOURCE=.\tilesetview.h
 # PROP Default_Filter ""
 # Begin Source File
 
+SOURCE=..\common\chr.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\chr.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\common\configfile.cpp
 # End Source File
 # Begin Source File
