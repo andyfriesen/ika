@@ -106,6 +106,10 @@ SOURCE=.\configdlg.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\graph.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
@@ -135,6 +139,10 @@ SOURCE=.\configdlg.h
 # Begin Source File
 
 SOURCE=..\common\graph.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\graph.h
 # End Source File
 # Begin Source File
 

@@ -65,7 +65,7 @@ struct RGBA
     RGBA()
         : r(0),g(0),b(0),a(0)		{}
     
-    RGBA(u8 ar,u8 ag,u8 ab,u8 aa)
+    RGBA(u8 ar,u8 ag,u8 ab,u8 aa=255)
         : r(ar),g(ag),b(ab),a(aa) 	{}
     
     // convert from 16bpp

@@ -22,6 +22,40 @@ CGraphFrame::~CGraphFrame()
 {
 }
 
+void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
+{
+    SetCurrent();
+
+    glBindTexture(GL_TEXTURE_2D,-1);
+    glColor4ub(colour.r,colour.g,colour.b,colour.a);
+
+    glBegin(GL_LINE_LOOP);
+
+    glVertex2i(x,y);
+    glVertex2i(x+w,y);
+    glVertex2i(x+w,y+h);
+    glVertex2i(x,y+h);
+
+    glEnd();
+}
+
+void CGraphFrame::RectFill(int x,int y,int w,int h,RGBA colour)
+{
+    SetCurrent();
+
+    glBindTexture(GL_TEXTURE_2D,-1);
+    glColor4ub(colour.r,colour.g,colour.b,colour.a);
+
+    glBegin(GL_QUADS);
+
+    glVertex2i(x,y);
+    glVertex2i(x+w,y);
+    glVertex2i(x+w,y+h);
+    glVertex2i(x,y+h);
+
+    glEnd();
+}
+
 void CGraphFrame::Blit(CImage& src,int x,int y,bool trans)
 {
     SetCurrent();
