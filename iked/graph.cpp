@@ -2,6 +2,8 @@
 #include "graph.h"
 #include "log.h"
 
+
+
 //-------------------------------------------------------
 
 BEGIN_EVENT_TABLE(CGraphFrame,wxGLCanvas)

@@ -15,6 +15,7 @@
 #include "map.h"
 #include "tileset.h"
 #include "controller.h"
+#include "fontview.h"
 
 class IDocView;
 
