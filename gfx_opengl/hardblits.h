@@ -1,4 +1,13 @@
 
+static inline void SwitchTexture(GLuint tex)
+{
+    static GLuint hLasttex=-1;
+    if (tex==hLasttex) return;
+
+    glBindTexture(GL_TEXTURE_2D,tex);
+    hLasttex=tex;
+}
+
 void SynchTexture(handle img)
 {
     int width=img->nWidth;
@@ -71,7 +80,8 @@ void RenderTexture(handle img,int x,int y,bool transparent)
     
     glDisable(GL_COLOR_MATERIAL);            // no tinting
     
-    glBindTexture(GL_TEXTURE_2D,img->hTex);
+//    glBindTexture(GL_TEXTURE_2D,img->hTex);
+    SwitchTexture(img->hTex);
     glBegin(GL_QUADS);
     glColor4ub(255,255,255,255);
     glTexCoord2f(0.0f,0.0f);            glVertex2i(x            ,y             );
@@ -93,7 +103,8 @@ void ScaleRenderTexture(handle img,int x,int y,int width,int height,bool transpa
     
     glDisable(GL_COLOR_MATERIAL);
     
-    glBindTexture(GL_TEXTURE_2D,img->hTex);
+    //glBindTexture(GL_TEXTURE_2D,img->hTex);
+    SwitchTexture(img->hTex);
     glBegin(GL_QUADS);
     glColor4ub(255,255,255,255);
     glTexCoord2f(0.0f,0.0f);            glVertex2i(x      ,y       );
@@ -115,7 +126,8 @@ void DistortRenderTexture(handle img,int x[4],int y[4],bool transparent)
     
     glDisable(GL_COLOR_MATERIAL);
 
-    glBindTexture(GL_TEXTURE_2D,img->hTex);
+    //glBindTexture(GL_TEXTURE_2D,img->hTex);
+    SwitchTexture(img->hTex);
 
     glBegin(GL_QUADS);
 
@@ -130,6 +142,7 @@ void DistortRenderTexture(handle img,int x[4],int y[4],bool transparent)
 
 void HardLine(int x1,int y1,int x2,int y2,u32 colour)
 {
+    SwitchTexture(0);
     glBegin(GL_LINES);
     glColor4ub(colour&255,(colour>>8)&255,(colour>>16)&255,(colour>>24)&255);
     glVertex2i(x1,y1);
@@ -142,7 +155,8 @@ void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
 {
     RGBA col=colour;
 
-    glBindTexture(GL_TEXTURE_2D,NULL);
+    //glBindTexture(GL_TEXTURE_2D,NULL);
+    SwitchTexture(0);
     if (filled)
     {
         glBegin(GL_QUADS);
@@ -176,6 +190,7 @@ void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
 
 void HardPoly(handle img,int x[3],int y[3],u32 colour[3])
 {
+    SwitchTexture(0);
     glBegin(GL_TRIANGLES);
     for (int i=0; i<3; i++)
     {
@@ -188,6 +203,7 @@ void HardPoly(handle img,int x[3],int y[3],u32 colour[3])
 
 void HardPoint(handle img,int x,int y,u32 colour)
 {
+    SwitchTexture(0);
     glBegin(GL_POINTS);
     glColor4ub(colour&255,(colour>>8)&255,(colour>>16)&255,(colour>>24)&255);
     glVertex2i(x,y);
