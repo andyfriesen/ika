@@ -133,7 +133,13 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
 
     // Get resources
     pMap=pParentwnd->map.Load(name);                                    // load the map
-    pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());                  // load the VSP
+    
+    // get the absolute path to the map, and add it to the tileset filename
+    string sTilesetname=pMap->GetVSPName();
+    int p=name.rfind('\\');
+    sTilesetname=string(name.substr(0,p+1))+sTilesetname;
+    
+    pTileset=pParentwnd->vsp.Load(sTilesetname);                        // load the VSP
 
     pRightbar->SetScrollbar(wxVERTICAL,0,w,pMap->Height()*pTileset->Height());
     pRightbar->SetScrollbar(wxHORIZONTAL,0,h,pMap->Width()*pTileset->Width());
