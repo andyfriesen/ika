@@ -4,6 +4,8 @@
 
 // low level components/containers/etc..
 #include <list>
+#include <vector>
+#include <set>
 
 #include "common/log.h"
 #include "common/misc.h"
@@ -29,6 +31,7 @@
 
 class Engine
 {
+
     // This sucks.
     friend class ScriptEngine;
 
@@ -38,12 +41,11 @@ public:                                                                         
     
     Map                             map;                                            ///< tile placement and stuff
     CTileSet*                       tiles;                                          ///< Images.  Of Tiles.
-    ScriptEngine                    script;                                         ///< c0de
+    ScriptEngine                    script;
     
-    CSpriteController               sprite;                                         ///< CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
-    EntityList                      entities;                                       ///< entities ;P
+    CSpriteController               sprite;                                         ///< sprite files
+    EntityList                      entities;                                       ///< entities
 public:
-    
     Video::Driver*                  video;                                          ///< video. ;)
 
     bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
@@ -53,7 +55,7 @@ private:
     int                             xwin, ywin;                                     ///< world coordinates of the viewport
 
 public:
-    Entity*                         player;                                        ///< Points to the current player entity
+    Entity*                         player;                                         ///< Points to the current player entity
     Entity*                         cameraTarget;                                   ///< Points to the current camera target
     
     // Odds and ends

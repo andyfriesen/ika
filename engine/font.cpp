@@ -24,7 +24,7 @@ CFont::CFont(const char* filename, Video::Driver* v)
     , _tabSize(30)
 {
     CDEBUG("cfont::loadfnt");
-    
+
     if (!_fontFile.Load(filename))
         throw FontException();
 
@@ -44,7 +44,7 @@ CFont::~CFont()
     {
         _video->FreeImage(_glyphs[i]);
     }
-        
+
     _glyphs.clear();
 }
 
@@ -60,7 +60,7 @@ Video::Image* CFont::GetGlyphImage(char c, uint subset)
     uint glyphIndex = GetGlyphIndex(c, subset);
 
     assert(glyphIndex <= _glyphs.size()); // :x
-    
+
     Video::Image* img = _glyphs[glyphIndex];
 
     if (!img)
@@ -92,7 +92,7 @@ void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::B
     //if (c < 0 || c > 96)
     //    return;
 
-    assert((uint)GetGlyphIndex(c, subset) >= _fontFile.NumGlyphs()); // paranoia check
+    assert((uint)GetGlyphIndex(c, subset) < _fontFile.NumGlyphs()); // paranoia check
 
     Canvas& glyph = GetGlyphCanvas(c, subset);
 
@@ -111,11 +111,11 @@ void CFont::PrintChar(int& x, int y, uint subset, char c, Canvas& dest, Video::B
 
 template <class Printer>
 void CFont::PaintString(int startx, int starty, const char* s, Printer& print)
-{   
+{
     int cursubset = 0;
     int x = startx;
     int y = starty;
-    
+
     _video->SetBlendMode(Video::Normal);
     for (uint i=0; i < strlen(s); i++)
     {
@@ -125,24 +125,24 @@ void CFont::PaintString(int startx, int starty, const char* s, Printer& print)
             y += _height;
             x = startx;
             break;
-            
+
         case '\t':          // tab
             x += _tabSize - (x - startx) % _tabSize;
             break;
-            
+
         case subsetmarker:
             i++;
-            
+
             if (i >= strlen(s))
                 return; // subset marker at end of string.  bjork.
-            
+
             if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets()))                    // number?  switch the subset. (also make sure that it's a valid subset index
                 cursubset=s[i] - '0';
             else if (s[i] == subsetmarker)
                 //PrintChar(x, y, cursubset, s[i]);
                 print(x, y, cursubset, s[i], this);
             break;
-            
+
         default:
             //PrintChar(x, y, cursubset, s[i]);
             print(x, y, cursubset, s[i], this);
@@ -178,14 +178,14 @@ namespace
 };
 
 void CFont::PrintString(int x, int y, const char* s)
-{   
-	PrintToVideo printer;
+{
+    PrintToVideo printer;
     PaintString(x, y, s, printer);
 }
 
 void CFont::PrintString(int x, int y, const char* s, Canvas& dest, Video::BlendMode blendMode)
 {
-	PrintToCanvas printer(dest, blendMode);
+    PrintToCanvas printer(dest, blendMode);
     PaintString(x, y, s, printer);
 }
 
@@ -194,20 +194,20 @@ int CFont::StringWidth(const char* s) const
     int _width = 0;
     int currentSubSet = 0;
     uint len = strlen(s);
-    
+
     for (uint i = 0; i < len; i++)
     {
         unsigned char c = s[i];
-        
+
         switch (c)
         {
         case '\n':
             return _width;                                                          // um.. @_x
-            
+
         case '\t':                                                                  // tab
             _width += _tabSize - _width % _tabSize;
             break;
-            
+
         case subsetmarker:
             i++;
             if (s[i] == subsetmarker)
@@ -215,7 +215,7 @@ int CFont::StringWidth(const char* s) const
             else if (s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets()))                       // valid subset number?
                 currentSubSet = s[i] - '0';
             break;
-            
+
         default:
             if (c < 32 || c > 32 + 96)
                 continue;                                                           // invalid char, skip it.

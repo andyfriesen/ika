@@ -14,8 +14,9 @@ namespace aries
 
     bool isWhiteSpace(char c)
     {
-        static const std::string whiteSpace(" \t\n\r");
-        return whiteSpace.find(c) != std::string::npos;
+        return c==' ' || c=='\t' || c=='\n' || c=='\r';
+        //static const std::string whiteSpace(" \t\n\r");
+        //return whiteSpace.find(c) != std::string::npos;
     }
 
     std::string readIdentifier(std::istream& stream)

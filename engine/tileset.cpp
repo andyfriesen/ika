@@ -43,7 +43,7 @@ CTileSet::CTileSet(const std::string& fname, Video::Driver* v)
     }
 
     animstate = vsp.vspAnim;
-    for (int j = 0; j < vsp.vspAnim.size(); j++)
+    for (uint j = 0; j < vsp.vspAnim.size(); j++)
     {
         animstate[j].count = animstate[j].delay;                // init the counter
     }

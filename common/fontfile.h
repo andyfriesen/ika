@@ -27,7 +27,7 @@ private:
     std::vector<SSubSet>    set;                    ///< font subsets.
     std::vector<Canvas>     glyph;                  ///< Actual font glyphs.
 
-    int width, height;                            ///< The width and height of the largest characters in the font.
+    int width, height;                              ///< The width and height of the largest characters in the font.
     
     // ---------- Implementation Details -----------
     bool Load8bppFont(File& f);

@@ -105,7 +105,7 @@ void Engine::MainLoop()
     CDEBUG("mainloop");
     static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
 
-    CFont* font;
+    ScopedPtr<CFont> font;
     try
     {
         font = new CFont("system.fnt", video);
@@ -141,12 +141,7 @@ void Engine::MainLoop()
         }
 
         video->ShowPage();
-
-        // if we're on the fast track, give the OS a minute.
-        if (now == GetTime()) SDL_Delay(10);
     }
-
-    delete font;
 }
 
 void Engine::Startup()
@@ -332,7 +327,6 @@ namespace
 void Engine::RenderEntities(uint layerIndex)
 {
     CDEBUG("renderentities");
-
     std::vector<Entity*>     drawlist;
     const Point res = video->GetResolution();
     const Map::Layer* layer = map.GetLayer(layerIndex);
@@ -468,7 +462,7 @@ void Engine::Render()
             cameraTarget->y - res.y / 2 + layer->y));
     }
 
-    video->DrawRect(0, 0, res.x, res.y, RGBA(0, 0, 0), true);
+    video->ClearScreen();
 
     for (uint i = 0; i < map.NumLayers(); i++)
     {
@@ -722,9 +716,13 @@ Entity* Engine::SpawnEntity()
 
 void Engine::DestroyEntity(Entity* e)
 {
+#ifdef _DEBUG
+    // std::list has no search method.
+    // This is just a big dumb integrity check anyway.
     for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
         if (e == (*i))
         {
+#endif
             sprite.Free(e->sprite);
 
             // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
@@ -734,11 +732,13 @@ void Engine::DestroyEntity(Entity* e)
             // actually nuke it
             entities.remove(e);
             delete e;
+#ifdef _DEBUG
             return;
         }
 
     // In a Perfect World, this will never execute.
     Log::Write("Attempt to unallocate invalid entity!!!");
+#endif
 }
 
 // --------------------------------- Misc (interface with old file formats, etc...) ----------------------
