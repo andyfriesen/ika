@@ -194,6 +194,10 @@ SOURCE=.\projectview.cpp
 
 SOURCE=.\tileset.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=.\tilesetview.cpp
+# End Source File
 # End Group
 # Begin Group "Headers"
 
@@ -237,6 +241,10 @@ SOURCE=.\projectview.h
 # Begin Source File
 
 SOURCE=.\tileset.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\tilesetview.h
 # End Source File
 # End Group
 # Begin Group "Common"

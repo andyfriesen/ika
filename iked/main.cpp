@@ -199,13 +199,6 @@ void CMainWnd::Open(const std::string& fname)
             return;
         }
     };   
-
-    Log::Write("---");
-    for (std::set<IDocView*>::iterator i=pDocuments.begin(); i!=pDocuments.end(); i++)
-    {
-        Log::Write("%s",(*i)->GetFileName().c_str());
-    }
-    Log::Write("   ");
     
     pDocuments.insert(pWnd);
     pWnd->Activate();

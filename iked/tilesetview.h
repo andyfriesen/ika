@@ -14,15 +14,20 @@ class CTileSetView : public IDocView
     CGraphFrame*    pGraph;
 
     CTileSet*       pTileset;
+
+    int ywin;                   // scrollbar position
 public:
     CTileSetView(CMainWnd* parentwnd,const string& fname);
+
+    void OnSave(wxCommandEvent& event);
 
     void OnClick(wxMouseEvent& event);
 
     void OnPaint();
-    void OnClose();
+    void OnSize(wxSizeEvent& event);
+    void OnScroll(wxScrollEvent& event);
 
-    void OnSave(wxCommandEvent& event);
+    void OnClose();
 
     DECLARE_EVENT_TABLE()
 };

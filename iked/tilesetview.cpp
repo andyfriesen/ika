@@ -3,8 +3,10 @@
 #include "main.h"
 
 BEGIN_EVENT_TABLE(CTileSetView,IDocView)
-    EVT_CLOSE(CTileSetView::OnClose)
+    EVT_SCROLL(CTileSetView::OnScroll)
+    EVT_SIZE(CTileSetView::OnSize)
     EVT_PAINT(CTileSetView::OnPaint)
+    EVT_CLOSE(CTileSetView::OnClose)
 END_EVENT_TABLE()
 
 CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
@@ -17,12 +19,15 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
     pTileset=pParent->vsp.Load(fname);
 }
 
+// --------------------------------- events ---------------------------------
 
-void CTileSetView::OnClose()
+void CTileSetView::OnSave(wxCommandEvent& event)
 {
-    pParent->vsp.Release(pTileset);
+    pTileset->Save(sName.c_str());
+}
 
-    Destroy();
+void CTileSetView::OnClick(wxMouseEvent& event)
+{
 }
 
 void CTileSetView::OnPaint()
@@ -55,7 +60,18 @@ void CTileSetView::OnPaint()
     pGraph->ShowPage();
 }
 
-void CTileSetView::OnSave(wxCommandEvent& event)
+void CTileSetView::OnSize(wxSizeEvent& event)
 {
-    pTileset->Save(sName.c_str());
+}
+
+void CTileSetView::OnScroll(wxScrollEvent& event)
+{
+
+}
+
+void CTileSetView::OnClose()
+{
+    pParent->vsp.Release(pTileset);
+
+    Destroy();
 }
