@@ -35,7 +35,7 @@ protected:
     virtual int MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
     virtual bool InitProc(HWND hwnd);
     
-    bool PointIsInRect(int x,int y,RECT r);
+    bool PointIsInRect(int x,int y,Rect r);
     
     void DoLeftDownOnBigTile(int x,int y,int b,RGBA& nCurcolour);
     void DoLeftUpOnBigTile(int x,int y,int b);
@@ -70,10 +70,10 @@ protected:
     bool    lbutton,rbutton;    // Mouse button state flags
     int     nOldx,nOldy;        // old mouse coords, to prevent redundant tile-mangling.
     
-    //---------------------------------- rects --------------------------------------
-    RECT rBigimage;
-    RECT rSmallimage;
-    RECT rSwatch;
+    //---------------------------------- Rects --------------------------------------
+    Rect rBigimage;
+    Rect rSmallimage;
+    Rect rSwatch;
     //---------------------- Things that make derivation nifty ----------------------
     // TODO: make these pure virtuals?
     virtual void UpdateData() {}                                        // Copies the current data to wherever it should go

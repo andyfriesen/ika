@@ -30,9 +30,9 @@ void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src)
 
     iCurrent->CopyPixelData(curimage.GetPixelData(),curimage.Width(),curimage.Height(),4,0);
     // TODO: make this depend on the size of the client, then everything will scale all superhappy and stuff when the client window is resized
-    rBigimage=MakeRect(20,20,430,430);
-    rSmallimage=MakeRect(500-(curimage.Width()/2), 400-(curimage.Height()/2), 500+(curimage.Width()/2), 400+(curimage.Height()/2));
-    rSwatch=MakeRect(640-128,148-128,640,148);
+    rBigimage=Rect(20,20,430,430);
+    rSmallimage=Rect(500-(curimage.Width()/2), 400-(curimage.Height()/2), 500+(curimage.Width()/2), 400+(curimage.Height()/2));
+    rSwatch=Rect(640-128,148-128,640,148);
     
     MakeSwatchImage();
 
@@ -139,13 +139,24 @@ void CEdit::DrawSwatch()
     SetDlgItemText(hWnd,IDC_CURRENTCOLOUR,sTemp);
 }
 
+// Note: This works just dandy, and that'd be great, except that it won't work on win95.  Only 98 and up.  It'll have to be replaced
+// with the Hard Way. :(
 void CEdit::DrawBlownUpImage()
 {
     SelectObject(iBackbuffer->GetDC(),hBrush);
 
     Rectangle(iBackbuffer->GetDC(),0,0,rBigimage.right-rBigimage.left,rBigimage.bottom-rBigimage.top);
+#ifdef ALPHA_BLIT
 
-/*    StretchBlt(iBackbuffer->GetDC(),
+    const BLENDFUNCTION blendfunc =
+    {
+        AC_SRC_OVER,
+        0,
+        255,
+        1
+    };
+
+    AlphaBlend(iBackbuffer->GetDC(),
         0,0,
         rBigimage.right-rBigimage.left,
         rBigimage.bottom-rBigimage.top,
@@ -154,14 +165,26 @@ void CEdit::DrawBlownUpImage()
         0,
         iCurrent->Width(),
         iCurrent->Height(),
-        SRCCOPY);*/
+        blendfunc);
+
+#else
+
+    StretchBlt(iBackbuffer->GetDC(),
+        0,0,
+        rBigimage.Width(),
+        rBigimage.Height(),
+        iCurrent->GetDC(),
+        0,0,
+        iCurrent->Width(),
+        iCurrent->Height(),
+        SRCCOPY);
+
+#endif
 }
 
 // ugh
 void CEdit::Redraw()
-{
-    //	bool bUsealphablit=true;
-    
+{   
     DrawSwatch();
     
     HDC hDC=GetDC(hWnd);
@@ -242,6 +265,9 @@ void CEdit::UpdateLumina(HWND hBar)
     si.nMax=255;
     si.nPos=nLumina;
     SetScrollInfo(hBar,SB_CTL,&si,true);
+
+    nCurcolour[0]=CalcColour(nLumina,chroma);
+    nCurcolour[0].a=nAlpha;
     
     // Also, the numeric thingie right next to it.
     char c[255];
@@ -262,6 +288,8 @@ void CEdit::UpdateAlpha(HWND hBar)
     si.nMax=255;
     si.nPos=nAlpha;
     SetScrollInfo(hBar,SB_CTL,&si,true);
+
+    nCurcolour[0].a=nAlpha;
     
     // Also, the numeric thingie right next to it.
     char c[255];
@@ -287,10 +315,10 @@ void CEdit::MakeSwatchImage()
         }
 }
 
-bool CEdit::PointIsInRect(int x,int y,RECT r)
+bool CEdit::PointIsInRect(int x,int y,Rect r)
 {
-    if (x<r.left)	return false;
-    if (y<r.top)	return false;
+    if (x<r.left)   return false;
+    if (y<r.top)    return false;
     if (x>=r.right) return false;
     if (y>=r.bottom)return false;
     return true;
@@ -400,20 +428,7 @@ void CEdit::HandleMouse(int x,int y,int b)
             y-rSwatch.top,
             b,nCurcolour[1]);
     }
-    
-    // ... I dislike this
-    // immensely
-    /*	if (PointIsInRect(x,y,MakeRect(rSwatch.right-70, rSwatch.bottom+10, rSwatch.right-40, rSwatch.bottom+40)))
-    {
-    if(lbutton)
-    nCurcolour[0]=SetAlpha(nAlpha,nCurcolour[0]);
-    } 
-    else if (PointIsInRect(x,y,MakeRect(rSwatch.right-30, rSwatch.bottom+10, rSwatch.right, rSwatch.bottom+40)))
-    {
-    if(rbutton)
-    nCurcolour[1]=SetAlpha(nAlpha,nCurcolour[1]);
-}*/
-}
+    }
 
 int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {

@@ -94,19 +94,11 @@ LINK32=link.exe
 # PROP Default_Filter "cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 # Begin Source File
 
-SOURCE=.\char.cpp
-# End Source File
-# Begin Source File
-
 SOURCE=.\entity.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\font.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\graphlib.cpp
 # End Source File
 # Begin Source File
 
@@ -126,6 +118,14 @@ SOURCE=.\sound.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\sprite.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\tileset.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\timer.cpp
 # End Source File
 # Begin Source File
@@ -138,10 +138,6 @@ SOURCE=.\win32.cpp
 # PROP Default_Filter "h;hpp;hxx;hm;inl"
 # Begin Source File
 
-SOURCE=.\char.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\controller.h
 # End Source File
 # Begin Source File
@@ -151,10 +147,6 @@ SOURCE=.\entity.h
 # Begin Source File
 
 SOURCE=.\font.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\graphlib.h
 # End Source File
 # Begin Source File
 
@@ -171,6 +163,14 @@ SOURCE=.\script.h
 # Begin Source File
 
 SOURCE=.\sound.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\sprite.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\tileset.h
 # End Source File
 # Begin Source File
 
