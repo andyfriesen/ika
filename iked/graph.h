@@ -58,6 +58,7 @@ class CImage
 protected:
     GLuint hTex;
     int nWidth,nHeight;
+    int nTexwidth,nTexheight;
 
 public:
     CImage(const CPixelMatrix& src);

@@ -111,6 +111,9 @@ void CGraphFrame::Blit(CImage& src,int x,int y,bool trans)
 
 void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
 {
+    GLfloat nTexendx=1.0f*src.nWidth/src.nTexwidth;
+    GLfloat nTexendy=1.0f*src.nHeight/src.nTexheight;
+
     glBindTexture(GL_TEXTURE_2D,src.hTex);
 
     glBegin(GL_QUADS);
@@ -149,8 +152,11 @@ void CImage::Update(const CPixelMatrix& src)
     nWidth=src.Width();
     nHeight=src.Height();
 
-    int nTexwidth=nWidth;
-    int nTexheight=nHeight;
+    nTexwidth=1;
+    nTexheight=1;
+
+    while (nTexwidth<nWidth) nTexwidth<<=1;
+    while (nTexheight<nHeight) nTexheight<<=1;
 
     glBindTexture(GL_TEXTURE_2D,hTex);
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)src.GetPixelData());
