@@ -98,7 +98,7 @@ METHOD(image_load)
         if (!File::Exists(filename))
             throw va("%s does not exist",filename);
         
-        bool bResult=gfxLoadPNG(((v_ImageObject*)self)->data,filename);
+        bool bResult=gfxLoadImage(((v_ImageObject*)self)->data,filename);
         
         if (!bResult)
             throw va("Failed to load %s",filename);

@@ -64,6 +64,7 @@ namespace rho.MapEditor
             
             MenuItem filemenu=new MenuItem("&File",new MenuItem[]
                 {
+                    new MenuItem("-"),
                     new MenuItem("&Save",new EventHandler(SaveMap))
                 }
                 );

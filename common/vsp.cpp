@@ -206,7 +206,7 @@ int VSP::Save(const char* fname)
     RGBA* pTemp=new RGBA[nTilex*nTiley*tiles.size()];
     
     // copy all the tile data into one big long buffer that we can write to disk
-    for (int j=0; j<tiles.size(); j++)
+    for (unsigned int j=0; j<tiles.size(); j++)
         memcpy(pTemp+(j*nTilex*nTiley),tiles[j].GetPixelData(),nTilex*nTiley*sizeof(RGBA));
     
     const char bpp=4;

@@ -36,8 +36,8 @@ void CScriptEngine::Init(CEngine* p)
     s.append(Py_GetPath());
     PySys_SetPath((char*)s.c_str());
     
-    PyImport_AddModule("std");
-    PyObject* module=Py_InitModule("std",standard_methods);
+    PyImport_AddModule("ika");
+    PyObject* module=Py_InitModule("ika",standard_methods);
     PyObject* dict  =PyModule_GetDict(module);
     
     pEngine=p;                                                  // urk
@@ -130,6 +130,20 @@ bool CScriptEngine::LoadMapScripts(const char* fname)
         PyErr_Print();
         return false;
     }
+
+    // Now to execute an AutoExec function, if one exists
+    PyObject* pDict=PyModule_GetDict(pMapmodule);
+    PyObject* pFunc=PyDict_GetItemString(pDict,"AutoExec");
+
+    if (!pFunc)
+        return true; // No AutoExec?  No problem!
+
+    PyObject* result=PyEval_CallObject(pFunc,0);
+
+    if (!result)
+        Log::Write("Warning: Module %s had an AutoExec event, but it could not execute.",fname);
+
+    Py_XDECREF(result);
     
     return true;
 }

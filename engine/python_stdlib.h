@@ -345,6 +345,7 @@ PyMethodDef standard_methods[] =
     FUNCTION("SetPlayer",std_setplayer),
     FUNCTION("SetCameraTarget",std_setcameratarget),
     FUNCTION("GetCameraTarget",std_getcameratarget),
+    FUNCTION("EntityAt",std_entityat),
     
     FUNCTION("HookButton",std_hookbutton),
     FUNCTION("HookRetrace",std_hookretrace),

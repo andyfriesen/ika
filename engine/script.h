@@ -159,6 +159,7 @@ public:                                                        // too bad
     METHOD(std_setplayer);
     METHOD(std_setcameratarget);
     METHOD(std_getcameratarget);
+    METHOD(std_entityat);
 
     METHOD(std_hookbutton);
     METHOD(std_hookretrace);

@@ -124,15 +124,18 @@ void UnloadGraphics()
     }
 }
 
-bool gfxLoadPNG(handle hImage,const char* fname)
+#include "corona.h"
+
+bool gfxLoadImage(handle hImage,const char* fname)
 {
-    CPixelMatrix png;
+    corona::Image* i=corona::OpenImage(fname,corona::FF_AUTODETECT,corona::PF_R8G8B8A8);
+    if (!i)
+        return 0;
+
+    CPixelMatrix img((RGBA*)i->getPixels(),i->getWidth(),i->getHeight());
+
+    delete i;
     
-    bool result=PNG::Load(png,fname);
-    
-    if (!result)
-        return false;
-    
-    gfxCopyPixelData(hImage,(u32*)png.GetPixelData(),png.Width(),png.Height());
+    gfxCopyPixelData(hImage,(u32*)img.GetPixelData(),img.Width(),img.Height());
     return true;
 }

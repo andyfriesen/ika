@@ -1,5 +1,5 @@
 /*
-OpenGL rendering engine
+    OpenGL rendering engine
 */
 
 #include <windows.h>

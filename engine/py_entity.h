@@ -437,3 +437,30 @@ METHOD(std_getcameratarget)
 
     // execution never gets here
 }
+METHOD(std_entityat)
+{
+    int x,y,width,height;
+    if (!PyArg_ParseTuple(args,"iiii|EntityAt",&x,&y,&width,&height))
+        return 0;
+
+    int x2=x+width;
+    int y2=y+height;
+
+    int count=0;
+    PyObject* pKey=0;
+    PyObject* pValue=0;
+    while (PyDict_Next(pEntitydict,&count,&pKey,&pValue))
+    {
+        CEntity& ent=*((v_EntityObject*)pValue)->pEnt;
+        if (x>ent.x+ent.pSprite->nHotw)    continue;
+        if (y>ent.y+ent.pSprite->nHoth)    continue;
+        if (x2<ent.x)    continue;
+        if (y2<ent.y)    continue;
+        
+        Py_INCREF(pValue);
+        return pValue;
+    }
+    
+    Py_INCREF(Py_None);
+    return Py_None;
+}
