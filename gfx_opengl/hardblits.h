@@ -135,7 +135,7 @@ void RotScaleRenderTexture(handle img,int cx,int cy,float angle,int scale,bool t
 void HardLine(int x1,int y1,int x2,int y2,u32 colour)
 {
     glBegin(GL_LINES);
-    glColor4ub((colour>>16)&255,(colour>>8)&255,colour&255,(colour>>24)&255);
+    glColor4ub(colour&255,(colour>>8)&255,(colour>>16)&255,(colour>>24)&255);
     glVertex2i(x1,y1);
     glVertex2i(x2,y2);
     glColor4ub(255,255,255,255);
@@ -150,7 +150,7 @@ void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
     if (filled)
     {
         glBegin(GL_QUADS);
-        glColor4ub(col.r & 255,col.g & 255,col.b & 255,col.a & 255);
+        glColor4ub(col.b,col.g,col.r,col.a);
         glVertex2i(x1,y1);
         glVertex2i(x2,y1);
         glVertex2i(x2,y2);
@@ -161,7 +161,7 @@ void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
     else
     {
         glBegin(GL_LINES);
-        glColor4ub(col.r & 255,col.g & 255,col.b & 255,col.a & 255);
+        glColor4ub(col.b,col.g,col.r,col.a & 255);
         glVertex2i(x1,y1);
         glVertex2i(x2,y1);
         
@@ -183,7 +183,7 @@ void HardPoly(handle img,int x[3],int y[3],u32 colour[3])
     glBegin(GL_TRIANGLES);
     for (int i=0; i<3; i++)
     {
-        glColor4ub((colour[i]>>16)&255,(colour[i]>>8)&255,colour[i]&255,(colour[i]>>24)&255);
+        glColor4ub(colour&255,(colour>>8)&255,(colour>>16)&255,(colour>>24)&255);
         glVertex2i(x[i],y[i]);
         glColor4ub(255,255,255,255);
     }
@@ -193,7 +193,7 @@ void HardPoly(handle img,int x[3],int y[3],u32 colour[3])
 void HardPoint(handle img,int x,int y,u32 colour)
 {
     glBegin(GL_POINTS);
-    glColor4ub((colour>>16)&255,(colour>>8)&255,colour&255,(colour>>24)&255);
+    glColor4ub(colour&255,(colour>>8)&255,(colour>>16)&255,(colour>>24)&255);
     glVertex2i(x,y);
     glColor4ub(255,255,255,255);
     glEnd();
