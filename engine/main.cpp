@@ -119,16 +119,17 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     
     hWnd=hwnd;        hInst=hinst;
     
-    initlog("ika.log");
+    cfg.Read("user.cfg");
+
+    if (cfg.bLog)
+        initlog("ika.log");
     
     log("%s startup",VERSION);
     log("Built on %s",__DATE__);
     log("--------------------------");
     
     bKillFlag=false;
-    
-    cfg.Read("user.cfg");
-    
+      
     if (!SetUpGraphics(cfg.sGraphplugin))
     {
         Sys_Error("Unable to load graphics driver.");

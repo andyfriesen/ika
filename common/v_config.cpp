@@ -1,13 +1,14 @@
 #include "v_config.h"
+#include "fileio.h"
 
 SUserConfig::SUserConfig()
+:   nInitxres(320),
+    nInityres(240),
+    nInitbpp(16),
+    bFullscreen(true),
+    bSound(true),
+    nMaxframeskip(10)
 {
-    nInitxres=320;
-    nInityres=240;
-    nInitbpp=16;
-    bFullscreen=true;
-    bSound=true;
-    nMaxframeskip=10;
     strcpy(sGraphplugin,"sys\\gfx_soft.dll");
     strcpy(sSoundplugin,"sys\\sfx_mikmod.dll");
 }
@@ -15,8 +16,6 @@ SUserConfig::SUserConfig()
 bool SUserConfig::Read(const char* fname)
 {
     File f;
-    
-    // First, set some defaults
     
     if (!f.OpenRead(fname))
         return false;
@@ -59,6 +58,9 @@ bool SUserConfig::Read(const char* fname)
         
         else if (!stricmp(c,"nosound"))
             bSound=false;
+
+        else if (!stricmp(c,"log"))
+            bLog=true;
         
         else
             break;

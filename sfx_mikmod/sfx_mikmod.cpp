@@ -60,7 +60,9 @@ static int	nMusic=0;
 
 bool EXPORT sfxInit()
 {
+#ifdef _DEBUG
     initlog("sfx_mikmod.log");
+#endif
     log("Initing sound...");
     Mikmod_RegisterLoader(load_mod);
     Mikmod_RegisterLoader(load_s3m);

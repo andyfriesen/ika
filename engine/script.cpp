@@ -102,7 +102,7 @@ bool CScriptEngine::LoadSystemScripts(char* fname)
 {
     Py_XDECREF(pSysmodule);                                            // free it if it's already allocated
     
-    pSysmodule=PyImport_ImportModule("system");//pGlobalscope,pGlobalscope,NULL);
+    pSysmodule=PyImport_ImportModule("system");
     if (!pSysmodule)
     {
         PyErr_Print();

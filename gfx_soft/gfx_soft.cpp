@@ -65,7 +65,9 @@ int gfxGetVersion()	{	return 2;	}
 
 bool gfxInit(HWND hWnd,int x,int y,int,bool fullscreen)
 {
+#ifdef _DEBUG
     initlog("gfx_soft.log");
+#endif
     
     if (bInited)
     {

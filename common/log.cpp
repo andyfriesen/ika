@@ -11,7 +11,7 @@
 // nuke this to disable all logging
 #define LOG_ENABLE
 
-int logging=0;
+static int logging=0;
 
 #ifdef _CALLBACK
 std::string CDebuggingthing::callback;
