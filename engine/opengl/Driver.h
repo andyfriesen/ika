@@ -4,8 +4,9 @@
 #include "SDL/SDL.h"
 
 #include "video/Driver.h"
-
 #include "common/Canvas.h"
+
+#include "FPSCounter.h"
 
 namespace OpenGL
 {
@@ -72,7 +73,11 @@ namespace OpenGL
 
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const;
+
+        /// Returns the number of times ShowPage() has been called in the past second.
+        virtual int GetFrameRate() const;
     private:
+        FPSCounter fps;
         SDL_Surface* _screen;
         int _xres;
         int _yres;

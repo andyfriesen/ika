@@ -14,7 +14,8 @@ You know the drill. --tSB
 
 static const char subsetmarker='~';
 
-CFont::CFont(const char* filename, Video::Driver* video)
+CFont::CFont(const char* filename, Video::Driver* v)
+    : video(v)
 {
     CDEBUG("cfont::loadfnt");
     

@@ -59,8 +59,9 @@ void CEngine::CheckMessages()
 //            if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
 //                ScreenShot();
 
-            // alt-F4.  Quit.
-            if (event.key.keysym.sym == SDLK_F4 && SDL_GetModState() & (KMOD_LALT | KMOD_RALT))
+            // Alt-F4.  Quit.
+            if (event.key.keysym.sym == SDLK_F4 && 
+                (SDL_GetModState() & (KMOD_LALT | KMOD_RALT)))
                 bKillFlag = true;
             break;
 
@@ -115,7 +116,7 @@ void CEngine::MainLoop()
 
         if (bShowfps)
         {
-            //font->PrintString(0, 0, va("FPS: %i", gfxGetFrameRate()));
+            font->PrintString(0, 0, va("FPS: %i", video->GetFrameRate()));
         }
 
         video->ShowPage();
@@ -128,8 +129,6 @@ void CEngine::Startup()
 // TODO: Make a nice happy GUI thingie for making a user.cfg
 // This is ugly. :(
 {
-
-    printf("blah");
     CDEBUG("Startup");
     
     CConfigFile cfg("user.cfg");
@@ -696,7 +695,6 @@ void CEngine::SetCamera(Point p)
 
 int main(int argc, char* args[])
 {
-    printf("wee!!!\n");
     CEngine engine;
     engine.Startup();
     engine.MainLoop();

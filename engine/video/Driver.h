@@ -82,6 +82,9 @@ namespace Video
 
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const = 0;
+
+        /// Returns the number of times ShowPage() has been called in the past second.
+        virtual int GetFrameRate() const = 0;
     };
 }
 

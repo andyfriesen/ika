@@ -90,6 +90,7 @@ namespace OpenGL
 
     void Driver::ShowPage()
     {
+        fps.Update();
         SDL_GL_SwapBuffers();
     }
 
@@ -124,7 +125,7 @@ namespace OpenGL
         RGBA& c = *(RGBA*)&color;   // >:D
 
         glDisable(GL_TEXTURE_2D);
-        glColor4f(c.r, c.g, c.b, c.a);
+        glColor4ub(c.r, c.g, c.b, c.a);
         if (filled)
             glBegin(GL_QUADS);
         else
@@ -151,5 +152,10 @@ namespace OpenGL
 
         _lasttex = tex;
         glBindTexture(GL_TEXTURE_2D, tex);
+    }
+
+    int Driver::GetFrameRate() const
+    {
+        return fps.FPS();
     }
 };
