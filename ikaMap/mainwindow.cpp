@@ -1003,8 +1003,10 @@ void MainWindow::HandleCommand(::Command* cmd)
 
 bool MainWindow::IsLayerVisible(uint index)
 {
-    wxASSERT(index < _map->NumLayers());
-    return _layerVisibility[index];
+    if (index >= _map->NumLayers())
+        return false;
+    else
+        return _layerVisibility[index];
 }
 
 void MainWindow::ShowLayer(uint index, bool show)

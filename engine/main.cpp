@@ -632,11 +632,13 @@ Map::Layer::Zone* Engine::TestZoneCollision(const Entity* ent)
         iter != layer->zones.end();
         iter++)
     {
-        if (x >= iter->position.left &&
-            y >= iter->position.top &&
-            x2 <= iter->position.right &&
-            y2 <= iter->position.bottom)
-            return &*iter; // hurk*/
+        if (!(
+            x > iter->position.right ||
+            y > iter->position.bottom ||
+            x2 < iter->position.left ||
+            y2 < iter->position.top
+            ))
+            return &*iter; // oogly
     }
 
     return 0;

@@ -22,8 +22,8 @@ void ScriptEngine::Init()
     _initted = true;
     Py_Initialize();
 
-    PyImport_AddModule("ika");
-    PyObject* ikaModule = Py_InitModule3("ika", ScriptObject::standard_methods,
+    PyImport_AddModule("ikamap");
+    PyObject* ikaModule = Py_InitModule3("ikamap", ScriptObject::standard_methods,
         "ikaMap standard module\n"
         "\n"
         "Contains functions for tweaking ikaMap, and the map it is editing."

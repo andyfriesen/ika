@@ -13,6 +13,7 @@ public:
     /// User's chosen settings.
     bool _append;
     bool _pad;
+    bool _autoCount;
     uint _width;
     uint _height;
     uint _rowSize;
@@ -35,10 +36,11 @@ public:
 private:
     void OnOk(wxCommandEvent& event);
     void OnCheckAppend(wxCommandEvent& event);
+    void OnCheckAutoCount(wxCommandEvent& event);
     void OnBrowse(wxCommandEvent& event);
 
     void SetDefaultValues();
-    void ImportTiles(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad);
+    void ImportTiles(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad, bool autoCount);
 
     DECLARE_EVENT_TABLE()
 

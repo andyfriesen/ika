@@ -37,6 +37,9 @@ void* ScriptObject::get() const
 
 void ScriptObject::set(void* o)
 {
+    if (o == Py_None)
+        o = 0;
+
     Py_XDECREF((PyObject*)_object);
     _object = o;
     Py_XINCREF((PyObject*)o);

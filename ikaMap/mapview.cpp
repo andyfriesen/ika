@@ -98,6 +98,9 @@ void MapView::OnScroll(wxScrollWinEvent& event)
 
 void MapView::OnMouseDown(wxMouseEvent& event)
 {
+    if (_executor->GetMap()->NumLayers() == 0)
+        return;
+
     if (!_executor->IsLayerVisible(_executor->GetCurrentLayer()))
     {
         ::wxMessageBox("You shouldn't be able to have an active layer that is not\n"
@@ -118,7 +121,7 @@ void MapView::OnMouseDown(wxMouseEvent& event)
 
 void MapView::OnMouseUp(wxMouseEvent& event)
 {
-    if (_executor->GetMap()->NumLayers())
+    if (_executor->GetMap()->NumLayers() > 0)
         _editState->OnMouseUp(event);
 }
 

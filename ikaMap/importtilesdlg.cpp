@@ -9,9 +9,15 @@ BEGIN_EVENT_TABLE(ImportTilesDlg, wxDialog)
     EVT_BUTTON(wxID_OK, ImportTilesDlg::OnOk)
     EVT_BUTTON(XRCID("button_browse"), ImportTilesDlg::OnBrowse)
     EVT_CHECKBOX(XRCID("check_append"), ImportTilesDlg::OnCheckAppend)
+    EVT_CHECKBOX(XRCID("check_autocount"), ImportTilesDlg::OnCheckAutoCount)
 END_EVENT_TABLE()
 
 ImportTilesDlg::ImportTilesDlg(wxWindow* parent)
+    : _append(false)
+    , _pad(true)
+    , _autoCount(true)
+    , _numTiles(1)
+    , _rowSize(18)
 {
     wxXmlResource::Get()->LoadDialog(this, parent, "dialog_importframes");
     XRCCTRL(*this, "panel_main", wxPanel)->GetSizer()->Fit(this);
@@ -44,16 +50,17 @@ void ImportTilesDlg::OnOk(wxCommandEvent& event)
         _rowSize = atoi(XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->GetValue());
         _fileName = XRCCTRL(*this, "edit_filename", wxTextCtrl)->GetValue().c_str();
         _pad = XRCCTRL(*this, "check_padding", wxCheckBox)->GetValue();
+        _autoCount = XRCCTRL(*this, "check_autocount", wxCheckBox)->GetValue();
         _append = XRCCTRL(*this, "check_append", wxCheckBox)->GetValue();
-    
+
         if (!File::Exists(_fileName))   throw va("%s does not exist", _fileName.c_str());
         if (_width < 0 || _height < 0)  throw "The frame dimensions must be at least one pixel.";
-        if (_numTiles < 1)              throw "Importing less than one frame doesn't make much sense.";
+        if (!_autoCount && _numTiles < 1) throw "Importing less than one frame doesn't make much sense.";
         if (_rowSize < 1)               throw "There should be at least one frame per row.";
 
         try
         {
-            ImportTiles(_width, _height, _numTiles, _rowSize, _fileName, _pad);
+            ImportTiles(_width, _height, _numTiles, _rowSize, _fileName, _pad, _autoCount);
             wxDialog::OnOK(event);
         }
         catch (std::exception ex)
@@ -84,6 +91,11 @@ void ImportTilesDlg::OnCheckAppend(wxCommandEvent& event)
         editWidth->Enable();
         editHeight->Enable();
     }
+}
+
+void ImportTilesDlg::OnCheckAutoCount(wxCommandEvent& event)
+{
+    XRCCTRL(*this, "edit_numframes", wxTextCtrl)->Enable(event.GetInt() == 0);
 }
 
 void ImportTilesDlg::OnBrowse(wxCommandEvent& event)
@@ -118,19 +130,24 @@ void ImportTilesDlg::SetDefaultValues()
 
     XRCCTRL(*this, "check_append", wxCheckBox)->SetValue(_append);
     XRCCTRL(*this, "check_padding", wxCheckBox)->SetValue(_pad);
+    XRCCTRL(*this, "check_autocount", wxCheckBox)->SetValue(_autoCount);
 
     XRCCTRL(*this, "edit_numframes", wxTextCtrl)->SetValue(ToString(_numTiles).c_str());
+    XRCCTRL(*this, "edit_numframes", wxTextCtrl)->Enable(!_autoCount);
     XRCCTRL(*this, "edit_rowsize", wxTextCtrl)->SetValue(ToString(_rowSize).c_str());
     XRCCTRL(*this, "edit_filename", wxTextCtrl)->SetValue(_fileName.c_str());
 }
 
-void ImportTilesDlg::ImportTiles(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad)
+void ImportTilesDlg::ImportTiles(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad, bool autoCount)
 {
     Canvas image(fileName.c_str());
     tiles.clear(); 
 
     int xstep = width + (pad ? 1 : 0);
     int ystep = height + (pad ? 1 : 0);
+
+    if (autoCount)
+        numFrames = (image.Width() / xstep) * (image.Height() / ystep);
 
     int xpos = pad ? 1 : 0;
     int ypos = pad ? 1 : 0;
