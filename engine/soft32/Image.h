@@ -16,11 +16,9 @@ namespace Soft32
         int _width, _height;
 
         Image(SDL_Surface* s, int w, int h);
-
-
-    public:
         ~Image();
 
+    public:
         virtual int Width();
         virtual int Height();
     };

@@ -686,8 +686,6 @@ void CEngine::LoadMap(const char* filename)
 // Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure.
 {
     CDEBUG("loadmap");
-    char    temp[255];
-//    char*   extension;
     
     try
     {
@@ -696,7 +694,7 @@ void CEngine::LoadMap(const char* filename)
         if (!map.Load(filename)) throw filename;                        // actually load the map
         
         delete tiles;                                                   // nuke the old tileset
-        tiles = new CTileSet(map.GetVSPName().c_str(), video);          // load up them tiles
+        tiles = new CTileSet(map.GetVSPName(), video);          // load up them tiles
         
         script.ClearEntityList();                                       // DEI
         
@@ -707,11 +705,7 @@ void CEngine::LoadMap(const char* filename)
             CEntity* pEnt = new CEntity(this, ent);                     // convert the old entity struct into the new one.
             entities.push_back(pEnt);
             
-            strcpy(temp, ent.sCHRname.c_str());
-            
-            pEnt->pSprite = sprite.Load(temp, video);                   // wee
-            if (pEnt->pSprite == 0)                                     // didn't load?
-                Sys_Error(va("Unable to load CHR file \"%s\"", temp));  // wah
+            pEnt->pSprite = sprite.Load(ent.sCHRname, video);                   // wee
             
             script.AddEntityToList(pEnt);
         }
@@ -722,6 +716,8 @@ void CEngine::LoadMap(const char* filename)
         if (!script.LoadMapScripts(filename))
             Script_Error();
     }
+    catch (std::runtime_error err)
+    {   Sys_Error(err.what());  }
     catch (const char* msg)
     {    Sys_Error(va("Failed to load %s", msg));    }
     catch (...)

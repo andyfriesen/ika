@@ -6,7 +6,7 @@
 #include "video/Driver.h"
 #include "video/Image.h"
 
-CTileSet::CTileSet(const char* fname, Video::Driver* v)
+CTileSet::CTileSet(const std::string& fname, Video::Driver* v)
     : video(v)
     , nAnimtimer(0)
 {
@@ -53,7 +53,8 @@ CTileSet::CTileSet(const char* fname, Video::Driver* v)
 CTileSet::~CTileSet()
 {
     for (int i=0; i<nFrames; i++)
-        delete hFrame[i];
+        video->FreeImage(hFrame[i]);
+        //delete hFrame[i];
 }
 
 Video::Image* CTileSet::GetTile(int index)

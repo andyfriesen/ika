@@ -96,49 +96,12 @@ namespace OpenGL
             delete[] pixels;
 
         return new Image(texture, texwidth, texheight, src.Width(), src.Height());
-/*        bool dealloc;
-        RGBA* pixels;
-        int texwidth;
-        int texheight;
-
-        texwidth = NextPowerOf2(src.Width());
-        texheight = NextPowerOf2(src.Height());
-
-        if (texwidth == src.Width() && texheight == src.Height())
-        {
-            dealloc = false;    // perfect match
-            pixels = src.GetPixels();
-        }
-        else
-        {
-            dealloc = true;
-
-            pixels = new RGBA[texwidth * texheight];
-            for (int y = 0; y < src.Height(); y++)
-            {
-                memcpy(
-                    pixels + (y * texwidth), 
-                    src.GetPixels() + (y * src.Width()),
-                    src.Width() * sizeof(RGBA));
-            }
-        }
-
-        uint texture;
-        glGenTextures(1, &texture);
-        SwitchTexture(texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-
-        if (dealloc)
-            delete[] pixels;
-
-        return new Image(texture, texwidth, texheight, src.Width(), src.Height());*/
     }
 
     void Driver::FreeImage(Video::Image* img)
     {
-        delete img;
+        SwitchTexture(0);
+        delete (Image*)img;
     }
 
     void Driver::ShowPage()
@@ -152,6 +115,7 @@ namespace OpenGL
         if (bm == _blendMode)
             return bm;
 
+        // Unset the blend equation if it was previously changed. (it is always changed if the current mode is Video::Subtract)
         if (_blendMode == Video::Subtract)
         {
             glBlendEquationEXT(GL_FUNC_ADD_EXT);

@@ -32,7 +32,7 @@ class CTileSet
     void AnimateStrand(VSP::AnimState& anim);           ///< Updates one tile's animation state.
 
 public:
-    CTileSet(const char* fname, Video::Driver* v);
+    CTileSet(const std::string& fname, Video::Driver* v);
     ~CTileSet();
 
     Video::Image* GetTile(int index);

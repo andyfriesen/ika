@@ -53,7 +53,8 @@ CFont::~CFont()
     for (int nSet = 0; nSet < nSetsize; nSet++)
     {
         for (int nGlyph = 0; nGlyph < 96; nGlyph++)
-            delete set[nSet].glyph[nGlyph];
+            video->FreeImage(set[nSet].glyph[nGlyph]);
+            //delete set[nSet].glyph[nGlyph];
     }
         
     set.clear();

@@ -19,10 +19,10 @@ struct SpriteException{};
 */
 class CSprite
 {
-    vector<string>  sScript;                        ///< move scripts
+    vector<string>  sScript;                            ///< move scripts
     Video::Driver* video;
 
-    int nFramex, nFramey;                            ///< frame size
+    int nFramex, nFramey;                               ///< frame size
 
 public:
     string sFilename;
@@ -30,12 +30,12 @@ public:
     short int	nHotx, nHoty;		                ///< hotspot position
     short int	nHotw, nHoth;		                ///< hotspot size
 
-    vector<Video::Image*> hFrame;                   ///< array of frame images
+    vector<Video::Image*> hFrame;                       ///< array of frame images
 
-    CSprite(const char* fname, Video::Driver* v);
+    CSprite(const std::string& fname, Video::Driver* v);
     virtual ~CSprite();
 
-    Video::Image* GetFrame(uint frame);              ///< Returns the frame image
+    Video::Image* GetFrame(uint frame);                 ///< Returns the frame image
   
     inline int Width() const { return nFramex; }
     inline int Height() const { return nFramey; }
@@ -52,7 +52,7 @@ class CSpriteController
     struct CRefCountedSprite : public CSprite
     {
         int nRefcount;
-        CRefCountedSprite(const char* fname, Video::Driver* v)
+        CRefCountedSprite(const std::string& fname, Video::Driver* v)
             : CSprite(fname, v)
             , nRefcount(0)
         {}
@@ -63,7 +63,7 @@ class CSpriteController
     SpriteList sprite;                                      ///< List of allocated sprites
 
 public:
-    CSprite* Load(const char* fname, Video::Driver* video); ///< loads a CHR file
+    CSprite* Load(const std::string& fname, Video::Driver* video); ///< loads a CHR file
     void Free(CSprite* s);                                  ///< releases a CHR file
 
     ~CSpriteController();

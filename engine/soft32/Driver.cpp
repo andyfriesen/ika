@@ -92,7 +92,7 @@ namespace Soft32
 
     void Driver::FreeImage(Video::Image* img)
     {
-        delete img;
+        delete (Image*)img;
     }
 
     void Driver::ShowPage()

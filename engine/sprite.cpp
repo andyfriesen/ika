@@ -7,7 +7,7 @@
 #include "video/Driver.h"
 #include "video/Image.h"
 
-CSprite::CSprite(const char* fname, Video::Driver* v)
+CSprite::CSprite(const std::string& fname, Video::Driver* v)
     : video(v)
 {
     CCHRfile chr;
@@ -34,7 +34,7 @@ CSprite::CSprite(const char* fname, Video::Driver* v)
 CSprite::~CSprite()
 {
     for (uint i=0; i<hFrame.size(); i++)
-        delete hFrame[i];
+        video->FreeImage(hFrame[i]);//delete hFrame[i];
 }
 
 const string& CSprite::Script(uint s) const
@@ -57,7 +57,7 @@ Video::Image* CSprite::GetFrame(uint frame)
 
 // -----------------------------------  CSpriteController methods ------------------------
 
-CSprite* CSpriteController::Load(const char* fname, Video::Driver* video)
+CSprite* CSpriteController::Load(const std::string& fname, Video::Driver* video)
 {
     CDEBUG("ccharactercontroller::load");
 

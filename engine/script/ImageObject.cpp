@@ -74,7 +74,8 @@ namespace Script
 
         void Destroy(ImageObject* self)
         {
-            delete ((ImageObject*)self)->img;
+            //delete self->img;
+            engine->video->FreeImage(self->img);
             PyObject_Del(self);
         }
 

@@ -235,7 +235,7 @@ void CEntity::Move(Direction d)
 
     if (bEntobs)
     {
-        CEntity* pEnt=engine.DetectEntityCollision(this, newx, newy, pSprite->nHotw, pSprite->nHoth);
+        CEntity* pEnt=engine.DetectEntityCollision(this, newx, newy, pSprite->nHotw, pSprite->nHoth, true);
         if (pEnt && pEnt->bIsobs)
         {
             if (this==engine.pPlayer && pEnt->bAdjacentactivate)                                    // Adjacent activation

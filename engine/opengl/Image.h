@@ -20,10 +20,9 @@ namespace OpenGL
         int _width, _height;
 
         Image(uint tex, int tw, int th, int w, int h);
-
-    public:
         ~Image();
 
+    public:
         virtual int Width();
         virtual int Height();
     };

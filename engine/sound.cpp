@@ -17,7 +17,7 @@ namespace Sound
 
         if (!nullAudio)
         {
-#if defined(WIN32) || defined(_WIN32)
+#if 0 //defined(WIN32) || defined(_WIN32)
             _device = OpenDevice("winmm", "");
             if (!_device)
 #endif
