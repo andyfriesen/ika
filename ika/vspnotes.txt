@@ -1,0 +1,16 @@
+word - version # (6 in this case)
+byte - bytes per pixel. (1 or 4)
+word - tile width
+word - tile height
+quad - number of tiles
+
+byte[64] - description. (plain ascii)
+
+if bytes per pixel is 1, then this stuff is there:
+        byte[768] - Palette
+        byte - transparent colour
+
+quad - size of compressed block
+<compressed crap> tile data
+
+same ol' VSP animation stuff

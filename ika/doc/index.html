@@ -1,0 +1,576 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html>
+<head>
+<title>ika Python Reference</title>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
+<meta name="author" content="Ear &amp; the Speed Bump" />
+<meta name="copyright" content="Copyright &copy; 2001 ika Documentation Team" />
+<meta name="description" content="Official ika documentation." />
+<meta name="keywords" content="ika, documentation, doc, docs, coding, code, python, rpg, rpgmaker, gce, game, creation, engine" />
+<link rel="stylesheet" href="docs.css" type="text/css" />
+</head>
+<body>
+
+<h4>
+ika Python Reference
+<br />
+<span class="note">Last updated September 3rd, 2001</span>
+</h4>
+
+<table cellspacing="0"><tr><th>
+Table of Contents
+</th></tr><tr><td>
+<ol class="main"><li>
+<a href="#Reference">Library Reference</a><ol class="section">
+<li><a href="#General">General</a><ul>
+<li><a href="#Log">Log()</a></li>
+<li><a href="#Exit">Exit()</a></li>
+<li><a href="#Wait">Wait()</a></li>
+<li><a href="#Delay">Delay()</a></li>
+<li><a href="#GetTime">GetTime()</a></li>
+<li><a href="#Random">Random()</a></li>
+<li><a href="#LoadImage">LoadImage()</a></li>
+<li><a href="#ShowPage">ShowPage()</a></li>
+<li><a href="#SetRenderDest">SetRenderDest()</a></li>
+<li><a href="#GetScreenImage">GetScreenImage()</a></li>
+<li><a href="#PaletteMorph">PaletteMorph()</a></li>
+<li><a href="#HookButton">HookButton()</a></li>
+<li><a href="#HookRetrace">HookRetrace()</a></li>
+<li><a href="#UnhookRetrace">UnhookRetrace()</a></li>
+<li><a href="#HookTimer">HookTimer()</a></li>
+<li><a href="#UnhookTimer">UnhookTimer()</a></li>
+<li><a href="#RGB">RGB()</a></li>
+<li><a href="#GetRGB">GetRGB()</a></li>
+</ul></li><li><a href="#Maps">Maps</a><ul>
+<li><a href="#map.xwin">map.xwin</a></li>
+<li><a href="#map.ywin">map.ywin</a></li>
+<li><a href="#map.tilewidth">map.tilewidth</a></li>
+<li><a href="#map.tileheight">map.tileheight</a></li>
+<li><a href="#map.width">map.width</a></li>
+<li><a href="#map.height">map.height</a></li>
+<li><a href="#map.rstring">map.rstring</a></li>
+<li><a href="#map.vspname">map.vspname</a></li>
+<li><a href="#map.defaultmusic">map.defaultmusic</a></li>
+<li><a href="#map.entities">map.entities</a></li>
+<li><a href="#map.Switch">map.Switch()</a></li>
+<li><a href="#map.Render">map.Render()</a></li>
+<li><a href="#map.GetTile">map.GetTile()</a></li>
+<li><a href="#map.SetTile">map.SetTile()</a></li>
+<li><a href="#map.GetObs">map.GetObs()</a></li>
+<li><a href="#map.SetObs">map.SetObs()</a></li>
+<li><a href="#map.GetZone">map.GetZone()</a></li>
+<li><a href="#map.SetZone">map.SetZone()</a></li>
+<!--<li><a href="#map.GetParallax">map.GetParallax()</a></li>
+<li><a href="#map.SetParallax">map.SetParallax()</a></li>-->
+</ul></li><li><a href="#Entities">Entities</a><ul>
+<li><a href="#ProcessEntities">ProcessEntities()</a></li>
+<li><a href="#SetPlayer">SetPlayer()</a></li>
+<li><a href="#SetCameraTarget">SetCameraTarget()</a></li>
+<li><a href="#GetCameraTarget">GetCameraTarget()</a></li>
+<li><a href="#Entity">Entity()</a></li>
+<li><a href="#entity.x">entity.x</a></li>
+<li><a href="#entity.y">entity.y</a></li>
+<li><a href="#entity.speed">entity.speed</a></li>
+<li><a href="#entity.direction">entity.direction</a></li>
+<li><a href="#entity.curframe">entity.curframe</a></li>
+<li><a href="#entity.specframe">entity.specframe</a></li>
+<li><a href="#entity.visible">entity.visible</a></li>
+<li><a href="#entity.name">entity.name</a></li>
+<li><a href="#entity.actscript">entity.actscript</a></li>
+<li><a href="#entity.isobs">entity.isobs</a></li>
+<li><a href="#entity.mapobs">entity.mapobs</a></li>
+<li><a href="#entity.entobs">entity.entobs</a></li>
+<li><a href="#entity.sprite">entity.sprite</a></li>
+<li><a href="#entity.hotx">entity.hotx</a></li>
+<li><a href="#entity.hoty">entity.hoty</a></li>
+<li><a href="#entity.hotwidth">entity.hotwidth</a></li>
+<li><a href="#entity.hotheight">entity.hotheight</a></li>
+<li><a href="#entity.hotheightentity.Move">entity.Move()</a></li>
+<li><a href="#entity.IsMoving">entity.IsMoving()</a></li>
+<li><a href="#entity.Chase">entity.Chase()</a></li>
+<li><a href="#entity.Wander">entity.Wander()</a></li>
+<li><a href="#entity.WanderZone">entity.WanderZone()</a></li>
+<li><a href="#entity.Stop">entity.Stop()</a></li>
+<li><a href="#entity.DetectCollision">entity.DetectCollision()</a></li>
+</ul></li><li><a href="#Music_Section">Music</a><ul>
+<li><a href="#Music">Music()</a></li>
+<li><a href="#music.volume">music.volume</a></li>
+<li><a href="#music.position">music.position</a></li>
+<li><a href="#music.Play">music.Play()</a></li>
+<li><a href="#music.Pause">music.Pause()</a></li>
+</ul></li><li><a href="#Sounds">Sounds</a><ul>
+<li><a href="#Sound">Sound()</a></li>
+<li><a href="#sound.Play">sound.Play()</a></li>
+</ul></li><li><a href="#Fonts">Fonts</a><ul>
+<li><a href="#Font">Font()</a></li>
+<li><a href="#font.width">font.width</a></li>
+<li><a href="#font.height">font.height</a></li>
+<li><a href="#font.tabsize">font.tabsize</a></li>
+<li><a href="#font.Print">font.Print()</a></li>
+<li><a href="#font.CenterPrint">font.CenterPrint()</a></li>
+<li><a href="#font.RightPrint">font.RightPrint()</a></li>
+</ul></li><li><a href="#Input">Controller Input</a><ul>
+<li><a href="#input.up">input.up</a></li>
+<li><a href="#input.down">input.down</a></li>
+<li><a href="#input.left">input.left</a></li>
+<li><a href="#input.right">input.right</a></li>
+<li><a href="#input.enter">input.enter</a></li>
+<li><a href="#input.cancel">input.cancel</a></li>
+<li><a href="#input.Update">input.Update()</a></li>
+<li><a href="#input.Button">input.Button()</a></li>
+<li><a href="#input.SetButton">input.SetButton()</a></li>
+<li><a href="#input.NextPressed">input.NextPressed()</a></li>
+<li><a href="#input.SetNextPressed">input.SetNextPressed()</a></li>
+<li><a href="#input.MouseState">input.MouseState()</a></li>
+<li><a href="#input.SetMouseState">input.SetMouseState()</a></li>
+<li><a href="#input.ClipMouse">input.ClipMouse()</a></li>
+<li><a href="#input.BindKey">input.BindKey()</a></li>
+<li><a href="#input.UnbindKey">input.UnbindKey()</a></li>
+</ul></li><li><a href="Images">Images</a><ul>
+<li><a href="#Image">Image()</a></li>
+<li><a href="#image.width">image.width</a></li>
+<li><a href="#image.height">image.height</a></li>
+<li><a href="#image.Load">image.Load()</a></li>
+<li><a href="#image.Blit">image.Blit()</a></li>
+<li><a href="#image.ScaleBlit">image.ScaleBlit()</a></li>
+<li><a href="#image.CopyChannel">image.CopyChannel()</a></li>
+<li><a href="#image.Clip">image.Clip()</a></li>
+<li><a href="#image.Line">image.Line()</a></li>
+<li><a href="#image.FlatPoly">image.FlatPoly()</a></li>
+<li><a href="#image.Ellipse">image.Ellipse()</a></li>
+<li><a href="#image.Rect">image.Rect()</a></li>
+<li><a href="#image.SetPixel">image.SetPixel()</a></li>
+<li><a href="#image.GetPixel">image.GetPixel()</a></li>
+</ul></li></ol>
+<!--<li><a href="#Appendix">Appendix</a></li>
+<li><a href="#Glossary">Glossary</a></li>
+<li><a href="#Glossary">Credits</a></li>-->
+</li></ol>
+</td></tr></table>
+
+<table cellspacing="0"><tr><th id="reference">
+Library Reference
+</th></tr><tr><td class="main">
+
+<h2 id="General">General</h2>
+
+<h1 id="Log"><b>Log</b>( <span class="variable">message</span> <span class="note">[string]</span> )</h1>
+<b>Log</b>() writes a <span class="variable">message</span> to ika's log file (<span class="variable">ika.log</span>).
+
+<h1 id="Exit"><b>Exit</b>( <span class="variable">message</span> <span class="note">[string]</span> )</h1>
+<b>Exit</b>() quits the engine, and displays the <span class="variable">message</span> where the user can see it.
+
+<h1 id="Delay"><b>Delay</b>( <span class="variable">ticks</span> <span class="note">[integer]</span> )</h1>
+<b>Delay</b>() stalls the engine for the number of <span class="variable">ticks</span> (<span class="variable">hundredths of a second</span>) specified.
+
+<h1 id="Wait"><b>Wait</b>( <span class="variable">ticks</span> <span class="note">[integer]</span> )</h1>
+Like <b>Delay</b>(), <b>Wait</b>() stalls the engine for the specified <span class="variable">ticks</span>, however it still redraws the map and processes entities while waiting.
+
+<h1 id="GetTime"><b>GetTime</b>() <span class="note">[integer]</span></h1>
+The <b>GetTime</b>() function returns the amount of time the engine has run for, in ticks.
+
+<h1 id="Random"><b>Random</b>( <span class="variable">minimum</span> <span class="note">[integer]</span>, <span class="variable">maximum</span> <span class="note">[integer]</span> ) <span class="note">[integer]</span></h1>
+The <b>Random</b>() function returns a random integer between the specified <i>minimum</i> and <i>maximum</i> values.
+
+<h1 id="LoadImage"><b>LoadImage</b>( <span class="variable">filename</span> <span class="note">[string]</span> )</h1>
+Creates a new image object, loads the image file specified, and returns it.  Note that <i>myimage=LoadImage(filename)</i> is merely shorthand for the following:
+
+<blockquote><i>myimage=Image()
+<br>myimage.Load(filename)</i></blockquote>
+
+<h1 id="ShowPage"><b>ShowPage</b>()</h1>
+<b>ShowPage</b>() copies the accumulated back buffer to the actual screen, where the user will see it.
+
+<h1 id="SetRenderDest"><b>SetRenderDest</b>( <span class="variable">renderdest</span> <span class="note">[image object]</span> )</h1>
+<b>SetRenderDest</b>() redirects all drawing commands to the image object passed. If <span class="variable">renderdest</span> isn't an image object, an error will be generated.
+
+<h1 id="SetRenderDest"><b>GetRenderDest</b>() <span class="note">[image object]</span></h1>
+The <b>GetRenderDest</b>() function returns the image that is currently being drawn to. This image should either be the screen image or an image set by <b>SetRenderDest</b>().
+
+<h1 id="GetScreenImage"><b>GetScreenImage</b>() <span class="note">[image object]</span></h1>
+The <b>GetScreenImage</b>() function returns an image object that corresponds to the screen. Drawing to this object means that changes will be displayed on-screen the next time <b>ShowPage</b>() is called.
+
+<h1 id="PaletteMorph"><b>PaletteMorph</b>( <span class="variable">red</span> <span class="note">[integer]</span>, <span class="variable">green</span> <span class="note">[integer]</span>, <span class="variable">blue</span> <span class="note">[integer]</span> )</h1>
+<b>PalletteMorph</b>() tints everything on-screen [<span class="variable">this may not work on all machines however</span>.] The arguments <span class="variable">red, green, and blue</span> can have a value from 0 to 255. A value of 255 is normal intensity, 128 is half, 0 has no intensity, and so on.
+
+<h1 id="HookButton"><b>HookButton</b>( <span class="variable">button</span> <span class="note">[integer]</span>, <span class="variable">function</span> <span class="note">[function]</span> )</h1>
+After calling <b>HookButton</b>(), the <span class="variable">function</span> you specify will be executed when the button you specify is pressed. Handy for menus and such. You can pass None as the function to un-hook the button.
+
+<h1 id="HookRetrace"><b>HookRetrace</b>( <span class="variable">function</span> <span class="note">[function]</span> )</h1>
+After calling <b>HookRetrace</b>(), the <span class="variable">function</span> you specify will be called every time the map is redrawn. Note that you can hook a theoretically unlimited number of functions simultaneously.
+
+<h1 id="UnhookRetrace"><b>UnhookRetrace</b>( <span class="optional">[<span class="variable">function</span> <span class="note">[integer]</span>]</span> )</h1>
+<b>UnhookRetrace</b>() removes a <span class="variable">function</span> from the hook retrace list, so that it's no longer called when the screen is redrawn. If you omit the <span class="variable">function</span> argument, the entire list is cleared, and no functions will be called on retrace.
+
+<h1 id="HookTimer"><b>HookTimer</b>( <span class="variable">function</span> <span class="note">[function]</span> )</h1>
+Similar to <b>HookRetrace</b>(), <b>HookTimer</b>() causes the <span class="variable">function</span> you specify to be called every game tick (<span class="variable">one hundredths of a second</span>). Like <b>HookRetrace</b>(), you can hook as many functions as you want. Be careful, however. If your <span class="variable">function</span> takes too long to execute, <b>HookRetrace</b>() might get behind or become unstable.
+
+<h1 id="UnhookTimer"><b>UnhookTimer</b>( <span class="optional">[<span class="variable">function</span> <span class="note">[integer]</span>]</span> )</h1>
+Like <b>UnhookRetrace</b>, <b>UnhookTimer</b>() removes a <span class="variable">function</span> from the hooktimer list. Omitting the <span class="variable">function</span> argument results in the whole <b>HookTimer</b>() list to be unhooked.
+
+<h1 id="RGB"><b>RGB</b>( <span class="variable">red</span> <span class="note">[integer]</span>, <span class="variable">green</span> <span class="note">[integer]</span>, <span class="variable">blue</span> <span class="note">[integer]</span> <span class="optional">[, <span class="variable">alpha</span> <span class="note">[integer]</span>]</span> ) <span class="note">[integer]</span></h1>
+The <b>RGB</b>() function returns an integer containing the color you specified. <span class="variable">red, green, blue</span> are the main components of the color, and can have a value of no intensity (<span class="variable">0</span>) to full intensity (<span class="variable">255</span>). <span class="variable">alpha</span>, which is an optional argument, specifies how opaque the color is. A value of 0 denotes that the color is completely transparent, while a value of 255 is completely opaque. If <span class="variable">alpha</span> is not specified, the color will be completely opaque.
+
+<h1 id="GetRGB"><b>GetRGB</b>( <span class="variable">colour</span> <span class="note">[integer]</span> ) <span class="note">[tuple (integer, integer, integer, integer)]</span> </h1>
+<b>GetRGB</b>() returns a four element tuple containing <span class="variable">red, green, blue</span> and <span class="variable">alpha</span> in that order based on the <span class="variable">colour</span> you pass it.
+
+<h2 id="Maps">Maps</h2>
+
+<h1 id="map.xwin">map.<span class="variable">xwin</span> <span class="note">[integer]</span></h1>
+<span class="variable">xwin</span> stores the current x coordinate position of the map camera in <acronym>pixels</acronym>. Changing its position alters what part of the map is currently visible.
+
+<h1 id="map.ywin">map.<span class="variable">ywin</span> <span class="note">[integer]</span></h1>
+<span class="variable">xwin</span> stores the current x coordinate position of the map camera in <acronym>pixels</acronym>. Changing its position alters what part of the map is currently visible.
+
+<h1 id="map.tilewidth">map.<span class="variable">tilewidth</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">tilewidth</span> returns the width of a tile in the map's <acronym>VSP</acronym> [<span class="variable">note that this will probably change when a <acronym>VSP</acronym> object is implemented.</span>]
+
+<h1 id="map.tileheight">map.<span class="variable">tileheight</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">tilewidth</span> returns the height of a tile in the map's <acronym>VSP</acronym> [<span class="variable">note that this will probably change when a <acronym>VSP</acronym> object is implemented.</span>]
+
+<h1 id="map.width">map.<span class="variable">width</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">width</span> returns the width of the map in tiles.
+
+<h1 id="map.height">map.<span class="variable">height</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">width</span> returns the height of the map in tiles.
+
+<h1 id="map.rstring">map.<span class="variable">rstring</span> <span class="note">[string]</span></h1>
+<span class="variable">rstring</span> stores the map's current render string. The render string tells the engine in what order to render the map's layers.
+
+<h1 id="map.vspname">map.<span class="variable">vspname</span> <span class="note">[string]</span></h1>
+<span class="variable">vspname</span> returns the map's <acronym>VSP</acronym> tile set.
+
+<h1 id="map.defaultmusic">map.<span class="variable">defaultmusic</span> <span class="note">[string]</span></h1>
+<span class="variable">defaultmusic</span> returns the map's default music.
+
+<h1 id="map.entities">map.<b>entities</b> <span class="note">[dictionary { string : entity object, ... }]</span></h1>
+map.<span class="variable">entities</span> is a dictionary storing all the entities on the map. Each key stores the entity's description, and its corresponding value stores its own entity object. Note that this dictionary only holds the entities on the map, and not entities loaded manually through <b>Entity</b>().
+
+<h1 id="map.Switch">map.<b>Switch</b>( <span class="variable">filename</span> <span class="note">[string]</span> )</h1>
+<b>Switch</b>() switches to the <span class="variable">map</span> passed.
+
+<h1 id="map.Render">map.<b>Render</b>( <span class="optional">[<span class="variable">renderstring</span> <span class="note">[string]</span>]</span> )</h1>
+<b>Render</b>() draws the map tiles and entities. If you specify <span class="variable">renderstring</span>, it renders the map layers in the order specified. If you do not, then the map's default render string is used. This does not, however, change the map's default render string.
+
+<h1 id="map.GetTile">map.<b>GetTile</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">layer</span> <span class="note">[integer]</span> ) <span class="note">[integer]</span></h1>
+<b>GetTile</b>() returns the tile at the <span class="variable">x, y</span> coordinates specified on the specified <span class="variable">layer</span>. Note that the coordinates are in tiles and not <acronym>pixel</acronym>s.
+
+<h1 id="map.SetTile">map.<b>SetTile</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">layer</span> <span class="note">[integer]</span>, <span class="variable">tile</span> <span class="note">[integer]</span> )</h1>
+<b>SetTile</b>() sets the tile at the <span class="variable">x, y</span> coordinates specified on the specified <span class="variable">layer</span> to the specified <span class="variable">tile</span>. Note that the coordinates are in tiles and not <acronym>pixel</acronym>s.
+
+<h1 id="map.GetObs">map.<b>GetObs</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span> ) <span class="note">[boolean]</span></h1>
+<b>GetObs</b>() returns the obstruction at the specified <span class="variable">x, y</span> coordinates. A returned value of true (<span class="variable">1</span>) means that the tile is obstructed, while a value of false (<span class="variable">0</span>) means the tile is not obstructed. Note that the coordinates are in tiles and not <acronym>pixel</acronym>s.
+
+<h1 id="map.SetObs">map.<b>SetObs</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">obstruction</span> <span class="note">[boolean]</span> )</h1>
+<b>SetObs</b>() sets the obstruction at the specified <span class="variable">x, y</span> coordinates. A value of true  (<span class="variable">1</span>) passed to the <span class="variable">obstruction</span> argument means that the tile will be obstructed, while a value of false (<span class="variable">0</span>) means the tile will be unobstructed. Note that the coordinates are in tiles and not <acronym>pixel</acronym>s.
+
+<h1 id="map.GetZone">map.<b>GetZone</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span> ) <span class="note">[integer]</span></h1>
+<b>GetZone</b>() returns the zone at the specified <span class="variable">x, y</span> coordinates. Note that the coordinates are in tiles and not <acronym>pixel</acronym>s.
+
+<h1 id="map.SetZone">map.<b>SetZone</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">zone</span> <span class="note">[integer]</span> )</h1>
+<b>SetZone</b>() sets the <span class="variable">zone</span> at the specified <span class="variable">x, y</span> coordinates. Note that only one tile of that <span class="variable">zone</span> will be changed, and not the whole instance of that zone. Also note that the coordinates are in tiles and not <acronym>pixel</acronym>s.
+
+<!--<h1 id="">map.<b>GetParallax</b>( layer )</h1>
+!!!<b>GetParallax</b>() returns the map's parallax information, and raster and traslucency effects for the <span class="variable">layer</span> you specify. It returns the data in the following tuple: ( ( parallax_x_multiplier, parallax_x_divisor, parallax_y_multiplier, parallax_y_divisor), ( translucency ), ( hline_raster_effect ) ) [<span class="variable">note that this will <b>definitely</b> change in the future, and when it does, it will be better documented too.</span>]
+
+<h1 id="">map.Set<b>Parallax</b>( <span class="variable">( ( pmultx, pdivx, pmulty, pdivy ), ( trans ), ( hline ) )</span> )</h1>
+
+!!!You figure it out [<span class="variable">sorry for now.</span>]-->
+
+<h2 id="Entities">Entities</h2>
+
+<h1 id="ProcessEntities"><b>ProcessEntities</b>()</h1>
+<b>ProcessEntities</b>() processes all the entity data one retrace.
+
+<h1 id="SetPlayer"><b>SetPlayer</b>( <span class="variable">entity</span> <span class="note">[entity object]</span> )</h1>
+<b>SetPlayer</b>() gives the player control over the <span class="variable">entity</span> passed. You may also pass <span class="variable">None</span> for <span class="variable">entity</span>, and take the player's control away without reassigning it to another entity.
+
+<h1 id="SetCameraTarget"><b>SetCameraTarget</b>( <span class="variable">entity</span> <span class="note">[entity object]</span> )</h1>
+<b>SetCameraTarget</b>() causes the built-in camera to follow the <span class="variable">entity</span> that you specify. If you pass <span class="variable">None</span> to <b>AttachCamera</b>(), then the camera will not follow any entity, including the player. This allows you to manually move the camera with the <span class="variable">xwin</span> and <span class="variable">ywin</span> variables.
+
+<h1 id="GetCameraTarget"><b>GetCameraTarget</b>( <span class="variable">entity</span> ) <span class="note">[entity object]</span></h1>
+<b>GetCameraTarget</b>() returns the entity that the built-in camera is following.
+
+<h1 id="Entity"><b>Entity</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">chrname</span> <span class="note">[string]</span> ) <span class="note">[entity object]</span></h1>
+<b>Entity</b>() creates a new entity at <span class="variable">x, y</span> using the <span class="variable">CHR file</span> you specified. It then returns an entity object corresponding to the entity.
+
+<h1 id="entity.x">entity.<span class="variable">x</span> <span class="note">[integer]</span></h1>
+<span class="variable">x</span> is the entity's x coordinate position on the map, in <acronym>pixel</acronym>s.
+
+<h1 id="entity.y">entity.<span class="variable">y</span> <span class="note">[integer]</span></h1>
+<span class="variable">x</span> is the entity's y coordinate position on the map, in <acronym>pixel</acronym>s [<span class="variable">it should be noted that the coordinates start at 0 in the upper left corner of the map, and not at the corner or center of the screen.</span>]
+
+<h1 id="entity.speed">entity.<span class="variable">speed</span> <span class="note">[integer]</span></h1>
+<span class="variable">speed</span> is the entity's current speed. A value of 50 denotes half speed, a value of 100 denotes normal speed, and a value of 200 denotes double speed.
+
+<h1 id="entity.direction">entity.<span class="variable">direction</span> <span class="note">[integer]</span></h1>
+<span class="variable">direction</span> stores the direction the entity is currently facing.
+
+<h1 id="entity.curframe">entity.<span class="variable">curframe</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">curframe</span> returns the entity's currently displayed frame.
+
+<h1 id="entity.specframe">entity.<span class="variable">specframe</span> <span class="note">[integer]</span></h1>
+Setting <span class="variable">specframe</span> causes the entity to display that frame unconditionally. Setting it back to 0 will give control of the entity's frame back to the engine.
+
+<h1 id="entity.visible">entity.<span class="variable">visible</span> <span class="note">[boolean]</span></h1>
+<span class="variable">visible</span> stores whether the entity is visible or not. A value of true (1) makes the entity visible, while a value of false (0) makes the entity invisible. Setting this does not change whether the entity is an obstruction or not.
+
+<h1 id="entity.name">entity.<span class="variable">name</span> <span class="note">[string]</span></h1>
+<span class="variable">name</span> stores the entity's name. <b>FindEntity</b>() uses this string when searching for an entity.
+
+<h1 id="entity.actscript">entity.<span class="variable">actscript</span> <span class="note">[function]</span></h1>
+<span class="variable">actscript</span> stores the function that is called when the entity is activated.
+
+<h1 id="entity.isobs">entity.<span class="variable">isobs</span> <span class="note">[boolean]</span></h1>
+If this value is nonzero, then the entity will obstruct other entities whose <span class="variable">entobs</span> attribute is set.
+
+<h1 id="entity.mapobs">entity.<span class="variable">mapobs</span> <span class="note">[boolean]</span></h1>
+If this value is nonzero, the entity will be blocked by map obstructions.  If it is zero, the entity can walk on the map without regard for the obstruction layer.
+
+<h1 id="entity.entobs">entity.<span class="variable">entobs</span> <span class="note">[boolean]</span></h1>
+If this value is nonzero, the entity will be blocked by other entities which have the <span class="variable">isobs</span> attribute set.  If it is zero, the entity cannot be blocked by entities.
+
+<h1 id="entity.sprite">entity.<span class="variable">sprite</span> <span class="note">[string]</span></h1>
+<span class="variable">sprite</span> stores the file name of the sprite (<span class="variable">.CHR</span>) the entity is displayed with. Changing this will load a new sprite from file or memory.
+
+<h1 id="entity.hotx">entity.<span class="variable">hotx</span> <span class="note">[integer]</span></h1>
+<span class="variable">hotx</span> returns the x coordinate of the upper-left corner of the entity's hotspot.
+
+<h1 id="entity.hoty">entity.<span class="variable">hoty</span> <span class="note">[integer]</span></h1>
+<span class="variable">hoty</span> returns the y coordinate of the upper-left corner of the entity's hotspot.
+
+<h1 id="entity.hotwidth">entity.<span class="variable">hotwidth</span> <span class="note">[integer]</span></h1>
+<span class="variable">hotwidth</span> returns width of the entity's hotspot.
+
+<h1 id="entity.hotheight">entity.<span class="variable">hotheight</span> <span class="note">[integer]</span></h1>
+<span class="variable">hotheight</span> returns height of the entity's hotspot.
+
+<h1 id="entity.Move">entity.<b>Move</b>( <span class="variable">movestring</span> <span class="note">[string]</span> )</h1>
+entity.<b>Move</b>() makes the entity follow the specified <span class="variable">move string</span>.
+
+<h1 id="entity.Chase">entity.<b>IsMoving</b>() <span class="note">[boolean]</span></h1>
+<b>IsMoving</b>() return <i>1</i> if the entity is moving and <i>0</i> if it is not.
+
+<h1 id="entity.Chase">entity.<b>Chase</b>( <span class="variable">targetentity</span> <span class="note">[integer]</span>, <span class="variable">distance</span> <span class="note">[integer]</span> )</h1>
+<b>Chase</b>() causes the entity to chase the specified <span class="variable">target entity</span> at no farther away than the specified <span class="variable">distance</span> (<span class="variable">in pixels</span>).
+
+<h1 id="entity.Wander">entity.<b>Wander</b>( <span class="variable">step</span> <span class="note">[integer]</span>, <span class="variable">delay</span> <span class="note">[integer]</span> <span class="optional">[, <span class="variable">x1</span> <span class="note">[integer]</span>, <span class="variable">y1</span> <span class="note">[integer]</span>, <span class="variable">x2</span> <span class="note">[integer]</span>,<span class="variable">y2</span> <span class="note">[integer]</span>]</span> )</h1>
+<b>Wander</b>() makes the entity wander aimlessly. After it randomly decides what direction to take, the entity will walk for <span class="variable">step</span> pixels, and then wait for <span class="variable">delay</span> ticks.  If x1, y1, x2, and y2 are specified, then the entity will be restricted to only wander in the rectangle that the two points inscribe on the map [the first point is the upper left corner, the other is the lower right corner.]
+
+<h1 id="entity.WanderZone">entity.<b>WanderZone</b>( <span class="variable">steps</span> <span class="note">[integer]</span>, <span class="variable">delay</span> <span class="note">[integer]</span>, <span class="variable">zone</span> <span class="note">[integer]</span> )</h1>
+<b>WanderZone</b>() is similar to Wander in that it causes an entity to wander, however instead of restricting the entity to a rectangle, <b>WanderZone</b>() restricts the entity to a single zone.
+<!--Handy if you want to make sure that the entity wanders around like an idiot, but doesn't go somewhere where he'll make a nuisance of himself. (in front of doorways, etc...)-->
+
+<h1 id="entity.Stop">entity.<b>Stop</b>()</h1>
+<b>Stop</b>() stops the entity from wandering, and from other entities.
+
+<h1 id="entity.DetectCollision">entity.<b>DetectCollision</b>() [entity object]</h1>
+<b>DetectCollision</b>() returns the entity the player has collided with, or <i>None</i> if the player hasn't collided with another entity. Note that it only takes the entities in map.<i>entities</i> into consideration, and not entities that have been spawned dynamically.  This issue can be aleviated by adding spawned entities to the map.<i>entities</i> dictionary.
+
+<p>The following code can do so if you do not wish to name them all:<br>
+<i>map.entities[id(myentity)]=myentity</i>
+
+<h2 id="Music_Section">Music</h2>
+
+<h1 id="Music"><b>Music</b>( <span class="variable">filename</span> <span class="note">[string]</span> ) <span class="note">[music object]</span></h1>
+<b>Music</b>() loads a music file from the specified <span class="variable">file name</span>. Currently <span class="variable">MOD, S3M, XM,</span> and <span class="variable">IT</span> module files are supported.
+
+<h1 id="music.volume">music.<span class="variable">volume</span> <span class="note">[integer]</span></h1>
+<span class="variable">volume</span> is the volume the music will play at. A value of 255 is full volume while 0 is silence.
+
+<h1 id="music.position">music.<span class="variable">position</span> <span class="note">[integer]</span></h1>
+<span class="variable">position</span> stores the position within the music file that is currently being played in milliseconds.
+
+<h1 id="music.Play">music.<b>Play</b>()</h1>
+<b>Play</b>() causes the music to play and to loop once the song ends.
+
+<h1 id="music.Pause">music.<b>Pause</b>()</h1>
+<b>Pause</b>() causes the music to halt playing. Using music.Play() once again will play the song again from where it left off.
+
+<h2 id="Sounds">Sounds</h2>
+
+<h1 id="Sound"><b>Sound</b>( <span class="variable">filename</span> <span class="note">[string]</span> )</h1>
+<b>Sound</b>() loads the specified <span class="variable">.WAV</span> file of any format.
+
+<!--usually used for special effects.-->
+
+<h1 id="sound.Play">sound.<b>Play</b>( <span class="optional">[<span class="variable">volume</span> <span class="note">[integer]</span>, <span class="variable">panning</span> <span class="note">[integer]</span>]</span> )</h1>
+<b>Play</b>() plays the sound and the sound will stop playing when its end has been reached. The <span class="variable">volume</span> and <span class="variable">panning</span> arguments are both optional, if they are not passed, volume defaults to 255 while panning defaults to 127. A value of 255 for <span class="variable">volume</span> is full volume, while a volume of 0 renders the sound inaudible. A value of 0 for <span class="variable">panning</span> is far to the left, while 255 is far right, and 128 is centered. Panning defaults to 128.
+
+<h2 id="Fonts">Fonts</h2>
+
+<p>Certain characters and combinations of characters can be embedded within
+strings passed to the font printing methods, to acheive certain effects.
+
+<p>The tilde "~" character will, when followed by a number between 0 and the subset
+count of the font, cause the engine to switch the active subset.
+
+<blockquote>font.Print(x,y,'This is in subset 0!   ~3This text is in subset 3!')</blockquote>
+
+<p>Tab characters will cause the cursor to tab ahead to the next nearest
+multiple of <a href="#font.tabsize">font.tabsize</a> pixels.  This is
+useful for making columns of data line up with variable-sized fonts.
+Tabs can be expressed as '\t' (without the quotes) within string literals.
+
+<p>Newline characters will cause the cursor to move back to the x position
+originally specified, and down <a href="#font.height">font.height</a>
+pixels.  Entire paragraphs can be drawn onscreen with a single call to
+<a href="#font.Print">font.Print()</a>.  Newlines can be either
+expressed with multi-line string constants (see the
+<a href="www.python.org/doc/">Python Documentation</a> for more information)
+or as '\n' (sans quotes) in single-line string constants.
+
+<h1 id="Font"><b>Font</b>( <span class="variable">filename</span> <span class="note">[string]</span> ) <span class="note">[font object]</span></h1>
+<b>Font</b>() loads the specified font (<span class="variable">.FNT</span>) file.
+
+<h1 id="font.width">font.<span class="variable">width</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">width</span> returns the width of the widest character in the font, expressed in <acronym>pixel</acronym>s.
+
+<h1 id="font.height">font.<span class="variable">height</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">height</span> returns the height of the tallest character in the font, in <acronym>pixel</acronym>s.
+
+<h1 id="font.tabsize">font.<span class="variable">tabsize</span> <span class="note">[integer]</span> </h1>
+<span class="variable">tabsize</span> is the number of pixels the text
+renderer will "jump" when it encounters a tab character, which can be
+expressed as '\t' in string literals.  This value can be written to.
+
+<h1 id="font.Print">font.<b>Print</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">text</span> <span class="note">[string]</span> )</h1>
+<b>Print</b>() prints a string of text on-screen. The <span class="variable">x, y</span> coordinates are the position that text output be printed at (<span class="variable">in <acronym>pixels</acronym></span>), <span class="variable">text</span> is a string that contains the text that will be written to the screen.
+
+<h1 id="font.CenterPrint">font.<b>CenterPrint</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">text</span> <span class="note">[string]</span> )</h1>
+<b>CenterPrint</b>() functions exactly like <a href="#font.Print">Print()</a>, except that it centers the text on the x axis.
+
+<h1 id="font.RightPrint">font.<b>RightPrint</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">text</span> <span class="note">[string]</span> )</h1>
+<b>RightPrint</b>() functions exactly like <a href="#font.Print">Print()</a>, except that it right justifies the text.
+
+<h2 id="Input">Controller Input</h2>
+
+<!--Note that this isn't like the other objects. At any given time there is ONE input object, and it's called 'input'.<br />-->
+
+<p>Controller input uses the concept of <i>virtual buttons</i> to make sure
+that a game will automatically work with any gaming controllers or other
+such should they be added at a later date.	Keys are bound to virtual
+buttons.  Virtual buttons can have scripts hooked to them.
+
+<p>The first 6 buttons (0 to 5 inclusive) are reserved for up, down,
+left, right, accept, and cancel functions, respectively.  They are
+initially bound to the cursor up, down, left, right, enter and ESC keys,
+respectively.  Note that this can be overridden with BindKey.
+
+<p>The effect caused by VERGE 2's <i>Unpress</i> function can be
+duplicated in ika by simply assigning a value of zero to the
+control.
+
+<p>For clarity and ease of use, six variables are added to the input
+object:  input.up, input.down, input.left, input.right, input.enter, and
+input.cancel.  These variables are merely syntactical sugar.
+
+<h1 id="input.up">input.<span class="variable">up</span> <span class="note">[boolean]</span></h1>
+input.<span class="variable">up</span> has a value of true (1) if the up directional arrow is pressed or false (0) if it is not. <!--Setting its value manually will cause the engine to treat it as the value you set it to.--> [<span class="variable">As of right now, this is for the keyboard directional arrow only, and not the numerical keypad key.</span>]
+
+<h1 id="input.down">input.<span class="variable">down</span> <span class="note">[boolean]</span></h1>
+input.<span class="variable">down</span> has a value of true (1) if the down directional arrow is pressed or false (0) if it is not. <!--Setting its value manually will cause the engine to treat it as the value you set it to.--> [<span class="variable">As of right now, this is for the keyboard directional arrow only, and not the numerical keypad key.</span>]
+
+<h1 id="input.left">input.<span class="variable">left</span> <span class="note">[boolean]</span></h1>
+input.<span class="variable">left</span> has a value of true (1) if the left directional arrow is pressed or false (0) if it is not. <!--Setting its value manually will cause the engine to treat it as the value you set it to.--> [<span class="variable">As of right now, this is for the keyboard directional arrow only, and not the numerical keypad key.</span>]
+
+<h1 id="input.right">input.<span class="variable">right</span> <span class="note">[boolean]</span></h1>
+input.<span class="variable">right</span> has a value of true (1) if the right directional arrow is pressed or false (0) if it is not. <!--Setting its value manually will cause the engine to treat it as the value you set it to.--> [<span class="variable">As of right now, this is for the keyboard directional arrow only, and not the numerical keypad key.</span>]
+
+<h1 id="input.enter">input.<span class="variable">enter</span> <span class="note">[boolean]</span></h1>
+input.<span class="variable">enter</span> has a value of true (1) if the current "Accept" key is pressed or false (0) if it is not. (this is the enter key by default) <!--Setting its value manually will cause the engine to treat it as the value you set it to.-->
+
+<h1 id="input.cancel">input.<span class="variable">cancel</span> <span class="note">[boolean]</span></h1>
+input.<span class="variable">cancel</span> has a value of true (1) if the current "cancel" key is pressed or false (0) if it is not. (this is the ESC key by default) <!--Setting its value manually will cause the engine to treat it as the value you set it to.-->
+
+<h1 id="input.Update">input.<b>Update</b>()</h1>
+input.<span class="variable">Update()</span> updates all of the controller input data for use.
+
+<h1 id="input.Button">input.<b>Button</b>( <span class="variable">button</span> <span class="note">[integer]</span> ) <span class="note">[boolean]</span></h1>
+input.<b>Button</b>() returns whether the index of the virtual <span class="variable">button</span> passed is pressed. A returned value of true (1) means the button is pressed, a value of false (0) means the button is not pressed.
+
+<h1 id="input.SetButton">input.<b>SetButton</b>( <span class="variable">button</span> <span class="note">[integer]</span>, <span class="variable">state</span> <span class="note">[boolean]</span> )</h1>
+input.<b>SetButton</b>() sets the <span class="variable">state</span> of the specified <span class="variable">button</span>. A passed value of true (1) makes the engine behave as if the button is being pressed, an value of false (0) makes it  behave as if the button is not being pressed.
+
+<h1 id="input.NextPressed">input.<b>NextPressed</b>() <span class="note">[string]</span></h1>
+Every time a key is pressed, it's queued. input.<b>NextPressed</b>() will return the next key in that queue as a one character string.
+
+<!--If you're aiming for a text entering window or some such, this is what you want.-->
+
+<h1 id="input.SetNextPressed">input.<b>SetNextPressed</b>( <span class="variable">key</span> <span class="note">[integer]</span> )</h1>
+input.<b>SetNextPressed</b>() sets the next key in the key queue that input.<b>NextPressed</b>() will return.
+
+<h1 id="input.MouseState">input.<b>MouseState</b>() <span class="note">[tuple ( integer, integer, boolean, boolean, boolean )]</span></h1>
+The input.<b>MouseState</b>() function returns a five element tuple containing all the mouse data in the following order: mouse x, mouse y, left button, right button and middle button. The x and y coordinates store the location of the cursor on screen. The button values have a value of true (1) if the button is being pressed or false (0) if the button is not being pressed.
+
+<h1 id="input.SetMouseState">input.<b>SetMouseState</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">leftbutton</span> <span class="note">[boolean]</span>, <span class="variable">rightbutton</span> <span class="note">[boolean]</span>, <span class="variable">middlebutton</span> <span class="note">[boolean]</span> )</h1>
+input.<b>SetMouseState</b>() allows you to sets all the mouse data. The <span class="variable">x, y</span> coordinates set the location of the cursor on screen. The <span class="variable">button</span> arguments force the engine to treat their respective mouse buttons as the value passed to them. A value of true (1) means the button is being pressed while a value of false (0) means the button is not being pressed.
+
+<h1 id="input.ClipMouse">input.<b>ClipMouse</b>( <span class="variable">x1</span> <span class="note">[integer]</span>, <span class="variable">y1</span> <span class="note">[integer]</span>, <span class="variable">x2</span> <span class="note">[integer]</span>, <span class="variable">y2</span> <span class="note">[integer]</span> )</h1>
+input.<b>ClipMouse</b>() sets the rectangle the mouse is restricted to. The point <span class="variable">x1, y1</span> is the upper-left corner of the rectangle, while the point <span class="variable">x2, y2</span> is the lower-right corner of the rectangle. By default the rectangle defaults to the size of the screen.
+
+<h1 id="input.BindKey">input.<b>BindKey</b>( <span class="variable">key</span> <span class="note">[integer]</span>, <span class="variable">button</span> <span class="note">[integer]</span> )</h1>
+input.<b>BindKey</b>() binds the specified <span class="variable">key</span> so that when it is pressed, the virtual <span class="variable">button</span> you specify registers as being pressed as well. Keys are not to be confused with buttons, since a key must be bound to a button before it can be used for something. Multiple keys can be bound to the same button, but a key may only be bound to one button.
+
+<h1 id="input.UnbindKey">input.<b>UnbindKey</b>( <span class="variable">key</span> <span class="note">[integer]</span> )</h1>
+input.<b>UnbindKey</b>() unbinds the specified <span class="variable">key</span> from the button it is bound to.
+
+<h2 id="Images">Images</h2>
+
+<h1 id="Image"><b>Image</b>( [<span class="variable">width</span> <span class="note">[integer]</span>, <span class="variable">height</span> <span class="note">[integer]</span>] ) <span class="note">[image object]</span></h1>
+<b>Image</b>() returns a newly created image. If <span class="variable">width</span> and <span class="variable">height</span> are specified, then the image is of the specified size. You might want to omit these if you are just going to load an image file into it anyway.
+
+<h1 id="image.width">image.<span class="variable">width</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">width</span> returns the width of the image in <acronym>pixel</acronym>s.
+
+<h1 id="image.height">image.<span class="variable">height</span> <span class="note">[integer]</span> <span class="note">[read-only]</span></h1>
+<span class="variable">height</span> returns the height of the image in <acronym>pixel</acronym>s.
+
+<h1 id="image.Load">image.<b>Load</b>( <span class="variable">filename</span> <span class="note">[string]</span> )</h1>
+<b>Load</b>() loads the specified image <span class="variable">file</span> into the image object. Right now only <span class="variable">.PNG</span> files are loadable. The file's image is resized to fit the width and height of the object unless they are both 0.
+
+<h1 id="image.Blit">image.<b>Blit</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span> <span class="optional">[, <span class="variable">translucency</span> <span class="note">[boolean]</span>]</span> )</h1>
+<b>Blit</b>() draws the image at the specified <span class="variable">x, y</span> coordinates. If <span class="variable">translucency</span> is specified and zero, then the image is opaque, otherwise it's drawn translucently, and any pixels with a non-opaque (less than 255) value are blended with the colors it is blitted over.
+
+<h1 id="image.ScaleBlit">image.<b>ScaleBlit</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">width</span> <span class="note">[integer]</span>, <span class="variable">height</span> <span class="note">[integer]</span> <span class="optional">[, <span class="variable">translucency</span> <span class="note">[boolean]</span>]</span> )</h1>
+<b>ScaleBlit</b>(), like <b>Blit</b>(), draws the image, however, it stretches the image to the dimensions specified by the <span class="variable">width</span> and <span class="variable">height</span> arguments. As <b>Blit</b>() does, it draws the image to the specified <span class="variable">x, y</span> coordinates, and specifying <span class="variable">translucency</span> will draw the non-opaque pixels as translucent.
+
+<h1 id="image.CopyChannel">image.<b>CopyChannel</b>( dest <span class="note">[image]</span>, sourcechannel <span class="note">[integer]</span>, destchannel <span class="note">[integer]</span> )</h1>
+The <b>CoppyChannel</b>() function copies the entire contents of a single colour channel to the destination image's specified channel. The channel indices are as follows:
+<ul>
+<li>0 - alpha (transparency information)</li>
+<li>1 - red</li>
+<li>2 - green</li>
+<li>3 - blue</li>
+</ul>
+
+<h1 id="image.Clip">image.<b>Clip</b>( [<span class="variable">x1</span> <span class="note">[integer]</span>, <span class="variable">y1</span> <span class="note">[integer]</span>, <span class="variable">x2</span> <span class="note">[integer]</span>, <span class="variable">y2</span> <span class="note">[integer]</span>] )</h1>
+<b>image.Clip</b>() sets the dimensions of the image's clipping rectangle so when the image is drawn it will only display the parts of the image within the specified rectangle. Setting the rectangle larger than the image will simply make the rectangle the size of the image. Omitting the parameters resets the clipping rectangle to the size of the entire image.
+
+<p>Note: all of the coordinates passed to image.Clip are <i>inclusive</i>.	ie if you clip the image from (0,0) to (20,20), pixels (0,0) and (20,20) are both within the clip rect.
+
+<h1 id="image.Line">image.<b>Line</b>( <span class="variable">x1</span> <span class="note">[integer]</span>, <span class="variable">y1</span> <span class="note">[integer]</span>, <span class="variable">x2</span> <span class="note">[integer]</span>, <span class="variable">y2</span> <span class="note">[integer]</span>, <span class="variable">colour</span> <span class="note">[integer]</span> )</h1>
+<b>Line</b>() draws an arbitrarily angled line on the image from the point <span class="variable">x1, y1</span> to the point <span class="variable">x2, y2</span> in the specified <span class="variable">colour</span>.
+
+<h1 id="image.FlatPoly">image.<b>FlatPoly</b>( <span class="variable">x1</span> <span class="note">[integer]</span>, <span class="variable">y1</span> <span class="note">[integer]</span>, <span class="variable">colour1</span> <span class="note">[integer]</span>, <span class="variable">x2</span> <span class="note">[integer]</span>, <span class="variable">y2</span> <span class="note">[integer]</span>, <span class="variable">colour2</span> <span class="note">[integer]</span>, <span class="variable">x3</span> <span class="note">[integer]</span>, <span class="variable">y3</span> <span class="note">[integer]</span>, <span class="variable">colour3</span> <span class="note">[integer]</span> )</h1>
+<b>FlatPoly</b>() draws a triangle on the image. If the three specified <i>colours</i> are different, they will gradually blend at the center of the triangle.
+
+<p><i>Note: this is only implemented in the OpenGL driver. (which itself lacks a great many graphics functions)</i>
+
+<h1 id="image.Ellipse">image.<b>Ellipse</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">xradius</span> <span class="note">[integer]</span>, <span class="variable">yradius</span> <span class="note">[integer]</span>, colour <span class="note">[integer]</span> <span class="optional">[, <span class="variable">filled</span> <span class="note">[boolean]</span>]</span> )</h1>
+Draws an ellipse on the image in the specified <span class="variable">colour</span>. The point <span class="variable">x, y</span> is the centre, while <span class="variable">xradius</span>, and <span class="variable">y2</span> are the horizontal and vertical radii, respectively. If <span class="variable">filled</span> is set to 1, the rectangle will be solid.  If <span class="variable">filled</span> is set to 0, or isn't passed, then the rectangle will only be an outline.
+
+<h1 id="image.Rect">image.<b>Rect</b>( <span class="variable">x1</span> <span class="note">[integer]</span>, <span class="variable">y1</span> <span class="note">[integer]</span>, <span class="variable">x2</span> <span class="note">[integer]</span>, <span class="variable">y2</span> <span class="note">[integer]</span>, colour <span class="note">[integer]</span> <span class="optional">[, <span class="variable">filled</span> <span class="note">[boolean]</span>]</span> )</h1>
+<b>Rect</b>() draws a rectangle on the image in the specified <span class="variable">colour</span>. The point <span class="variable">x1, y1</span> is the upper-left corner, while the point <span class="variable">x2, y2</span> is the lower-right corner of the rectangle. If <span class="variable">filled</span> is set to 1, the rectangle will be solid. If <span class="variable">filled</span> is set to 0, or isn't passed, then the rectangle will only be an outline.
+
+<h1 id="image.SetPixel">image.<b>SetPixel</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span>, <span class="variable">colour</span> <span class="note">[integer]</span> )</h1>
+<b>SetPixel</b>() draws a pixel on the image at the <span class="variable">x, y</span> coordinates using the specified <span class="variable">colour</span>.
+
+<h1 id="image.GetPixel">image.<b>GetPixel</b>( <span class="variable">x</span> <span class="note">[integer]</span>, <span class="variable">y</span> <span class="note">[integer]</span> ) <span class="note">[integer]</span></h1>
+<b>GetPixel</b>() returns the colour of the image's pixel at the specified <span class="variable">x, y</span> coordinates.
+
+</td></tr></table>
+
+</body>
+</html>

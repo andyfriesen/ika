@@ -1,0 +1,95 @@
+<!--
+body {
+    background : rgb(255,255,255);
+    font-size : 11pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    color : rgb(0,0,0);
+    margin : 0px;
+}
+a:link, a:visited {
+    background : rgb(255,255,255);
+    font-size : 12pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-decoration : none;
+    color : rgb(0,0,0);
+}
+a:active, a:hover {
+    background : rgb(255,255,225);
+    font-size : 12pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-decoration : none;
+    color : rgb(0,0,0);
+}
+h4 {
+    background : rgb(255,255,255);
+    border-bottom : 1pt rgb(0,0,0) solid;
+    font-size : 20pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : center;
+    color : rgb(0,0,0);
+    padding-bottom : 1pt;
+}
+h2 {
+    background : rgb(255,255,255);
+    border : 1pt rgb(0,0,0) solid;
+    font-size : 14pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : center;
+    color : rgb(0,0,0);
+    padding-bottom : 1pt;
+}
+h1 {
+    background : rgb(255,255,255);
+    font-size : 12pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    color : rgb(0,0,0);
+    border-bottom : 1px solid rgb(0,0,0);
+    padding-bottom : 3px;
+    margin-bottom : 3px;
+}
+td.main {
+    background : rgb(255,255,255);
+    font-size : 11pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : justify;
+    color : rgb(0,0,0);
+    padding-top : 14pt;
+}
+table {
+    border-width : 0px;
+    margin-top : 14pt;
+}
+th {
+    background : rgb(255,255,255);
+    border : 1pt rgb(0,0,0) solid;
+    font-size : 14pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : center;
+    color : rgb(0,0,0);
+    padding-bottom : 1px;
+}
+td {
+    color : rgb(0,0,0);
+    background : rgb(255,255,255);
+}
+span.underline {
+    text-decoration : underline;
+}
+ol.main {
+    list-style-type : upper-roman;
+}
+ol.section {
+    list-style-type : decimal;
+}
+ul {
+    list-style-type : disc;
+}
+-->

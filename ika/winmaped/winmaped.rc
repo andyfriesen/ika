@@ -1,0 +1,782 @@
+//Microsoft Developer Studio generated resource script.
+//
+#include "resource.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "afxres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+OBSTRUCTIONTHINGIEDLG DIALOG DISCARDABLE  0, 0, 324, 84
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "The Obstruction Thingie"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "&Obstruct",IDC_TOT_OBSTRUCT,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,7,33,43,10
+    CONTROL         "&Unobstruct",IDC_TOT_UNOBSTRUCT,"Button",
+                    BS_AUTORADIOBUTTON,7,44,51,10
+    LTEXT           "all tiles",IDC_STATIC,61,39,23,11
+    EDITTEXT        IDC_TOT_STARTVAL,139,37,40,13,ES_NUMBER
+    LTEXT           "to",IDC_STATIC,187,39,8,8
+    EDITTEXT        IDC_TOT_ENDVAL,201,37,40,13,ES_NUMBER
+    LTEXT           "on layer",IDC_STATIC,243,39,26,8
+    PUSHBUTTON      "Okay!",IDOK,100,63,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,162,63,50,14
+    CONTROL         "&between",IDC_TOT_FROM,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,89,33,43,10
+    CONTROL         "e&xcept",IDC_TOT_EXCEPT,"Button",BS_AUTORADIOBUTTON,89,
+                    44,37,10
+    CONTROL         "Layer &1",IDC_TOT_LAY1,"Button",BS_AUTORADIOBUTTON | 
+                    BS_LEFTTEXT | WS_GROUP | WS_TABSTOP,278,7,39,10
+    CONTROL         "Layer &2",IDC_TOT_LAY2,"Button",BS_AUTORADIOBUTTON | 
+                    BS_LEFTTEXT,278,17,39,10
+    CONTROL         "Layer &3",IDC_TOT_LAY3,"Button",BS_AUTORADIOBUTTON | 
+                    BS_LEFTTEXT,278,27,39,10
+    CONTROL         "Layer &4",IDC_TOT_LAY4,"Button",BS_AUTORADIOBUTTON | 
+                    BS_LEFTTEXT,278,37,39,10
+    CONTROL         "Layer &5",IDC_TOT_LAY5,"Button",BS_AUTORADIOBUTTON | 
+                    BS_LEFTTEXT,278,47,39,10
+    CONTROL         "Layer &6",IDC_TOT_LAY6,"Button",BS_AUTORADIOBUTTON | 
+                    BS_LEFTTEXT,278,57,39,10
+    CONTROL         "&All Layers",IDC_TOT_ALLLAY,"Button",BS_AUTORADIOBUTTON | 
+                    BS_LEFTTEXT,271,67,46,10
+END
+
+NEWMAPDLG DIALOG DISCARDABLE  0, 0, 162, 122
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Create a New Map"
+FONT 8, "MS Sans Serif"
+BEGIN
+    CONTROL         "&Create new VSP",IDC_NEWVSP,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP | WS_TABSTOP,5,15,70,10
+    CONTROL         "&Load VSP",IDC_LOADVSP,"Button",BS_AUTORADIOBUTTON,5,55,
+                    48,10
+    EDITTEXT        IDC_EDVSPX,80,15,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDVSPY,80,30,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDVSPNAME,75,55,80,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDMAPX,85,85,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDMAPY,85,100,40,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,5,85,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,5,102,50,14
+    GROUPBOX        "New VSP",IDC_STATIC,75,5,80,45
+    LTEXT           "width",IDC_STATIC,125,15,18,8
+    LTEXT           "height",IDC_STATIC,125,30,20,8
+    GROUPBOX        "Map size",IDC_STATIC,75,75,80,45
+    LTEXT           "width",IDC_STATIC,131,85,18,8
+    LTEXT           "height",IDC_STATIC,131,100,20,8
+END
+
+CONFIGDLG DIALOG DISCARDABLE  0, 0, 186, 47
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Options"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    CONTROL         "Save v&2 style VSPs (16x16 only)",IDC_SAVEV2VSPS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,7,118,10
+END
+
+MAPDLG DIALOG DISCARDABLE  50, 50, 190, 105
+STYLE WS_CAPTION
+CAPTION "Map Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    LTEXT           "Music:",-1,4,3,46,9
+    LTEXT           "Render String:",-1,4,17,46,10
+    LTEXT           "VSP:",-1,4,32,46,10
+    EDITTEXT        ID_EDMUSIC,50,0,100,12
+    EDITTEXT        ID_EDRSTRING,49,15,100,12
+    EDITTEXT        ID_EDVSP,49,30,100,12
+    GROUPBOX        "Map Dimensions",-1,0,45,100,60
+    LTEXT           "Map Width:",-1,5,60,50,12
+    LTEXT           "Map Height:",-1,5,75,50,12
+    EDITTEXT        ID_EDMAPX,55,60,41,12
+    EDITTEXT        ID_EDMAPY,55,75,40,12
+    PUSHBUTTON      "Resize",ID_RESIZEMAP,30,90,50,12
+    DEFPUSHBUTTON   "OK",IDOK,110,90,30,12
+    PUSHBUTTON      "Cancel",IDCANCEL,145,90,30,12
+END
+
+ZONEDLG DIALOGEX 50, 50, 190, 127
+STYLE DS_MODALFRAME | WS_CAPTION
+CAPTION "Zone Properties"
+FONT 8, "MS Sans Serif", 0, 0, 0x1
+BEGIN
+    EDITTEXT        IDC_EDNAME,70,5,100,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDDESC,70,25,100,12
+    EDITTEXT        IDC_EDSCRIPT,70,40,100,12
+    EDITTEXT        IDC_EDENTSCRIPT,70,55,100,12
+    EDITTEXT        IDC_EDPERCENT,70,70,50,12,ES_NUMBER
+    EDITTEXT        IDC_EDDELAY,70,85,50,12,ES_NUMBER
+    CONTROL         "&Allow adjacent activation",IDC_AAA,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,70,100,100,12
+    DEFPUSHBUTTON   "OK",IDOK,80,113,30,12
+    PUSHBUTTON      "Apply",ID_APPLY,115,113,30,12
+    PUSHBUTTON      "Cancel",IDCANCEL,150,113,30,12
+    PUSHBUTTON      "<",ID_PREV,40,113,12,12
+    PUSHBUTTON      ">",ID_NEXT,52,113,12,12
+    LTEXT           "Description",IDC_STATIC,5,26,60,9,0,WS_EX_RIGHT
+    LTEXT           "Script",IDC_STATIC,5,42,60,10,0,WS_EX_RIGHT
+    LTEXT           "Chance (out of 100)",IDC_STATIC,0,70,65,9,0,WS_EX_RIGHT
+    LTEXT           "Delay",IDC_STATIC,5,85,60,9,0,WS_EX_RIGHT
+    LTEXT           "Entity Script",IDC_STATIC,5,55,60,10,0,WS_EX_RIGHT
+    RTEXT           "Zone 0",IDC_CURZONE,2,116,36,10
+    RTEXT           "Name",IDC_STATIC,5,7,59,8
+END
+
+ENTDLG DIALOG DISCARDABLE  50, 50, 322, 238
+STYLE DS_MODALFRAME | WS_CAPTION
+CAPTION "Entity Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        ID_EDNAME,70,5,120,12
+    EDITTEXT        ID_EDX,70,20,50,12,ES_NUMBER
+    EDITTEXT        ID_EDY,135,20,55,12,ES_NUMBER
+    EDITTEXT        ID_EDSPEED,70,35,50,12,ES_NUMBER
+    EDITTEXT        ID_EDSTEPS,70,48,50,12,ES_NUMBER
+    EDITTEXT        ID_EDDELAY,70,63,50,12,ES_NUMBER
+    EDITTEXT        ID_EDCHR,70,80,120,12
+    EDITTEXT        ID_EDSCRIPT,70,97,120,12
+    EDITTEXT        ID_EDMSCRIPT,70,111,120,12
+    EDITTEXT        ID_EDX1,70,128,50,12,ES_NUMBER
+    EDITTEXT        ID_EDY1,133,128,57,12,ES_NUMBER
+    EDITTEXT        ID_EDX2,70,143,50,12,ES_NUMBER
+    EDITTEXT        ID_EDY2,133,143,57,12,ES_NUMBER
+    CONTROL         "Stopped",ID_MSTOPPED,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,205,15,60,10
+    CONTROL         "Wander",ID_MWANDER,"Button",BS_AUTORADIOBUTTON,205,25,
+                    60,10
+    CONTROL         "Wander zone",ID_MWANDERZONE,"Button",BS_AUTORADIOBUTTON,
+                    205,35,60,10
+    CONTROL         "Wander rect",ID_MWANDERRECT,"Button",BS_AUTORADIOBUTTON,
+                    205,45,60,10
+    CONTROL         "Scripted",ID_MSCRIPTED,"Button",BS_AUTORADIOBUTTON,205,
+                    55,60,10
+    CONTROL         "Chasing",IDC_MCHASING,"Button",BS_AUTORADIOBUTTON,205,
+                    65,41,10
+    CONTROL         "Entity &Obstructs other entities",ID_ENTISOBS,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,195,90,107,10
+    CONTROL         "Entity is obstructed by the &Map",ID_ENTOBSMAP,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,195,100,113,10
+    CONTROL         "Entity is obstructed by &Entities",IDC_ENTOBSENT,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,195,110,109,10
+    PUSHBUTTON      "Apply",ID_APPLY,75,222,30,12
+    DEFPUSHBUTTON   "Ok",IDOK,110,222,30,12
+    PUSHBUTTON      "Cancel",IDCANCEL,145,222,30,12
+    PUSHBUTTON      "<",ID_PREV,36,220,12,12
+    PUSHBUTTON      ">",ID_NEXT,48,220,12,12
+    PUSHBUTTON      "Delete",ID_DELETE,235,220,30,12
+    RTEXT           "Name",IDC_STATIC,0,5,60,12
+    RTEXT           "X",IDC_STATIC,40,22,20,12
+    RTEXT           "Y",IDC_STATIC,120,22,10,12
+    RTEXT           "Sprite",IDC_STATIC,30,82,30,12
+    RTEXT           "Speed",IDC_STATIC,30,36,30,12
+    RTEXT           "Activation Script",IDC_STATIC,0,98,60,12
+    RTEXT           "Movement Script",IDC_STATIC,0,113,60,12
+    RTEXT           "Steps",ID_LSTEPS,35,50,25,12
+    RTEXT           "Delay",ID_LDELAY,35,65,25,12
+    RTEXT           "X1",ID_LX1,40,130,20,12
+    RTEXT           "Y1",ID_LY1,120,130,10,12
+    RTEXT           "X2",ID_LX2,45,145,15,12
+    RTEXT           "Y2",ID_LY2,120,145,10,12
+    GROUPBOX        "Movement pattern",IDC_STATIC,200,5,70,75
+    RTEXT           "Entity 0",ID_CURZONE,0,222,34,9
+    EDITTEXT        IDC_EDMZONE,70,160,120,14,ES_AUTOHSCROLL
+    RTEXT           "Wander in zone",IDC_STATIC,5,161,55,8
+    EDITTEXT        IDC_EDCHASETARGET,70,180,120,14,ES_AUTOHSCROLL
+    RTEXT           "Chase Target",IDC_STATIC,10,181,49,8
+    EDITTEXT        IDC_EDCHASEDIST,70,200,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    RTEXT           "Chase Distance",IDC_STATIC,10,201,50,8
+    CONTROL         "Entity activates when the player activates it",
+                    IDC_MANUALACTIVATE,"Button",BS_AUTORADIOBUTTON | 
+                    BS_MULTILINE,200,135,75,25
+    GROUPBOX        "Activation Method",IDC_STATIC,195,125,85,75
+    CONTROL         "Entity activates when adjacent to the player",
+                    IDC_AUTOACTIVATE,"Button",BS_AUTORADIOBUTTON | 
+                    BS_MULTILINE,200,170,75,25
+END
+
+LAYERDLG DIALOG DISCARDABLE  50, 50, 192, 90
+STYLE DS_MODALFRAME | WS_CAPTION
+CAPTION "Layers"
+FONT 8, "MS Sans Serif"
+BEGIN
+    GROUPBOX        "Parallax",-1,3,5,102,55
+    LTEXT           "X",-1,11,26,5,12
+    LTEXT           "Y",-1,11,41,5,12
+    LTEXT           "Mult",-1,25,15,30,10
+    LTEXT           "Div",-1,65,15,30,10
+    LTEXT           "/",-1,59,26,3,12
+    LTEXT           "/",-1,59,41,3,12
+    EDITTEXT        ID_EDMULTX,25,25,30,12,ES_NUMBER
+    EDITTEXT        ID_EDDIVX,65,25,30,12,ES_NUMBER
+    EDITTEXT        ID_EDMULTY,25,40,30,12,ES_NUMBER
+    EDITTEXT        ID_EDDIVY,65,40,30,12,ES_NUMBER
+    GROUPBOX        "Transparency",-1,110,5,80,55
+    CONTROL         "Opaque",ID_LUCENT0,"Button",BS_AUTORADIOBUTTON | 
+                    WS_GROUP,115,15,60,10
+    CONTROL         "Normal",ID_LUCENT1,"Button",BS_AUTORADIOBUTTON,115,25,
+                    60,10
+    CONTROL         "Additive",ID_LUCENT3,"Button",BS_AUTORADIOBUTTON,115,35,
+                    60,10
+    CONTROL         "Subtractive",ID_LUCENT4,"Button",BS_AUTORADIOBUTTON,115,
+                    45,60,10
+    LTEXT           "HLine",-1,10,71,20,10
+    EDITTEXT        ID_EDHLINE,45,70,30,12,ES_NUMBER
+    RTEXT           "Layer 1",ID_CURZONE,84,71,34,10
+    PUSHBUTTON      "<",ID_PREV,120,70,10,10
+    PUSHBUTTON      ">",ID_NEXT,130,70,10,10
+    DEFPUSHBUTTON   "OK",IDOK,150,75,40,12
+END
+
+TILESELDLG DIALOG DISCARDABLE  0, 0, 330, 222
+STYLE WS_CAPTION | WS_VSCROLL | WS_SYSMENU | WS_THICKFRAME
+CAPTION "VSP..."
+MENU IDR_TILESELMENU
+FONT 8, "MS Sans Serif"
+BEGIN
+END
+
+PIXEDDLG DIALOG DISCARDABLE  0, 0, 442, 286
+STYLE DS_MODALFRAME | WS_CAPTION | WS_SYSMENU
+CAPTION "TileEd v1.0.3"
+FONT 8, "MS Sans Serif"
+BEGIN
+    RTEXT           "255",IDC_LUMINAINDICATOR,350,95,15,9
+    GROUPBOX        "",IDC_STATIC,5,0,290,270
+    PUSHBUTTON      "&Flip",ID_TILEED_FLIP,350,135,41,14
+    PUSHBUTTON      "&Mirror",ID_TILEED_MIRROR,305,135,40,14
+    PUSHBUTTON      "&Rotate",ID_TILEED_ROTATE,395,135,41,14
+    SCROLLBAR       IDC_LUMINABAR,315,10,10,75,SBS_VERT
+    GROUPBOX        "Colors",IDC_STATIC,305,0,130,130
+    LTEXT           "Brightness:",IDC_STATIC,310,95,37,9
+    SCROLLBAR       IDC_ALPHABAR,325,10,10,75,SBS_VERT
+    RTEXT           "255",IDC_ALPHAINDICATOR,350,105,15,9
+    LTEXT           "Alpha:",IDC_STATIC,310,105,35,9
+    CTEXT           "(0, 0, 0)",IDC_CURRENTCOLOUR,310,115,124,9
+    GROUPBOX        "Preview:",IDC_STATIC,310,220,59,50
+    PUSHBUTTON      "<",ID_TILEED_PREV,400,250,16,16
+    PUSHBUTTON      ">",ID_TILEED_NEXT,420,250,16,16
+END
+
+IMPORTIMAGEDLG DIALOG DISCARDABLE  0, 0, 186, 118
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Import tiles from PNG"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,129,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,129,24,50,14
+    EDITTEXT        IDC_VSPWIDTH,7,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_VSPHEIGHT,7,26,40,14,ES_AUTOHSCROLL
+    CONTROL         "&Use one pixel padding",IDC_PIXELPADDING,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,49,86,10
+    LTEXT           "pixels wide",IDC_STATIC,51,7,35,8
+    LTEXT           "pixels high",IDC_STATIC,51,26,34,8
+    EDITTEXT        IDC_FILENAME,47,97,112,14,ES_AUTOHSCROLL
+    PUSHBUTTON      "...",IDC_BROWSE,165,97,14,14
+    LTEXT           "Import from:",IDC_STATIC,7,103,38,8
+    CONTROL         "&Append to existing tileset",IDC_APPEND,"Button",
+                    BS_AUTOCHECKBOX | WS_TABSTOP,7,65,94,10
+END
+
+CHRPROPDLG DIALOG DISCARDABLE  0, 0, 218, 93
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "CHR Properties"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,161,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,161,22,50,14
+    EDITTEXT        IDC_EDITHOTWIDTH,105,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDITHOTHEIGHT,105,27,40,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_EDITHOTX,35,7,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDITHOTY,35,27,40,15,ES_AUTOHSCROLL | ES_NUMBER
+    LTEXT           "x",IDC_STATIC,25,12,8,8
+    LTEXT           "y",IDC_STATIC,25,32,8,8
+    LTEXT           "width",IDC_STATIC,85,12,18,8
+    LTEXT           "height",IDC_STATIC,81,32,20,8
+    LTEXT           "Description",IDC_STATIC,7,55,36,8
+    EDITTEXT        IDC_EDITDESC,46,52,165,14,ES_AUTOHSCROLL
+    LTEXT           "I suck, you can't edit animation scripts yet",
+                    IDC_STATIC,52,78,132,8
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    "OBSTRUCTIONTHINGIEDLG", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 317
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 77
+    END
+
+    "NEWMAPDLG", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 155
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 115
+    END
+
+    "CONFIGDLG", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 40
+    END
+
+    "ZONEDLG", DIALOG
+    BEGIN
+        BOTTOMMARGIN, 51
+    END
+
+    "ENTDLG", DIALOG
+    BEGIN
+        RIGHTMARGIN, 208
+        BOTTOMMARGIN, 134
+    END
+
+    "PIXEDDLG", DIALOG
+    BEGIN
+        RIGHTMARGIN, 432
+        BOTTOMMARGIN, 281
+    END
+
+    "IMPORTIMAGEDLG", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 179
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 111
+    END
+
+    "CHRPROPDLG", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 211
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 86
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Menu
+//
+
+IDR_MAINMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New Map",                    ID_FILE_NEWMAP
+        MENUITEM "&Open Map\tCtrl+O",           ID_FILE_OPENMAP
+        MENUITEM "Load &VSP",                   ID_FILE_LOADVSP
+        MENUITEM "&Save Map\tF10 or Ctrl+S",    ID_FILE_SAVEMAP
+        MENUITEM "Save Map &As",                ID_FILE_SAVEMAPAS
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit\tAlt+F4",               ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&VSP...",                     ID_EDIT_VSP
+        MENUITEM "&Zone Properties",            ID_EDIT_ZONEPROPERTIES
+        MENUITEM "&Entity Properties",          ID_EDIT_ENTITIES
+        MENUITEM "&Map Properties",             ID_EDIT_MAPPROPERTIES
+        MENUITEM "&Layer Properties",           ID_EDIT_LAYERPROPERTIES
+        MENUITEM SEPARATOR
+        MENUITEM "&Add Layer",                  ID_EDIT_ADDLAYER
+        MENUITEM SEPARATOR
+        POPUP "La&yer Edit"
+        BEGIN
+            MENUITEM "Edit Layer &1\t1",            ID_EDLAY1
+            MENUITEM "Edit Layer &2\t2",            ID_EDLAY2
+            MENUITEM "Edit Layer &3\t3",            ID_EDLAY3
+            MENUITEM "Edit Layer &4\t4",            ID_EDLAY4
+            MENUITEM "Edit Layer &5\t5",            ID_EDLAY5
+            MENUITEM "Edit Layer &6\t6",            ID_EDLAY6
+            MENUITEM "Edit &Obstructions\tO",       ID_EDOBS
+            MENUITEM "Edit Zo&nes\tN",              ID_EDZONE
+            MENUITEM "Edit &Entities\tE",           ID_EDENT
+        END
+        POPUP "C&ool Stuff"
+        BEGIN
+            MENUITEM "&Obstruction Thingie",        ID_EDIT_COOLSTUFF_OBSTRUCTIONTHINGIE
+
+            MENUITEM "&CHR editor",                 ID_EDIT_COOLSTUFF_CHREDITOR
+
+        END
+        MENUITEM SEPARATOR
+        MENUITEM "&Options...",                 ID_EDIT_OPTIONS
+    END
+    POPUP "&View"
+    BEGIN
+        MENUITEM "Zoom &1x\tF1",                ID_VIEW_ZOOM1
+        MENUITEM "Zoom &2x\tF2",                ID_VIEW_ZOOM2
+        MENUITEM "Zoom &3X\tF3",                ID_VIEW_ZOOM3
+        MENUITEM "Zoom &4X\tF4",                ID_VIEW_ZOOM4
+        MENUITEM SEPARATOR
+        POPUP "Layer &View"
+        BEGIN
+            MENUITEM "Show Layer &1\tShift+1",      ID_SHOWLAY1
+            MENUITEM "Show Layer &2\tShift+2",      ID_SHOWLAY2
+            MENUITEM "Show Layer &3\tShift+3",      ID_SHOWLAY3
+            MENUITEM "Show Layer &4\tShift+4",      ID_SHOWLAY4
+            MENUITEM "Show Layer &5\tShift+5",      ID_SHOWLAY5
+            MENUITEM "Show Layer &6\tShift+6",      ID_SHOWLAY6
+            MENUITEM "Show &Obstructions\tShift+O", ID_SHOWOBS
+            MENUITEM "Show Zo&nes\tShift+N",        ID_SHOWZONE
+            MENUITEM "Show &Entities\tShift+E",     ID_SHOWENT
+        END
+    END
+END
+
+IDR_ALTMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "TileSel"
+    BEGIN
+        MENUITEM "&Insert tile here\tI",        ID_INSERTTILE
+        MENUITEM "&Delete this tile\tDel",      ID_DELETETILE
+        MENUITEM "&Copy this tile\tC",          ID_COPYTILE
+        MENUITEM SEPARATOR
+        MENUITEM "&Paste tile here\tP",         ID_PASTETILE
+        MENUITEM "Paste tile here &transparently\tShift+P", ID_TPASTETILE
+        MENUITEM "I&nsert tile and Paste\tCtrl+P", ID_IPASTETILE
+        MENUITEM SEPARATOR
+        MENUITEM "&Edit...",                    ID_EDITTILE
+    END
+END
+
+IDR_TILEEDMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "&TileEd"
+    BEGIN
+        MENUITEM "Update tile",                 ID_TILEED_UPDATE
+        MENUITEM "&Update VSP and Exit",        ID_TILEED_UPDATEANDEXIT
+        MENUITEM "E&xit",                       ID_TILEED_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Undo",                        ID_TILEED_UNDO
+        MENUITEM "Redo",                        ID_TILEED_REDO
+        MENUITEM "&Clear",                      ID_TILEED_CLEAR
+    END
+    POPUP "Effe&cts"
+    BEGIN
+        MENUITEM "&Mirror\tAlt+X",              ID_TILEED_MIRROR
+        MENUITEM "&Flip\tAlt+Y",                ID_TILEED_FLIP
+        MENUITEM "&Rotate\tAlt+Z",              ID_TILEED_ROTATE
+        MENUITEM "&Noise",                      ID_TILEED_NOISE
+    END
+END
+
+IDR_TILESELMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&Save",                       ID_FILE_SAVEVSP
+        MENUITEM "Save &As...",                 ID_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "&Import from image...",       ID_FILE_IMPORTFROMIMAGE
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "&Animation Data...",          ID_EDIT_ANIMATIONDATA
+        MENUITEM "&Resize VSP...",              ID_EDIT_RESIZEVSP
+        MENUITEM "&Convert to 32bpp",           ID_EDIT_CONVERTTO32BPP
+    END
+END
+
+IDR_CHREDMENU MENU DISCARDABLE 
+BEGIN
+    POPUP "&File"
+    BEGIN
+        MENUITEM "&New",                        ID_FILE_NEWCHR
+        MENUITEM "&Open",                       ID_FILE_OPENCHR
+        MENUITEM "&Save",                       ID_FILE_SAVECHR
+        MENUITEM "Save &As",                    ID_FILE_SAVEAS
+        MENUITEM SEPARATOR
+        MENUITEM "&Import from Image",          ID_FILE_IMPORT
+        MENUITEM SEPARATOR
+        MENUITEM "E&xit",                       ID_FILE_EXIT
+    END
+    POPUP "&Edit"
+    BEGIN
+        MENUITEM "Undo",                        ID_TILEED_UNDO
+        MENUITEM "Redo",                        ID_TILEED_REDO
+        MENUITEM "&Clear",                      ID_TILEED_CLEAR
+        MENUITEM "&Properties",                 ID_EDIT_PROPERTIES
+    END
+    POPUP "Effe&cts"
+    BEGIN
+        MENUITEM "&Mirror\tAlt+X",              ID_TILEED_MIRROR
+        MENUITEM "&Flip\tAlt+Y",                ID_TILEED_FLIP
+        MENUITEM "&Rotate\tAlt+Z",              ID_TILEED_ROTATE
+        MENUITEM "&Noise",                      ID_TILEED_NOISE
+    END
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (Canada) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENC)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
+#pragma code_page(1252)
+#endif //_WIN32
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Dialog
+//
+
+VSPANIMDLG DIALOG DISCARDABLE  0, 0, 307, 101
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "VSP animation"
+FONT 8, "MS Sans Serif"
+BEGIN
+    EDITTEXT        IDC_EDFIRSTTILE,85,8,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDLASTTILE,85,23,40,14,ES_AUTOHSCROLL
+    EDITTEXT        IDC_EDDELAY,85,38,40,14,ES_AUTOHSCROLL
+    DEFPUSHBUTTON   "OK",IDOK,5,80,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,60,80,50,14
+    RTEXT           "First tile in sequence",IDC_STATIC,10,10,65,8
+    RTEXT           "Last tile in sequence",IDC_STATIC,10,25,66,8
+    RTEXT           "Delay",IDC_STATIC,55,40,19,8
+    GROUPBOX        "Animation Mode",IDC_STATIC,150,5,75,60
+    GROUPBOX        "Preview",IDC_STATIC,235,5,64,60
+    LTEXT           "TODO: show a preview here",IDC_STATIC,240,25,56,31
+    PUSHBUTTON      "<",IDC_PREV,280,80,10,14
+    PUSHBUTTON      ">",IDC_NEXT,290,80,10,14
+    RTEXT           "Strand 0",IDC_CURSTRAND,235,83,43,8
+    CONTROL         "Forward",IDC_ANIMFORWARDS,"Button",BS_AUTORADIOBUTTON,
+                    155,15,41,10
+    CONTROL         "Backwards",IDC_ANIMBACKWARDS,"Button",
+                    BS_AUTORADIOBUTTON,155,25,51,10
+    CONTROL         "Random",IDC_ANIMRANDOM,"Button",BS_AUTORADIOBUTTON,155,
+                    35,43,10
+    CONTROL         "Back and Forth",IDC_ANIMFLIP,"Button",
+                    BS_AUTORADIOBUTTON,155,45,65,10
+END
+
+IMPORTCHRDLG DIALOG DISCARDABLE  0, 0, 282, 118
+STYLE DS_MODALFRAME | WS_POPUP | WS_CAPTION | WS_SYSMENU
+CAPTION "Dialog"
+FONT 8, "MS Sans Serif"
+BEGIN
+    DEFPUSHBUTTON   "OK",IDOK,225,7,50,14
+    PUSHBUTTON      "Cancel",IDCANCEL,225,24,50,14
+    RTEXT           "Frame Width",IDC_STATIC,5,10,100,8
+    RTEXT           "Frame Height",IDC_STATIC,5,25,100,8
+    RTEXT           "Number of frames to import",IDC_STATIC,5,40,100,8
+    RTEXT           "Frames per row",IDC_STATIC,5,55,100,8
+    EDITTEXT        IDC_EDFRAMEWIDTH,115,8,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDFRAMEHEIGHT,115,23,40,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    EDITTEXT        IDC_EDNUMFRAMES,115,38,40,14,ES_AUTOHSCROLL | ES_NUMBER
+    EDITTEXT        IDC_EDFRAMESPERROW,115,53,40,14,ES_AUTOHSCROLL | 
+                    ES_NUMBER
+    CONTROL         "Append to existing CHR",IDC_APPEND,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFTTEXT | BS_RIGHT | WS_TABSTOP,5,
+                    70,118,10
+    CONTROL         "1 Pixel padding between frames",IDC_PAD,"Button",
+                    BS_AUTOCHECKBOX | BS_LEFTTEXT | BS_RIGHT | WS_TABSTOP,10,
+                    85,113,10
+    EDITTEXT        IDC_FILENAME,115,98,145,12,ES_AUTOHSCROLL
+    RTEXT           "Filename",IDC_STATIC,5,100,104,8
+    PUSHBUTTON      "...",IDC_BROWSE,265,98,10,13
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// DESIGNINFO
+//
+
+#ifdef APSTUDIO_INVOKED
+GUIDELINES DESIGNINFO DISCARDABLE 
+BEGIN
+    "VSPANIMDLG", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 300
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 94
+    END
+
+    "IMPORTCHRDLG", DIALOG
+    BEGIN
+        LEFTMARGIN, 7
+        RIGHTMARGIN, 275
+        TOPMARGIN, 7
+        BOTTOMMARGIN, 111
+    END
+END
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Accelerator
+//
+
+IDR_MAINMENU ACCELERATORS MOVEABLE PURE 
+BEGIN
+    "1",            ID_EDLAY1,              VIRTKEY, NOINVERT
+    "1",            ID_SHOWLAY1,            VIRTKEY, SHIFT, NOINVERT
+    "2",            ID_EDLAY2,              VIRTKEY, NOINVERT
+    "2",            ID_SHOWLAY2,            VIRTKEY, SHIFT, NOINVERT
+    "3",            ID_EDLAY3,              VIRTKEY, NOINVERT
+    "3",            ID_SHOWLAY3,            VIRTKEY, SHIFT, NOINVERT
+    "4",            ID_EDLAY4,              VIRTKEY, NOINVERT
+    "4",            ID_SHOWLAY4,            VIRTKEY, SHIFT, NOINVERT
+    "5",            ID_EDLAY5,              VIRTKEY, NOINVERT
+    "5",            ID_SHOWLAY5,            VIRTKEY, SHIFT, NOINVERT
+    "6",            ID_EDLAY6,              VIRTKEY, NOINVERT
+    "6",            ID_SHOWLAY6,            VIRTKEY, SHIFT, NOINVERT
+    "A",            ID_NEXTTILE,            VIRTKEY, NOINVERT
+    "E",            ID_EDENT,               VIRTKEY, NOINVERT
+    "E",            ID_SHOWENT,             VIRTKEY, SHIFT, NOINVERT
+    "N",            ID_EDZONE,              VIRTKEY, NOINVERT
+    "N",            ID_SHOWZONE,            VIRTKEY, SHIFT, NOINVERT
+    "O",            ID_EDOBS,               VIRTKEY, NOINVERT
+    "O",            ID_FILE_OPENMAP,        VIRTKEY, CONTROL, NOINVERT
+    "O",            ID_SHOWOBS,             VIRTKEY, SHIFT, NOINVERT
+    "S",            ID_FILE_SAVEMAP,        VIRTKEY, CONTROL, NOINVERT
+    VK_F1,          ID_VIEW_ZOOM1,          VIRTKEY, NOINVERT
+    VK_F10,         ID_FILE_SAVEMAP,        VIRTKEY, NOINVERT
+    VK_F2,          ID_VIEW_ZOOM2,          VIRTKEY, NOINVERT
+    VK_F3,          ID_VIEW_ZOOM3,          VIRTKEY, NOINVERT
+    VK_F4,          ID_VIEW_ZOOM4,          VIRTKEY, NOINVERT
+    "Z",            ID_PREVTILE,            VIRTKEY, NOINVERT
+END
+
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "#include ""afxres.h""\r\n"
+    "\0"
+END
+
+3 TEXTINCLUDE DISCARDABLE 
+BEGIN
+    "\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Bitmap
+//
+
+IDB_TOOLBUTTONS         BITMAP  DISCARDABLE     "bitmap1.bmp"
+
+#ifndef _MAC
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION 1,0,0,1
+ PRODUCTVERSION 1,0,0,1
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x40004L
+ FILETYPE 0x1L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "100904b0"
+        BEGIN
+            VALUE "Comments", "I AM PEANUT\0"
+            VALUE "CompanyName", "tSB's basement Inc.\0"
+            VALUE "FileDescription", "Map Editor for v2.x\0"
+            VALUE "FileVersion", "0.999999\0"
+            VALUE "InternalName", "winmaped.exe\0"
+            VALUE "LegalCopyright", "Copyright © 2001\0"
+            VALUE "LegalTrademarks", "\0"
+            VALUE "OriginalFilename", "winmaped.exe\0"
+            VALUE "PrivateBuild", "\0"
+            VALUE "ProductName", "WinMapEd\0"
+            VALUE "ProductVersion", "0.99999999\0"
+            VALUE "SpecialBuild", "\0"
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x1009, 1200
+    END
+END
+
+#endif    // !_MAC
+
+#endif    // English (Canada) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+
+
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+
