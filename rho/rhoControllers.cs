@@ -9,7 +9,7 @@ namespace rho
     {
         public override object Load(string fname)
         {
-            return new TileSet(ika.TileSet.Load(fname));
+            return ika.TileSet.Load(fname);
         }
     }
 

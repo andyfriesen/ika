@@ -23,7 +23,7 @@ namespace rho.MapEditor
         class EventProxy
         {
             MapView view;
-            IState state;
+            State state;
 
             public void OnSelect(object o, EventArgs e)
             {
@@ -35,7 +35,7 @@ namespace rho.MapEditor
                     m.Checked=(m == o);
             }
 
-            public EventProxy(MapView mv, IState s)
+            public EventProxy(MapView mv, State s)
             {
                 view = mv;
                 state = s;
@@ -49,15 +49,16 @@ namespace rho.MapEditor
         string filename;
 	
         StatusBar  statusbar;
-        GraphView  graphview;
+        GraphView  gfx;
         ListView   layercontrol;
         MainMenu   menu;
         protected MenuItem       statemenu;
 
-        IState     state;
+        State     state;
 
         object[][] states;
 
+        #region Menu Initialization
         private void InitMenu()
         {
             menu = new MainMenu();
@@ -76,7 +77,7 @@ namespace rho.MapEditor
                 statemenu.MenuItems.Add(
                     new MenuItem(
                         o[0].ToString(),
-                        new EventHandler(new EventProxy(this, (IState)o[1]).OnSelect)
+                        new EventHandler(new EventProxy(this, (State)o[1]).OnSelect)
                     )
                 );
 
@@ -86,36 +87,49 @@ namespace rho.MapEditor
             menu.MenuItems.AddRange(new MenuItem[] { filemenu, statemenu });
             Menu = menu;
         }
+        #endregion
 
+        #region Control Initialization
         void InitControls()
         {
-            graphview = new GraphView();
-            graphview.Dock = DockStyle.Fill;
-            graphview.Redraw += new PaintEventHandler(Redraw);
-            Controls.Add(graphview);
-            graphview.Show();
+            gfx=new GraphView();
+            gfx.Dock=DockStyle.Fill;
+            gfx.Paint+=new PaintEventHandler(Redraw);
+            Controls.Add(gfx);
+            
+            //scrollwnd.Layout += new LayoutEventHandler(LayoutThing);
 		
-            graphview.OnHScroll += new ScrollEventHandler(OnHScroll);
-            graphview.OnVScroll += new ScrollEventHandler(OnVScroll);
+            gfx.OnHScroll  +=new ScrollEventHandler(OnHScroll);
+            gfx.OnVScroll  +=new ScrollEventHandler(OnVScroll);
 
-            statusbar = new StatusBar();
-            statusbar.Dock = DockStyle.Bottom;
+            gfx.MouseDown        +=new MouseEventHandler(OnMouseDown);
+            gfx.MouseUp          +=new MouseEventHandler(OnMouseUp);
+            gfx.MouseWheel       +=new MouseEventHandler(OnMouseWheel);
+            gfx.MouseMove        +=new MouseEventHandler(OnMouseMove);
+
+            //map.EntityChanged    +=new EntityChangedHandler(EntityChanged);
+            //map.LayerChanged     +=new LayerChangedHandler(LayerChanged);
+            //map.PropertiesChanged+=new MapChangedHandler(PropertiesChanged);
+
+            statusbar=new StatusBar();
+            statusbar.Dock=DockStyle.Bottom;
             Controls.Add(statusbar);
 		
-            Splitter splitter = new Splitter();
-            splitter.Dock = DockStyle.Left;
+            Splitter splitter=new Splitter();
+            splitter.Dock=DockStyle.Left;
             Controls.Add(splitter);
 		
-            layercontrol = new ListView();
-            layercontrol.Dock = DockStyle.Left;
-            layercontrol.Width = 80;
-            layercontrol.View = View.Details;
+            layercontrol=new ListView();
+            layercontrol.Dock=DockStyle.Left;
+            layercontrol.Width=80;
+            layercontrol.View=View.Details;
             Controls.Add(layercontrol);
 
             statusbar.SendToBack();	
 				
-            Resize += new EventHandler(OnResize);
+            Resize+=new EventHandler(OnResize);
         }
+        #endregion
 
         // What a mess. -_-;
         private void Init(MainForm p, Map m, TileSet t)
@@ -124,7 +138,7 @@ namespace rho.MapEditor
             // I have a handy dandy loop that converts this to menu items. :D
             states = new object[][]
             {
-                new object[]    {   "&Tiles",   new TileSetState(this)  },
+                new object[]    {   "&Tiles",   new TileSetState()  },
             };
 
             InitControls();
@@ -136,21 +150,22 @@ namespace rho.MapEditor
 		
             xwin = ywin = 0;
 		
+            state = new TileSetState();
         }
 
         public MapView(MainForm p)
         {
             Map m = new Map(100, 100);
             m.AddLayer();
-            m.RenderString="1";
+            m.RenderString = "1";
 
             TileSet t = new TileSet();
             //t.AppendTile();
 
             Init(p, m, t);
 
-            filename="";
-            Text="Untitled map";
+            filename = "";
+            Text = "Untitled map";
 
             UpdateScrollBars();
         }
@@ -172,8 +187,8 @@ namespace rho.MapEditor
 	
         void UpdateScrollBars()
         {
-            graphview.ScrollSize = new Size(map.Width*tiles.Width, map.Height*tiles.Height);	
-            graphview.PageSize = ClientSize;
+            gfx.ScrollSize = new Size(map.Width*tiles.Width, map.Height*tiles.Height);	
+            gfx.PageSize = ClientSize;
         }
 	
         void OnHScroll(object o, ScrollEventArgs e)
@@ -183,7 +198,7 @@ namespace rho.MapEditor
 				
             XWin = e.NewValue;
 		
-            graphview.Invalidate();
+            gfx.Invalidate();
         }
 	
         void OnVScroll(object o, ScrollEventArgs e)
@@ -193,7 +208,7 @@ namespace rho.MapEditor
 		
             YWin = e.NewValue;
 
-            graphview.Invalidate();
+            gfx.Invalidate();
         }
 	
         void OnResize(object o, EventArgs e)
@@ -202,7 +217,7 @@ namespace rho.MapEditor
 
             // Need a way to find out how big the window was before now.
             // Then we have at most two skinny rects that need to be redrawn.
-            //    graphview.Invalidate();
+            //    gfx.Invalidate();
         }
 	
         void Redraw(object o, PaintEventArgs e)
@@ -214,11 +229,11 @@ namespace rho.MapEditor
 		
             foreach (char c in map.RenderString)
             {
-                int i=(int)c-'1';
+                int i=(int)c - '1';
 			
-                if (i>=0 && i<map.NumLayers)
+                if (i >= 0 && i < map.NumLayers)
                 {
-                    DrawLayer(i, e, n!=0);
+                    DrawLayer(i, e, n != 0);
 
                     if (n == 0)
                         // ... and enable it for all subsequent layers
@@ -300,8 +315,8 @@ namespace rho.MapEditor
             {
                 xwin = value;
                 if (xwin<0) xwin = 0;
-                if (xwin>map.Width*tiles.Width-graphview.ClientSize.Width)
-                    xwin = map.Width*tiles.Width-graphview.ClientSize.Width;
+                if (xwin>map.Width*tiles.Width-gfx.ClientSize.Width)
+                    xwin = map.Width*tiles.Width-gfx.ClientSize.Width;
             }
         }
 
@@ -311,9 +326,9 @@ namespace rho.MapEditor
             set
             {
                 ywin = value;
-                if (ywin<0) ywin = 0;
-                if (ywin>map.Width*tiles.Width-graphview.ClientSize.Width)
-                    ywin = map.Width*tiles.Width-graphview.ClientSize.Width;        }
+                if (ywin < 0) ywin = 0;
+                if (ywin > map.Width*tiles.Width - gfx.ClientSize.Width)
+                    ywin = map.Width*tiles.Width - gfx.ClientSize.Width;        }
         }
 
         public Map Map
@@ -357,27 +372,27 @@ namespace rho.MapEditor
 
         }
 
-        protected override void OnMouseDown(MouseEventArgs e)
+        void OnMouseDown(object o, MouseEventArgs e)
         {
-            state.MouseDown(e);
+            state.MouseDown(this, e);
             base.OnMouseDown(e);
         }
 
-        protected override void OnMouseUp(MouseEventArgs e)
+        void OnMouseUp(object o, MouseEventArgs e)
         {
-            state.MouseUp(e);
+            state.MouseUp(this, e);
             base.OnMouseUp(e);
         }
 
-        protected override void OnMouseWheel(MouseEventArgs e)
+        void OnMouseWheel(object o, MouseEventArgs e)
         {
-            state.MouseWheel(e);
+            state.MouseWheel(this, e);
             base.OnMouseWheel(e);
         }
 
-        protected override void OnMouseMove(MouseEventArgs e)
+        void OnMouseMove(object o, MouseEventArgs e)
         {
-            state.MouseMove(e);
+            state.MouseMove(this, e);
             base.OnMouseMove(e);
         }
     }

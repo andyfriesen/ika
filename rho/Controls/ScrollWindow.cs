@@ -37,6 +37,13 @@ namespace rho.Controls
             public uint page;
             public int pos;
             public int trackpos;
+            
+            public ScrollInfo()
+            {
+                size = page = 0;
+                min = max = pos = trackpos = 0;
+                flags = 0;
+            }
         }
 
         [DllImport("user32")]  static extern int GetScrollInfo(IntPtr hwnd, int bar, [MarshalAs(UnmanagedType.LPStruct)]ScrollInfo si);
@@ -88,8 +95,7 @@ namespace rho.Controls
         protected override void WndProc(ref Message msg)
         {
             
-            // more than a little hackish. -_-
-            // At least it's contained, though.
+            // Intercept and override the scroll messages.
             if (msg.Msg==WM_VSCROLL)
             {
                 int position=(msg.WParam.ToInt32()>>16);
