@@ -15,8 +15,8 @@ namespace Script
         GET(Y)      { return Script::Control::New(the< ::Input>()->GetMouse()->GetAxis(::Mouse::Y)); }
         GET(Wheel)  { return Script::Control::New(the< ::Input>()->GetMouse()->GetAxis(::Mouse::WHEEL)); }
         GET(Left)   { return Script::Control::New(the< ::Input>()->GetMouse()->GetButton(1));        }
-        GET(Right)  { return Script::Control::New(the< ::Input>()->GetMouse()->GetButton(2));        }
-        GET(Middle) { return Script::Control::New(the< ::Input>()->GetMouse()->GetButton(3));        }
+        GET(Middle) { return Script::Control::New(the< ::Input>()->GetMouse()->GetButton(2));        }
+        GET(Right)  { return Script::Control::New(the< ::Input>()->GetMouse()->GetButton(3));        }
 #undef GET
 
         PyGetSetDef properties[] =

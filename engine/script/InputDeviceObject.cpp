@@ -94,10 +94,14 @@ namespace Script
                 if (!name)
                     throw "Control names must be strings!";
 
-                PyObject* obj = Script::Control::New(self->device->GetControl(name));
+                ::InputControl* control = self->device->GetControl(name);
+                if (!control)
+                    throw va("%s is not a valid control name", name);
+
+                PyObject* obj = Script::Control::New(control);
 
                 if (!obj)
-                    throw va("%s is not a valid control name", name);
+                    throw "Internal Python weirdness!";
 
                 return obj;
             }

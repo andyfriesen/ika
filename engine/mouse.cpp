@@ -50,9 +50,9 @@ MouseButtonControl* Mouse::GetButton(uint button)
 {
     switch (button)
     {
-    case 0: return _left.get();
-    case 1: return _right.get();
-    case 2: return _middle.get();
+    case 1: return _left.get();
+    case 2: return _right.get();
+    case 3: return _middle.get();
     default: return 0;
     }
 }
