@@ -199,7 +199,7 @@ namespace Script
             PyObject* dict = PyDict_New();
 
             for (std::map<std::string, std::string>::iterator iter = engine->map.metaData.begin(); iter != engine->map.metaData.end(); iter++)
-                PyDict_SetItemString(dict, iter->first.c_str(), PyString_FromString(iter->second.c_str()));
+                PyDict_SetItemString(dict, const_cast<char*>(iter->first.c_str()), PyString_FromString(iter->second.c_str()));
 
             return dict;
         }

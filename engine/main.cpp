@@ -326,51 +326,68 @@ void CEngine::RenderEntities(uint layerIndex)
         CSprite* s = e->sprite;
         
         int frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
+
+        int x = e->x - xwin - s->nHotx + layer->x;
+        int y = e->y - ywin - s->nHoty + layer->y;
        
-        video->BlitImage(s->GetFrame(frame), e->x - xwin - s->nHotx, e->y - ywin - s->nHoty);
+        video->BlitImage(s->GetFrame(frame), x, y);
     }
 }
 
 void CEngine::RenderLayer(uint layerIndex)
 {
     CDEBUG("renderlayer");
-    int        xl, yl;        // x/y run length
-    int        xs, ys;        // x/y start
-    int        xofs, yofs;    // sub-tile offset
+    int        lenX, lenY;        // x/y run length
+    int        firstX, firstY;        // x/y start
+    int        adjustX, adjustY;    // sub-tile offset
     int        xw, yw;
     const Map::Layer* layer = &map.GetLayer(layerIndex);
 
     int layerWidth = layer->Width() * tiles->Width();
     int layerHeight = layer->Height() * tiles->Height();
    
-    xw = (xwin * layer->parallax.mulx) / layer->parallax.divx;
-    yw = (ywin * layer->parallax.mulx) / layer->parallax.divy;
+    xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
+    yw = (ywin * layer->parallax.mulx / layer->parallax.divy) - layer->y;
     
-    xs = xw / tiles->Width();
-    ys = yw / tiles->Height();
+    firstX = xw / tiles->Width();
+    firstY = yw / tiles->Height();
     
-    xofs = -(xw % tiles->Width());
-    yofs = -(yw % tiles->Height());
+    adjustX = xw % tiles->Width();
+    adjustY = yw % tiles->Height();
     
     const Point res = video->GetResolution();
-    xl = res.x / tiles->Width() + 1;
-    yl = res.y / tiles->Height() + 2;
+    lenX = res.x / tiles->Width() + 1;
+    lenY = res.y / tiles->Height() + 2;
     
-    if (xs + xl > layer->Width()) xl = layer->Width() - xs;        // clip yo
-    if (ys + yl > layer->Height()) yl = layer->Height() - ys;
+    if (firstX + lenX > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
+    if (firstY + lenY > layer->Height()) lenY = layer->Height() - firstY;
 
-    if (xl < 1 || yl < 1) return;   // not visible
+    if (firstX < 0)
+    {
+        lenX -= -firstX;
+        adjustX += firstX * tiles->Width();
+        firstX = 0;
+    }
+
+    if (firstY < 0)
+    {
+        lenY -= -firstY;
+        adjustY += firstY * tiles->Height();
+        firstY = 0;
+    }
+
+    if (lenX < 1 || lenY < 1) return;   // not visible
     
-    const uint*  t = layer->tiles.GetPointer(xs, ys);
-    int xinc = layer->Width() - xl;
+    const uint*  t = layer->tiles.GetPointer(firstX, firstY);
+    int xinc = layer->Width() - lenX;
     
-    int curx = xofs;
-    int cury = yofs;
+    int curx = -adjustX;
+    int cury = -adjustY;
 
     video->SetBlendMode(Video::Normal);
-    for (int y = 0; y < yl; y++)
+    for (int y = 0; y < lenY; y++)
     {
-        for (int x = 0; x < xl; x++)
+        for (int x = 0; x < lenX; x++)
         {
             //if (*t)
                 video->BlitImage(tiles->GetTile(*t), curx, cury);
@@ -379,7 +396,7 @@ void CEngine::RenderLayer(uint layerIndex)
             t++;
         }
         cury += tiles->Height();
-        curx = xofs;
+        curx = -adjustX;
         t += xinc;
     }
 }
@@ -395,9 +412,11 @@ void CEngine::Render()
     
     if (cameraTarget)
     {        
+        const Map::Layer* layer = &map.GetLayer(cameraTarget->layerIndex);
+
         SetCamera(Point(
-            cameraTarget->x - res.x / 2,
-            cameraTarget->y - res.y / 2));
+            cameraTarget->x - res.x / 2 + layer->x,
+            cameraTarget->y - res.y / 2 + layer->y));
     }
     
     for (uint i = 0; i < map.NumLayers(); i++)

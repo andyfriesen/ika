@@ -9,13 +9,13 @@
 
 #include "compression.h"
 #include "base64.h"
-#include "xmlutil.h"
-#include <cppdom/cppdom.h>
+//#include "xmlutil.h"
+//#include <cppdom/cppdom.h>
 #include "aries.h"
 #include <fstream>
 #include <stdexcept>
 
-using namespace cppdom;
+//using namespace cppdom;
 using aries::NodeList;
 using aries::DataNodeList;
 using aries::DataNode;
@@ -200,7 +200,7 @@ void CCHRfile::Load(const std::string& fname)
         {
             DataNode* frameNode = rootNode->getChild("frames");
 
-            int frameCount = atoi(frameNode->getChild("count")->getString().c_str());
+            uint frameCount = (uint)atoi(frameNode->getChild("count")->getString().c_str());
 
             DataNode* dimNode = frameNode->getChild("dimensions");
             nWidth = atoi(dimNode->getChild("width")->getString().c_str());
@@ -241,7 +241,8 @@ void CCHRfile::Load(const std::string& fname)
     }
 
 #else
-    // Now the XML fun.  Woot.
+    // blech.  This is still here for some stupid reason I cannot fathom.
+    // It'll be purged at some point.  Probably before ika 0.48 goes public.
     XMLContextPtr context(new XMLContext);
     XMLDocument document;
 
