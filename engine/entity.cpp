@@ -166,7 +166,7 @@ void CEntity::Move(Direction d)
     if (bEntobs)
     {
         CEntity* pEnt=engine.DetectEntityCollision(this,newx,newy,pSprite->nHotw,pSprite->nHoth);
-        if (pEnt)
+        if (pEnt && pEnt->bIsobs)
         {
             if (this==engine.pPlayer && pEnt->bAdjacentactivate)                                    // Adjacent activation
                 engine.script.CallEvent(pEnt->sActscript.c_str());
