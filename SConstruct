@@ -1,7 +1,7 @@
 import sys
 import os
 
-env = Environment(ENV=os.environ, tools=['gcc','g++','gnulink'])
+env = Environment(ENV=os.environ, tools=['mingw'])
 env.EnsurePythonVersion(2,3)
 env.EnsureSConsVersion(0,9)
 
@@ -21,7 +21,7 @@ def Alert(msg):
 include('.', '..')
 if sys.platform == 'win32':
     include('../3rdparty/include')
-include('d:/cygwin/usr/include/python2.3')  # should not be necessary
+    #include('d:/cygwin/usr/include/python2.3')  # should not be necessary
 
 libs(Split('''
     GL

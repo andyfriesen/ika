@@ -27,7 +27,7 @@ namespace
         "up-left",
         "up-right",
         "down-left",
-        "down_right",
+        "down-right",
         "wtf"
     };
     const int numDirs = sizeof dirNames / sizeof dirNames[0];
@@ -213,6 +213,7 @@ bool Map::Load(const std::string& filename)
                         e.spriteName = Local::getStringNode(*iter, "sprite");
 
                         std::string dir = Local::getStringNode(*iter, "direction");
+                        e.direction = face_down;
                         for (uint i = 0; i < numDirs; i++)
                             if (dir == dirNames[i])
                             {   e.direction = (Direction)i; break;  }

@@ -3,7 +3,7 @@
 #include <math.h>
 
 //#include "SDL/SDL_opengl.h"
-#include "gl/gl.h"
+#include "GL/gl.h"
 
 #include "Driver.h"
 #include "Image.h"
