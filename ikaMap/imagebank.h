@@ -14,7 +14,7 @@ class Canvas;
 class ImageBank
 {
 protected:
-    vector<Image*> bitmaps;
+    std::vector<Image*> bitmaps;
     std::set<int> altered;
 
     virtual void SetImage(const Canvas& img, int idx)=0;

@@ -398,9 +398,6 @@ void CEngine::Render()
         SetCamera(Point(
             cameraTarget->x - res.x / 2,
             cameraTarget->y - res.y / 2));
-        
-        int maxx=(map.width  * tiles->Width() ) - res.x;   // and make sure it's still in range
-        int maxy=(map.height * tiles->Height()) - res.y;
     }
     
     for (uint i = 0; i < map.NumLayers(); i++)
@@ -409,6 +406,11 @@ void CEngine::Render()
         RenderEntities(i);
     }
 //    DoHook(_hookRetrace);
+}
+
+void CEngine::Render(const std::vector<uint>& list)
+{
+
 }
 
 void CEngine::DoHook(HookList& hooklist)

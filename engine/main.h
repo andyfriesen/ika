@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "0.47"
+#define VERSION "0.50 experimental"
 
 // low level components/containers/etc..
 #include <list>
@@ -80,7 +80,7 @@ public:
     bool      DetectMapCollision(int x1, int y1, int w, int h, uint layerIndex);    ///< returns true if there is a map obstruction within the passed rect, on the specified layer
     
     /// If an entity is within the rect, return it, else return 0.  If wantobstructable 
-    /// is true, then entities whose bIsobs attribute is unset will be ignored.
+    /// is true, then entities whose obstructEntities attribute is unset will be ignored.
     Entity*   DetectEntityCollision(const Entity* ent, 
                                     int x1, int y1, int w, int h, 
                                     uint layerIndex, bool wantobstructable = false);  
@@ -94,6 +94,7 @@ public:
     void      RenderEntities(uint layerIndex);                                      ///< Draws entities
     void      RenderLayer(uint layerIndex);                                         ///< renders a single layer
     void      Render();                                                             ///< renders everything
+    void      Render(const std::vector<uint>& list);                                ///< Renders the layers specified, in order.
     
     void      LoadMap(const std::string& filename);                                 ///< switches maps
     

@@ -247,6 +247,7 @@ namespace Script
 
         // Methods
         METHOD(Map_Switch, PyObject);
+        METHOD(Map_GetMetaData, PyObject);
         METHOD(Map_Render, PyObject);
         METHOD(Map_GetTile, PyObject);
         METHOD(Map_SetTile, PyObject);
@@ -256,6 +257,9 @@ namespace Script
         METHOD(Map_SetZone, PyObject);
         METHOD(Map_GetParallax, PyObject);
         METHOD(Map_SetParallax, PyObject);
+        METHOD(Map_GetWaypoints, PyObject);
+        //METHOD(Map_GetAllEntities, PyObject);
+        //METHOD(Map_GetEntitiesOnLayer, PyObject);
 
         void Init();
         PyObject* New();

@@ -78,7 +78,7 @@ public:
             return blah;
         }
 
-        return _data[y * _height + x];
+        return _data[y * _width + x];
     }
 
     const T& operator ()(uint x, uint y) const
@@ -94,7 +94,7 @@ public:
         assert(x >= 0 && y >= 0);
         assert(x < _width && y < _height);
 
-        return _data + y * _height + x;
+        return _data + (y * _width) + x;
     }
 
     uint Width() const  { return _width; }
@@ -108,7 +108,7 @@ public:
             delete[] _data;
             _data = 0;
         }
-        else
+        else if (newx != _width || newy != _height) // eliminate the trivial case
         {
             int sx = newx < _width  ? newx : _width;
             int sy = newy < _height ? newy : _height;
@@ -129,7 +129,7 @@ public:
 
             delete[] _data;
             _data = tempData;
-            _width = newx;
+            _width  = newx;
             _height = newy;
         }
     }

@@ -23,9 +23,9 @@ class Entity
 {
     CEngine&    engine;                                             //!< engine instance.  This allows the entity to gather information about its surroundings
 public: // AVERT YOUR EYES
-    std::string  curanimscript;                                     //!< a copy of the last frame animation script assigned to this entity
-    uint         animscriptofs;                                     //!< current offset in the current anim script
-    uint         animscriptct;                                      //!< delay counter
+    std::string curanimscript;                                      //!< a copy of the last frame animation script assigned to this entity
+    uint        animscriptofs;                                      //!< current offset in the current anim script
+    uint        animscriptct;                                       //!< delay counter
     
     std::string  moveScript;                                        //!< Movement script assigned to this entity.
     

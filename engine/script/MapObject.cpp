@@ -17,18 +17,19 @@ namespace Script
                 "Map.Switch(filename)\n\n"
                 "Switches the current map to the map file specified.\n"
                 "The new map's AutoExec event is executed, if it exists."
-            },/*
+            },
+
+            {   "GetMetaData",  (PyCFunction)Map_GetMetaData,   METH_NOARGS,
+                "Map.GetMetaData() -> dict\n\n"
+                "Creates a dictionary containing the map's metadata, and returns it."
+            },
 
             {   "Render",       (PyCFunction)Map_Render,        METH_VARARGS,
-                "Map.Render([rstring])\n\n"
-                "Draws the map and entities, according to rstring.  If rstring is\n"
-                "omitted, the map's default render string is used instead. (this\n"
-                "can be set from the map editor)\n"
-                "\n"
-                "The render string format is as follows:\n"
-                "1-9 - Render a tile layer.  The bottom layer is layer number 1.\n"
-                "E - Render the entities.\n"
-                "R - Execute the functions in the HookRetrace queue."
+                "Map.Render([layerList])\n\n"
+                "Draws the map and entities.  layerList is a sequence of integers;\n"
+                "ika will only draw these layers (in the order given).  If layerList\n"
+                "is omitted, all layers will be drawn, in their predefined order (set\n"
+                "in the editor)"
             },
 
             {   "GetTile",      (PyCFunction)Map_GetTile,       METH_VARARGS,
@@ -42,24 +43,25 @@ namespace Script
             },
 
             {   "GetObs",       (PyCFunction)Map_GetObs,        METH_VARARGS,
-                "Map.GetObs(x, y) -> int\n\n"
+                "Map.GetObs(x, y, layerIndex) -> int\n\n"
                 "Returns 1 if the tile at (x, y) is obstructed, or 0 if not."
             },
 
             {   "SetObs",       (PyCFunction)Map_SetObs,        METH_VARARGS,
-                "Map.SetObs(x, y, obs)\n\n"
+                "Map.SetObs(x, y, layerIndex, obs)\n\n"
                 "If obs is nonzero, the tile at (x, y) is obstructed, else it is\n"
                 "unobstructed."
             },
 
-            {   "GetZone",      (PyCFunction)Map_GetZone,       METH_VARARGS,
+            /*{   "GetZone",      (PyCFunction)Map_GetZone,       METH_VARARGS,
                 "Map.GetZone(x, y) -> int\n\n"
                 "Returns the id number of the zone at (x, y)"
             },
             {   "SetZone",      (PyCFunction)Map_SetZone,       METH_VARARGS,
                 "Map.SetZone(x, y, zone)\n\n"
                 "Sets the zone id number at (x, y)."
-            },
+            },*/
+
             {   "GetParallax",  (PyCFunction)Map_GetParallax,   METH_VARARGS,
                 "Map.GetParallax(layer) -> (int, int, int, int)\n\n"
                 "Returns a 4-tuple containing parallax settings for the layer specified.\n"
@@ -69,21 +71,43 @@ namespace Script
                 "  parallax Y multiplier, \n"
                 "  parallax Y divisor )"
             },
+
             {   "SetParallax",  (PyCFunction)Map_SetParallax,   METH_VARARGS,
                 "Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)\n\n"
                 "Sets the specified layer's parallax settings according to the multipliers\n"
-                "and divisors given."
+                "and divisors given.  If either of the divisors are zero, a parallax value of 0/1\n"
+                "will be used for that axis."
+            },
+
+            {   "GetWaypoints", (PyCFunction)Map_GetWaypoints,  METH_NOARGS,
+                "Map.GetWaypoints() -> list\n\n"
+                "Returns a list of three-tuples in the format of (name, x, y), one for\n"
+                "each waypoint defined within the editor."
+            },
+
+            /*{   "GetAllEntities",   (PyCFunction)Map_GetAllEntities,    METH_NOARGS,
+                "Map.GetAllEntities) -> list\n\n"
+                "Creates a list of every single existing entity, and returns it."
+            },
+
+            {   "GetEntitiesOnLayer",   (PyCFunction)Map_GetEntitiesOnLayer,    METH_VARARGS,
+                "GetEntitiesOnLayer(layerIndex) -> list\n\n"
+                "Returns a list containing every entity on the specified layer.\n"
             },*/
+
             {   0   }   // end of list
         };
 
 #define GET(x) PyObject* get ## x(PyObject* self)
 #define SET(x) PyObject* set ## x(PyObject* self, PyObject* value)
 
+        GET(Title)      { return PyString_FromString(engine->map.title.c_str()); }
+        SET(Title)      { engine->map.title = PyString_AsString(value); return 0;   }
         GET(XWin)       { return PyInt_FromLong(engine->GetCamera().x); }
         SET(XWin)       { engine->SetCamera(Point(PyInt_AsLong(value), engine->GetCamera().y)); return 0; }
         GET(YWin)       { return PyInt_FromLong(engine->GetCamera().y); }
         SET(YWin)       { engine->SetCamera(Point(engine->GetCamera().x, PyInt_AsLong(value)));  return 0;}
+        GET(LayerCount) { return PyInt_FromLong(engine->map.NumLayers());   }
         GET(NumTiles)   { return PyInt_FromLong(engine->tiles->NumTiles()); }
         GET(TileWidth)  { return PyInt_FromLong(engine->tiles->Width()); }
         GET(TileHeight) { return PyInt_FromLong(engine->tiles->Height()); }
@@ -102,13 +126,15 @@ namespace Script
 
         PyGetSetDef properties[] =
         {
-            {   "xwin",         (getter)getXWin,            (setter)setXWin,    "Gets or sets the X coordinate of the camera"   },
-            {   "ywin",         (getter)getYWin,            (setter)setYWin,    "Gets or sets the Y coordinate of the camera"   },
+            {   "title",        (getter)getTitle,           (setter)setTitle,   "Gets or sets the map's title."                     },
+            {   "xwin",         (getter)getXWin,            (setter)setXWin,    "Gets or sets the X coordinate of the camera"       },
+            {   "ywin",         (getter)getYWin,            (setter)setYWin,    "Gets or sets the Y coordinate of the camera"       },
+            {   "layercount",   (getter)getLayerCount,      0,                  "Gets the number of layers on the current map."     },
             {   "numtiles",     (getter)getNumTiles,        0,                  "Gets the number of tiles in the current tileset"   },
-            {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset"         },
-            {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset"        },
-            //{   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in tiles"   },
-            //{   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in tiles"  },
+            {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset"             },
+            {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset"            },
+            //{   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in tiles"     },
+            //{   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in tiles"    },
             //{   "rstring",      (getter)getRString,         (setter)setRString, "Gets or sets the current render string of the map" },
             {   "tilesetname",      (getter)getTileSetName,         (setter)setTileSetName, "Gets or sets the name of the current tileset"  },
             //{   "defaultmusic", (getter)getMusic,           (setter)setMusic,   "Gets or sets the default music of the current map" },
@@ -137,7 +163,7 @@ namespace Script
             PyObject* map=PyObject_New(PyObject, &type);
 
             if (!map)
-                return NULL;
+                return 0;
 
             return (PyObject*)map;
         }
@@ -154,31 +180,65 @@ namespace Script
             char* filename;
 
             if (!PyArg_ParseTuple(args, "s:MapSwitch", &filename))
-                return NULL;
+                return 0;
 
             if (!File::Exists(filename))
             {
                 PyErr_SetString(PyExc_OSError, va("Unable to load %s", filename));
-                return NULL;
+                return 0;
             }
 
             engine->LoadMap(filename);
 
             Py_INCREF(Py_None);
             return Py_None;
-        }/*
+        }
+        
+        METHOD(Map_GetMetaData)
+        {
+            PyObject* dict = PyDict_New();
+
+            for (std::map<std::string, std::string>::iterator iter = engine->map.metaData.begin(); iter != engine->map.metaData.end(); iter++)
+                PyDict_SetItemString(dict, iter->first.c_str(), PyString_FromString(iter->second.c_str()));
+
+            return dict;
+        }
 
         METHOD(Map_Render)
         {
-            char* rstring=NULL;
 
-            if (!PyArg_ParseTuple(args, "|s:RenderMap", &rstring))
-                return NULL;
-
-            if (rstring)
-                engine->Render(rstring);
-            else
+            if (PyTuple_Size(args) == 0)
                 engine->Render();
+            else
+            {
+                // Compile the arguments into a vector.
+                std::vector<uint> renderList(PyTuple_Size(args));
+                
+                for (uint i = 0; i < renderList.size(); i++)
+                {
+                    PyObject* item = PyTuple_GetItem(args, i);
+                    if (!PyInt_Check(item))
+                    {
+                        PyErr_SetString(PyExc_SyntaxError, "Map.Render needs INTEGERS.");  return 0;
+                    }
+
+                    uint layerIndex = (uint)PyInt_AsLong(item);
+
+                    if (layerIndex >= engine->map.NumLayers())
+                    {   
+                        PyErr_SetString(PyExc_RuntimeError, 
+                            va("Map.Render: asked to render layer %i.  The map only has %i layers!", 
+                                layerIndex, engine->map.NumLayers())
+                            );
+                        return 0;
+                    }
+
+                    renderList[i] = layerIndex;
+                }
+
+                // Pass them on.
+                engine->Render(renderList);
+            }
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -186,22 +246,36 @@ namespace Script
 
         METHOD(Map_GetTile)
         {
-            int x, y, lay;
+            int x, y;
+            uint lay;
 
             if (!PyArg_ParseTuple(args, "iii:Map.GetTile", &x, &y, &lay))
-                return NULL;
+                return 0;
 
-            return PyInt_FromLong(engine->map.GetTile(x, y, lay));
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot GetTile from layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            return PyInt_FromLong(engine->map.GetLayer(lay).tiles(x, y));
         }
 
         METHOD(Map_SetTile)
         {
-            int x, y, lay, tile;
+            int x, y, tile;
+            uint lay;
 
             if (!PyArg_ParseTuple(args, "iiii:Map.SetTile", &x, &y, &lay, &tile))
-                return NULL;
+                return 0;
 
-            engine->map.SetTile(x, y, lay, tile);
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot SetTile to layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            engine->map.GetLayer(lay).tiles(x, y) = tile;
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -210,32 +284,46 @@ namespace Script
         METHOD(Map_GetObs)
         {
             int x, y;
+            uint lay;
 
-            if (!PyArg_ParseTuple(args, "ii:Map.GetObs", &x, &y))
-                return NULL;
+            if (!PyArg_ParseTuple(args, "iii:Map.GetObs", &x, &y, &lay))
+                return 0;
 
-            return PyInt_FromLong(engine->map.IsObs(x, y));
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot GetObs from layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            return PyInt_FromLong(engine->map.GetLayer(lay).obstructions(x, y));
         }
 
         METHOD(Map_SetObs)
         {
-            int x, y, bSet;
+            int x, y, set;
+            uint lay;
 
-            if (!PyArg_ParseTuple(args, "iii:Map.SetObs", &x, &y, &bSet))
-                return NULL;
+            if (!PyArg_ParseTuple(args, "iiii:Map.SetObs", &x, &y, &lay, &set))
+                return 0;
 
-            engine->map.SetObs(x, y, bSet!=0);
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot SetObs to layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            engine->map.GetLayer(lay).obstructions(x, y) = set != 0;
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD(Map_GetZone)
+        /*METHOD(Map_GetZone)
         {
             int x, y;
 
             if (!PyArg_ParseTuple(args, "ii:Map.GetZone", &x, &y))
-                return NULL;
+                return 0;
 
             return PyInt_FromLong(engine->map.GetZone(x, y));
         }
@@ -245,53 +333,93 @@ namespace Script
             int x, y, z;
 
             if (!PyArg_ParseTuple(args, "iii:Map.SetZone", &x, &y, &z))
-                return NULL;
+                return 0;
 
             engine->map.SetZone(x, y, z);
 
             Py_INCREF(Py_None);
             return Py_None;
-        }
+        }*/
 
-        // urk.. temporary code.  Please be temporary code.
         METHOD(Map_GetParallax)
         {
-            int lay;
+            uint lay;
 
             if (!PyArg_ParseTuple(args, "i:Map.GetParallax", &lay))
-                return NULL;
+                return 0;
 
-            SMapLayerInfo layerinfo;
-            engine->map.GetLayerInfo(layerinfo, lay);
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot GetParallax from layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            ::Map::Layer& layer = engine->map.GetLayer(lay);
 
             return Py_BuildValue("(iiii)",
-                layerinfo.pmulx,
-                layerinfo.pdivx,
-                layerinfo.pmuly,
-                layerinfo.pdivy
+                layer.parallax.mulx,
+                layer.parallax.divx,
+                layer.parallax.muly,
+                layer.parallax.divy
                 );
         }
 
         METHOD(Map_SetParallax)
         {
-            int lay, pmulx, pdivx, pmuly, pdivy;
+            int pmulx, pdivx, pmuly, pdivy;
+            uint lay;
 
             if (!PyArg_ParseTuple(args, "iiiii:Map.SetParallax", &lay, &pmulx, &pdivx, &pmuly, &pdivy))
                 return 0;
 
-            SMapLayerInfo layer;
-            engine->map.GetLayerInfo(layer, lay);
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot SetParallax to layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
 
-            layer.pmulx = pmulx;
-            layer.pmuly = pmuly;
-            layer.pdivx = pdivx;
-            layer.pdivy = pdivy;
+            if (pdivx == 0)
+                pmulx = 0, pdivx = 1;
+            if (pdivy == 0)
+                pmuly = 0, pdivy = 1;
 
-            engine->map.SetLayerInfo(layer, lay);
+            ::Map::Layer& layer = engine->map.GetLayer(lay);
+            layer.parallax.mulx = pmulx;
+            layer.parallax.divx = pdivx;
+            layer.parallax.muly = pmulx;
+            layer.parallax.divy = pdivy;
 
             Py_INCREF(Py_None);
             return Py_None;
-        }*/
+        }
+
+        METHOD(Map_GetWaypoints)
+        {
+            if (!PyArg_ParseTuple(args, ":Map.GetWaypoints"))
+                return 0;
+
+            uint s = engine->map.wayPoints.size();
+            PyObject* list = PyTuple_New(s);
+            uint i = 0;
+            
+            for (
+                std::map<std::string, ::Map::WayPoint>::iterator iter = engine->map.wayPoints.begin(); 
+                iter != engine->map.wayPoints.end(); 
+                iter++)
+            {
+                ::Map::WayPoint& wp = iter->second;
+
+                PyObject* o = PyTuple_New(3);
+                PyTuple_SET_ITEM(o, 0, PyString_FromString(wp.label.c_str()));
+                PyTuple_SET_ITEM(o, 1, PyInt_FromLong(wp.x));
+                PyTuple_SET_ITEM(o, 2, PyInt_FromLong(wp.y));
+
+                PyTuple_SET_ITEM(list, i, o);
+                i++;
+            }
+
+            return list;
+        }
 
 #undef METHOD
     }
