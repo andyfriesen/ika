@@ -258,9 +258,6 @@
 				RelativePath=".\resource.h">
 			</File>
 			<File
-				RelativePath=".\v26.ico">
-			</File>
-			<File
 				RelativePath=".\winmaped.rc">
 			</File>
 		</Filter>

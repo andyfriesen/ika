@@ -51,6 +51,28 @@ string Upper(const string& s);
 
 string ToString(int i);
 
+template <class T>
+class ScopedPtr
+{
+    T* _data;
+    ScopedPtr(ScopedPtr&){} // no copy!
+
+public:
+    ScopedPtr(T* t)  : _data(t) {}
+    ScopedPtr()      : _data(0) {}
+    ~ScopedPtr()     { delete _data;  }
+
+    T* operator ->() { return  _data; }
+    T* get()         { return  _data; }
+  
+    ScopedPtr& operator = (T* t)
+    {
+        delete _data;
+        _data = t;
+        return *this;
+    }
+};
+
 namespace Path
 {
     // ifdef and blah blah for platform independance
