@@ -104,4 +104,6 @@ void CEntityEditor::Update()
 
         pEntlist->Append(e.sName.c_str());
     }
+
+
 }

@@ -23,6 +23,8 @@ private:
     // ------------------ Data ---------------------
     std::vector<SSubSet>    set;                            // font subsets
     std::vector<CPixelMatrix>       glyph;
+
+    int nWidth,nHeight;                                     // for convenience.  The width and height of the largest characters in the font.
     
     // ---------- Implementation Details -----------
     bool Load8bppFont(File& f);
@@ -41,6 +43,9 @@ public:
     SSubSet&      GetSubSet(int subset)  const { return (SSubSet&)set[subset];          }
     CPixelMatrix& GetGlyph(int glyphidx) const { return (CPixelMatrix&)glyph[glyphidx]; }
     int           NumGlyphs()            const { return glyph.size();                   }
+
+    int           Width()                const { return nWidth;                         }
+    int           Height()               const { return nHeight;                        }
 };
 
 #endif

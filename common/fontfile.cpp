@@ -46,6 +46,10 @@ bool CFontFile::Load8bppFont(File& f)
         for (int j=0; j<96; j++)
             set[nCurset].nGlyphtbl[j+32]=j+(nCurset*96);
     }
+
+    // blegh
+    this->nWidth=nWidth;
+    this->nHeight=nHeight;
     
     delete[] buffer8;
     delete[] pPixels;
@@ -96,6 +100,9 @@ bool CFontFile::Load16bppFont(File& f)
         for (int j=0; j<96; j++)
             set[nCurset].nGlyphtbl[j+32]=j+(nCurset*96);
     }
+
+    this->nWidth=nWidth;
+    this->nHeight=nHeight;
     
     delete[] buffer16;
     delete[] pPixels;
@@ -131,6 +138,8 @@ bool CFontFile::Load32bppFont(File& f)
     std::vector<int>	nGlyphwidth;
     std::vector<int>	nGlyphheight;
     int nGlyphdatasize=0;
+
+    nWidth=nHeight=0;
     
     for (int i=0; i<nGlyphs; i++)
     {
@@ -139,6 +148,9 @@ bool CFontFile::Load32bppFont(File& f)
         nGlyphwidth.push_back(w);
         nGlyphheight.push_back(h);
         nGlyphdatasize+=w*h;
+
+        if (nWidth<w) nWidth=w;
+        if (nHeight<h) nHeight=h;
     }
     
     RGBA* pBuffer=new RGBA[nGlyphdatasize];

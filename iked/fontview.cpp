@@ -49,37 +49,28 @@ void CFontView::OnLeftClick(wxMouseEvent& event)
 void CFontView::Render()
 {
 
-    int nTx=0, nTy=0;
+    int tx=0, ty=0;
     int nWidth, nHeight;
 
     GetClientSize(&nWidth, &nHeight);
 
 
-    CPixelMatrix& rGlyph_=pFontfile->GetGlyph(nCurfont);
-    nTx=rGlyph_.Width();
-    nTy=rGlyph_.Height();
+    tx=pFontfile->Width();
+    ty=pFontfile->Height();
 
-    int nFontwidth=nWidth/nTx;
-    int nFontheight=(nHeight/nTy)+1;
+    int nFontwidth=nWidth/tx;
+    int nFontheight=(nHeight/ty)+1;
     int nFont=ywin*nFontwidth;
-
 
 
     pGraph->SetCurrent();
     pGraph->Clear();     
 
-    nTx=0;
-    nTy=0;
-
     for(int y=0; y<nFontheight; y++)
     {
         for(int x=0; x<nFontwidth; x++)
         {
-            CPixelMatrix& rGlyph=pFontfile->GetGlyph(nFont);
-            nTx=rGlyph.Width();
-            nTy=rGlyph.Height();
-
-            
+//            CPixelMatrix& rGlyph=pFontfile->GetGlyph(nFont);          
 
             // Grab the font bitmap, blit, and move right along.
             //  -- khross
@@ -87,10 +78,10 @@ void CFontView::Render()
             // I am amazed that this allocation/deallocation is not slow. --andy
             CPixelMatrix& rBitmap=pFontfile->GetGlyph(nFont);
             CImage rImage(rBitmap);
-            pGraph->ScaleBlit(rImage,x*nTx+1,y*nTy+1,
-                nTx, nTy, true);
+            pGraph->ScaleBlit(rImage,x*tx+1,y*ty+1,
+                rBitmap.Width(), rBitmap.Height(), true);
 
-            // add zooming.
+            // TODO: add zooming.
 
             nFont++;
 
@@ -100,40 +91,38 @@ void CFontView::Render()
                 break;
             }
 
-            nFontwidth=nWidth/nTx;
-            nFontheight=(nHeight/nTy)+1;
+            nFontwidth=nWidth/tx;
+            nFontheight=(nHeight/ty)+1;
 
         }
         
     }
 
     int x2, y2;
-    nTx=pFontfile->GetGlyph(nCurfont).Width();
-    nTy=pFontfile->GetGlyph(nCurfont).Height();
+    tx=pFontfile->Width();
+    ty=pFontfile->Height();
 
     FontPos(nCurfont,x2,y2);
-    pGraph->Rect(x2-1,y2-1,nTx+1,nTy+1,RGBA(255,255,255));
+    pGraph->Rect(x2-1,y2-1,tx+1,ty+1,RGBA(255,255,255));
     pGraph->ShowPage();
 }
 
 void CFontView::FontPos(int fontidx,int& x,int& y) const
 {
-    CPixelMatrix& rGlyph=pFontfile->GetGlyph(fontidx);
-    int nFontwidth=GetClientSize().GetWidth()/rGlyph.Width();
+    int nFontwidth=GetClientSize().GetWidth()/pFontfile->Width();
     
 
     x=fontidx%nFontwidth;
     y=fontidx/nFontwidth-ywin;
 
-    x*=rGlyph.Width();
-    y*=rGlyph.Height();
+    x*=pFontfile->Width();
+    y*=pFontfile->Height();
 }
 
 int CFontView::FontAt(int x,int y) const
 {
-    CPixelMatrix& rGlyph=pFontfile->GetGlyph(nCurfont);
-    const int tx=rGlyph.Width();
-    const int ty=rGlyph.Height();
+    const int tx=pFontfile->Width();
+    const int ty=pFontfile->Height();
 
     int nFontwidth = GetClientSize().GetWidth()/tx;
 
