@@ -11,13 +11,11 @@ enum
     ID_ENABLELOGGING,
     ID_PIXELDEPTH,
     ID_GRAPHDRIVER,
-    ID_OK,
-    ID_CANCEL,
 };
 
 BEGIN_EVENT_TABLE(CConfigDlg,wxDialog)
-    EVT_BUTTON(ID_OK,CConfigDlg::OnOK)
-    EVT_BUTTON(ID_CANCEL,CConfigDlg::OnCancel)
+    EVT_BUTTON(wxID_OK,CConfigDlg::OnOK)
+    EVT_BUTTON(wxID_CANCEL,CConfigDlg::OnCancel)
 END_EVENT_TABLE()
 
 CConfigDlg::CConfigDlg(wxWindow* parent,
@@ -29,13 +27,13 @@ CConfigDlg::CConfigDlg(wxWindow* parent,
 {
     LoadFromResource(parent,"ConfigDlg");
 
-/*    pFullscreenbox  =(wxCheckBox*)wxFindWindowByName("fullscreen",this);
+    pFullscreenbox  =(wxCheckBox*)wxFindWindowByName("fullscreen",this);
     pSoundbox       =(wxCheckBox*)wxFindWindowByName("enablesound",this);
     pLogbox         =(wxCheckBox*)wxFindWindowByName("enablelogging",this);
     pPixeldepthselector
                     =wxFindWindowByName("pixeldepth",this);
     pGraphdriverselector
-                    =wxFindWindowByName("graphdriver",this);*/
+                    =wxFindWindowByName("graphdriver",this);
 
     if (name!="")
         Load(name.c_str());
@@ -51,18 +49,18 @@ void CConfigDlg::Load(const string& fname)
 
 void CConfigDlg::Save(const string& fname)
 {
-    /*cfg.Add("fullscreen",pFullscreenbox->GetValue()?"1":"0");
+    cfg.Add("fullscreen",pFullscreenbox->GetValue()?"1":"0");
     cfg.Add("sounddriver",pSoundbox->GetValue()?"sys\\sfx_mikmod.dll":"");
     cfg.Add("log",pLogbox->GetValue()?"1":"0");
 
-    cfg.Save(fname.c_str());*/
+    cfg.Save(fname.c_str());
 }
 
 void CConfigDlg::Update()
 {
-/*    pFullscreenbox->SetValue(cfg.GetInt("fullscreen")!=0);
+    pFullscreenbox->SetValue(cfg.GetInt("fullscreen")!=0);
     pSoundbox->SetValue     (cfg.Get("sounddriver")!="");
-    pLogbox->SetValue       (cfg.GetInt("log")!=0);*/
+    pLogbox->SetValue       (cfg.GetInt("log")!=0);
 }
 
 void CConfigDlg::OnOk(wxCommandEvent&)
@@ -72,4 +70,5 @@ void CConfigDlg::OnOk(wxCommandEvent&)
 
 void CConfigDlg::OnCancel(wxCommandEvent&)
 {
+    EndModal(wxID_CANCEL);
 }

@@ -14,8 +14,6 @@
 #include <wx\resource.h>
 #include "controller.h"
 
-#include "dlg.wxr"
-
 IMPLEMENT_APP(CApp);
 
 bool CApp::OnInit()
@@ -30,10 +28,8 @@ bool CApp::OnInit()
     
     SetTopWindow(mainwnd);
 
-    wxResourceParseData(ConfigDlg);
-    wxResourceParseData(Entities);
-    /*wxString sDlginfo=wxLoadUserResource("DIALOGS","TEXT");
-    wxResourceParseString(const_cast<char*>(sDlginfo.c_str()));*/
+    wxString sDlginfo=wxLoadUserResource("DIALOGS","TEXT");
+    wxResourceParseString(const_cast<char*>(sDlginfo.c_str()));
   
     return TRUE;
 }
@@ -213,10 +209,7 @@ void CMainWnd::Open(const std::string& fname)
 
             configdlg->ShowModal();
             configdlg->Close(true);
-            /*wxDialog* dlg=new wxDialog(this,-1,"Config",wxDefaultPosition);
-            dlg->LoadFromResource(this,"ConfigDlg");
-            dlg->ShowModal();
-            dlg->Close(true);*/
+
             return;
         }
     default:
