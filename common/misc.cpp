@@ -5,6 +5,7 @@ look at misc.h :P
 #include <stdarg.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include <time.h>
 #include "misc.h"
 
 const char* IKA_VERSION = "0.56";
@@ -44,6 +45,13 @@ char* va(char* format, ...)
     va_end(argptr);
     
     return str;
+}
+
+void SeedRandom()
+{
+    time_t curTime;
+    time(&curTime);
+    srand(curTime);
 }
 
 int Random(int min, int max)

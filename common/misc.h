@@ -67,6 +67,7 @@ bool IsPowerOf2(uint i);
 uint NextPowerOf2(uint i);
 
 int sgn(int x);
+void SeedRandom();
 int Random(int min, int max);
 char* va(char* format, ...);
 

@@ -142,6 +142,9 @@
 				RelativePath="entitystate.cpp">
 			</File>
 			<File
+				RelativePath=".\exporttilesdlg.cpp">
+			</File>
+			<File
 				RelativePath="ikamap.cpp">
 			</File>
 			<File
@@ -240,6 +243,9 @@
 			</File>
 			<File
 				RelativePath=".\executor.h">
+			</File>
+			<File
+				RelativePath=".\exporttilesdlg.h">
 			</File>
 			<File
 				RelativePath="imagebank.h">

@@ -62,7 +62,7 @@ public:
 
 struct Image
 {
-    friend class VideoFrame;
+    friend struct VideoFrame;
 protected:
     GLuint hTex;
     int nWidth, nHeight;

@@ -17,6 +17,7 @@
 #include "mapdlg.h"
 #include "layerdlg.h"
 #include "importtilesdlg.h"
+#include "exporttilesdlg.h"
 #include "scriptdlg.h"
 #include "tileanimdlg.h"
 
@@ -54,6 +55,7 @@ namespace
         id_editredo,
         id_editmapproperties,
         id_importtiles,
+        id_exporttiles,
         id_edittileanim,
         id_clonelayer,
 
@@ -114,6 +116,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_editredo, MainWindow::OnRedo)
     EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
     EVT_MENU(id_importtiles, MainWindow::OnImportTiles)
+    EVT_MENU(id_exporttiles, MainWindow::OnExportTileSet)
     EVT_MENU(id_clonelayer, MainWindow::OnCloneLayer)
     EVT_MENU(id_edittileanim, MainWindow::OnEditTileAnim)
 
@@ -322,6 +325,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         editMenu->AppendSeparator();
         editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
         editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
+        editMenu->Append(id_exporttiles, "&Export Tiles...", "Save the tileset as an image.");
         editMenu->Append(id_edittileanim, "Edit Tile &Animations...", "");
         editMenu->AppendSeparator();
         editMenu->Append(id_clonelayer, "Clone Layer", "Create a copy of the current layer.");
@@ -601,47 +605,38 @@ void MainWindow::OnSaveTileSetAs(wxCommandEvent&)
 
 void MainWindow::OnExportTileSet(wxCommandEvent&)
 {
-    wxFileDialog dlg(
-        this,
-        "Export Tileset to PNG",
-        "",
-        "",
-        "PNG images (*.png)|*.png|"
-        "All files (*.*)|*.*",
-        wxSAVE | wxOVERWRITE_PROMPT
-        );
-
+    ExportTilesDlg dlg(this);
     if (dlg.ShowModal() == wxID_OK)
     {
-        const bool pad = true;
-        const int colSize = 18; // gay arbitrary constant until I get around to making a dialog.
+        const int padAdjust = dlg._pad ? 1 : 0;
+        const uint rowSize = dlg._rowSize;
 
-        int numRows = max<int>(1, _tileSet->Count() / colSize);
-        int tileWidth = _tileSet->Width() + (pad ? 1 : 0);
-        int tileHeight = _tileSet->Height() + (pad ? 1 : 0);
+        Canvas dest(
+            rowSize * (_tileSet->Width() + padAdjust) + padAdjust,
+            (_tileSet->Count() / rowSize) * (_tileSet->Height() + padAdjust) + padAdjust);
 
-        int width = tileWidth * colSize;
-        int height = tileHeight * numRows;
+        dest.Clear(RGBA(255, 255, 255));
 
-        Canvas bigImage(width, height);
         uint i = 0;
-        for (int y = 0; y < numRows; y++)
+        uint curX = padAdjust;
+        uint curY = padAdjust;
+        while (i < _tileSet->Count())
         {
-            for (int x = 0; x < colSize; x++)
+            for (uint j = 0; j < rowSize; j++)
             {
-                CBlitter<Opaque>::Blit(_tileSet->Get(i), bigImage,
-                    -(x * tileWidth),
-                    -(y * tileHeight));
-
+                CBlitter<Opaque>::Blit(_tileSet->Get(i), dest, curX, curY);
+                curX += _tileSet->Width() + padAdjust;
                 i++;
                 if (i >= _tileSet->Count())
                     goto breakLoop;
             }
+
+            curX = padAdjust;
+            curY += _tileSet->Height() + padAdjust;
         }
+breakLoop:; // eeeeeeeeeeeeeee
 
-        bigImage.Save(dlg.GetPath().c_str());
-
-breakLoop:;
+        dest.Save(dlg._fileName.c_str());
     }
 }
 
@@ -715,25 +710,6 @@ void MainWindow::OnCloneLayer(wxCommandEvent&)
     wxASSERT(curLayer < _map->NumLayers());
 
     HandleCommand(new CloneLayerCommand(curLayer));
-}
-
-void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
-{
-    uint layerIndex = uint(event.GetInt());
-    LayerDlg dlg(this, layerIndex);
-
-    int result = dlg.ShowModal();
-
-    if (result == wxID_OK)
-    {
-        HandleCommand(new ChangeLayerPropertiesCommand(
-            _map->GetLayer(layerIndex),
-            dlg.label,
-            dlg.wrapx,
-            dlg.wrapy,
-            dlg.x,
-            dlg.y));
-    }
 }
 
 void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   _mapView->IncZoom(-1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }

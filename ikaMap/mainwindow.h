@@ -63,7 +63,6 @@ struct MainWindow : public wxFrame, Executor
     void OnEditTileAnim(wxCommandEvent&);
     void OnCloneLayer(wxCommandEvent&);
 
-    void OnShowLayerProperties(wxCommandEvent& event);
     void OnShowLayerContextMenu(wxMouseEvent& event);
     void OnZoomMapIn(wxCommandEvent&);
     void OnZoomMapOut(wxCommandEvent&);

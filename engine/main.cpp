@@ -12,6 +12,7 @@
 #include "opengl/Driver.h"
 //#include "soft32/Driver.h"
 #include "keyboard.h"
+
 void Engine::Sys_Error(const char* errmsg)
 {
     CDEBUG("sys_error");
@@ -238,7 +239,7 @@ void Engine::Startup()
         Sys_Error("An unknown error occurred during initialization.");
     }
 
-    srand(GetTime());
+    SeedRandom();
 
     Log::Write("Initing Python");
     script.Init(this);
