@@ -240,11 +240,11 @@ void CCHRfile::Load(const std::string& fname)
 
                 std::string cdata = n->getCdata();
 
-                ScopedPtr<u8> compressed(new u8[cdata.length()]); // the actual number should be 3/4ths as long as cdata.length, but I don't see a reason to take chances
+                ScopedArray<u8> compressed(new u8[cdata.length()]); // the actual number should be 3/4ths as long as cdata.length, but I don't see a reason to take chances
 
                 int compressedSize = base64::decode(cdata, compressed.get(), cdata.length());
 
-                ScopedPtr<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
+                ScopedArray<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
 
                 Compression::decompress(compressed.get(), compressedSize, pixels.get(), nWidth * nHeight * frameCount * sizeof(RGBA));
 
