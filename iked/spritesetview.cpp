@@ -48,6 +48,7 @@ namespace
 BEGIN_EVENT_TABLE(CSpriteSetView,IDocView)
 
     EVT_MENU(id_chrmovescript,CSpriteSetView::OnShowMovescriptEditor)
+    EVT_MENU(id_editframe,CSpriteSetView::OnEditFrame)
 
     EVT_MENU(id_zoomin,CSpriteSetView::OnZoomIn)
     EVT_MENU(id_zoomout,CSpriteSetView::OnZoomOut)
@@ -64,9 +65,9 @@ BEGIN_EVENT_TABLE(CSpriteSetView,IDocView)
     EVT_CLOSE(CSpriteSetView::OnClose)
     //EVT_ERASE_BACKGROUND(CSpriteSetView::OnEraseBackground)
 
-    //EVT_LEFT_DOWN(CSpriteSetView::OnLeftClick)
+    EVT_LEFT_DOWN(CSpriteSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CSpriteSetView::OnRightClick)
-    EVT_MOUSE_EVENTS(CSpriteSetView::HandleMouse)
+    //EVT_MOUSE_EVENTS(CSpriteSetView::HandleMouse)
 
 END_EVENT_TABLE()
 
@@ -112,7 +113,7 @@ pSprite(0)
 
     //Render();
 
-    Show();
+    SetFocus();
     
 
 }
@@ -122,10 +123,8 @@ CSpriteSetView::~CSpriteSetView()
     delete pContextmenu;
 }
 
-void CSpriteSetView::HandleMouse(wxMouseEvent& event)
-{
-    if (!event.LeftIsDown()) return;
-
+void CSpriteSetView::OnLeftClick(wxMouseEvent& event)
+{    
     int x=event.GetPosition().x;
     int y=event.GetPosition().y;
 
@@ -142,6 +141,8 @@ void CSpriteSetView::HandleMouse(wxMouseEvent& event)
     if (t>pSprite->Count()) t=0;
     
     nCurframe=t;
+
+    Render();
 }
 
     
@@ -310,7 +311,7 @@ void CSpriteSetView::Render()
 
             CImage img(rBitmap);
             
-            pGraph->Blit(img,x*tx+1,y*ty+1,true);
+            pGraph->Blit(img,x*tx,y*ty,true);
             //pGraph->Rect(x*tx-1,y*ty-1,rBitmap.Width()+1,rBitmap.Height()+1,RGBA(255,255,255));
 
 
@@ -330,6 +331,13 @@ void CSpriteSetView::Render()
         }
         
     }
+
+    int x2,y2;
+    tx=pSprite->Width();
+    ty=pSprite->Height();
+    SpritePos(nCurframe,x2,y2);
+
+    pGraph->Rect(x2-1,y2-1,tx+1,ty+1,RGBA(255,255,255));
 
     pGraph->ShowPage();
 
@@ -367,6 +375,17 @@ void CSpriteSetView::OnScroll(wxScrollWinEvent& event)
 
     UpdateScrollbar();
     Render();
+}
+
+void CSpriteSetView::SpritePos(int idx,int& x,int& y) const
+{
+    int w=GetClientSize().GetWidth()/pSprite->Width();
+    
+    x=idx%w;
+    y=idx/w-ywin;
+
+    x*=pSprite->Width();
+    y*=pSprite->Height();
 }
 
 void CSpriteSetView::OnShowMovescriptEditor(wxCommandEvent& event)

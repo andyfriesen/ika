@@ -28,7 +28,7 @@ class CSpriteSetView : public IDocView
         void OnSize(wxSizeEvent& event);
         void OnScroll(wxScrollWinEvent& event);
 
-        //void OnLeftClick(wxMouseEvent& event){}
+        void OnLeftClick(wxMouseEvent& event);
         void OnRightClick(wxMouseEvent& event);
 
         void OnEditFrame(wxCommandEvent&);
@@ -36,13 +36,12 @@ class CSpriteSetView : public IDocView
         void OnPreviousFrame(wxCommandEvent&);
         void OnNextFrame(wxCommandEvent&);
 
-        void Zoom(int nZoomscale);
         void OnZoomIn(wxCommandEvent& event);
         void OnZoomOut(wxCommandEvent& event);
         void OnZoomNormal(wxCommandEvent& event);
 
         void UpdateScrollbar();
-        void HandleMouse(wxMouseEvent& event);
+        //void HandleMouse(wxMouseEvent& event);
 
         void OnShowMovescriptEditor(wxCommandEvent& event);
 
@@ -51,6 +50,8 @@ class CSpriteSetView : public IDocView
 
         void InitMenu();
         void InitAccelerators();
+        void SpritePos(int idx,int& x,int& y) const;
+        void Zoom(int nZoomscale);
 
 
 
