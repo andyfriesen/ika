@@ -26,6 +26,7 @@ class CMovescriptEditor : public wxDialog
 
         void OnSize(wxCommandEvent& event);
         void OnClose(wxCommandEvent& event);
+        void OnOk(wxCommandEvent&);
 
         void BeginEdit(wxGridEvent& event);
         void EditCell(wxGridEvent& event);

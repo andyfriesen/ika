@@ -174,7 +174,7 @@ namespace Script
             int x, y;
             int trans = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "Oii|i:Video.Blit", &image, &x, &y, &trans))
+            if (!PyArg_ParseTuple(args, "O!ii|i:Video.Blit", &Script::Image::type, &image, &x, &y, &trans))
                 return 0;
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
@@ -191,7 +191,7 @@ namespace Script
             int w, h;
             int trans = 1;
 
-            if (!PyArg_ParseTuple(args, "Oiiii|i:Video.ScaleBlit", &image, &x, &y, &w, &h, &trans))
+            if (!PyArg_ParseTuple(args, "O!iiii|i:Video.ScaleBlit", &Script::Image::type, &image, &x, &y, &w, &h, &trans))
                 return 0;
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
@@ -207,7 +207,7 @@ namespace Script
             int x[4], y[4];
             int trans = 1;
 
-            if (!PyArg_ParseTuple(args, "O(ii)(ii)(ii)(ii)|i:Video.DistortBlit", &image, x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &trans))
+            if (!PyArg_ParseTuple(args, "O!(ii)(ii)(ii)(ii)|i:Video.DistortBlit", &Script::Image::type, &image, x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &trans))
                 return 0;
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
@@ -225,7 +225,7 @@ namespace Script
             float scalex = 1, scaley = 1;
             int trans = 1;
 
-            if (!PyArg_ParseTuple(args, "Oiiii|ffi:Video.TileBlit", &image, &x, &y, &w, &h, &scalex, &scaley, &trans))
+            if (!PyArg_ParseTuple(args, "O!iiii|ffi:Video.TileBlit", &Script::Image::type, &image, &x, &y, &w, &h, &scalex, &scaley, &trans))
                 return 0;
 
             self->video->SetBlendMode((::Video::BlendMode)trans);

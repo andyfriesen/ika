@@ -8,12 +8,24 @@
 #include "tileset.h"
 #include "command.h"
 #include "misc.h"
+#include "video.h"
+#include "wxinc.h"
 
 TileSetState::TileSetState(MainWindow* mw)
     : EditState(mw)
     , _oldX(-1)
     , _oldY(-1)
 {}
+
+void TileSetState::OnRenderCurrentLayer()
+{
+/*    wxPoint mousePos = GetMapView()->ScreenToClient(::wxGetMousePosition());
+    GetMapView()->ScreenToTile(mousePos.x, mousePos.y);	
+
+    int w = GetTileSet()->Width();
+    int h = GetTileSet()->Height();	
+    GetMapView()->GetVideo()->Rect(mousePos.x*w, mousePos.y*h, w, h, RGBA(255, 192, 192, 255));*/
+}
 
 void TileSetState::OnMouseDown(wxMouseEvent& event)
 {
@@ -33,7 +45,7 @@ void TileSetState::OnMouseDown(wxMouseEvent& event)
 
 void TileSetState::OnMouseUp(wxMouseEvent& event)
 {
-    _oldX = _oldY = -1;
+	_oldX = _oldY = -1;
 }
 
 void TileSetState::OnMouseMove(wxMouseEvent& event)
@@ -45,6 +57,7 @@ void TileSetState::OnMouseMove(wxMouseEvent& event)
 
     if (event.LeftIsDown() && !event.ShiftDown())
         SetTile(event.m_x, event.m_y);
+	GetMapView()->Refresh();
 }
 
 void TileSetState::OnMouseWheel(wxMouseEvent& event)

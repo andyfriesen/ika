@@ -42,10 +42,7 @@ namespace OpenGL
 
         glEnable(GL_TEXTURE_2D);
 
-        if (fullscreen)
-            SDL_ShowCursor(SDL_DISABLE);
-
-        //Log::Write("%s", glGetString(GL_EXTENSIONS));
+        SDL_ShowCursor(SDL_DISABLE);
 
 #ifdef WIN32
         glBlendEquationEXT = (void (__stdcall *)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
@@ -84,7 +81,8 @@ namespace OpenGL
         */
 
         // disabled for now, due to glitches and things
-        if (0 && src.Width() == 16 && src.Height() == 16)
+#ifdef SHARE_TEXTURES
+        if (src.Width() == 16 && src.Height() == 16)
         {
             Texture* tex = 0;
             for (std::hash_set<Texture*>::iterator
@@ -132,6 +130,7 @@ namespace OpenGL
             return new Image(tex, texcoords, 16, 16);
         }
         else
+#endif
         {
             bool dealloc;
             RGBA* pixels;
@@ -192,8 +191,10 @@ namespace OpenGL
         Texture* tex = ((OpenGL::Image*)img)->_texture;
         if (tex->refCount == 1)
         {
+#ifdef SHARE_TEXTURES
             _textures.erase(tex);
-            glDeleteTextures(1, &tex->handle);
+#endif
+			glDeleteTextures(1, &tex->handle);
             delete tex;
         }
         else
@@ -384,7 +385,8 @@ namespace OpenGL
         glPushMatrix();
         glTranslatef(0.5f, 0.5f, 0);
 
-        glDisable(GL_TEXTURE_2D);
+        //glDisable(GL_TEXTURE_2D);
+		SwitchTexture(0);
         glColor4ubv((u8*)&colour);
         if (filled)
         {
@@ -406,7 +408,7 @@ namespace OpenGL
         glVertex2i(x1, y2);
         glEnd();
         glColor4f(1, 1, 1, 1);
-        glEnable(GL_TEXTURE_2D);
+        //glEnable(GL_TEXTURE_2D);
         glPopMatrix();
     }
 

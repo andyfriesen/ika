@@ -320,7 +320,7 @@ void CSpriteSetView::UpdateScrollbar()
 void CSpriteSetView::OnShowMovescriptEditor(wxCommandEvent& event)
 {
     _moveScriptEditor->Show(true);
-
+    _moveScriptEditor->UpdateDlg();
 }
 
 void CSpriteSetView::OnImportFrames(wxCommandEvent& event)

@@ -56,7 +56,9 @@ VideoFrame::VideoFrame(wxWindow* parent)
 
 VideoFrame::~VideoFrame()
 {
+    int q = _instances.size();
     _instances.erase(this);
+    q = _instances.size();
 }
 
 void VideoFrame::OnSize(wxSizeEvent& event)

@@ -1,7 +1,7 @@
-<?xml version="1.0" encoding = "Windows-1252"?>
+<?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.00"
+	Version="7.10"
 	Name="ikaMap"
 	ProjectGUID="{71F0DE24-F543-42E5-90C7-0B5AF0517458}"
 	Keyword="Win32Proj">
@@ -35,7 +35,7 @@
 				AdditionalDependencies="rpcrt4.lib comctl32.lib wsock32.lib winmm.lib wxmswd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib opengl32.lib glu32.lib regexd.lib corona.lib wxxrcd.lib"
 				OutputFile="$(OutDir)/ikaMap.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../common,../3rdparty/lib,c:/wx2/lib,c:/wx2/contrib/lib"
+				AdditionalLibraryDirectories="../common,../3rdparty/lib,$(WXWIN)/lib,$(WXWIN)/contrib/lib"
 				IgnoreDefaultLibraryNames="libcd.lib,libcid.lib,msvcrt.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/ikaMap.pdb"
@@ -54,7 +54,13 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
@@ -83,7 +89,7 @@
 				AdditionalDependencies="comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib opengl32.lib glu32.lib corona.lib wxxrc.lib"
 				OutputFile="$(OutDir)/ikaMap.exe"
 				LinkIncremental="1"
-				AdditionalLibraryDirectories="../common,../3rdparty/lib,c:/wx2/lib,c:/wx2/contrib/lib"
+				AdditionalLibraryDirectories="../common,../3rdparty/lib,$(WXWIN)/lib,$(WXWIN)/contrib/lib"
 				IgnoreDefaultLibraryNames="libc.lib,libci.lib,msvcrtd.lib"
 				SubSystem="2"
 				OptimizeReferences="2"
@@ -102,9 +108,17 @@
 			<Tool
 				Name="VCWebServiceProxyGeneratorTool"/>
 			<Tool
+				Name="VCXMLDataGeneratorTool"/>
+			<Tool
 				Name="VCWebDeploymentTool"/>
+			<Tool
+				Name="VCManagedWrapperGeneratorTool"/>
+			<Tool
+				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
 		</Configuration>
 	</Configurations>
+	<References>
+	</References>
 	<Files>
 		<Filter
 			Name="Source Files"
@@ -362,15 +376,6 @@
 			Name="Common"
 			Filter="">
 			<File
-				RelativePath="..\common\Canvas.cpp">
-			</File>
-			<File
-				RelativePath="..\common\Canvas.h">
-			</File>
-			<File
-				RelativePath="..\common\CanvasBlitter.h">
-			</File>
-			<File
 				RelativePath="..\common\aries.cpp">
 			</File>
 			<File
@@ -381,6 +386,15 @@
 			</File>
 			<File
 				RelativePath="..\common\base64.h">
+			</File>
+			<File
+				RelativePath="..\common\Canvas.cpp">
+			</File>
+			<File
+				RelativePath="..\common\Canvas.h">
+			</File>
+			<File
+				RelativePath="..\common\CanvasBlitter.h">
 			</File>
 			<File
 				RelativePath="..\common\chr.cpp">

@@ -49,6 +49,7 @@ namespace Script
             {   "volume",       (getter)getVolume,      (setter)setVolume,      "The volume of the sound.  Ranges from 0 to 1, with 1 being full volume."   },
             {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  0 is left.  2 is right.  1 is centre."   },
             {   "position",     (getter)getPosition,    (setter)setPosition,    "The chronological position of the sound, in milliseconds." },
+			{	"pitchshift",	(getter)getPitchShift,	(setter)setPitchShift,	"Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing" },
             {   "loop",         (getter)getLoop,        (setter)setLoop,        "If nonzero, the sound loops.  If zero, then the sound stops playing when it reaches the end."  },
             {   0   }
         };

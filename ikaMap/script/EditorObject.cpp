@@ -50,7 +50,7 @@ namespace ScriptObject
         GET(CurLayer)   {   return PyInt_FromLong(self->mainWnd->GetMapView()->GetCurLayer());          }
         SET(CurLayer)   {   self->mainWnd->GetMapView()->SetCurLayer(PyInt_AsLong(value));  return 0;   }
         GET(CurTile)    {   return PyInt_FromLong(self->mainWnd->GetTileSetView()->GetCurTile());       }
-        SET(CurTile)    
+        SET(CurTile)
         {   
             self->mainWnd->GetTileSetView()->SetCurTile(PyInt_AsLong(value));   
             return 0;

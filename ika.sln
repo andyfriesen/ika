@@ -1,16 +1,20 @@
-Microsoft Visual Studio Solution File, Format Version 7.00
+Microsoft Visual Studio Solution File, Format Version 8.00
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ikaMap", "ikaMap\ikaMap.vcproj", "{71F0DE24-F543-42E5-90C7-0B5AF0517458}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ika", "engine\ika.vcproj", "{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iked", "iked\iked.vcproj", "{86231232-3F9D-440A-A33B-3170501C170E}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
-		ConfigName.0 = Debug
-		ConfigName.1 = Release
-	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
+		Debug = Debug
+		Release = Release
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug.ActiveCfg = Debug|Win32

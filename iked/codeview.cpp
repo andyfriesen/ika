@@ -456,7 +456,7 @@ void CCodeView::OnCharAdded(wxStyledTextEvent& event)
         // autoindent after def, while, etc....
         // I have NO idea why I'm going 4 back from the end. ;P
         s = pTextctrl->GetLine(nCurline - 1).Trim();
-        if (s.Right(4)[0]==':')
+        if (s.Right(4).StartsWith(":"))
             strcat(linebuf, "\t");
 
         if (linebuf[0])
