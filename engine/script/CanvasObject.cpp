@@ -118,8 +118,13 @@ namespace Script
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset  = properties;
-            type.tp_doc = "A software representation of an image that can be manipulated easily.";
             type.tp_new = New;
+            type.tp_doc = 
+                "A software representation of an image that can be manipulated easily.\n\n"
+                "Canvas(filename)\n\n"
+                "Loads the image specified by 'filename' into a new canvas.\n\n"
+                "Canvas(width, height)\n\n"
+                "Creates a new, blank canvas of the specified size.";
     
             PyType_Ready(&type);
         }
