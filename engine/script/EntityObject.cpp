@@ -19,14 +19,47 @@ namespace Script
         
         PyMethodDef methods [] =
         {
-            {    "Move",            (PyCFunction)Entity_Move,             1    },
-            {    "Chase",           (PyCFunction)Entity_Chase,            1    },
-            {    "Wander",          (PyCFunction)Entity_Wander,           1    },
-            {    "WanderZone",      (PyCFunction)Entity_Wanderzone,       1    },
-            {    "Stop",            (PyCFunction)Entity_Stop,             1    },
-            {    "IsMoving",        (PyCFunction)Entity_IsMoving,         1    },
-            {    "DetectCollision", (PyCFunction)Entity_DetectCollision,  1    },
-            {    NULL,              NULL    },                        // end of list
+            {    "Move",            (PyCFunction)Entity_Move,             METH_VARARGS,
+                "Entity.Move(movepattern)\n"
+                "Directs the entity to move in the pattern specified."
+            },
+
+            {    "Chase",           (PyCFunction)Entity_Chase,            METH_VARARGS,    
+                "Entity.Chase(entity, distance)\n"
+                "Directs the entity to chase the entity specified.  It will attempt to close\n"
+                "within the specified distance (in pixels) before it stops."
+            },
+
+            {    "Wander",          (PyCFunction)Entity_Wander,           METH_VARARGS,    
+                "Entity.Wander(pixels, delay)\n"
+                "Directs the entity to wander around randomly.  It will move the specified\n"
+                "number of pixels in one direction, then delay for the specified amount of\n"
+                "time."
+            },
+
+            {    "WanderZone",      (PyCFunction)Entity_Wanderzone,       METH_VARARGS,    
+                "Entity.WanderZone(pixels, delay, zone)\n"
+                "Directs the entity to wander around randomly.  Unlike Entity.Wander, however\n"
+                "the entity will not wander off the specified zone.  This is a good way to confine\n"
+                "an entity to an irregular region of the map."
+            },
+
+            {    "Stop",            (PyCFunction)Entity_Stop,             METH_VARARGS,    
+                "Entity.Stop()\n"
+                "Directs the entity to stop whatever it is doing."
+            },
+
+            {    "IsMoving",        (PyCFunction)Entity_IsMoving,         METH_VARARGS,    
+                "Entity.IsMoving()\n"
+                "If the entity is moving, the result is 1.  If not, it is 0."
+            },
+
+            {    "DetectCollision", (PyCFunction)Entity_DetectCollision,  METH_VARARGS,    
+                "Entity.DetectCollision()\n"
+                "If an entity is touching the entity, then it is returned.\n"
+                "None is returned if there is no entity touching it."
+            },
+            {    0    },                        // end of list
         };
 
 #define GET(x) PyObject* get ## x(EntityObject* self)
@@ -291,158 +324,5 @@ namespace Script
         }
 
         /////////////////
-/*
-        METHOD(std_spawnentity)
-        {
-            int x,y;
-            char* chrname;
-
-            if (!PyArg_ParseTuple(args,"iis:Entity_new",&x,&y,&chrname))
-                return NULL;
-
-            if (!File::Exists(chrname))
-                engine->Sys_Error(va("Could not load %s",chrname));
-
-            CEntity* pEnt=engine->SpawnEntity();
-            CSprite* pSprite=engine->sprite.Load(chrname, engine->video);
-
-            pEnt->sName="Spawned entity";
-            pEnt->pSprite=pSprite;
-            pEnt->x=x;
-            pEnt->y=y;
-
-            EntityObject* ent=PyObject_New(EntityObject,&type);
-            if (!ent)
-                return NULL;
-
-            ent->ent=pEnt;
-
-            return (PyObject*)ent;
-        }
-
-        METHOD(std_processentities)
-        {
-            if (!PyArg_ParseTuple(args,""))
-                return NULL;
-
-            engine->ProcessEntities();
-
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-
-        METHOD(std_setplayer)                                            // FIXME?  Is there a more intuitive way to do this?
-        {
-            EntityObject* ent;
-
-            if (!PyArg_ParseTuple(args,"O:SetPlayerEntity",&ent))
-                return NULL;
-
-            if ((PyObject*)ent==Py_None)
-            {
-                Py_XDECREF(pPlayerent);
-                pPlayerent=0;
-                engine->pPlayer=0;
-            }
-            else
-            {
-                if (ent->ob_type!=&type)
-                {
-                    PyErr_SetString(PyExc_TypeError,"SetPlayerEntity not called with entity object or None.");
-                    return NULL;
-                }
-
-                Py_INCREF(ent);
-                Py_XDECREF(pPlayerent);
-                pPlayerent=(PyObject*)ent;
-
-                engine->pPlayer=ent->ent;
-                ent->ent->movecode=mc_nothing;
-            }
-
-            PyObject* result=std_setcameratarget(self,args);
-            Py_XDECREF(result);
-
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-
-        METHOD(std_setcameratarget)
-        {
-            EntityObject* pEnt;
-
-            if (!PyArg_ParseTuple(args,"O:SetCameraTarget",&pEnt))
-                return NULL;
-
-            if ((PyObject*)pEnt==Py_None)
-            {
-                engine->pCameratarget=0;
-                Py_XDECREF(pCameratarget);
-                pCameratarget=0;
-            }
-            else
-            {
-                if (pEnt->ob_type!=&type)
-                {
-                    PyErr_SetString(PyExc_TypeError,"SetCameraTarget not called with entity/None object");
-                    return NULL;
-                }
-
-                engine->pCameratarget=pEnt->ent;  // oops
-
-                Py_INCREF(pEnt);
-                Py_XDECREF(pCameratarget);
-                pCameratarget=(PyObject*)pEnt;
-            }
-
-            Py_INCREF(Py_None);
-            return Py_None;
-        }
-
-        METHOD(std_getcameratarget)
-        {
-            if (!PyArg_ParseTuple(args,""))
-                return NULL;
-
-            if (!pCameratarget)
-            {
-                Py_INCREF(Py_None);
-                return Py_None;
-            }
-            else
-            {
-                Py_INCREF(pCameratarget);
-                return pCameratarget;
-            }
-
-            // execution never gets here
-        }
-        METHOD(std_entityat)
-        {
-            int x,y,width,height;
-            if (!PyArg_ParseTuple(args,"iiii|EntityAt",&x,&y,&width,&height))
-                return 0;
-
-            int x2=x+width;
-            int y2=y+height;
-
-            int count=0;
-            PyObject* pKey=0;
-            PyObject* pValue=0;
-            while (PyDict_Next(pEntitydict,&count,&pKey,&pValue))
-            {
-                CEntity& ent=*((EntityObject*)pValue)->ent;
-                if (x>ent.x+ent.pSprite->nHotw)    continue;
-                if (y>ent.y+ent.pSprite->nHoth)    continue;
-                if (x2<ent.x)    continue;
-                if (y2<ent.y)    continue;
-
-                Py_INCREF(pValue);
-                return pValue;
-            }
-
-            Py_INCREF(Py_None);
-            return Py_None;
-        }*/
     }
 }

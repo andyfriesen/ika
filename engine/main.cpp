@@ -124,6 +124,10 @@ void CEngine::MainLoop()
         }
 
         video->ShowPage();
+
+        // if we're on the fast track, give the OS a minute.
+        if (now == GetTime())
+            SDL_Delay(10);
     }
 
     delete font;

@@ -16,7 +16,13 @@ namespace Script
 
         PyMethodDef methods[] =
         {
-            {   "Update",           (PyCFunction)Input_Update,   METH_NOARGS   },
+            {   "Update",           (PyCFunction)Input_Update,   METH_NOARGS,
+                "Input.Update()\n"
+                "Updates the state of the mouse, and any attached input devices.\n"
+                "Also gives the OS a chance to do background tasks.  Continious\n"
+                "loops should call this occasionally to give the OS time to perform\n"
+                "its tasks."
+            },
             {   0   }
         };
 

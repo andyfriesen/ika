@@ -14,10 +14,7 @@ namespace Script
 
         PyMethodDef methods[] =
         {
-            {   "Blit",         (PyCFunction)Image_Blit,         1    },
-            {   "ScaleBlit",    (PyCFunction)Image_ScaleBlit,    1    },
-            {   "DistortBlit",  (PyCFunction)Image_DistortBlit,  1    },
-            {   "Clip",         (PyCFunction)Image_Clip,         1    },
+//            {   "Clip",         (PyCFunction)Image_Clip,         METH_VARARGS,    },
             {   NULL,    NULL }
         };
 
