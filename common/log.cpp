@@ -45,10 +45,22 @@ void Log::Writen(const char* s, ...)
     
     va_start(lst, s);
 
-#if 1
-    ScopedArray<char> buffer = new char[_vscprintf(s, lst)];;
+#ifdef _MSC_VER
+    int bufferLength = _vscprintf(s, lst) + 1; // plus terminating null
+    ScopedArray<char> buffer = new char[bufferLength];
     vsprintf(buffer.get(), s, lst);
     logfile << buffer.get();
+#elif defined(GNUC)
+    
+    char* buffer = 0;
+    int len = asprintf(&buffer, s, lst);
+    if (len == -1) {
+        logfile << "Log system error: Unable to write some stuff.";
+    } else {
+        logfile << buffer;
+        ::free(buffer);
+    }
+
 #else
 #    error buffer overrun gayness that must be overcome!
     char buffer[1024];
@@ -57,7 +69,6 @@ void Log::Writen(const char* s, ...)
 #endif
 
     va_end(lst);
-  
 }
 
 void Log::Write(const char* s, ...) {

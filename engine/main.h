@@ -41,7 +41,7 @@ struct Engine
 public:                                                                             // Too many components need access to this class.  Kinda sucks. :/
     
     Map                             map;                                            ///< tile placement and stuff
-    CTileSet*                       tiles;                                          ///< Images.  Of Tiles.
+    TileSet*                        tiles;                                          ///< Images.  Of Tiles.
     ScriptEngine                    script;
     
     CSpriteController               sprite;                                         ///< sprite files

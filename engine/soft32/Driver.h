@@ -15,12 +15,11 @@ namespace Soft32
     struct NotYetImplementedException{};
 #define NYI { throw NotYetImplementedException(); }
 
-    class Image;
+    struct Image;
 
     /// The driver itself.
-    struct Driver : public Video::Driver
-    {
-    public:
+    struct Driver : Video::Driver {
+
         Driver(int xres, int yres, int bpp, bool fullscreen);
         ~Driver();
 
@@ -98,6 +97,7 @@ namespace Soft32
 
         /// Returns the number of times ShowPage() has been called in the past second.
         virtual int GetFrameRate() const;
+
     private:
         FPSCounter fps;
         SDL_Surface* _screen;

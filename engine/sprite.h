@@ -10,7 +10,7 @@
 namespace Video
 {
     struct Driver;
-    class Image;
+    struct Image;
 }
 
 struct SpriteException{};

@@ -81,8 +81,11 @@ void Entity::UpdateAnimation() {
 }
 
 void Entity::SetAnimScript(const std::string& newScript) {
-    defaultAnim = AnimScript(newScript);
-    UpdateAnimation();                                                                  // and immediately update the frame
+    if (!newScript.empty()) {
+        defaultAnim = AnimScript(newScript);
+        // immediately update the frame
+        UpdateAnimation();
+    }
 }
 
 void Entity::SetFace(Direction d) {
@@ -257,11 +260,15 @@ void Entity::Update() {
     Direction newDir = face_nothing;;
 
     UpdateAnimation();
-    if (this == engine.player)
+    if (this == engine.player) {
         newDir = HandlePlayer();
+    }
 
-    if (delayCount == 0 && (x == destLocation.x && y == destLocation.y)) // Nothing to do?
-        GetMoveScriptCommand();                                          // ask the script what we should do
+    if (delayCount == 0 && (x == destLocation.x && y == destLocation.y)) {
+        // Nothing to do?
+        // ask the script what we should do
+        GetMoveScriptCommand();
+    }
 
     if (delayCount > 0) {
         delayCount--;

@@ -5,6 +5,7 @@
 
 #include "common/fileio.h"
 #include "common/log.h"
+#include "common/version.h"
 
 #include "main.h"
 #include "input.h"
@@ -34,6 +35,7 @@ void ScriptEngine::Init(Engine* njin) {
     Script::Image::Init();
     Script::Entity::Init();
     Script::Sound::Init();
+    Script::SoundEffect::Init();
     Script::Font::Init();
     Script::Canvas::Init();
     Script::Control::Init();
@@ -45,18 +47,21 @@ void ScriptEngine::Init(Engine* njin) {
     Script::Video::Init();
     Script::Colours::Init();
     Script::Map::Init();
+    Script::TileSet::Init();
     Script::Input::Init();
     Script::Error::Init();
 
     // Create singletons
     PyObject* input = Script::Input::New();
     PyObject* map = Script::Map::New();
+    PyObject* tileSet = Script::TileSet::New();
     PyObject* video = Script::Video::New(engine->video);
 
     // We don't need to decref here because we should be increffing as we add the objects.  So
     // we're basically "moving" the reference
     PyModule_AddObject(module, "Input", input);
     PyModule_AddObject(module, "Map",   map);
+    PyModule_AddObject(module, "TileSet",   tileSet);
     PyModule_AddObject(module, "Video", video);
 
     PyModule_AddIntConstant(module, "Opaque", 0);
@@ -65,11 +70,14 @@ void ScriptEngine::Init(Engine* njin) {
     PyModule_AddIntConstant(module, "AddBlend", 3);
     PyModule_AddIntConstant(module, "SubtractBlend", 4);
 
-    Py_INCREF(&Script::Image::type);    PyModule_AddObject(module, "Image", (PyObject*)&Script::Image::type);
+    PyModule_AddObject(module, "Version", PyString_FromString(IKA_VERSION));
+
     Py_INCREF(&Script::Entity::type);   PyModule_AddObject(module, "Entity", (PyObject*)&Script::Entity::type);
-    Py_INCREF(&Script::Sound::type);    PyModule_AddObject(module, "Sound", (PyObject*)&Script::Sound::type);
     Py_INCREF(&Script::Font::type);     PyModule_AddObject(module, "Font",  (PyObject*)&Script::Font::type);
     Py_INCREF(&Script::Canvas::type);   PyModule_AddObject(module, "Canvas", (PyObject*)&Script::Canvas::type);
+    Py_INCREF(&Script::Image::type);    PyModule_AddObject(module, "Image", (PyObject*)&Script::Image::type);
+    Py_INCREF(&Script::Sound::type);    PyModule_AddObject(module, "Sound", (PyObject*)&Script::Sound::type);
+    Py_INCREF(&Script::SoundEffect::type);    PyModule_AddObject(module, "SoundEffect", (PyObject*)&Script::SoundEffect::type);
 
     // Create entity dictionary
     entityDict = PyDict_New();

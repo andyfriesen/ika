@@ -8,18 +8,14 @@ using audiere::OpenDevice;
 using audiere::OpenSound;
 
 using audiere::AudioDevice;
-using audiere::AudioDevicePtr;
 using audiere::FileFormat;
 using audiere::OutputStream;
-using audiere::OutputStreamPtr;
+using audiere::SoundEffect;
 using audiere::RefPtr;
 using audiere::SampleSource;
 
-namespace {
-    RefPtr<AudioDevice> _device;
-}
-
 namespace Sound {
+    RefPtr<AudioDevice> _device;
 
     void Init(bool nullAudio) {
         // On windows, we try winmm first, because it doesn't crash my PC.
@@ -45,12 +41,21 @@ namespace Sound {
         _device = 0;
     }
 
-    OutputStream* OpenSound(const char* fname) {
-        OutputStream* stream = ::audiere::OpenSound(_device.get(), fname, false);
+    OutputStream* OpenSound(const std::string& fileName) {
+        OutputStream* stream = ::audiere::OpenSound(_device.get(), fileName.c_str(), false);
         if (!stream)
             return 0;
 
         stream->ref();
         return stream;
+    }
+
+    SoundEffect* OpenSoundEffect(const std::string& fileName) {
+        SoundEffect* effect = ::audiere::OpenSoundEffect(_device.get(), fileName.c_str(), audiere::MULTIPLE);
+        if (!effect)
+            return 0;
+
+        effect->ref();
+        return effect;
     }
 }

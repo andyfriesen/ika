@@ -7,7 +7,7 @@ namespace Video
     /**
      * This class defines the base interface for all device-dependent images.
      */
-    class Image
+    struct Image
     {
     protected:
         virtual ~Image(){}

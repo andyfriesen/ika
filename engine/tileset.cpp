@@ -7,25 +7,25 @@
 #include "video/Driver.h"
 #include "video/Image.h"
 
-CTileSet::CTileSet(const std::string& fname, Video::Driver* v)
+TileSet::TileSet(const std::string& fname, Video::Driver* v)
     : video(v)
     , nAnimtimer(0)
 {
     CDEBUG("ctileset::loadvsp");
-    VSP vsp;
+    vsp = new VSP;
     
-    if (!vsp.Load(fname)) {
+    if (!vsp->Load(fname)) {
         throw std::runtime_error("Unable to load VSP file " + fname);
     }
     
-    nFrames=vsp.NumTiles();
-    nFramex=vsp.Width();
-    nFramey=vsp.Height();
+    nFrames = vsp->NumTiles();
+    nFramex = vsp->Width();
+    nFramey = vsp->Height();
     
     try {
         hFrame.resize(nFrames);
         for (int i = 0; i < nFrames; i++) {
-            hFrame[i] = video->CreateImage(vsp.GetTile(i));
+            hFrame[i] = video->CreateImage(vsp->GetTile(i));
         }
     }
     catch(...) {	
@@ -41,33 +41,41 @@ CTileSet::CTileSet(const std::string& fname, Video::Driver* v)
         bFlip[i] = false;
     }
 
-    animstate = vsp.vspAnim;
-    for (uint j = 0; j < vsp.vspAnim.size(); j++)
-    {
+    animstate = vsp->vspAnim;
+    for (uint j = 0; j < vsp->vspAnim.size(); j++) {
         animstate[j].count = animstate[j].delay;                // init the counter
     }
 }
 
-CTileSet::~CTileSet()
+TileSet::~TileSet()
 {
     for (int i = 0; i < nFrames; i++)
         video->FreeImage(hFrame[i]);
 }
 
-Video::Image* CTileSet::GetTile(uint index)
-{
-    if (index < 0 || index >= nTileidx.size())
+void TileSet::Save(const std::string& fileName) const {
+    vsp->Save(fileName);
+}
+
+Video::Image* TileSet::GetTile(uint index) const {
+    if (hFrame.empty()) {
+        return 0;
+    }
+
+    if (index < 0 || index >= nTileidx.size()) {
         index = 0;
+    }
 
     index = nTileidx[index];
 
-    if (index < 0 || index >= nTileidx.size())
+    if (index < 0 || index >= nTileidx.size()) {
         index = 0;
+    }
 
     return hFrame[index];
 }
 
-void CTileSet::UpdateAnimation(int time)
+void TileSet::UpdateAnimation(int time)
 {
     int i = time - nAnimtimer;					// how many ticks have elapsed?
     nAnimtimer = time;
@@ -82,7 +90,7 @@ void CTileSet::UpdateAnimation(int time)
     }
 }
 
-void CTileSet::AnimateStrand(VSP::AnimState& anim)
+void TileSet::AnimateStrand(VSP::AnimState& anim)
 {
     int i;
     

@@ -1,3 +1,4 @@
+
 #include <cassert>
 #include <vector>
 #include <math.h>
@@ -19,8 +20,8 @@ static void __stdcall glBlendEquationStub(int){}
 static void glBlendEquationStub(int){}
 #endif
 
-namespace OpenGL
-{
+namespace OpenGL {
+
 #ifndef GL_FUNC_REVERSE_SUBTRACT_EXT
     const uint GL_FUNC_REVERSE_SUBTRACT_EXT = 0x800B;
 #endif
@@ -29,42 +30,41 @@ namespace OpenGL
 #endif
 
     Driver::Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize)
-        : _lasttex(0)
+        : _screen(0)
         , _xres(xres)
         , _yres(yres)
         , _bpp(bpp)
+        , _tintColour(255, 255, 255)
         , _fullScreen(fullScreen)
-        , _doubleSize(doubleSize) // TEST CODE
+        , _blendMode(Video::Normal)
+        , _doubleSize(doubleSize) 
+        , _lasttex(0)
     {
-        if (_doubleSize)
-        {
-            xres += xres;
-            yres += yres;
+        if (_doubleSize) {
+            xres *= 2;
+            yres *= 2;
         }
 
-        // from this point, xres and yres are the physical resulotion,
+        // from this point, xres and yres are the physical resolution,
         // _xres and _yres are the virtual resolution
 
         _screen = SDL_SetVideoMode(xres, yres, bpp, SDL_OPENGL | (fullScreen ? SDL_FULLSCREEN : 0));
-        if (!_screen)
+        if (!_screen) {
             throw Video::Exception();
+        }
 
         glShadeModel(GL_SMOOTH);
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
 
-#if 0
-        gluOrtho2D(0, xres, yres, 0);
-#else
         glMatrixMode(GL_PROJECTION);
         glLoadIdentity();
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glScalef(2.0f / (float)xres, -2.0f / (float)yres, 1.0f);
-        glTranslatef(-((float)xres / 2.0f), -((float)yres / 2.0f), 0.0f);
+        glScalef(2.0f / float(xres), -2.0f / float(yres), 1.0f);
+        glTranslatef(-(float(xres) / 2.0f), -(float(yres) / 2.0f), 0.0f);
         glViewport(0, 0, xres, yres);
-#endif
 
         glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
@@ -84,27 +84,23 @@ namespace OpenGL
         glBlendEquationEXT = (void (*)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
 #endif
 
-        if (!glBlendEquationEXT) 
-        {
+        if (!glBlendEquationEXT)  {
             Log::Write("Warning! glBlendEquationEXT not found.  Colour subtraction disabled.");
             glBlendEquationEXT = &glBlendEquationStub;
         }
 
-        if (_doubleSize)
-        {
+        if (_doubleSize) {
             glGenTextures(1, &_bufferTex);
         }
     }
 
-    Driver::~Driver()
-    {
+    Driver::~Driver() {
         glDeleteTextures(1, &_bufferTex);
     }
 
     // Trouble is, SDL nukes the GL context when it switches modes.
     // Which means that our textures go down the crapper. ;_;
-    bool Driver::SwitchResolution(int x, int y)
-    {
+    bool Driver::SwitchResolution(int x, int y) {
 #if 1
         return false;
 #else
@@ -122,8 +118,8 @@ namespace OpenGL
         glLoadIdentity();
         glMatrixMode(GL_MODELVIEW);
         glLoadIdentity();
-        glScalef(2.0f / (float)_xres, -2.0f / (float)_yres, 1.0f);
-        glTranslatef(-((float)_xres / 2.0f), -((float)_yres / 2.0f), 0.0f);
+        glScalef(2.0f / float(_xres), -2.0f / float(_yres), 1.0f);
+        glTranslatef(-(float(_xres) / 2.0f), -(float(_yres) / 2.0f), 0.0f);
         glViewport(0, 0, _xres, _yres);
 
         return true;
@@ -131,33 +127,27 @@ namespace OpenGL
     }
 
     // This is far, far too long.  Refactor.
-    Image* Driver::CreateImage(Canvas& src)
-    {
-        /*
-            First, if src is 16x16, we figure out if we have a texture that can fit it.
-            If we do, we use glSubTexImage2D, update the used region, and fly away on wings
-            of silver dust.  If not, we create a 256x256 texture, and do the aforementioned
-            glSubTexImage2Ding. (we do NOT, however, fly away on wings of silver dust.  That's
-            strictly reserved for when there is an existing texture for us to use.
+    Image* Driver::CreateImage(Canvas& src) {
 
-            oh yeah.  I know this is messy.  Don't give a shit yet.  Prototyping is a bitch
-            that way.
-
-            TODO: Generalize this so that we hold onto a bunch of textures for every power-of-two
-            size of image that is created. (8x8, 64x64, et cetera)
-            Or maybe just group images of equal height togeather.  Then ika would be able to
-            leverage texture-sharing for the font as well.
-        */
-
-        // disabled for now, due to glitches and things
 #ifdef SHARE_TEXTURES
-        Texture* blah[255];
-        int q = 0;
-        for (TextureSet::iterator iter = _textures.begin(); iter != _textures.end(); iter++)
-            blah[q++] = *iter;
 
-        if (src.Width() == 16 && src.Height() == 16)
-        {
+        /*
+         * First, if src is 16x16, we figure out if we have a texture that can fit it.
+         * If we do, we use glSubTexImage2D, update the used region, and fly away on wings
+         * of silver dust.  If not, we create a 256x256 texture, and do the aforementioned
+         * glSubTexImage2Ding. (we do NOT, however, fly away on wings of silver dust.  That's
+         * strictly reserved for when there is an existing texture for us to use)
+         *
+         * oh yeah.  I know this is messy.  Don't give a shit yet.  Prototyping is a bitch
+         * that way.
+         *
+         * TODO: Generalize this so that we hold onto a bunch of textures for every power-of-two
+         * size of image that is created. (8x8, 64x64, et cetera)
+         * Or maybe just group images of equal height togeather.  Then ika would be able to
+         * leverage texture-sharing for the font as well.
+         */
+
+        if (src.Width() == 16 && src.Height() == 16) {
             Texture* tex = 0;
             for (TextureSet::iterator
                 iter  = _textures.begin(); 
@@ -166,15 +156,13 @@ namespace OpenGL
             {
                 Texture* t = *iter;
                 const Point& p = (*iter)->unused;
-                if (p.x <= 256 - 16 && p.y <= 256 - 16)
-                {
+                if (p.x <= 256 - 16 && p.y <= 256 - 16) {
                     tex = *iter;
                     break;
                 }
             }
 
-            if (!tex)
-            {
+            if (!tex) {
                 // no texture?  no problem.
                 static u32 dummyShit[256 * 256] = {0}; // initialized to 0
                 tex = new Texture(0, 256, 256);
@@ -189,8 +177,9 @@ namespace OpenGL
             int x = tex->unused.x;
             int y = tex->unused.y;
             tex->unused.x += 16;
-            if (tex->unused.x >= 256)
+            if (tex->unused.x >= 256) {
                 tex->unused = Point(0, tex->unused.y + 16);
+            }
 
             SwitchTexture(tex->handle);
 
@@ -205,8 +194,7 @@ namespace OpenGL
 
             tex->refCount++;
             return new Image(tex, texcoords, 16, 16);
-        }
-        else
+        } else
 #endif
         {
             bool dealloc;
@@ -216,27 +204,23 @@ namespace OpenGL
 
             src.Flip(); // GAY
 
-            if (isPowerOf2(src.Width()) && isPowerOf2(src.Height()))
-            {
+            if (isPowerOf2(src.Width()) && isPowerOf2(src.Height())) {
                 dealloc = false;    // perfect match
                 pixels = src.GetPixels();
                 texwidth = src.Width();
                 texheight = src.Height();
-            }
-            else
-            // The old way.  One texture for every image.  boooring.  Easy, but boooring.  And possibly slow.
-            {
+            } else {
                 dealloc = true;
                 texwidth  = 1;  while (texwidth < src.Width())  texwidth <<= 1;
                 texheight = 1;  while (texheight < src.Height()) texheight <<= 1;
 
                 pixels = new RGBA[texwidth * texheight];
-                for (int y = 0; y < src.Height(); y++)
-                {
+                for (int y = 0; y < src.Height(); y++) {
                     memcpy(
                         pixels + (y * texwidth), 
                         src.GetPixels() + (y * src.Width()),
-                        src.Width() * sizeof(RGBA));
+                        src.Width() * sizeof(RGBA)
+                    );
                 }
             }
 
@@ -248,8 +232,9 @@ namespace OpenGL
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             src.Flip();
 
-            if (dealloc)
+            if (dealloc) {
                 delete[] pixels;
+            }
 
             const float texCoords[] = { 0, 0, float(src.Width()) / texwidth, float(src.Height()) / texheight };
             Texture* tex = new Texture(texture, texwidth, texheight);
@@ -258,17 +243,16 @@ namespace OpenGL
         }
     }
 
-    void Driver::FreeImage(Video::Image* img)
-    {
+    void Driver::FreeImage(Video::Image* img) {
         if (!img)   return;
 
         SwitchTexture(0);
         
         // Refcount update/cleanup
-        Texture* tex = ((OpenGL::Image*)img)->_texture;
+        Texture* tex = static_cast<OpenGL::Image*>(img)->_texture;
+
 #ifdef SHARE_TEXTURES
-        if (tex->refCount == 1)
-        {
+        if (tex->refCount == 1) {
             _textures.erase(tex);
             glDeleteTextures(1, &tex->handle);
             delete tex;
@@ -283,8 +267,7 @@ namespace OpenGL
         delete (OpenGL::Image*)img;
     }
 
-    void Driver::ClipScreen(int left, int top, int right, int bottom)
-    {
+    void Driver::ClipScreen(int left, int top, int right, int bottom) {
         if (left > right)
             swap(left, right);
         if (top > bottom)
@@ -296,35 +279,21 @@ namespace OpenGL
         int width = right - left;
         int height = bottom - top;
 
-        if (_doubleSize)
+        if (_doubleSize) {
             top = min(_yres * 2, _yres * 2 - top) - height;
-        else
+        } else {
             top = min(_yres, _yres - top) - height;
+        }
 
         glScissor(
             left, top,
             width, height
-            );
+        );
     }
 
-    void Driver::ShowPage()
-    {
-        if (_doubleSize)
-        {
-#if 0
-            // The easy way
-            _xres <<= 1;    _yres <<= 1;                            // Fool the driver for a moment.
-            Image* tempImage = GrabImage(0, 0, _xres, _yres);       // Grab a hunk o screen
-            ScaleBlitImage(tempImage, 0, 0, _xres * 2, _yres * 2);  // Draw it
-            _xres >>= 1;    _yres >>= 1;                            // Restore xres and yres
-
-            FreeImage(tempImage);                                   // Clean up
-#else
-            // The fast way
-            // It's much faster because it bypasses all my gay abstraction crap.
-            // Most notably, the allocation of a temporary image, and a lot of
-            // pixel/screen space arithmatic that isn't needed.
-
+    void Driver::ShowPage() {
+        if (_doubleSize) {
+            // Grab the whole screen into our buffer texture and draw it at double size.
             glDisable(GL_BLEND);
             uint texW = nextPowerOf2(_xres);
             uint texH = nextPowerOf2(_yres);
@@ -338,25 +307,20 @@ namespace OpenGL
             float endX = float(_xres) / texW;
             float endY = float(_yres) / texH;
 
-            // Doubling xres and yres for a moment because I'm lazy
-            // and because creating temporaries would require extra
-            // typing. (pay no attention to the fact that it would
-            // require less typing than this comment did)
-            _xres <<= 1;    _yres <<= 1;
+            int x = _xres * 2;
+            int y = _yres * 2;
             glPushAttrib(GL_SCISSOR_BIT);
             glScissor(0, 0, _xres, _yres);
 
             glBegin(GL_QUADS);
-            glTexCoord2f(0,    endY); glVertex2i(0,         0);
-            glTexCoord2f(endX, endY); glVertex2i(_xres,     0);
-            glTexCoord2f(endX,    0); glVertex2i(_xres, _yres);
-            glTexCoord2f(0,       0); glVertex2i(0,     _yres);
+            glTexCoord2f(0,    endY); glVertex2i(0, 0);
+            glTexCoord2f(endX, endY); glVertex2i(x, 0);
+            glTexCoord2f(endX,    0); glVertex2i(x, y);
+            glTexCoord2f(0,       0); glVertex2i(0, y);
             glEnd();
 
-            _xres >>= 1;    _yres >>= 1;
             glPopAttrib();
             glEnable(GL_BLEND);
-#endif
         }
 
         fps.Update();
@@ -364,38 +328,39 @@ namespace OpenGL
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    void Driver::ClearScreen()
-    {
+    void Driver::ClearScreen() {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
-    Video::BlendMode Driver::SetBlendMode(Video::BlendMode bm)
-    {
+    Video::BlendMode Driver::SetBlendMode(Video::BlendMode bm) {
         if (bm == _blendMode)
             return bm;
 
         // Unset the blend equation if it was previously changed. (it is always changed if the current mode is Video::Subtract)
-        if (_blendMode == Video::Subtract)
-        {
+        if (_blendMode == Video::Subtract) {
             glBlendEquationEXT(GL_FUNC_ADD_EXT);
             
             // hack for old buggy ATi drivers. (GAY)
+            // (fixed it recent releases.  Remove?)
             glBegin(GL_POINTS); glVertex2i(-1, -1); glEnd();
         }
 
-        switch (bm)
-        {
-        case Video::None:    glDisable(GL_BLEND);     break;
-        case Video::Matte:   // TODO: see if we can get GL to do matte?  A shader would do it, but I think that's overkill. :)
-        case Video::Normal:  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;
-        case Video::Add:     glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;
-        case Video::Subtract:
-            glBlendEquationEXT(GL_FUNC_REVERSE_SUBTRACT_EXT);
-            glBlendFunc(GL_ONE, GL_ONE);
-            glEnable(GL_BLEND);
-            break;
-        default:
-            return _blendMode;
+        switch (bm) {
+            case Video::None:    {  glDisable(GL_BLEND);     break; }
+            case Video::Matte:   // TODO: See if we can get GL to do matte?
+            case Video::Normal:  {  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;  }
+            case Video::Add:     {  glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;  }
+
+            case Video::Subtract: {
+                glBlendEquationEXT(GL_FUNC_REVERSE_SUBTRACT_EXT);
+                glBlendFunc(GL_ONE, GL_ONE);
+                glEnable(GL_BLEND);
+                break;
+            }
+
+            default: {
+                return _blendMode;
+            }
         }
 
         Video::BlendMode m = _blendMode;
@@ -407,10 +372,10 @@ namespace OpenGL
     // At least 20% of the sum total CPU goes into this.
     // Even when the profiler brings the framerate below 1fps, with the AI loop is being executed at 
     // least ten times per render, a fifth of the CPU goes here.
-    void Driver::BlitImage(Video::Image* i, int x, int y)
-    {
+    void Driver::BlitImage(Video::Image* i, int x, int y) {
         OpenGL::Image* img = (Image*)i;
-        // VC7 won't inline these, because they're virtual.
+
+        // VC7 won't inline these because they're virtual.
         int w = img->_width;//Width();
         int h = img->_height;//Height();
 
@@ -425,24 +390,22 @@ namespace OpenGL
         glEnd();
     }
     
-    void Driver::ClipBlitImage(Video::Image* i, int x, int y, int ix, int iy, int iw, int ih)
-    {
+    void Driver::ClipBlitImage(Video::Image* i, int x, int y, int ix, int iy, int iw, int ih) {
         OpenGL::Image* img = static_cast<Image*>(i);
-        // VC7 won't inline these, because they're virtual.
-        static int w, h;
-        w = img->_width;//Width();
-        h = img->_height;//Height();
 
-        static float texCoords[4] = {0,0,0,0};
+        // VC7 won't inline these because they're virtual.  Homo.
+        int w = img->_width;//Width();
+        int h = img->_height;//Height();
+
+        float texCoords[4] = {0,0,0,0};
         memcpy(texCoords, img->_texCoords, sizeof(float) * 4);
-        if(ix > w || ix < 0) ix = 0;
-        if(iy > w || iy < 0) iy = 0;
-        if(iw > w || iw < 0) iw = w;
-        if(ih > h || ih < 0) ih = h;
+        if (ix > w || ix < 0) ix = 0;
+        if (iy > w || iy < 0) iy = 0;
+        if (iw > w || iw < 0) iw = w;
+        if (ih > h || ih < 0) ih = h;
 
-        static float cw, ch;
-        cw = texCoords[2] - texCoords[0];
-        ch = texCoords[3] - texCoords[1];
+        float cw = texCoords[2] - texCoords[0];
+        float ch = texCoords[3] - texCoords[1];
         texCoords[0] += cw * ix / w;
         texCoords[1] += ch * iy / h;
         texCoords[2] = texCoords[0] + cw * iw / w;
@@ -457,8 +420,7 @@ namespace OpenGL
         glEnd();
     }
 
-    void Driver::ScaleBlitImage(Video::Image* i, int x, int y, int w, int h)
-    {
+    void Driver::ScaleBlitImage(Video::Image* i, int x, int y, int w, int h) {
         Image* img = (Image*)i;
 
         const float* texCoords = img->_texCoords;
@@ -473,8 +435,7 @@ namespace OpenGL
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
-    void Driver::DistortBlitImage(Video::Image* i, int x[4], int y[4])
-    {
+    void Driver::DistortBlitImage(Video::Image* i, int x[4], int y[4]) {
         Image* img = (Image*)i;
 
         const float* texCoords = img->_texCoords;
@@ -485,8 +446,7 @@ namespace OpenGL
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         glBegin(GL_QUADS);
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             glTexCoord2f(texX[i], texY[i]);
             glVertex2i(x[i], y[i]);
         }
@@ -494,8 +454,7 @@ namespace OpenGL
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
-    void Driver::TileBlitImage(Video::Image* i, int x, int y, int w, int h, float scalex, float scaley)
-    {
+    void Driver::TileBlitImage(Video::Image* i, int x, int y, int w, int h, float scalex, float scaley) {
         Image* img = static_cast<Image*>(i);
         Texture* tex = img->_texture;
         SwitchTexture(img->_texture->handle);
@@ -505,21 +464,18 @@ namespace OpenGL
         float texY = float(h) / img->Height() * scaley;
 
         // simplest case.  We can draw one big textured quad for the whole thing.
-        if (tex->width == img->_width && tex->height == img->_height)
-        {
+        if (tex->width == img->_width && tex->height == img->_height) {
             glBegin(GL_QUADS);
             glTexCoord2f(0,    texY);   glVertex2i(x, y);
             glTexCoord2f(texX, texY);   glVertex2i(x + w, y);
             glTexCoord2f(texX, 0);      glVertex2i(x + w, y + h);
             glTexCoord2f(0,    0);      glVertex2i(x, y + h);
             glEnd();
-        }
-        else
-        // backup: Draw a grid of textured quads.
-        // This isn't so bad, really, but we could do another optimization
-        // and see if we could get away with doing some big long horizontal
-        // or vertical strips.  Something for another day.
-        {
+        } else {
+            // backup: Draw a grid of textured quads.
+            // This isn't so bad, really, but we could do another optimization
+            // and see if we could get away with doing some big long horizontal
+            // or vertical strips.  Something for another day.
             glPushAttrib(GL_SCISSOR_BIT);
             ClipScreen(x, y, x + w, y + h);
 
@@ -529,10 +485,8 @@ namespace OpenGL
             const float* texCoords = img->_texCoords;
     
             glBegin(GL_QUADS);
-            for (float curY = float(y); curY < y + h; curY += imgWidth)
-            {
-                for (float curX = float(x); curX < x + w; curX += imgHeight)
-                {
+            for (float curY = float(y); curY < y + h; curY += imgWidth) {
+                for (float curX = float(x); curX < x + w; curX += imgHeight) {
                     glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2f(curX, curY);
                     glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2f(curX + imgWidth, curY);
                     glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2f(curX + imgWidth, curY + imgHeight);
@@ -547,15 +501,13 @@ namespace OpenGL
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
-    void Driver::TintBlitImage(Video::Image* img, int x, int y, u32 tint)
-    {
+    void Driver::TintBlitImage(Video::Image* img, int x, int y, u32 tint) {
         glColor4ubv((u8*)&tint);
-        ::OpenGL::Driver::BlitImage(img, x, y); // inline this?  Pretty please? :(
-        glColor4ub(255, 255, 255, 255);
+        ::OpenGL::Driver::BlitImage(img, x, y);
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
     }
 
-    void Driver::TintDistortBlitImage(Video::Image* i, int x[4], int y[4], u32 colour[4])
-    {
+    void Driver::TintDistortBlitImage(Video::Image* i, int x[4], int y[4], u32 colour[4]) {
         Image* img = (Image*)i;
 
         const float* texCoords = img->_texCoords;
@@ -565,27 +517,24 @@ namespace OpenGL
         SwitchTexture(img->_texture->handle);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBegin(GL_QUADS);
-        for (int i = 0; i < 4; i++)
-        {
+        for (int i = 0; i < 4; i++) {
             glColor4ubv((u8*)&colour[i]);
             glTexCoord2f(texX[i], texY[i]);
             glVertex2i(x[i], y[i]);
         }
         glEnd();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
-        glColor4ub(255, 255, 255, 255);
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
     }
 
     /// Combines TintBlit and TileBlit.  'nuff said.
-    void Driver::TintTileBlitImage(Video::Image* img, int x, int y, int w, int h, float scalex, float scaley, u32 tint)
-    {
+    void Driver::TintTileBlitImage(Video::Image* img, int x, int y, int w, int h, float scalex, float scaley, u32 tint) {
         glColor4ubv(reinterpret_cast<u8*>(&tint));
         TileBlitImage(img, x, y, w, h, scalex, scaley);
         glColor3ub(255, 255, 255);
     }
 
-    void Driver::DrawPixel(int x, int y, u32 colour)
-    {
+    void Driver::DrawPixel(int x, int y, u32 colour) {
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
 
@@ -594,11 +543,10 @@ namespace OpenGL
         glEnd();
 
         glEnable(GL_TEXTURE_2D);
-        glColor4ub(255, 255, 255, 255);
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
     }
 
-    void Driver::DrawLine(int x1, int y1, int x2, int y2, u32 colour)
-    {
+    void Driver::DrawLine(int x1, int y1, int x2, int y2, u32 colour) {
         glPushMatrix();
         glTranslatef(0.375f, 0.375f, 0);
 
@@ -609,26 +557,23 @@ namespace OpenGL
         glVertex2i(x2, y2);
         glEnd();
         glEnable(GL_TEXTURE_2D);
-        glColor4ub(255, 255, 255, 255);
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
 
         glPopMatrix();
     }
 
-    void Driver::DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled)
-    {
+    void Driver::DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled) {
         glPushMatrix();
         glTranslatef(0.375f, 0.375f, 0);
 
         SwitchTexture(0);
         glColor4ubv((u8*)&colour);
-        if (filled)
-        {
+        if (filled) {
             x2++;
             y2++;
             glBegin(GL_QUADS);
         }
-        else
-        {
+        else {
             //y1++;
             glBegin(GL_LINE_LOOP);
         }
@@ -638,14 +583,13 @@ namespace OpenGL
         glVertex2i(x2, y2);
         glVertex2i(x1, y2);
         glEnd();
-        glColor4ub(255, 255, 255, 255);
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
         glPopMatrix();
     }
 
     // Ellipse algorithm courtesy of aen.
     // I had to spend like 5 minutes deobfuscating this.
-    void Driver::DrawEllipse(int cx, int cy, int rx, int ry, u32 colour, bool filled)
-    {
+    void Driver::DrawEllipse(int cx, int cy, int rx, int ry, u32 colour, bool filled) {
         int x1 = cx - rx;
         int y1 = cy - ry;
         int width = rx * 2;
@@ -716,41 +660,40 @@ namespace OpenGL
         }
         glEnd();
 
-        glColor4ub(255, 255, 255, 255);
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
         glEnable(GL_TEXTURE_2D);
         glPopMatrix();
     }
 
-    void Driver::DrawTriangle(int x[3], int y[3], u32 colour[3])
-    {
+    void Driver::DrawTriangle(int x[3], int y[3], u32 colour[3]) {
         glDisable(GL_TEXTURE_2D);
         glBegin(GL_TRIANGLES);
-        for (int i = 0; i < 3; i++)
-        {
+        for (int i = 0; i < 3; i++) {
             glColor4ubv((u8*)&colour[i]);
             glVertex2i(x[i], y[i]);
         }
         glEnd();
-        glColor4ub(255, 255, 255, 255);
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
         glEnable(GL_TEXTURE_2D);
     }
 
-    Image* Driver::GrabImage(int x1, int y1, int x2, int y2)
-    {
+    Image* Driver::GrabImage(int x1, int y1, int x2, int y2) {
         // Way fast, since there are no pixels going from the video card to system memory.
         // They just get copied from the screen to a texture (which also video memory)
 
         // clip
         if (x1 > x2) swap(x1, x2);
         if (y1 > y2) swap(y1, y2);
-        //x1 = clamp(x1, 0, _xres);        x2 = clamp(x2, 0, _xres);
-        //y1 = clamp(y1, 0, _yres);        y2 = clamp(y2, 0, _yres);
+
         int w = x2 - x1;
         int h = y2 - y1;
-        if (w < 0 || h < 0) return 0;
+        if (w < 0 || h < 0) {
+            return 0;
+        }
 
-        if (_doubleSize)
+        if (_doubleSize) {
             y2 -= _yres;
+        }
 
         uint texwidth = nextPowerOf2(w);
         uint texheight = nextPowerOf2(h);
@@ -768,19 +711,23 @@ namespace OpenGL
         return new Image(tex, texCoords, w, h);
     }
 
-    Canvas* Driver::GrabCanvas(int x1, int y1, int x2, int y2)
-    {
+    Canvas* Driver::GrabCanvas(int x1, int y1, int x2, int y2) {
         y1 = _yres - y1;
         y2 = _yres - y2;
 
         // clip
         if (x1 > x2) swap(x1, x2);
         if (y1 > y2) swap(y1, y2);
-        x1 = clamp(x1, 0, _xres);        x2 = clamp(x2, 0, _xres);
-        y1 = clamp(y1, 0, _yres);        y2 = clamp(y2, 0, _yres);
+
         int w = x2 - x1;
         int h = y2 - y1;
-        if (w < 0 || h < 0) return 0;
+        if (w < 0 || h < 0) {
+            return 0;
+        }
+
+        if (_doubleSize) {
+            y2 -= _yres;
+        }
 
         Canvas* c = new Canvas(w, h);
         glReadPixels(x1, y1, w, h, GL_RGBA, GL_UNSIGNED_BYTE, c->GetPixels());
@@ -788,22 +735,27 @@ namespace OpenGL
         return c;
     }
 
-    Point Driver::GetResolution() const
-    {
+    u32 Driver::GetTint() {
+        return _tintColour;
+    }
+
+    void Driver::SetTint(u32 tint) {
+        _tintColour = tint;
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
+    }
+
+    Point Driver::GetResolution() const {
         return Point(_xres, _yres);
     }
 
-    int Driver::GetFrameRate() const
-    {
+    int Driver::GetFrameRate() const {
         return fps.FPS();
     }
 
-    inline void Driver::SwitchTexture(uint tex)
-    {
-        if (tex == _lasttex)
-            return;
-
-        _lasttex = tex;
-        glBindTexture(GL_TEXTURE_2D, tex);
+    inline void Driver::SwitchTexture(uint tex) {
+        if (tex != _lasttex) {
+            _lasttex = tex;
+            glBindTexture(GL_TEXTURE_2D, tex);
+        }
     }
 };

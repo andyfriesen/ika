@@ -32,6 +32,8 @@ struct AnimScript
 
     std::string toString() const;
 
+    inline bool isEmpty() const { return commands.empty(); }
+
 private:
     uint _offset;
     int  _count;

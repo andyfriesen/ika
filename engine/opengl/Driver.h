@@ -128,6 +128,12 @@ namespace OpenGL
         /// Like GrabImage, but stores the contents on a canvas, not an image
         virtual Canvas* GrabCanvas(int x1, int y1, int x2, int y2);
 
+        /// Sets the current tint colour.  This tint is applied to *everything*
+        virtual u32 GetTint();
+
+        /// Sets the current tint colour. :P
+        virtual void SetTint(u32 tint);
+
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const;
 
@@ -137,10 +143,14 @@ namespace OpenGL
     private:
         FPSCounter fps;
         SDL_Surface* _screen;
-        int _xres;
-        int _yres;
-        int _bpp;
+        int  _xres;
+        int  _yres;
+        int  _bpp;
         bool _fullScreen;
+
+        RGBA _tintColour;
+
+        Video::BlendMode _blendMode;
 
         // If true, we make the real resolution twice normal, and let
         // OpenGL scale it (bilinear filtering!) when we ShowPage
@@ -150,8 +160,6 @@ namespace OpenGL
 
         uint _lasttex;
         void SwitchTexture(uint tex);
-
-        Video::BlendMode _blendMode;
 
 #ifdef SHARE_TEXTURES
         typedef std::set<Texture*> TextureSet;

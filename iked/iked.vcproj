@@ -167,6 +167,12 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\graph.cpp">
@@ -194,11 +200,23 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\tileset.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"/>
@@ -216,6 +234,9 @@
 			</File>
 			<File
 				RelativePath=".\controller.h">
+			</File>
+			<File
+				RelativePath=".\debug.h">
 			</File>
 			<File
 				RelativePath=".\document.h">
@@ -300,7 +321,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling resources"
-						CommandLine="d:\src\wxWin\contrib\utils\wxrc\wxrc /c $(InputFileName)"
+						CommandLine="d:\src\wxWin\contrib\utils\wxrc\wxrc /c $(InputFileName)
+"
 						Outputs="$(InputName).cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -308,7 +330,8 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling resources"
-						CommandLine="d:\src\wxWin\contrib\utils\wxrc\wxrc /c $(InputFileName)"
+						CommandLine="d:\src\wxWin\contrib\utils\wxrc\wxrc /c $(InputFileName)
+"
 						Outputs="$(InputName).cpp"/>
 				</FileConfiguration>
 			</File>
@@ -352,6 +375,12 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\fontview.h">
@@ -370,6 +399,12 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\imageview.h">
@@ -382,6 +417,12 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\mapview.h">
@@ -390,6 +431,12 @@
 				RelativePath=".\projectview.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"/>
@@ -427,6 +474,12 @@
 						<Tool
 							Name="VCCLCompilerTool"/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\textview.cpp">
@@ -436,11 +489,23 @@
 						<Tool
 							Name="VCCLCompilerTool"/>
 					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath=".\tilesetview.cpp">
 					<FileConfiguration
 						Name="Debug|Win32"
+						ExcludedFromBuild="TRUE">
+						<Tool
+							Name="VCCLCompilerTool"/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
 						ExcludedFromBuild="TRUE">
 						<Tool
 							Name="VCCLCompilerTool"/>
@@ -455,6 +520,12 @@
 				RelativePath=".\configdlg.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"/>
@@ -495,6 +566,12 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="importframesdlg.h">
@@ -509,6 +586,12 @@
 				RelativePath=".\movescripteditor.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"/>
@@ -531,6 +614,12 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="newmapdlg.h">
@@ -545,6 +634,12 @@
 				RelativePath="newprojectdlg.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"/>
@@ -567,6 +662,12 @@
 					<Tool
 						Name="VCCLCompilerTool"/>
 				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="newspritedlg.h">
@@ -581,6 +682,12 @@
 				RelativePath="zoneeditor.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
+					ExcludedFromBuild="TRUE">
+					<Tool
+						Name="VCCLCompilerTool"/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
 					ExcludedFromBuild="TRUE">
 					<Tool
 						Name="VCCLCompilerTool"/>

@@ -365,6 +365,9 @@ void Engine::RenderLayer(uint layerIndex) {
     int        adjustX, adjustY;    // sub-tile offset
     const Map::Layer* layer = map.GetLayer(layerIndex);
 
+    RGBA oldTint = video->GetTint();
+    video->SetTint(layer->tintColour);
+
     //int layerWidth = layer->Width() * tiles->Width();
     //int layerHeight = layer->Height() * tiles->Height();
 
@@ -416,6 +419,8 @@ void Engine::RenderLayer(uint layerIndex) {
         curx = -adjustX;
         t += xinc;
     }
+
+    video->SetTint(oldTint);
 }
 
 void Engine::Render() {
@@ -450,11 +455,7 @@ void Engine::Render(const std::vector<uint>& list) {
         }
     }
 
-    if (!_recurseStop) {
-        _recurseStop = true;
-        DoHook(_hookRetrace);
-        _recurseStop = false;
-    }
+    DoHook(_hookRetrace);
 }
 
 void Engine::DoHook(HookList& hooklist) {
@@ -470,6 +471,7 @@ void Engine::DoHook(HookList& hooklist) {
             _recurseStop = false;
             throw;
         }
+        _recurseStop = false;
     }
 }
 
@@ -704,16 +706,17 @@ void Engine::LoadMap(const std::string& filename) {
 
         // Reset the default render list.
         renderList.clear();
-        for (uint i = 0; i < map.NumLayers(); i++)
+        for (uint i = 0; i < map.NumLayers(); i++) {
             renderList.push_back(i);
+        }
 
         // Only load the tileset if it's different
         if (map.tileSetName != oldTileSetName) {
             delete tiles;                                               // nuke the old tileset
-            tiles = new CTileSet(map.tileSetName, video);               // load up them tiles
+            tiles = new TileSet(map.tileSetName, video);               // load up them tiles
         }
 
-        script.ClearEntityList();                                       // DEI
+        script.ClearEntityList();
 
         std::map<const Map::Entity*, Entity*> entMap;                   // used so we know which is related to which, so we can properly gather objects from the map script. (once it's loaded)
 

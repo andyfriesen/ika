@@ -107,6 +107,12 @@ namespace Video {
         /// Like GrabImage, but stores the contents on a canvas, not an image
         virtual Canvas* GrabCanvas(int x1, int y1, int x2, int y2) = 0;
 
+        /// Sets the current tint colour.  This tint is applied to *everything*
+        virtual u32 GetTint() = 0;
+
+        /// Sets the current tint colour. :P
+        virtual void SetTint(u32 tint) = 0;
+
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const = 0;
 

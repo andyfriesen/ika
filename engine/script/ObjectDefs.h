@@ -9,7 +9,7 @@
 #include <map>
 
 // Rain of prototypes
-namespace Ika {  // X11 fix
+namespace Ika {  // X11/SDL fix
     struct Font;
 }
 struct Entity;
@@ -22,26 +22,27 @@ class InputControl;
 class Keyboard;
 class Mouse;
 class Joystick;
+struct TileSet;
 
-namespace audiere   {   class OutputStream; }
-namespace Video
-{
+namespace audiere   {   
+    class OutputStream; 
+    class SoundEffect;
+}
+
+namespace Video {
     struct Driver;
-    class Image;
+    struct Image;
 }
 
 struct ColourHandler;
 
 /// Contains implementations of Python binding things.
-namespace Script
-{
+namespace Script {
     // Hardware interfaces
     /// Reflects an image.
-    namespace Image
-    {
+    namespace Image {
         // object type
-        struct ImageObject
-        {
+        struct ImageObject {
             PyObject_HEAD
             ::Video::Image* img;
         };
@@ -63,11 +64,9 @@ namespace Script
     }
 
     /// Reflects a sound stream.
-    namespace Sound
-    {
+    namespace Sound {
         // Object type
-        struct SoundObject
-        {
+        struct SoundObject {
             PyObject_HEAD
             audiere::OutputStream* sound;
         };
@@ -85,12 +84,30 @@ namespace Script
         extern PyTypeObject type;
     }
 
-    /// Reflects an input control.
-    namespace Control
-    {
+    namespace SoundEffect {
         // Object type
-        struct ControlObject
-        {
+        struct SoundEffectObject {
+            PyObject_HEAD
+            audiere::SoundEffect* soundEffect;
+        };
+
+        // Methods
+        METHOD1(SoundEffect_Play, SoundEffectObject);
+        METHOD1(SoundEffect_Pause, SoundEffectObject);
+
+        void Init();
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
+        void Destroy(SoundEffectObject* self);
+
+        // Method table
+        extern PyMethodDef methods[];
+        extern PyTypeObject type;
+    }
+
+    /// Reflects an input control.
+    namespace Control {
+        // Object type
+        struct ControlObject {
             PyObject_HEAD
             InputControl* control;
         };
@@ -111,11 +128,9 @@ namespace Script
 
     // Engine resources
     /// Reflects a canvas. (software image surface thingie)
-    namespace Canvas
-    {
+    namespace Canvas {
         // Object type
-        struct CanvasObject
-        {
+        struct CanvasObject {
             PyObject_HEAD
             bool ref;
             ::Canvas* canvas;
@@ -147,11 +162,9 @@ namespace Script
     }
 
     /// Reflects a bitmap font. (maybe a std::vector font later on)
-    namespace Font
-    {
+    namespace Font {
         // Object type
-        struct FontObject
-        {
+        struct FontObject {
             PyObject_HEAD
             Ika::Font* font;
         };
@@ -172,11 +185,9 @@ namespace Script
     }
 
     /// Reflects a map entity.
-    namespace Entity
-    {
+    namespace Entity {
         // Object type
-        struct EntityObject
-        {
+        struct EntityObject {
             PyObject_HEAD
             ::Entity* ent;
         };
@@ -204,10 +215,8 @@ namespace Script
         extern PyTypeObject type;
     }
 
-    namespace InputDevice
-    {
-        struct DeviceObject
-        {
+    namespace InputDevice {
+        struct DeviceObject {
             PyObject_HEAD
             ::InputDevice* device;
         };
@@ -225,8 +234,7 @@ namespace Script
         extern PyTypeObject type;
     }
 
-    namespace Keyboard
-    {
+    namespace Keyboard {
         METHOD1(Keyboard_GetKey, PyObject);
         METHOD1(Keyboard_WasKeyPressed, PyObject);
         METHOD1(Keyboard_ClearKeyQueue, PyObject);
@@ -239,8 +247,7 @@ namespace Script
         extern PyTypeObject type;
     }
 
-    namespace Mouse
-    {
+    namespace Mouse {
         void Init();
         PyObject* New();
         void Destroy(PyObject* self);
@@ -249,10 +256,8 @@ namespace Script
         extern PyTypeObject type;
     }
 
-    namespace Joystick
-    {
-        struct JoystickObject
-        {
+    namespace Joystick {
+        struct JoystickObject {
             PyObject_HEAD
             ::Joystick* joystick;
 
@@ -273,11 +278,9 @@ namespace Script
 
     // Singletons
     /// Reflects the input core.
-    namespace Input
-    {
+    namespace Input {
         // Object type
-        struct InputObject
-        {
+        struct InputObject {
             PyObject_HEAD
             PyObject* keyboard;
             PyObject* mouse;
@@ -298,11 +301,9 @@ namespace Script
     }
 
     /// Reflects the video driver.
-    namespace Video
-    {
+    namespace Video {
         // Object type
-        struct VideoObject
-        {
+        struct VideoObject {
             PyObject_HEAD
             ::Video::Driver* video;
         };
@@ -337,11 +338,9 @@ namespace Script
         extern PyTypeObject type;
     }
     
-    namespace Colours
-    {
+    namespace Colours {
         // Object type
-        struct ColoursObject
-        {
+        struct ColoursObject {
             PyObject_HEAD
             ::ColourHandler* handler;
         };
@@ -360,8 +359,7 @@ namespace Script
     }
 
     /// Reflects the current map, and some aspects of the engine.
-    namespace Map
-    {
+    namespace Map {
         // Object type
 
         // Methods
@@ -397,9 +395,29 @@ namespace Script
         extern PyTypeObject type;
     }
 
+    namespace TileSet {
+        // object type
+        struct TileSetObject {
+            PyObject_HEAD
+            //::TileSet* tileSet;
+        };
+
+        // methods
+        METHOD(TileSet_Save, TileSetObject);
+        METHOD(TileSet_Load, TileSetObject);
+
+        void Init();
+        PyObject* New();//::TileSet* tileset);
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
+        void Destroy(TileSetObject* self);
+
+        // method table
+        extern PyMethodDef methods[];
+        extern PyTypeObject type;
+    }
+
     /// lil' Python object used to redirect error messages to pyout.log
-    namespace Error
-    {
+    namespace Error {
         // Object type
 
         // Methods

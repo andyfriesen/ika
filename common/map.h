@@ -108,6 +108,7 @@ struct Map
             , wrapx(false)  , wrapy(false)
             , tiles(width, height)
             , obstructions(width, height)
+            , tintColour(255, 255, 255)
         {}
 
         Layer(const Layer& l)
@@ -116,6 +117,7 @@ struct Map
             , wrapx(l.wrapx), wrapy(l.wrapy)
             , tiles(l.tiles)
             , obstructions(l.obstructions)
+            , tintColour(255, 255, 255)
         {}
 
         // note to self: copy constructor

@@ -195,6 +195,15 @@ bool Map::Load(const std::string& filename) {
                     int compressedSize;
                         
                     if (ver == "1.0") {
+
+                        static bool warn1dot0 = false;
+                        if (!warn1dot0) {
+                            Log::Write("Warning: 1.0 tileset loading will be officially dropped in 0.61");
+                            Log::Write("    Actually, they may still work, but this isn't guaranteed!");
+                            Log::Write("    To convert the map to v1.1, load and re-save it in ikaMap");
+                            warn1dot0 = true;
+                        }
+
                         compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
                     } else if (ver == "1.1") {
                         std::string un64 = base64::decode(d64);
