@@ -5,11 +5,11 @@
 
 class wxMouseEvent;
 class wxKeyEvent;
-class MainWindow;
-class MapView;
-class TileSetView;
-class TileSet;
-class Command;
+struct MainWindow;
+struct MapView;
+struct TileSetView;
+struct TileSet;
+struct Command;
 
 /**
  * Encapsulates the editor's current behaviour.  There are
@@ -20,12 +20,8 @@ class Command;
  * can do some simple things on its own. (mostly accessors to keep
  * the code brief)
  */
-class EditState
+struct EditState
 {
-private:
-    MainWindow* _mainWindow;
-
-public:
     EditState(MainWindow* mw);
     virtual ~EditState(){}
 
@@ -53,6 +49,9 @@ protected:
     uint            GetCurLayerIndex() const;
     TileSet*        GetTileSet() const;
     void            HandleCommand(::Command* cmd);
+
+private:
+    MainWindow* _mainWindow;
 };
 
 #endif

@@ -6,6 +6,8 @@
 #include "fileio.h"
 #include "script/ObjectDefs.h" // for ScriptObject::Error
 
+#include "scriptengine.h" // geh
+
 Script::Script(const std::string& fileName)
     : module(0)
     , onMouseDown(0)
@@ -22,6 +24,8 @@ Script::Script(const std::string& fileName)
 
     , _name(fileName)
 {
+    ScriptEngine::Init(); // init python, if it hasn't already been initted.
+
     Reload();
 }
 

@@ -3,23 +3,29 @@
 #define MAINWINDOW_H
 
 #include <wx/wx.h>
+
 #include <stack>
 #include <map>
-#include "misc.h"
 
-#include "spriteset.h"
-#include "controller.h"
+#include "misc.h"
+#include "executor.h"
+#include "listener.h"
 
 class wxSashLayoutWindow;
 class wxSashEvent;
 class wxCheckListBox;
-class Command;
-class MapView;
-class TileSetView;
+struct Command;
+
+struct MapView;
+struct TileSetView;
+struct LayerList;
+
+struct ImportTilesDlg;
+
 struct Map;
-class TileSet;
-class Script;
-class ImportTilesDlg;
+struct TileSet;
+struct SpriteSet;
+struct Script;
 
 /**
  * The main application frame.
@@ -27,43 +33,10 @@ class ImportTilesDlg;
  * Also deals with the layer list, tool buttons, drop down menu, and the Command interface used
  * to actually modify the map.
  */
-class MainWindow : public wxFrame
+struct MainWindow : public wxFrame, Executor
 {
-    friend class ChangeTileSetCommand;
-    friend class ScriptDlg;
+    friend struct ScriptDlg;
 
-private:
-    wxStatusBar*        _statusBar;
-    wxSashLayoutWindow* _topBar;
-    wxSashLayoutWindow* _bottomBar;
-    wxSashLayoutWindow* _sideBar;
-    wxCheckListBox*     _layerList;
-    MapView* _mapView;
-    TileSetView* _tileSetView;
-
-    // We store this because we need to store its default values.
-    ScopedPtr<ImportTilesDlg> _importTilesDlg;
-    
-    typedef std::map<std::string, SpriteSet*> SpriteMap;
-    SpriteMap _sprites;
-
-    std::vector<Script*> _scripts;
-    uint _curScript;    // the currently active tool script
-    
-    std::stack<::Command*> _undoList;
-    std::stack<::Command*> _redoList;
-
-    std::string _curMapName;
-    bool _changed;
-
-    // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
-    static void ClearList(std::stack<::Command*>& list);
-
-protected:
-    Map* _map;
-    TileSet* _tileSet;
-
-public:
     MainWindow(
         const wxPoint& position = wxDefaultPosition,
         const wxSize& size = wxDefaultSize,
@@ -91,6 +64,7 @@ public:
 
     void OnChangeCurrentLayer(wxCommandEvent& event);
     void OnShowLayerProperties(wxCommandEvent& event);
+    void OnShowLayerContextMenu(wxMouseEvent& event);
     void OnZoomMapIn(wxCommandEvent&);
     void OnZoomMapOut(wxCommandEvent&);
     void OnZoomMapNormal(wxCommandEvent&);
@@ -119,15 +93,10 @@ public:
     void OnMoveLayerUp(wxCommandEvent&);
     void OnMoveLayerDown(wxCommandEvent&);
 
-    void UpdateLayerList();
     void UpdateTitle();
     void UpdateScriptMenu();
 
     void SetChanged(bool changed);
-
-    bool IsLayerVisible(uint index) const;
-    void ShowLayer(uint index, bool show = true);
-    void HideLayer(uint index);
 
     void HighlightToolButton(uint buttonId);
 
@@ -136,7 +105,6 @@ public:
     MapView* GetMapView() const;
     TileSetView* GetTileSetView() const;
 
-    void HandleCommand(::Command* cmd);
     void Undo();
     void Redo();
 
@@ -144,10 +112,64 @@ public:
 
     SpriteSet* GetSprite(const std::string& fileName);
 
+    // Executor:
+    virtual void HandleCommand(::Command* cmd);
+    virtual bool IsLayerVisible(uint index);
+    virtual void ShowLayer(uint index, bool show);
+
+    virtual uint GetCurrentTile();
+    virtual void SetCurrentTile(uint i);
+
+    virtual uint GetCurrentLayer();
+    virtual void SetCurrentLayer(uint i);
+
+    virtual Map* GetMap();
+    virtual TileSet* GetTileSet();
+
+    virtual MapView* GetMapView();
+    virtual TileSetView* GetTileSetView();
+
+    virtual void SwitchTileSet(TileSet* ts);
+
 protected:
     std::vector<Script*>& GetScripts();
 
+    Map*     _map;
+    TileSet* _tileSet;
+
     DECLARE_EVENT_TABLE()
+
+private:
+    wxStatusBar*        _statusBar;
+    wxSashLayoutWindow* _topBar;
+    wxSashLayoutWindow* _bottomBar;
+    wxSashLayoutWindow* _sideBar;
+    LayerList*          _layerList;
+    MapView*            _mapView;
+    TileSetView*        _tileSetView;
+
+    // Store and reuse the dialog so that it can remember its previous values.
+    ScopedPtr<ImportTilesDlg> _importTilesDlg;
+    
+    typedef std::map<std::string, SpriteSet*> SpriteMap;
+    SpriteMap _sprites;
+
+    std::vector<Script*> _scripts;
+    uint _curScript;    // the currently active tool script
+    
+    std::stack<::Command*> _undoList;
+    std::stack<::Command*> _redoList;
+
+    std::vector<bool>      _layerVisibility;
+
+    std::string _curMapName;
+    bool _changed;
+
+    uint _curTile;
+    uint _curLayer;
+
+    // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
+    static void ClearList(std::stack<::Command*>& list);
 };
 
 #endif

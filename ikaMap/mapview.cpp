@@ -3,6 +3,7 @@
 
 #include "mainwindow.h"
 #include "map.h"
+#include "spriteset.h"
 #include "chr.h"
 #include "tileset.h"
 #include "command.h"
@@ -154,6 +155,11 @@ void MapView::OnMouseWheel(wxMouseEvent& event)
 void MapView::OnKeyPress(wxKeyEvent& event)
 {
     _editState->OnKeyPress(event);
+}
+
+void MapView::OnMapChange(const MapEvent& event)
+{
+    Render();
 }
 
 void MapView::Render()

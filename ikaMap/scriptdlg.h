@@ -4,10 +4,10 @@
 #include "wxinc.h"
 #include <vector>
 
-class MainWindow;
-class Script;
+struct MainWindow;
+struct Script;
 
-class ScriptDlg : public wxDialog
+struct ScriptDlg : public wxDialog
 {
     std::vector<Script*>& _scripts;
 public:

@@ -8,7 +8,7 @@
 #include <Python.h>
 #include <sstream>
 
-class MainWindow;
+struct MainWindow;
 struct Map;
 
 /// Contains implementations of Python binding things.

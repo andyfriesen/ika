@@ -1,0 +1,85 @@
+#ifndef EXECUTOR_H
+#define EXECUTOR_H
+
+// Keep dependancies to an absolute bare minimum!
+// Otherwise we slaughter compile times any time this file changes.
+#include "types.h"
+#include "listener.h"
+#include "events.h"
+
+struct Command;
+
+struct Map;
+struct TileSet;
+
+struct MapView;
+struct TileSetView;
+
+/*
+ * The Executor is the class that is responsible for actually doing most 
+ * everything.  Executor accepts messages, and relays them to the components
+ * that are subscribing to the appropriate listeners.
+ *
+ * I'm not completely happy with this, as I can tell already that it's going
+ * to get mighty bloated.  But it's better tossing this around, than the actual
+ * main window class.
+ *
+ * Get methods never ever fire events.  Set methods can be assumed to fire
+ * the appropriate event.
+ */
+struct Executor
+{
+    virtual void HandleCommand(::Command* cmd) = 0;
+
+    virtual bool IsLayerVisible(uint index) = 0;
+    virtual void ShowLayer(uint index, bool show) = 0;
+    inline  void ShowLayer(uint index) { ShowLayer(index, true);    }
+    inline  void HideLayer(uint index) { ShowLayer(index, false);   }
+
+    /*
+     * It'd probably be best to discard the idea of a current tile altogeather
+     * and just use brushes for everything.
+     */
+    virtual uint GetCurrentTile() = 0;
+    virtual void SetCurrentTile(uint i) = 0;
+
+    virtual uint GetCurrentLayer() = 0;
+    virtual void SetCurrentLayer(uint i) = 0;
+
+    // Mustn't use these to mutate!!  Send a command!
+    virtual Map* GetMap() = 0;
+    virtual TileSet* GetTileSet() = 0;
+
+    virtual MapView* GetMapView() = 0;
+    virtual TileSetView* GetTileSetView() = 0;
+
+    // ---------- ASSUMES THAT THE CALLER WILL CLEAN UP THE OLD TILESET ------------
+    // (this is because it is not always desirable to delete the old tileset; we may
+    //  want it back later)
+    virtual void SwitchTileSet(TileSet* ts) = 0;
+
+    /*
+     * I'm not a fan of implementation inheritance, but doing this
+     * any other way will result in serious asspains.
+     * 
+     * Some sort of way to have heirarchical events is in order.  For instance, the MapView
+     * could simple subscribe to mapChanged, and be notified when any change at all occurs.
+     * Other controls could subscribe to more specific events.
+     */
+    
+    // Map events
+    Listener<const MapEvent&>  mapChanged;             // Global map properties have changed. (the argument is a dummy)
+    Listener<const MapEvent&>  layerChanged;           // The contents of a layer has changed.
+    Listener<const MapEvent&>  mapLayersChanged;       // The layer list has changed in some way. (rename, remove, clone, etc)
+    Listener<const MapEvent&>  mapVisibilityChanged;   // A layer has been hidden, or unhidden, or something.
+    Listener<const MapEvent&>  curLayerChanged;        // The current layer has changed.
+
+    // Tileset events
+    Listener<uint>  tileSetChanged;
+    Listener<uint>  curTileChanged;
+
+    // Other events
+    Listener<Executor*> scriptsChanged;
+};
+
+#endif

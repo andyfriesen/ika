@@ -2,6 +2,7 @@
 #include "entitystate.h"
 #include "mainwindow.h"
 #include "mapview.h"
+#include "spriteset.h"
 #include "chr.h"
 
 #include "entitydlg.h"

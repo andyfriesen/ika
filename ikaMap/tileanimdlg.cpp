@@ -4,7 +4,9 @@
 
 #include "tileanimdlg.h"
 #include "mainwindow.h"
-#include "updatetileanimstrandcommand.h"
+#include "command.h"
+
+#include "log.h"
 
 BEGIN_EVENT_TABLE(TileAnimDlg, wxDialog)
     EVT_LISTBOX(-1, TileAnimDlg::OnSelectStrand)

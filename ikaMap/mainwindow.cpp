@@ -1,16 +1,16 @@
 #include "wxinc.h"
-
-#include "wx\filename.h"
+#include <wx/laywin.h>
+#include <wx/filename.h>
 
 #include <vector>
 #include <sstream>
 
 #include "mainwindow.h"
 
-#include <wx/laywin.h>
 // Important UI element things
 #include "mapview.h"
 #include "tilesetview.h"
+#include "layerlist.h"
 
 // Dialogs
 #include "newmapdlg.h"
@@ -20,13 +20,18 @@
 #include "scriptdlg.h"
 #include "tileanimdlg.h"
 
-// Other stuff
-#include "canvas.h"
+// Resources
+#include "map.h"
 #include "tileset.h"
+#include "spriteset.h"
+#include "canvas.h"
+
+// Other stuff
 #include "command.h"
+#include "events.h"
 #include "misc.h"
 
-// Scripting!
+// Scripting
 #include "scriptengine.h"
 #include "script.h"
 
@@ -78,6 +83,7 @@ namespace
         id_destroylayer,
         id_movelayerup,
         id_movelayerdown,
+        id_editlayerproperties,
 
         id_layerlist,
         id_topbar,
@@ -140,7 +146,8 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_BUTTON(id_movelayerdown, MainWindow::OnMoveLayerDown)
 
     EVT_LISTBOX(id_layerlist, MainWindow::OnChangeCurrentLayer)
-    EVT_LISTBOX_DCLICK(id_layerlist, MainWindow::OnShowLayerProperties)
+    //EVT_LISTBOX_DCLICK(id_layerlist, MainWindow::OnShowLayerProperties)
+    //EVT_CUSTOM(wxEVT_RIGHT_DOWN, id_layerlist, MainWindow::OnShowLayerContextMenu)
     EVT_CHECKLISTBOX(id_layerlist, MainWindow::OnToggleLayer)
 END_EVENT_TABLE()
 
@@ -160,6 +167,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _tileSet(0)
     , _curScript(0)
     , _changed(false)
+    , _layerVisibility(20)
 {
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
 
@@ -177,7 +185,6 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     wxPanel* sidePanel = new wxPanel(_sideBar);
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
 
-    //*
     struct ToolButton
     {
         const char* iconName;
@@ -222,7 +229,9 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         sizer->Add(miniSizer);
     }
 
-    sizer->Add(_layerList = new wxCheckListBox(sidePanel, id_layerlist), 1, wxEXPAND);
+    _layerList = new LayerList(this, sidePanel);
+    sizer->Add(_layerList, 1, wxEXPAND);
+    //sizer->Add(_layerList = new wxCheckListBox(sidePanel, id_layerlist), 1, wxEXPAND);
     sidePanel->SetSizer(sizer);
 
     _topBar = new wxSashLayoutWindow(this, id_topbar);
@@ -252,6 +261,14 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     _map = new Map;
     _tileSet = new TileSet;
     _tileSet->New(16, 16);
+
+    mapChanged.add(_mapView, MapView::OnMapChange);
+    layerChanged.add(_mapView, MapView::OnMapChange);
+    mapLayersChanged.add(_mapView, MapView::OnMapChange);
+    mapVisibilityChanged.add(_mapView, MapView::OnMapChange);
+    curLayerChanged.add(_mapView, MapView::OnMapChange);
+
+    mapLayersChanged.add(_layerList, LayerList::OnMapChange);
 
     wxMenu* fileMenu = new wxMenu;
     fileMenu->Append(id_filenew, "&New Map\tCtrl-N", "Open a fresh, blank map.");
@@ -317,7 +334,6 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     wxAcceleratorTable table(tableSize, entries);
     SetAcceleratorTable(table);
 
-    UpdateLayerList();
     UpdateTitle();
     UpdateScriptMenu();
 
@@ -328,15 +344,15 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
 MainWindow::~MainWindow()
 {
-    delete _map;
-    delete _tileSet;
-
     for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
         delete iter->second;
     _sprites.clear();
 
     ClearList(_undoList);
     ClearList(_redoList);
+
+    delete _map;
+    delete _tileSet;
 
     for (uint i = 0; i < _scripts.size(); i++)
         delete _scripts[i];
@@ -396,13 +412,14 @@ void MainWindow::OnNewMap(wxCommandEvent&)
             delete _map;        _map = newMap;
             delete _tileSet;    _tileSet = newTileSet;
 
+            _layerVisibility.resize(_map->NumLayers());
+            std::fill(_layerVisibility.begin(), _layerVisibility.end(), true);
+
             _mapView->UpdateScrollBars();       _mapView->Refresh();
             _tileSetView->UpdateScrollBars();   _tileSetView->Refresh();
 
             ClearList(_undoList);
             ClearList(_redoList);
-
-            UpdateLayerList();
         }
         catch (std::runtime_error& error)
         {
@@ -431,7 +448,6 @@ void MainWindow::OnOpenMap(wxCommandEvent&)
     std::string filename = dlg.GetPath().c_str();
 
     LoadMap(filename);
-    UpdateLayerList();
 
     _changed = false;
     UpdateTitle();
@@ -667,7 +683,7 @@ void MainWindow::OnChangeCurrentLayer(wxCommandEvent& event)
 {
     wxASSERT(_map != 0 && (uint)event.GetInt() < _map->NumLayers());
     _mapView->SetCurLayer(event.GetInt());
-    _layerList->Check(event.GetInt());
+    //_layerList->Check(event.GetInt());
 
     _mapView->Render();
     _mapView->ShowPage();
@@ -689,6 +705,11 @@ void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
             dlg.x,
             dlg.y));
     }
+}
+
+void MainWindow::OnShowLayerContextMenu(wxMouseEvent& event)
+{
+
 }
 
 void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   _mapView->IncZoom(-1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
@@ -824,31 +845,6 @@ void MainWindow::OnMoveLayerDown(wxCommandEvent&)
         HandleCommand(new SwapLayerCommand(curLay, curLay + 1));
 }
 
-// FIXME: this unhides every layer.
-void MainWindow::UpdateLayerList()
-{
-    int curLayer = _mapView->GetCurLayer();//_layerList->GetSelection();
-
-    _layerList->Clear();
-    _mapView->Freeze();                                         // stops the map view from refreshing every time we check something.
-
-    for (uint i = 0; i < _map->NumLayers(); i++)
-        _layerList->Append(_map->GetLayer(i)->label.c_str());
-
-    for (uint i = 0; i < _map->NumLayers(); i++)
-        _layerList->Check(i);
-
-    bool b = _map->NumLayers() > 0;
-
-    if (b) _layerList->SetSelection(clamp<int>(curLayer, 0, _map->NumLayers()));
-
-    _mapView->Thaw();                                           // Let the map view draw again.
-
-    FindWindowById(id_destroylayer)->Enable(b);
-    FindWindowById(id_movelayerup)->Enable(b);
-    FindWindowById(id_movelayerdown)->Enable(b);
-}
-
 void MainWindow::UpdateTitle()
 {
     std::string name = 
@@ -896,26 +892,6 @@ void MainWindow::SetChanged(bool changed)
     }
 }
 
-bool MainWindow::IsLayerVisible(uint index) const
-{
-    wxASSERT(index < _map->NumLayers());
-    return _layerList->IsChecked(index);
-}
-
-void MainWindow::ShowLayer(uint index, bool show)
-{
-    wxASSERT(index < _map->NumLayers());
-
-    _layerList->Check(index, show);
-    _mapView->Render();
-    _mapView->ShowPage();
-}
-
-void MainWindow::HideLayer(uint index)
-{
-    ShowLayer(index, false);
-}
-
 void MainWindow::HighlightToolButton(uint buttonId)
 {
     static const uint ids[] =
@@ -940,19 +916,8 @@ void MainWindow::HighlightToolButton(uint buttonId)
     }
 }
 
-Map* MainWindow::GetMap() const { return _map; }
-TileSet* MainWindow::GetTileSet() const { return _tileSet; }
 MapView* MainWindow::GetMapView() const { return _mapView; }
 TileSetView* MainWindow::GetTileSetView() const { return _tileSetView; }
-
-void MainWindow::HandleCommand(::Command* cmd)
-{
-    ClearList(_redoList);
-
-    cmd->Do(this);
-    _undoList.push(cmd);
-    SetChanged(true);
-}
 
 void MainWindow::Undo()
 {
@@ -1013,15 +978,19 @@ void MainWindow::LoadMap(const std::string& fileName)
         delete iter->second;
     _sprites.clear();
 
-    UpdateLayerList();
-
     ClearList(_undoList);
     ClearList(_redoList);
 
+    _layerVisibility.resize(_map->NumLayers());
+    std::fill(_layerVisibility.begin(), _layerVisibility.end(), true);
+
+    // Not firing events here because several components listen to more than one
+    // event.  This would cause things to redraw themselves more than is sane.
     _mapView->UpdateScrollBars();
     _tileSetView->UpdateScrollBars();
     _mapView->Refresh();
     _tileSetView->Refresh();
+    _layerList->Update(_map);
 
     _changed = false;
     UpdateTitle();
@@ -1049,4 +1018,76 @@ SpriteSet* MainWindow::GetSprite(const std::string& fileName)
 std::vector<Script*>& MainWindow::GetScripts()
 {
     return _scripts;
+}
+
+// Executor:
+void MainWindow::HandleCommand(::Command* cmd)
+{
+    ClearList(_redoList);
+
+    cmd->Do(this);
+    _undoList.push(cmd);
+    SetChanged(true);
+}
+
+bool MainWindow::IsLayerVisible(uint index)
+{
+    wxASSERT(index < _map->NumLayers());
+    return _layerVisibility[index];
+}
+
+void MainWindow::ShowLayer(uint index, bool show)
+{
+    wxASSERT(index < _map->NumLayers());
+
+    _layerVisibility[index] = show;
+
+    mapVisibilityChanged.fire(MapEvent(_map, index));
+}
+
+uint MainWindow::GetCurrentTile()
+{
+    return _curTile;
+}
+
+void MainWindow::SetCurrentTile(uint i)
+{
+    if (i > _tileSet->Count())
+        i = 0;
+
+    _curTile = i;
+    curTileChanged.fire(i);
+}
+
+uint MainWindow::GetCurrentLayer()
+{
+    return _curLayer;
+}
+
+void MainWindow::SetCurrentLayer(uint i)
+{
+    wxASSERT(i < _map->NumLayers());
+
+    _curLayer = i;
+    curLayerChanged.fire(MapEvent(_map, i));
+}
+
+Map* MainWindow::GetMap()         { return _map; }
+TileSet* MainWindow::GetTileSet() { return _tileSet; }
+
+MapView* MainWindow::GetMapView()
+{
+    return _mapView;
+}
+
+TileSetView* MainWindow::GetTileSetView()
+{
+    return _tileSetView;
+}
+
+void MainWindow::SwitchTileSet(TileSet* ts)
+{
+    _tileSet = ts;
+    layerChanged.fire(MapEvent(_map));
+    tileSetChanged.fire(0);
 }

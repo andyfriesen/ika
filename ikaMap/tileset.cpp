@@ -58,17 +58,17 @@ void TileSet::SetImage(const Canvas& newtile, uint tileidx)
 
 uint TileSet::Count() const
 {
-    return pVsp?pVsp->NumTiles() : 0;
+    return pVsp ? pVsp->NumTiles() : 0;
 }
 
 int TileSet::Width() const
 {
-    return pVsp?pVsp->Width() : 0;
+    return pVsp ? pVsp->Width() : 0;
 }
 
 int TileSet::Height() const
 {
-    return pVsp?pVsp->Height():0;
+    return pVsp ? pVsp->Height() : 0;
 }
 
 void TileSet::AppendTile()

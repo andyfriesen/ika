@@ -4,9 +4,9 @@
 #include "wxinc.h"
 #include "map.h"
 
-class MainWindow;
+struct MainWindow;
 
-class MapDlg : public wxDialog
+struct MapDlg : public wxDialog
 {
     template <class T>
     T* Ctrl(const std::string& name, const T* = 0);

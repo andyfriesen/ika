@@ -1,19 +1,29 @@
 #include "scriptengine.h"
-#include "mainwindow.h"
+//#include "mainwindow.h"
 
 #include "script/ObjectDefs.h"
 
 namespace
 {
-    PyObject* ikaModule;
+    bool _initted = false;
+    MainWindow* _mainWnd = 0;
 }
 
 void ScriptEngine::Init(MainWindow* mainWnd)
 {
+    _mainWnd = mainWnd;
+}
+
+void ScriptEngine::Init()
+{
+    if (_initted)
+        return;
+
+    _initted = true;
     Py_Initialize();
 
     PyImport_AddModule("ika");
-    ikaModule = Py_InitModule3("ika", ScriptObject::standard_methods,
+    PyObject* ikaModule = Py_InitModule3("ika", ScriptObject::standard_methods,
         "ikaMap standard module\n"
         "\n"
         "Contains functions for tweaking ikaMap, and the map it is editing."
@@ -23,8 +33,8 @@ void ScriptEngine::Init(MainWindow* mainWnd)
     ScriptObject::Editor::Init();
     ScriptObject::Error::Init();
 
-    PyObject* mapObject = ScriptObject::Map::New(mainWnd);
-    PyObject* editorObject = ScriptObject::Editor::New(mainWnd);
+    PyObject* mapObject = ScriptObject::Map::New(_mainWnd);
+    PyObject* editorObject = ScriptObject::Editor::New(_mainWnd);
 
     PyModule_AddObject(ikaModule, "Map", mapObject);
     PyModule_AddObject(ikaModule, "Editor", editorObject);
@@ -32,6 +42,7 @@ void ScriptEngine::Init(MainWindow* mainWnd)
 
 void ScriptEngine::ShutDown()
 {
-
-    Py_Finalize();
+    if (_initted)
+        Py_Finalize();
+    _initted = false;
 }

@@ -5,10 +5,10 @@
 #include "wxinc.h"
 #include "video.h"
 
-class MainWindow;
-class TileSet;
+struct MainWindow;
+struct TileSet;
 
-class TileSetView : public VideoFrame
+struct TileSetView : VideoFrame
 {
 private:
     MainWindow* _mainWnd;

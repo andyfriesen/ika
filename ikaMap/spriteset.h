@@ -6,7 +6,7 @@
 
 class CCHRfile;
 
-class SpriteSet : public ImageBank
+struct SpriteSet : ImageBank
 {
     virtual void SetImage(const Canvas& img, uint idx);
 

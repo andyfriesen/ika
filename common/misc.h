@@ -9,15 +9,16 @@
 
 #include "types.h"
 #include <string>
+#include <algorithm>
 
 extern const char* IKA_VERSION;
 
-#ifdef min
+/*#ifdef min
 #   undef min
 #endif
 #ifdef max
 #   undef max
-#endif
+#endif*/
 
 #if !defined(_MSC_VER) || _MSC_VER >= 1300
     // This totally rocks.
@@ -31,6 +32,9 @@ extern const char* IKA_VERSION;
 #   define lengthof(x) sizeof x / sizeof x[0];
 #endif
 
+using std::min;
+using std::max;
+
 template <typename T>
 inline void swap(T& a, T& b)
 {
@@ -38,18 +42,6 @@ inline void swap(T& a, T& b)
     c = a;
     a = b;
     b = c;
-}
-
-template <typename T>
-inline T min(T a, T b)
-{
-    return a < b ? a : b;
-}
-
-template <typename T>
-inline T max(T a, T b)
-{
-    return a > b ? a : b;
 }
 
 template <typename T>
@@ -66,6 +58,10 @@ inline T* the()
 {
     return T::GetInstance();
 }
+
+// Simple little predicate for for_each
+template <class T>
+struct Destroy {    void operator()(T* t) { delete t; } };
 
 bool IsPowerOf2(uint i);
 uint NextPowerOf2(uint i);
@@ -92,9 +88,9 @@ public:
     ScopedPtr()      : _data(0) {}
     ~ScopedPtr()     { delete _data;  }
 
-    T* operator ->() { return  _data; }
-    T& operator * () { return *_data; }
-    T* get() const   { return  _data; }
+    T* operator ->() const { return  _data; }
+    T& operator * () const { return *_data; }
+    T* get()         const { return  _data; }
 
     operator bool () { return _data != 0; }
   
@@ -117,12 +113,12 @@ public:
     ScopedArray()      : _data(0) {}
     ~ScopedArray()     { delete[] _data;  }
 
-    T& operator[](int i) { return _data[i]; }
-    T* operator ->() { return  _data; }
-    T& operator * () { return *_data; }
-    T* get() const   { return  _data; }
+    T& operator[](uint i) const { return _data[i]; }
+    T* operator ->()      const { return  _data; }
+    T& operator * ()      const { return *_data; }
+    T* get()              const { return  _data; }
 
-    operator bool () { return _data != 0; }
+    operator bool()       const { return _data != 0; }
   
     ScopedArray& operator = (T* t)
     {

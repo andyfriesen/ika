@@ -6,11 +6,11 @@
 #include "wxinc.h"
 #include "vsp.h"
 
-class Command;
+struct Command;
 
-class MainWindow;
+struct MainWindow;
 
-class TileAnimDlg : public wxDialog
+struct TileAnimDlg : public wxDialog
 {
 public:
     TileAnimDlg(MainWindow* mainWnd);

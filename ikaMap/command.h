@@ -5,7 +5,7 @@
 #include "map.h"
 #include "canvas.h"
 
-class MainWindow; // bleh. ;P
+struct Executor;
 
 /**
  * Encapsulates some operation that changes the map somehow.
@@ -18,11 +18,11 @@ class MainWindow; // bleh. ;P
  *
  * I wonder if I should put this all in a namespace.
  */
-class Command
+struct Command
 {
 public:
-    virtual void Do(MainWindow* m) = 0;
-    virtual void Undo(MainWindow* m) = 0;
+    virtual void Do(Executor* e) = 0;
+    virtual void Undo(Executor* e) = 0;
 
     virtual ~Command(){}
 };
@@ -31,7 +31,7 @@ public:
  * A group of commands.  Used to pack more than one command into a single
  * undo step.
  */
-class CompositeCommand : public Command
+struct CompositeCommand : Command
 {
 private:
     std::vector<Command*> _commands;
@@ -40,14 +40,14 @@ public:
     CompositeCommand(const std::vector<Command*>& commands);
     ~CompositeCommand();
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
 /**
  * Real easy; a command to set a single tile somewhere.
  */
-class SetTileCommand : public Command
+struct SetTileCommand : Command
 {
 private:
     uint _tileX, _tileY;
@@ -58,11 +58,11 @@ private:
 public:
     SetTileCommand(uint tx, uint ty, uint li, uint ti);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class PasteTilesCommand : public Command
+struct PasteTilesCommand : Command
 {
 private:
     int _x, _y;
@@ -72,11 +72,11 @@ private:
 public:
     PasteTilesCommand(int x, int y, uint layerIndex, const Matrix<uint>& tiles);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class SetObstructionCommand : public Command
+struct SetObstructionCommand : Command
 {
 private:
     uint _x, _y;
@@ -87,22 +87,22 @@ private:
 public:
     SetObstructionCommand(uint x, uint y, uint layerIndex, u8 set);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class CreateLayerCommand : public Command
+struct CreateLayerCommand : Command
 {
 private:
     uint _layerIndex;           // The index of the layer we created.
 
 public:
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class DestroyLayerCommand : public Command
+struct DestroyLayerCommand : Command
 {
 private:
     Map::Layer* _savedLayer;        // a copy of the erased layer
@@ -112,12 +112,12 @@ public:
     DestroyLayerCommand(uint index);
     virtual ~DestroyLayerCommand();
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
 // Used for both moving layers up and down, since they're the same thing
-class SwapLayerCommand : public Command
+struct SwapLayerCommand : Command
 {
 private:
     uint _index1;
@@ -126,11 +126,11 @@ private:
 public:
     SwapLayerCommand(uint i1, uint i2);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class CloneLayerCommand: public Command
+struct CloneLayerCommand: Command
 {
 private:
     uint _index;    // index of the layer to clone.  The new layer is put directly after this one.
@@ -138,11 +138,11 @@ private:
 public:
     CloneLayerCommand(uint index);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class ResizeLayerCommand : public Command
+struct ResizeLayerCommand : Command
 {
 private:
     uint _index;
@@ -153,11 +153,11 @@ private:
 public:
     ResizeLayerCommand(uint index, uint newWidth, uint newHeight);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class ChangeLayerPropertiesCommand : public Command
+struct ChangeLayerPropertiesCommand : Command
 {
     struct LayerProperties
     {
@@ -189,11 +189,11 @@ public:
         int x,
         int y);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class ChangeMapPropertiesCommand : public Command
+struct ChangeMapPropertiesCommand : Command
 {
     std::string _oldTitle, _newTitle;
     uint _oldWidth, _newWidth;
@@ -202,11 +202,11 @@ class ChangeMapPropertiesCommand : public Command
 public:
     ChangeMapPropertiesCommand(const std::string& newTitle, uint newWidth, uint newHeight);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class ChangeEntityPropertiesCommand : public Command
+struct ChangeEntityPropertiesCommand : Command
 {
     uint _layerIndex;
     uint _entityIndex;
@@ -217,11 +217,11 @@ class ChangeEntityPropertiesCommand : public Command
 public:
     ChangeEntityPropertiesCommand(uint layerIndex, uint entityIndex, Map::Entity newData);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class CreateEntityCommand : public Command
+struct CreateEntityCommand : Command
 {
     uint _layerIndex;
     uint _entityIndex;
@@ -230,11 +230,11 @@ class CreateEntityCommand : public Command
 public:
     CreateEntityCommand(uint layerIndex, int x, int y);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class DestroyEntityCommand : public Command
+struct DestroyEntityCommand : Command
 {
     uint _layerIndex;
     uint _entityIndex;
@@ -244,25 +244,25 @@ class DestroyEntityCommand : public Command
 public:
     DestroyEntityCommand(uint layerIndex, uint entityIndex);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class ChangeTileSetCommand : public Command
+struct ChangeTileSetCommand : Command
 {
 private:
-    class TileSet* _tileSet;
+    struct TileSet* _tileSet;
     std::string _fileName;
 
 public:
-    ChangeTileSetCommand(class TileSet* tileSet, const std::string& fileName);
+    ChangeTileSetCommand(struct TileSet* tileSet, const std::string& fileName);
     virtual ~ChangeTileSetCommand();
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class InsertTilesCommand : public Command
+struct InsertTilesCommand : Command
 {
 private:
     std::vector<Canvas> _tiles;
@@ -273,11 +273,11 @@ public:
     // Start throwing pointers around instead?
     InsertTilesCommand(uint startPos, std::vector<Canvas>& tiles);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class DeleteTilesCommand : public Command
+struct DeleteTilesCommand : Command
 {
 private:
     std::vector<Canvas> _savedTiles;
@@ -287,11 +287,11 @@ private:
 public:
     DeleteTilesCommand(uint firstTile, uint lastTile);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class ResizeTileSetCommand : public Command
+struct ResizeTileSetCommand : Command
 {
 private:
     std::vector<Canvas> _savedTiles;
@@ -303,11 +303,11 @@ private:
 public:
     ResizeTileSetCommand(uint newWidth, uint newHeight);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class DefineZoneBluePrintCommand : public Command
+struct DefineZoneBluePrintCommand : Command
 {
 private:
     enum Mode
@@ -330,11 +330,11 @@ public:
     DefineZoneBluePrintCommand(Map::Zone& newZone, int);
     DefineZoneBluePrintCommand(int, Map::Zone& oldZone);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class PlaceZoneCommand : public Command
+struct PlaceZoneCommand : Command
 {
 private:
     Rect        _position;
@@ -344,11 +344,11 @@ private:
 public:
     PlaceZoneCommand(const Rect& position, uint layerIndex, const std::string& bluePrint);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
-class ChangeZoneCommand : public Command
+struct ChangeZoneCommand : Command
 {
 private:
     uint _layerIndex;
@@ -360,13 +360,13 @@ private:
 public:
     ChangeZoneCommand(uint layerIndex, uint zoneIndex, const Map::Layer::Zone& newZone);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
 };
 
 //-----------------------------------------------------------------------------
 
-class DestroyZoneCommand : public Command
+struct DestroyZoneCommand : Command
 {
 private:
     uint _layerIndex;
@@ -377,8 +377,26 @@ private:
 public:
     DestroyZoneCommand(uint layerIndex, uint zoneIndex);
 
-    virtual void Do(MainWindow* m);
-    virtual void Undo(MainWindow* m);
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
+};
+
+//-----------------------------------------------------------------------------
+
+#include "vsp.h"
+
+struct UpdateTileAnimStrandCommand : Command
+{
+public:
+    UpdateTileAnimStrandCommand(uint index, const VSP::AnimState& newStrand);
+
+    virtual void Do(Executor* m);
+    virtual void Undo(Executor* m);
+
+private:
+    VSP::AnimState _newStrand;
+    VSP::AnimState _oldStrand;
+    uint _index;
 };
 
 #endif

@@ -6,16 +6,16 @@
 
 #include "map.h"
 
-class MainWindow;
+struct MainWindow;
 
-class EntityDlg : public wxDialog
+struct EntityDlg : public wxDialog
 {
     MainWindow* _mainWnd;
     uint _layer;
     uint _index;
 
 private:
-    template <class T>
+    template <typename T>
         T* get(const char* name, T* = 0)
     {
         T* t = (T*)FindWindowByName(name);

@@ -8,9 +8,9 @@
 
 #include "editstate.h"
 
-class Script;
+struct Script;
 
-class ScriptState : public EditState
+struct ScriptState : public EditState
 {
 private:
     Script* _script;

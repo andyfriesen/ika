@@ -5,7 +5,7 @@
 #include "types.h"
 #include "editstate.h"
 
-class TileSetState : public EditState
+struct TileSetState : EditState
 {
 public:
     TileSetState(MainWindow* mw);

@@ -84,7 +84,7 @@
 #include "types.h"
 #include "Python.h" // I *HATE* having to put this here.  I can't just proto PyObject because of gay C.
 
-class Script
+struct Script
 {
 private:
     PyObject* module;

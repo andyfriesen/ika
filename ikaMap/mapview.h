@@ -13,9 +13,11 @@
 #include "zoneeditstate.h"
 #include "scriptstate.h"
 
-class MainWindow;
-class SpriteSet;
-class Script;
+struct MainWindow;
+struct SpriteSet;
+struct Script;
+
+struct MapEvent;
 
 /**
  * This is the panel that holds the actual map image.  It processes events and the like pertaining to
@@ -24,7 +26,7 @@ class Script;
  * _editState points to one of the editor state subclasses, depending on what the current state is.
  * (simple strategy pattern)
  */
-class MapView : public wxPanel
+struct MapView : public wxPanel
 {
 private:
     MainWindow* _mainWnd;
@@ -63,6 +65,8 @@ public:
     void OnMouseWheel(wxMouseEvent& event);
 
     void OnKeyPress(wxKeyEvent& event);
+
+    void OnMapChange(const MapEvent& event);
 
     void Render();
     void ShowPage();

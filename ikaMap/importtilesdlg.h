@@ -7,7 +7,7 @@
 
 #include "Canvas.h"
 
-class ImportTilesDlg : public wxDialog
+struct ImportTilesDlg : public wxDialog
 {
 public:
     /// User's chosen settings.

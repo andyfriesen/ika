@@ -7,7 +7,7 @@
 #include "imagebank.h"
 #include "vsp.h"
 
-class TileSet : public ImageBank
+struct TileSet : ImageBank
 {
 private:
     VSP* pVsp;

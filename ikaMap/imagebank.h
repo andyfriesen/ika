@@ -5,13 +5,13 @@
 #include "types.h"
 #include <set>
 
-class Image;
+struct Image;
 class Canvas;
 
 // abstract image bank class.
 // Subclassed for VSPs, fonts and such, so they can have hardware - specific copies
 // that stay sync'd.
-class ImageBank
+struct ImageBank
 {
 protected:
     std::vector<Image*> bitmaps;

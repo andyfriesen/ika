@@ -11,10 +11,9 @@
 #include "wxinc.h"
 #include <wx/glcanvas.h>
 
-class VideoFrame;
-class Image;
+struct Image;
 
-class VideoFrame : public wxGLCanvas
+struct VideoFrame : public wxGLCanvas
 {
     /*    
         We keep a list of all open VideoFrame instances so that they can all have the same OpenGL context.
@@ -61,7 +60,7 @@ public:
     DECLARE_EVENT_TABLE()
 };
 
-class Image
+struct Image
 {
     friend VideoFrame;
 protected:

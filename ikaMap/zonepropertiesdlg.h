@@ -5,10 +5,10 @@
 #include "wx/wx.h"
 #include "types.h"
 
-class MainWindow;
+struct MainWindow;
 struct Map;
 
-class ZonePropertiesDlg : public wxDialog
+struct ZonePropertiesDlg : public wxDialog
 {
 private:
     MainWindow* _mainWnd;

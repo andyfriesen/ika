@@ -151,6 +151,9 @@
 				RelativePath="layerdlg.cpp">
 			</File>
 			<File
+				RelativePath=".\layerlist.cpp">
+			</File>
+			<File
 				RelativePath="mainwindow.cpp">
 			</File>
 			<File
@@ -196,9 +199,6 @@
 				RelativePath="tilesetview.cpp">
 			</File>
 			<File
-				RelativePath=".\updatetileanimstrandcommand.cpp">
-			</File>
-			<File
 				RelativePath="video.cpp">
 			</File>
 			<File
@@ -230,6 +230,12 @@
 				RelativePath="entitystate.h">
 			</File>
 			<File
+				RelativePath=".\events.h">
+			</File>
+			<File
+				RelativePath=".\executor.h">
+			</File>
+			<File
 				RelativePath="imagebank.h">
 			</File>
 			<File
@@ -237,6 +243,12 @@
 			</File>
 			<File
 				RelativePath="layerdlg.h">
+			</File>
+			<File
+				RelativePath=".\layerlist.h">
+			</File>
+			<File
+				RelativePath=".\listener.h">
 			</File>
 			<File
 				RelativePath="mainwindow.h">
@@ -282,9 +294,6 @@
 			</File>
 			<File
 				RelativePath="tilesetview.h">
-			</File>
-			<File
-				RelativePath=".\updatetileanimstrandcommand.h">
 			</File>
 			<File
 				RelativePath="video.h">
@@ -446,6 +455,12 @@
 			</File>
 			<File
 				RelativePath="..\common\matrix.h">
+			</File>
+			<File
+				RelativePath="..\common\mem.cpp">
+			</File>
+			<File
+				RelativePath="..\common\mem.h">
 			</File>
 			<File
 				RelativePath="..\common\misc.cpp">
