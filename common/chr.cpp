@@ -65,6 +65,10 @@ Canvas& CCHRfile::GetFrame(uint nFrame) const {
     return *frame[nFrame];
 }
 
+const std::vector<Canvas*>& CCHRfile::GetAllFrames() {
+    return frame;
+}
+
 void CCHRfile::UpdateFrame(const Canvas& newdata, uint nFrame) {
     if (0 <= nFrame && nFrame < frame.size()) {
         *frame[nFrame] = newdata;
@@ -73,6 +77,14 @@ void CCHRfile::UpdateFrame(const Canvas& newdata, uint nFrame) {
 
 void CCHRfile::AppendFrame() {
     frame.push_back(new Canvas(nWidth, nHeight));
+}
+
+void CCHRfile::AppendFrame(Canvas& c) {
+    frame.push_back(new Canvas(c));
+}
+
+void CCHRfile::AppendFrame(Canvas* c) {
+    frame.push_back(new Canvas(*c));
 }
 
 void CCHRfile::InsertFrame(uint idx) {
@@ -88,17 +100,30 @@ void CCHRfile::InsertFrame(uint idx) {
     frame.insert(frame.begin() + idx, new Canvas(nWidth, nHeight));
 }
 
-void CCHRfile::InsertFrame(uint idx, Canvas& p) {
+void CCHRfile::InsertFrame(uint idx, Canvas& c) {
     if (idx < 0) {
         idx = 0;
     }
     
     if (idx >= frame.size()) {
-        frame.push_back(new Canvas(p));
+        frame.push_back(new Canvas(c));
         return;
     }
     
-    frame.insert(frame.begin() + idx, new Canvas(p));
+    frame.insert(frame.begin() + idx, new Canvas(c));
+}
+
+void CCHRfile::InsertFrame(uint idx, Canvas* c) {
+    if (idx < 0) {
+        idx = 0;
+    }
+    
+    if (idx >= frame.size()) {
+        AppendFrame(c);
+        return;
+    }
+    
+    frame.insert(frame.begin() + idx, new Canvas(*c));
 }
 
 void CCHRfile::DeleteFrame(uint idx) {

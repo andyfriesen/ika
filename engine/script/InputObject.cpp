@@ -19,7 +19,7 @@ namespace Script
             {   "Update",           (PyCFunction)Input_Update,      METH_NOARGS,
                 "Update()\n\n"
                 "Updates the state of the mouse, and any attached input devices.\n"
-                "Also gives the OS a chance to do background tasks.  Continious\n"
+                "Also gives the OS a chance to do background tasks.  Continuous\n"
                 "loops should call this occasionally to give the OS time to perform\n"
                 "its tasks."
             },

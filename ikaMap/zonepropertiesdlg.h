@@ -8,8 +8,7 @@
 struct Executor;
 struct Map;
 
-struct ZonePropertiesDlg : public wxDialog
-{
+struct ZonePropertiesDlg : public wxDialog {
 private:
     Executor*   _executor;
     uint        _layerIndex;
@@ -29,7 +28,7 @@ private:
     void UpdateData();
     void UpdateDlg();
     void OnSelectBlueprint(wxCommandEvent&);
-    void OnClose(wxCommandEvent& event);
+    void OnClose(wxCloseEvent& event);
     void OnNewBlueprint(wxCommandEvent&);
     void OnDeleteBlueprint(wxCommandEvent&);
     void OnRenameBlueprint(wxCommandEvent&);

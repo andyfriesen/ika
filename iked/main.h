@@ -45,8 +45,8 @@ namespace iked {
     struct DocumentFactory {
         virtual std::string getName() = 0;
         virtual std::string getExtension() = 0;
-        virtual DocumentResource* createResource() = 0;
-        virtual DocumentResource* createResource(const std::string& fileName) = 0;
+        //virtual DocumentResource* createResource() = 0;
+        //virtual DocumentResource* createResource(const std::string& fileName) = 0;
         virtual DocumentPanel* createPanel(MainWindow* parent, const std::string& filename) = 0;
     };
 

@@ -31,15 +31,14 @@ namespace iked {
         int getWidth();
         int getHeight();
         const Canvas& getCanvas(int idx);
-#if 0
-        void setCanvas(const Canvas& img, int idx);
+
+        void update(const Canvas& img, int idx);
         void insert(const Canvas& canvas, int position);
         void remove(int position);
 
         void append(const Canvas& canvas) {
             insert(canvas, getCount());
         }
-#endif
 
         Image& getImage(int idx);
 

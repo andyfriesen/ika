@@ -34,7 +34,7 @@ LayerBox::LayerBox(wxWindow* parent, wxPoint position, wxSize size)
     wxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(_visibilityIcon, 0, wxBOTTOM, 4);
     sizer->Add(_activeIcon, 0, wxBOTTOM, 4);
-    sizer->Add(_label, 1, wxALIGN_CENTER_VERTICAL);
+    sizer->Add(_label, 1, wxALIGN_CENTER_VERTICAL | wxEXPAND);
     SetSizer(sizer);
     sizer->Fit(this);
 }
@@ -50,22 +50,17 @@ void LayerBox::SetActiveIcon(wxIcon& icon) {
 void LayerBox::DoToggleVisibility(wxCommandEvent& event) {
     event.SetInt(GetId());
     event.Skip();
-    Log::Write("Toggle! %s", _label->GetLabel().c_str());
 }
 
 void LayerBox::DoActivateLayer(wxCommandEvent& event) {
     event.SetInt(GetId());
     event.Skip();
-    Log::Write("Activate! %s", _label->GetLabel().c_str());
 }
 
 void LayerBox::DoContextMenu(wxContextMenuEvent& event) {
     // Write our layer index to the event, then skip, so the enclosing control can recieve it.
     event.SetInt(GetId());
     event.Skip();
-#ifdef DEBUG
-    Log::Write("Right click %s", _label->GetLabel().c_str());
-#endif
 }
 
 void LayerBox::SetLabel(const std::string& label) {

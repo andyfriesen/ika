@@ -18,21 +18,22 @@ namespace iked {
      * TODO: extend wxPanel, not MDIChildFrame
      */
     struct DocumentPanel : public wxMDIChildFrame {
-        DocumentPanel(MainWindow* parentWindow, Document* doc, const std::string& fname, int style=0);
+        DocumentPanel(MainWindow* parentWindow, Document* doc, const std::string& fileName, int style=wxDEFAULT_FRAME_STYLE);
         virtual ~DocumentPanel();
 
         void setName(const std::string& newName);
         const std::string& getName() const;
 
-        virtual Document* getDocument();
+        virtual Document* getDocument() const;
 
         virtual void saveDocument(const std::string& fileName);
-        void saveDocument() {
-            saveDocument(getName());
-        }
+        void saveDocument();
 
         void onClose(wxCloseEvent& event);
         virtual void onSave(wxCommandEvent& event);
+
+        void onUndo(wxCommandEvent& event);
+        void onRedo(wxCommandEvent& event);
 
         MainWindow* getParent() { return parent; }
 

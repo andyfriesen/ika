@@ -14,6 +14,12 @@
 
 #include "boost/foreach.hpp"
 
+#if defined(_MSC_VER)
+#   define DEPRECATED __declspec(deprecated)
+#else
+#   define DEPRECATED
+#endif
+
 // debug_cast<T>(U* u)
 // In debug mode, asserts that the cast is good via dynamic_cast,
 // if RTTI is enabled.

@@ -16,33 +16,53 @@ namespace iked {
     }
 
     int ImageArrayDocument::getWidth() {
+        invariant();
         return doGetWidth();
     }
 
     int ImageArrayDocument::getHeight() {
+        invariant();
         return doGetHeight();
     }
 
     const Canvas& ImageArrayDocument::getCanvas(int index) {
+        invariant();
         assert(0 <= index && index < getCount());
         return doGetCanvas(index);
     }
 
-    /*
-    void ImageArrayDocument::insert(const Canvas& canvas, int position) {
-        assert(0 <= position && position <= getCount());
-        doInsert(canvas, position);
-        images.insert(images.begin() + position, 0);
-    }
-
-    void ImageArrayDocument::setCanvas(const Canvas& canvas, int index) {
+    void ImageArrayDocument::update(const Canvas& canvas, int index) {
+        invariant();
         assert(0 <= index && index < getCount());
+
         makeDirty(index);
         doSetCanvas(canvas, index);
+
+        invariant();
     }
-    */
+
+    void ImageArrayDocument::insert(const Canvas& canvas, int position) {
+        invariant();
+        assert(0 <= position && position <= getCount());
+
+        doInsert(canvas, position);
+        images.insert(images.begin() + position, 0);
+
+        invariant();
+    }
+
+    void ImageArrayDocument::remove(int position) {
+        invariant();
+
+        doRemove(position);
+        delete images[position];
+        images.erase(images.begin() + position);
+
+        invariant();
+    }
 
     Image& ImageArrayDocument::getImage(int index) {
+        invariant();
         assert(0 <= index && index < getCount());
         sync(index);
         return *images[index];

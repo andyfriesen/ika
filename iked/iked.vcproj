@@ -410,6 +410,12 @@
 				RelativePath=".\imageview.h">
 			</File>
 			<File
+				RelativePath=".\listcontrol.cpp">
+			</File>
+			<File
+				RelativePath=".\listcontrol.h">
+			</File>
+			<File
 				RelativePath=".\mapview.cpp">
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -563,18 +569,6 @@
 			</File>
 			<File
 				RelativePath="importframesdlg.cpp">
-				<FileConfiguration
-					Name="Debug|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					ExcludedFromBuild="TRUE">
-					<Tool
-						Name="VCCLCompilerTool"/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="importframesdlg.h">

@@ -39,10 +39,6 @@ namespace iked {
         }
     }
 
-    void SpriteSet::sendCommand(commands::Command* cmd) {
-        delete cmd;
-    }
-
     void SpriteSet::resize(int width, int height) {
         chr->Resize(width, height);
         invariant();

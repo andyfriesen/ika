@@ -1,27 +1,30 @@
-#if 0
 #pragma once
 
-#include <wx/dialog.h>
+#include <wx/wx.h>
 #include <string>
 #include <vector>
 
-#include "Canvas.h"
+#include "common/Canvas.h"
 
-class ImportFramesDlg : public wxDialog
-{
-    void OnOk(wxCommandEvent& event);
-    void OnBrowse(wxCommandEvent& event);
+namespace iked {
+    struct ImportFramesDlg : public wxDialog {
+        ImportFramesDlg(wxWindow* parent);
 
-    void ImportFrames(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad);
-public:
-    ImportFramesDlg(wxWindow* parent);
+        int ShowModal();
+        int ShowModal(int width, int height); // locks the width and height, then does the usual ShowModal thing.
 
-    std::vector<Canvas> frames; // the resultant frames
-    bool append;                // nothing to do with this dialog.  We expose it so that whoever is using it can interpret the frames properly.
+        std::string fileName;
+        int frameWidth;
+        int frameHeight;
+        int frameCount;
+        int rowSize;
+        bool pad;
+        bool append;
 
-    int ShowModal();
-    int ShowModal(int width, int height); // locks the width and height, then does the usual ShowModal thing.
+    private:
+        void OnOk(wxCommandEvent& event);
+        void OnBrowse(wxCommandEvent& event);
 
-    DECLARE_EVENT_TABLE()
-};
-#endif
+        DECLARE_EVENT_TABLE()
+    };
+}

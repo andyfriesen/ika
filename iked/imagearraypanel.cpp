@@ -27,7 +27,7 @@ namespace iked {
         Refresh();
     }
 
-    int ImageArrayPanel::getImageAtPos(int x, int y) {
+    int ImageArrayPanel::getImageAtPos(int x, int y) const {
         y += scrollPos;
 
         int xstep = document->getWidth() + imagePadSize;
@@ -46,20 +46,7 @@ namespace iked {
         }
     }
 
-    void ImageArrayPanel::getImagePos(int index, int* x, int* y) {
-#if 0
-        int xstep = document->getWidth()  + imagePadSize;
-        int ystep = document->getHeight() + imagePadSize;
-
-        int cols = max(LogicalWidth() / xstep, 1);
-
-        *x = index % cols;
-        *y = index / cols - scrollPos;
-
-        *x *= xstep;
-        *y *= ystep;
-        *y += scrollPos;
-#else
+    void ImageArrayPanel::getImagePos(int index, int* x, int* y) const {
         if (index > document->getCount()) {
             *x = *y = -1;
         } else {
@@ -70,7 +57,10 @@ namespace iked {
             *y = (index / framesPerRow) * frameHeight - scrollPos;
             *x = (index % framesPerRow) * frameWidth;
         }
-#endif
+    }
+
+    int ImageArrayPanel::getSelectedImage() const {
+        return selectedImage;
     }
 
     void ImageArrayPanel::onSize(wxSizeEvent& event) {
@@ -194,12 +184,12 @@ namespace iked {
         SetScrollbar(wxVERTICAL, scrollPos, LogicalHeight(), getNumRows() * document->getHeight());
     }
 
-    int ImageArrayPanel::getNumCols() {
+    int ImageArrayPanel::getNumCols() const {
         return max(1, LogicalWidth() / (document->getWidth() + imagePadSize));
     }
 
-    int ImageArrayPanel::getNumRows() {
-        return max(1, document->getCount() / getNumCols());
+    int ImageArrayPanel::getNumRows() const {
+        return max(1, (document->getCount() + getNumCols() / 2) / getNumCols());
     }
 
 }

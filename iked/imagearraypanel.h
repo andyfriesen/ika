@@ -19,14 +19,19 @@ namespace iked {
         /**
          * @return Returns the image under x,y.  -1 if no image is there.
          */
-        int getImageAtPos(int x, int y);
+        int getImageAtPos(int x, int y) const;
 
         /**
          * x and y recieve the position of the image with the given index.
          */
-        void getImagePos(int index, int* x, int* y);
+        void getImagePos(int index, int* x, int* y) const;
 
-        ImageArrayDocument* getDocument() { return document; }
+        /**
+         * Returns the currently selected image.
+         */
+        int getSelectedImage() const;
+
+        ImageArrayDocument* getDocument() const { return document; }
 
         Listener<int> leftClickImage;
         Listener<int> rightClickImage;
@@ -49,8 +54,8 @@ namespace iked {
 
         void updateScrollbar();
 
-        int getNumCols();
-        int getNumRows();
+        int getNumCols() const;
+        int getNumRows() const;
 
         ImageArrayDocument* document;
         int imagePadSize;

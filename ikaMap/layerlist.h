@@ -13,8 +13,11 @@ struct Map;
 struct Executor;
 class wxWindow;
 
-struct LayerBox : public wxWindow
-{
+/**
+ * Displays information about a single map layer.
+ * Draws pretty icons next to the name of the layer.
+ */
+struct LayerBox : public wxWindow {
     LayerBox(wxWindow* parent, wxPoint = wxDefaultPosition, wxSize = wxDefaultSize); // also temp
 
     void SetVisibilityIcon(wxIcon& bmp);
@@ -34,9 +37,10 @@ private:
     wxStaticText*   _label;
 };
 
-struct LayerList : public wxScrolledWindow
-{
-public:
+/**
+ * Contains a list of LayerBoxes.  Also scrolls and stuff.
+ */
+struct LayerList : public wxScrolledWindow {
     LayerList(Executor* executor, wxWindow* parent, wxPoint position = wxDefaultPosition, wxSize size = wxDefaultSize);
 
     // These happen in response to events from executor.
@@ -58,6 +62,7 @@ public:
     void UpdateIcons();
 
     DECLARE_EVENT_TABLE();
+
 private:
 
     std::vector<LayerBox*> _boxes;  // little UI widget box thingies.

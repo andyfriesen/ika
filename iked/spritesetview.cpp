@@ -1,13 +1,17 @@
 
 #include <wx/event.h>
 
+#include "common/chr.h"
+
 #include "document.h"
 #include "imageview.h"
+#include "listcontrol.h"
 #include "importframesdlg.h"
 #include "main.h"
 #include "movescripteditor.h"
 #include "spritesetview.h"
-#include "common/chr.h"
+
+#include "commands/spritecommands.h"
 
 namespace iked {
 
@@ -18,6 +22,9 @@ namespace iked {
             id_filesave,
             id_filesaveas,
             id_fileclose,
+
+            id_editundo,
+            id_editredo,
 
             id_chrmovescript,
             id_chrimportframes,
@@ -38,7 +45,11 @@ namespace iked {
 
             id_zoomin,
             id_zoomout,
-            id_zoomnormal
+            id_zoomnormal,
+
+            // controls
+            id_animscriptlist,
+            id_metadatalist,
         };
 
     }
@@ -56,8 +67,17 @@ namespace iked {
 
         EVT_MENU(id_filesave, SpriteSetView::onSave)
         EVT_MENU(id_filesaveas, SpriteSetView::onSaveAs)
-        EVT_MENU(id_fileclose, SpriteSetView::onClose)
+        //EVT_MENU(id_fileclose, SpriteSetView::onClose)
+
+        EVT_MENU(id_editundo, SpriteSetView::onUndo)
+        EVT_MENU(id_editredo, SpriteSetView::onRedo)
         
+        EVT_BUTTON(id_newanimscript, SpriteSetView::onNewAnimScript)
+        EVT_BUTTON(id_destroyanimscript, SpriteSetView::onDestroyAnimScript)
+
+        EVT_LIST_ITEM_ACTIVATED(id_animscriptlist, SpriteSetView::onEditAnimScript)
+
+        EVT_MENU(id_deleteframe, SpriteSetView::onDestroyFrame)
     END_EVENT_TABLE()
 
     SpriteSetView::SpriteSetView(MainWindow* parentwnd, Document* doc, const std::string& fileName)
@@ -69,6 +89,8 @@ namespace iked {
         init();
         refresh();
         Thaw();
+
+        doc->changed.add(bind(this, (void (SpriteSetView::*)(Document*))&SpriteSetView::onSpriteSetChanged));
 
         // Connect imagePanel event(s)
         imagePanel->rightClickImage.add(bind(this, &SpriteSetView::onRightClickFrame));
@@ -86,6 +108,7 @@ namespace iked {
         if (getName().empty()) {
             onSaveAs(event);
         } else {
+            refreshSprite();
             saveDocument();
         }
     }
@@ -100,11 +123,14 @@ namespace iked {
             "CHR files (*.chr)|*.chr|"
             "All files (*.*)|*.*",
             wxSAVE | wxOVERWRITE_PROMPT
-            );
+        );
 
         int result = dlg.ShowModal();
         if (result == wxID_OK) {
+            refreshSprite();
+
             std::string name = dlg.GetPath().c_str();
+            setName(name);
             saveDocument(name);
         }
     }
@@ -133,29 +159,16 @@ namespace iked {
     }
 
     void SpriteSetView::onImportFrames(wxCommandEvent& event) {
-#if 1
-        throw std::runtime_error("Not yet implemented");
-#else
         ImportFramesDlg dlg(this);
         SpriteSet* sprite = getSprite();
 
-        if (dlg.ShowModal() != wxID_OK)
+        if (dlg.ShowModal() != wxID_OK) {
             return;
-
-        std::vector<Canvas>& frames = dlg.frames;
-        if (frames.size() == 0)
-            return;
-
-        // this is horribly inefficient
-        if (!dlg.append) {
-            while (sprite->getCount()) {
-                sprite->remove(0);
-            }
         }
 
-        if (frames[0].Width() != _sprite->Width() || frames[0].Height() != _sprite->Height()) {
-            if (!dlg.append) {
-                _sprite->Resize(frames[0].Width(), frames[0].Height());
+        if (dlg.frameWidth != sprite->getWidth() || dlg.frameHeight != sprite->getHeight()) {
+            if (0 && !dlg.append) {
+                //sprite->Resize(dlg.frameWidth, dlg.frameHeight);
             } else {
                 // TODO: offer to crop or scale or some other things.
                 wxMessageBox("The frames aren't the same size as the sprite!", "Error", wxOK | wxCENTER, this);
@@ -163,10 +176,88 @@ namespace iked {
             }
         }
 
-        for (uint i = 0; i < frames.size(); i++) {
-            _sprite->append(frames[i]);
+        importFrames(
+            dlg.fileName, 
+            dlg.frameWidth, 
+            dlg.frameHeight, 
+            dlg.rowSize, 
+            dlg.frameCount, 
+            dlg.pad,
+            dlg.append ? commands::insertFrames : commands::eraseAndReplaceFrames
+        );
+    }
+
+    void SpriteSetView::onNewAnimScript(wxCommandEvent& event) {
+        int q = rand();
+        SpriteSet* sprite = getSprite();
+        sprite->sendCommand(new commands::UpdateSpriteAnimScriptCommand(sprite, toString(q), toString(q / 2)));
+    }
+
+    void SpriteSetView::onDestroyAnimScript(wxCommandEvent& event) {
+        int selection = animScriptGrid->getSelection();
+        
+        if (selection == -1) {
+            return;
         }
-#endif
+
+        const std::string scriptName = animScriptGrid->getString(selection, 0);
+        SpriteSet* sprite = getSprite();
+        sprite->sendCommand(new commands::UpdateSpriteAnimScriptCommand(sprite, scriptName, ""));
+    }
+
+    void SpriteSetView::onEditAnimScript(wxListEvent& event) {
+        int selection = animScriptGrid->getSelection();
+        if (selection == -1) {
+            return;
+        }
+
+        const std::string scriptName = animScriptGrid->getString(selection, 0);
+
+        // Create a little dialog window, run it, etc.
+        wxDialog dlg(this, -1, "Edit animation script", wxDefaultPosition);
+        wxDialog* const dialog = &dlg; // so we can be consistent and use pointer syntax
+
+        wxTextCtrl* nameEdit = new wxTextCtrl(dialog, -1, scriptName.c_str());
+        wxTextCtrl* valueEdit = new wxTextCtrl(dialog, -1, getSprite()->GetCHR().moveScripts[scriptName].c_str());
+        nameEdit->Disable(); // TODO: provide a way to rename animation scripts
+
+        wxSizer* sizer = new wxFlexGridSizer(2, 3);
+        sizer->Add(new wxStaticText(dialog, -1, "Name"));
+        sizer->Add(nameEdit);
+        sizer->Add(new wxStaticText(dialog, -1, "Value"));
+        sizer->Add(valueEdit);
+        sizer->Add(new wxButton(dialog, wxID_OK, "Ok"));
+        sizer->Add(new wxButton(dialog, wxID_CANCEL, "Cancel"));
+
+        dialog->SetSizer(sizer);
+        sizer->Fit(dialog);
+        int result = dialog->ShowModal();
+        if (result == wxID_OK) {
+            getSprite()->sendCommand(
+                new commands::UpdateSpriteAnimScriptCommand(
+                    getSprite(), 
+                    scriptName, 
+                    valueEdit->GetValue().c_str()
+                )
+            );
+        } else {
+            wxASSERT(result == wxID_CANCEL);
+        }
+    }
+
+    void SpriteSetView::onDestroyFrame(wxCommandEvent& event) {
+        SpriteSet* const spriteSet = getSprite();
+        spriteSet->sendCommand(
+            new commands::DeleteSpriteFrameCommand(
+                spriteSet,
+                imagePanel->getSelectedImage()
+            )
+        );
+    }
+
+    void SpriteSetView::onSpriteSetChanged(SpriteSet* spriteSet) {
+        assert(spriteSet->asSpriteSet() != 0);
+        refresh();
     }
 
     void SpriteSetView::init() {
@@ -183,11 +274,11 @@ namespace iked {
         wxButton* newMetaDataButton = new wxButton(this, id_newmetadata, "Ne&w");
         wxButton* deleteMetaDataButton = new wxButton(this, id_destroymetadata, "Dele&te");
 
-        animScriptGrid = new wxListCtrl(this, -1, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+        animScriptGrid = new ListControl(this, id_animscriptlist, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
         animScriptGrid->InsertColumn(0, "Name");
         animScriptGrid->InsertColumn(1, "Value");
 
-        metaDataGrid = new wxListCtrl(this, -1, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
+        metaDataGrid = new ListControl(this, id_metadatalist, wxDefaultPosition, wxDefaultSize, wxLC_REPORT);
         metaDataGrid->InsertColumn(0, "Name");
         metaDataGrid->InsertColumn(1, "Value");
 
@@ -243,10 +334,13 @@ namespace iked {
         filemenu->Insert(5, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the sprite view."));
         menubar->Append(filemenu, "&File");
 
-        wxMenu* chrmenu = new wxMenu;
-        chrmenu->Append(id_chrmovescript, "&Movescript...");
-        chrmenu->Append(id_chrimportframes, "Import &Frames...");
-        menubar->Append(chrmenu, "&CHR");
+        wxMenu* editMenu = new wxMenu;
+        editMenu->Append(id_editundo, "&Undo\tCtrl+Z");
+        editMenu->Append(id_editredo, "&Redo\tCtrl+Y");
+        editMenu->AppendSeparator();
+        editMenu->Append(id_chrmovescript, "&Movescript...");
+        editMenu->Append(id_chrimportframes, "Import &Frames...");
+        menubar->Append(editMenu, "&Edit");
 
         wxMenu* viewMenu = new wxMenu;
         viewMenu->Append(id_zoomin, "Zoom &in");
@@ -275,12 +369,14 @@ namespace iked {
         std::vector<wxAcceleratorEntry> accel = getParent()->CreateBasicAcceleratorTable();
 
         int p = accel.size();
-        accel.resize(accel.size()+4);
+        accel.resize(accel.size() + 6);
 
         accel[p++].Set(wxACCEL_CTRL, (int)'S', id_filesave);
         accel[p++].Set(0, (int)'+', id_zoomin);
         accel[p++].Set(0, (int)'-', id_zoomout);
         accel[p++].Set(0, (int)'=', id_zoomnormal);
+        accel[p++].Set(wxACCEL_CTRL, (int)'Z', id_editundo);
+        accel[p++].Set(wxACCEL_CTRL, (int)'Y', id_editredo);
 
         wxAcceleratorTable table(p, &*accel.begin());
         SetAcceleratorTable(table);
@@ -294,7 +390,7 @@ namespace iked {
         hotWidthEdit->SetValue(toString(chr.HotW()).c_str());
         hotHeightEdit->SetValue(toString(chr.HotH()).c_str());
 
-        animScriptGrid->Clear();
+        animScriptGrid->DeleteAllItems();
         int index = 0;
         for (CCHRfile::StringMap::iterator
             iter = chr.moveScripts.begin();
@@ -307,7 +403,7 @@ namespace iked {
         }
 
         index = 0;
-        metaDataGrid->Clear();
+        metaDataGrid->DeleteAllItems();
         for (CCHRfile::StringMap::iterator
             iter = chr.metaData.begin();
             iter != chr.metaData.end();
@@ -317,10 +413,68 @@ namespace iked {
             metaDataGrid->SetItem(index, 1, iter->second.c_str());
             index++;
         }
+
+        imagePanel->Refresh();
     }
 
-    SpriteSet* SpriteSetView::getSprite() {
-        // error checking?
-        return static_cast<SpriteSet*>(getDocument()->asSpriteSet());
+    void SpriteSetView::refreshSprite() {
+        SpriteSet* const sprite = getSprite();
+        CCHRfile* const chr = &sprite->GetCHR();
+        
+        chr->HotX() = atoi(hotXEdit->GetValue().c_str());
+        chr->HotY() = atoi(hotYEdit->GetValue().c_str());
+        chr->HotW() = atoi(hotWidthEdit->GetValue().c_str());
+        chr->HotH() = atoi(hotHeightEdit->GetValue().c_str());
+    }
+
+    SpriteSet* SpriteSetView::getSprite() const {
+        SpriteSet* sprite = static_cast<SpriteSet*>(getDocument()->asSpriteSet());
+        wxASSERT(sprite != 0);
+        return sprite;
+    }
+
+    void SpriteSetView::importFrames(
+        const std::string& fileName, 
+        int frameWidth, 
+        int frameHeight, 
+        int rowSize, 
+        int numFrames,
+        bool pad,
+        commands::ImportMode importMode
+    ) {
+        Canvas image(fileName.c_str());
+
+        std::vector<Canvas> frames; 
+
+        int xstep = frameWidth + (pad ? 1 : 0);
+        int ystep = frameHeight + (pad ? 1 : 0);
+
+        int xpos = pad ? 1 : 0;
+        int ypos = pad ? 1 : 0;
+        int curframe = 0;
+        int row = 0;
+        while (row++, curframe < numFrames) {
+            for (int col = 0; col < rowSize && curframe < numFrames; col++) {
+                Canvas frame(frameWidth, frameHeight);
+                Blitter::Blit(image, frame, -xpos, -ypos, Blitter::OpaqueBlend());
+                frames.push_back(frame);
+                
+                curframe++;
+
+                xpos += xstep;
+            }
+
+            xpos = pad ? 1 : 0;
+            ypos += ystep;
+        }
+
+        getSprite()->sendCommand(
+            new commands::ImportSpriteFramesCommand(
+                getSprite(),
+                frames,
+                getSprite()->getCount(),
+                importMode
+            )
+        );
     }
 }

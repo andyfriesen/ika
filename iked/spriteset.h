@@ -15,13 +15,13 @@ namespace iked {
         ~SpriteSet();
 
         virtual void save(const std::string& fileName);
-        virtual void sendCommand(commands::Command* cmd);
 
         virtual SpriteSet* asSpriteSet();
 
         void resize(int width, int height);
 
         CCHRfile& GetCHR() { return *chr; }
+
     protected:
         // ImageDocumentResource
         virtual int doGetCount();

@@ -3,7 +3,8 @@
 
 namespace iked { namespace commands {
 
-    struct CommandContext;
+    struct CommandContext {
+    };
 
     struct Command {
         virtual ~Command() {}

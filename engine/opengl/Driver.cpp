@@ -48,11 +48,13 @@ namespace OpenGL {
         // from this point, xres and yres are the physical resolution,
         // _xres and _yres are the virtual resolution
 
+        Log::Write("--Setting video mode");
         _screen = SDL_SetVideoMode(xres, yres, bpp, SDL_OPENGL | (fullScreen ? SDL_FULLSCREEN : 0));
         if (!_screen) {
             throw Video::Exception();
         }
 
+        Log::Write("--Initializing OpenGL");
         glShadeModel(GL_SMOOTH);
 
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -76,6 +78,7 @@ namespace OpenGL {
 
         glEnable(GL_TEXTURE_2D);
 
+        Log::Write("--Disabling cursor");
         SDL_ShowCursor(SDL_DISABLE);
 
 #ifdef WIN32
@@ -90,6 +93,7 @@ namespace OpenGL {
         }
 
         if (_doubleSize) {
+            Log::Write("--Generating doublesize buffer");
             glGenTextures(1, &_bufferTex);
         }
     }
