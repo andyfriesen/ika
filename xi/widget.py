@@ -129,6 +129,12 @@ class TextLabel(Widget):
 
         self.LeftJustify()
 
+    def __len__(self):
+        return len(self.text)
+
+    def __nonzero__(self):
+        return True
+
     def LeftJustify(self):
         self.PrintString = self.font.Print
 
@@ -147,8 +153,8 @@ class TextLabel(Widget):
         self.Clear()
         self.AddText(text)
 
-    def AddText(self, text):
-        for x in text.split('\n'):
+    def AddText(self, *text):
+        for x in text:
             self.text.append(x)
             self.width = max(self.width, self.font.StringWidth(x))
         self.AutoSize()
@@ -195,6 +201,12 @@ class ColumnedTextLabel(Widget):
         for i in range(columns):
             self.columns.append(TextLabel(font))
 
+    def __len__(self):
+        return len(self.columns[0])
+
+    def __nonzero__(self):
+        return True
+
     def LeftJustify(self):
         for c in self.columns:
             c.LeftJustify()
@@ -214,6 +226,7 @@ class ColumnedTextLabel(Widget):
     def AddText(self,*args):
         for i in range(min(len(args), len(self.columns))):
             self.columns[i].AddText(args[i])
+        self.AutoSize()
 
     def Draw(self, xoffset = 0, yoffset = 0):
         for c in self.columns:

@@ -20,7 +20,8 @@ import party
 
 class ItemMenu(object):
     def __init__(self):
-        self.menu = menu.Menu()
+        self.menu = menu.Menu(textcontrol = widget.ColumnedTextLabel(columns = 2))
+
         self.statbar = StatusBar()
         self.statbar.Update()
         self.statbar.AutoSize()
@@ -40,7 +41,7 @@ class ItemMenu(object):
         self.statbar.Update()
         self.menu.Clear()
         for itm in party.inv:
-            self.menu.AddText( '%s\t%i' % (itm.Name, itm.qty) )
+            self.menu.AddText(itm.Name, str(itm.qty) )
         self.menu.AutoSize()
 
 
@@ -63,5 +64,7 @@ class ItemMenu(object):
             
             if result is not None:
                 pass # Handle item use here
+
+        return True
 
 #--------------------------------------------

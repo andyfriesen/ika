@@ -25,11 +25,12 @@ def SetDefaultCursor(csr):
 
 class Menu(widget.Frame):
 	"A menu window.  Has a list of items that the user can select."
-	def __init__(self, x = 0 , y = 0, cursor = None):
+	def __init__(self, x = 0 , y = 0, cursor = None, textcontrol = None):
 		global defaultcursor
-		
+
 		widget.Frame.__init__(self)
-		self.menuitems = widget.TextLabel()
+		self.menuitems = textcontrol or widget.TextLabel()
+
 		self.menuitems.x = CURSOR_WIDTH
 		self.widgets.append(self.menuitems)
 		self.cursor = cursor or defaultcursor
@@ -45,15 +46,18 @@ class Menu(widget.Frame):
 		widget.Frame.Draw(self)
 
 		if self.active:
-			self.cursor.Draw(self.x+CURSOR_WIDTH, self.y + (self.cursory + 0.5) * self.menuitems.font.height)
-			#self.menuitems.font.Print(self.x,self.y+self.cursory*widget.defaultfont.height,'>')
+			self.cursor.Draw(self.x + CURSOR_WIDTH, self.y + (self.cursory + 0.5) * self.menuitems.font.height)
 
 	def Clear(self):
 		self.menuitems.Clear()
 
 	def AddText(self,*args):
-		self.menuitems.AddText('\n'.join(args))
+		self.menuitems.AddText(*args)
 		self.AutoSize()
+
+	def AutoSize(self):
+		self.menuitems.AutoSize()
+		widget.Frame.AutoSize(self)
 
 	def Update(self):
 		input.Update()
@@ -64,7 +68,7 @@ class Menu(widget.Frame):
 
 		if input.down:
 			input.down=0
-			if self.cursory<len(self.menuitems.text)-1:
+			if self.cursory<len(self.menuitems)-1:
 				self.cursory+=1
 
 		if input.enter:

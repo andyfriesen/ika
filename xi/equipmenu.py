@@ -23,10 +23,7 @@ from menuwindows import *
 
 class EquipItemList(Menu):
     def __init__(self):
-        Menu.__init__(self)
-        self.menuitems = widget.ColumnedTextLabel(columns = 2)
-        self.menuitems.Position = (20, 0)
-        self.widgets = [self.menuitems]
+        Menu.__init__(self, textcontrol = widget.ColumnedTextLabel(columns = 2))
         
     def Update(self,char):
         self.Clear()
@@ -35,7 +32,7 @@ class EquipItemList(Menu):
                 self.menuitems.AddText(i.Name, str(i.qty))
             else:
                 self.menuitems.AddText('~3' + i.Name, str(i.qty))
-        self.menuitems.AutoSize()
+                
         self.AutoSize()
 
 class EquipMenu(object):
@@ -45,7 +42,6 @@ class EquipMenu(object):
         self.statwindow = StatusWindow()
         self.itemlist = EquipItemList()
         self.charidx = 0
-
 
     def Refresh(self, char):
         for x in (self.equipwindow, self.portraitwindow, self.statwindow, self.itemlist):
@@ -88,58 +84,10 @@ class EquipMenu(object):
             ika.ShowPage()
 
             result = states[curstate]()
+
+            if input.cancel:
+                break
             if result is not None:
                 break
-            
+
         return True
-"""
-def GenerateEquipMenu(curchar):
-    window=Menu()
-    
-    for slotname in curchar.equip:
-        eq=curchar.equip[slotname]
-        if eq:
-            name = eq.name
-        else:
-            name = '';
-        window.AddText(slotname.capitalize() + ':\t' + name)
-        
-    window.AutoSize()
-    
-    return window
-
-def Execute():
-    charidx=0
-    char = party.party[charidx]
-
-    portraitwindow = PortraitWindow()
-    statwindow = StatusWindow()
-    equipwindow = EquipWindow()
-
-    for wnd in (portraitwindow, statwindow, equipwindow):
-        wnd.Update(party.party[charidx])
-
-    itemmenu=Menu(equipmenu.x+equipmenu.width+16,20)
-    UpdateItemMenu(itemmenu)
-    itemmenu.AutoSize()
-
-    active=equipmenu
-
-    while 1:
-        result = active.Update()
-
-        if result is not None:
-            break
-
-        map.Render()
-
-        for x in (statwindow, portraitwindow, equipwindow, itemmenu):
-            hx.Draw()
-        
-        ShowPage()
-        input.Update()
-
-    input.Update()
-    input.enter = 0
-    return 1
-"""

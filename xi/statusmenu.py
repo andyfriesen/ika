@@ -62,4 +62,4 @@ def Execute():
 			input.enter=input.cancel=0
 			break
 
-	return 1
+	return True

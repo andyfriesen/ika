@@ -62,7 +62,8 @@ class MainMenu(StatelessProxy):
 			
 			elif result != None:
 				result = self.submenu[result]()
-				ika.input.enter = 0				
+				ika.input.enter = 0
+				ika.input.cancel = 0
 				if not result:
 					break
 
