@@ -115,4 +115,4 @@ class Menu(widget.Frame):
                 return result
                 
             self.Draw()
-            ika.ShowPage()
+            ika.Video.ShowPage()

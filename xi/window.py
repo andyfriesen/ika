@@ -80,3 +80,16 @@ class SimpleWindow(object):
     def Draw(_, x1, y1, x2, y2):
         ika.Video.DrawRect(x1, y1, x2, y2, _.__bg, True)
         ika.Video.DrawRect(x1, y1, x2, y2, _.__border, False)
+
+#--------------------------------------------------------------------
+
+class GradientWindow(object):
+    def __init__(_, c1, c2, c3, c4):
+        _.c1 = c1
+        _.c2 = c2
+        _.c3 = c3
+        _.c4 = c4
+
+    def Draw(_, x1, y1, x2, y2):
+        ika.Video.DrawTriangle((x1, y1, _.c1), (x2, y1, _.c2), (x2, y2, _.c3))
+        ika.Video.DrawTriangle((x2, y2, _.c3), (x1, y2, _.c4), (x1, y1, _.c1))

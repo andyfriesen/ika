@@ -96,7 +96,7 @@ class MainMenu(StatelessProxy):
         while not done:
             ika.Map.Render()
             self.Draw()
-            ika.ShowPage()
+            ika.Video.ShowPage()
             
             result = self.Update()
 

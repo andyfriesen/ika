@@ -60,9 +60,9 @@ def AddCharacter(name,datname=''):
         ika.SetPlayer(player)
     else:
         chars[name].Spawn(player.x,player.y)
-        chars[name].ent.Chase(player,24)
+        chars[name].ent.Chase(party[-2].ent, 24) # chase the one ahead
         chars[name].ent.isobs = False
-        chars[name].ent.mapobs = False
+        #chars[name].ent.mapobs = False
         chars[name].ent.entobs = False
 
 #------------------------------------------------------------------------------
@@ -75,13 +75,13 @@ def RemoveChar(name):
         return
 
     if len(party) > 0:
-        del party[0].ent        		# kill off the entity
-        if party[0] == chars[name]:   		# are we killing off the leader?
+        del party[0].ent        		        # kill off the entity
+        if party[0] == chars[name]:   		    # are we killing off the leader?
             party[1].Spawn(player.x,player.y) 	# create the new leader
             player = party[1].ent
 
         party.remove(chars[name])
-
+        FixFollowChain()
 
 #------------------------------------------------------------------------------
 
@@ -119,3 +119,7 @@ def PartyMove(movescript):
 
 #------------------------------------------------------------------------------
 
+def FixFollowChain():
+    'Sets each party member to follow the one ahead.'
+    for i in range(1, len(party)):
+        party[i].ent.Chase(party[i-1].ent, followdist)

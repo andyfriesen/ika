@@ -118,7 +118,7 @@ def MainLoop():
                 
         ika.map.Render()
         trans.Draw()
-        ika.ShowPage()
+        ika.Video.ShowPage()
         ika.input.Update()       
 
 def Battle(*args):

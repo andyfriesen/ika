@@ -102,7 +102,7 @@ class Transition(StatelessProxy):
             _.Update(dt)
             _.Draw()
             
-            ika.ShowPage()
+            ika.Video.ShowPage()
             while t == ika.GetTime():
                 ika.Input.Update()
             

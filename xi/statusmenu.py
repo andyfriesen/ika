@@ -77,7 +77,7 @@ class StatusMenu(object):
             for x in (_.equipwindow, _.statwindow, _.statbar, _.portraitwindow, _.skillwindow):
                 x.Draw()
                 
-            ika.ShowPage()
+            ika.Video.ShowPage()
     
             ika.Input.Update()
             if left() and curchar > 0:

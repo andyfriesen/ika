@@ -42,4 +42,4 @@ def Text(text, portrait = None, font = None, wnd = None):
             font.Print(x1, y, s)
             y += font.height
         
-        ika.ShowPage()
+        ika.Video.ShowPage()

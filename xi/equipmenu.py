@@ -142,7 +142,7 @@ class EquipMenu(object):
             for x in (_.equipwindow, _.portraitwindow, _.statwindow, _.itemlist, _.statbar, _.description):
                 x.Draw()
 
-            ika.ShowPage()
+            ika.Video.ShowPage()
 
             result = _.state()
 

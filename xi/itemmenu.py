@@ -69,7 +69,7 @@ class ItemMenu(object):
             ika.Map.Render()
             for x in (_.menu, _.statbar, _.description):
                 x.Draw()
-            ika.ShowPage()
+            ika.Video.ShowPage()
 
             result = _.menu.Update()
             if result == -1:

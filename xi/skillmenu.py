@@ -106,7 +106,7 @@ class SkillMenu(object):
             for x in (_.skillwindow, _.portraitwindow, _.statwindow, _.statbar, _.description):
                 x.Draw()
 
-            ika.ShowPage()
+            ika.Video.ShowPage()
 
             result = curstate()
 
