@@ -3,7 +3,7 @@
 #include "common/log.h"
 
 #include "common/fileio.h"
-#include "common/misc.h"
+#include "common/utility.h"
 #include "sound.h"
 
 namespace Script

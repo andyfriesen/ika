@@ -94,6 +94,8 @@ struct Map
         std::vector<Entity> entities;
         std::vector<Zone> zones;
 
+        RGBA tintColour;
+
         // TODO:
         // std::vector<LineSegments> obstructionVectors;
 

@@ -9,7 +9,7 @@
 #include "Image.h"
 
 #include "common/types.h"
-#include "common/misc.h"
+#include "common/utility.h"
 #include "common/Canvas.h"
 #include "common/log.h"
 
@@ -216,7 +216,7 @@ namespace OpenGL
 
             src.Flip(); // GAY
 
-            if (IsPowerOf2(src.Width()) && IsPowerOf2(src.Height()))
+            if (isPowerOf2(src.Width()) && isPowerOf2(src.Height()))
             {
                 dealloc = false;    // perfect match
                 pixels = src.GetPixels();
@@ -326,8 +326,8 @@ namespace OpenGL
             // pixel/screen space arithmatic that isn't needed.
 
             glDisable(GL_BLEND);
-            uint texW = NextPowerOf2(_xres);
-            uint texH = NextPowerOf2(_yres);
+            uint texW = nextPowerOf2(_xres);
+            uint texH = nextPowerOf2(_yres);
             SwitchTexture(_bufferTex);
             glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, _yres, texW, texH, 0);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -752,8 +752,8 @@ namespace OpenGL
         if (_doubleSize)
             y2 -= _yres;
 
-        uint texwidth = NextPowerOf2(w);
-        uint texheight = NextPowerOf2(h);
+        uint texwidth = nextPowerOf2(w);
+        uint texheight = nextPowerOf2(h);
         uint handle;
         glGenTextures(1, &handle);
         SwitchTexture(handle);

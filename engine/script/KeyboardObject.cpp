@@ -1,7 +1,7 @@
 #include "ObjectDefs.h"
 #include "input.h"
 #include "keyboard.h"
-#include "common/misc.h"
+#include "common/utility.h"
 
 #include <cassert>
 

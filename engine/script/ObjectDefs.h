@@ -376,6 +376,8 @@ namespace Script
         METHOD(Map_SetZone, PyObject);
         METHOD(Map_GetLayerName, PyObject);
         METHOD(Map_SetLayerName, PyObject);
+        METHOD(Map_GetLayerTintColour, PyObject);
+        METHOD(Map_SetLayerTintColour, PyObject);
         METHOD(Map_FindLayerByName, PyObject);
         METHOD(Map_GetParallax, PyObject);
         METHOD(Map_SetParallax, PyObject);

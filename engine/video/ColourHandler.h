@@ -2,7 +2,7 @@
 #define COLOUR_HANDLER_H
 
 #include "common/types.h"
-#include "common/misc.h"
+#include "common/utility.h"
 #include <map>
 
 class ColourHandler
