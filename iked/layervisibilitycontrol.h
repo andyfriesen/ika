@@ -1,5 +1,5 @@
 
-#pragma warning (disable:4786)
+#include "types.h"
 
 #include "wx/wx.h"
 #include "wx/checklst.h"
@@ -22,8 +22,6 @@ public:
     void AppendItem(const std::string& name, int idx);
     void CheckItem(int idx);
 
-    void OnDrag(wxListEvent& event);
-    void OnEndDrag(wxListEvent& event);
     void OnItemSelected(wxCommandEvent& event);
     void OnKeyDown(wxListEvent& event);
     void OnItemChecked(wxCommandEvent& event);

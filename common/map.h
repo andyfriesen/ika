@@ -194,7 +194,7 @@ private:
     int             nStartx, nStarty;                        // unused (TODO: expose these to the scripter)
     bool            bWrap;                                  // unused for now
     
-    void Paste(MapClip &mc, int xs, int ys, int sourcelayer, int destlayer, bool transparent);
+    void Paste(const MapClip &mc, int xs, int ys, int sourcelayer, int destlayer, bool transparent);
     
     bool Importv2Map(File& f);                              // Loads an old v2 VSP.
 public:
@@ -202,9 +202,9 @@ public:
     Map(const char* fname);
     ~Map();
     
-    u32  GetTile(int x, int y, int layer);                    // returns the tile at the specified layer
-    void SetTile(int x, int y, int layer, u32 tile);           // sets the tile at the specified layer
-    u32* GetDataPtr(int layer);                             // returns a pointer to the raw tile data (BE CAREFUL WITH THIS!  YOU CAN BREAK THINGS!)
+    u32  GetTile(int x, int y, int layer) const;             // returns the tile at the specified layer
+    void SetTile(int x, int y, int layer, u32 tile);        // sets the tile at the specified layer
+    u32* GetDataPtr(int layer) const;                       // returns a pointer to the raw tile data (BE CAREFUL WITH THIS!  YOU CAN BREAK THINGS!)
     
     void Free();                                            // cleanup
     void New();                                             // creates a new 100x100, 1 layer map
@@ -213,11 +213,11 @@ public:
     bool Exportv2Map(const char* fname);
     
     // layer manipulation
-    void Resize(int newx, int newy);                         // resizes all layers and all that
-    int  NumLayers();                                       // returns the number of layers the map uses
+    void Resize(int newx, int newy);                        // resizes all layers and all that
+    int  NumLayers() const;                                 // returns the number of layers the map uses
     void AddLayer(int pos);                                 // inserts a layer before pos
     void DeleteLayer(int pos);                              // deletes the pos - th layer
-    void GetLayerInfo(SMapLayerInfo& nfo, int layidx);       // fills nfo with information about the specified layer
+    void GetLayerInfo(SMapLayerInfo& nfo, int layidx);      // fills nfo with information about the specified layer
     void SetLayerInfo(const SMapLayerInfo&  nfo, int layidx);// sets the properties of the specified layer according to nfo
     
     // General map properties
@@ -264,9 +264,9 @@ public:
     int  Width() { return nWidth; }                         // returns the width of the map (in tiles)
     int  Height() { return nHeight; }                       // returns the hieght of the map (in tiles)
     
-    void Copy(MapClip& mc, Rect r, int layer);                // copies part of one layer to the clip
-    void Copy(MapClip& mc, Rect r);                          // copies a chunk from all visible layers onto the map clip
-    void Paste(MapClip& mc, int x, int y, int destlayer);      // mega - copier.
+    void Copy(MapClip& mc, Rect r, int layer) const;        // copies part of one layer to the clip
+    void Copy(MapClip& mc, Rect r) const;                   // copies a chunk from all visible layers onto the map clip
+    void Paste(const MapClip& mc, int x, int y, int destlayer);      // mega - copier.
 };
 
 #endif

@@ -49,7 +49,11 @@ bool CApp::OnInit()
     SetTopWindow(mainwnd);
 
     wxXmlResource::Get()->InitAllHandlers();
+#if 0 && defined(DEBUG)
+    wxXmlResource::Get()->Load("resource.xrc");
+#else
     InitXmlResource();
+#endif
   
     return TRUE;
 }
@@ -153,6 +157,8 @@ void CMainWnd::NewSprite(wxCommandEvent& event)
 void CMainWnd::NewTileSet(wxCommandEvent& event)
 {
     NewSpriteDlg dlg(this);
+    dlg.SetTitle("New Tileset");
+
     if (dlg.ShowModal() == wxID_OK)
         OpenDocument(new CTileSetView(this, dlg.width, dlg.height));
 }
@@ -199,7 +205,7 @@ void CMainWnd::OnSize(wxSizeEvent& event)
 
 void CMainWnd::OnQuit(wxCloseEvent& event)
 {
-    for (std::set < IDocView*>::iterator i = pDocuments.begin(); i!=pDocuments.end(); i++)
+    for (std::set<IDocView*>::iterator i = pDocuments.begin(); i!=pDocuments.end(); i++)
     {
         IDocView* pDoc=*i;
         pDoc->Close();
@@ -214,7 +220,7 @@ void CMainWnd::OnQuit(wxCloseEvent& event)
 void CMainWnd::Open(const std::string& fname)
 {
     // First, see if the document is already open
-    for (std::set < IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+    for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
     {
         // FIXME?  Windows filenames are not case sensitive.
         if (Path::Compare((*i)->GetFileName(), fname))
@@ -272,7 +278,7 @@ void CMainWnd::OpenDocument(IDocView* newwnd)
 
 IDocView* CMainWnd::FindWindow(const void* rsrc) const
 {
-    for (std::set < IDocView*>::const_iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+    for (std::set<IDocView*>::const_iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
         if ((*i)->GetResource() == rsrc)
             return *i;
 

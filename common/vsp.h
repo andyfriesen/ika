@@ -56,7 +56,7 @@ private:
     
     vector<AnimState>  vspanim;
     
-    int nTilex, nTiley;
+    int _width, _height;
     
 public:
     VSP();
@@ -83,8 +83,8 @@ public:
 
     Canvas& GetTile(uint tileidx);
 
-    inline int Width() const { return nTilex; }
-    inline int Height() const { return nTiley; }
+    inline int Width() const { return _width; }
+    inline int Height() const { return _height; }
     inline uint NumTiles() const { return tiles.size(); }
     
     inline const char* Name() const { return (const char*)name; }

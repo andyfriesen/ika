@@ -16,6 +16,8 @@
 #include "zoneeditor.h"
 #include "tilesetview.h"
 #include "vsp.h"
+#include "clipboard.h"
+
 #include <gl\glu.h>
 
 /*
@@ -140,11 +142,16 @@ namespace
         id_filesaveas,
         id_fileclose,
 
+        id_goprevtile,
+        id_gonexttile,
         id_mapentities,
         id_mapzones,
         id_newlayer,
         id_tileset,
-        id_script
+        id_script,
+
+        id_movelayerup,
+        id_movelayerdown,
     };
 };
 
@@ -160,6 +167,8 @@ BEGIN_EVENT_TABLE(CMapView, wxMDIChildFrame)
     EVT_MENU(id_zoomout2x, CMapView::OnZoomOut2x)
     EVT_MENU(id_zoomout4x, CMapView::OnZoomOut4x)
 
+    EVT_MENU(id_goprevtile, CMapView::GoPrevTile)
+    EVT_MENU(id_gonexttile, CMapView::GoNextTile)
     EVT_MENU(id_mapentities, CMapView::OnShowEntityEditor)
     EVT_MENU(id_mapzones, CMapView::OnShowZoneEditor)
     EVT_MENU(id_newlayer, CMapView::OnNewLayer)
@@ -182,7 +191,6 @@ END_EVENT_TABLE()
 CMapView::CMapView(CMainWnd* parent, int width, int height, const string& tilesetname)
     : IDocView(parent, "")
     , pParentwnd(parent)
-    , nZoom(16)
 {
     pMap = new Map;
     pMap->Resize(width, height);
@@ -194,7 +202,6 @@ CMapView::CMapView(CMainWnd* parent, int width, int height, const string& tilese
 CMapView::CMapView(CMainWnd* parent, const string& name)
     : IDocView(parent, name)
     , pParentwnd(parent)
-    , nZoom(16)
 {
     pMap = pParentwnd->map.Load(name);    
     Init();
@@ -205,9 +212,11 @@ void CMapView::InitAccelerators()
     vector<wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
-    accel.resize(accel.size()+4);
+    accel.resize(accel.size()+6);
 
     accel[p++].Set(wxACCEL_CTRL, (int)'S', id_filesave);
+    accel[p++].Set(0, (int)'[', id_gonexttile);
+    accel[p++].Set(0, (int)']', id_goprevtile);
     accel[p++].Set(0, (int)'+', id_zoomin);
     accel[p++].Set(0, (int)'-', id_zoomout);
     accel[p++].Set(0, (int)'=', id_zoomnormal);
@@ -248,6 +257,9 @@ void CMapView::InitMenu()
     //--
 
     wxMenu* mapmenu = new wxMenu;
+    mapmenu->Append(id_goprevtile, "&Previous Tile\t[", "");
+    mapmenu->Append(id_gonexttile, "&Next Tile\t]", "");
+    mapmenu->AppendSeparator();
 
     mapmenu->Append(id_tileset, "&Tileset");
     mapmenu->Append(id_script, "&Script");
@@ -274,7 +286,22 @@ void CMapView::Init()
     pLeftbar->SetDefaultSize(wxSize(100, 100));
     pLeftbar->SetSashVisible(wxSASH_RIGHT, true);
 
-    pLayerlist = new CLayerVisibilityControl(pLeftbar, -1, this);
+    wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
+        pLayerlist = new CLayerVisibilityControl(pLeftbar, -1, this);
+        pLayerlist->SetSize(200,200);
+        mainSizer->Add(pLayerlist, 1, wxALL | wxEXPAND, 10);
+        
+        wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
+
+            sizer->Add(new wxButton(pLeftbar, id_movelayerup, "^"), 0, wxALL);
+            sizer->Add(new wxButton(pLeftbar, id_movelayerdown, "v"), 0, wxALL);
+
+        mainSizer->Add(sizer, 0, wxALIGN_CENTER);
+    
+    pLeftbar->SetSizer(mainSizer);
+    mainSizer->SetSizeHints(pLeftbar);
+
+    mainSizer->RecalcSizes();
 
     // Right side -- Map view
     pRightbar = new CMapSash(this, -1);
@@ -320,7 +347,7 @@ void CMapView::Init()
     InitMenu();
 
     nCurlayer = 0;
-    //csrmode = mode_select;
+    //csrmode = mode_copy;
     csrmode = mode_normal;
     _selection = Rect(5, 2, 8, 12);
 
@@ -328,6 +355,7 @@ void CMapView::Init()
     _zoneeditor = new ZoneEditor(this, pMap);
 
     Show();
+    SetFocus();
 }
 
 void CMapView::Paint()
@@ -450,14 +478,32 @@ const void* CMapView::GetResource() const
     return pMap;
 }
 
+void CMapView::GoPrevTile(wxEvent&)
+{
+    int t = pTileset->CurTile() + 1;
+    pTileset->SetCurTile(t % pTileset->Count());
+    // And redraw the tileset window, if one is open.
+    CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(pTileset);
+    if (tsv)    tsv->Render();
+}
+
+void CMapView::GoNextTile(wxEvent&)
+{
+    int t = pTileset->CurTile() + pTileset->Count() - 1;    // This is just a cheap way to do wrap - around.
+    pTileset->SetCurTile(t % pTileset->Count());        
+    // And redraw the tileset window, if one is open.
+    CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(pTileset);
+    if (tsv)    tsv->Render();
+}
+
 void CMapView::Zoom(int nZoomscale)
 {
-    nZoom = pGraph->Zoom() - nZoomscale;
+    int zoom = pGraph->Zoom() - nZoomscale;
 
-    if (nZoom < 1) nZoom = 1;
-    if (nZoom > 255) nZoom = 255;
+    if (zoom < 1) zoom = 1;
+    if (zoom > 255) zoom = 255;
 
-    pGraph->Zoom(nZoom);
+    pGraph->Zoom(zoom);
 
     UpdateScrollbars();
     Render();   pGraph->ShowPage();
@@ -469,7 +515,7 @@ void CMapView::OnZoomIn2x(wxCommandEvent& event)  { Zoom(2);  }
 void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
 void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
 void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
-void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(nZoom - 16); }  // >:D
+void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(pGraph->Zoom() - 16); }  // >:D
 
 void CMapView::OnShowEntityEditor(wxCommandEvent& event)
 {
@@ -513,6 +559,18 @@ void CMapView::ScreenToMap(int& x, int& y)
     y+=(ywin * l.pmuly / l.pdivy);
 }
 
+void CMapView::MapToTile(int& x, int& y)
+{
+    x /= pTileset->Width();
+    y /= pTileset->Height();
+}
+
+void CMapView::ScreenToTile(int& x, int& y)
+{
+    ScreenToMap(x, y);
+    MapToTile(x, y);
+}
+        
 void CMapView::LayerEdit(wxMouseEvent& event)
 {
     if (
@@ -566,16 +624,61 @@ void CMapView::HandleMouse(wxMouseEvent& event)
     switch (csrmode)
     {
     case mode_normal:
-        LayerEdit(event);
+        if (event.ControlDown() && event.LeftDown())
+        {
+            _selection.left = event.GetPosition().x;
+            _selection.top = event.GetPosition().y;
+            ScreenToTile(_selection.left, _selection.top);
+            csrmode = mode_copy;
+        }
+        else if (event.ControlDown() && event.RightDown())
+            csrmode = mode_paste;
+        else
+            LayerEdit(event);
         break;
 
-    case mode_select:
+    case mode_copy:
         {
             _selection.right = event.GetPosition().x;
             _selection.bottom = event.GetPosition().y;
-            ScreenToMap(_selection.right, _selection.bottom);
-            _selection.right /= pTileset->Width();
-            _selection.bottom /= pTileset->Height();
+            ScreenToTile(_selection.right, _selection.bottom);
+
+            if (!event.LeftIsDown())            // Left mouse button released - copy it
+            {
+                _selection.right++;
+                _selection.bottom++;
+                _selection.Normalize();
+
+                MapClip mc;
+                pMap->Copy(mc, _selection, nCurlayer);
+                Clipboard::Set(mc);
+                csrmode = mode_normal;
+            }
+            else if (event.RightDown() || !event.ControlDown())         // Right mouse button, or control key released - cancel
+                csrmode = mode_normal;
+
+            Render();
+            pGraph->ShowPage();
+            break;
+        }
+
+    case mode_paste:
+        {
+            const MapClip& mc = Clipboard::GetMap();
+            _selection.left = event.GetPosition().x;
+            _selection.top = event.GetPosition().y;
+            ScreenToTile(_selection.left, _selection.top);
+            _selection.right = _selection.left + mc.Width() - 1;
+            _selection.bottom = _selection.top + mc.Height() - 1;
+
+            if (event.RightUp())
+            {
+                pMap->Paste(mc, _selection.left, _selection.top, nCurlayer);
+                csrmode = mode_normal;
+            }
+            else if (event.LeftDown() || !event.ControlDown())
+                csrmode = mode_normal;
+
             Render();
             pGraph->ShowPage();
             break;
@@ -599,16 +702,8 @@ void CMapView::HandleMouseWheel(wxMouseEvent& event)
     }
     else
     {
-        // Change the current tile
-
-        int t = pTileset->CurTile() + pTileset->Count();    // add the tile count so that we don't go negative
-        if (delta > 0)  t++;
-        else            t--;
-        pTileset->SetCurTile(t % pTileset->Count());        // then drop it.  This is just a cheap way to do wrap - around.
-
-        // And redraw the tileset window, if one is open.
-        CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(pTileset);
-        if (tsv)    tsv->Render();
+        if (delta > 0)  GoNextTile(event);
+        else            GoPrevTile(event);
     }
 }
 
@@ -716,10 +811,11 @@ void CMapView::Render()
     if (nLayertoggle[lay_zone])
         RenderInfoLayer(lay_zone);
  
-//    RenderSelectionRect();
+    if (csrmode == mode_copy || csrmode == mode_paste)
+        RenderSelectionRect();
 }
 
-typedef std::pair < SMapEntity*, CSpriteSet*> EntSpritePair;
+typedef std::pair<SMapEntity*, CSpriteSet*> EntSpritePair;
 typedef std::list<EntSpritePair> EntRenderList;
 
 void CMapView::RenderEntities()
@@ -885,6 +981,7 @@ void CMapView::RenderSelectionRect()
     r.left *= pTileset->Width();
     r.bottom = (r.bottom + 1) * pTileset->Height();
     r.right = (r.right + 1) * pTileset->Width();
+    RGBA colour = csrmode == mode_copy ? RGBA(255, 255, 255) : RGBA(255, 0, 0);
 
-    pGraph->Rect(r.left - xwin, r.top - ywin, r.Width(), r.Height(), RGBA(255, 255, 255));
+    pGraph->Rect(r.left - xwin, r.top - ywin, r.Width(), r.Height(), colour);
 }

@@ -49,7 +49,7 @@ public:
 
 class CMainWnd : public wxMDIParentFrame
 {
-    std::set < IDocView*> pDocuments;
+    std::set<IDocView*> pDocuments;
     ProjectView* _project;
 
 public:    
@@ -78,11 +78,10 @@ public:
     void OnChildClose(IDocView* child);
 
     wxMenuBar*  CreateBasicMenu();
-/*
 
+/*
     This is technically wrong, as std::vector doesn't stipulate that the entries be sequential.
     It merely promises random access at O(1).  Fix if it becomes an issue. (unlikely)
-
 */
     vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
 

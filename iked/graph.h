@@ -30,7 +30,7 @@ class CGraphFrame : public wxGLCanvas
         there is no context, things might get icky.  However, this does not make sense, as CImages exist
         only so that they may be blitted on CGraphFrames.  Just something to keep in mind.
     */
-    static std::set < CGraphFrame*>  pInstances;
+    static std::set<CGraphFrame*>  pInstances;
 
     // The GraphFrame does its own zooming.  Everything possible is done to make this invisible to the parent window.
     int nZoom;

@@ -140,30 +140,6 @@ namespace Script
 
     // video
 
-    METHOD(std_showpage)
-    {
-        if (!PyArg_ParseTuple(args, ""))
-            return NULL;
-
-        engine->video->ShowPage();
-
-        Py_INCREF(Py_None);
-        return Py_None;
-    }
-
-    METHOD(std_palettemorph)
-    {
-        int r=255, g=255, b=255;
-
-        if (!PyArg_ParseTuple(args, "|iii:PaletteMorph", &r, &g, &b))
-            return NULL;
-
-        //    gfxPaletteMorph(r, g, b);
-
-        Py_INCREF(Py_None);
-        return Py_None;
-    }
-
     METHOD(std_getrgb)
     {
         int colour;
@@ -483,13 +459,6 @@ namespace Script
         },
 
         // Video
-        { "ShowPage",       (PyCFunction)std_showpage,          METH_VARARGS,
-            "ShowPage()\n\n"
-            "Flips the back and front video buffers.  This must be called after the screen\n"
-            "has been completely drawn, or the scene will never be presented to the player.\n"
-            "This method is not guaranteed to preserve the contents of the screen, so it is\n"
-            "advised to dedraw the entire screen, instead of incrementally drawing."
-        },
 
         { "RGB",            (PyCFunction)std_rgb,               METH_VARARGS,
             "RGB(r, g, b[, a]) -> int\n\n"

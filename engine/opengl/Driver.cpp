@@ -34,6 +34,9 @@ namespace OpenGL
         glEnable(GL_SCISSOR_TEST);
 
         glEnable(GL_TEXTURE_2D);
+
+        if (fullscreen)
+            SDL_ShowCursor(SDL_DISABLE);
     }
 
     Driver::~Driver()
@@ -213,6 +216,8 @@ namespace OpenGL
             glBegin(GL_QUADS);
         else
             glBegin(GL_LINE_LOOP);
+
+        x2++; y2++;
 
         glVertex2i(x1, y1);
         glVertex2i(x2, y1);

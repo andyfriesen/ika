@@ -54,7 +54,8 @@ class CMapView : public IDocView
     enum CursorMode
     {
         mode_normal,
-        mode_select,
+        mode_copy,
+        mode_paste,
         // copy / paste / etc...
     };
 
@@ -78,8 +79,6 @@ private:
 
     std::vector<CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
 
-    int  nZoom;                                                     // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
-
     Rect _selection;
 
 public:
@@ -99,6 +98,9 @@ public:
     void OnSaveAs(wxCommandEvent& event);
 
     virtual const void* GetResource() const;
+
+    void GoNextTile(wxEvent&);
+    void GoPrevTile(wxEvent&);
 
     void OnZoomIn(wxCommandEvent& event);
     void OnZoomOut(wxCommandEvent& event);
@@ -138,6 +140,8 @@ private:
     std::map < int, int> nLayertoggle;
 
     void ScreenToMap(int& x, int& y);
+    void MapToTile(int& x, int& y);
+    void ScreenToTile(int& x, int& y);
     void LayerEdit(wxMouseEvent& event);
     void HandleMouse(wxMouseEvent& event);
     void HandleMouseWheel(wxMouseEvent& event);

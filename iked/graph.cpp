@@ -3,6 +3,7 @@
 #include "log.h"
 
 static const int nZoomscale = 16;
+static int numImages = 0;
 
 //-------------------------------------------------------
 
@@ -25,7 +26,7 @@ static void SetTex(uint tex)
     last = tex;
 }
 
-std::set < CGraphFrame*> CGraphFrame::pInstances;
+std::set<CGraphFrame*> CGraphFrame::pInstances;
 
 CGraphFrame::CGraphFrame(wxWindow* parent)
 :   wxGLCanvas(parent, pInstances.empty() ? (wxGLCanvas*)0 : *pInstances.begin()), nZoom(16)
@@ -60,6 +61,7 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
 CGraphFrame::~CGraphFrame()
 {
     pInstances.erase(this);
+    Log::Write("%i images", numImages);
 }
 
 void CGraphFrame::OnSize(wxSizeEvent& event)
@@ -185,12 +187,12 @@ void CGraphFrame::ShowPage()
 
 int CGraphFrame::LogicalWidth() const
 {
-    return GetClientSize().GetWidth()*nZoom / nZoomscale;
+    return GetClientSize().GetWidth() * nZoom / nZoomscale;
 }
 
 int CGraphFrame::LogicalHeight() const
 {
-    return GetClientSize().GetHeight()*nZoom / nZoomscale;
+    return GetClientSize().GetHeight() * nZoom / nZoomscale;
 }
 
 int CGraphFrame::Zoom() const
@@ -207,11 +209,13 @@ CImage::CImage(const Canvas& src)
 {
     glGenTextures(1, &hTex);
     Update(src);
+    numImages++;
 }
 
 CImage::~CImage()
 {
     glDeleteTextures(1, &hTex);
+    numImages--;
 }
 
 void CImage::Update(const Canvas& src)

@@ -22,7 +22,6 @@ class CTileSetView : public IDocView
     bool bPad;                                      // pixel padding on / off
 
     int nTile;                                      // used for the context menu; the tile index of the tile that was right - clicked
-    int zoom;                                       // zoom scale.  16 is normal.  1 is 1 / 16th scale.
 
 public:
     CTileSetView(CMainWnd* parentwnd, const string& fname);
@@ -53,6 +52,11 @@ public:
     void OnImportTiles(wxCommandEvent&);
 
     void Zoom(int factor);
+    void OnCutTile(wxCommandEvent&);
+    void OnCopyTile(wxCommandEvent&);
+    void OnInsertTile(wxCommandEvent&);
+    void OnPasteOver(wxCommandEvent&);
+    void OnInsertAndPaste(wxCommandEvent&);
     void OnEditTile(wxCommandEvent&);
     void OnZoomNormal(wxCommandEvent&);
     void OnZoomIn(wxCommandEvent&);

@@ -68,6 +68,14 @@ namespace Script
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
 
+            {   "ShowPage",     (PyCFunction)Video_ShowPage, METH_NOARGS,
+                "Video.ShowPage()\n\n"
+                "Flips the back and front video buffers.  This must be called after the screen\n"
+                "has been completely drawn, or the scene will never be presented to the player.\n"
+                "This method is not guaranteed to preserve the contents of the screen, so it is\n"
+                "advised to dedraw the entire screen, instead of incrementally drawing."
+            },
+
             {   0   }
         };
 
@@ -113,6 +121,7 @@ namespace Script
         }
 
 #define METHOD(x) PyObject* x(VideoObject* self,PyObject* args)
+#define METHOD1(x) PyObject* x(VideoObject* self)
 
         METHOD(Video_Blit)
         {
@@ -254,6 +263,25 @@ namespace Script
             Py_INCREF(Py_None);
             return Py_None;
         }
+
+        METHOD1(Video_ShowPage)
+        {
+            self->video->ShowPage();
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        /*METHOD(std_palettemorph)
+        {
+            int r=255, g=255, b=255;
+
+            if (!PyArg_ParseTuple(args, "|iii:PaletteMorph", &r, &g, &b))
+                return NULL;
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }*/
 
 #undef METHOD
     }

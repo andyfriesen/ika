@@ -222,6 +222,7 @@ namespace Script
         METHOD(Video_DrawRect, VideoObject);
         METHOD(Video_DrawEllipse, VideoObject);
         METHOD(Video_DrawTriangle, VideoObject);
+        METHOD1(Video_ShowPage, VideoObject);
 
         void Init();
         PyObject* New(::Video::Driver* v);

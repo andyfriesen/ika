@@ -363,7 +363,7 @@ void CSpriteSetView::OnImportFrames(wxCommandEvent& event)
         }
     }
 
-    for (int i = 0; i < frames.size(); i++)
+    for (uint i = 0; i < frames.size(); i++)
         _sprite->AppendFrame(frames[i]);
 }
 

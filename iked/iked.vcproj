@@ -57,8 +57,7 @@
 				Name="VCPostBuildEventTool"/>
 			<Tool
 				Name="VCPreBuildEventTool"
-				Description="Building Resources"
-				CommandLine="c:\wx2\contrib\utils\wxrc\wxrc.exe -c resource.xrc"/>
+				ExcludedFromBuild="TRUE"/>
 			<Tool
 				Name="VCPreLinkEventTool"/>
 			<Tool
@@ -138,6 +137,9 @@
 			Name="Source"
 			Filter="*.cpp">
 			<File
+				RelativePath="clipboard.cpp">
+			</File>
+			<File
 				RelativePath=".\codeview.cpp">
 			</File>
 			<File
@@ -213,6 +215,9 @@
 		<Filter
 			Name="Headers"
 			Filter="*.h">
+			<File
+				RelativePath="clipboard.h">
+			</File>
 			<File
 				RelativePath=".\codeview.h">
 			</File>
@@ -366,10 +371,19 @@
 			Name="Resources"
 			Filter="">
 			<File
+				RelativePath=".\colours.bmp">
+			</File>
+			<File
 				RelativePath=".\folder.ico">
 			</File>
 			<File
+				RelativePath="folderopen.ico">
+			</File>
+			<File
 				RelativePath=".\font.ico">
+			</File>
+			<File
+				RelativePath="iked.ico">
 			</File>
 			<File
 				RelativePath=".\iked.rc">
@@ -399,15 +413,6 @@
 				RelativePath=".\vsp.ico">
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\colours.bmp">
-		</File>
-		<File
-			RelativePath="folderopen.ico">
-		</File>
-		<File
-			RelativePath="iked.ico">
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -5,7 +5,11 @@
 #ifndef TYPES_H
 #define TYPES_H
 
-#pragma warning (disable:4786)                      // identifier too long (stupid compiler)
+#ifdef MSVC6
+#  pragma warning (disable:4786)                      // identifier too long (stupid compiler)
+// Fix broken for loop scoping in VC6
+#  define for if (0); else for                        
+#endif
 
 #include <vector>
 #include <string>
@@ -19,11 +23,6 @@ typedef unsigned int u32;
 
 typedef unsigned int uint;
 
-// Kudos to kepler and aegis for this trick.
-// Fix VC6 for loop scoping.
-#ifdef MSVC6
-#  define for if (0); else for
-#endif
 
 /// Everybody has their own Rect struct.  This is mine.
 struct Rect
@@ -35,6 +34,13 @@ struct Rect
     
     inline int Width() const  { return right - left; }
     inline int Height() const { return bottom - top; }
+    void Normalize()
+    {
+        if (left > right)
+            std::swap(left, right);
+        if (top > bottom)
+            std::swap(top, bottom);
+    }
 
     Rect(int x1, int y1, int x2, int y2) : left(x1), right(x2), top(y1), bottom(y2) {}
     Rect() : left(0), right(0), top(0), bottom(0) {}
@@ -132,5 +138,12 @@ union BGRA
 };
 
 #pragma pack (pop)
+
+// Modern C++ design is so neat.
+template<typename T>
+struct Type2Type
+{
+    typedef T Type;
+};
 
 #endif

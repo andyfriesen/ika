@@ -26,7 +26,7 @@ public:
     void FreeBitmaps();
 
     virtual Canvas& Get(int idx)=0;
-    void Set(Canvas& img, int idx);
+    void Set(const Canvas& img, int idx);
 
     virtual int Count() const = 0;
 

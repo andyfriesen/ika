@@ -43,7 +43,7 @@ void MapClip::Free()
     bMegaclip = false;
 }
 
-void Map::Copy(MapClip &mc, Rect r, int layer)
+void Map::Copy(MapClip &mc, Rect r, int layer)const 
 // copies a single map layer to the clip
 {
     int xl, yl;    // x, y length
@@ -76,7 +76,7 @@ void Map::Copy(MapClip &mc, Rect r, int layer)
             mc.pData[0][ay * xl + ax]=pData[layer][(ay + r.top)*nWidth + ax + r.left];    // buah... I'm not concerned with speed.  Not here.
 }
 
-void Map::Copy(MapClip &mc, Rect r)
+void Map::Copy(MapClip &mc, Rect r)const 
 // mass copier.  Copies all layers at once.
 {
     int xl, yl;    // x / y length
@@ -112,7 +112,7 @@ void Map::Copy(MapClip &mc, Rect r)
     }
 }
 
-void Map::Paste(MapClip &mc, int xs, int ys, int sourcelayer, int destlayer, bool transparent)
+void Map::Paste(const MapClip &mc, int xs, int ys, int sourcelayer, int destlayer, bool transparent)
 // pastes one layer from the clip to a layer on the map (don't call this directly)
 {
     int xl, yl;
@@ -133,7 +133,7 @@ void Map::Paste(MapClip &mc, int xs, int ys, int sourcelayer, int destlayer, boo
         }
 }
 
-void Map::Paste(MapClip &mc, int x, int y, int destlayer)
+void Map::Paste(const MapClip &mc, int x, int y, int destlayer)
 {
     if (!mc.bMegaclip)    // only one layer here?
     {
@@ -171,7 +171,7 @@ Map::~Map()
 
 // Interface
 
-u32 Map::GetTile(int x, int y, int layer)
+u32 Map::GetTile(int x, int y, int layer) const
 {
     if (layer > NumLayers()) return 0;
     if (x < 0 || y < 0) return 0;
@@ -191,7 +191,7 @@ void Map::SetTile(int x, int y, int layer, u32 tile)
     pData[layer][y * nWidth + x]=tile;
 }
 
-u32* Map::GetDataPtr(int layer)
+u32* Map::GetDataPtr(int layer) const
 {
     if (layer < 0 || layer > NumLayers()) return NULL;
     return pData[layer];
@@ -794,7 +794,7 @@ void Map::Resize(int newx, int newy)
     this->nWidth = newx; this->nHeight = newy;                          // whoops, one must be careful to not clog one's namespace up. >_<
 }
 
-int Map::NumLayers()
+int Map::NumLayers() const
 {
     return pData.size();
 }

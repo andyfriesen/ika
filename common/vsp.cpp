@@ -7,7 +7,7 @@
 #include "log.h"
 #include "zlib.h"
 
-VSP::VSP() : nTilex(0), nTiley(0)
+VSP::VSP() : _width(0), _height(0)
 {
     vspanim.resize(100);
     New();
@@ -44,8 +44,8 @@ bool VSP::Load(const char *fname)
     {
     case 2: 
         {
-            nTilex = 16;
-            nTiley = 16;
+            _width = 16;
+            _height = 16;
             
             u8 pal[768];
             f.Read(&pal, 768);
@@ -54,7 +54,7 @@ bool VSP::Load(const char *fname)
             u8* pData8 = new u8[nTiles * 256];
             f.Read(pData8, nTiles * 256);
             
-            CreateTilesFromBuffer(pData8, pal, nTiles, nTilex, nTiley);
+            CreateTilesFromBuffer(pData8, pal, nTiles, _width, _height);
             
             delete[] pData8;
             break;
@@ -62,8 +62,8 @@ bool VSP::Load(const char *fname)
         
     case 3: 
         {
-            nTilex = 16;
-            nTiley = 16;
+            _width = 16;
+            _height = 16;
             
             u8 pal[768];
             u32 bufsize;
@@ -77,7 +77,7 @@ bool VSP::Load(const char *fname)
             f.Read(pBuffer, bufsize);
             ReadCompressedLayer1(pData8, nTiles * 256, pBuffer);
             
-            CreateTilesFromBuffer(pData8, pal, nTiles, nTilex, nTiley);
+            CreateTilesFromBuffer(pData8, pal, nTiles, _width, _height);
             
             delete[] pBuffer;
             delete[] pData8;
@@ -86,15 +86,15 @@ bool VSP::Load(const char *fname)
         
     case 4:
         {
-            nTilex = 16; nTiley = 16;
+            _width = 16; _height = 16;
             
             f.Read(&nTiles, 2);
             
-            u16* pData16 = new u16[nTiles * nTilex * nTiley];
+            u16* pData16 = new u16[nTiles * _width * _height];
             
-            f.Read(pData16, nTiles * nTilex * nTiley * 2); // the VSP is 2bpp
+            f.Read(pData16, nTiles * _width * _height * 2); // the VSP is 2bpp
             
-            CreateTilesFromBuffer(pData16, nTiles, nTilex, nTiley);
+            CreateTilesFromBuffer(pData16, nTiles, _width, _height);
             
             delete[] pData16;
             break;
@@ -104,17 +104,17 @@ bool VSP::Load(const char *fname)
         {
             u32 bufsize;
             
-            nTilex = 16; nTiley = 16;
+            _width = 16; _height = 16;
             f.Read(&nTiles, 2);
             f.Read(&bufsize, 4);
             
             u8* pBuffer = new u8[bufsize];
-            u16* pData16 = new u16[nTiles * nTilex * nTiley];
+            u16* pData16 = new u16[nTiles * _width * _height];
             
             f.Read(pBuffer, bufsize);
-            ReadCompressedLayer2(pData16, nTiles * nTilex * nTiley, (u16*)pBuffer);
+            ReadCompressedLayer2(pData16, nTiles * _width * _height, (u16*)pBuffer);
             
-            CreateTilesFromBuffer(pData16, nTiles, nTilex, nTiley);
+            CreateTilesFromBuffer(pData16, nTiles, _width, _height);
             
             delete[] pBuffer;            
             delete[] pData16;
@@ -130,8 +130,8 @@ bool VSP::Load(const char *fname)
             
             f.Read(bpp);
             
-            f.Read(&nTilex, 2);
-            f.Read(&nTiley, 2);
+            f.Read(&_width, 2);
+            f.Read(&_height, 2);
             f.Read(&nTiles, 4);
             
             f.Read(sDesc, 64);
@@ -142,7 +142,7 @@ bool VSP::Load(const char *fname)
                 f.Read(&nMaskcolour, 1);
             }
             
-            int nDatasize = nTilex * nTiley * nTiles * bpp;
+            int nDatasize = _width * _height * nTiles * bpp;
             int nCompressedblocksize;
             f.Read(&nCompressedblocksize, 4);
             
@@ -165,9 +165,9 @@ bool VSP::Load(const char *fname)
             inflateEnd(&stream);
             
             if (bpp==1)
-                CreateTilesFromBuffer(pData, pal, nTiles, nTilex, nTiley);
+                CreateTilesFromBuffer(pData, pal, nTiles, _width, _height);
             else
-                CreateTilesFromBuffer((RGBA*)pData, nTiles, nTilex, nTiley);
+                CreateTilesFromBuffer((RGBA*)pData, nTiles, _width, _height);
 
             delete[] pBuffer;
             delete[] pData;
@@ -203,25 +203,25 @@ int VSP::Save(const char* fname)
         return 0;
     }
     
-    RGBA* pTemp = new RGBA[nTilex * nTiley * tiles.size()];
+    RGBA* pTemp = new RGBA[_width * _height * tiles.size()];
     
     // copy all the tile data into one big long buffer that we can write to disk
     for (unsigned int j = 0; j < tiles.size(); j++)
-        memcpy(pTemp+(j * nTilex * nTiley), tiles[j].GetPixels(), nTilex * nTiley * sizeof(RGBA));
+        memcpy(pTemp+(j * _width * _height), tiles[j].GetPixels(), _width * _height * sizeof(RGBA));
     
     const char bpp = 4;
     
     i = 6;
     f.Write(&i, 2);
     f.Write(&bpp, 1);
-    f.Write(&nTilex, 2);
-    f.Write(&nTiley, 2);
+    f.Write(&_width, 2);
+    f.Write(&_height, 2);
     f.Write((int)tiles.size());
     
     f.Write(sDesc, 64);			// description. (authoring info, whatever)
     
     z_stream stream;
-    int nDatasize = tiles.size()*nTilex * nTiley * bpp;
+    int nDatasize = tiles.size()*_width * _height * bpp;
     
     cb = new u8[(nDatasize * 11)/10 + 12];
     
@@ -265,13 +265,13 @@ void VSP::Free()
 void VSP::New(int xsize, int ysize, int numtiles)     // creates a blank 32 bit VSP, of the specified size and number of tiles
 {
     Free();
-    nTilex = xsize > 0?xsize:1;
-    nTiley = ysize > 0?ysize:1;
+    _width = xsize > 0?xsize:1;
+    _height = ysize > 0?ysize:1;
     
     tiles.resize(numtiles);
     
     for (int i = 0; i < numtiles; i++)
-        tiles[i].Resize(nTilex, nTiley);
+        tiles[i].Resize(_width, _height);
 }
 
 // vsp alteration routines
@@ -280,11 +280,8 @@ void VSP::InsertTile(uint pos)
 {
     if (pos < 0 || pos >= tiles.size())
         return;
-    
-    tiles.push_back(tiles[tiles.size()-1]); // tack the last tile on the end
-    
-    for (uint i = pos; i < tiles.size()-1; i++)
-        tiles[i + 1]=tiles[i];                // bump 'em all over
+
+    tiles.insert(tiles.begin() + pos, Canvas(_width, _height));
 }
 
 void VSP::DeleteTile(uint pos)
@@ -292,15 +289,12 @@ void VSP::DeleteTile(uint pos)
     if (pos < 0 || pos >= tiles.size())
         return;
     
-    for (uint i = pos; i < tiles.size()-1; i++)
-        tiles[i]=tiles[i + 1];                // shuffle them all down one
-    
-    tiles.pop_back();
+    tiles.erase(tiles.begin() + pos);
 }
 
 void VSP::AppendTiles(uint count)
 {
-    Canvas dummy(nTilex, nTiley);
+    Canvas dummy(_width, _height);
     
     for (uint i = 0; i < count; i++)
         tiles.push_back(dummy);
@@ -347,40 +341,40 @@ Canvas& VSP::GetTile(uint tileidx)
 
 void VSP::CreateTilesFromBuffer(u8* data, u8* pal, uint numtiles, int tilex, int tiley)
 {
-    nTilex = tilex;
-    nTiley = tiley;
+    _width = tilex;
+    _height = tiley;
     
     tiles.resize(numtiles);
     
     for (uint i = 0; i < numtiles; i++)
     {
-        tiles[i].Resize(nTilex, nTiley);       
-        tiles[i].CopyPixelData(data, nTilex, nTiley, pal);
-        data += nTilex * nTiley;
+        tiles[i].Resize(_width, _height);       
+        tiles[i].CopyPixelData(data, _width, _height, pal);
+        data += _width * _height;
     }
 }
 
 void VSP::CreateTilesFromBuffer(u16* data, uint numtiles, int tilex, int tiley)
 {
-    nTilex = tilex;
-    nTiley = tiley;
+    _width = tilex;
+    _height = tiley;
     
     tiles.resize(numtiles);
     
-    RGBA* pBuffer = new RGBA[nTilex * nTiley];
+    RGBA* pBuffer = new RGBA[_width * _height];
     u16* pSrc = data;
     
     for (uint i = 0; i < numtiles; i++)
     {
-        tiles[i].Resize(nTilex, nTiley);
+        tiles[i].Resize(_width, _height);
         
-        for (int y = 0; y < nTiley; y++)
-            for (int x = 0; x < nTilex; x++)
-                pBuffer[y * nTilex + x]=RGBA(pSrc[y * nTilex + x]);
+        for (int y = 0; y < _height; y++)
+            for (int x = 0; x < _width; x++)
+                pBuffer[y * _width + x]=RGBA(pSrc[y * _width + x]);
             
-            pSrc += nTilex * nTiley;
+            pSrc += _width * _height;
             
-            tiles[i].CopyPixelData(pBuffer, nTilex, nTiley);
+            tiles[i].CopyPixelData(pBuffer, _width, _height);
     }
     
     delete[] pBuffer;
@@ -388,14 +382,14 @@ void VSP::CreateTilesFromBuffer(u16* data, uint numtiles, int tilex, int tiley)
 
 void VSP::CreateTilesFromBuffer(RGBA* data, uint numtiles, int tilex, int tiley)
 {
-    nTilex = tilex;
-    nTiley = tiley;
+    _width = tilex;
+    _height = tiley;
     
     tiles.resize(numtiles);
     
     for (uint i = 0; i < numtiles; i++)
     {
-        tiles[i].Resize(nTilex, nTiley);
-        tiles[i].CopyPixelData(data + i * nTilex * nTiley, nTilex, nTiley);
+        tiles[i].Resize(_width, _height);
+        tiles[i].CopyPixelData(data + i * _width * _height, _width, _height);
     }
 }
