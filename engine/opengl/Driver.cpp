@@ -19,7 +19,10 @@ namespace OpenGL
         if (!_screen)
             throw Video::Exception();
 
+        glShadeModel(GL_SMOOTH);
+
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+        glEnable(GL_BLEND);
 
         gluOrtho2D(0, _xres, _yres, 0);
         glClearColor(0, 0, 0, 0);
@@ -68,7 +71,9 @@ namespace OpenGL
 
         uint texture;
         glGenTextures(1, &texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        //SwitchTexture(texture);
+        glBindTexture(GL_TEXTURE_2D, texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
@@ -104,7 +109,7 @@ namespace OpenGL
             glEnable(GL_BLEND);
         else
             glDisable(GL_BLEND);
-glColor4f(1,0,0,1);
+
         SwitchTexture(img->_texture);
         glBegin(GL_QUADS);
         glTexCoord2f(0,0);          glVertex2i(x, y);
