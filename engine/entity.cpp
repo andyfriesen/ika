@@ -143,6 +143,10 @@ void CEntity::Stop()
     SetAnimScript(pSprite->Script((int)direction+8));
 }
 
+void CEntity::MoveDiagonally(Direction d)
+{
+}
+
 void CEntity::Move(Direction d)
 {
     int newx=x,newy=y;
@@ -205,6 +209,42 @@ Direction CEntity::Wander()
         movescriptct--;
 
     return bMoving?direction:face_nothing;
+}
+
+Direction CEntity::Chase()
+{
+    if (!pChasetarget)
+    {
+        log("Chasing entity with no chasing target!!");
+        return face_nothing;
+    }
+
+    int nDeltax=pChasetarget->x-x;
+    int nDeltay=pChasetarget->y-y;
+
+    // close enough?
+    if (sqrt(nDeltax*nDeltax + nDeltay*nDeltay)<nMinchasedist)
+        return face_nothing;
+
+    if (nDeltay<0)
+    {
+        if (nDeltax<0)  return face_upleft;
+        if (nDeltax>0)  return face_upright;
+        return face_up;
+    }
+    if (nDeltay>0)
+    {
+        if (nDeltax<0)  return face_downleft;
+        if (nDeltax>0)  return face_downright;
+        return face_down;
+    }
+    if (nDeltax<0)
+        return face_left;
+    if (nDeltax>0)
+        return face_right;
+
+    // if we get this far, then the entity is standing directly on top of its target
+    return face_nothing;
 }
 
 Direction CEntity::GetMoveScriptCommand()
@@ -311,6 +351,7 @@ void CEntity::Update()
         case mc_nothing:    newdir=face_nothing;            break;
         case mc_wander:
         case mc_wanderzone:
+        case mc_chase:      newdir=Chase();                 break;
         case mc_wanderrect: newdir=Wander();                break;
         case mc_script:     newdir=GetMoveScriptCommand();  break;
         default:

@@ -50,20 +50,20 @@ int CEngine::CheckMessages()
     
     do
     {
-        while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))    // process things until the message queue is empty
+        while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))        // process things until the message queue is empty
         {         
             if (msg.message==WM_QUIT || msg.message==WM_CLOSE || (msg.message==WM_SYSCOMMAND && msg.wParam==SC_CLOSE))
             {
-                bKillFlag=true;                            // so that everybody knows to stop what they're doing and quit
+                bKillFlag=true;                             // so that everybody knows to stop what they're doing and quit
                 Shutdown();
-                exit(-1);                                // probably a bad idea, but maybe not, I'm not sure*/
+                exit(-1);                                   // probably a bad idea, but maybe not, I'm not sure
                 return 1;
             }
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        if (!bActive)                                    // Are we ready to rock?
-            WaitMessage();                                // Nope, wait for something to happen.
+        if (!bActive)                                       // Are we ready to rock?
+            WaitMessage();                                  // Nope, wait for something to happen.
         
     } while (!bActive);
     
@@ -73,8 +73,8 @@ int CEngine::CheckMessages()
 void CEngine::MainLoop()
 {
     CDEBUG("mainloop");
-    static int numframes,t,fps=0;                        // frame counter stuff
-    
+    static int numframes,t,fps=0;                           // frame counter stuff (Why do these need to be static?)
+   
     while(1)
     {
         CheckMessages();
@@ -95,7 +95,7 @@ void CEngine::MainLoop()
         
         timer.t=0;
         
-        if (t>timerate)                                    // update the frame counter
+        if (t>timerate)                                     // update the frame counter
         {
             fps=numframes;
             numframes=0;
@@ -106,7 +106,7 @@ void CEngine::MainLoop()
         
         Render();
         
-        //        font[0].PrintString(0,0,va("Fps: \\3%i",fps));
+        //font.PrintString(0,0,va("Fps: ~3%i",fps));
         
         gfxShowPage();
     }

@@ -61,7 +61,7 @@ public:
     string_k    sActscript;                                         // event to be called when the entity is activated
     
     CEntity(CEngine* njin);
-    CEntity(CEngine* njin,const SMapEntity& e);                                   // converting map entities
+    CEntity(CEngine* njin,const SMapEntity& e);                     // converting map entities
     
     void        Init();                                             // does any setup type thingies that need to be done
     void        Free();                                             // cleanup
@@ -73,6 +73,7 @@ public:
     void        SetFace(Direction d);                               // Makes the entity face the specified direction. (if it's currently moving, then it'll start moving in that direction instead)
 
     void        Stop();                                             // the entity stops moving, and stands still
+    void        MoveDiagonally(Direction d);
     void        Move(Direction d);                                  // Cause the entity to try to move one pixel in a given direction
 
 //----------------------------------------- AI -----------------------------------------------------
