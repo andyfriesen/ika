@@ -61,11 +61,11 @@ PyObject* CScriptEngine::Map_GetAttribute(PyObject* self,char* name)
     if (!strcmp(name,"ywin"))
         return PyInt_FromLong(pEngine->ywin);
     if (!strcmp(name,"numtiles"))
-        return PyInt_FromLong(pEngine->tiles.NumTiles());
+        return PyInt_FromLong(pEngine->tiles->NumTiles());
     if (!strcmp(name,"tilewidth"))
-        return PyInt_FromLong(pEngine->tiles.Width());
+        return PyInt_FromLong(pEngine->tiles->Width());
     if (!strcmp(name,"tileheight"))
-        return PyInt_FromLong(pEngine->tiles.Height());
+        return PyInt_FromLong(pEngine->tiles->Height());
     if (!strcmp(name,"width"))
         return PyInt_FromLong(pEngine->map.Width());
     if (!strcmp(name,"height"))
@@ -89,7 +89,7 @@ int CScriptEngine::Map_SetAttribute(PyObject* self,char* name,PyObject* value)
     if (!strcmp(name,"xwin"))
     {
         int i=PyInt_AsLong(value);
-        int maxx=pEngine->map.Width()*pEngine->tiles.Width()-gfxImageWidth(pEngine->hRenderdest);
+        int maxx=pEngine->map.Width()*pEngine->tiles->Width()-pEngine->video->XRes();
         if (i<0) i=0;
         if (i>=maxx) i=maxx-1;
         
@@ -98,7 +98,7 @@ int CScriptEngine::Map_SetAttribute(PyObject* self,char* name,PyObject* value)
     if (!strcmp(name,"ywin"))
     {
         int i=PyInt_AsLong(value);
-        int maxy=pEngine->map.Height()*pEngine->tiles.Height()-gfxImageHeight(pEngine->hRenderdest);
+        int maxy=pEngine->map.Height()*pEngine->tiles->Height()-pEngine->video->YRes();
         if (i<0) i=0;
         if (i>maxy) i=maxy;
         

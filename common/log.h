@@ -9,7 +9,7 @@
 
 #include "types.h"
 
-//#define LOG_CALLBACK
+#define LOG_CALLBACK
 
 namespace Log
 {

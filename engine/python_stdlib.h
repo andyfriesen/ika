@@ -50,9 +50,9 @@ METHOD(std_getcaption)
     if (!PyArg_ParseTuple(args,":GetCaption"))
         return 0;
 
-    const char* s = pEngine->GetCaption();
+    //const char* s = pEngine->GetCaption();
 
-    return PyString_FromString(s);
+    return PyString_FromString("");
 }
 
 METHOD(std_setcaption)
@@ -62,7 +62,7 @@ METHOD(std_setcaption)
     if (!PyArg_ParseTuple(args, "|s:SetCaption", &s))
         return 0;
 
-    pEngine->SetCaption(s);
+//    pEngine->SetCaption(s);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -73,7 +73,7 @@ METHOD(std_getframerate)
     if (!PyArg_ParseTuple(args, ":GetFrameRate"))
         return 0;
 
-    return PyInt_FromLong(gfxGetFrameRate());
+    return PyInt_FromLong(0);//gfxGetFrameRate());
 }
 
 METHOD(std_delay)
@@ -88,8 +88,7 @@ METHOD(std_delay)
     // Always check messages at least once.
     do
     {
-        if (pEngine->CheckMessages())
-            return 0;
+        pEngine->CheckMessages();
     }
     while (endtime > GetTime());
     
@@ -111,8 +110,7 @@ METHOD(std_wait)
     
     while (endtime > GetTime())
     {
-        if (pEngine->CheckMessages())
-            return NULL;
+        pEngine->CheckMessages();
 
         while (t < GetTime())
         {
@@ -121,7 +119,7 @@ METHOD(std_wait)
         }
 
         pEngine->Render();
-        gfxShowPage();
+        pEngine->video->ShowPage();
     }
     
     pEngine->pPlayer = pSaveplayer;                   // restore the player
@@ -154,7 +152,7 @@ METHOD(std_showpage)
     if (!PyArg_ParseTuple(args,""))
         return NULL;
     
-    gfxShowPage();
+    pEngine->video->ShowPage();
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -164,9 +162,7 @@ METHOD(std_getscreenimage)
 {
     if (!PyArg_ParseTuple(args,""))
         return NULL;
-    
-    Py_INCREF(pScreenobject);
-    return pScreenobject;
+    return 0;//pScreenobject;
 }
 
 METHOD(std_palettemorph)
@@ -176,7 +172,7 @@ METHOD(std_palettemorph)
     if (!PyArg_ParseTuple(args,"|iii:PaletteMorph",&r,&g,&b))
         return NULL;
     
-    gfxPaletteMorph(r,g,b);
+//    gfxPaletteMorph(r,g,b);
     
     Py_INCREF(Py_None);
     return Py_None;

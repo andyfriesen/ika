@@ -46,7 +46,7 @@ public:
     };
 
 private:
-    static std::map<const char*, int> _keymap;
+    static std::map<std::string, int> _keymap;
     static bool _keymapinitted;
 
     std::queue<void*> _hookqueue;

@@ -79,10 +79,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\common,..\3rdparty"
+				AdditionalIncludeDirectories="..\common,..\3rdparty\include,C:\src\python\dist\src\Include,c:\src\python\dist\src\PC"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
-				RuntimeLibrary="5"
+				RuntimeLibrary="3"
 				PrecompiledHeaderFile=".\Debug/ika.pch"
 				AssemblerListingLocation=".\Debug/"
 				ObjectFile=".\Debug/"
@@ -96,11 +96,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="dinput.lib dxguid.lib winmm.lib zlib.lib corona.lib audiere.lib"
+				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib"
 				OutputFile=".\Debug/ika.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common\,..\3rdparty"
+				AdditionalLibraryDirectories="..\common\,..\3rdparty\lib,c:\src\python\dist\src\PCbuild"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/ika.pdb"
 				SubSystem="2"/>

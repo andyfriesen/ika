@@ -165,7 +165,7 @@ int CScriptEngine::Entity_SetAttribute(PyObject* self,char* name,PyObject* value
     {
         pEngine->sprite.Free(ent.pSprite);
 
-        ent.pSprite=pEngine->sprite.Load(PyString_AsString(value));
+        ent.pSprite=pEngine->sprite.Load(PyString_AsString(value), pEngine->video);
         ent.SetAnimScript(va("F%i",ent.nCurframe));
     }
     if (!strcmp(name,"hotx") || !strcmp(name,"hoty") || 
@@ -325,7 +325,7 @@ METHOD(std_spawnentity)
         pEngine->Sys_Error(va("Could not load %s",chrname));
     
     CEntity* pEnt=pEngine->SpawnEntity();
-    CSprite* pSprite=pEngine->sprite.Load(chrname);
+    CSprite* pSprite=pEngine->sprite.Load(chrname, pEngine->video);
     
     pEnt->sName="Spawned entity";
     pEnt->pSprite=pSprite;

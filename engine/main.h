@@ -93,6 +93,8 @@ public:                                                                         
     void      Startup();                                                            ///< Inits the engine
     void      Shutdown();                                                           ///< deinits the engine
     void      MainLoop();                                                           ///< runs the engine
+
+    CEngine(){}
 };
 
 #endif

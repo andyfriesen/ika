@@ -81,7 +81,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\common,$(PYTHON)\include,..\3rdparty"
+				AdditionalIncludeDirectories="..\common,..\3rdparty\include"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				StringPooling="TRUE"
 				RuntimeLibrary="0"
@@ -102,7 +102,7 @@
 				OutputFile=".\Release/WinMapEd.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common,$(PYTHON)\lib,..\3rdparty"
+				AdditionalLibraryDirectories="..\common,..\3rdparty\lib"
 				ProgramDatabaseFile=".\Release/WinMapEd.pdb"
 				SubSystem="2"/>
 			<Tool

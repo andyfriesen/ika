@@ -2,7 +2,7 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#include "python/python.h"
+#include "python.h"
 #include "types.h"
 
 /*!
@@ -27,9 +27,7 @@ class CScriptEngine
 
     static CEngine* pEngine;
 
-    static PyObject*    pScreenobject;
     static PyObject*    pEntitydict;
-    static PyObject*    pRenderdest;
     static PyObject*    pPlayerent;
     static PyObject*    pCameratarget;
     static PyObject*    pErrorhandler;

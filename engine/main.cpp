@@ -121,6 +121,8 @@ void CEngine::Startup()
 // TODO: Make a nice happy GUI thingie for making a user.cfg
 // This is ugly. :(
 {
+
+    printf("blah");
     CDEBUG("Startup");
     
     CConfigFile cfg("user.cfg");
@@ -264,7 +266,7 @@ void CEngine::RenderEntities()
         
         int frame = e.nSpecframe ? e.nSpecframe : e.nCurframe;
         
-        s.BlitFrame(e.x - xwin - s.nHotx, e.y - ywin - s.nHoty, frame);
+        video->DrawImage(s.GetFrame(frame), e.x - xwin - s.nHotx, e.y - ywin - s.nHoty);
     }
 }
 
@@ -644,30 +646,30 @@ void CEngine::LoadMap(const char* filename)
     {
         Log::Write("Loading map \"%s\"", filename);
         
-        if (!map.Load(filename)) throw filename;                            // actually load the map
+        if (!map.Load(filename)) throw filename;                        // actually load the map
         
-        delete tiles;                                                       // nuke the old tileset
-        tiles = new CTileSet(map.GetVSPName().c_str(), video);              // load up them tiles
+        delete tiles;                                                   // nuke the old tileset
+        tiles = new CTileSet(map.GetVSPName().c_str(), video);          // load up them tiles
         
-        script.ClearEntityList();                                           // DEI
+        script.ClearEntityList();                                       // DEI
         
         for (int i = 0; i < map.NumEnts(); i++)
         {
             const SMapEntity& ent = map.GetEntity(i);
             
-            CEntity* pEnt = new CEntity(this, ent);                            // convert the old entity struct into the new one.
+            CEntity* pEnt = new CEntity(this, ent);                     // convert the old entity struct into the new one.
             entities.push_back(pEnt);
             
             strcpy(temp, ent.sCHRname.c_str());
             
-            pEnt->pSprite = sprite.Load(temp);                                // wee
-            if (pEnt->pSprite == 0)                                           // didn't load?
-                Sys_Error(va("Unable to load CHR file \"%s\"", temp));       // wah
+            pEnt->pSprite = sprite.Load(temp, video);                   // wee
+            if (pEnt->pSprite == 0)                                     // didn't load?
+                Sys_Error(va("Unable to load CHR file \"%s\"", temp));  // wah
             
             script.AddEntityToList(pEnt);
         }
         
-        xwin = ywin = 0;                                                        // just in case
+        xwin = ywin = 0;                                                // just in case
         bMaploaded = true;
         
         if (!script.LoadMapScripts(filename))
@@ -681,6 +683,7 @@ void CEngine::LoadMap(const char* filename)
 
 int main(int argc, char* args[])
 {
+    printf("wee!!!\n");
     CEngine engine;
     engine.Startup();
     engine.MainLoop();

@@ -14,9 +14,7 @@
 #include "main.h"
 
 CEngine* CScriptEngine::pEngine=0;
-PyObject* CScriptEngine::pScreenobject=0;
 PyObject* CScriptEngine::pEntitydict=0;
-PyObject* CScriptEngine::pRenderdest=0;
 PyObject* CScriptEngine::pPlayerent=0;
 PyObject* CScriptEngine::pCameratarget=0;
 PyObject* CScriptEngine::pErrorhandler=0;
@@ -86,13 +84,6 @@ void CScriptEngine::Shutdown()
     
     Py_XDECREF(pEntitydict);
     Py_XDECREF(pCameratarget);
-    
-    // nuke the screen object, but not the actual image.  The engine still needs it. ;)
-    ((v_ImageObject*)pScreenobject)->data=0;
-    Py_XDECREF(pScreenobject);
-
-    // Free all other engine objects.
-    Py_XDECREF(pRenderdest);
     
     Py_XDECREF(pErrorhandler);
     Py_XDECREF(pSysmodule);

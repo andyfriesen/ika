@@ -277,7 +277,7 @@ METHOD(image_getpixel)
     //
     //u32 c=gfxGetPixel(((v_ImageObject*)self)->data,x,y);
     
-    return PyInt_FromLong(c);
+    return PyInt_FromLong(0);
 }
 
 METHOD(image_flatpoly)
@@ -311,28 +311,30 @@ METHOD(std_loadimage)
 
 METHOD(std_setrenderdest)
 {
-    PyObject* newrenderdest;
-    
-    if (!PyArg_ParseTuple(args,"O!",&imagetype,&newrenderdest))
-        return NULL;
-    
-    pEngine->hRenderdest=((v_ImageObject*)newrenderdest)->data;
-    
-    gfxSetRenderDest(pEngine->hRenderdest);
-    
-    Py_XDECREF(pRenderdest);
-    Py_INCREF(newrenderdest);
-    pRenderdest=newrenderdest;
-    
-    Py_INCREF(Py_None);
-    return Py_None;
+    return 0;
+    //PyObject* newrenderdest;
+    //
+    //if (!PyArg_ParseTuple(args,"O!",&imagetype,&newrenderdest))
+    //    return NULL;
+    //
+    //pEngine->hRenderdest=((v_ImageObject*)newrenderdest)->data;
+    //
+    //gfxSetRenderDest(pEngine->hRenderdest);
+    //
+    //Py_XDECREF(pRenderdest);
+    //Py_INCREF(newrenderdest);
+    //pRenderdest=newrenderdest;
+    //
+    //Py_INCREF(Py_None);
+    //return Py_None;
 }
 
 METHOD(std_getrenderdest)
 {
-    if (!PyArg_ParseTuple(args,""))
-        return NULL;
-    
-    Py_INCREF(pRenderdest);
-    return pRenderdest;
+    //if (!PyArg_ParseTuple(args,""))
+    //    return NULL;
+    //
+    //Py_INCREF(pRenderdest);
+    //return pRenderdest;
+    return 0;
 }

@@ -2,21 +2,36 @@
 #include "chr.h"
 #include "log.h"
 
-CSprite::CSprite(const char* fname)
+CSprite::CSprite(const char* fname, Video::Driver* v)
+    : video(v)
 {
-    LoadCHR(fname);
+    CCHRfile chr;
+    bool bResult = chr.Load(fname);
+    if (!bResult)
+        throw SpriteException();
+    
+    nFramex=chr.Width();
+    nFramey=chr.Height();
+    nHotx=chr.HotX();
+    nHoty=chr.HotY();
+    nHotw=chr.HotW();
+    nHoth=chr.HotH();
+    
+    sScript.resize(chr.sMovescript.size());
+    for (uint s = 0; s < chr.sMovescript.size(); s++)
+        sScript[s] = chr.sMovescript[s];
+    
+    hFrame.resize(chr.NumFrames());
+    for (uint i = 0; i < chr.NumFrames(); i++)
+    {
+        hFrame[i] = video->CreateImage(chr.GetFrame(i));
+    }
 }
 
 CSprite::~CSprite()
 {
-    Free();
-}
-
-void CSprite::Free()
-{
     for (int i=0; i<hFrame.size(); i++)
-        gfxFreeImage(hFrame[i]);
-    hFrame.clear();
+        delete hFrame[i];
 }
 
 string& CSprite::Script(int s)
@@ -29,47 +44,17 @@ string& CSprite::Script(int s)
     return sScript[s];
 }
 
-void CSprite::BlitFrame(int x,int y,int frame)
+Video::Image* CSprite::GetFrame(int frame)
 {
     if (frame<0 || frame>hFrame.size())
-        return;
+        return 0;
     
-    gfxBlitImage(hFrame[frame],x,y,true);
-}
-
-bool CSprite::LoadCHR(const char* fname)
-{
-    CCHRfile chr;
-    bool bResult=chr.Load(fname);
-    if (!bResult)
-        return false;
-    
-    Free();
-    
-    nFramex=chr.Width();
-    nFramey=chr.Height();
-    nHotx=chr.HotX();
-    nHoty=chr.HotY();
-    nHotw=chr.HotW();
-    nHoth=chr.HotH();
-    
-    sScript.resize(chr.sMovescript.size());
-    for (int s=0; s<chr.sMovescript.size(); s++)
-        sScript[s]=chr.sMovescript[s];
-    
-    hFrame.resize(chr.NumFrames());
-    for (int i=0; i<chr.NumFrames(); i++)
-    {
-        hFrame[i]=gfxCreateImage(nFramex,nFramey);
-        gfxCopyPixelData(hFrame[i], (u32*)chr.GetFrame(i).GetPixelData(), nFramex, nFramey);
-    }
-    
-    return true;
+    return hFrame[frame];
 }
 
 // -----------------------------------  CSpriteController methods ------------------------
 
-CSprite* CSpriteController::Load(const char* fname)
+CSprite* CSpriteController::Load(const char* fname, Video::Driver* video)
 {
     CDEBUG("ccharactercontroller::load");
 
@@ -83,9 +68,15 @@ CSprite* CSpriteController::Load(const char* fname)
     }
 
     // Not already loaded, we'll have to do that now.
-    CRefCountedSprite* s=new CRefCountedSprite();
-    bool result=s->LoadCHR(fname);
-    if (!result)    {        delete s;        return NULL;    }
+    CRefCountedSprite* s;
+    try
+    {
+        s=new CRefCountedSprite(fname, video);
+    }
+    catch (SpriteException)
+    {
+        return 0;
+    }
 
     s->nRefcount=1;
     s->sFilename=fname;

@@ -8,12 +8,15 @@
 #include <list>
 using std::list;
 
+struct SpriteException{};
+
 /**
     A hardware dependant representation of a .CHR file.
 */
 class CSprite
 {
     vector<string>  sScript;                        ///< move scripts
+    Video::Driver* video;
 
     int nFramex,nFramey;                            ///< frame size
 
@@ -25,15 +28,11 @@ public:
 
     vector<Video::Image*> hFrame;                   ///< array of frame images
 
-    CSprite() {}
-    CSprite(const char* fname);
+    CSprite(const char* fname, Video::Driver* v);
     virtual ~CSprite();
-    void Free();
 
-    void BlitFrame(int x,int y,int frame);          ///< Draws a frame of the sprite at the specified location.
+    Video::Image* GetFrame(int frame);              ///< Returns the frame image
   
-    bool LoadCHR(const char* fname);                ///< Loads data from the specified file.
-
     inline int Width() const { return nFramex; }
     inline int Height() const { return nFramey; }
     string& Script(int s);
@@ -49,6 +48,10 @@ class CSpriteController
     struct CRefCountedSprite : public CSprite
     {
         int nRefcount;
+        CRefCountedSprite(const char* fname, Video::Driver* v)
+            : CSprite(fname, v)
+            , nRefcount(0)
+        {}
     };
 
     typedef list<CRefCountedSprite*> SpriteList;
@@ -56,7 +59,7 @@ class CSpriteController
     SpriteList sprite;                                      ///< List of allocated sprites
 
 public:
-    CSprite* Load(const char* fname);                       ///< loads a CHR file
+    CSprite* Load(const char* fname, Video::Driver* video); ///< loads a CHR file
     void Free(CSprite* s);                                  ///< releases a CHR file
 
     ~CSpriteController();

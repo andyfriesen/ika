@@ -23,6 +23,8 @@ namespace Video
 
         int XRes() { return 0; }
         int YRes() { return 0; }
+
+        virtual ~Driver(){}
     };
 
     class Image
@@ -30,6 +32,8 @@ namespace Video
     public:
         int getWidth() { return 0; }
         int getHeight() { return 0; }
+
+        virtual ~Image(){}
     };
 }
 
