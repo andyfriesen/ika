@@ -74,7 +74,6 @@ class Inventory(object):
         try:
             return self.items[val]
         except IndexError, ie:
-            print val, len(self.items)
             raise ie
 
     #--------------------------------------------

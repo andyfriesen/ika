@@ -29,26 +29,33 @@ class MainMenu(StatelessProxy):
         StatelessProxy.__init__(self)
         if len(self.__dict__) != 0:
             return
-
         # "static constructor" logic follows
-        mm = self.mainmenu = Menu()
-        mm.AddText('Item','Skills','Equip','Status','Order','Load','Save','Quit')
-        mm.DockLeft().DockTop()
 
         self.statbar = StatusBar()
         self.statbar.Refresh()
         self.statbar.DockRight().DockTop()
 
-        dummy = Dummy()
-        self.submenu = [ itemmenu.ItemMenu(self.statbar),
-                         skillmenu.SkillMenu(self.statbar),
-                         equipmenu.EquipMenu(self.statbar),
-                         statusmenu.StatusMenu(self.statbar),
-                         dummy,
-                         dummy,
-                         dummy,
-                         dummy ]
+        mm = self.mainmenu = Menu()        
 
+        self.SetMenuItems(self.CreateMenuItems())
+
+        #mm.AddText('Item','Skills','Equip','Status','Order','Load','Save','Quit')
+        mm.DockLeft().DockTop()
+
+    def SetMenuItems(self, menuItems):
+        self.mainmenu.Clear()
+        self.submenu = [None] * len(menuItems)
+        for i, (name, menu) in enumerate(menuItems):
+            self.mainmenu.AddText(name)
+            self.submenu[i] = menu
+
+    def CreateMenuItems(self):
+        return [
+            ('Item', itemmenu.ItemMenu(self.statbar)),
+            ('Skills', skillmenu.SkillMenu(self.statbar)),
+            ('Equip', equipmenu.EquipMenu(self.statbar)),
+            ('Status', statusmenu.StatusMenu(self.statbar))
+            ]
 
     def Draw(self):
         self.statbar.Draw()
@@ -56,34 +63,37 @@ class MainMenu(StatelessProxy):
 
     def Update(self):
         return self.mainmenu.Update()
-        
-    def Show(self):
+
+    def Layout(self):
         self.statbar.DockRight().DockTop()
         self.mainmenu.DockLeft().DockTop()
+
+    def Show(self):
+        self.Layout()
 
         trans.AddWindowReverse(self.statbar, (self.statbar.Left, ika.Video.yres))
         trans.AddWindowReverse(self.mainmenu, (-self.mainmenu.width, self.mainmenu.Top))
         trans.Execute()
-        
+
     def Hide(self):
         trans.AddWindow(self.statbar, (self.statbar.Left, -self.statbar.height), remove = True)
         trans.AddWindow(self.mainmenu, (ika.Video.xres, self.mainmenu.y), remove = True)
         trans.Execute()
         trans.Reset()
-        
+
     def RunMenu(self, menu):
         # hold onto this so we can put the menu back later
-        r = self.mainmenu.Rect
-        
+        mainMenuPos = self.mainmenu.Rect
+
         menu.StartShow()
         trans.AddWindow(self.mainmenu, (ika.Video.xres + 20, self.mainmenu.y) )
         trans.Execute()
-        
+
         result = menu.Execute()
-        
+
         menu.StartHide()
         self.mainmenu.x = -self.mainmenu.width  # put the menu at stage left
-        trans.AddWindow(self.mainmenu, r)       # restore the menu's position
+        trans.AddWindow(self.mainmenu, mainMenuPos)       # restore the menu's position
         trans.Execute()
 
         return result
@@ -92,25 +102,23 @@ class MainMenu(StatelessProxy):
         def draw():
             ika.Map.Render()
             self.Draw()
-            ika.Video.ShowPage()
-            
-        self.Show()
-        #ika.Input.cancel.Pressed() # flush
-        
+
         self.statbar.Refresh()
+        self.Show()
+
         fps = FPSManager()
-        
+
         while True:
             result = self.Update()
 
-            if result == menu.Cancel:
+            if result is menu.Cancel:
                 break
-            
-            elif result != None:
+
+            elif result is not None:
                 result = self.RunMenu(self.submenu[result])
                 if not result:
                     break
-            
+
             fps.Render(draw)
 
         self.Hide()
@@ -118,9 +126,9 @@ class MainMenu(StatelessProxy):
 #------------------------------------------------------------------------------
 
 class Dummy(object):
-    def StartShow(_):
+    def StartShow(self):
         pass
-    def StartHide(_):
+    def StartHide(self):
         pass
-    def Execute(_):
+    def Execute(self):
         return True

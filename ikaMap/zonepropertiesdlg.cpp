@@ -79,7 +79,7 @@ void ZonePropertiesDlg::UpdateData()
         Map::Zone& oldBp = bPrints[zone.label];
         Map::Zone newBp = oldBp;
         newBp.scriptName = _editScript->GetValue().c_str();
-        commands.push_back(new DefineZoneBluePrintCommand(oldBp, newBp));
+        commands.push_back(new DefineZoneBluePrintCommand(newBp, oldBp));
     }
 
     newZone.position.left   = atoi(_editX->GetValue().c_str());
@@ -94,7 +94,7 @@ void ZonePropertiesDlg::UpdateData()
 void ZonePropertiesDlg::UpdateDlg()
 {
     Map::Layer::Zone& zone = GetMap()->GetLayer(_layerIndex)->zones[_zoneIndex];
-    if (GetMap()->zones.count(zone.label) != 0)
+    if (!zone.label.empty() && GetMap()->zones.count(zone.label) != 0)
     {
         Map::Zone& bluePrint =   GetMap()->zones[zone.label];
 
@@ -241,7 +241,7 @@ void ZonePropertiesDlg::OnRenameBlueprint(wxCommandEvent&)
         {
             if (zones[j].label == oldLabel)
             {
-                Map::Layer::Zone newZone = zones[i];
+                Map::Layer::Zone newZone = zones[j];
                 newZone.label = newLabel;
                 commands.push_back(new ChangeZoneCommand(i, j, newZone));
             }

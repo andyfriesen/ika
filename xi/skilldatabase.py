@@ -8,8 +8,6 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from __future__ import generators
-
 from token import TokenStream
 from statelessproxy import StatelessProxy
 from exception import XiException

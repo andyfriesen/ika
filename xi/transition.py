@@ -23,89 +23,106 @@ from statelessproxy import *
 DEFAULT_TIME = 30
 
 class Transition(StatelessProxy):
-    def __init__(_):
-        StatelessProxy.__init__(_)
+    def __init__(self):
+        StatelessProxy.__init__(self)
         
-        if len(_.__dict__) != 0:
+        if len(self.__dict__) != 0:
             return
         
-        _.time = DEFAULT_TIME
-        _.curtime = 0
-        _.windows = {}  # window : (start, end)
-        _.killqueue = []
+        self.time = DEFAULT_TIME
+        self.curtime = 0
+        self.windows = []  # The window itself
+        self.startend = [] # (start, end) (indeces match up with the windows list)
+        self.killqueue = []
         
-    def AddWindow(_, window, end, remove = False):
+    def AddWindow(self, window, end, remove = False):
         if len(end) == 2:
             end = (end[0], end[1], window.width, window.height)
 
-        _.windows[window] = (window.Rect, end)
-        
-        if remove:
-            _.killqueue.append(window)
+        if window in self.windows:
+            i = self.windows.index(window)
+            self.windows.pop(i)
+            self.startend.pop(i)
 
-    def AddWindowReverse(_, window, start, remove = False):
+        self.windows.append(window)
+        self.startend.append((window.Rect, end))
+
+        if remove:
+            self.killqueue.append(window)
+
+    def AddWindowReverse(self, window, start, remove = False):
         if len(start) == 2:
             start = (start[0], start[1], window.width, window.height)
-            
+
         r = window.Rect
         window.Rect = start
-        _.AddWindow(window, r, remove)
-        
-    def RemoveWindow(_, window):
-        del _.windows[window]
-        
-    def Reset(_):
-        _.curtime = 0
-        for wnd in _.windows.keys():
-            r = wnd.Rect
-            _.windows[wnd] = (r, r)
-            
-    def Finish(_):
-        _.curtime = _.time
-        for wnd in _.windows.keys():
-            start, end = _.windows[wnd]
-            wnd.Rect = end
-            _.windows[wnd] = (end, end)
-            
-        while len(_.killqueue):
-            del _.windows[_.killqueue.pop()]
+        self.AddWindow(window, r, remove)
 
-    def Update(_, dt):
+    def RemoveWindow(self, window):
+        i = self.windows.index(window)
+        if i != -1:
+            self.windows.pop(i)
+            self.startend.pop(i)
+
+    def Reset(self):
+        self.curtime = 0
+        i = 0
+        for wnd in self.windows:
+            r = wnd.Rect
+            self.startend[i] = (r, r)
+            i += 1
+
+    def Finish(self):
+        self.curtime = self.time
+        i = 0
+        for i in range(len(self.startend)):
+            start, end = self.startend[i]
+            self.windows[i].Rect = end
+            self.startend[i] = (end, end)
+
+        while len(self.killqueue):
+            i = self.windows.index(self.killqueue.pop())
+            self.windows.pop(i)
+            self.startend.pop(i)
+
+    def Update(self, dt):
         if dt == 0:
             return
-            
-        if _.curtime + dt >= _.time:
-            _.Finish()
+
+        if self.curtime + dt >= self.time:
+            self.Finish()
             return
-            
-        _.curtime += dt
-            
-        factor = float(dt) / _.time
-        for wnd, (start, end) in _.windows.items():
+
+        self.curtime += dt
+
+        factor = float(dt) / self.time
+        for wnd, (start, end) in zip(self.windows, self.startend):
             delta = map(lambda x, y: y - x, start, end)
-            wnd.Rect = map(lambda x, y: x + factor * y, wnd.Rect, delta)
-            
-    def Draw(_):
-        for wnd in _.windows.keys():
+            wnd.Rect = map(lambda x, y: int(x + factor * y), wnd.Rect, delta)
+
+    def Draw(self):
+        for wnd in self.windows:
             wnd.Draw()
 
-    def Execute(_):
-        _.curtime = 0
+    def Execute(self):
+        self.curtime = 0
         t = ika.GetTime()
-        while not _.Done:
+        while not self.Done:
             t2 = ika.GetTime()
             dt = t2 - t
             t = t2
-            
+
             ika.Map.Render()
-            
-            _.Update(dt)
-            _.Draw()
-            
+
+            self.Update(dt)
+            self.Draw()
+
             ika.Video.ShowPage()
             while t == ika.GetTime():
                 ika.Input.Update()
-            
-    Done = property(lambda _: _.curtime == _.time)
+
+        ika.Input.Unpress()
+
+    Done = property(lambda self: self.curtime == self.time)
 
 trans = Transition()

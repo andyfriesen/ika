@@ -15,17 +15,17 @@ class FPSManager(object):
         'count'
         ]
 
-    def __init__(_):
-        _.count = ika.GetTime()
+    def __init__(self):
+        self.count = ika.GetTime()
 
-    def Render(_, func):
-        _.count += 1 # What we wish the time was
+    def Render(self, func):
+        self.count += 1 # What we wish the time was
 
         t = ika.GetTime()
-        if t > _.count:     # behind schedule
+        if t > self.count:     # behind schedule
             return
 
-        if t == _.count:    # ahead of schedule.  Wait a second.
+        if t == self.count:    # ahead of schedule.  Wait a second.
             ika.Delay(1)
             
         func()

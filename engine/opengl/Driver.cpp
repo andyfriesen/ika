@@ -83,7 +83,8 @@ namespace OpenGL
             leverage texture-sharing for the font as well.
         */
 
-        if (src.Width() == 16 && src.Height() == 16)
+        // disabled for now, due to glitches and things
+        if (0 && src.Width() == 16 && src.Height() == 16)
         {
             Texture* tex = 0;
             for (std::hash_set<Texture*>::iterator

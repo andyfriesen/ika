@@ -15,80 +15,114 @@ import menu
 import widget
 import item
 import mainmenu
+from fps import FPSManager
 from menuwindows import *
 from misc import *
 from transition import *
 
 class ItemMenu(object):
-    def __init__(_, statbar):
-        _.menu = InventoryWindow()
+    def __init__(self, statbar):
+        self.statbar = statbar
+        self.menu = self.CreateInventoryWindow()
+        self.description = self.CreateDescriptionBar()
+        self.description.AddText('')
+
+    def CreateInventoryWindow(self):
+        return InventoryWindow()
+
+    #--------------------------------------------
+
+    # Maybe someone wants to make a multiline description field.
+    # Like Star Ocean.  You could even put an image in here somewhere, or something.
+    def CreateDescriptionBar(self):
+        desc = widget.TextFrame()
+        return desc
+
+    #--------------------------------------------
+
+    def UpdateDescriptionBar(self, item):
+        self.description.Text[0] = item.Description
+
+    #--------------------------------------------
+
+    def Layout(self):
+        self.description.DockTop().DockLeft()
+        self.menu.DockLeft().DockTop(self.description)
+
+        self.menu.YMax = (ika.Video.yres - self.menu.y - 20) / self.menu.Font.height
+        self.description.Right = self.statbar.x - self.statbar.border * 2
+
+    #--------------------------------------------
+
+    def StartShow(self):
+        self.Layout()
+        self.Refresh()
+
+        trans.AddWindowReverse(self.description, (self.description.x, -self.description.height * 2) )
+        trans.AddWindowReverse(self.menu, (self.menu.x, ika.Video.yres) )
+
+    #--------------------------------------------
+
+    def StartHide(self):
+        trans.AddWindow(self.description, (self.description.x, -self.description.height * 2), remove = True )
+        trans.AddWindow(self.menu, (self.menu.x, ika.Video.yres), remove = True )
+
+    #--------------------------------------------
+
+    def Refresh(self):
+        self.menu.Refresh(lambda i: i.fieldeffect is not None)
+        self.menu.AutoSize()
+        self.statbar.Refresh()
+        self.menu.Right = self.statbar.Left - self.statbar.border * 2
+
+        if len(party.inv) > 0:
+            self.menu.active = True
+        else:
+            self.menu.AddText('No Items')
+            self.menu.CursorPos = 0
+            self.menu.active = False
+
+        self.menu.Layout()
         
-        _.statbar = statbar
-
-        _.description = widget.TextFrame()
-        _.description.DockTop().DockLeft()
-        _.description.AddText( '' )
-        _.description.AutoSize()
-
-        _.menu.DockLeft().DockTop(_.description)
-        _.description.Right = _.statbar.x - _.statbar.border * 2
-        _.menu.YMax = (ika.Video.yres - _.menu.y - 20) / _.menu.Font.height
-
-    #--------------------------------------------
-    
-    def StartShow(_):
-        _.description.DockTop().DockLeft()
-        _.menu.DockLeft().DockTop(_.description)
-        _.description.Right = _.statbar.x - _.statbar.border * 2
-        _.Refresh()
-
-        trans.AddWindowReverse(_.description, (_.description.x, -_.description.height) )
-        trans.AddWindowReverse(_.menu, (_.menu.x, ika.Video.yres) )
-
-    #--------------------------------------------
-    
-    def StartHide(_):
-        trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True )
-        trans.AddWindow(_.menu, (_.menu.x, ika.Video.yres), remove = True )
-
-    #--------------------------------------------
-
-    def Refresh(_):
-        _.menu.Refresh(lambda i: i.fieldeffect is not None)
-        _.menu.AutoSize()
-        _.statbar.Refresh()
+            
         trans.Reset()
 
     #--------------------------------------------
 
-    def Update(_):
-        result = _.menu.Update()
+    def Update(self):
+        result = self.menu.Update()
         if result == menu.Cancel:
             return menu.Cancel
-        
+
         if result is not None:
-            item = party.inv[_.menu.CursorPos].item
+            item = party.inv[self.menu.CursorPos].item
 
             if item.fieldeffect is not None:
                 result = item.fieldeffect()
                 if result is None and item.consumable:
                     party.inv.Take(item.name)
-                _.Refresh()
+                self.Refresh()
 
     #--------------------------------------------
 
-    def Execute(_):
-        
-        while True:
-            if _.Update() is not None:
-                break
-            
+    def Execute(self):
+        def Draw():
             ika.Map.Render()
-            _.description.Text[0] = party.inv[_.menu.CursorPos].Description
-            for x in (_.menu, _.statbar, _.description):
-                x.Draw()
-            ika.Video.ShowPage()
+            trans.Draw()
 
+        fps = FPSManager()
+
+        while True:
+            oldPos = self.menu.CursorPos
+            result = self.Update()
+
+            if result is not None:
+                break
+
+            if oldPos != self.menu.CursorPos:
+                self.UpdateDescriptionBar(party.inv[self.menu.CursorPos])
+
+            fps.Render(Draw)
 
         return True
 

@@ -32,58 +32,59 @@ class StatusMenu(object):
         'charidx'           # Index of the current character
         ]
         
-    def __init__(_, statbar):
-        _.statbar = statbar
-        _.portraitwindow = PortraitWindow()
-        _.statwindow = StatusWindow()
-        _.equipwindow = EquipWindow()
-        _.skillwindow = SkillWindow()
-        _.charidx = 0
+    def __init__(self, statbar):
+        self.statbar = statbar
+        self.portraitwindow = PortraitWindow()
+        self.statwindow = StatusWindow()
+        self.equipwindow = EquipWindow()
+        self.skillwindow = SkillWindow()
+        self.charidx = 0
         
-    CurChar = property(lambda _: party[_.charidx])
+    CurChar = property(lambda self: party[self.charidx])
     
-    def StartShow(_):
-        _.Refresh(_.CurChar)
+    def StartShow(self):
+        self.Refresh(self.CurChar)
         
         trans = Transition()
-        trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
-        trans.AddWindowReverse(_.statwindow, (ika.Video.xres, _.statwindow.y))
-        trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
-        trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, ika.Video.yres))
+        trans.AddWindowReverse(self.portraitwindow, (-self.portraitwindow.width, self.portraitwindow.y))
+        trans.AddWindowReverse(self.statwindow, (ika.Video.xres, self.statwindow.y))
+        trans.AddWindowReverse(self.equipwindow, (self.equipwindow.x, -self.equipwindow.height))
+        trans.AddWindowReverse(self.skillwindow, (self.skillwindow.x, ika.Video.yres))
         
-    def StartHide(_):
-        trans.AddWindow(_.portraitwindow, (ika.Video.xres, _.portraitwindow.y), remove = True)
-        trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
-        trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)
-        trans.AddWindow(_.skillwindow, (_.skillwindow.x, ika.Video.yres), remove = True)
+    def StartHide(self):
+        trans.AddWindow(self.portraitwindow, (ika.Video.xres, self.portraitwindow.y), remove = True)
+        trans.AddWindow(self.statwindow, (-self.statwindow.width, self.statwindow.y), remove = True)
+        trans.AddWindow(self.equipwindow, (self.equipwindow.x, -self.equipwindow.height), remove = True)
+        trans.AddWindow(self.skillwindow, (self.skillwindow.x, ika.Video.yres), remove = True)
 
-    def Refresh(_, curchar):
-        _.portraitwindow.Refresh(curchar)
-        _.statwindow.Refresh(curchar)
-        _.equipwindow.Refresh(curchar)
-        _.skillwindow.Refresh(curchar)
+    def Refresh(self, curchar):
+        self.portraitwindow.Refresh(curchar)
+        self.statwindow.Refresh(curchar)
+        self.equipwindow.Refresh(curchar)
+        self.skillwindow.Refresh(curchar)
 
-        if _.skillwindow.Text.Length == 0:
-            _.skillwindow.AddText('No skills')
+        if self.skillwindow.Text.Length == 0:
+            self.skillwindow.AddText('No skills')
     
-        _.statbar.Refresh()
-        _.portraitwindow.DockTop().DockLeft()
-        _.statwindow.DockTop(_.portraitwindow).DockLeft()
-        _.statwindow.width = _.portraitwindow.width
-        _.equipwindow.DockTop().DockLeft(_.portraitwindow)
-        _.skillwindow.DockTop(_.equipwindow).DockLeft(_.statwindow)
-        _.equipwindow.Right = _.statbar.x - _.statbar.border * 2
-        _.skillwindow.width = _.equipwindow.width
+        self.statbar.Refresh()
+        self.portraitwindow.DockTop().DockLeft()
+        self.statwindow.DockTop(self.portraitwindow).DockLeft()
+        self.statwindow.width = self.portraitwindow.width
+        self.equipwindow.DockTop().DockLeft(self.portraitwindow)
+        self.skillwindow.DockTop(self.equipwindow).DockLeft(self.statwindow)
+        self.equipwindow.Right = self.statbar.x - self.statbar.border * 2
+        self.skillwindow.width = self.equipwindow.width
+        self.skillwindow.Layout()
         
 
-    def Execute(_):
+    def Execute(self):
         curchar = 0
     
-        _.Refresh(party[curchar])
+        self.Refresh(party[curchar])
     
         while 1:
             ika.Map.Render()
-            for x in (_.equipwindow, _.statwindow, _.statbar, _.portraitwindow, _.skillwindow):
+            for x in (self.equipwindow, self.statwindow, self.statbar, self.portraitwindow, self.skillwindow):
                 x.Draw()
                 
             ika.Video.ShowPage()
@@ -91,11 +92,11 @@ class StatusMenu(object):
             ika.Input.Update()
             if left() and curchar > 0:
                 curchar -= 1
-                _.Refresh(party[curchar])
+                self.Refresh(party[curchar])
     
             if right() and curchar < len(party) - 1:
                 curchar += 1
-                _.Refresh(party[curchar])
+                self.Refresh(party[curchar])
     
             if enter() or cancel():
                 break

@@ -22,6 +22,8 @@ inv     = None # party's current inventory
 
 import ika
 import char
+import effects
+
 from item import *
 from skill import *
 from exception import *
@@ -31,7 +33,7 @@ from skilldatabase import SkillDatabase
 def Init(itemdat = 'items.dat', fielditemeffects = None, battleitemeffects = None, skilldat = 'skills.dat', fieldskilleffects = None, battleskilleffects = None):
     global itemdb, skilldb, inv
 
-    #try:    
+    #try:
     itemdb = ItemDatabase()
     itemdb.Init(itemdat, fielditemeffects, battleitemeffects)
     skilldb = SkillDatabase()
@@ -42,32 +44,36 @@ def Init(itemdat = 'items.dat', fielditemeffects = None, battleitemeffects = Non
 
 #------------------------------------------------------------------------------
 
-def AddCharacter(name,datname=''):
+def CacheCharacter(name, datName = ''):
+    if name in chars:   return
+
+    if datName == '':
+        datName = name + '.dat'
+
+    chars[name] = char.Character(datName)
+
+def AddCharacter(name,datName=''):
     global chars
     global party
     global player
 
-    if name not in chars:
-        if datname == '':
-            datname = name + '.dat'
-
-        chars[name] = char.Character(datname)
+    CacheCharacter(name, datName)
 
     if chars[name] in party:        # already in the party?
         return
 
     party.append(chars[name])
-
-    if len(party) == 1:
-        chars[name].Spawn(0, 0)     # arbitrary position
-        player = chars[name].ent
-        ika.SetPlayer(player)
-    else:
-        chars[name].Spawn(player.x,player.y)
-        chars[name].ent.Chase(party[-2].ent, 24) # chase the one ahead
-        chars[name].ent.isobs = False
-        #chars[name].ent.mapobs = False
-        chars[name].ent.entobs = False
+    
+    #if len(party) == 1:
+    #    chars[name].Spawn(0, 0)     # arbitrary position
+    #    player = chars[name].ent
+    #    ika.SetPlayer(player)
+    #else:
+    #    chars[name].Spawn(player.x,player.y)
+    #    chars[name].ent.Chase(party[-2].ent, 24) # chase the one ahead
+    #    chars[name].ent.isobs = False
+    #    chars[name].ent.mapobs = False
+    #    chars[name].ent.entobs = False
 
 #------------------------------------------------------------------------------
 
@@ -106,9 +112,31 @@ def Warp(x,y,fade = 0):
 
 #------------------------------------------------------------------------------
 
-def MapSwitch(x,y,mapname,fade = 0):
-    ika.Map.Switch(mapname)
-    Warp(x, y, fade)
+def MapSwitch(x, y, layer, mapName, fade = False, fadeOut = False, fadeIn = None):
+    global player
+
+    if fade or fadeOut:
+        effects.FadeOut(100)
+
+    ika.Map.Switch(mapName)
+    metaData = ika.Map.GetMetaData()
+    if 'entitylayer' in metaData:
+        layName = metaData['entitylayer']
+        layer = ika.Map.FindLayerByName(metaData['entitylayer']) or layer
+
+    party[0].Spawn(x, y, layer)
+    player = party[0].ent
+
+    if fade or fadeIn:
+        effects.FadeIn(100)
+
+    #for ch in party:
+    #    if ch.ent is not None:
+    #        ch.ent.x = x
+    #        ch.ent.y = y
+    #    else:
+    #        ch.Spawn(x, y, layer)
+    #Warp(x, y, fade)
 
 #------------------------------------------------------------------------------
 

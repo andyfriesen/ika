@@ -21,9 +21,11 @@ class Window(object):
         'iBottomleft',      # Bottom left corner
         'iBottomright',     # Bottom right corner
         'iCentre',          # Center area
-        'Blit'              # Blitting function used to draw the edges and centre area.  For internal use only.
+        'Blit',             # Blitting function used to draw the edges and centre area.  For internal use only.
+        'border',           # amound of "breathing room" the window wants to have.  Defaults to the exact size of the border images
         ]
-    def __init__(_, srcimage, bordersize, stretch = 0):
+    
+    def __init__(self, srcimage, bordersize, stretch = 0):
         def ss(x, y, w, h):
             c = ika.Canvas(w, h)
             srcimage.Blit(c, -x, -y)
@@ -35,66 +37,63 @@ class Window(object):
         edgex = srcimage.width  - (bordersize * 2)
         edgey = srcimage.height - (bordersize * 2)
 
-        _.iLeft         = ss(0,                 bordersize,     bordersize, edgey)
-        _.iRight        = ss(edgex + bordersize, bordersize,    bordersize, edgey)
-        _.iTop          = ss(bordersize,        0,                  edgex, bordersize)
-        _.iBottom       = ss(bordersize,        edgey + bordersize, edgex, bordersize)
-        _.iTopleft      = ss(0,                 0,              bordersize, bordersize)
-        _.iTopright     = ss(edgex + bordersize, 0,             bordersize, bordersize)
-        _.iBottomleft   = ss(0,                 edgey + bordersize, bordersize, bordersize)
-        _.iBottomright  = ss(edgex + bordersize, edgey + bordersize, bordersize, bordersize)
-        _.iCentre       = ss(bordersize,        bordersize,     edgex, edgey)
+        self.iLeft         = ss(0,                  bordersize,         bordersize, edgey)
+        self.iRight        = ss(edgex + bordersize, bordersize,         bordersize, edgey)
+        self.iTop          = ss(bordersize,         0,                  edgex,      bordersize)
+        self.iBottom       = ss(bordersize,         edgey + bordersize, edgex,      bordersize)
+        self.iTopleft      = ss(0,                  0,                  bordersize, bordersize)
+        self.iTopright     = ss(edgex + bordersize, 0,                  bordersize, bordersize)
+        self.iBottomleft   = ss(0,                  edgey + bordersize, bordersize, bordersize)
+        self.iBottomright  = ss(edgex + bordersize, edgey + bordersize, bordersize, bordersize)
+        self.iCentre       = ss(bordersize,         bordersize,         edgex,      edgey)
+
+        self.border = self.iLeft.width        
         
         if stretch:
-            _.Blit = ika.Video.ScaleBlit
+            self.Blit = ika.Video.ScaleBlit
         else:
-            _.Blit = ika.Video.TileBlit
+            self.Blit = ika.Video.TileBlit
 
     #----------------------------------------------------------------
 
-    def Draw(_, x1, y1, x2, y2):
-        b = _.Left / 2
+    def Draw(self, x1, y1, x2, y2):
+        b = self.Left / 2
         x1 -= b
         y1 -= b
         x2 += b
         y2 += b
 
-        ika.Video.Blit(_.iTopleft,  x1 - _.iTopleft.width, y1 - _.iTopleft.height)
-        ika.Video.Blit(_.iTopright, x2, y1 - _.iTopright.height)
-        ika.Video.Blit(_.iBottomleft, x1 - _.iBottomleft.width, y2)
-        ika.Video.Blit(_.iBottomright, x2, y2)
+        ika.Video.Blit(self.iTopleft,  x1 - self.iTopleft.width, y1 - self.iTopleft.height)
+        ika.Video.Blit(self.iTopright, x2, y1 - self.iTopright.height)
+        ika.Video.Blit(self.iBottomleft, x1 - self.iBottomleft.width, y2)
+        ika.Video.Blit(self.iBottomright, x2, y2)
 
-        _.Blit(_.iLeft, x1 - _.iLeft.width, y1, _.iLeft.width, y2 - y1)
-        _.Blit(_.iRight, x2, y1, _.iRight.width, y2 - y1)
+        self.Blit(self.iLeft, x1 - self.iLeft.width, y1, self.iLeft.width, y2 - y1)
+        self.Blit(self.iRight, x2, y1, self.iRight.width, y2 - y1)
 
-        _.Blit(_.iTop, x1, y1 - _.iTop.height, x2 - x1, _.iTop.height)
-        _.Blit(_.iBottom, x1, y2, x2 - x1, _.iBottom.height)
+        self.Blit(self.iTop, x1, y1 - self.iTop.height, x2 - x1, self.iTop.height)
+        self.Blit(self.iBottom, x1, y2, x2 - x1, self.iBottom.height)
 
-        _.Blit(_.iCentre, x1, y1, x2 - x1, y2 - y1)    
+        self.Blit(self.iCentre, x1, y1, x2 - x1, y2 - y1)    
 
-    Left   = property( lambda _: _.iLeft.width )
-    Right  = property( lambda _: _.iRight.width )
-    Top    = property( lambda _: _.iTop.height )
-    Bottom = property( lambda _: _.iBottom.height )
-    #Left = Right = property( lambda _: _.iLeft.width )
-    #Top = Bottom = property( lambda _: _.iTop.height )
+    Left   = property( lambda self: self.border )
+    Right  = property( lambda self: self.border )
+    Top    = property( lambda self: self.border )
+    Bottom = property( lambda self: self.border )
+    #Left = Right = property( lambda self: self.iLeft.width )
+    #Top = Bottom = property( lambda self: self.iTop.height )
 
 
 #--------------------------------------------------------------------
 
 class SimpleWindow(object):
-    __slots__ = [
-        'border',       # Colour of the border
-        'bg'            # Colour of the background
-        ]
-    
-    def __init__(_, bordercolour = ika.RGB(0, 0, 0), backgroundcolour = ika.RGB(0, 0, 255)):
-        _.border = bordercolour
-        _.bg = backgroundcolour
+    def __init__(self, bordercolour = ika.RGB(0, 0, 0), backgroundcolour = ika.RGB(0, 0, 255)):
+        self._border = bordercolour
+        self._bg = backgroundcolour
 
-    def Draw(_, x1, y1, x2, y2):
-        ika.Video.DrawRect(x1, y1, x2, y2, _.__bg, True)
-        ika.Video.DrawRect(x1, y1, x2, y2, _.__border, False)
+    def Draw(self, x1, y1, x2, y2):
+        ika.Video.DrawRect(x1, y1, x2, y2, self._bg, True)
+        ika.Video.DrawRect(x1, y1, x2, y2, self._border, False)
 
     Top = Bottom = Left = Right = property(lambda a: 1)
     
@@ -104,12 +103,16 @@ class SimpleWindow(object):
 class GradientWindow(object):
     __slots__ = ['c1', 'c2', 'c3', 'c4'] # Colour of each corner of the window
     
-    def __init__(_, c1, c2, c3, c4):
-        _.c1 = c1
-        _.c2 = c2
-        _.c3 = c3
-        _.c4 = c4
+    def __init__(self, c1, c2, c3, c4):
+        self.c1 = c1
+        self.c2 = c2
+        self.c3 = c3
+        self.c4 = c4
 
-    def Draw(_, x1, y1, x2, y2):
-        ika.Video.DrawTriangle((x1, y1, _.c1), (x2, y1, _.c2), (x2, y2, _.c3))
-        ika.Video.DrawTriangle((x2, y2, _.c3), (x1, y2, _.c4), (x1, y1, _.c1))
+    def Draw(self, x1, y1, x2, y2):
+        ika.Video.DrawTriangle((x1, y1, self.c1), (x2, y1, self.c2), (x2, y2, self.c3))
+        ika.Video.DrawTriangle((x2, y2, self.c3), (x1, y2, self.c4), (x1, y1, self.c1))
+        ika.Video.DrawRect(x1, y1, x2, y2, ika.RGB(0, 0, 0), False)
+
+    Top = Bottom = Left = Right = property(lambda a: 1)
+

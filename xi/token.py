@@ -9,62 +9,62 @@
 # suitability of this code for any purpose.
 
 class TokenStream:
-    def __init__(_, filename):
+    def __init__(self, filename):
         f = open(filename, 'rt')
-        _.text = f.read()
-        _.curpos = 0
-        _.delimiters = ' \t\n\r\0'
+        self.text = f.read()
+        self.curpos = 0
+        self.delimiters = ' \t\n\r\0'
         f.close()
 
-    def EOF(_):
-        if _.curpos < len(_.text):
+    def EOF(self):
+        if self.curpos < len(self.text):
             return 0
         else:
             return 1
 
-    def GetChar(_):
-        if _.curpos >= len(_.text):
+    def GetChar(self):
+        if self.curpos >= len(self.text):
             return 0
 
-        c = _.text[_.curpos]
-        _.curpos += 1
+        c = self.text[self.curpos]
+        self.curpos += 1
         return c
 
-    def WhiteSpace(_):
-        while not _.EOF():
-            c = _.text[_.curpos]
+    def WhiteSpace(self):
+        while not self.EOF():
+            c = self.text[self.curpos]
 
             # comment skipper
             if c == '#':
-                while not _.EOF() and _.text[_.curpos] != '\n':
-                    _.curpos += 1
+                while not self.EOF() and self.text[self.curpos] != '\n':
+                    self.curpos += 1
                 continue
 
-            if not c in _.delimiters:
+            if not c in self.delimiters:
                 return
 
-            _.curpos += 1
+            self.curpos += 1
 
-    def Next(_):
-        _.WhiteSpace()
+    def Next(self):
+        self.WhiteSpace()
 
         s = ''
-        while not _.EOF():
-            c = _.GetChar()
+        while not self.EOF():
+            c = self.GetChar()
 
-            if c in _.delimiters:
+            if c in self.delimiters:
                 break
 
             s += c
             
         return s
 
-    def GetLine(_):
-        _.WhiteSpace()
+    def GetLine(self):
+        self.WhiteSpace()
 
         s = ''
         while 1:
-            c = _.GetChar()
+            c = self.GetChar()
 
             if c == '\n' or c == '':
                 return s

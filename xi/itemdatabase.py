@@ -8,8 +8,6 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from __future__ import generators
-
 from token import TokenStream
 from statelessproxy import StatelessProxy
 from exception import XiException
@@ -96,9 +94,8 @@ class ItemDatabase(StatelessProxy):
                 elif t == 'end':
                     break
                 else:
-                    print f.Next()
                     raise XiException('Unknown items.dat directive ' + `t`)
-                            
+
             return i
                 
         file = TokenStream(filename)

@@ -17,13 +17,13 @@ from misc import *
 from transition import trans
 
 class CharSelectMenu(Menu):
-    def __init__(_, *args):
-        Menu.__init__(_, *args)
-        _.Refresh()
+    def __init__(self, *args):
+        Menu.__init__(self, *args)
+        self.Refresh()
         
-    def Refresh(_):
-        _.Clear()
-        _.AddText(*[ x.name for x in party ])
+    def Refresh(self):
+        self.Clear()
+        self.AddText(*[ x.name for x in party ])
         
 def ChooseCharacter():
     charselect = CharSelectMenu()

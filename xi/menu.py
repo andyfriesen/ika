@@ -8,8 +8,6 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from __future__ import generators
-
 import ika
 import widget
 import cursor
@@ -18,13 +16,14 @@ from misc import *
 
 #------------------------------------------------------------------------------
 
-defaultcursor = cursor.Cursor(widget.defaultfont)
+def GetDefaultCursor():
+    return cursor.Cursor(widget.defaultfont)
 
 # Unique object returned when a menu was cancelled.
 Cancel = object()
 # Key repeat delay
 DELAY = 50
-MOVE_DELAY = 10
+MOVE_DELAY = 5
 
 def SetDefaultCursor(csr):
     global defaultcursor
@@ -47,109 +46,111 @@ class Menu(widget.Frame):
         #'Update',       # Update coroutine
         ]
     
-    def __init__(_, x = 0 , y = 0, cursor = None, textcontrol = None):
-        global defaultcursor
+    def __init__(self, x = 0 , y = 0, cursor = None, textcontrol = None):
+        
+        widget.Frame.__init__(self)
+        self.menuitems = textcontrol or widget.TextLabel()
 
-        widget.Frame.__init__(_)
-        _.menuitems = textcontrol or widget.TextLabel()
+        self.widgets.append(self.menuitems)
+        self.cursor = cursor or GetDefaultCursor()
+        self.cursorwidth = self.cursor.Width * 2 / 3
+        self.menuitems.x = self.cursorwidth
 
-        _.widgets.append(_.menuitems)
-        _.cursor = cursor or defaultcursor
-        _.cursorwidth = _.cursor.Width * 2 / 3
-        _.menuitems.x = _.cursorwidth
+        self.Position = (x, y)
+        self.Size = self.menuitems.Size
+        self.width += self.cursorwidth
+        self.cursorcount = DELAY
 
-        _.Position = (x, y)
-        _.Size = _.menuitems.Size
-        _.width += _.cursorwidth
-        _.cursorcount = DELAY
+        self.pagesize = self.height / self.menuitems.font.height    # The number of menu items that fit in the window at one time
 
-        _.pagesize = _.height / _.menuitems.font.height    # The number of menu items that fit in the window at one time
+        self.ypos = 0                                         # The position of the cursor, on the menu
+        self.active = True
 
-        _.ypos = 0                                         # The position of the cursor, on the menu
-        _.active = True
+        #self.Update = self.__Update().next
 
-        #_.Update = _.__Update().next
+    def set_YPage(self, value):
+        self.menuitems.YPage = value
 
-    def set_YPage(_, value):
-        _.menuitems.YPage = value
+    def set_YMax(self, value):
+        self.menuitems.YMax = value
 
-    def set_YMax(_, value):
-        _.menuitems.YMax = value
-
-    def set_CursorPos(_, value):
-        if value - _.YPage < _.pagesize:
-            _.ypos = value - _.YPage
+    def set_CursorPos(self, value):
+        if value - self.YPage < self.pagesize:
+            self.ypos = value - self.YPage
         else:
-            _.YPage = value
-            _.ypos = 0
+            self.YPage = value
+            self.ypos = 0
 
-    CursorPos = property(lambda _: _.ypos + _.YPage, set_CursorPos)
-    YPage = property(lambda _: _.menuitems.YPage, set_YPage)
-    YMax = property(lambda _: _.menuitems.YMax, set_YMax)
-    Font = property(lambda _: _.menuitems.font)
-    Text = property(lambda _: _.menuitems)
+    CursorPos = property(lambda self: self.ypos + self.YPage, set_CursorPos)
+    YPage = property(lambda self: self.menuitems.YPage, set_YPage)
+    YMax = property(lambda self: self.menuitems.YMax, set_YMax)
+    Font = property(lambda self: self.menuitems.font)
+    Text = property(lambda self: self.menuitems)
 
-    def Draw(_):
-        widget.Frame.Draw(_)
+    def Draw(self):
+        widget.Frame.Draw(self)
 
-        if _.active:
-            _.cursor.Draw(_.x + _.cursorwidth, _.y + (_.ypos + 0.5) * _.menuitems.font.height)
+        if self.active:
+            self.cursor.Draw(self.x + self.cursorwidth, self.y + (self.ypos + 0.5) * self.menuitems.font.height)
 
-    def Clear(_):
-        _.menuitems.Clear()
+    def Clear(self):
+        self.menuitems.Clear()
 
-    def AddText(_,*args):
-        _.menuitems.AddText(*args)
-        _.AutoSize()
+    def AddText(self,*args):
+        self.menuitems.AddText(*args)
+        self.AutoSize()
 
-    def AutoSize(_):
-        _.menuitems.AutoSize()
-        widget.Frame.AutoSize(_)
-        _.pagesize = _.height / _.menuitems.font.height
+    def AutoSize(self):
+        self.menuitems.AutoSize()
+        widget.Frame.AutoSize(self)
+        self.pagesize = self.height / self.menuitems.font.height
 
-    def Update(_):
+    def Update(self):
         def MoveUp():
-            if _.ypos > 0:      _.ypos -= 1
-            elif _.YPage > 0:   _.YPage -= 1
+            if self.ypos > 0:      self.ypos -= 1
+            elif self.YPage > 0:   self.YPage -= 1
 
         def MoveDown():
-            if _.ypos < _.pagesize - 1:
-                _.ypos += 1
-            elif _.YPage < _.menuitems.Length - _.pagesize:
-                _.YPage += 1
+            if self.CursorPos == self.menuitems.Length - 1:
+                return
+            
+            if self.ypos < self.pagesize - 1:
+                self.ypos += 1
+            elif self.YPage < self.menuitems.Length - self.pagesize:
+                self.YPage += 1
 
         #--
                 
         ika.Input.Update()
 
         if ika.Input.up.Position():
-            if _.cursorcount == 0 or _.cursorcount == DELAY:
+            if self.cursorcount == 0 or self.cursorcount == DELAY:
                 MoveUp()
+            self.cursorcount -= 1
+            if self.cursorcount < 0:
+                self.cursorcount = MOVE_DELAY
+
 
         elif ika.Input.down.Position():
-            if _.cursorcount == 0 or _.cursorcount == DELAY:
+            if self.cursorcount == 0 or self.cursorcount == DELAY:
                 MoveDown()
+            self.cursorcount -= 1
+            if self.cursorcount < 0:
+                self.cursorcount = MOVE_DELAY
 
-        elif enter():
-            return _.CursorPos
+        else:
+            self.cursorcount = DELAY
+
+        if enter():
+            return self.CursorPos
 
         elif cancel():
             return Cancel
 
-        else:
-            _.cursorcount = DELAY
-            return None
-
-        # if not ika.Input.up.Position() and not ika.Input.down.Position():
-        # not needed because the else clause returns.
-        _.cursorcount -= 1
-        if _.cursorcount < 0:
-            _.cursorcount = MOVE_DELAY
-
         return None            
 
-    def Execute(_):
-        _.ypos = _.YPage = 0
+    def Execute(self):
+        self.ypos = self.YPage = 0
         t = ika.GetTime()
 
         while 1:
@@ -158,11 +159,11 @@ class Menu(widget.Frame):
             t = time
 
             while delta > 0:            
-                result = _.Update()
+                result = self.Update()
                 if result is not None:
                     return result
 
             map.Render()
                 
-            _.Draw()
+            self.Draw()
             ika.Video.ShowPage()

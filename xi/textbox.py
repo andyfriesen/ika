@@ -18,13 +18,13 @@ from misc import *
 def Text(text, portrait = None, font = None, wnd = None):
     wnd = wnd or widget.defaultwindow
     font = font or widget.defaultfont
-    
-    w = (ika.Video.xres - wnd.iLeft.width - wnd.iRight.width) / font.width
-    t = WrapText(text, w);
-    
-    x1 = wnd.iLeft.width
-    x2 = ika.Video.xres - wnd.iRight.width
-    y2 = ika.Video.yres - wnd.iBottom.height
+
+    w = (ika.Video.xres) - 2 * (wnd.Left + wnd.Right)
+    t = WrapText(text, w, font);
+
+    x1 = wnd.Left
+    x2 = ika.Video.xres - wnd.Right
+    y2 = ika.Video.yres - wnd.Bottom
     y1 = y2 - len(t) * font.height
 
     while not enter():

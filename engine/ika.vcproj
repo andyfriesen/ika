@@ -149,9 +149,6 @@
 				RelativePath=".\input.cpp">
 			</File>
 			<File
-				RelativePath="joystick.cpp">
-			</File>
-			<File
 				RelativePath=".\main.cpp">
 			</File>
 			<File
@@ -190,9 +187,6 @@
 			</File>
 			<File
 				RelativePath=".\input.h">
-			</File>
-			<File
-				RelativePath="joystick.h">
 			</File>
 			<File
 				RelativePath=".\main.h">
