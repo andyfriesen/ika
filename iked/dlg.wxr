@@ -1,5 +1,5 @@
 static char *ConfigDlg = "dialog(name = 'ConfigDlg',\
-  style = 'wxRAISED_BORDER | wxCAPTION | wxSYSTEM_MENU | wxDIALOG_MODAL',\
+  style = 'wxRAISED_BORDER | wxCAPTION | wxDIALOG_MODAL',\
   title = 'Configuration',\
   id = 100,\
   x = 10, y = 10, width = 225, height = 90,\

@@ -1,3 +1,4 @@
+#include "configdlg.h"
 #include "main.h"
 
 #include "resource.h"
@@ -25,7 +26,7 @@ bool CApp::OnInit()
     SetTopWindow(mainwnd);
 
     wxResourceParseData(ConfigDlg);
-    
+  
     return TRUE;
 }
 
@@ -165,6 +166,19 @@ void CMainWnd::Open(const std::string& fname)
             codeview->SetFocus();
             return;
         }
+    case t_config:
+        {
+            wxDialog* dlg=new wxDialog();
+            dlg->LoadFromResource(this,"ConfigDlg");
+            dlg->ShowModal();
+            dlg->Destroy();
+/*            CConfigDlg* configdlg=new CConfigDlg(
+                this,
+                -1,
+                "Config"
+                );
+            return;*/
+        }
     default:
         wxMessageDialog(this,"Not implemented yet","NYI",wxOK).ShowModal();
     };       
@@ -172,20 +186,21 @@ void CMainWnd::Open(const std::string& fname)
 
 FileType CMainWnd::GetFileType(const std::string& fname)
 {
-    const int nExt=8;
+    const int nExt=9;
     char* ext[] =
     {
         "",
-        ".",
-        ".ikaprj",
-        ".py",
-        ".vsp",
-        ".chr",
-        ".fnt",
-        ".map"
+        "",
+        "ikaprj",
+        "py",
+        "vsp",
+        "chr",
+        "fnt",
+        "map",
+        "cfg",
     };
 
-    int idx=fname.rfind(".");
+    int idx=fname.rfind(".")+1;
 
     std::string sExt=fname.substr(idx);
     

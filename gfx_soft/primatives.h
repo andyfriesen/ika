@@ -13,10 +13,10 @@ bool gfxSetPixel(handle img,int x,int y,int colour)
         y<0 || y>=img->nHeight)
         return false;
     
-    u32* p=img->pData+y*img->nPitch+x;
+    BGRA* p=img->pData+y*img->nPitch+x;
     
     *p=Blend_Pixels(colour,img->pData[y*img->nPitch+x]);
-    *p|=0xFF000000;																				// max out the alpha
+    p->a=255;																				// max out the alpha
     
     RescanImage(img,colour>>24==0,colour>>24==255,colour>>24!=0 || colour>>24!=255);
     
@@ -28,7 +28,7 @@ int gfxGetPixel(handle img,int x,int y)
     if (x<0 || x>=img->nWidth ||
         y<0 || y>=img->nHeight)
         return 0;
-    return img->pData[y*img->nPitch+x];
+    return SwapBR(img->pData[y*img->nPitch+x]);
 }
 
 void HLine(handle img,int x1,int x2,int y,u32 colour)
@@ -41,7 +41,7 @@ void HLine(handle img,int x1,int x2,int y,u32 colour)
     keepinrange(x1,img->rClip.left,img->rClip.right-1);
     keepinrange(x2,img->rClip.left,img->rClip.right-1);
     
-    u32* p=img->pData+(y*img->nPitch)+x1;
+    BGRA* p=img->pData+(y*img->nPitch)+x1;
     
     int xlen=x2-x1;
     
@@ -63,7 +63,7 @@ void VLine(handle img,int x,int y1,int y2,u32 colour)
     keepinrange(y1,img->rClip.top,img->rClip.bottom-1);
     keepinrange(y2,img->rClip.top,img->rClip.bottom-1);
     
-    u32* p=img->pData+(y1*img->nPitch)+x;
+    BGRA* p=img->pData+(y1*img->nPitch)+x;
     
     int yinc=img->nWidth;
     
@@ -77,7 +77,7 @@ void VLine(handle img,int x,int y1,int y2,u32 colour)
     while (ylen--);
 }
 
-bool gfxRect(handle img,int x1,int y1,int x2,int y2,u32 colour,bool filled)
+bool gfxRect(handle img,int x1,int y1,int x2,int y2,RGBA colour,bool filled)
 {
     if (filled)
     {
@@ -124,12 +124,13 @@ bool gfxEllipse(handle img,int cx,int cy,int radx,int rady,u32 colour,bool fill)
     int x;
     
     if (fill)
-        HLine(img,cx-radx,cx+radx,cy,colour);
+        HLine(img,cx-radx,cx+radx,cy,SwapBR(colour));
     else
     {
         gfxSetPixel(img,cx+radx,cy,colour);
         gfxSetPixel(img,cx-radx,cy,colour);
     }
+    colour=SwapBR(colour);
     
     mx1=cx-radx;	my1=cy;
     mx2=cx+radx;	my2=cy;
@@ -203,6 +204,7 @@ bool gfxLine(handle img,int x1, int y1, int x2, int y2, u32 colour)
         return true;
     }
     
+    colour=SwapBR(colour);
     //its good to have these handy
     int cx1=img->rClip.left;
     int cx2=img->rClip.right-1;

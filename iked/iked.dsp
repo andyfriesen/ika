@@ -50,7 +50,7 @@ RSC=rc.exe
 # ADD BASE MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "NDEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /d "NDEBUG"
-# ADD RSC /l 0x809 /d "NDEBUG"
+# ADD RSC /l 0x809 /i "\wx2\include\msw\wx.rc" /d "NDEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -79,7 +79,7 @@ LINK32=link.exe
 # ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
-# ADD RSC /l 0x809 /d "_DEBUG"
+# ADD RSC /l 0x809 /i "\wx2\include\msw\wx.rc" /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
@@ -102,6 +102,10 @@ SOURCE=.\codeview.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\configdlg.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
@@ -115,6 +119,10 @@ SOURCE=.\projectview.cpp
 # Begin Source File
 
 SOURCE=.\codeview.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\configdlg.h
 # End Source File
 # Begin Source File
 
@@ -169,6 +177,13 @@ SOURCE=..\..\ika\common\strk.h
 SOURCE=..\..\ika\common\types.h
 # End Source File
 # End Group
+# Begin Group "Resources"
+
+# PROP Default_Filter ""
+# Begin Source File
+
+SOURCE=.\dlg.wxr
+# End Source File
 # Begin Source File
 
 SOURCE=.\font.ico
@@ -193,5 +208,6 @@ SOURCE=.\py.ico
 
 SOURCE=.\vsp.ico
 # End Source File
+# End Group
 # End Target
 # End Project

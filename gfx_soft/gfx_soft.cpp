@@ -34,6 +34,13 @@ int nScreensurfacewidth,nScreensurfaceheight;		// width/height of the screen sur
 static int nImagecount=0;							// Running count of images, for debugging purposes
 static bool bInited=false;
 
+inline u32 SwapBR(u32 c)
+{
+    u32 r=c&0x00FF0000;
+    u32 b=c&0x000000FF;
+    return (c&0xFF00FF00)|(r>>16)|(b<<16);
+}
+
 inline void ValidateClipRect(handle& img)
 {
     if (img->rClip.left<0) img->rClip.left=0;
@@ -42,7 +49,7 @@ inline void ValidateClipRect(handle& img)
     if (img->rClip.bottom>img->nHeight) img->rClip.bottom=img->nHeight;
 }
 
-inline int Blend_Pixels(u32 c1,u32 c2)
+inline u32 Blend_Pixels(u32 c1,u32 c2)
 {
     u32 c;
     
@@ -262,8 +269,8 @@ handle gfxCreateImage(int x,int y)
     
     temp=new SImage;
     
-    temp->pData=new u32[x*y];
-    ZeroMemory(temp->pData,x*y*sizeof(u32));
+    temp->pData=new BGRA[x*y];
+    //ZeroMemory(temp->pData,x*y*sizeof(u32));
     temp->nWidth=x;
     temp->nHeight=y;
     temp->nPitch=x;
@@ -296,7 +303,7 @@ handle gfxCopyImage(handle img)
     bool gfxCopyPixelData(handle,u32*,int,int);
     
     handle i=gfxCreateImage(img->nWidth,img->nHeight);
-    gfxCopyPixelData(i,img->pData,img->nWidth,img->nHeight);
+    gfxCopyPixelData(i,(u32*)img->pData,img->nWidth,img->nHeight);
     
     nImagecount++;
     
@@ -308,7 +315,7 @@ bool gfxCopyPixelData(handle img,u32* data,int width,int height)
     
     delete[] img->pData;
     
-    img->pData=new u32[width*height];
+    img->pData=new BGRA[width*height];
     
     img->nWidth=width;
     img->nHeight=height;
@@ -316,6 +323,7 @@ bool gfxCopyPixelData(handle img,u32* data,int width,int height)
     img->rClip=Rect(0,0,width,height);
     
     for (int y=0; y<height; y++)
+    {
         for (int x=0; x<width; x++)
         {
             u32 c=*data++;
@@ -328,10 +336,11 @@ bool gfxCopyPixelData(handle img,u32* data,int width,int height)
             
             img->pData[y*width+x]=(a<<24)|(b<<16)|(g<<8)|r;
         }
+    }   
+
+    ScanImage(img);
         
-        ScanImage(img);
-        
-        return 0;
+    return 0;
 }
 
 bool gfxClipWnd(int x1,int y1,int x2,int y2)
@@ -368,9 +377,9 @@ bool gfxShowPage()
         result=backsurf->Lock(NULL,&ddsd,DDLOCK_WAIT | DDLOCK_WRITEONLY,NULL);
         if (FAILED(result))	{ log("lockfail"); return false; }
         
-        u32* pSrc =hScreen->pData;
+        u32* pSrc =(u32*)hScreen->pData;
         u8* pDest=(u8*)ddsd.lpSurface;
-        //	int xlen=xres>ddsd.dwWidth?xres:ddsd.dwWidth;
+        
         int xlen=xres;
         xlen*=sizeof(u32);
         for (int y=yres; y; y--)

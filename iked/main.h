@@ -21,7 +21,8 @@ enum FileType
     t_vsp,
     t_chr,
     t_font,
-    t_map
+    t_map,
+    t_config,
 };
 
 //////////////////////////////////////////

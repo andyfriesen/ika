@@ -103,8 +103,21 @@ struct BGRA
         : b(0),g(0),r(0),a(0)	{}
     BGRA(u8 ab,u8 ag,u8 ar,u8 aa)
         : b(ab),g(ag),r(ar),a(aa)	{}
+    BGRA(u32 c)
+    {
+        a=c>>24;
+        b=(c>>16)&255;
+        g=(c>>8)&255;
+        r=c&255;
+    }
+
     BGRA(const RGBA& c)
     {	r=c.r; g=c.g; b=c.b; a=c.a;	}
+
+    inline operator u32() const
+    {
+        return *(u32*)this;
+    }
 };
 
 // win32 ;P

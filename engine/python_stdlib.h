@@ -169,7 +169,7 @@ METHOD(std_rgb)
     if (!PyArg_ParseTuple(args,"iii|i:RGB",&r,&g,&b,&a))
         return false;
     
-    return PyInt_FromLong((a<<24)|(r<<16)|(g<<8)|b);
+    return PyInt_FromLong(RGBA(r,g,b,a));
 }
 
 METHOD(std_hookbutton)

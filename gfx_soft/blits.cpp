@@ -40,7 +40,7 @@ void ScanImage(handle img)
     for (y=0; y<img->nHeight && (bIsNull || bIsOpaque || bIsSprite); y++)
 	for (x=0; x<img->nWidth && (bIsNull || bIsOpaque || bIsSprite); x++)
 	{
-	    u8 a=(u8)(img->pData[y*img->nPitch+x]>>24);
+	    u8 a=(u8)(img->pData[y*img->nPitch+x].a);
 	    if (a)	bIsNull=false;
 	    if (a!=255) bIsOpaque=false;
 	    if (a!=0 && a!=255)
@@ -93,13 +93,17 @@ bool OpaqueBlit(handle img,int x,int y)
     DoClipping(x,y,xstart,xlen,ystart,ylen,hRenderdest->rClip);
     if (xlen<1 || ylen<1)	return true;	// offscreen
     
-    u32* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
-    u32* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
+    BGRA* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    BGRA* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
+
+#ifdef _DEBUG
     if (!pDest)
     {
 	log("!!! %8x",img);
 	return false;
     }
+#endif
+
 #ifndef USE_ASM
     while (ylen)
     {
@@ -157,8 +161,8 @@ bool SpriteBlit(handle img,int x,int y)
     DoClipping(x,y,xstart,xlen,ystart,ylen,hRenderdest->rClip);
     if (xlen<1 || ylen<1)	return true;	// offscreen
     
-    u32* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
-    u32* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
+    BGRA* pDest=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    BGRA* pSrc =img->pData        +(ystart*img->nPitch)+xstart;
     
 #ifndef USE_ASM
     int destinc=hRenderdest->nPitch-xlen;
@@ -171,7 +175,7 @@ bool SpriteBlit(handle img,int x,int y)
 	int ix=xlen;
 	while (ix)
 	{
-	    if (*pSrc>>24)	// alpha?
+	    if (pSrc->a)	// alpha?
 		*pDest=*pSrc;
 	    ++pSrc;
 	    ++pDest;
@@ -228,10 +232,10 @@ bool AlphaBlit(handle img,int x,int y)
     DoClipping(x,y,xstart,xlen,ystart,ylen,hRenderdest->rClip);
     if (xlen<1 || ylen<1)	return true;	// offscreen
     
-    u32* pSrc  = img->pData			+(ystart*img->nPitch)+xstart;
-    u32* pDest = hRenderdest->pData	+(y*hRenderdest->nPitch)+x;
-    int  srcinc= img->nPitch-xlen;
-    int  destinc=hRenderdest->nPitch-xlen;
+    u32* pSrc  = (u32*)img->pData            +(ystart*img->nPitch)+xstart;
+    u32* pDest = (u32*)hRenderdest->pData    +(y*hRenderdest->nPitch)+x;
+    int   srcinc= img->nPitch-xlen;
+    int   destinc=hRenderdest->nPitch-xlen;
     
     y=ylen;
     x=xlen;
@@ -434,8 +438,8 @@ bool OpaqueScaleBlit(handle img,int cx,int cy,int w,int h)
     ix=xs;
     iy=ys&0xFFFF;
     
-    u32* src	=img->pData+((ys>>16)*img->nPitch);
-    u32* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    BGRA* src	=img->pData+((ys>>16)*img->nPitch);
+    BGRA* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
     
     x=0;
     y=h;
@@ -496,15 +500,15 @@ bool SpriteScaleBlit(handle img,int cx,int cy,int w,int h)
     ix=xs;
     iy=ys&0xFFFF;
     
-    u32* src	=img->pData+((ys>>16)*img->nPitch);
-    u32* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    BGRA* src	=img->pData+((ys>>16)*img->nPitch);
+    BGRA* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
     
     x=0;
     y=h;
     
     while (ylen)
     {
-	if (src[ix>>16]&0xFF000000)		// any alpha at all?
+	if (src[ix>>16].a)		// any alpha at all?
 	    dest[x]=src[ix>>16];
 	ix+=xinc;
 	if (++x<xlen)
@@ -558,8 +562,8 @@ bool AlphaScaleBlit(handle img,int cx,int cy,int w,int h)
     ix=xs;
     iy=ys&0xFFFF;
     
-    u32* src	=img->pData+((ys>>16)*img->nPitch);
-    u32* dest	=hRenderdest->pData+(y*hRenderdest->nPitch)+x;
+    u32* src	=(u32*)img->pData+((ys>>16)*img->nPitch);
+    u32* dest	=(u32*)hRenderdest->pData+(y*hRenderdest->nPitch)+x;
     
     x=0;
     y=h;
