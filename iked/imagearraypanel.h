@@ -2,6 +2,7 @@
 #pragma once
 
 #include "graph.h"
+#include "wx_events.h"
 
 namespace iked {
 

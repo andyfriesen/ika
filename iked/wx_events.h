@@ -2,7 +2,7 @@
 #pragma once
 
 /**
- * Custom wxwindow event... things.  Sometimes used for inter-control interaction.
+ * Custom wxWindow event types.  Used for inter-control interaction.
  */
 namespace iked {
     enum {

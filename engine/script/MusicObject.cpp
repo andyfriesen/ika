@@ -6,14 +6,11 @@
 #include "common/utility.h"
 #include "sound.h"
 
-namespace Script
-{
-    namespace Music
-    {
+namespace Script {
+    namespace Music {
         PyTypeObject type;
 
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Play",     (PyCFunction)Music_Play,  METH_NOARGS,
                 "Music.Play()\n\n"
                 "Plays the stream."
@@ -43,45 +40,44 @@ namespace Script
 #undef GET
 #undef SET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "volume",       (getter)getVolume,      (setter)setVolume,      "The volume of the sound.  Ranges from 0 to 1, with 1 being full volume."   },
-            {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  0 is left.  2 is right.  1 is centre."   },
+            {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  -1 is left.  1 is right.  0 is centre."   },
             {   "position",     (getter)getPosition,    (setter)setPosition,    "The chronological position of the sound, in milliseconds." },
             {   "pitchshift",   (getter)getPitchShift,  (setter)setPitchShift,  "Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing" },
             {   "loop",         (getter)getLoop,        (setter)setLoop,        "If nonzero, the sound loops.  If zero, then the sound stops playing when it reaches the end."  },
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt=1;
-            type.ob_type=&PyType_Type;
-            type.tp_name="Music";
-            type.tp_basicsize=sizeof type;
-            type.tp_dealloc=(destructor)Destroy;
+            type.ob_refcnt = 1;
+            type.ob_type = &PyType_Type;
+            type.tp_name = "Music";
+            type.tp_basicsize = sizeof type;
+            type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;
-            type.tp_doc="A hunk of sound data, like a sound effect, or a piece of music.";
+            type.tp_doc = 
+                "Streamed sound data.  Almost always used for music, but could be useful\n"
+                "any time sound data needs to be looped or paused and resumed.";
             type.tp_new = New;
 
             PyType_Ready(&type);
         }
 
-        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
-        {
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
             char* keywords[] = { "filename" , 0};
             char* filename;
 
-            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:newsound", keywords, &filename))
-                return NULL;
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:__init__", keywords, &filename)) {
+                return 0;
+            }
 
             MusicObject* sound;
 
-            try
-            {
+            try {
                 if (!File::Exists(filename)) {
                     throw va("%s does not exist", filename);
                 }
@@ -96,33 +92,29 @@ namespace Script
                     throw va("Failed to load %s", filename);
                 }
             }
-            catch(const char* s)
-            {
+            catch(const char* s) {
                 PyErr_SetString(PyExc_RuntimeError, s);
-                return NULL;
+                return 0;
             }
 
             return (PyObject*)sound;
         }
 
-        void Destroy(MusicObject* self)
-        {
+        void Destroy(MusicObject* self) {
             self->music->unref();
             PyObject_Del(self);
         }
 
 #define METHOD(x) PyObject* x(MusicObject* self)
 
-        METHOD(Music_Play)
-        {
+        METHOD(Music_Play) {
             self->music->play();
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD(Music_Pause)
-        {
+        METHOD(Music_Pause) {
             self->music->stop();
 
             Py_INCREF(Py_None);

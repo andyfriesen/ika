@@ -36,7 +36,7 @@ namespace iked {
             id_zoomnormal
         };
 
-    };
+    }
 
 
     BEGIN_EVENT_TABLE(SpriteSetView, DocumentPanel)
@@ -53,7 +53,7 @@ namespace iked {
         EVT_MENU(id_filesaveas, SpriteSetView::onSaveAs)
         EVT_MENU(id_fileclose, SpriteSetView::onClose)
         
-        EVT_COMMAND(-1, EVT_IMAGE_RIGHT_CLICK, SpriteSetView::onRightClickFrame)
+        EVT_COMMAND(EVT_IMAGE_RIGHT_CLICK, -1, SpriteSetView::onRightClickFrame)
 
         //EVT_PAINT(SpriteSetView::onPaint)
         EVT_ERASE_BACKGROUND(SpriteSetView::OnEraseBackground)

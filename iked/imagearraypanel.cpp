@@ -103,9 +103,10 @@ namespace iked {
         int index = getImageAtPos(x, y);
         if (index != -1) {
             wxCommandEvent evt(EVT_IMAGE_RIGHT_CLICK, GetId());
-            evt.SetInt(index);
+            evt.SetInt(EVT_IMAGE_RIGHT_CLICK);
+            evt.SetEventObject(this);
             AddPendingEvent(evt);
-            selectedImage = index; // is this the right thing?
+            selectedImage = index; // is this the Right Thing?
         }
     }
 

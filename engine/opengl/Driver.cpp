@@ -310,7 +310,7 @@ namespace OpenGL {
             int x = _xres * 2;
             int y = _yres * 2;
             glPushAttrib(GL_SCISSOR_BIT);
-            glScissor(0, 0, _xres, _yres);
+            glScissor(0, 0, x, y);
 
             glBegin(GL_QUADS);
             glTexCoord2f(0,    endY); glVertex2i(0, 0);

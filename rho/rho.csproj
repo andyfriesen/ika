@@ -99,6 +99,11 @@
                     AssemblyName = "WeifenLuo.WinFormsUI"
                     HintPath = "..\..\..\..\src\DockManager\WinFormsUI\bin\Release\WeifenLuo.WinFormsUI.dll"
                 />
+                <Reference
+                    Name = "ICSharpCode.SharpZipLib"
+                    AssemblyName = "ICSharpCode.SharpZipLib"
+                    HintPath = "..\..\..\..\src\ICSharpCode.SharpZipLib.dll"
+                />
             </References>
         </Build>
         <Files>
@@ -109,11 +114,6 @@
                 />
                 <File
                     RelPath = "AssemblyInfo.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "IDocView.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -138,6 +138,21 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Aries\DataNode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Aries\Node.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Aries\StringNode.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Commands\Command.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -151,6 +166,11 @@
                     RelPath = "Controls\GraphView.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Controls\GraphView.resx"
+                    DependentUpon = "GraphView.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "Controls\ScrollWindow.cs"
@@ -173,14 +193,84 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Documents\TextDocument.cs"
+                    RelPath = "Documents\IDocumentView.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\ikaSprite.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\ikaTileSet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\Map.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\TileSet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\v2Map.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\v2rle.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\v2TileSet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\vergepal.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\SpriteDetailPanel.cs"
+                    SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\SpriteDetailPanel.resx"
+                    DependentUpon = "SpriteDetailPanel.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "SpriteEditor\SpriteDocument.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\SpriteEditor.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\SpriteEditor.resx"
+                    DependentUpon = "SpriteEditor.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TextEditor\CodeView.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TextEditor\CodeView.resx"
+                    DependentUpon = "CodeView.cs"
+                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TextEditor\CSharpHighlightStyle.cs"
@@ -194,6 +284,16 @@
                 />
                 <File
                     RelPath = "TextEditor\PythonHighlightStyle.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TextEditor\TextDocument.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TextEditor\TextStyle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

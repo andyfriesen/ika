@@ -17,6 +17,11 @@ using audiere::SampleSource;
 namespace Sound {
     RefPtr<AudioDevice> _device;
 
+    enum {
+        streamAudio = true,
+        dontStreamAudio = false,
+    };
+
     void Init(bool nullAudio) {
         // On windows, we try winmm first, because it doesn't crash my PC.
         // If it doesn't work, we use the default device.  On nonwindows,
@@ -42,7 +47,7 @@ namespace Sound {
     }
 
     OutputStream* OpenSound(const std::string& fileName) {
-        OutputStream* stream = ::audiere::OpenSound(_device.get(), fileName.c_str(), false);
+        OutputStream* stream = ::audiere::OpenSound(_device.get(), fileName.c_str(), streamAudio);
         if (!stream)
             return 0;
 

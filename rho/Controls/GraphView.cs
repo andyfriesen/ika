@@ -12,28 +12,23 @@ using System.Drawing;
 using System.Drawing.Imaging;
 using System.Drawing.Drawing2D;
 
-namespace rho.Controls
-{
+namespace rho.Controls {
 
-    public class GraphView : ScrollWindow
-    {
+    public class GraphView : ScrollWindow {
         const int buffersize=256;
         Bitmap buffer;
         Graphics graphics;
 	
-        public GraphView() : base()
-        {
+        public GraphView() : base() {
             buffer=new Bitmap(buffersize, buffersize, PixelFormat.Format32bppArgb);
             graphics=Graphics.FromImage(buffer);
         }
 	
-        protected override void OnPaintBackground(PaintEventArgs e)
-        {
+        protected override void OnPaintBackground(PaintEventArgs e) {
             // ;D
         }
 
-        protected override void OnPaint(PaintEventArgs e)
-        {
+        protected override void OnPaint(PaintEventArgs e) {
             base.OnPaint(e);
 
             if (Redraw==null)
@@ -51,10 +46,8 @@ namespace rho.Controls
 		
             r.Width=buffersize;
             r.Height=buffersize;
-            for (int y=starty; y<endy; y++)
-            {
-                for (int x=startx; x<endx; x++)
-                {
+            for (int y=starty; y<endy; y++) {
+                for (int x=startx; x<endx; x++) {
                     graphics.Clear(Color.Black);
 
                     Redraw(this, new PaintEventArgs(graphics, r));

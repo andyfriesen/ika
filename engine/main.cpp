@@ -360,16 +360,11 @@ void Engine::RenderEntities(uint layerIndex) {
 
 void Engine::RenderLayer(uint layerIndex) {
     CDEBUG("renderlayer");
-    int        lenX, lenY;        // x/y run length
-    int        firstX, firstY;        // x/y start
-    int        adjustX, adjustY;    // sub-tile offset
+
+    int lenX, lenY;          // x/y run length
+    int firstX, firstY;      // x/y start
+    int adjustX, adjustY;    // sub-tile offset
     const Map::Layer* layer = map.GetLayer(layerIndex);
-
-    RGBA oldTint = video->GetTint();
-    video->SetTint(layer->tintColour);
-
-    //int layerWidth = layer->Width() * tiles->Width();
-    //int layerHeight = layer->Height() * tiles->Height();
 
     int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
     int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
@@ -407,7 +402,10 @@ void Engine::RenderLayer(uint layerIndex) {
     int curx = -adjustX;
     int cury = -adjustY;
 
+    RGBA oldTint = video->GetTint();
+    video->SetTint(layer->tintColour);
     video->SetBlendMode(Video::Normal);
+
     for (int y = 0; y < lenY; y++) {
         for (int x = 0; x < lenX; x++) {
             video->BlitImage(tiles->GetTile(*t), curx, cury);

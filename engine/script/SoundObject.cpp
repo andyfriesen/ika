@@ -6,14 +6,11 @@
 #include "common/utility.h"
 #include "sound.h"
 
-namespace Script
-{
-    namespace Sound
-    {
+namespace Script {
+    namespace Sound {
         PyTypeObject type;
 
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Play",     (PyCFunction)Sound_Play,  METH_NOARGS,
                 "Sound.Play()\n\n"
                 "Plays the sound effect."
@@ -38,16 +35,14 @@ namespace Script
 #undef GET
 #undef SET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "volume",       (getter)getVolume,      (setter)setVolume,      "The volume of the sound effect.  Ranges from 0 to 1, with 1 being full volume."   },
-            {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  0 is left.  2 is right.  1 is centre."   },
+            {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  -1 is left.  1 is right.  0 is centre."   },
             {   "pitchshift",   (getter)getPitchShift,  (setter)setPitchShift,  "Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing" },
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt = 1;
@@ -63,8 +58,7 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
-        {
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
             char* keywords[] = { "filename" , 0};
             char* filename;
 
@@ -73,8 +67,7 @@ namespace Script
 
             SoundObject* sound;
 
-            try
-            {
+            try {
                 if (!File::Exists(filename)) {
                     throw va("%s does not exist", filename);
                 }
@@ -89,8 +82,7 @@ namespace Script
                     throw va("Failed to load %s", filename);
                 }
             }
-            catch(const char* s)
-            {
+            catch(const char* s) {
                 PyErr_SetString(PyExc_RuntimeError, s);
                 return 0;
             }
@@ -98,24 +90,21 @@ namespace Script
             return (PyObject*)sound;
         }
 
-        void Destroy(SoundObject* self)
-        {
+        void Destroy(SoundObject* self) {
             self->sound->unref();
             PyObject_Del(self);
         }
 
 #define METHOD(x) PyObject* x(SoundObject* self)
 
-        METHOD(Sound_Play)
-        {
+        METHOD(Sound_Play) {
             self->sound->play();
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD(Sound_Pause)
-        {
+        METHOD(Sound_Pause) {
             self->sound->stop();
 
             Py_INCREF(Py_None);

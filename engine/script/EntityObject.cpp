@@ -1,10 +1,10 @@
 /*
  * Python entity interface.
- * 
+ *
  * I'm not sure if I'm %100 happy with this setup.  Entities are *only* destroyed through Python's GC, which means that
  * entities can be made "persistent" simply by holding on to a reference to them.  Additionally, there is an implicitly
  * defined dictionary that holds all the map-defined entities. (and serves as their "life line", to keep them from
- * being garbage collected)    
+ * being garbage collected)
  */
 
 #include "ObjectDefs.h"
@@ -13,6 +13,7 @@
 
 #include <set>
 #include <cassert>
+#include <stdexcept>
 
 namespace Script {
     namespace Entity {
@@ -20,10 +21,10 @@ namespace Script {
         typedef std::pair< ::Entity*, Script::Entity::EntityObject*> EntityPair;
 
         // Maps all existing Entity objects to their Python counterparts.
-        EntityMap instances;   
+        EntityMap instances;
 
-        PyTypeObject type; 
-        
+        PyTypeObject type;
+
         PyMethodDef methods [] = {
             {   "MoveTo",           (PyCFunction)Entity_MoveTo,            METH_VARARGS,
                 "Entity.MoveTo(x, y)\n\n"
@@ -36,17 +37,17 @@ namespace Script {
                 "resuming motion."
             },
 
-            {   "Stop",            (PyCFunction)Entity_Stop,               METH_VARARGS,    
+            {   "Stop",            (PyCFunction)Entity_Stop,               METH_VARARGS,
                 "Entity.Stop()\n\n"
                 "Directs the entity to stop whatever it is doing."
             },
 
-            {   "IsMoving",        (PyCFunction)Entity_IsMoving,           METH_VARARGS,    
+            {   "IsMoving",        (PyCFunction)Entity_IsMoving,           METH_VARARGS,
                 "Entity.IsMoving() -> int\n\n"
                 "If the entity is moving, the result is 1.  If not, it is 0."
             },
 
-            {   "DetectCollision", (PyCFunction)Entity_DetectCollision,    METH_VARARGS,    
+            {   "DetectCollision", (PyCFunction)Entity_DetectCollision,    METH_VARARGS,
                 "Entity.DetectCollision() -> Entity\n\n"
                 "If an entity is touching the entity, then it is returned.\n"
                 "None is returned if there is no entity touching it."
@@ -88,10 +89,10 @@ namespace Script {
             GET(Direction)          { return PyInt_FromLong(self->ent->direction); }
             GET(CurFrame)           { return PyInt_FromLong(self->ent->curFrame); }
             GET(SpecFrame)          { return PyInt_FromLong(self->ent->specFrame); }
-            GET(SpecAnim)           
-            { 
+            GET(SpecAnim)
+            {
                 if (self->ent->useSpecAnim) {
-                    return PyString_FromString(self->ent->specAnim.toString().c_str()); 
+                    return PyString_FromString(self->ent->specAnim.toString().c_str());
                 } else {
                     Py_INCREF(Py_None);
                     return Py_None;
@@ -110,7 +111,7 @@ namespace Script {
                 return o;
             }
 
-            GET(ActScript) { 
+            GET(ActScript) {
                 PyObject* o = (PyObject*)self->ent->activateScript.get();
                 if (!o) {
                     o = Py_None;
@@ -144,7 +145,7 @@ namespace Script {
             SET(Layer) {
                 uint i = (uint)PyInt_AsLong(value);
                 if (i >= engine->map.NumLayers()) {
-                    PyErr_SetString(PyExc_RuntimeError, 
+                    PyErr_SetString(PyExc_RuntimeError,
                         va("Cannot put entity on layer %i.  The map only has %i layers.", i, engine->map.NumLayers())
                     );
                 } else {
@@ -171,12 +172,12 @@ namespace Script {
 
             SET(SpecFrame)          { self->ent->specFrame = PyInt_AsLong(value); return 0; }
 
-            SET(SpecAnim) { 
+            SET(SpecAnim) {
                 if (value == Py_None) {
                     self->ent->useSpecAnim = false;
                 } else {
                     self->ent->useSpecAnim = true;
-                    self->ent->specAnim = AnimScript(PyString_AsString(value)); 
+                    self->ent->specAnim = AnimScript(PyString_AsString(value));
                 }
                 return 0;
             }
@@ -290,7 +291,7 @@ namespace Script {
             }
 
             if (layer >= engine->map.NumLayers()) {
-                PyErr_SetString(PyExc_RuntimeError, 
+                PyErr_SetString(PyExc_RuntimeError,
                     va("Map only has %i layers.  Cannot put an entity on layer %i", engine->map.NumLayers(), layer)
                 );
                 return 0;
@@ -388,7 +389,7 @@ namespace Script {
             foreach (const EntityPair& iter, instances) {
                 EntityObject* entObj = iter.second;
                 const ::Entity* e2 = iter.first;
-                
+
                 if ((e1 != e2)                        &&
                     (x1 <= e2->x + e2->sprite->nHotw) &&
                     (y1 <= e2->y + e2->sprite->nHoth) &&
@@ -470,7 +471,7 @@ namespace Script {
             PyObject* dict = PyDict_New();
 
             const std::map<std::string, std::string>& scripts = self->ent->sprite->GetAllScripts();
-            
+
             typedef std::pair<std::string, std::string> StringPair;
             foreach (const StringPair& iter, scripts) {
                 PyDict_SetItemString(dict, iter.first.c_str(), PyString_FromString(iter.second.c_str()));
