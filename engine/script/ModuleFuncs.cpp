@@ -243,7 +243,6 @@ namespace Script
             playerent = (PyObject*)ent;
 
             engine->pPlayer = ent->ent;
-            //ent->ent->movecode=mc_nothing;
         }
 
         PyObject* result = std_setcameraTarget(self, args);
@@ -324,11 +323,6 @@ namespace Script
 
         if (!pFunc)
         {
-            /*std::list<ScriptObject>::iterator i;
-
-            for (i=engine->_hookRetrace.begin(); i != engine->_hookRetrace.end(); i++)
-                Py_XDECREF((PyObject*)*i);                                        // dereference*/
-
             engine->_hookRetrace.Clear();
         }
         else
@@ -383,16 +377,13 @@ namespace Script
         {
             std::list<void*>::iterator i;
 
-            /*for (i=engine->_hookTimer.begin(); i != engine->_hookTimer.end(); i++)
-                Py_DECREF((PyObject*)*i);                                    // dereference*/
-
             engine->_hookTimer.Clear();
         }
         else
         {
             HookList::List::iterator i;
 
-            for (i=engine->_hookTimer.begin(); i != engine->_hookTimer.end(); i++)
+            for (i = engine->_hookTimer.begin(); i != engine->_hookTimer.end(); i++)
             {
                 if (*i == pFunc)
                 {

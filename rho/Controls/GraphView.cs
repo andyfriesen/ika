@@ -1,7 +1,7 @@
 /*
  * This is a bit hackish, as the Reraw event gives you a rect,
  * but expects you to draw what would be in that rect, but at
- * (0,0)
+ * (0, 0)
  * 
  * Not really ideal.
  */
@@ -23,7 +23,7 @@ namespace rho.Controls
 	
         public GraphView() : base()
         {
-            buffer=new Bitmap(buffersize,buffersize,PixelFormat.Format32bppArgb);
+            buffer=new Bitmap(buffersize, buffersize, PixelFormat.Format32bppArgb);
             graphics=Graphics.FromImage(buffer);
         }
 	
@@ -57,8 +57,8 @@ namespace rho.Controls
                 {
                     graphics.Clear(Color.Black);
 
-                    Redraw(this,new PaintEventArgs(graphics,r));
-                    e.Graphics.DrawImage(buffer,r.X,r.Y);
+                    Redraw(this, new PaintEventArgs(graphics, r));
+                    e.Graphics.DrawImage(buffer, r.X, r.Y);
                     Console.WriteLine("!");
 				
                     r.X+=buffersize;

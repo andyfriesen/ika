@@ -16,7 +16,7 @@ namespace rho
             public int refcount;	//!< number of thingies using it
             public string fname;	//!< filename
 		
-            public Resource(object obj,string n)
+            public Resource(object obj, string n)
             {
                 o=obj;
                 fname=n;
@@ -38,7 +38,7 @@ namespace rho
                     }
 	
                 object obj=Load(fname);
-                resources.Add(new Resource(obj,fname));
+                resources.Add(new Resource(obj, fname));
 			
                 return obj;
             }

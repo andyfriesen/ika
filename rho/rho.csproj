@@ -92,16 +92,6 @@
                     Project = "{E522652F-513B-4694-9518-8760F2F17F4C}"
                     Package = "{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}"
                 />
-                <Reference
-                    Name = "Cataract"
-                    AssemblyName = "Cataract"
-                    HintPath = "..\..\src\corncob\Cataract\bin\Release\Cataract.dll"
-                />
-                <Reference
-                    Name = "csgl"
-                    AssemblyName = "csgl"
-                    HintPath = "..\..\src\csgl\lib\csgl.dll"
-                />
             </References>
         </Build>
         <Files>
@@ -113,11 +103,6 @@
                 <File
                     RelPath = "AssemblyInfo.cs"
                     SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "CodeView.cs"
-                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
@@ -161,27 +146,22 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "MapEditor\MapEditor.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "MapEditor\MapView.cs"
+                    RelPath = "TextEditor\CodeView.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MapEditor\MapView.resx"
-                    DependentUpon = "MapView.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
-                    RelPath = "MapEditor\State.cs"
+                    RelPath = "TextEditor\CSharpHighlightStyle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "MapEditor\TileSetState.cs"
+                    RelPath = "TextEditor\HighlightStyle.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "TextEditor\PythonHighlightStyle.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />

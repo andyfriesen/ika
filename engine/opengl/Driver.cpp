@@ -354,7 +354,7 @@ namespace OpenGL
         glColor4ubv((u8*)&colour);
 
         glBegin(GL_POINTS);
-        glVertex2i(x, y);
+        glVertex2f(float(x) + 0.5f, float(y) + 0.5f);
         glEnd();
 
         glEnable(GL_TEXTURE_2D);
@@ -363,6 +363,9 @@ namespace OpenGL
 
     void Driver::DrawLine(int x1, int y1, int x2, int y2, u32 colour)
     {
+        glPushMatrix();
+        glTranslatef(0.5f, 0.5f, 0);
+
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
         glBegin(GL_LINES);
@@ -371,24 +374,30 @@ namespace OpenGL
         glEnd();
         glEnable(GL_TEXTURE_2D);
         glColor4ub(255, 255, 255, 255);
+
+        glPopMatrix();
     }
 
     void Driver::DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled)
     {
+        glPushMatrix();
+        glTranslatef(0.5f, 0.5f, 0);
+
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
         if (filled)
         {
             x2++;
+            y2++;
             glBegin(GL_QUADS);
         }
         else
         {
-            y1++;
+            //y1++;
             glBegin(GL_LINE_LOOP);
         }
         
-        y2++;
+        //y2++;
 
         glVertex2i(x1, y1);
         glVertex2i(x2, y1);
@@ -397,10 +406,14 @@ namespace OpenGL
         glEnd();
         glColor4f(1, 1, 1, 1);
         glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
     }
 
     void Driver::DrawEllipse(int cx, int cy, int rx, int ry, u32 colour, bool filled)
     {
+        glPushMatrix();
+        glTranslatef(0.5f, 0.5f, 0);
+
         // Kudos to Dante for coding this.
         if(rx==0 || ry==0) return;
 
@@ -513,6 +526,7 @@ namespace OpenGL
         }
         glColor4ub(255, 255, 255, 255);
         glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
     }
 
     void Driver::DrawTriangle(int x[3], int y[3], u32 colour[3])

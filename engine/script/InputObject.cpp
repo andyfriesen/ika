@@ -53,7 +53,7 @@ namespace Script
             {   "WasKeyPressed",    (PyCFunction)Input_WasKeyPressed,   METH_NOARGS,
                 "Input.WasKeyPressed() -> bool\n\n"
                 "Returns True if there is a key in the key queue.  False if not.\n"
-                "(ie True if Input.GetKey() will return None if the result is False)"
+                "(ie Input.GetKey() will return None if the result is False)"
             },
 
             {   0   }

@@ -4,14 +4,12 @@ using System.Windows.Forms;
 using System.IO;
 
 using Import.ika;
-using MapView=rho.MapEditor.MapView;
 
 namespace rho
 {
     class MainForm : Form
     {
         public TileSetController tilesets=new TileSetController();
-        public MapController maps=new MapController();
 	
         public MainForm()
         {
@@ -21,22 +19,21 @@ namespace rho
             Width=640;
             Height=480;
 		
-            MenuItem file=new MenuItem("&File",new MenuItem[]
+            MenuItem file=new MenuItem("&File", new MenuItem[]
                                 {
-                                    new MenuItem("&New",new MenuItem[]
+                                    new MenuItem("&New", new MenuItem[]
                                     {
-                                        new MenuItem("&Map",new EventHandler(NewMap)),
-                                        new MenuItem("&Script",new EventHandler(NewScript)),
+                                        new MenuItem("&Script", new EventHandler(NewScript)),
                                     }),
                                     
-                                    new MenuItem("&Open",new EventHandler(OpenFile)),
+                                    new MenuItem("&Open", new EventHandler(OpenFile)),
                                     new MenuItem("-"),
-                                    new MenuItem("E&xit",new EventHandler(Exit))
+                                    new MenuItem("E&xit", new EventHandler(Exit))
                                 });
             file.MergeType=MenuMerge.MergeItems;
             file.MergeOrder=1;
 
-            MenuItem window=new MenuItem("&Window",new MenuItem[]
+            MenuItem window=new MenuItem("&Window", new MenuItem[]
                                 {
                                 });
             window.MdiList=true;
@@ -68,38 +65,31 @@ namespace rho
 
             switch (extension)
             {
-                case ".map": 
-                    doc=new MapView(this,filename);    
+                case ".py":  
+                    doc=new TextEditor.CodeView(this, filename, new TextEditor.PythonHighlightStyle());    
                     break;
 
-                case ".py":  
-                    doc=new CodeView(this,filename,new PythonHighlightStyle());    
+                case ".cs":
+                    doc = new TextEditor.CodeView(this, filename, new TextEditor.CSharpHighlightStyle());
                     break;
 
                 default:
-                    MessageBox.Show("rho",String.Format("Unrecognized File type \"{0}\"",extension));
+                    MessageBox.Show("rho", String.Format("Unrecognized File type \"{0}\"", extension));
                     return;
             }
 
             doc.MdiParent=this;
             doc.Show();
         }
-	
-        void NewMap(object o,EventArgs e)
-        {
-            MapView mapview=new MapView(this);
-            mapview.MdiParent=this;
-            mapview.Show();
-        }
 
-        void NewScript(object o,EventArgs e)
+        void NewScript(object o, EventArgs e)
         {
-            CodeView codeview=new CodeView(this,new PythonHighlightStyle());
-            codeview.MdiParent=this;
+            TextEditor.CodeView codeview = new TextEditor.CodeView(this, new TextEditor.PythonHighlightStyle());
+            codeview.MdiParent = this;
             codeview.Show();
         }
 
-        void OpenFile(object o,EventArgs e)
+        void OpenFile(object o, EventArgs e)
         {
             using (OpenFileDialog dlg=new OpenFileDialog())
             {
@@ -117,7 +107,7 @@ namespace rho
             }
         }
 
-        void Exit(object o,EventArgs e)
+        void Exit(object o, EventArgs e)
         {
             Close();
         }

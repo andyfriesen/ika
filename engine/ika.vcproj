@@ -24,7 +24,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="3"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=".,..,..\3rdparty\include,..\3rdparty\include\python"
+				AdditionalIncludeDirectories=".,..,\src\audiere\src,..\3rdparty\include,../3rdparty/include/python"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -81,7 +81,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..,\src\audiere\src,..\3rdparty\include,\src\python-2.3a2\include"
+				AdditionalIncludeDirectories=".,..,\src\audiere\src,..\3rdparty\include,../3rdparty/include/python"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

@@ -187,7 +187,7 @@ void CEngine::Startup()
         std::string driver = Lower(cfg["videodriver"]);
 
 #if 0
-        if driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
+        if (driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
         {
             Log::Write("Using SDL video driver");
             video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);

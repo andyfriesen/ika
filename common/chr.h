@@ -14,20 +14,15 @@
  */
 class CCHRfile
 {
-    std::vector<Canvas>    frame;                    ///< frame data
-
-    int        nWidth, nHeight;
-    int        nHotx, nHoty;                    ///< hotspot position
-    int        nHotw, nHoth;                    ///< hotspot width / height
-
-    void PackData(u8* data, int& size);
-    void UnpackData(u8* data, int size);
-
 public:
-    std::vector<std::string>  moveScripts;          ///< movement scripts
-    std::map<std::string, std::string> metaData;    ///< Authoring information and the like.
+    typedef std::map<std::string, std::string> StringMap;
+    StringMap               moveScripts;
+    StringMap               metaData;    ///< Authoring information and the like.
     
     CCHRfile(int width = 16, int height = 16);
+    ~CCHRfile();
+
+    void ClearFrames();
 
     Canvas& GetFrame(uint frame) const;
     void UpdateFrame(const Canvas& newdata, uint nFrame);
@@ -52,7 +47,17 @@ public:
     void Save(const std::string& fname);                                ///< Writes the sprite data to a file.
     void SaveOld(const std::string& fname);                             ///< Writes the sprite data to a file, in VERGE's CHR format.
 
+    std::string GetStandingScript(Direction dir);
+    std::string GetWalkingScript(Direction dir);
+
 private:
+
+    std::vector<Canvas*>   frame;                    ///< frame data
+
+    int        nWidth, nHeight;
+    int        nHotx, nHoty;                    ///< hotspot position
+    int        nHotw, nHoth;                    ///< hotspot width / height
+
     void LoadCHR(const std::string& filename);
     void Loadv2CHR(class File& f);
     void Loadv4CHR(class File& f);

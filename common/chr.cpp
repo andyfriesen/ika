@@ -19,6 +19,21 @@ using aries::DataNodeList;
 using aries::DataNode;
 using aries::newNode;
 
+namespace
+{
+    const char* scriptNames[] = {
+        "idle_left",
+        "idle_right",
+        "idle_up",
+        "idle_down",
+        "idle_upleft",
+        "idle_upright",
+        "idle_downleft",
+        "idle_downright"
+    };
+    const int numScripts = sizeof scriptNames / sizeof scriptNames[0];
+}
+
 CCHRfile::CCHRfile(int width, int height)
 {
     nHotx = nHoty = 0;
@@ -26,8 +41,20 @@ CCHRfile::CCHRfile(int width, int height)
     nWidth = width;
     nHeight = height;
     frame.clear();
-    moveScripts.resize(16); // egh
+    //moveScripts.resize(16); // egh
     AppendFrame();
+}
+
+CCHRfile::~CCHRfile()
+{
+    ClearFrames();
+}
+
+void CCHRfile::ClearFrames()
+{
+    for (uint i = 0; i < frame.size(); i++)
+        delete frame[i];
+    frame.clear();
 }
 
 Canvas& CCHRfile::GetFrame(uint nFrame) const
@@ -37,7 +64,7 @@ Canvas& CCHRfile::GetFrame(uint nFrame) const
     if (nFrame < 0 || nFrame >= frame.size())
         return dummy;
     
-    return (Canvas&)frame[nFrame];
+    return *frame[nFrame];
 }
 
 void CCHRfile::UpdateFrame(const Canvas& newdata, uint nFrame)
@@ -45,12 +72,12 @@ void CCHRfile::UpdateFrame(const Canvas& newdata, uint nFrame)
     if (nFrame < 0 || nFrame >= frame.size())
         return;
 
-    frame[nFrame]=newdata;
+    *frame[nFrame] = newdata;
 }
 
 void CCHRfile::AppendFrame()
 {
-    frame.push_back(Canvas(nWidth, nHeight));
+    frame.push_back(new Canvas(nWidth, nHeight));
 }
 
 void CCHRfile::InsertFrame(uint idx)
@@ -64,12 +91,7 @@ void CCHRfile::InsertFrame(uint idx)
     if (idx < 0)
         idx = 0;
     
-    Canvas p(frame[frame.size()-1]);        // copy the last frame
-    
-    for (uint i = idx; i < frame.size(); i++)
-        frame[i + 1]=frame[i];
-    
-    InsertFrame(frame.size(), p);                    // and tack it on the end.
+    frame.insert(frame.begin() + idx, new Canvas(nWidth, nHeight));
 }
 
 void CCHRfile::InsertFrame(uint idx, Canvas& p)
@@ -78,32 +100,27 @@ void CCHRfile::InsertFrame(uint idx, Canvas& p)
         idx = 0;
     if (idx >= frame.size())
     {
-        AppendFrame();
-        frame[frame.size()-1]=p;
+        frame.push_back(new Canvas(p));
         return;
     }
     
-    InsertFrame(idx);
-    frame[idx]=p;
+    frame.insert(frame.begin() + idx, new Canvas(p));
 }
 
 void CCHRfile::DeleteFrame(uint idx)
 {
     if (idx < 0 || idx >= frame.size())
         return;
+
+    // Nuke the frame
+    delete frame[idx];
     
+    // Move the other frames back one
     for (uint i = idx; i < frame.size(); i++)
         frame[i]=frame[i + 1];
     
-    frame.resize(frame.size()-1);
-}
-
-void CCHRfile::PackData(u8* data, int& size)
-{
-}
-
-void CCHRfile::UnpackData(u8* data, int size)
-{
+    // Remove the last pointer in the list
+    frame.pop_back();
 }
 
 void CCHRfile::Resize(int width, int height)
@@ -112,7 +129,7 @@ void CCHRfile::Resize(int width, int height)
         throw std::runtime_error(va("CHRfile::Resize: Invalid dimensions %i, %i", width, height));
 
     for (uint i = 0; i < frame.size(); i++)
-        frame[i].Resize(width, height);
+        frame[i]->Resize(width, height);
 
     nWidth = width;
     nHeight = height;
@@ -124,7 +141,7 @@ void CCHRfile::New(int framex, int framey)
     nHeight = framey;
     nHotx = 0;        nHoty = 0;
     nHotw = framex;    nHoth = framey;
-    frame.clear();
+    ClearFrames();
 }
 
 void CCHRfile::Load(const std::string& fname)
@@ -189,7 +206,8 @@ void CCHRfile::Load(const std::string& fname)
                 std::string script = (*iter)->getString();
 
                 // FIXME: script name not actually used!
-                moveScripts.push_back(script);
+                moveScripts[name] = script;
+                //moveScripts.push_back(script);
             }
         }
 
@@ -218,12 +236,12 @@ void CCHRfile::Load(const std::string& fname)
             ScopedArray<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
             Compression::decompress(compressed.get(), compressedSize, pixels.get(), nWidth * nHeight * frameCount * sizeof(RGBA));
 
-            frame.clear();
+            ClearFrames();
             frame.reserve(frameCount);
             RGBA* ptr = (RGBA*)pixels.get();
             for (uint i = 0; i < frameCount; i++)
             {
-                frame.push_back(Canvas(ptr, nWidth, nHeight));
+                frame.push_back(new Canvas(ptr, nWidth, nHeight));
                 ptr += nWidth * nHeight;
             }
         }
@@ -270,13 +288,16 @@ void CCHRfile::Save(const std::string& fname)
         DataNode* scriptNode = newNode("scripts");
         rootNode->addChild(scriptNode);
 
-        for (uint i = 0; i < moveScripts.size(); i++)
+        for (StringMap::iterator 
+            iter = moveScripts.begin();
+            iter != moveScripts.end();
+            iter++)
         {
             scriptNode->addChild(
                 newNode("script")->addChild(
-                    newNode("label")->addChild(va("script%i", i))
+                    newNode("label")->addChild(iter->first)
                     )
-                    ->addChild(moveScripts[i])
+                    ->addChild(iter->second)
                 );
         }
     }
@@ -308,7 +329,7 @@ void CCHRfile::Save(const std::string& fname)
         RGBA* dest = reinterpret_cast<RGBA*>(uncompressed.get());
         for (uint i = 0; i < frame.size(); i++)
         {
-            RGBA* src = frame[i].GetPixels();
+            RGBA* src = frame[i]->GetPixels();
             memcpy(dest, src, nWidth * nHeight * sizeof(RGBA));
             
             dest += nWidth * nHeight;
@@ -331,6 +352,56 @@ void CCHRfile::Save(const std::string& fname)
     file << rootNode;
     delete rootNode;
 
+}
+
+void CCHRfile::SaveOld(const std::string& fname)
+{
+    File f;
+    
+    bool bResult = f.OpenWrite(fname.c_str());
+    if (!bResult)
+        throw std::runtime_error(va("Failed to open %s for writing.", fname.c_str()));                                                     // :(
+    
+    f.Write((char)5);                                               // version - u8
+    
+    f.Write(metaData["description"].c_str(), 64);                   // desc    - 64 byte string
+    
+    f.Write(moveScripts.size());                                    // write the number of scripts
+    
+    for (uint i = 0; i < numScripts; i++)
+    {
+        const std::string& script = moveScripts[scriptNames[i]];
+        f.Write(script.length());                                   // write the length
+        f.Write(script.c_str(), script.length());                   // write the actual script
+    }
+    
+    // Write the frame data
+    f.Write((int)frame.size());
+    for (uint i = 0; i < frame.size(); i++)
+    {
+        f.Write(frame[i]->Width());
+        f.Write(frame[i]->Height());
+        f.Write(nHotx);                                             // note that the current data structure does not support variable hotspots.  But the file format does. (potential expansion)
+        f.Write(nHoty);
+        f.Write(nHotw);
+        f.Write(nHoth);
+        
+        f.WriteCompressed(
+            frame[i]->GetPixels(),
+            frame[i]->Width() * frame[i]->Height() * sizeof(RGBA));
+    }
+    
+    f.Close();
+}
+
+std::string CCHRfile::GetStandingScript(Direction dir)
+{
+    return moveScripts[scriptNames[int(dir) + 8]];
+}
+
+std::string CCHRfile::GetWalkingScript(Direction dir)
+{
+    return moveScripts[scriptNames[int(dir)]];
 }
 
 void CCHRfile::LoadCHR(const std::string& fileName)
@@ -377,22 +448,24 @@ void CCHRfile::Loadv2CHR(File& f)
     ReadCompressedLayer1(pUncompbuf, nFrames * nWidth * nHeight, pCompbuf);
     delete[] pCompbuf;
     
+    ClearFrames();
     frame.resize(nFrames);
     u8* src = pUncompbuf;
     for (int nCurframe = 0; nCurframe < nFrames; nCurframe++)
     {
-        frame[nCurframe].CopyPixelData(src, nWidth, nHeight, cVergepal);
+        frame[nCurframe] = new Canvas(src, nWidth, nHeight, cVergepal);
         src += nWidth * nHeight;
     }
     
-    moveScripts.resize(16);
+    moveScripts.clear();
+    //moveScripts.resize(16);
     
     // Get the idle frames
     int i;
-    f.Read(i);        moveScripts[8 + face_left]  =std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_right] =std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_up]    =std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_down]  =std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_left"]  = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_right"] = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_up"]    = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_down"]  = std::string("F") + ToString(i) + "W10";
     
     for (int b = 0; b < 4; b++)
     {
@@ -407,16 +480,22 @@ void CCHRfile::Loadv2CHR(File& f)
         
         switch (b)
         {
-        case 0: moveScripts[face_left]  = ptr;  break;
-        case 1: moveScripts[face_right] = ptr;  break;
-        case 2: moveScripts[face_up]    = ptr;  break;
-        case 3: moveScripts[face_down]  = ptr;  break;
+        case 0: moveScripts["walk_left"]  = ptr;  break;
+        case 1: moveScripts["walk_right"] = ptr;  break;
+        case 2: moveScripts["walk_up"]    = ptr;  break;
+        case 3: moveScripts["walk_down"]  = ptr;  break;
         }
     }
-    moveScripts[face_upleft]    = moveScripts[face_left];
-    moveScripts[face_downleft]  = moveScripts[face_left];
-    moveScripts[face_upright]   = moveScripts[face_right];
-    moveScripts[face_downright] = moveScripts[face_right];
+
+    moveScripts["walk_upleft"]    = moveScripts["walk_left"];
+    moveScripts["walk_downleft"]  = moveScripts["walk_left"];
+    moveScripts["walk_upright"]   = moveScripts["walk_right"];
+    moveScripts["walk_downright"] = moveScripts["walk_right"];
+
+    moveScripts["idle_upleft"]    = moveScripts["idle_left"];
+    moveScripts["idle_downleft"]  = moveScripts["idle_left"];
+    moveScripts["idle_upright"]   = moveScripts["idle_right"];
+    moveScripts["idle_downright"] = moveScripts["idle_right"];
 }
 
 void CCHRfile::Loadv4CHR(File& f)
@@ -433,14 +512,15 @@ void CCHRfile::Loadv4CHR(File& f)
     f.Read(&nHotw, 2);
     f.Read(&nHoth, 2);
     
-    moveScripts.resize(16);
+    //moveScripts.resize(16);
+    moveScripts.clear();
     
     // Get the idle frames
     u16 i;
-    f.Read(i);        moveScripts[8 + face_left]    = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_right]   = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_up]      = std::string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_down]    = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_left"]  = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_right"] = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_up"]    = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts["idle_down"]  = std::string("F") + ToString(i) + "W10";
     
     f.Read(i);
     int nFrames = i;                // frame count
@@ -459,16 +539,21 @@ void CCHRfile::Loadv4CHR(File& f)
         
         switch (b)
         {
-        case 0: moveScripts[face_left]  = ptr;  break;
-        case 1: moveScripts[face_right] = ptr;  break;
-        case 2: moveScripts[face_up]    = ptr;  break;
-        case 3: moveScripts[face_down]  = ptr;  break;
+        case 0: moveScripts["walk_left"]  = ptr;  break;
+        case 1: moveScripts["walk_right"] = ptr;  break;
+        case 2: moveScripts["walk_up"]    = ptr;  break;
+        case 3: moveScripts["walk_down"]  = ptr;  break;
         }
     }
-    moveScripts[face_upleft]    = moveScripts[face_left];
-    moveScripts[face_downleft]  = moveScripts[face_left];
-    moveScripts[face_upright]   = moveScripts[face_right];
-    moveScripts[face_downright] = moveScripts[face_right];
+    moveScripts["walk_upleft"]    = moveScripts["walk_left"];
+    moveScripts["walk_downleft"]  = moveScripts["walk_left"];
+    moveScripts["walk_upright"]   = moveScripts["walk_right"];
+    moveScripts["walk_downright"] = moveScripts["walk_right"];
+
+    moveScripts["idle_upleft"]    = moveScripts["idle_left"];
+    moveScripts["idle_downleft"]  = moveScripts["idle_left"];
+    moveScripts["idle_upright"]   = moveScripts["idle_right"];
+    moveScripts["idle_downright"] = moveScripts["idle_right"];
     
     int n;
     f.Read(n);
@@ -480,6 +565,7 @@ void CCHRfile::Loadv4CHR(File& f)
     ReadCompressedLayer2(pTemp, nWidth * nHeight * nFrames, (u16*)ptr);
     delete[] ptr;
     
+    ClearFrames();
     frame.resize(nFrames);
     
     // adjust to 32bpp
@@ -496,7 +582,7 @@ void CCHRfile::Loadv4CHR(File& f)
             p[n]=RGBA(r, g, b, a);
         }
         
-        frame[nCurframe].CopyPixelData(p, nWidth, nHeight);
+        frame[nCurframe] = new Canvas(p, nWidth, nHeight);
     }
     
     delete[] pTemp;
@@ -517,24 +603,24 @@ void CCHRfile::Loadv5CHR(File& f)
     f.Read(nScripts);
 
     moveScripts.clear();
-    moveScripts.reserve(nScripts);
     
-    for (int i = 0; i < nScripts; i++)
+    for (int i = 0; i < nScripts && i < numScripts; i++)
     {
         int nLen;
         f.Read(nLen);
         
         char* s = new char[nLen + 1];
         f.Read(s, nLen);
-        s[nLen]=0;
-        moveScripts.push_back(s);
+        s[nLen] = 0;
+        moveScripts[scriptNames[i]] = s;
         delete[] s;
     }
     
     // Get the frame data
     int nFrames;
     f.Read(nFrames);
-    frame.clear();
+    ClearFrames();
+    frame.reserve(nFrames);
     for (int i = 0; i < nFrames; i++)
     {
         int x, y;
@@ -548,7 +634,7 @@ void CCHRfile::Loadv5CHR(File& f)
         RGBA* pTemp = new RGBA[x * y];
         f.ReadCompressed(pTemp, x * y * sizeof(RGBA));
         
-        frame.push_back(Canvas(pTemp, x, y));
+        frame.push_back(new Canvas(pTemp, x, y));
         
         delete[] pTemp;
     }
@@ -556,41 +642,3 @@ void CCHRfile::Loadv5CHR(File& f)
     f.Close();
 }
 
-void CCHRfile::SaveOld(const std::string& fname)
-{
-    File f;
-    
-    bool bResult = f.OpenWrite(fname.c_str());
-    if (!bResult)
-        throw std::runtime_error(va("Failed to open %s for writing.", fname.c_str()));                                                     // :(
-    
-    f.Write((char)5);                                               // version - u8
-    
-    f.Write(metaData["description"].c_str(), 64);                   // desc    - 64 byte string
-    
-    f.Write(moveScripts.size());                                    // write the number of scripts
-    
-    for (uint i = 0; i < moveScripts.size(); i++)
-    {
-        f.Write(moveScripts[i].length());                           // write the length
-        f.Write(moveScripts[i].c_str(), moveScripts[i].length());   // write the actual script
-    }
-    
-    // Write the frame data
-    f.Write((int)frame.size());
-    for (uint i = 0; i < frame.size(); i++)
-    {
-        f.Write(frame[i].Width());
-        f.Write(frame[i].Height());
-        f.Write(nHotx);                                             // note that the current data structure does not support variable hotspots.  But the file format does. (potential expansion)
-        f.Write(nHoty);
-        f.Write(nHotw);
-        f.Write(nHoth);
-        
-        f.WriteCompressed(
-            frame[i].GetPixels(),
-            frame[i].Width()*frame[i].Height()*sizeof(RGBA));
-    }
-    
-    f.Close();
-}

@@ -20,7 +20,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../Common;../3rdParty"
+				AdditionalIncludeDirectories="../Common;../3rdParty/include"
 				PreprocessorDefinitions="WIN32;_DEBUG"
 				MinimalRebuild="FALSE"
 				BasicRuntimeChecks="0"
@@ -32,10 +32,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="zlib.lib"
+				AdditionalDependencies="zlib.lib corona.lib"
 				OutputFile="$(OutDir)/ikaImport.dll"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../3rdParty"
+				AdditionalLibraryDirectories="../3rdParty/lib"
 				GenerateDebugInformation="TRUE"/>
 			<Tool
 				Name="VCMIDLTool"/>
@@ -63,7 +63,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="../Common;../3rdParty"
+				AdditionalIncludeDirectories="../Common;../3rdParty/include"
 				PreprocessorDefinitions="WIN32;NDEBUG"
 				MinimalRebuild="FALSE"
 				RuntimeLibrary="2"
@@ -105,9 +105,6 @@
 				RelativePath="Strings.cpp">
 			</File>
 			<File
-				RelativePath="ikaMap.cpp">
-			</File>
-			<File
 				RelativePath="ikaTileSet.cpp">
 			</File>
 		</Filter>
@@ -131,9 +128,30 @@
 		<Filter
 			Name="Common"
 			Filter="">
+			<File
+				RelativePath="..\common\aries.cpp">
+			</File>
+			<File
+				RelativePath="..\common\aries.h">
+			</File>
+			<File
+				RelativePath="..\common\base64.cpp">
+			</File>
+			<File
+				RelativePath="..\common\base64.h">
+			</File>
+			<File
+				RelativePath="..\common\compression.cpp">
+			</File>
+			<File
+				RelativePath="..\common\compression.h">
+			</File>
 			<Filter
 				Name="Source"
 				Filter="">
+				<File
+					RelativePath="..\common\Canvas.cpp">
+				</File>
 				<File
 					RelativePath="..\common\chr.cpp">
 					<FileConfiguration
@@ -159,25 +177,7 @@
 					RelativePath="..\common\log.cpp">
 				</File>
 				<File
-					RelativePath="..\common\map.cpp">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							CompileAsManaged="0"/>
-					</FileConfiguration>
-				</File>
-				<File
 					RelativePath="..\common\misc.cpp">
-				</File>
-				<File
-					RelativePath="..\common\pixel_matrix.cpp">
-					<FileConfiguration
-						Name="Release|Win32">
-						<Tool
-							Name="VCCLCompilerTool"
-							CompileAsManaged="0"/>
-					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\common\rle.cpp">
@@ -211,6 +211,12 @@
 				Name="Headers"
 				Filter="">
 				<File
+					RelativePath="..\common\Canvas.h">
+				</File>
+				<File
+					RelativePath="..\common\CanvasBlitter.h">
+				</File>
+				<File
 					RelativePath="..\common\chr.h">
 				</File>
 				<File
@@ -223,16 +229,7 @@
 					RelativePath="..\common\log.h">
 				</File>
 				<File
-					RelativePath="..\common\map.h">
-				</File>
-				<File
 					RelativePath="..\common\misc.h">
-				</File>
-				<File
-					RelativePath="..\common\pixel_matrix.h">
-				</File>
-				<File
-					RelativePath="..\common\pixel_matrix_blitter.h">
 				</File>
 				<File
 					RelativePath="..\common\types.h">

@@ -64,10 +64,10 @@ namespace Import
             // Get the pixel data for both images
             BitmapData* bd=bmp->LockBits(Rectangle(0,0,bmp->Width,bmp->Height),ImageLockMode::ReadOnly,PixelFormat::Format32bppArgb);
 
-            CPixelMatrix& tile=vsp->GetTile(idx);
+            Canvas& tile = vsp->GetTile(idx);
 
-            BGRA* src= (BGRA*)bd->Scan0.ToPointer();
-            RGBA* dest=(RGBA*)tile.GetPixelData();
+            RGBA* src= (RGBA*)bd->Scan0.ToPointer();
+            RGBA* dest=(RGBA*)tile.GetPixels();
 
             // Then copy the bitmap into the pixel matrix. (taking pixel format differences into account)
             int y=tile.Height();
@@ -75,9 +75,10 @@ namespace Import
             {
                 for (int x=0; x<tile.Width(); x++)
                 {
-                    dest[x].r=src[x].r;
+                    // swap blue and red channels while we're at it.
+                    dest[x].r=src[x].b;
                     dest[x].g=src[x].g;
-                    dest[x].b=src[x].b;
+                    dest[x].b=src[x].r;
                     dest[x].a=src[x].a;
                 }
                 
@@ -118,14 +119,17 @@ namespace Import
 
                 BitmapData* bd=bmp->LockBits(Rectangle(0,0,vsp->Width(),vsp->Height()),ImageLockMode::WriteOnly,PixelFormat::Format32bppArgb);
 
-                BGRA* dest=(BGRA*)bd->Scan0.ToPointer();
-                RGBA* src =(RGBA*)vsp->GetTile(idx).GetPixelData();
+                RGBA* dest=(RGBA*)bd->Scan0.ToPointer();
+                RGBA* src =(RGBA*)vsp->GetTile(idx).GetPixels();
 
                 int y=vsp->Height();
                 while (y--)
                 {
                     for (int x=0; x<vsp->Width(); x++)
+                    {
                         dest[x]=src[x];
+                        swap(dest[x].r, dest[x].b);
+                    }
 
                     dest+=bd->Stride/sizeof(u32);
                     src+=vsp->Width();

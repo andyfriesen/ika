@@ -18,7 +18,6 @@ class CMovescriptEditor : public wxDialog
     public:
 
         CMovescriptEditor(CSpriteSetView* parent, CSpriteSet* sprite, int idx = 0);
-
         
         void UpdateData();
         void UpdateDlg();

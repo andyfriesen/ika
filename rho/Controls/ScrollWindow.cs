@@ -99,23 +99,23 @@ namespace rho.Controls
             if (msg.Msg==WM_VSCROLL)
             {
                 int position=(msg.WParam.ToInt32()>>16);
-                ScrollEventArgs sea=new ScrollEventArgs(GetEventType(msg.WParam),position);
+                ScrollEventArgs sea=new ScrollEventArgs(GetEventType(msg.WParam), position);
 			
-                DoVScroll(ref position,sea);			
+                DoVScroll(ref position, sea);			
                 sea.NewValue=position;
 			
-                OnVScroll(this,sea);
+                OnVScroll(this, sea);
                 return;
             }
             else if (msg.Msg==WM_HSCROLL)
             {
                 int position=(msg.WParam.ToInt32()>>16);
-                ScrollEventArgs sea=new ScrollEventArgs(GetEventType(msg.WParam),position);
+                ScrollEventArgs sea=new ScrollEventArgs(GetEventType(msg.WParam), position);
 			
-                DoHScroll(ref position,sea);
+                DoHScroll(ref position, sea);
                 sea.NewValue=position;
 			
-                OnHScroll(this,new ScrollEventArgs(GetEventType(msg.WParam),position));
+                OnHScroll(this, new ScrollEventArgs(GetEventType(msg.WParam), position));
                 return;
             }
 		
@@ -124,7 +124,7 @@ namespace rho.Controls
         }
 	
         // most basic action; update the scrollbar position
-        void DoScroll(ScrollEventArgs e,ref int curpos,int largeincsize,int max)
+        void DoScroll(ScrollEventArgs e, ref int curpos, int largeincsize, int max)
         {
             switch (e.Type)
             {
@@ -143,7 +143,7 @@ namespace rho.Controls
             }
         }
 	
-        void DoHScroll(ref int x,ScrollEventArgs e)
+        void DoHScroll(ref int x, ScrollEventArgs e)
         {
             GetScrollInfo(Handle, SB_HORIZ, si);
 
@@ -153,7 +153,7 @@ namespace rho.Controls
             SetScrollInfo(Handle, SB_HORIZ, si, true);
         }
 	
-        void DoVScroll(ref int y,ScrollEventArgs e)
+        void DoVScroll(ref int y, ScrollEventArgs e)
         {
             GetScrollInfo(Handle, SB_VERT, si);
 
@@ -198,7 +198,7 @@ namespace rho.Controls
         public event ScrollEventHandler OnHScroll;
         public event ScrollEventHandler OnVScroll;
 	
-        public void ScrollTo(int x,int y)
+        public void ScrollTo(int x, int y)
         {
             si.flags = SetScrollFlags.Pos;
             si.pos = x;
@@ -224,7 +224,7 @@ namespace rho.Controls
                 case SB_THUMBTRACK: 	return ScrollEventType.ThumbTrack;
                 case SB_TOP: 			return ScrollEventType.First;
                 default:
-                    throw new System.ArgumentException(String.Format("{0} isn't a valid scroll event type.",wparam),"wparam");
+                    throw new System.ArgumentException(String.Format("{0} isn't a valid scroll event type.", wparam), "wparam");
             }
         }
     }

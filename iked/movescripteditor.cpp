@@ -80,12 +80,17 @@ void CMovescriptEditor::UpdateDlg()
         if (delta > 0)          animScriptGrid->DeleteRows(delta);
         else if (delta < 0)     animScriptGrid->AppendRows(-delta);
 
+        int i = 0;
         animScriptGrid->ClearGrid();
-        for (uint i = 0; i < chr.moveScripts.size(); i++)
+        for (CCHRfile::StringMap::iterator 
+            iter = chr.moveScripts.begin();
+            iter != chr.moveScripts.end();
+            iter++)
         {
-            animScriptGrid->SetCellValue(va("Script%i", i), i, 0);
-            animScriptGrid->SetCellValue(chr.moveScripts[i].c_str(), i, 1);
+            animScriptGrid->SetCellValue(iter->first.c_str(), i, 0);
+            animScriptGrid->SetCellValue(iter->second.c_str(), i, 1);
             animScriptGrid->SetReadOnly(i, 0); // for now, scripts cannot be renamed
+            i++;
         }
         animScriptGrid->EndBatch();
     }
@@ -108,6 +113,13 @@ void CMovescriptEditor::UpdateDlg()
         }
         metaDataGrid->EndBatch();
     }
+}
+
+void CMovescriptEditor::UpdateData()
+{
+    CCHRfile::StringMap& animScripts = pSprite->GetCHR().moveScripts;
+
+    animScripts.clear();
 }
 
 void CMovescriptEditor::OnSize(wxCommandEvent& event)
@@ -155,14 +167,24 @@ void CMovescriptEditor::EditAnimScript(wxGridEvent& event)
 
     if (cell.empty())
     {
-        pSprite->GetCHR().moveScripts.erase(pSprite->GetCHR().moveScripts.begin() + row);
-        animScriptGrid->DeleteRows(row);
+        event.veto();
+        //animScriptGrid->DeleteRows(row);
+        //UpdateData();
+        //pSprite->GetCHR().moveScripts.erase(pSprite->GetCHR().moveScripts.begin() + row);
+        //animScriptGrid->DeleteRows(row);
     }
     else
     {
         if (col == 1) // editing the actual script
-            pSprite->GetCHR().moveScripts[row] = cell.c_str();
+        {
+            std::string name = animScriptGrid->GetCellValue(row, 0).c_str();
+            pSprite->GetCHR().moveScripts[name] = cell.c_str();
+        }
         // else rename the script (NYI.  Scripts are still ordinal)
+        {
+            // it'd be awful nice if we could know what was in the cell before it was changed.
+            UpdateData();   // -_-
+        }
     }
 }
 
