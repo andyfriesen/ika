@@ -45,7 +45,7 @@
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="..\common\,..\3rdparty\lib"
-				ProgramDatabaseFile=".\Release/ika.pdb"
+				ProgramDatabaseFile=""
 				SubSystem="2"/>
 			<Tool
 				Name="VCMIDLTool"

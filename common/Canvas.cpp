@@ -185,6 +185,8 @@ void Canvas::Clear(RGBA colour)
 void Canvas::Rotate()
 {
     Canvas temp(*this);
+
+    Resize(_height, _width);
     
     for (int y = 0; y<_height; y++)
         for (int x = 0; x<_width; x++)

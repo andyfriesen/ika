@@ -104,7 +104,7 @@
 				SuppressStartupBanner="TRUE"
 				AdditionalLibraryDirectories="../common,../3rdparty/lib,c:/wx2/lib,c:/wx2/contrib/lib"
 				IgnoreDefaultLibraryNames="libc.lib,libci.lib,msvcrtd.lib"
-				ProgramDatabaseFile=".\Release/iked.pdb"
+				ProgramDatabaseFile=""
 				SubSystem="2"/>
 			<Tool
 				Name="VCMIDLTool"

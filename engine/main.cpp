@@ -692,9 +692,10 @@ void CEngine::LoadMap(const std::string& filename)
             Script_Error();
     }
     catch (std::runtime_error err)  {   Sys_Error(va("LoadMap(\"%s\"): %s", filename.c_str(), err.what())); }
+    catch (TileSetException)        {   Sys_Error(va("Unable to load tileset %s", map.tileSetName.c_str())); }
     catch (const char* msg)         {   Sys_Error(va("Failed to load %s", msg));                            }
     catch (const std::string& msg)  {   Sys_Error(va("Failed to load %s", msg.c_str()));                    }
-    catch (...)                     {   Sys_Error(va("Unknown error loading map %s", filename));            }
+    catch (...)                     {   Sys_Error(va("Unknown error loading map %s", filename.c_str()));    }
 }
 
 Point CEngine::GetCamera()

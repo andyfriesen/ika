@@ -1,5 +1,5 @@
 
-#include <wx/wx.h>
+#include "wxinc.h"
 #include <wx/xrc/xmlres.h>
 #include "mainwindow.h"
 
@@ -25,6 +25,10 @@ namespace
 
             MainWindow* mainwnd = new MainWindow(wxDefaultPosition, wxSize(750,500));
             mainwnd->Show(true);
+
+            if (argc > 1)
+                mainwnd->LoadMap(argv[0]);
+
             SetTopWindow(mainwnd);
             return TRUE;
         }

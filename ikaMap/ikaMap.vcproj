@@ -83,7 +83,6 @@
 				OutputFile="$(OutDir)/ikaMap.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../common,../3rdparty/lib,c:/wx2/lib,c:/wx2/contrib/lib"
-				GenerateDebugInformation="FALSE"
 				SubSystem="2"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"

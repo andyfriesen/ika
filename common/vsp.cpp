@@ -32,7 +32,7 @@ bool VSP::Load(const std::string& fname)
     
     if (!f.OpenRead(fname.c_str()))
     {
-        Log::Write("Error opening %s", fname);
+        Log::Write("Error opening %s", fname.c_str());
         return false;
     }
     

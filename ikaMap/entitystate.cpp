@@ -42,7 +42,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
     }
     else
     {
-        if (wxMessageBox("Create a new entity here?", "", wxYES_NO, GetMainWindow()) == wxID_YES)
+        if (wxMessageBox("Create a new entity here?", "", wxYES_NO, GetMainWindow()) == wxYES)
         {
             HandleCommand(new CreateEntityCommand(GetMapView()->GetCurLayer(), x, y));
         }
