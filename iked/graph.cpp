@@ -1,5 +1,6 @@
 
 #include "graph.h"
+#include "log.h"
 
 //-------------------------------------------------------
 
@@ -97,8 +98,11 @@ void CGraphFrame::Blit(CImage& src,int x,int y,bool trans)
     SetCurrent();
 
     glBindTexture(GL_TEXTURE_2D,src.hTex);
+    glDisable(GL_BLEND);
+
     glBegin(GL_QUADS);
 
+    glColor4ub(255,255,255,255);
     glTexCoord2f(0,0);      glVertex2i(x,y);
     glTexCoord2f(1,0);      glVertex2i(x+src.nWidth,y);
     glTexCoord2f(1,1);      glVertex2i(x+src.nWidth,y+src.nHeight);
@@ -136,5 +140,7 @@ void CImage::Update(const CPixelMatrix& src)
     int nTexheight=nHeight;
 
     glBindTexture(GL_TEXTURE_2D,hTex);
-    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nWidth,nHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)src.GetPixelData());
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)src.GetPixelData());
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
 }

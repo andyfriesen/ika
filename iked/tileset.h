@@ -24,7 +24,7 @@ class CTileSet
 
     VSP*                pVsp;
     vector<CTile>       bitmaps;    // hardware dependant copies of the tiles
-    
+    public:    
     void Sync();                    // updates bitmaps to mirror the VSP
     void SyncAll();                 // Deallocates the bitmaps, then reconstructs them all.
     void FreeBitmaps();             // Deallocates the bitmaps vector
