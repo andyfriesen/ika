@@ -413,10 +413,16 @@ void CEngine::Render(const char* sTemprstring)
 
 void CEngine::DoHook(HookList& hooklist)
 {
+    bool result;
     hooklist.Flush(); // handle any pending insertions/deletions
 
     for (std::list <void*>::iterator i = hooklist.begin(); i != hooklist.end(); i++)
-        script.ExecFunction(*i);
+    {
+        result = script.ExecFunction(*i);
+
+        if (!result)
+            Script_Error();
+    }
 }
 
 // ----------------------------------------- AI -------------------------------------------------

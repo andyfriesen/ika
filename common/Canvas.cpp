@@ -60,11 +60,11 @@ Canvas::Canvas(u8* data, int width, int height, u8* pal)
 
 Canvas::Canvas(const Canvas& src)
 {
-    _width=src._width;
-    _height=src._height;
-    _pixels=new RGBA[_width*_height];
+    _width = src._width;
+    _height = src._height;
+    _pixels = new RGBA[_width*_height];
     memcpy(_pixels, src._pixels, _width*_height*sizeof(RGBA));
-    _cliprect=Rect(0, 0, _width, _height);
+    _cliprect = Rect(0, 0, _width, _height);
 }
 
 Canvas::Canvas(const char* fname)
@@ -77,6 +77,7 @@ Canvas::Canvas(const char* fname)
     _width  = img->getWidth();
     _height = img->getHeight();
     _pixels = new RGBA[_width * _height];
+    _cliprect = Rect(0, 0, _width, _height);
 
     std::copy(src, src + _width * _height, _pixels);
 
@@ -91,7 +92,7 @@ Canvas::~Canvas()
 
 void Canvas::Save(const char* fname)
 {
-    corona::Image* img = corona::CreateImage(Width(), Height(), corona::PF_R8G8B8A8);
+    corona::Image* img = corona::CreateImage(_width, _height, corona::PF_R8G8B8A8);
     RGBA* dest = (RGBA*)img->getPixels();
     std::copy(_pixels, _pixels + _width * _height, dest);
     corona::SaveImage(fname, corona::FF_PNG, img);

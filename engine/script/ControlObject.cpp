@@ -15,6 +15,28 @@ namespace Script
             {   0, 0    }
         };
 
+#define GET(x) PyObject* get ## x(ControlObject* self)
+#define SET(x) PyObject* set ## x(ControlObject* self, PyObject* value)
+
+        GET(OnPress)    {   return self->control->OnPress;  }
+        GET(OnUnpress)  {   return self->control->OnUnpress; }
+        SET(OnPress)
+        {
+            Py_XDECREF(self->control->OnPress);
+            Py_INCREF(value);
+            self->control->OnPress = value;
+            return 0;
+        }
+        SET(OnUnpress)
+        {
+            Py_XDECREF(self->control->OnUnpress);
+            Py_INCREF(value);
+            self->control->OnUnpress = value;
+            return 0;
+        }
+#undef GET
+#undef SET
+
         void Init()
         {
             memset(&type, 0, sizeof type);
