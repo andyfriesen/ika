@@ -1,59 +1,62 @@
 Indentations are 4 spaces in size.  No hard tabs, since everybody sets their
-tab size to something different, and the code will look funky in any tabsize
-other than the one that was used when the code was written.
+tab size to something different, and the code will look terrible in any
+tabsize other than the one that was used when the code was written.
 
-Member variables should use the "camel" notation.
-Locals and parameters can be whatever you want, really.  Just be reasonable.
-(eg.  thisIsAMemberVariable, thisisalocal)  Globals can be whatever too.
+Member variables should use the "camel" notation. Locals and parameters can
+be whatever you want, really.  Just be reasonable. (eg.
+thisIsAMemberVariable, thisisalocal)  Globals can be whatever too.  Class
+attributes should use the camel notation as well.
 
 Class names should follow the Java convention.  (eg. ThisIsAClass)
 
-Namespaces should be all lowercase, of the same name as the directory
-to which they correspond.  The contents of nontrivial namespaces should
-be placed in a directory whose name is the same as that of the namespace.
+Namespaces should be all lowercase, of the same name as the directory to
+which they correspond.  The contents of nontrivial namespaces should be
+placed in a directory whose name is the same as that of the namespace.
 
-Filenames and directories should be all lowercase, so as to minimize fuss with operating
-systems that are sensitive about filename case.
+Filenames and directories should be all lowercase, so as to minimize fuss
+with operating systems that are sensitive about filename case. Containers
+should be plural, despite the fact that entity[i] looks more sensical than
+entities[i].
 
-Containers should be plural, despite the fact that entity[i] looks more sensical
-than entities[i].
-
-Function names should be verbs.  Accessors should use the GetXXX form.  They
-should use camel notation, with the first letter capitalized.  Methods which query
-the state of a class should use getState(), isState() or somesuch.
+Function names should be verbs.  Accessors should use the getXXX form.  They
+should use camel notation.  Methods which return a yes/no query about the
+state of an object should use the isXXX form.  Accessors and query methods
+should never have side effects.
 
     exampleMethod();
     blah()
     isEmpty()
     getCount()
 
-Types which have a size should expose it as the type's "count".  There are too many terms
-one could use for this sort of thing; we need to pick one and stick with it. (this obviously
-doesn't apply to multidimensional containers like matrices)
+Types which have a size should expose it as the type's "count".  There are
+too many terms one could use for this sort of thing; we need to pick one and
+stick with it. (this obviously doesn't apply to multidimensional containers
+like matrices) For instance, prefer "getEntityCount()" over "getNumEntities()"
 
-Prefer the 'struct' keyword over 'class'.  Structs are identical to classes, except that
-they default to public inheritance and visibility.  This helps to reduce the amount of
-syntactic clutter a little.  Don't explicitly state the type of inheritance being used
-unless it differs from the default.
+Prefer the 'struct' keyword over 'class'.  Structs are identical to classes,
+except that they default to public inheritance and visibility.  This helps to
+reduce the amount of syntactic clutter a little.  Don't explicitly state the
+type of inheritance being used unless it differs from the default.
 
 Private data belongs at the end of the class, not the beginning.
 
-Preprocessor constants should be in all uppercase, with underscores dilineating
-words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever possbile. (they
-should follow the usual variable convention)
+Preprocessor constants should be in all uppercase, with underscores
+dilineating words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever
+possbile. (they should follow the usual variable convention)
 
 Prefer #pragma once over inclusion guards.  GCC 3.x and MSVC both support it,
-which is close enough to a de-facto standard to me.  It's less typing, easier to
-get right, and harder to get wrong.  Further, it reduces macro namespace
+which is close enough to a de-facto standard to me.  It's less typing, easier
+to get right, and harder to get wrong.  Further, it reduces macro namespace
 clutter.
 
-Braces usually belong on the same line as their initiating construct.
-Cheating and putting the whole block on the same line is acceptable
-if it is a trivial operation, and it doesn't result in excessive line length.
-(more than 120 characters or so)
+Braces usually belong on the same line as their initiating construct. Do not
+cheat by putting the whole condition on one line, even if it is a very short
+condition.  Always put braces around if and while bodies, even if they only
+consist of a single statement.  The end brace should line up with the first
+line of the construct. (ie K&R bracing style)
 
-The end brace should line up with the first line of the construct.
-(ie K&R bracing style)
+Putting multiple statements on a single line is acceptable if (and only if)
+both statements are extremely simple *and related*.
 
 example:
 
@@ -61,9 +64,11 @@ example:
         void DoSomethingInteresting(int x, int y) {
             bool mylocal;
 
-            if (mylocal) { x++; y--; }
+            if (mylocal) {
+                x++; y--;
+            }
 
-            if (_myProperty) {
+            if (myProperty) {
                ...
             } else {
                ...
@@ -71,7 +76,7 @@ example:
         }
 
     private:
-        bool _myProperty;
+        bool myProperty;
     };
 
 Whenever possible, wrap globals in a meaningful namespace.  The simple fact
@@ -80,7 +85,16 @@ Balance accordingly.
 
 Every line of code is *not* to be commented.  A single line/paragraph
 describing the general jist of a section may be needed if the code becomes
-complex, but if more than that is needed, then you need to simplify it anyway.
-The idea is to make the code will comment itself, not to double the code size
-with an english translation of the entire engine. ;)  Doxygen comments in header
-files are a plus.
+complex, but if more than that is needed, then you need to simplify it
+anyway. The idea is to make the code will comment itself, not to double the
+code size with an english translation of the entire engine. ;)  Doxygen
+comments in header files are a plus, but should only be used in places where
+the method name does not adequately describe itself.
+
+When writing C#, use the .NET naming conventions: all public symbols use
+PascalCase.  Brace and indentation rules should be as written in this document.
+
+Python code should use the naming convention outlined here.  Blocks should
+use four space indents without any hard tabs whatsoever.  This is doubly
+important in a language like Python, where whitespace is syntactically
+significant.
