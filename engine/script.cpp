@@ -172,13 +172,6 @@ void ScriptEngine::ClearEntityList()
         return;
 
     PyDict_Clear(Script::entityDict);
-
-    for (std::map<::Entity*, Script::Entity::EntityObject*>::iterator iter = Script::Entity::instances.begin();
-        iter != Script::Entity::instances.end();
-        iter++)
-    {
-        Log::Write("%s still exists, with refcount %i", iter->first->name.c_str(), iter->second->ob_refcnt);
-    }
 }
 
 void ScriptEngine::AddEntityToList(::Entity* e)
@@ -240,7 +233,6 @@ void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
 
     PyObject* args = Py_BuildValue("(O)", entObject);
     PyObject* result = PyObject_CallObject(func, args);
-    Py_DECREF(entObject);
     Py_DECREF(args);
 
     if (!result)

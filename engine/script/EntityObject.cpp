@@ -226,11 +226,9 @@ namespace Script
 
         void Destroy(EntityObject* self)
         {
-            Log::Write("Nuking %s", self->ent->name.c_str());
-            if (self->ent)
-                engine->DestroyEntity(self->ent);
-            else
-                Log::Write("Entity_Destroy weirdness");
+            assert(self->ent);
+
+            engine->DestroyEntity(self->ent);
 
             instances.erase(self->ent);
 
