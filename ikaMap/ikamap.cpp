@@ -23,7 +23,7 @@ namespace
             InitXmlResource();
 #endif
 
-            MainWindow* mainwnd = new MainWindow(wxDefaultPosition, wxSize(640, 480));
+            MainWindow* mainwnd = new MainWindow(wxDefaultPosition, wxSize(750,500));
             mainwnd->Show(true);
             SetTopWindow(mainwnd);
             return TRUE;

@@ -67,6 +67,9 @@ void EntityState::OnRender()
     uint xwin = GetMapView()->GetXWin();
     uint ywin = GetMapView()->GetYWin();
 
+    if (!layer)
+        return;
+
     // This is more work than I think it should be, largely due to the whole stupid entity "blueprint" bullshit.
     // I should nuke that shit and be done with it.
     for (std::vector<Map::Entity>::iterator iter = layer->entities.begin();

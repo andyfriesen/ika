@@ -54,5 +54,6 @@ void ObstructionState::OnRender()
     Map::Layer* l = GetCurrentLayer();
     MapView* mv = GetMapView();
 
-    mv->RenderObstructions(GetCurrentLayer(), mv->GetXWin() - l->x, mv->GetYWin() - l->y);
+    if (l)
+        mv->RenderObstructions(GetCurrentLayer(), mv->GetXWin() - l->x, mv->GetYWin() - l->y);
 }

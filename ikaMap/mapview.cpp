@@ -181,8 +181,8 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
     int lenX = width  / tileX + 2;
     int lenY = height / tileY + 2;
 
-    int adjustX = -(xoffset % tileX);
-    int adjustY = -(yoffset % tileY);
+    int adjustX = xoffset % tileX;
+    int adjustY = yoffset % tileY;
 
     if (firstX + lenX > lay->Width())  lenX = lay->Width()  - firstX;
     if (firstY + lenY > lay->Height()) lenY = lay->Height() - firstY;
@@ -200,8 +200,6 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
         firstY = 0;
     }
 
-    int curX = adjustX;
-    int curY = adjustY;
     for (int y = 0; y < lenY; y++)
     {
         for (int x = 0; x < lenX; x++)
@@ -210,13 +208,9 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
 
             _video->Blit(
                 ts->GetImage(t),
-                curX, curY,
+                x * tileX - adjustX, y * tileY - adjustY,
                 true);
-
-            curX += tileX;
         }
-        curY += tileY;
-        curX = adjustX;
     }
 }
 
