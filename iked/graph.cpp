@@ -74,10 +74,8 @@ void CGraphFrame::OnSize(wxSizeEvent& event)
 void CGraphFrame::OnMouseEvent(wxMouseEvent& event)
 {
     // Tweak the mouse position, so that the parent doesn't have to compensate for interacting with the frame.
-//    ScreenToClient(&event.m_x,&event.m_y);
-    event.m_x=event.m_x*nZoomscale/nZoom;
-    event.m_y=event.m_y*nZoomscale/nZoom;
-//    ClientToScreen(&event.m_x,&event.m_y);
+    event.m_x=event.m_x*nZoom/nZoomscale;
+    event.m_y=event.m_y*nZoom/nZoomscale;
 
     // Relay to the parent.
     wxPostEvent(GetParent(),event);
@@ -161,6 +159,16 @@ void CGraphFrame::Clear()
 void CGraphFrame::ShowPage()
 {
     SwapBuffers();
+}
+
+int CGraphFrame::LogicalWidth() const
+{
+    return GetClientSize().GetWidth()*nZoom/nZoomscale;
+}
+
+int CGraphFrame::LogicalHeight() const
+{
+    return GetClientSize().GetHeight()*nZoom/nZoomscale;
 }
 
 int CGraphFrame::Zoom() const

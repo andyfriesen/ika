@@ -359,7 +359,7 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
 
 void CMapView::Zoom(int nZoomscale)
 {
-    int nZoom=pGraph->Zoom()+nZoomscale;
+    int nZoom=pGraph->Zoom()-nZoomscale;
 
     if (nZoom<1) nZoom=1;
     if (nZoom>255) nZoom=255;
@@ -462,12 +462,8 @@ void CMapView::OnLayerToggleVisibility(int lay,int newstate)
 
 void CMapView::UpdateScrollbars()
 {
-    int w,h;
-    pGraph->GetClientSize(&w,&h);
-
-    // not using *= here for a reason.  Integer math, remember. ;)
-/*    w=w*nZoomscale/nZoom;
-    h=h*nZoomscale/nZoom;*/
+    int w=pGraph->LogicalWidth();
+    int h=pGraph->LogicalHeight();
 
     int maxx=pMap->Width()*pTileset->Width();
     int maxy=pMap->Height()*pTileset->Height();
@@ -556,9 +552,8 @@ void CMapView::RenderEntities()
 
 void CMapView::RenderInfoLayer(int lay)
 {
-    int nWidth,nHeight;
-
-    pGraph->GetClientSize(&nWidth,&nHeight);
+    int nWidth=pGraph->LogicalWidth();
+    int nHeight=pGraph->LogicalHeight();
 
 /*    nWidth=nWidth*nZoomscale/nZoom;
     nHeight=nHeight*nZoomscale/nZoom;*/
@@ -622,9 +617,8 @@ void CMapView::RenderInfoLayer(int lay)
 
 void CMapView::RenderLayer(int lay)
 {
-    int nWidth,nHeight;
-
-    pGraph->GetClientSize(&nWidth,&nHeight);
+    int nWidth=pGraph->LogicalWidth();
+    int nHeight=pGraph->LogicalHeight();
 
 /*    nWidth=nWidth*nZoomscale/nZoom;
     nHeight=nHeight*nZoomscale/nZoom;*/
