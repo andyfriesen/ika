@@ -13,8 +13,8 @@ import ika
 i = 0
 
 class Window(object):
-    __slots__ = [ 'iLeft', 'iRight', 'iTop', 'iBottom', 'iTopleft', 'iTopright', 'iBottomleft', 'iBottomright', 'iCentre', 'borderwidth' ]
-    def __init__(_, srcimage, bordersize):
+    __slots__ = [ 'iLeft', 'iRight', 'iTop', 'iBottom', 'iTopleft', 'iTopright', 'iBottomleft', 'iBottomright', 'iCentre', 'borderwidth', 'Blit' ]
+    def __init__(_, srcimage, bordersize, stretch = 0):
         def ss(x, y, w, h):
             global i
             
@@ -38,6 +38,11 @@ class Window(object):
         _.iBottomleft   = ss(0,                 edgey + bordersize, bordersize, bordersize)
         _.iBottomright  = ss(edgex + bordersize, edgey + bordersize, bordersize, bordersize)
         _.iCentre       = ss(bordersize,        bordersize,     edgex, edgey)
+        
+        if stretch:
+            _.Blit = ika.Video.ScaleBlit
+        else:
+            _.Blit = ika.Video.TileBlit
 
     #----------------------------------------------------------------
 
@@ -53,13 +58,13 @@ class Window(object):
         ika.Video.Blit(_.iBottomleft, x1 - _.iBottomleft.width, y2)
         ika.Video.Blit(_.iBottomright, x2, y2)
 
-        ika.Video.TileBlit(_.iLeft, x1 - _.iLeft.width, y1, _.iLeft.width, y2 - y1)
-        ika.Video.TileBlit(_.iRight, x2, y1, _.iRight.width, y2 - y1)
+        _.Blit(_.iLeft, x1 - _.iLeft.width, y1, _.iLeft.width, y2 - y1)
+        _.Blit(_.iRight, x2, y1, _.iRight.width, y2 - y1)
 
-        ika.Video.TileBlit(_.iTop, x1, y1 - _.iTop.height, x2 - x1, _.iTop.height)
-        ika.Video.TileBlit(_.iBottom, x1, y2, x2 - x1, _.iBottom.height)
+        _.Blit(_.iTop, x1, y1 - _.iTop.height, x2 - x1, _.iTop.height)
+        _.Blit(_.iBottom, x1, y2, x2 - x1, _.iBottom.height)
 
-        ika.Video.TileBlit(_.iCentre, x1, y1, x2 - x1, y2 - y1)    
+        _.Blit(_.iCentre, x1, y1, x2 - x1, y2 - y1)    
 
     """Left   = property( lambda _: _.iLeft.width )
     Right  = property( lambda _: _.iRight.width )

@@ -7,9 +7,16 @@ defined dictionary that holds all the map-defined entities. (and serves as their
 being garbage collected)    
 */
 
+#include <set>  // all entity instances
+
 #include "ObjectDefs.h"
 #include "main.h"
 #include "entity.h"
+
+namespace
+{
+    std::set<Script::Entity::EntityObject*> _entInstances;
+}
 
 namespace Script
 {
@@ -74,6 +81,7 @@ namespace Script
             GET(Name)               { return PyString_FromString(self->ent->sName.c_str()); }
             GET(ActScript)          { return PyString_FromString(self->ent->sActscript.c_str()); }
             GET(AdjacentActivate)   { return PyInt_FromLong(self->ent->bAdjacentactivate?1:0); }
+//            GET(AutoFace)           { return PyInt_FromLong(self->ent->bAutoface?1:0; }
             GET(IsObs)              { return PyInt_FromLong(self->ent->bIsobs?1:0); }
             GET(MapObs)             { return PyInt_FromLong(self->ent->bMapobs?1:0); }
             GET(EntObs)             { return PyInt_FromLong(self->ent->bEntobs?1:0); }
@@ -83,11 +91,30 @@ namespace Script
             GET(HotWidth)           { return PyInt_FromLong(self->ent->pSprite->nHotw); }
             GET(HotHeight)          { return PyInt_FromLong(self->ent->pSprite->nHoth); }
             GET(MovePattern)        { return PyInt_FromLong(self->ent->movecode);   }
+            GET(ChaseTarget)
+            {
+                if (!self->ent->pChasetarget || self->ent->movecode != mc_chase)
+                {
+                    Py_INCREF(Py_None); return Py_None;
+                }
+
+                for (std::set<EntityObject*>::iterator i = _entInstances.begin(); i != _entInstances.end(); i++)
+                {
+                    if ((*i)->ent == self->ent->pChasetarget)
+                    {
+                        Py_INCREF(*i);  return (PyObject*)*i;
+                    }
+                }
+
+                PyErr_SetString(PyExc_RuntimeError, "Internal error: chasetarget points to something wacky.  Bug andy if you see this!");
+                return 0;
+            }
+
             SET(X)                  { self->ent->x = PyInt_AsLong(value); return 0; }
             SET(Y)                  { self->ent->y = PyInt_AsLong(value); return 0; }
             SET(Speed)              { self->ent->nSpeed = PyInt_AsLong(value); return 0; }
-            SET(Direction)          
-            { 
+            SET(Direction)
+            {
                 self->ent->direction = (Direction)PyInt_AsLong(value);    return 0;
                 self->ent->SetAnimScript(self->ent->pSprite->Script((int)self->ent->direction + self->ent->bMoving ? 0 : 8));
             }
@@ -97,6 +124,7 @@ namespace Script
             SET(Name)               { self->ent->sName = PyString_AsString(value); return 0; }
             SET(ActScript)          { self->ent->sActscript = PyString_AsString(value); return 0; }
             SET(AdjacentActivate)   { self->ent->bAdjacentactivate = (PyInt_AsLong(value) != 0); return 0; }
+//            SET(AutoFace)           { self->ent->bAutoface = PyInt_AsLong(value) != 0; return 0; }
             SET(IsObs)              { self->ent->bIsobs = (PyInt_AsLong(value)!=0) ; return 0; }
             SET(MapObs)             { self->ent->bMapobs = (PyInt_AsLong(value)!=0) ; return 0; }
             SET(EntObs)             { self->ent->bEntobs = (PyInt_AsLong(value)!=0) ; return 0; }
@@ -123,6 +151,7 @@ namespace Script
             {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
             {   "actscript",        (getter)getActScript,           (setter)setActScript,       "Gets or sets the name of the function called when the entity is activated."    },
             {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate,"If nonzero, the entity will activate when it touches the player entity. (not implemented)" },
+//            {   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated."  },
             {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
             {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
             {   "entobs",           (getter)getEntObs,              (setter)setEntObs,          "If nonzero, the entity is unable to walk through entities whose isobs property is set."    },
@@ -138,6 +167,7 @@ namespace Script
                                                                                                 "   ika.wanderzone - The entity is wandering within a zone.\n"
                                                                                                 "   ika.scripted - The entity is following a movement script.\n"
                                                                                                 "   ika.chase - The entity is chasing another entity." },
+            {   "chasetarget",      (getter)getChaseTarget,         0,                          "Gets the entity that this entity is chasing, or None if it is not chasing another entity." },
             {   0   }
         };
 
@@ -165,6 +195,8 @@ namespace Script
                 return NULL;
 
             ent->ent=e;
+
+            _entInstances.insert(ent);
 
             return (PyObject*)ent;
         }
@@ -194,6 +226,8 @@ namespace Script
             ent->ent->y = y;
             ent->ent->pSprite = sprite;
 
+            _entInstances.insert(ent);
+
             return (PyObject*)ent;
         }
 
@@ -203,6 +237,8 @@ namespace Script
                 engine->DestroyEntity(self->ent);
             else
                 Log::Write("Entity_Destroy weirdness");
+
+            _entInstances.erase(self);
 
             PyObject_Del(self);
         }

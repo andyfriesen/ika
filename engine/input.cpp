@@ -224,9 +224,6 @@ void Input::KeyDown(int key)
         if (c->onPress)
             _hookqueue.push(c->onPress);
     }
-
-    if (key == SDLK_UP)
-        Log::Write("%f", _up->Position());
 }
 
 void Input::KeyUp(int key)

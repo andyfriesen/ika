@@ -599,17 +599,15 @@ void CEngine::TestActivate(const CEntity& player)
         nOldtx = tx; nOldty = ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
         const SMapZone& zone = map.Zones()[map.GetZone(tx, ty)];
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
-        {
             script.CallEvent(zone.sActscript.c_str());
-        }
     }
     
     nOldtx = tx; nOldty = ty;
     
     // adjacent activation
     
-    if (!input.Enter()) return;                                // From this point on, the only time we'd have to check this crap is if enter was pressed.
-    input.Unpress();
+    if (!input.Enter().Pressed()) return;                           // From this point on, the only time we'd have to check this crap is if enter was pressed.
+    //input.Unpress();
     
     tx = player.x; ty = player.y;
     // entity activation
@@ -632,6 +630,7 @@ void CEngine::TestActivate(const CEntity& player)
         if (!pEnt->bAdjacentactivate && pEnt->sActscript.length() != 0)
         {
             script.CallEvent(pEnt->sActscript.c_str());
+            input.Enter().Pressed(); // flush
             return;
         }
     }
@@ -647,6 +646,7 @@ void CEngine::TestActivate(const CEntity& player)
     if (zone.bAdjacentactivation)
     {
         script.CallEvent(zone.sActscript.c_str());
+        input.Enter().Pressed(); // flush
     }
 }
 

@@ -22,20 +22,18 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         echo Assembling the main dist zip...
         mkdir tempdist
         mkdir tempdist/xi
-        mkdir tempdist/cursor
-        cp dist/* tempdist
+        cp -R dist/* tempdist
         cp xi/* tempdist/xi
         cp 3rdparty/dlls/*.dll tempdist
-        cp dist/cursor/* tempdist/cursor
         cp engine/Release/ika.exe tempdist
         cp iked/Release/iked.exe tempdist
         cp winmaped/Release/winmaped.exe tempdist
         cd tempdist
         zip -r ../ika-win-$version.zip *
         cd ..
-        rm -rf tempdist
+        #rm -rf tempdist
         echo Done.
-        
+
         echo Assembling source archive...
         mkdir ika
         cd ika

@@ -5,7 +5,7 @@
 #define METHOD1(x, type) PyObject* x(type* self)
 
 // Rain of prototypes
-#include <Python.h>
+#include <python/Python.h>
 #include "input.h"
 class CFont;
 class CEntity;

@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VER "0.43"
+#define VER "0.44"
 
 #ifdef _DEBUG
 #   define VERSION VER " (debug)"
@@ -30,11 +30,11 @@
 #include "font.h"
 
 
-/*!
-    Main module thingie.
-
-    This is the part that takes all the pieces, and whips them around as necessary.
-*/
+/**
+ *  Main module thingie.
+ *
+ *  This is the part that takes all the pieces, and whips them around as necessary.
+ */
 
 class CEngine
 {

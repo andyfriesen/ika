@@ -2,7 +2,7 @@
 #ifndef SCRIPT_H
 #define SCRIPT_H
 
-#include "Python.h"
+#include <python/Python.h>
 #include "common/types.h"
 
 /*!

@@ -369,9 +369,22 @@ bool CCHRfile::Loadv4CHR(File& f)
     for (int nCurframe = 0; nCurframe < nFrames; nCurframe++)
     {
         for (int n = 0; n < nWidth * nHeight; n++)
-            p[n]=RGBA( pTemp[ nCurframe * nWidth * nHeight + n]);
+        {
+            u16 u = pTemp[nCurframe * nWidth * nHeight + n];
+            u8 r = ((u >> 11) & 31) << 3;
+            u8 g = ((u >> 5) & 63) << 2;
+            u8 b = (u & 31) << 3;
+            u8 a = ((!r && !g && !b) || (r == 255 && !g && b == 255)) ? 0 : 255;
+            p[n]=RGBA(r, g, b, a);
+
+            //pTemp[ nCurframe * nWidth * nHeight + n]);
+        }
         
         frame[nCurframe].CopyPixelData(p, nWidth, nHeight);
+        
+        char c[16];
+        sprintf(c,"s%i.png", nCurframe);
+        frame[nCurframe].Save(c);
     }
     
     delete[] pTemp;

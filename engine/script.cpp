@@ -202,6 +202,8 @@ void CScriptEngine::CallEvent(const char* sName)
     
     if (!mapmodule)
         return;                                                                // no module loaded == no event
+
+    engine->input.Unpress();
     
     PyObject* pDict=PyModule_GetDict(mapmodule);
     PyObject* pFunc=PyDict_GetItemString(pDict, (char*)sName);
