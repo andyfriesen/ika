@@ -59,9 +59,10 @@ void CGraphFrame::OnSize(wxSizeEvent& event)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0f,w,h,0.0f,-1.0f,1.0f);
-
+/*
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+*/
 
     glViewport(0,0,w,h);
 

@@ -339,12 +339,8 @@ VSP::AnimState& VSP::Anim(int strand)
 
 CPixelMatrix& VSP::GetTile(int tileidx)
 {
-    static CPixelMatrix dummy;
-    
     if (tileidx<0 || tileidx>tiles.size())
-    {
-        return dummy;
-    }
+        tileidx=0;
     
     return tiles[tileidx];
 }

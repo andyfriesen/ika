@@ -34,6 +34,17 @@ class CMapView : public IDocView
 {
     enum
     {
+        id_zoomin=100,
+        id_zoomout,
+        id_zoomnormal,
+
+        id_filesave,
+        id_filesaveas,
+        id_fileclose,
+    };
+
+    enum
+    {
         lay_entity=-10,
         lay_zone,
         lay_obstruction
@@ -70,13 +81,20 @@ public:
     CMapView(CMainWnd* parent,const string& fname);
 
     void InitLayerVisibilityControl();
+    void InitAccelerators();
+    void InitMenu();
 
     void OnPaint();
     void OnErase(wxEraseEvent&) {}
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
 
-    void OnSave(wxCommandEvent& event) {}
+    void OnSave(wxCommandEvent& event);
+    void OnSaveAs(wxCommandEvent& event);
+
+    void OnZoomIn(wxCommandEvent& event);
+    void OnZoomOut(wxCommandEvent& event);
+    void OnZoomNormal(wxCommandEvent& event);
 
     void OnClose();
 
@@ -104,7 +122,8 @@ private:
     void ScreenToMap(int& x,int& y);
     void HandleLayerEdit(wxMouseEvent& event);
     void HandleMouse(wxMouseEvent& event);
-    
+    void UpdateScrollbars();
+
     void Render();
     void RenderLayer(int lay);
 

@@ -15,9 +15,8 @@ namespace
     enum    {   linecountmargin, foldmargin };
 };
 
-BEGIN_EVENT_TABLE(CCodeView,wxMDIChildFrame)
+BEGIN_EVENT_TABLE(CCodeView,IDocView)
     EVT_STC_CHARADDED(CCodeView::id_ed,CCodeView::OnCharAdded)
-    EVT_CLOSE(CCodeView::OnClose)
 
     EVT_MENU(CCodeView::id_filesave,CCodeView::OnSave)
     EVT_MENU(CCodeView::id_filesaveas,CCodeView::OnSaveAs)
@@ -119,7 +118,8 @@ void CCodeView::InitAccelerators()
     accel[p++].Set(wxACCEL_CTRL,(int)'S',id_filesave);
     accel[p++].Set(wxACCEL_CTRL,(int)'W',id_fileclose);
 
-    wxAcceleratorTable table(accel.size(),&*accel.begin());
+    wxAcceleratorTable table(p,&*accel.begin());
+
     SetAcceleratorTable(table);
 }
 
@@ -538,32 +538,6 @@ void CCodeView::OnSaveAs(wxCommandEvent& event)
 }
 
 // Trivial stuff
-void CCodeView::OnClose(wxCommandEvent& event)
-{      
-    if (bChanged)
-    {
-        wxMessageDialog msgdlg
-            (
-                this,
-                "This file has been modified. Save?",
-                sName.c_str(),
-                wxYES_NO | wxCANCEL | wxICON_QUESTION,
-                wxDefaultPosition
-            );
-
-        int nDecision=msgdlg.ShowModal();
-
-        switch(nDecision)
-        {
-
-            case wxID_YES: OnSave(event); break;
-            case wxID_CANCEL: return;
-            //case wxID_NO:
-        }
-    }
-    
-    Destroy();
-}
 
 void CCodeView::OnMarginClick(wxStyledTextEvent& event)
 {

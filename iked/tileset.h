@@ -3,6 +3,7 @@
 #define TILESET_H
 
 #include "types.h"
+#include <set>
 //#include <wx\wx.h>
 
 class CPixelMatrix;
@@ -14,16 +15,18 @@ class VSP;
 
 class CTileSet
 {
-    struct CTile
+    /*struct CTile
     {
         CImage* pImg;
         bool bAltered;
 
         CTile() : pImg(0),bAltered(false) {}
-    };
+    };*/
 
     VSP*                pVsp;
-    vector<CTile>       bitmaps;    // hardware dependant copies of the tiles
+    vector<CImage*>     bitmaps;    // hardware dependant copies of the tiles
+
+    std::set<int>       altered;    // tiles that have changed since the last sync
 public:    
     void Sync();                    // updates bitmaps to mirror the VSP
     void SyncAll();                 // Deallocates the bitmaps, then reconstructs them all.

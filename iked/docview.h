@@ -1,3 +1,6 @@
+/*
+    Generic document class.  If something is common to all documents, then it should go here, so as to save redundancy.
+*/
 
 #ifndef DOCVIEW_H
 #define DOCVIEW_H
@@ -14,16 +17,18 @@ protected:
     CMainWnd* pParent;
     string sName;
 
+    bool bChanged;
+
 public:
     IDocView(CMainWnd* parent,const string& fname);
     virtual ~IDocView();
 
-    //virtual void OnClose(wxCommandEvent& event);
+    virtual void OnClose(wxCommandEvent& event);
     virtual void OnSave(wxCommandEvent& event)=0;
 
     const string& GetFileName() { return sName; }
 
-//    DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

@@ -101,6 +101,14 @@ namespace
 //-------------------------------------------------------------------------------------
 
 BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
+    EVT_MENU(CMapView::id_zoomin,CMapView::OnZoomIn)
+    EVT_MENU(CMapView::id_zoomout,CMapView::OnZoomOut)
+    EVT_MENU(CMapView::id_zoomnormal,CMapView::OnZoomNormal)
+
+    EVT_MENU(CMapView::id_filesave,CMapView::OnSave)
+    EVT_MENU(CMapView::id_filesaveas,CMapView::OnSaveAs)
+    EVT_MENU(CMapView::id_fileclose,CMapView::OnClose)
+
     EVT_PAINT(CMapView::OnPaint)
     EVT_ERASE_BACKGROUND(CMapView::OnErase)
     EVT_SIZE(CMapView::OnSize)
@@ -145,6 +153,8 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     xwin=ywin=0;
 
     InitLayerVisibilityControl();
+    InitAccelerators();
+    InitMenu();
 
     nCurlayer=0;
     csrmode=mode_normal;
@@ -179,6 +189,41 @@ void CMapView::InitLayerVisibilityControl()
     pLayerlist->AppendItem("Obstructions",lay_obstruction);
 }
 
+void CMapView::InitAccelerators()
+{
+    vector<wxAcceleratorEntry> accel=pParent->CreateBasicAcceleratorTable();
+
+    int p=accel.size();
+    accel.resize(accel.size()+4);
+
+    accel[p++].Set(wxACCEL_CTRL,(int)'S',id_filesave);
+    accel[p++].Set(0,(int)'+',id_zoomin);
+    accel[p++].Set(0,(int)'-',id_zoomout);
+    accel[p++].Set(0,(int)'=',id_zoomnormal);
+
+    wxAcceleratorTable table(p,&*accel.begin());
+    SetAcceleratorTable(table);
+}
+
+void CMapView::InitMenu()
+{
+    wxMenuBar* menubar=pParent->CreateBasicMenu();
+
+    wxMenu* filemenu=menubar->Remove(0);
+    filemenu->Insert(2,new wxMenuItem(filemenu,id_filesave,"&Save","Save the map to disk."));
+    filemenu->Insert(3,new wxMenuItem(filemenu,id_filesaveas,"Save &As","Save the map under a new filename."));
+    filemenu->Insert(4,new wxMenuItem(filemenu,id_fileclose,"&Close","Close the map view."));
+    menubar->Append(filemenu,"&File");
+
+    wxMenu* viewmenu=new wxMenu;
+    viewmenu->Append(id_zoomin,"Zoom &In\t+","");
+    viewmenu->Append(id_zoomout,"Zoom &Out\t-","");
+    viewmenu->Append(id_zoomnormal,"Zoom %&100","");
+    menubar->Append(viewmenu,"&View");
+
+    SetMenuBar(menubar);
+}
+
 void CMapView::OnPaint()
 {
     wxPaintDC paintdc(this);
@@ -196,12 +241,7 @@ void CMapView::OnSize(wxSizeEvent& event)
     wxLayoutAlgorithm layout;
     layout.LayoutWindow(this,pRightbar);
 
-    // FIXME: w is coming out too big; you can scroll right past the end of the map.
-    int w,h;
-    pGraph->GetClientSize(&w,&h);
-
-    pRightbar->SetScrollbar(wxHORIZONTAL,xwin,w, ( pMap->Width()*pTileset->Width() ) * nZoom/nZoomscale );
-    pRightbar->SetScrollbar(wxVERTICAL,ywin,h, ( pMap->Height()*pTileset->Height() ) * nZoom/nZoomscale );
+    UpdateScrollbars();
 }
 
 void CMapView::OnScroll(wxScrollWinEvent& event)
@@ -212,8 +252,7 @@ void CMapView::OnScroll(wxScrollWinEvent& event)
     case wxVERTICAL:    ywin=event.GetPosition();   break;
     }
 
-    pRightbar->SetScrollPos(wxHORIZONTAL,xwin);
-    pRightbar->SetScrollPos(wxVERTICAL,ywin);
+    UpdateScrollbars();
 
     Render();
     pGraph->ShowPage();
@@ -224,6 +263,59 @@ void CMapView::OnClose()
     pParentwnd->map.Release(pMap);
     pParentwnd->vsp.Release(pTileset);
     Destroy();
+}
+
+void CMapView::OnSave(wxCommandEvent& event)
+{
+    if (sName.length())
+    {
+        pMap->Save(sName.c_str());
+    }
+    else
+        OnSaveAs(event);
+}
+
+void CMapView::OnSaveAs(wxCommandEvent& event)
+{
+    wxFileDialog dlg(
+        this,
+        "Open File",
+        "",
+        "",
+        "ika maps (*.map)|*.map|"
+        "All files (*.*)|*.*",
+        wxSAVE | wxOVERWRITE_PROMPT
+        );
+
+    int result=dlg.ShowModal();
+    if (result==wxID_CANCEL)
+        return;
+
+    sName=dlg.GetFilename().c_str();
+    SetTitle(sName.c_str());
+
+    OnSave(event);
+}
+
+void CMapView::OnZoomIn(wxCommandEvent& event)
+{
+    if (nZoom<32) nZoom++;
+    UpdateScrollbars();
+    Render();   pGraph->ShowPage();
+}
+
+void CMapView::OnZoomOut(wxCommandEvent& event)
+{
+    if (nZoom>1) nZoom--;
+    UpdateScrollbars();
+    Render();   pGraph->ShowPage();
+}
+
+void CMapView::OnZoomNormal(wxCommandEvent& event)
+{
+    nZoom=nZoomscale;
+    UpdateScrollbars();
+    Render();   pGraph->ShowPage();
 }
 
 //------------------------------------------------------------
@@ -253,7 +345,6 @@ void CMapView::HandleLayerEdit(wxMouseEvent& event)
 
     SMapLayerInfo l;
     pMap->GetLayerInfo(l,nCurlayer);
-
 
     int tilex=(x*l.pmulx/l.pdivx) / pTileset->Width();
     int tiley=(y*l.pmuly/l.pdivy) / pTileset->Height();
@@ -303,6 +394,30 @@ void CMapView::OnLayerToggleVisibility(int lay,int newstate)
     pGraph->ShowPage();
 }
 
+void CMapView::UpdateScrollbars()
+{
+    int w,h;
+    pGraph->GetClientSize(&w,&h);
+
+    // not using *= here for a reason.  Integer math, remember. ;)
+    w=w*nZoomscale/nZoom;
+    h=h*nZoomscale/nZoom;
+
+    int a=nZoomscale;
+
+    int maxx=pMap->Width()*pTileset->Width();
+    int maxy=pMap->Height()*pTileset->Height();
+
+    // clip the viewport
+    if (xwin+w>maxx) xwin=maxx-w;
+    if (ywin+h>maxy) ywin=maxy-h;
+    if (xwin<0) xwin=0;
+    if (ywin<0) ywin=0;
+
+    pRightbar->SetScrollbar(wxHORIZONTAL,xwin,w, pMap->Width() *pTileset->Width()  );
+    pRightbar->SetScrollbar(wxVERTICAL,ywin,h,   pMap->Height()*pTileset->Height() );
+}
+
 // ------------------------------ Rendering -------------------------
 
 void CMapView::Render()
@@ -337,20 +452,23 @@ void CMapView::RenderLayer(int lay)
     SMapLayerInfo l;
     pMap->GetLayerInfo(l,lay);
 
-    const int xw=xwin*l.pmulx/l.pdivx;
-    const int yw=ywin*l.pmuly/l.pdivy;
+    int xw=xwin*l.pmulx/l.pdivx;
+    int yw=ywin*l.pmuly/l.pdivy;
 
-    int tx=pTileset->Width();//*nZoom/nZoomscale;
-    int ty=pTileset->Height();//*nZoom/nZoomscale;
+    int tx=pTileset->Width();
+    int ty=pTileset->Height();
 
-    const int nFirstx=xw/tx;
-    const int nFirsty=yw/ty;
+    int nFirstx=xw/tx;
+    int nFirsty=yw/ty;
     
-    const int nLenx=nWidth/tx+2;
-    const int nLeny=nHeight/ty+2;
+    int nLenx=nWidth/tx+2;
+    int nLeny=nHeight/ty+2;
 
-    const int nAdjx=(xw%tx)*nZoom/nZoomscale;
-    const int nAdjy=(yw%ty)*nZoom/nZoomscale;
+    if (nFirstx+nLenx>pMap->Width())  nLenx=pMap->Width()-nFirstx;
+    if (nFirsty+nLeny>pMap->Height()) nLeny=pMap->Height()-nFirsty;
+
+    int nAdjx=(xw%tx)*nZoom/nZoomscale;
+    int nAdjy=(yw%ty)*nZoom/nZoomscale;
 
     tx=tx*nZoom/nZoomscale;
     ty=ty*nZoom/nZoomscale;
@@ -367,7 +485,6 @@ void CMapView::RenderLayer(int lay)
                     x*tx-nAdjx, y*ty-nAdjy,
                     tx,ty,
                     true);
-                //pTileset->DrawTile(x*tx-nAdjx, y*ty-nAdjy, t, *pGraph);
         }
     }
 }

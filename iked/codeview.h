@@ -17,7 +17,6 @@ class CMainWnd;
 class CCodeView : public IDocView
 {
     wxStyledTextCtrl*   pTextctrl;
-    bool                bChanged;
 
     void InitTextControl();
     void InitAccelerators();
@@ -51,7 +50,6 @@ public:
     
     void OnSave(wxCommandEvent& event);
     void OnSaveAs(wxCommandEvent& event);
-    void OnClose(wxCommandEvent& event);
 
     void OnUndo(wxCommandEvent& event);
     void OnRedo(wxCommandEvent& event);

@@ -318,6 +318,10 @@ SOURCE=..\common\types.h
 
 SOURCE=..\common\vsp.cpp
 # End Source File
+# Begin Source File
+
+SOURCE=..\common\vsp.h
+# End Source File
 # End Group
 # Begin Group "Resources"
 

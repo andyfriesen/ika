@@ -44,7 +44,7 @@ void CTileSetView::OnSize(wxSizeEvent& event)
     pGraph->SetSize(GetClientSize());
 
     UpdateScrollbar();
-    Render();
+    //Render();                                                         // We don't have to draw here.  OnPaint will be called to do that. --andy
 }
 
 void CTileSetView::OnScroll(wxScrollWinEvent& event)
@@ -106,8 +106,17 @@ void CTileSetView::Render()
     {
         for (int x=0; x<nTilewidth; x++)
         {
-            pTileset->DrawTile(x*tx,y*ty,nTile,*pGraph);
+            pGraph->Blit(
+                pTileset->GetImage(nTile),
+                x*tx,y*ty,true);
+
             nTile++;
+
+            if (nTile>pTileset->NumTiles())
+            {
+                y=nTileheight;  // hack, so that we bomb out of the outer loop too.
+                break;
+            }
         }
     }
 
