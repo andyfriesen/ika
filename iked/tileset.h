@@ -44,6 +44,7 @@ public:
 
     const CPixelMatrix&   GetTile(int tileidx);                 // returns the pixel data for the tile
     void SetTile(int tileidx,const CPixelMatrix& newtile);      // assigns the pixel data for the tile
+    int  NumTiles() const;
     int  Width() const;
     int  Height() const;
 

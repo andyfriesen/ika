@@ -15,21 +15,29 @@ class CTileSetView : public IDocView
 
     CTileSet*       pTileset;
 
-    int ywin;                   // scrollbar position
+    int ywin;                                       // scrollbar position
 public:
     CTileSetView(CMainWnd* parentwnd,const string& fname);
 
     void OnSave(wxCommandEvent& event);
 
-    void OnClick(wxMouseEvent& event);
-
     void OnPaint();
     void OnSize(wxSizeEvent& event);
-    void OnScroll(wxScrollEvent& event);
+    void OnScroll(wxScrollWinEvent& event);
 
     void OnClose();
 
+    void OnLeftClick(wxMouseEvent& event);
+    void OnRightClick(wxMouseEvent& event);
+
     DECLARE_EVENT_TABLE()
+
+    //-----------------------------------
+
+    void Render();
+    void UpdateScrollbar();
+
+    int  TileAt(int x,int y) const;                 // returns the tile under the specified client coordinates
 };
 
 #endif

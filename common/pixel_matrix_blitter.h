@@ -11,7 +11,7 @@ namespace
 {
     struct Opaque
     {
-        static inline RGBA Blend(RGBA src,RGBA dest)
+        static inline RGBA Blend(RGBA src,RGBA)
         {
             return src;
         }

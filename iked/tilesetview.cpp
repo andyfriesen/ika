@@ -3,10 +3,13 @@
 #include "main.h"
 
 BEGIN_EVENT_TABLE(CTileSetView,IDocView)
-    EVT_SCROLL(CTileSetView::OnScroll)
+    EVT_SCROLLWIN(CTileSetView::OnScroll)
     EVT_SIZE(CTileSetView::OnSize)
     EVT_PAINT(CTileSetView::OnPaint)
     EVT_CLOSE(CTileSetView::OnClose)
+
+    EVT_LEFT_DOWN(CTileSetView::OnLeftClick)
+    EVT_RIGHT_DOWN(CTileSetView::OnRightClick)
 END_EVENT_TABLE()
 
 CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
@@ -17,6 +20,8 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
     pGraph->SetSize(GetClientSize());
 
     pTileset=pParent->vsp.Load(fname);
+
+    ywin=0;
 }
 
 // --------------------------------- events ---------------------------------
@@ -26,14 +31,61 @@ void CTileSetView::OnSave(wxCommandEvent& event)
     pTileset->Save(sName.c_str());
 }
 
-void CTileSetView::OnClick(wxMouseEvent& event)
-{
-}
-
 void CTileSetView::OnPaint()
 {
     wxPaintDC dc(this);
 
+    Render();
+}
+
+void CTileSetView::OnSize(wxSizeEvent& event)
+{
+    pGraph->SetSize(GetClientSize());
+
+    UpdateScrollbar();
+    Render();
+}
+
+void CTileSetView::OnScroll(wxScrollWinEvent& event)
+{
+    switch (event.m_eventType)
+    {
+    case wxEVT_SCROLLWIN_TOP:       ywin=0;                     break;
+    case wxEVT_SCROLLWIN_BOTTOM:    ywin=pTileset->NumTiles();  break;  // guaranteed to be too big, so that the usual scroll handler will clip it
+    case wxEVT_SCROLLWIN_LINEUP:    ywin--;                     break;
+    case wxEVT_SCROLLWIN_LINEDOWN:  ywin++;                     break;
+    case wxEVT_SCROLLWIN_PAGEUP:    ywin-=GetScrollThumb(wxVERTICAL);   break;
+    case wxEVT_SCROLLWIN_PAGEDOWN:  ywin+=GetScrollThumb(wxVERTICAL);   break;
+    default:                        ywin=event.GetPosition();   break;
+    };
+
+    UpdateScrollbar();
+    Render();
+}
+
+void CTileSetView::OnClose()
+{
+    pParent->vsp.Release(pTileset);
+
+    Destroy();
+}
+
+void CTileSetView::OnLeftClick(wxMouseEvent& event)
+{
+    int x,y;
+    event.GetPosition(&x,&y);
+
+    pTileset->SetCurTile(TileAt(x,y));  
+}
+
+void CTileSetView::OnRightClick(wxMouseEvent& event)
+{
+}
+
+//---------------------------
+
+void CTileSetView::Render()
+{
     int w,h;
     GetClientSize(&w,&h);
 
@@ -41,9 +93,9 @@ void CTileSetView::OnPaint()
     const int ty=pTileset->Height();
 
     int nTilewidth =w/tx;
-    int nTileheight=h/ty;
+    int nTileheight=(h/ty)+1;
 
-    int nTile=0;
+    int nTile=ywin*nTilewidth;                  // first tile to draw
 
     pGraph->SetCurrent();
     pGraph->Clear();
@@ -60,18 +112,33 @@ void CTileSetView::OnPaint()
     pGraph->ShowPage();
 }
 
-void CTileSetView::OnSize(wxSizeEvent& event)
+void CTileSetView::UpdateScrollbar()
 {
+    int w,h;
+    GetClientSize(&w,&h);
+
+    int nTilewidth =w/pTileset->Width();
+    int nTileheight=h/pTileset->Height();
+
+    int nTotalheight=pTileset->NumTiles()/nTilewidth;
+
+    if (ywin>nTotalheight-nTileheight)  ywin=nTotalheight-nTileheight;
+    if (ywin<0)                         ywin=0;
+
+    SetScrollbar(wxVERTICAL,ywin,nTileheight,nTotalheight,true);
 }
 
-void CTileSetView::OnScroll(wxScrollEvent& event)
+int CTileSetView::TileAt(int x,int y) const
 {
+    const int tx=pTileset->Width();
+    const int ty=pTileset->Height();
 
-}
+    int nTilewidth =GetClientSize().GetWidth()/tx;
 
-void CTileSetView::OnClose()
-{
-    pParent->vsp.Release(pTileset);
+    x/=tx;      y/=ty;
 
-    Destroy();
+    int t=(y+ywin)*nTilewidth+x;
+
+    if (t>pTileset->NumTiles()) return 0;
+    return t;
 }

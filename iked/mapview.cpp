@@ -26,7 +26,7 @@
 
 namespace
 {
-    // wxSashLayoutWindow tweak that passes size events to its parent.
+    // wxSashLayoutWindow tweak that passes scroll events to its parent.
     class CMapSash : public wxSashLayoutWindow
     {
     public:
@@ -59,14 +59,14 @@ namespace
             ((CMapView*)GetParent())->OnScroll(wxScrollWinEvent(-1,pos,event.GetOrientation()));
         }
 
-        void ScrollTop(wxScrollWinEvent& event)         {   ScrollTo(event,0);    }
-        void ScrollBottom(wxScrollWinEvent& event)      {   ScrollTo(event,GetScrollRange(event.GetOrientation()));    }
+        void ScrollTop(wxScrollWinEvent& event)         {   ScrollTo(event,0);      }
+        void ScrollBottom(wxScrollWinEvent& event)      {   ScrollTo(event,GetScrollRange(event.GetOrientation()));     }
         
-        void ScrollLineUp(wxScrollWinEvent& event)      {   ScrollRel(event,-1);       }
+        void ScrollLineUp(wxScrollWinEvent& event)      {   ScrollRel(event,-1);    }
         void ScrollLineDown(wxScrollWinEvent& event)    {   ScrollRel(event,+1);    }
 
-        void ScrollPageUp(wxScrollWinEvent& event)      {   ScrollRel(event,-GetScrollThumb(event.GetOrientation()));    }
-        void ScrollPageDown(wxScrollWinEvent& event)    {   ScrollRel(event,+GetScrollThumb(event.GetOrientation()));    }
+        void ScrollPageUp(wxScrollWinEvent& event)      {   ScrollRel(event,-GetScrollThumb(event.GetOrientation()));   }
+        void ScrollPageDown(wxScrollWinEvent& event)    {   ScrollRel(event,+GetScrollThumb(event.GetOrientation()));   }
 
         void OnScroll(wxScrollWinEvent& event)
         {
