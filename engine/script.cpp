@@ -14,10 +14,8 @@ void CScriptEngine::Init(CEngine* p)
     
     Py_Initialize();
     
-    string s(".;");                                             // The delimiter is platform dependant.
-    s.append(Py_GetPath());
-    PySys_SetPath((char*)s.c_str());
-    
+    PyRun_SimpleString("import sys; sys.path.insert(0, '.')");
+
     PyImport_AddModule("ika");
     PyObject* module=Py_InitModule3("ika", Script::standard_methods,
         "ika standard module. \n"
