@@ -7,21 +7,21 @@
 CFG=iked - Win32 Debug wx232
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "iked.mak".
-!MESSAGE
+!MESSAGE 
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE
+!MESSAGE 
 !MESSAGE NMAKE /f "iked.mak" CFG="iked - Win32 Debug wx232"
-!MESSAGE
+!MESSAGE 
 !MESSAGE Possible choices for configuration are:
-!MESSAGE
+!MESSAGE 
 !MESSAGE "iked - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "iked - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE "iked - Win32 Debug wx232" (based on "Win32 (x86) Application")
 !MESSAGE "iked - Win32 Release wx232" (based on "Win32 (x86) Application")
-!MESSAGE
+!MESSAGE 
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -147,7 +147,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"../common" /libpath:"../3rdparty"
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"..\common" /libpath:"..\3rdparty" /libpath:"\wx232\lib" /libpath:"\wx232\contrib\lib"
 
-!ENDIF
+!ENDIF 
 
 # Begin Target
 
@@ -169,6 +169,10 @@ SOURCE=.\configdlg.cpp
 # Begin Source File
 
 SOURCE=.\docview.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\fontview.cpp
 # End Source File
 # Begin Source File
 
@@ -220,6 +224,10 @@ SOURCE=.\docview.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\fontview.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\graph.h
 # End Source File
 # Begin Source File
@@ -265,6 +273,14 @@ SOURCE=..\common\fileio.cpp
 # Begin Source File
 
 SOURCE=..\common\fileio.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\fontfile.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\fontfile.h
 # End Source File
 # Begin Source File
 
@@ -316,6 +332,10 @@ SOURCE=..\common\types.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\vergepal.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=..\common\vsp.cpp
 # End Source File
 # Begin Source File
@@ -359,7 +379,7 @@ SOURCE=.\iked.rc
 
 !ELSEIF  "$(CFG)" == "iked - Win32 Release wx232"
 
-!ENDIF
+!ENDIF 
 
 # End Source File
 # Begin Source File
@@ -381,5 +401,3 @@ SOURCE=.\vsp.ico
 # End Group
 # End Target
 # End Project
-
-

@@ -181,8 +181,10 @@ void CMapView::InitLayerVisibilityControl()
 
             SMapLayerInfo lay;
             pMap->GetLayerInfo(lay,c);
-            pLayerlist->AppendItem(va("Layer %i",c),c);
+            pLayerlist->AppendItem(va("Layer %i",c+1),c);
             pLayerlist->Check(pLayerlist->Number()-1);
+
+            nLayertoggle[c]=visible;
         }
         else if (c=='E')
             pLayerlist->AppendItem("Entities",lay_entity);

@@ -2,7 +2,6 @@
 #include "fontview.h"
 #include "main.h"
 
-
 BEGIN_EVENT_TABLE(CFontView,IDocView)
 
     EVT_SCROLLWIN(CFontView::OnScroll)
@@ -63,9 +62,7 @@ void CFontView::Render()
     int nFont=ywin*nFontwidth;
 
     pGraph->SetCurrent();
-    pGraph->Clear();
-
-     
+    pGraph->Clear();     
 
     for(int y=0; y<nFontheight; y++)
     {
@@ -73,32 +70,31 @@ void CFontView::Render()
         {
             // Grab the font bitmap, blit, and move right along.
             //  -- khross
+
+            // I am amazed that this allocation/deallocation is not slow. --andy
             CPixelMatrix& rBitmap=pFontfile->GetGlyph(nFont);
             CImage rImage(rBitmap);
-/*            pGraph->ScaleBlit(rImage,x*nTx+1,y*nTy+1,
+            pGraph->ScaleBlit(rImage,x*nTx+1,y*nTy+1,
                 rGlyph.Width(),rGlyph.Height(),
-                true);*/
-            pGraph->Blit(rImage,x*nTx+1,y*nTy+1,true);
+                true);
             // add zooming.
 
             nFont++;
 
             if (nFont>=pFontfile->NumGlyphs()) 
             {
-                y=nFontheight+1; 
+                y=nFontheight+1;    // bomb out of both loops
                 break;
             }
 
         }
     }
 
-
     int x2, y2;
 
     FontPos(nCurfont,x2,y2);
     pGraph->Rect(x2-1,y2-1,nTx+1,nTy+1,RGBA(255,255,255));
     pGraph->ShowPage();
-
 }
 
 void CFontView::FontPos(int fontidx,int& x,int& y) const
@@ -133,7 +129,8 @@ int CFontView::FontAt(int x,int y) const
 
 void CFontView::OnPaint()
 {
-    if (!pGraph) return; // Can't be too careful with these wacky paint messages. -- khross
+    if (!pGraph) 
+        return; // Can't be too careful with these wacky paint messages. -- khross
 
     wxPaintDC dc(this);
     Render();
@@ -141,6 +138,7 @@ void CFontView::OnPaint()
 
 void CFontView::OnSave(wxCommandEvent& event)
 {
+    // FIXME: CFontFile::Save isn't implemented. :x
     pFontfile->Save(sFilename.c_str());
 }
 
