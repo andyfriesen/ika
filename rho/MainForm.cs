@@ -84,7 +84,7 @@ namespace rho
 
                 if (result==DialogResult.OK)
                 {
-                    CodeView codeview=new CodeView(this,dlg.FileName,null);
+                    CodeView codeview=new CodeView(this,dlg.FileName,new PythonHighlightStyle());
                     codeview.MdiParent=this;
                     codeview.Show();
                 }

@@ -85,7 +85,7 @@
                 <Reference
                     Name = "sci.NET"
                     AssemblyName = "sci.NET"
-                    HintPath = "..\scintilla.NET\sci.NET.DLL"
+                    HintPath = "..\..\src\scintilla.NET\sci.NET.DLL"
                 />
             </References>
         </Build>
