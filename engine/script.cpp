@@ -9,6 +9,7 @@
 #include "py_sound.h"
 #include "py_font.h"
 #include "py_video.h"
+#include "py_control.h"
 #include "py_map.h"
 #include "py_input.h"
 #include "py_error.h"
@@ -52,11 +53,12 @@ void CScriptEngine::Init(CEngine* p)
     // singletons
     Init_Video();
     Init_Map();
-    Init_Input();
+    Script::Input::Init_Input();
+    Script::Control::Init_Control();
     Init_Error();
     
     // Create singletons
-    PyObject* input=Input_New();
+    PyObject* input=Script::Input::Input_New(pEngine->input);
     PyDict_SetItemString(dict, "Input", input);
     Py_DECREF(input);
     

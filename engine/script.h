@@ -72,8 +72,6 @@ private:
     // Singleton interface thingies
     static PyMethodDef  map_methods[];
     static PyTypeObject maptype;
-    static PyMethodDef  input_methods[];
-    static PyTypeObject inputtype;
     static PyMethodDef  error_methods[];
     static PyTypeObject errortype;
     
@@ -120,13 +118,6 @@ public:                                                        // too bad
     static void      Map_Destroy(PyObject* self);
     static PyObject* Map_GetAttribute(PyObject* self,char* name);
     static int       Map_SetAttribute(PyObject* self,char* name,PyObject* value);
-
-    // input
-    void Init_Input();
-    static PyObject* Input_New();
-    static void      Input_Destroy(PyObject* self);
-    static PyObject* Input_GetAttribute(PyObject* self,char* name);
-    static int       Input_SetAttribute(PyObject* self,char* name,PyObject* value);    
     
     // error handling
     void Init_Error();
@@ -210,18 +201,6 @@ public:                                                        // too bad
     METHOD(map_setzone);
     METHOD(map_getparallax);
     METHOD(map_setparallax);
-
-    // Input methods
-    METHOD(input_update);
-    METHOD(input_button);
-    METHOD(input_setbutton);
-    METHOD(input_nextpressed);
-    METHOD(input_setnextpressed);
-    METHOD(input_mousestate);
-    METHOD(input_setmousestate);
-    METHOD(input_clipmouse);
-    METHOD(input_bindkey);
-    METHOD(input_unbindkey);
 
     // error method
     METHOD(error_write);

@@ -295,6 +295,9 @@
 			Name="Script"
 			Filter="py*.*">
 			<File
+				RelativePath="py_control.h">
+			</File>
+			<File
 				RelativePath=".\py_entity.h">
 			</File>
 			<File

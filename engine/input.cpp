@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 
 #include "input.h"
+#include "common/log.h"
 
 std::map<std::string, int> Input::_keymap;
 bool Input::_keymapinitted = false;

@@ -59,6 +59,8 @@ PyObject* CScriptEngine::Error_GetAttribute(PyObject* self,char* name)
     return Py_FindMethod(error_methods,self,name);
 }
 
+#define METHOD(x) PyObject* CScriptEngine::x(PyObject* self, PyObject* args)
+
 METHOD(error_write)
 {
     const char* msg;
@@ -75,3 +77,5 @@ METHOD(error_write)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+#undef METHOD

@@ -145,6 +145,8 @@ int CScriptEngine::Map_SetAttribute(PyObject* self,char* name,PyObject* value)
     return 0;
 }
 
+#define METHOD(x) PyObject* CScriptEngine::x(PyObject* self, PyObject* args)
+
 METHOD(map_switch)
 {
     char* filename;
@@ -273,3 +275,5 @@ METHOD(map_setparallax)
 {
     return NULL;
 }
+
+#undef METHOD
