@@ -77,10 +77,10 @@ void DumpList()
 
 	for (i=memblocks->begin(); i!=memblocks->end(); i++)
 	{
-		log("File: %s\tLine: %i\tSize: %i\tLocation: %i",(*i)->fname,(*i)->nLine,(*i)->nSize,(int)((*i)->pMem));
+		Log::Write("File: %s\tLine: %i\tSize: %i\tLocation: %i",(*i)->fname,(*i)->nLine,(*i)->nSize,(int)((*i)->pMem));
 //		memblocks->remove(*i);
 	}
-	log("done!");
+	Log::Write("done!");
 
 #endif
 }
