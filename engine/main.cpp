@@ -186,12 +186,14 @@ void CEngine::Startup()
         Log::Write("Initializing Video");
         std::string driver = Lower(cfg["videodriver"]);
 
-        if (0)//driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
+#if 0
+        if driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
         {
             Log::Write("Using SDL video driver");
             video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
         }
-        else // if (driver == "opengl")
+        else if (driver == "opengl")
+#endif
         {
             Log::Write("Using OpenGL video driver");
             video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
@@ -582,11 +584,11 @@ Map::Layer::Zone* CEngine::TestZoneCollision(const Entity* ent)
         iter != layer->zones.end();
         iter++)
     {
-        if (x > iter->position.left &&
-            y > iter->position.top &&
-            x2 < iter->position.right &&
-            y2 < iter->position.bottom)
-            return &*iter; // hurk
+        if (x >= iter->position.left &&
+            y >= iter->position.top &&
+            x2 <= iter->position.right &&
+            y2 <= iter->position.bottom)
+            return &*iter; // hurk*/
     }
 
     return 0;
@@ -601,8 +603,6 @@ void CEngine::TestActivate(const Entity* player)
 // This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
 {
     CDEBUG("testactivate");
-    static int    nOldtx = -1;
-    static int    nOldty = -1;
     CSprite* sprite = player->sprite;
     
     int tx = (player->x + sprite->nHotw / 2) / tiles->Width();
@@ -633,12 +633,9 @@ void CEngine::TestActivate(const Entity* player)
             script.CallScript(zone.sActscript.c_str());
     }*/
     
-    nOldtx = tx; nOldty = ty;
-    
     // adjacent activation
     
     if (!input.Enter().Pressed()) return;                           // From this point on, the only time we'd have to check this crap is if enter was pressed.
-    //input.Unpress();
     
     tx = player->x; ty = player->y;
     // entity activation
@@ -655,30 +652,16 @@ void CEngine::TestActivate(const Entity* player)
     case face_downright: tx += sprite->nHotw;    ty += sprite->nHoth;    break;
     }
     
-    Entity* pEnt = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
-    if (pEnt)
+    Entity* ent = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
+    if (ent)
     {
-        if (!pEnt->activateScript.empty())
+        if (!ent->activateScript.empty())
         {
-            script.CallScript(pEnt->activateScript.c_str());
+            script.CallScript(ent->activateScript.c_str());
             input.Flush();
             return;
         }
     }
-    
-    // Activating a zone?
-    /*uint z = map.GetZone(tx / tiles->Width(), ty / tiles->Height());
-    
-    if (z >= map.NumZones())
-        return; // invalid zone
-
-    const SMapZone& zone = map.GetZoneInfo(z);
-    
-    if (zone.bAdjacentactivation)
-    {
-        script.CallScript(zone.sActscript.c_str());
-        input.Flush();
-    }*/
 }
 
 Entity* CEngine::SpawnEntity()

@@ -7,7 +7,7 @@
 #include "map.h"
 #include "tileset.h"
 
-CompositeCommand::CompositeCommand(std::vector<Command*>& commands)
+CompositeCommand::CompositeCommand(const std::vector<Command*>& commands)
     : _commands(commands)
 {}
 
@@ -25,8 +25,11 @@ void CompositeCommand::Do(MainWindow* m)
 
 void CompositeCommand::Undo(MainWindow* m)
 {
-    for (uint i = _commands.size() - 1; i >= 0; i++)
+    uint i = _commands.size() - 1;
+    do
+    {
         _commands[i]->Undo(m);
+    } while (i-- != 0);
 }
 
 //-----------------------------------------------------------------------------

@@ -1,3 +1,4 @@
+#if 0
 #ifndef SOFT32_IMAGE_H
 #define SOFT32_IMAGE_H
 
@@ -24,4 +25,5 @@ namespace Soft32
     };
 };
 
+#endif
 #endif

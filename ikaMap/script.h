@@ -45,6 +45,7 @@
  *      GetMetaData()
  *      SetMetaData(**kwargs)
  *      GetLayerName(layer)
+ *      GetLayerSize(layer)
  *      FindLayerByName(name)
  *      GetParallax(layer)
  *      SetParallax(layer, mulx, divx, muly, divy)
@@ -80,7 +81,7 @@
 
 #include <string>
 #include "types.h"
-#include "python.h" // I *HATE* having to put this here.  I can't just proto PyObject because Python is gay C.
+#include "Python.h" // I *HATE* having to put this here.  I can't just proto PyObject because of gay C.
 
 class Script
 {
@@ -121,6 +122,12 @@ public:
 
     std::string GetName() const;
     std::string GetDesc() const;
+
+    bool IsTool() const;
+    bool IsActivatable() const;
+
+private:
+    void ReportError();
 };
 
 #endif

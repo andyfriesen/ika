@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include "misc.h"
 #include "fileio.h"
+#include "script/ObjectDefs.h" // for ScriptObject::Error
 
 Script::Script(const std::string& fileName)
     : module(0)
@@ -64,13 +65,11 @@ Script::Script(const std::string& fileName)
     sourceFile.Close();
 
     PyObject* code = Py_CompileString(const_cast<char*>(source.c_str()), fileName.c_str(), Py_file_input);
-    if (!code)
-    {
-        PyErr_Print();
-        throw std::runtime_error("code error?");
-    }
+    if (!code)  ReportError();
+
     module = PyImport_ExecCodeModule(const_cast<char*>(name.c_str()), code);
     Py_DECREF(code);
+    if (!module) ReportError();
 
     // FINALLY got the module loaded now.  Time to gank the relevant methods from it.
    
@@ -120,8 +119,7 @@ void Script::OnMouseDown(int x, int y)
     PyObject* result = PyObject_CallObject(onMouseDown, args);
     Py_DECREF(args);
 
-    // TODO: error checking
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
 }
 
@@ -133,8 +131,7 @@ void Script::OnMouseUp(int x, int y)
     PyObject* result = PyObject_CallObject(onMouseUp, args);
     Py_DECREF(args);
 
-    // TODO: error checking
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
 }
 
@@ -146,8 +143,7 @@ void Script::OnMouseMove(int x, int y)
     PyObject* result = PyObject_CallObject(onMouseMove, args);
     Py_DECREF(args);
 
-    // TODO: error checking
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
 }
 
@@ -159,8 +155,7 @@ void Script::OnMouseWheel(int x, int y, int wheelDelta)
     PyObject* result = PyObject_CallObject(onMouseWheel, args);
     Py_DECREF(args);
 
-    // TODO: error checking
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
 }
 
@@ -169,9 +164,18 @@ void Script::OnRender()
     if (!onRender)  return;
 
     PyObject* result = PyObject_CallObject(onRender, 0);
-    if (!result)    PyErr_Print();
+
+    // If there is an error here, we risk infinite recursion by popping a dialog over the screen.
+    // So, if there is an error, we unset the render callback so that it doesn't get executed again.
+    if (!result)
+    {
+        Py_DECREF(onRender);
+        onRender = 0;
+
+        ReportError();
+    }
+
     Py_XDECREF(result);
-    // TODO: error checking
 }
 
 void Script::OnRenderCurrentLayer()
@@ -179,9 +183,18 @@ void Script::OnRenderCurrentLayer()
     if (!onRenderCurrentLayer) return;
 
     PyObject* result = PyObject_CallObject(onRenderCurrentLayer, 0);
-    if (!result)    PyErr_Print();
+
+    // If there is an error here, we risk infinite recursion by popping a dialog over the screen.
+    // So, if there is an error, we unset the render callback so that it doesn't get executed again.
+    if (!result)
+    {
+        Py_DECREF(onRender);
+        onRender = 0;
+
+        ReportError();
+    }
+
     Py_XDECREF(result);
-    // TODO: error checking
 }
 
 void Script::OnBeginState()
@@ -189,9 +202,8 @@ void Script::OnBeginState()
     if (!onBeginState)  return;
     
     PyObject* result = PyObject_CallObject(onBeginState, 0);
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
-    // TODO: error checking
 }
 
 void Script::OnEndState()
@@ -199,9 +211,8 @@ void Script::OnEndState()
     if (!onEndState) return;
     
     PyObject* result = PyObject_CallObject(onEndState, 0);
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
-    // TODO: error checking
 }
 
 void Script::OnSwitchLayers(uint oldLayer, uint newLayer)
@@ -211,18 +222,16 @@ void Script::OnSwitchLayers(uint oldLayer, uint newLayer)
     PyObject* args = Py_BuildValue("(ii)", oldLayer, newLayer);
     PyObject* result = PyObject_CallObject(onSwitchLayers, args);
     Py_DECREF(args);
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
-    // TODO: error checking
 }
 
 void Script::OnActivated()
 {
     if (!onActivated) return;
     PyObject* result = PyObject_CallObject(onActivated, 0);
-    if (!result)    PyErr_Print();
+    if (!result)    ReportError();
     Py_XDECREF(result);
-    // TODO: error checking
 }
 
 std::string Script::GetName() const
@@ -233,4 +242,32 @@ std::string Script::GetName() const
 std::string Script::GetDesc() const
 {
     return _desc;
+}
+
+bool Script::IsTool() const
+{
+    return 
+        onMouseDown             != 0 ||
+        onMouseUp               != 0 ||
+        onMouseMove             != 0 ||
+        onMouseWheel            != 0 ||
+        onBeginState            != 0 ||
+        onEndState              != 0 ||
+        onSwitchLayers          != 0 ||
+        onRender                != 0 ||
+        onRenderCurrentLayer    != 0;
+}
+
+bool Script::IsActivatable() const
+{
+    return onActivated != 0;
+}
+
+void Script::ReportError()
+{
+    PyErr_Print();
+    std::string msg = "There was an error in " + _name + ".\n";
+    msg += ScriptObject::pyErrors.str();
+    ScriptObject::pyErrors.str("");
+    throw std::runtime_error(msg);
 }

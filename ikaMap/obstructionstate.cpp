@@ -20,18 +20,24 @@ void ObstructionState::OnMouseDown(wxMouseEvent& event)
     if (x == _oldX && y == _oldY)
         return;
 
-    _oldX = x;
-    _oldY = y;
-
     /*
      * yay for boolean logic.
      * Left == set.
      * Right == unset.
      * Both == unset.
-     * Neither == execution will never get here.
+     * Neither == execution will never get here anyway.
      */
-    HandleCommand(new SetObstructionCommand(x, y, GetCurLayerIndex(),
-        event.LeftIsDown() && !event.RightIsDown()));
+    u8 set = event.LeftIsDown() && !event.RightIsDown();
+
+    _oldX = x;
+    _oldY = y;
+
+    // If we're not actually going to change anything, then do not send the command.
+    if (GetCurLayer()->obstructions(x, y) != set)
+    {
+        HandleCommand(new SetObstructionCommand(x, y, GetCurLayerIndex(),
+            event.LeftIsDown() && !event.RightIsDown()));
+    }
 }
 
 void ObstructionState::OnMouseUp(wxMouseEvent& event)

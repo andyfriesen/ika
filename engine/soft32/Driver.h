@@ -1,3 +1,4 @@
+#if 0
 #ifndef SOFT32_DRIVER_H
 #define SOFT32_DRIVER_H
 
@@ -108,4 +109,5 @@ namespace Soft32
 #undef NYI
 };
 
+#endif
 #endif

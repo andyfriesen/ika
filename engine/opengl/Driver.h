@@ -1,18 +1,43 @@
 #ifndef OPENGL_DRIVER_H
 #define OPENGL_DRIVER_H
 
+#include <hash_set>
+
 #include "SDL/SDL.h"
 
 #include "video/Driver.h"
 #include "common/Canvas.h"
+#include "common/types.h"
 
 #include "FPSCounter.h"
 
 /// OpenGL video driver implementation
 namespace OpenGL
 {
+    // Don't create stack instances, dork.
+    // And keep the refcount up to date
+    struct Texture
+    {
+        friend class Driver;
+        uint handle;
+        uint width;
+        uint height;
+        uint refCount;
+
+        Point unused;   // where the next image should go
+
+    protected:
+        Texture(uint p = 0, uint w = 0, uint h = 0)
+            : handle(p)
+            , width(w)
+            , height(h)
+            , refCount(0)
+            , unused(0, 0)
+        {}
+    };
+
     struct NotYetImplementedException{};
-#define NYI { throw NotYetImplementedException(); }
+#   define NYI { throw NotYetImplementedException(); }
 
     /// The driver itself.
     class Driver : public Video::Driver
@@ -97,6 +122,8 @@ namespace OpenGL
         void SwitchTexture(uint tex);
 
         Video::BlendMode _blendMode;
+
+        std::hash_set<Texture*> _textures;  // textures allocated.  Only used for 16x16 images at this moment.
 
 #ifdef WIN32
         void (__stdcall *glBlendEquationEXT)(int);

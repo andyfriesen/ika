@@ -76,6 +76,8 @@ void TileSetState::SetTile(int x, int y)
 
     _oldX = x; _oldY = y;
 
+    if (GetCurLayer()->tiles(x, y) == GetCurTile()) return; // don't flood the undo buffer with commands that don't actually do anything
+
     HandleCommand(new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile()));
 }
 

@@ -64,56 +64,136 @@ namespace OpenGL
     {
     }
 
+    // This is far, far too long.  Refactor.
     Video::Image* Driver::CreateImage(Canvas& src)
     {
-        bool dealloc;
-        RGBA* pixels;
-        int texwidth;
-        int texheight;
+        /*
+            First, if src is 16x16, we figure out if we have a texture that can fit it.
+            If we do, we use glSubTexImage2D, update the used region, and fly away on wings
+            of silver dust.  If not, we create a 256x256 texture, and do the aforementioned
+            glSubTexImage2Ding. (we do NOT, however, fly away on wings of silver dust.  That's
+            strictly reserved for when there is an existing texture for us to use.
 
-        src.Flip(); // GAY
+            oh yeah.  I know this is messy.  Don't give a shit yet.  Prototyping is a bitch
+            that way.
+        */
 
-        if (IsPowerOf2(src.Width()) && IsPowerOf2(src.Height()))
+        if (src.Width() == 16 && src.Height() == 16)
         {
-            dealloc = false;    // perfect match
-            pixels = src.GetPixels();
-            texwidth = src.Width();
-            texheight = src.Height();
+            Texture* tex = 0;
+            for (std::hash_set<Texture*>::iterator
+                iter  = _textures.begin(); 
+                iter != _textures.end(); 
+                iter++)
+            {
+                const Point& p = (*iter)->unused;
+                if (p.x <= 256 - 16 && p.y <= 256 - 16)
+                {
+                    tex = *iter;
+                    break;
+                }
+            }
+
+            if (!tex)
+            {
+                // no texture?  no problem.
+                static u32 dummyShit[256 * 256] = {0}; // initialized to 0
+                tex = new Texture(0, 256, 256);
+                glGenTextures(1, &tex->handle);
+                SwitchTexture(tex->handle);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyShit);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                _textures.insert(tex);
+            }
+
+            int x = tex->unused.x;
+            int y = tex->unused.y;
+            tex->unused.x += 16;
+            if (tex->unused.x >= 256)
+                tex->unused = Point(0, tex->unused.y + 16);
+
+            src.Flip();
+            glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, src.GetPixels());
+            src.Flip();
+
+            const float texcoords[4] = {
+                float(x) / 256.0f,      float(y) / 256.0f,
+                float(x + 16) / 256.0f, float(y + 16) / 256.0f
+            };
+
+            tex->refCount++;
+            return new Image(tex, texcoords, 16, 16);
         }
         else
         {
-            dealloc = true;
-            texwidth  = 1;  while (texwidth < src.Width())  texwidth <<= 1;
-            texheight = 1;  while (texheight < src.Height()) texheight <<= 1;
+            bool dealloc;
+            RGBA* pixels;
+            int texwidth;
+            int texheight;
 
-            pixels = new RGBA[texwidth * texheight];
-            for (int y = 0; y < src.Height(); y++)
+            src.Flip(); // GAY
+
+            if (IsPowerOf2(src.Width()) && IsPowerOf2(src.Height()))
             {
-                memcpy(
-                    pixels + (y * texwidth), 
-                    src.GetPixels() + (y * src.Width()),
-                    src.Width() * sizeof(RGBA));
+                dealloc = false;    // perfect match
+                pixels = src.GetPixels();
+                texwidth = src.Width();
+                texheight = src.Height();
             }
+            else
+            // The old way.  One texture for every image.  boooring.  Easy, but boooring.  And possibly slow.
+            {
+                dealloc = true;
+                texwidth  = 1;  while (texwidth < src.Width())  texwidth <<= 1;
+                texheight = 1;  while (texheight < src.Height()) texheight <<= 1;
+
+                pixels = new RGBA[texwidth * texheight];
+                for (int y = 0; y < src.Height(); y++)
+                {
+                    memcpy(
+                        pixels + (y * texwidth), 
+                        src.GetPixels() + (y * src.Width()),
+                        src.Width() * sizeof(RGBA));
+                }
+            }
+
+            uint texture;
+            glGenTextures(1, &texture);
+            SwitchTexture(texture);
+            glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            src.Flip();
+
+            if (dealloc)
+                delete[] pixels;
+
+            const float texCoords[] = { 0, 0, float(src.Width()) / texwidth, float(src.Height()) / texheight };
+            Texture* tex = new Texture(texture, texwidth, texheight);
+            tex->refCount++;
+            return new Image(tex, texCoords, src.Width(), src.Height());
         }
-
-        uint texture;
-        glGenTextures(1, &texture);
-        SwitchTexture(texture);
-        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-        src.Flip();
-
-        if (dealloc)
-            delete[] pixels;
-
-        return new Image(texture, texwidth, texheight, src.Width(), src.Height());
     }
 
     void Driver::FreeImage(Video::Image* img)
     {
+        if (!img)   return;
+
         SwitchTexture(0);
-        delete (Image*)img;
+        
+        // Refcount update/cleanup
+        Texture* tex = ((OpenGL::Image*)img)->_texture;
+        if (tex->refCount == 1)
+        {
+            _textures.erase(tex);
+            glDeleteTextures(1, &tex->handle);
+            delete tex;
+        }
+        else
+            tex->refCount--;
+
+        delete (OpenGL::Image*)img;
     }
 
     void Driver::ClipScreen(int left, int top, int right, int bottom)
@@ -142,7 +222,7 @@ namespace OpenGL
         {
             glBlendEquationEXT(GL_FUNC_ADD_EXT);
             
-            // hack for ATi cards. (GAY)
+            // hack for old buggy ATi drivers. (GAY)
             glBegin(GL_POINTS); glVertex2i(-1, -1); glEnd();
         }
 
@@ -166,21 +246,25 @@ namespace OpenGL
         return m;
     }
 
+    // This is, without question *the* method to optimize.
+    // At least 20% of the sum total CPU goes into this.
+    // Even when the profiler brings the framerate below 1fps, with the AI loop is being executed at 
+    // least ten times per render, a fifth of the CPU goes here.
     void Driver::BlitImage(Video::Image* i, int x, int y)
     {
-        Image* img = (Image*)i;
-        int w = img->Width();
-        int h = img->Height();
+        OpenGL::Image* img = (Image*)i;
+        // VC7 won't inline these, because they're virtual.
+        int w = img->_width;//Width();
+        int h = img->_height;//Height();
 
-        float texX = 1.0f * img->_width / img->_texWidth;
-        float texY = 1.0f * img->_height / img->_texHeight;
+        const float* texCoords = img->_texCoords;
 
-        SwitchTexture(img->_texture);
+        SwitchTexture(img->_texture->handle);
         glBegin(GL_QUADS);
-        glTexCoord2f(0, texY);         glVertex2i(x, y);
-        glTexCoord2f(texX, texY);      glVertex2i(x + w, y);
-        glTexCoord2f(texX, 0);   glVertex2i(x + w, y + h);
-        glTexCoord2f(0, 0);      glVertex2i(x, y + h);
+        glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2i(x, y);
+        glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2i(x + w, y);
+        glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2i(x + w, y + h);
+        glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + h);
         glEnd();
     }
 
@@ -188,15 +272,13 @@ namespace OpenGL
     {
         Image* img = (Image*)i;
 
-        float texX = 1.0f * img->_width / img->_texWidth;
-        float texY = 1.0f * img->_height / img->_texHeight;
-
-        SwitchTexture(img->_texture);
+        const float* texCoords = img->_texCoords;
+        SwitchTexture(img->_texture->handle);
         glBegin(GL_QUADS);
-        glTexCoord2f(0, texY);         glVertex2i(x, y);
-        glTexCoord2f(texX, texY);      glVertex2i(x + w, y);
-        glTexCoord2f(texX, 0);   glVertex2i(x + w, y + h);
-        glTexCoord2f(0, 0);      glVertex2i(x, y + h);
+        glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2i(x, y);
+        glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2i(x + w, y);
+        glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2i(x + w, y + h);
+        glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + h);
         glEnd();
     }
 
@@ -204,13 +286,11 @@ namespace OpenGL
     {
         Image* img = (Image*)i;
 
-        float endX = 1.0f * img->_width / img->_texWidth;
-        float endY = 1.0f * img->_height / img->_texHeight;
+        const float* texCoords = img->_texCoords;
+        const float texX[] = { texCoords[0], texCoords[2], texCoords[2], texCoords[0] };
+        const float texY[] = { texCoords[3], texCoords[3], texCoords[1], texCoords[1] };
 
-        float texX[] = { 0, endX, endX, 0 };
-        float texY[] = { endY, endY, 0, 0 };
-
-        SwitchTexture(img->_texture);
+        SwitchTexture(img->_texture->handle);
         glBegin(GL_QUADS);
         for (int i = 0; i < 4; i++)
         {
@@ -222,7 +302,7 @@ namespace OpenGL
 
     void Driver::TileBlitImage(Video::Image* i, int x, int y, int w, int h, float scalex, float scaley)
     {
-        Image* img = (Image*)i;
+        /*Image* img = (Image*)i;
 
         float texX = float(w) / img->Width()  * scalex;
         float texY = float(h) / img->Height() * scaley;
@@ -233,7 +313,7 @@ namespace OpenGL
         glTexCoord2f(texX, texY);   glVertex2i(x + w, y);
         glTexCoord2f(texX, 0);      glVertex2i(x + w, y + h);
         glTexCoord2f(0,    0);      glVertex2i(x, y + h);
-        glEnd();
+        glEnd();*/
     }
 
     void Driver::DrawPixel(int x, int y, u32 colour)
@@ -443,14 +523,17 @@ namespace OpenGL
 
         uint texwidth = NextPowerOf2(w);
         uint texheight = NextPowerOf2(h);
-        uint tex;
-        glGenTextures(1, &tex);
-        SwitchTexture(tex);
+        uint handle;
+        glGenTextures(1, &handle);
+        SwitchTexture(handle);
         glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, texwidth, texheight, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
-        return new Image(tex, texwidth, texheight, w, h);
+        const float texCoords[] = { 0, 0, float(w) / texwidth, float(h) / texheight };
+        Texture* tex = new Texture(handle, texwidth, texheight);
+        tex->refCount++;
+        return new Image(tex, texCoords, w, h);
 #endif
     }
 
@@ -483,7 +566,8 @@ namespace OpenGL
     {
         return fps.FPS();
     }
-    void Driver::SwitchTexture(uint tex)
+
+    inline void Driver::SwitchTexture(uint tex)
     {
         if (tex == _lasttex)
             return;

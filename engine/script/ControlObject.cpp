@@ -109,6 +109,8 @@ namespace Script
                 return 0;
 
             ControlObject* ctrl = PyObject_New(ControlObject, &type);
+            new (ctrl) ControlObject;
+
             ctrl->control = c;
             ctrl->name = name;
 
@@ -120,6 +122,8 @@ namespace Script
         void Destroy(ControlObject* self)
         {
             _instances.erase(self->name);
+
+            self->~ControlObject();
 
             PyObject_Del(self);
         }

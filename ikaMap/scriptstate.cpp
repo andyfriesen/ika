@@ -3,6 +3,7 @@
 #include "script.h"
 #include <cassert>
 
+#include "mainwindow.h"
 #include "mapview.h"
 
 ScriptState::ScriptState(MainWindow* mainWnd)
@@ -21,56 +22,124 @@ void ScriptState::OnMouseDown(wxMouseEvent& event)
 {
     assert(_script);
     GetMapView()->ScreenToMap(event.m_x, event.m_y);
-    _script->OnMouseDown(event.GetX(), event.GetY());
+    try
+    {
+        _script->OnMouseDown(event.GetX(), event.GetY());
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
 }
 
 void ScriptState::OnMouseUp(wxMouseEvent& event)
 {
     assert(_script);
     GetMapView()->ScreenToMap(event.m_x, event.m_y);
-    _script->OnMouseUp(event.GetX(), event.GetY());
+    try
+    {
+        _script->OnMouseUp(event.GetX(), event.GetY());
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
 }
 
 void ScriptState::OnMouseMove(wxMouseEvent& event)
 {
     assert(_script);
     GetMapView()->ScreenToMap(event.m_x, event.m_y);
-    _script->OnMouseMove(event.GetX(), event.GetY());
+
+    try
+    {
+        _script->OnMouseMove(event.GetX(), event.GetY());
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
 }
 
 void ScriptState::OnBeginState()
 {
     assert(_script);
-    _script->OnBeginState();
+
+    try
+    {
+        _script->OnBeginState();
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
+
 }
 
 void ScriptState::OnEndState()
 {
     assert(_script);
-    _script->OnEndState();
+
+    try
+    {
+        _script->OnEndState();
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
 }
 
 void ScriptState::OnMouseWheel(wxMouseEvent& event)
 {
     assert(_script);
     GetMapView()->ScreenToMap(event.m_x, event.m_y);
-    _script->OnMouseWheel(event.GetX(), event.GetY(), event.GetWheelRotation() / event.GetWheelDelta());
+    try
+    {
+        _script->OnMouseWheel(event.GetX(), event.GetY(), event.GetWheelRotation() / event.GetWheelDelta());
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
+
 }
 
 void ScriptState::OnRender()
 {
     assert(_script);
-    _script->OnRender();
+    try
+    {
+        _script->OnRender();
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
 }
 
 void ScriptState::OnRenderCurrentLayer()
 {
     assert(_script);
-    _script->OnRenderCurrentLayer();
+    try
+    {
+        _script->OnRenderCurrentLayer();
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
 }
 
 void ScriptState::OnSwitchLayers(uint oldLayer, uint newLayer)
 {
     assert(_script);
-    _script->OnSwitchLayers(oldLayer, newLayer);
+    try
+    {
+        _script->OnSwitchLayers(oldLayer, newLayer);
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, GetMainWindow());
+    }
 }

@@ -83,6 +83,12 @@ namespace
         id_topbar,
         id_bottombar,
         id_sidebar,
+
+        id_scriptlist,
+        id_customscript,
+        id_lastcustomscript = id_customscript + 1000, // Hopefully a reasonable limit. (sucks that I need a limit at all, but what can you do)
+                                                     // (aside from pay more attention to the wx documentation, that is)
+        id_dummy
     };
 }
 
@@ -113,6 +119,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_zoomtilesetnormal, MainWindow::OnZoomTileSetNormal)
 
     EVT_MENU(id_configurescripts, MainWindow::OnConfigureScripts)
+    EVT_MENU_RANGE(id_customscript, id_lastcustomscript, MainWindow::OnSetCurrentScript)
 
     EVT_MENU(id_cursorup, MainWindow::OnCursorUp)
     EVT_MENU(id_cursordown, MainWindow::OnCursorDown)
@@ -275,6 +282,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
     wxMenu* toolMenu = new wxMenu;
     toolMenu->Append(id_configurescripts, "Configure Plugin &Scripts...", "Load and unload Python scripts");
+    wxMenu* scriptMenu = new wxMenu;
+    toolMenu->Append(id_scriptlist, "Scripts", scriptMenu);    // we fill this submenu later
 
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(fileMenu, "&File");
@@ -307,6 +316,9 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
     UpdateLayerList();
     UpdateTitle();
+    UpdateScriptMenu();
+
+    ::wxSafeYield();
 
     ScriptEngine::Init(this);
 }
@@ -657,7 +669,7 @@ void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoo
 void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTileSetNormal(wxCommandEvent&)   {   _tileSetView->SetZoom(16);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   } // 16:16 == 100%
 
-void MainWindow::OnConfigureScripts(wxCommandEvent&)
+void MainWindow::OnConfigureScripts(wxCommandEvent& e)
 {
     ScriptDlg dlg(this);
 
@@ -668,7 +680,17 @@ void MainWindow::OnConfigureScripts(wxCommandEvent&)
     // Dirty hack, I know. -_-
     // Maybe I should give ScriptState a reference to the list of scripts and an index
     // Then it could get the pointer straight from the horse's mouth, so to speak.
-    _mapView->Cock();
+    OnSetTilePaintState(e);
+
+    UpdateScriptMenu();
+}
+
+void MainWindow::OnSetCurrentScript(wxCommandEvent& event)
+{
+    int id = event.GetId() - id_customscript;
+    wxASSERT(id >= 0 && id < _scripts.size());
+
+    _curScript = id;
 }
 
 void MainWindow::OnCursorUp(wxCommandEvent&)
@@ -733,10 +755,11 @@ void MainWindow::OnSetEntityState(wxCommandEvent&)
 
 void MainWindow::OnSetScriptTool(wxCommandEvent&)
 {
-    if (!_scripts.empty())
+    wxASSERT(_curScript < _scripts.size());
+    if (!_scripts.empty() && _scripts[_curScript]->IsTool())
     {
         HighlightToolButton(id_scripttool);
-        _mapView->SetScriptTool(_scripts[0]);
+        _mapView->SetScriptTool(_scripts[_curScript]);
     }
 }
 
@@ -803,6 +826,32 @@ void MainWindow::UpdateTitle()
                                 "Untitled Map";
 
     SetTitle(va("ikaMap version %0.2f - [ %s ]", _version, name.c_str()));
+}
+
+void MainWindow::UpdateScriptMenu()
+{
+    wxMenu* scriptMenu = new wxMenu;
+    if (!_scripts.empty())
+    {
+        for (uint i = 0; i < _scripts.size(); i++)
+        {
+            scriptMenu->AppendRadioItem(id_customscript + i, _scripts[i]->GetName().c_str());
+            scriptMenu->Enable(id_customscript + i, _scripts[i]->IsTool());
+        }
+    }
+    else
+    {
+        wxMenuItem* item = new wxMenuItem(scriptMenu, id_dummy, "(None)");
+        scriptMenu->Append(item);
+        item->Enable(false);
+    }
+
+    int id = GetMenuBar()->FindMenu("Tools");
+    wxMenu* toolMenu = GetMenuBar()->GetMenu(id);
+    wxASSERT(toolMenu);
+    toolMenu->Destroy(id_scriptlist);
+    toolMenu->Append(id_scriptlist, "&Scripts", scriptMenu);
+    _curScript = 0;
 }
 
 bool MainWindow::IsLayerVisible(uint index) const

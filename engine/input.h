@@ -3,10 +3,8 @@
 
 #include <string>
 #include <map>
-#include <hash_map>
+#include <vector>
 #include <queue>
-
-#include "common/misc.h"  // for Hash
 
 // >_<
 #include "script.h"
@@ -63,6 +61,8 @@ private:
     ScriptObject*    _hookQueue;
     std::queue<char> _keyQueue;
 
+    //std::vector<Joystick*> _joysticks;
+
     Control* _up;
     Control* _down;
     Control* _left;
@@ -70,7 +70,6 @@ private:
     Control* _enter;
     Control* _cancel;
 
-protected:
     ControlMap _controls;  // Name : control pairs.
     
     // keyboard things go here.  They can be handled efficiently if we can get them efficiently through their keysym.
@@ -105,11 +104,17 @@ public:
     iterator begin() { return _controls.begin(); }
     iterator end()   { return _controls.end();   }
 
+    uint GetJoystickCount() const;
+    uint GetAxisCount(uint joyIndex) const;
+    uint GetButtonCount(uint joyIndex) const;
+    std::string GetJoystickName(uint joyIndex) const;
+
     void Unpress(const std::string& name);
     void Unpress(int i);
     void Unpress();
 
     void Flush();
+
 };
 
 #endif

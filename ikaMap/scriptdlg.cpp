@@ -16,6 +16,9 @@ ScriptDlg::ScriptDlg(MainWindow* mainWnd)
 {
     wxXmlResource::Get()->LoadDialog(this, mainWnd, wxT("dialog_scripts"));
 
+    wxSizer* sizer = XRCCTRL(*this, "panel_main", wxPanel)->GetSizer();
+    sizer->Fit(this);
+
     _scriptList = XRCCTRL(*this, "list_scripts", wxListBox);
     _scriptDesc = XRCCTRL(*this, "static_scriptdesc", wxStaticText);
 
@@ -87,7 +90,15 @@ void ScriptDlg::OnActivateScript(wxCommandEvent&)
 {
     Script* script = reinterpret_cast<Script*>(_scriptList->GetClientData(_scriptList->GetSelection()));
 
-    script->OnActivated();  // can we do this?
+    try
+    {
+        script->OnActivated();  // can we do this?
+    }
+    catch (std::runtime_error err)
+    {
+        ::wxMessageBox(err.what(), "Script error", wxOK | wxCENTER, this);
+    }
+
     EndModal(wxID_OK);
 }
 

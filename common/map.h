@@ -122,7 +122,7 @@ struct Map
     uint width, height;
     std::string tileSetName;
 
-    typedef std::hash_map<std::string, Zone, Hash<std::string> > ZoneMap;
+    typedef std::map<std::string, Zone> ZoneMap;
     typedef std::map<std::string, WayPoint> WayPointMap;
     
     ZoneMap             zones;

@@ -25,6 +25,10 @@
 
 #include "controller.h"
 
+#ifdef _MSC_VER
+#   pragma warning(disable:4355)    // bah.
+#endif
+
 // HACK.  This shouldn't be needed in release mode. -_-
 #ifndef DEBUG
 void __cdecl wxAssert(int, char const*, int, char const*, char const*)

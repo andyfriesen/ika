@@ -37,7 +37,7 @@ private:
     std::vector<Command*> _commands;
 
 public:
-    CompositeCommand(std::vector<Command*>& commands);
+    CompositeCommand(const std::vector<Command*>& commands);
     ~CompositeCommand();
 
     virtual void Do(MainWindow* m);

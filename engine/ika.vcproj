@@ -3,6 +3,7 @@
 	ProjectType="Visual C++"
 	Version="7.00"
 	Name="ika"
+	ProjectGUID="{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}"
 	SccProjectName=""
 	SccLocalPath="">
 	<Platforms>
@@ -18,7 +19,7 @@
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="FALSE"
 			CharacterSet="2"
-			WholeProgramOptimization="TRUE">
+			WholeProgramOptimization="FALSE">
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="3"
@@ -148,6 +149,9 @@
 				RelativePath=".\input.cpp">
 			</File>
 			<File
+				RelativePath="joystick.cpp">
+			</File>
+			<File
 				RelativePath=".\main.cpp">
 			</File>
 			<File
@@ -186,6 +190,9 @@
 			</File>
 			<File
 				RelativePath=".\input.h">
+			</File>
+			<File
+				RelativePath="joystick.h">
 			</File>
 			<File
 				RelativePath=".\main.h">

@@ -15,12 +15,11 @@ namespace OpenGL
         friend class OpenGL::Driver;
 
     protected:
-        uint _texture;
-        int _texWidth, _texHeight;
+        struct Texture* _texture;
+        float _texCoords[4];               // Two x/y pairs.  Just like glTexCoord2dv is expecting
         int _width, _height;
-        bool _flip;                         // FUCKING RETARDED HACK BECAUSE OPENGL WAS DESIGNED BY APES.  (if true, we invert texture coords when blitting)
 
-        Image(uint tex, int tw, int th, int w, int h);
+        Image(Texture* texture, const float texCoords[4], int width, int height);
         ~Image();       // protected for a reason.  Use Driver::FreeImage to nuke it.
 
     public:

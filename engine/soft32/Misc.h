@@ -1,3 +1,4 @@
+#if 0
 #ifndef SOFT32_MISC_H
 #define SOFT32_MISC_H
 
@@ -22,4 +23,5 @@ namespace Soft32
 
 };
 
+#endif
 #endif

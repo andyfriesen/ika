@@ -259,11 +259,6 @@ public:
     }
 };
 
-/*class CompositeControl : public Control
-{
-    // NYI
-};*/
-
 Input::Input()
     : _hookQueue(0)
 {
@@ -310,6 +305,7 @@ void Input::KeyDown(int key)
     if (_keys.count(key))
     {
         KeyControl* c = _keys[key];
+        assert(c);
         c->Press();
 
         if (_hookQueue == 0)
@@ -319,9 +315,10 @@ void Input::KeyDown(int key)
 
 void Input::KeyUp(int key)
 {
-    KeyControl* c = _keys[key];
-    if (c)
+    if (_keys.count(key))
     {
+        KeyControl* c = _keys[key];
+        assert(c);
         c->Unpress();
 
         if (_hookQueue == 0)
@@ -393,9 +390,12 @@ void Input::Unpress(const std::string& name)
 
 void Input::Unpress(int i)
 {
-    Control* c = _keys[i];
-    if (c)
+    if (_keys.count(i))
+    {
+        Control* c = _keys[i];
+        assert(c);
         c->Pressed();
+    }
 }
 
 void Input::Unpress()

@@ -93,6 +93,7 @@ public:
     void OnZoomTileSetNormal(wxCommandEvent&);
 
     void OnConfigureScripts(wxCommandEvent&);
+    void OnSetCurrentScript(wxCommandEvent& event);
 
     void OnCursorDown(wxCommandEvent&);
     void OnCursorUp(wxCommandEvent&);
@@ -114,6 +115,7 @@ public:
 
     void UpdateLayerList();
     void UpdateTitle();
+    void UpdateScriptMenu();
 
     bool IsLayerVisible(uint index) const;
     void ShowLayer(uint index, bool show = true);

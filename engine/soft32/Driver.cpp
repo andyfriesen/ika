@@ -1,3 +1,4 @@
+#if 0
 #include <cassert>
 #include <math.h>
 
@@ -790,3 +791,4 @@ namespace Soft32
         return fps.FPS();
     }
 };
+#endif

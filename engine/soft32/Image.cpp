@@ -1,3 +1,4 @@
+#if 0
 #include "SDL/SDL.h"
 #include "Image.h"
 
@@ -28,3 +29,4 @@ namespace Soft32
         return _height;
     }
 }
+#endif
