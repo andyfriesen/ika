@@ -34,7 +34,7 @@ CSprite::CSprite(const std::string& fname, Video::Driver* v)
 CSprite::~CSprite()
 {
     for (uint i=0; i<hFrame.size(); i++)
-        video->FreeImage(hFrame[i]);//delete hFrame[i];
+        video->FreeImage(hFrame[i]);
 }
 
 const std::string& CSprite::Script(uint s) const

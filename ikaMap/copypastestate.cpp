@@ -100,6 +100,10 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event)
         // Grab the tiles, put them in our clipboard and erase them from the map.
         // TODO: move this into a command
 
+        _selection.Normalize();
+        _selX = _selection.left;
+        _selY = _selection.top;
+
         if (_selection.Width() > 1 || _selection.Height() > 1)
         {
             _tiles.Resize(_selection.Width(), _selection.Height());

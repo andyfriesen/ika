@@ -178,8 +178,8 @@ void Canvas::Clear(RGBA colour)
     // I feel like being nasty right now >:D
     RGBA* p=_pixels+_width*_height - 1;
     
-    while (p>=_pixels)
-        *p--=colour;
+    while (p >=_pixels)
+        *p-- = colour;
 }
 
 void Canvas::Rotate()

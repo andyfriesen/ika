@@ -60,13 +60,6 @@ void ScriptEngine::Init(CEngine* p)
     PyModule_AddIntConstant(module, "AddBlend", 3);
     PyModule_AddIntConstant(module, "SubtractBlend", 4);
 
-    PyModule_AddIntConstant(module, "Nothing", mc_nothing);
-    PyModule_AddIntConstant(module, "Wander", mc_wander);
-    PyModule_AddIntConstant(module, "WanderRect", mc_wanderrect);
-    PyModule_AddIntConstant(module, "WanderZone", mc_wanderzone);
-    PyModule_AddIntConstant(module, "Scripted", mc_script);
-    PyModule_AddIntConstant(module, "Chase", mc_chase);
-
     Py_INCREF(&Script::Image::type);    PyModule_AddObject(module, "Image", (PyObject*)&Script::Image::type);
     Py_INCREF(&Script::Entity::type);   PyModule_AddObject(module, "Entity", (PyObject*)&Script::Entity::type);
     Py_INCREF(&Script::Sound::type);    PyModule_AddObject(module, "Sound", (PyObject*)&Script::Sound::type);

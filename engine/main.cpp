@@ -325,7 +325,8 @@ void CEngine::RenderEntities(uint layerIndex)
         const Entity* e = *j;
         CSprite* s = e->sprite;
         
-        int frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
+        uint frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
+        if (frame >= s->Count()) frame = 0;
 
         int x = e->x - xwin - s->nHotx + layer->x;
         int y = e->y - ywin - s->nHoty + layer->y;

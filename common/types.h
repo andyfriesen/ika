@@ -61,18 +61,6 @@ struct Point
     {}
 };
 
-// Same as Point, but floating point. (ugh)
-struct Vertex
-{
-    float x;
-    float y;
-
-    Vertex(float _x = 0, float _y = 0)
-        : x(_x)
-        , y(_y)
-    {}
-};
-
 enum Direction											///< directions an entity can be facing
 {
     face_up,
@@ -84,16 +72,6 @@ enum Direction											///< directions an entity can be facing
     face_downleft,
     face_downright,
     face_nothing, 										///< a special case, entity::getcommand returns this if the entity in question isn't walking
-};
-
-enum MoveCode											///< entity movecodes
-{
-    mc_nothing = 0, 									///< entity just stands there
-    mc_wander, 											///< entity wanders around like an idiot
-    mc_wanderrect, 										///< ditto, but the entity is restricted to a rectangular region
-    mc_wanderzone, 										///< ditto again, but the entity is restricted to a particular zone
-    mc_script, 											///< entity follows its script
-    mc_chase, 											///< the entity is following another entity
 };
 
 #pragma pack (push, 1)
