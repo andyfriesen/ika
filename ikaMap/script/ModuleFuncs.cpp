@@ -4,6 +4,8 @@
 #include "log.h"
 #include "../userdialog.h"
 
+#include <stdexcept>
+
 #define METHOD(x)  PyObject* x(PyObject* self, PyObject* args)
 #define METHOD1(x) PyObject* x(PyObject*)
 

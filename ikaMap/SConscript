@@ -7,6 +7,7 @@ ikamap = env.Program('ikamap',
         editstate.cpp
         entitydlg.cpp
         entitystate.cpp
+        exporttilesdlg.cpp
         ikamap.cpp
         imagebank.cpp
         importtilesdlg.cpp
@@ -27,6 +28,7 @@ ikamap = env.Program('ikamap',
         tileanimdlg.cpp
         tileset.cpp
         tilesetview.cpp
+        userdialog.cpp
         video.cpp
         zoneeditstate.cpp
         zonepropertiesdlg.cpp

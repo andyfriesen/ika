@@ -5,7 +5,7 @@
 
 UserDialog::UserDialog(int cols, char* caption, const ArgList& args)
     // TODO: get this to be a child of the main window. :P
-    : wxDialog(0, caption, true)
+    : wxDialog(0, -1, caption)
     , _args(args)
 {
     cols += cols; // double cols because we attach a caption to each element

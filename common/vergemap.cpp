@@ -71,15 +71,15 @@ Map* ImportVerge1Map(const std::string& fileName)
         fgetc(f); // toss compression flag
 
         fseek(f, 27, SEEK_CUR); // "skip buffer" (beats me)
-        ScopedArray<u16> lay0 = new u16[xsize * ysize];
-        ScopedArray<u16> lay1 = new u16[xsize * ysize];
-        ScopedArray<u8>  obs  = new u8[xsize * ysize];
+        ScopedArray<u16> lay0(new u16[xsize * ysize]);
+        ScopedArray<u16> lay1(new u16[xsize * ysize]);
+        ScopedArray<u8>  obs(new u8[xsize * ysize]);
         fread(lay0.get(), sizeof(u16), xsize * ysize, f);
         fread(lay1.get(), sizeof(u16), xsize * ysize, f);
         fread(obs.get(),  sizeof(u8),  xsize * ysize, f);
 
         // copy 16 bit indeces into a 32 bit buffer
-        ScopedArray<uint> layBuffer = new uint[xsize * ysize];
+        ScopedArray<uint> layBuffer(new uint[xsize * ysize]);
         std::copy(lay0.get(), lay0.get() + xsize * ysize, layBuffer.get());
         Map::Layer* layer0 = new Map::Layer("BG", xsize, ysize);
         layer0->tiles = Matrix<uint>(xsize, ysize, layBuffer.get());
@@ -237,8 +237,8 @@ Map* ImportVerge2Map(const std::string& fileName)
         for (int i = 0; i < numLayers; i++)
         {
             u32 bufSize = fgetq(f);
-            ScopedArray<u16> buffer = new u16[bufSize];
-            ScopedArray<u32> data = new u32[width * height];
+            ScopedArray<u16> buffer(new u16[bufSize]);
+            ScopedArray<u32> data(new u32[width * height]);
             fread(buffer.get(), 1, bufSize, f);
             ReadCompressedLayer2tou32(data.get(), width * height, buffer.get());
             Map::Layer* lay = new Map::Layer(va("Layer%i", i), width, height);
@@ -266,8 +266,8 @@ Map* ImportVerge2Map(const std::string& fileName)
 
         // obstructions
         uint bufSize = fgetq(f);
-        ScopedArray<u8> rleBuffer = new u8[bufSize];
-        ScopedArray<u8> obsData = new u8[width * height];
+        ScopedArray<u8> rleBuffer(new u8[bufSize]);
+        ScopedArray<u8> obsData(new u8[width * height]);
         fread(rleBuffer.get(), 1, bufSize, f);
         ReadCompressedLayer1(obsData.get(), width * height, rleBuffer.get());
         if (map->NumLayers())
@@ -376,7 +376,7 @@ static void DecompressVerge3(void* dest, int outSize, FILE* f)
             "(%i vs %i)", compressedSize, outSize));
 
     uLong zsize = outSize;
-    ScopedArray<u8> cdata = new u8[compressedSize];
+    ScopedArray<u8> cdata(new u8[compressedSize]);
 
     fread(cdata.get(), 1, compressedSize, f);
     int result = uncompress(reinterpret_cast<Bytef*>(dest), &zsize, cdata.get(), compressedSize);
@@ -431,10 +431,10 @@ Map* ImportVerge3Map(const std::string& fileName)
             int height = fgetw(f);
             int lucent = fgetc(f);
 
-            ScopedArray<u16> data = new u16[width * height];
+            ScopedArray<u16> data(new u16[width * height]);
             DecompressVerge3(data.get(), width * height * 2, f);
 
-            ScopedArray<u32> data32 = new u32[width * height];
+            ScopedArray<u32> data32(new u32[width * height]);
             std::copy(data.get(), data.get() + width * height, data32.get());
 
             lay->tiles = Matrix<u32>(width, height, data32.get());
@@ -446,11 +446,11 @@ Map* ImportVerge3Map(const std::string& fileName)
         map->width = width * 16;
         map->height = height * 16;
 
-        ScopedArray<u8> obsData = new u8[width * height];
+        ScopedArray<u8> obsData(new u8[width * height]);
         DecompressVerge3(obsData.get(), width * height, f);
         map->GetLayer(0)->obstructions = Matrix<u8>(width, height, obsData.get());
 
-        ScopedArray<u16> zoneData = new u16[width * height];
+        ScopedArray<u16> zoneData(new u16[width * height]);
         DecompressVerge3(zoneData.get(), width * height * 2, f);
 
         fclose(f);
@@ -518,11 +518,11 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
     if (compression != ZLIB_COMPRESSION)
         throw std::runtime_error("I was unaware than Verge3 VSPs had any compression other than zlib.");
 
-    ScopedArray<RGBA> pixels = new RGBA[numTiles * tileWidth * tileHeight];
+    ScopedArray<RGBA> pixels(new RGBA[numTiles * tileWidth * tileHeight]);
 
     if (format == BPP24)
     {
-        ScopedArray<u8> rgb = new u8[numTiles * tileWidth * tileHeight * 3];
+        ScopedArray<u8> rgb(new u8[numTiles * tileWidth * tileHeight * 3]);
         DecompressVerge3(rgb.get(), numTiles * tileWidth * tileHeight * 3, f);
         u8* p = rgb.get();
         for (int i = 0; i < numTiles * tileWidth * tileHeight; i++)
@@ -568,7 +568,7 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
     }
 
     int numObsTiles = fgetq(f);
-    ScopedArray<u8> obsPix = new u8[numObsTiles * tileWidth * tileHeight];
+    ScopedArray<u8> obsPix(new u8[numObsTiles * tileWidth * tileHeight]);
     DecompressVerge3(obsPix.get(), numObsTiles * tileWidth * tileHeight, f);
 
     // TODO: use this. :)

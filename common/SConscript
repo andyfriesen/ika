@@ -15,6 +15,7 @@ common = env.StaticLibrary('common',
         map.cpp
         misc.cpp
         rle.cpp
+        vergemap.cpp
         vergepal.cpp
         vsp.cpp
         ''')
