@@ -2,6 +2,7 @@
 
 #include "ObjectDefs.h"
 #include "common/Canvas.h"
+#include "common/log.h"
 
 namespace Script
 {
@@ -218,6 +219,8 @@ namespace Script
             if (!PyArg_ParseTuple(args, "O!iiii|i:ScaleBlit", &type, &dest, &x, &y, &w, &h, &mode))
                 return 0;
 
+            Log::Write("%i, %i  %ix%i %i", x, y, w, h, mode);
+
             switch (mode)
             {
             case 0: CBlitter<Opaque>::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
@@ -229,6 +232,8 @@ namespace Script
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
             }
+
+            Log::Write("Blah");
 
             Py_INCREF(Py_None);
             return Py_None;

@@ -15,8 +15,8 @@ Global
 	GlobalSection(ProjectDependencies) = postSolution
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
-		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug.ActiveCfg = Release|Win32
-		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug.Build.0 = Release|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug.ActiveCfg = Debug|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug.Build.0 = Debug|Win32
 		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug wx232.ActiveCfg = Debug|Win32
 		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug wx232.Build.0 = Debug|Win32
 		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Release.ActiveCfg = Release|Win32

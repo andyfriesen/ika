@@ -96,6 +96,44 @@ namespace OpenGL
             delete[] pixels;
 
         return new Image(texture, texwidth, texheight, src.Width(), src.Height());
+/*        bool dealloc;
+        RGBA* pixels;
+        int texwidth;
+        int texheight;
+
+        texwidth = NextPowerOf2(src.Width());
+        texheight = NextPowerOf2(src.Height());
+
+        if (texwidth == src.Width() && texheight == src.Height())
+        {
+            dealloc = false;    // perfect match
+            pixels = src.GetPixels();
+        }
+        else
+        {
+            dealloc = true;
+
+            pixels = new RGBA[texwidth * texheight];
+            for (int y = 0; y < src.Height(); y++)
+            {
+                memcpy(
+                    pixels + (y * texwidth), 
+                    src.GetPixels() + (y * src.Width()),
+                    src.Width() * sizeof(RGBA));
+            }
+        }
+
+        uint texture;
+        glGenTextures(1, &texture);
+        SwitchTexture(texture);
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        if (dealloc)
+            delete[] pixels;
+
+        return new Image(texture, texwidth, texheight, src.Width(), src.Height());*/
     }
 
     void Driver::FreeImage(Video::Image* img)
@@ -389,10 +427,38 @@ namespace OpenGL
 
     ::Video::Image* Driver::GrabImage(int x1, int y1, int x2, int y2)
     {
+#if 1
         ScopedPtr<Canvas> c(GrabCanvas(x1, y1, x2, y2));
         if (!c.get()) return 0;
 
         return CreateImage(*c);
+#else
+        // It'd be real nice if I could get this to work.  It'd be a lot faster, since it doesn't involve
+        // copying pixels from the display to system memory.  Pixels go straight from the screen to the texture.
+
+        y1 = _yres - y1;
+        y2 = _yres - y2;
+
+        // clip
+        if (x1 > x2) swap(x1, x2);
+        if (y1 > y2) swap(y1, y2);
+        x1 = clamp(x1, 0, _xres);        x2 = clamp(x2, 0, _xres);
+        y1 = clamp(y1, 0, _yres);        y2 = clamp(y2, 0, _yres);
+        int w = x2 - x1;
+        int h = y2 - y1;
+        if (w < 0 || h < 0) return 0;
+
+        uint texwidth = NextPowerOf2(w);
+        uint texheight = NextPowerOf2(h);
+        uint tex;
+        glGenTextures(1, &tex);
+        SwitchTexture(tex);
+        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, texwidth, texheight, 0);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+        return new Image(tex, texwidth, texheight, w, h);
+#endif
     }
 
     Canvas* Driver::GrabCanvas(int x1, int y1, int x2, int y2)

@@ -33,11 +33,11 @@ namespace Script
                 "Blits the image scaled to the four points specified."
             },
 
-            {   "Clip",         (PyCFunction)Image_Clip,         METH_VARARGS,
+            /*{   "Clip",         (PyCFunction)Image_Clip,         METH_VARARGS,
                 "Image.Clip(x, y, x2, y2)\n\n"
                 "Sets the dimensions of the image's clipping rectangle.\n"
                 "When images are drawn they will only be drawn in this area."
-            },
+            },*/ // NYI
             
             {   NULL,    NULL }
         };
@@ -138,10 +138,10 @@ namespace Script
         PyObject* Image_Blit(ImageObject* self, PyObject* args)
         {
             int x,y;
-            int trans = 1;
+            int trans = ::Video::Normal;
 
             if (!PyArg_ParseTuple(args,"ii|i:Image.Blit",&x,&y, &trans))
-                return NULL;
+                return 0;
 
             engine->video->SetBlendMode((::Video::BlendMode)trans);
             engine->video->BlitImage(self->img, x, y);
@@ -152,18 +152,37 @@ namespace Script
 
         PyObject* Image_ScaleBlit(ImageObject* self,PyObject* args)
         {
+            int x, y, w, h;
+            int trans = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iiii|i:Image.ScaleBlit", &x, &y, &w, &h, &trans))
+                return 0;
+
+            engine->video->SetBlendMode((::Video::BlendMode)trans);
+            engine->video->ScaleBlitImage(self->img, x, y, w, h);
+
             Py_INCREF(Py_None);
             return Py_None;
         }
 
         PyObject* Image_DistortBlit(ImageObject* self,PyObject* args)
         {
+            int x[4], y[4];
+            int trans = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "(ii)(ii)(ii)(ii)|i:Video.DistortBlit", x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &trans))
+                return 0;
+
+            engine->video->SetBlendMode((::Video::BlendMode)trans);
+            engine->video->DistortBlitImage(self->img, x, y);
+
             Py_INCREF(Py_None);
             return Py_None;
         };
 
         PyObject* Image_Clip(ImageObject* self,PyObject* args)
         {
+           
             Py_INCREF(Py_None);
             return Py_None;
         }

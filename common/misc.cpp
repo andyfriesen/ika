@@ -7,9 +7,18 @@ look at misc.h :P
 #include <stdio.h>
 #include "misc.h"
 
-bool IsPowerOf2(int i)
+bool IsPowerOf2(uint i)
 {
     return (i & (i - 1)) == 0;
+}
+
+uint NextPowerOf2(uint i)
+{
+    if (IsPowerOf2(i)) return i;
+    
+    int j = 1;
+    while ((j <<= 1) < i);
+    return j;
 }
 
 int sgn(int x)

@@ -39,7 +39,8 @@ inline T clamp(T val, T lower, T upper)
     return min(max(lower, val), upper);
 }
 
-bool IsPowerOf2(int i);
+bool IsPowerOf2(uint i);
+uint NextPowerOf2(uint i);
 
 int sgn(int x);
 int Random(int min, int max);

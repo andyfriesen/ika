@@ -225,7 +225,7 @@ public:
     {
         int	x, y;		// current pixel position
         int ix, iy;		// current image location (fixed point 16.16)
-        int xinc, yinc;	// Increment to ix, iy per screen pixel (fixed point)
+        int xinc, yinc;	        // Increment to ix, iy per screen pixel (fixed point)
         
         int xstart, ystart;	// position of first pixel to copy (on the image)
         int xlen, ylen;		// number of screen pixels to copy along each axis
@@ -252,10 +252,10 @@ public:
         int ys = yinc * ystart;
         
         ix = xs;
-        iy = ys&0xFFFF;
+        iy = ys & 0xFFFF;
         
-        RGBA* pSrc  =src.GetPixels()+((ys>>16)*src.Width());
-        RGBA* pDest =dest.GetPixels()+(y * dest.Width())+x;
+        RGBA* pSrc  = src.GetPixels() + ((ys >> 16) * src.Width());
+        RGBA* pDest = dest.GetPixels() + (y * dest.Width()) + x;
         
         x = 0;
         y = h;
@@ -264,7 +264,7 @@ public:
         {
             while (x < xlen)
             {
-                pDest[x]=Blend(pDest[x], pSrc[ix>>16]);
+                pDest[x]=Blend(pSrc[ix >> 16], pDest[x]);
                 ix += xinc;
                 ++x;
             }

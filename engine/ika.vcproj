@@ -79,7 +79,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..,..\3rdparty\include,C:\src\python\dist\src\Include,c:\src\python\dist\src\PC"
+				AdditionalIncludeDirectories=".,..,..\3rdparty\include,\src\python-2.3a2\include"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -100,7 +100,7 @@
 				OutputFile=".\Debug/ika.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common\,..\3rdparty\lib,c:\src\python\dist\src\PCbuild"
+				AdditionalLibraryDirectories="..\common\,..\3rdparty\lib,\src\python-2.3a2\PCbuild"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/ika.pdb"
 				SubSystem="2"/>
