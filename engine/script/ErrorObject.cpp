@@ -77,7 +77,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "s:Error.Write", &msg))
                 return NULL;
 
-            Log::Writen(msg);
+            Log::Writen("%s", msg);
             pyOutput << msg;
 
             Py_INCREF(Py_None);

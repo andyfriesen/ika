@@ -173,7 +173,7 @@ Input::Input()
     _left = _keyboard->GetControl("LEFT");
     _right = _keyboard->GetControl("RIGHT");
     _enter = _keyboard->GetControl("RETURN");
-    _cancel = _keyboard->GetControl("CANCEL");
+    _cancel = _keyboard->GetControl("ESCAPE");
 }
 
 Input::~Input()

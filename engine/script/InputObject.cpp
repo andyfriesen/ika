@@ -63,6 +63,8 @@ namespace Script
         //PyObject* Input_Subscript(InputObject* self, PyObject* key);
 
 #define GET(x) PyObject* get ## x(InputObject* self)
+#define SET(x) PyObject* set ## x(InputObject* self, PyObject* value)
+
         GET(Up)         { return Script::Control::New(the< ::Input>()->up);      }
         GET(Down)       { return Script::Control::New(the< ::Input>()->down);    }
         GET(Left)       { return Script::Control::New(the< ::Input>()->left);    }
@@ -72,18 +74,86 @@ namespace Script
         GET(Keyboard)   { Py_INCREF(self->keyboard); return self->keyboard;     }
         GET(Mouse)      { Py_INCREF(self->mouse); return self->mouse;           }
         GET(Joysticks)  { Py_INCREF(self->joysticks); return self->joysticks;   }
+
+        SET(Up)         
+        {
+            Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
+
+            if (o->ob_type != &Script::Control::type)
+                PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
+            else
+                the< ::Input>() ->SetStandardControl(the< ::Input>()->up, o->control);
+            return 0;
+        }
+
+        SET(Down)         
+        {
+            Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
+
+            if (o->ob_type != &Script::Control::type)
+                PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
+            else
+                the< ::Input>()->SetStandardControl(the< ::Input>()->down, o->control);
+            return 0;
+        }
+
+        SET(Left)         
+        {
+            Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
+
+            if (o->ob_type != &Script::Control::type)
+                PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
+            else
+                the< ::Input>()->SetStandardControl(the< ::Input>()->left, o->control);
+            return 0;
+        }
+
+        SET(Right)
+        {
+            Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
+
+            if (o->ob_type != &Script::Control::type)
+                PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
+            else
+                the< ::Input>()->SetStandardControl(the< ::Input>()->right, o->control);
+            return 0;
+        }
+
+        SET(Enter)
+        {
+            Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
+
+            if (o->ob_type != &Script::Control::type)
+                PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
+            else
+                the< ::Input>()->SetStandardControl(the< ::Input>()->enter, o->control);
+            return 0;
+        }
+
+        SET(Cancel)         
+        {
+            Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
+
+            if (o->ob_type != &Script::Control::type)
+                PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
+            else
+                the< ::Input>()->SetStandardControl(the< ::Input>()->cancel, o->control);
+            return 0;
+        }
+
 #undef GET
+#undef SET
 
         PyGetSetDef properties[] =
         {
-            {   "up",       (getter)getUp,      0,  "Gets the standard \"Up\" control."     },
-            {   "down",     (getter)getDown,    0,  "Gets the standard \"Down\" control."   },
-            {   "left",     (getter)getLeft,    0,  "Gets the standard \"Left\" control."   },
-            {   "right",    (getter)getRight,   0,  "Gets the standard \"Right\" control."  },
-            {   "enter",    (getter)getEnter,   0,  "Gets the standard \"Enter\" control."  },
-            {   "cancel",   (getter)getCancel,  0,  "Gets the standard \"Cancel\" control." },
-            {   "keyboard", (getter)getKeyboard,0,  "Gets the keyboard device."             },
-            {   "mouse",    (getter)getMouse,   0,  "Gets the mouse device."                },
+            {   "up",       (getter)getUp,          (setter)setUp,      "Gets the standard \"Up\" control."     },
+            {   "down",     (getter)getDown,        (setter)setDown,    "Gets the standard \"Down\" control."   },
+            {   "left",     (getter)getLeft,        (setter)setLeft,    "Gets the standard \"Left\" control."   },
+            {   "right",    (getter)getRight,       (setter)setRight,   "Gets the standard \"Right\" control."  },
+            {   "enter",    (getter)getEnter,       (setter)setEnter,   "Gets the standard \"Enter\" control."  },
+            {   "cancel",   (getter)getCancel,      (setter)setCancel,  "Gets the standard \"Cancel\" control." },
+            {   "keyboard", (getter)getKeyboard,                    0,  "Gets the keyboard device."             },
+            {   "mouse",    (getter)getMouse,                       0,  "Gets the mouse device."                },
             {   "joysticks",(getter)getJoysticks,0, "Gets a tuple containing all the connected joystick devices."   },
             {   0   }
         };

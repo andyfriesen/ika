@@ -1,6 +1,10 @@
 #include <cassert>
 #include "joystick.h"
 #include "SDL/SDL.h"
+#include "common/log.h"
+
+// Joystick values read to be less than this are trimmed to 0.
+static const int EPSILON = 258;
 
 Joystick::Joystick(uint index)
     : _joystick(SDL_JoystickOpen(index))
@@ -113,7 +117,14 @@ AxisControl::AxisControl(_SDL_Joystick* j, uint index)
 
 float AxisControl::Position()
 {
-    return float(SDL_JoystickGetAxis(_joystick, _index)) / 32768;
+    int i = SDL_JoystickGetAxis(_joystick, _index);
+    
+    // Kill nearly-centered values; joysticks aren't always very precise.
+    if (abs(i) < EPSILON) i = 0;
+
+    // Cheap hack to get normalization
+    if (i == -32768) i++;
+    return float(i) / 32767;
 }
 
 ReverseAxisControl::ReverseAxisControl(_SDL_Joystick* j, uint index)

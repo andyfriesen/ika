@@ -49,7 +49,7 @@ public:
     ScriptObject onPress;
     ScriptObject onUnpress;
 
-    operator bool() { return Position() != 0; }
+    operator bool() { return Position() > 0; }
 
 private:
     float  _oldPos; // for Pressed and Delta
