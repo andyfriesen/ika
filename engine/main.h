@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "0.48 experimental"
+#define VERSION "0.48"
 
 // low level components/containers/etc..
 #include <list>
