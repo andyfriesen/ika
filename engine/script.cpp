@@ -231,7 +231,7 @@ void ScriptEngine::CallScript(const std::string& name)
 
     if (!func)
     {
-        Log::Write("CallScript, no such event \"%s\"", name);
+        Log::Write("CallScript, no such event \"%s\"", name.c_str());
         return;                                                                // no such event
     }
 

@@ -6,6 +6,11 @@
 #include "common/types.h"
 #include "common/Canvas.h"
 
+// linux hack.
+#ifdef None
+#   undef None
+#endif
+
 /// The video driver interface lives here.
 namespace Video
 {

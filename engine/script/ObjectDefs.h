@@ -5,8 +5,9 @@
 #define METHOD1(x, type) PyObject* x(type* self)
 
 #include <sstream>
+#include <map>
 #include "Python.h"
-#include "input.h"
+#include "../input.h"
 
 // Rain of prototypes
 class CFont;
@@ -169,7 +170,7 @@ namespace Script
             ::Entity* ent;
         };
 
-        extern std::map<::Entity*, EntityObject*> instances;
+        extern std::map< ::Entity*, EntityObject*> instances;
 
         // Methods
         METHOD(Entity_MoveTo, EntityObject);

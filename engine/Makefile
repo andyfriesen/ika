@@ -1,5 +1,6 @@
 # cygwin specific.
-#CPPFLAGS=-I../3rdparty/include -I/usr/include/python2.3 -I../
+#CC=g++
+#CPPFLAGS=-I../3rdparty/include -I.. -I/usr/include/python2.3
 
 OBJECTS = \
     FPSCounter.o \

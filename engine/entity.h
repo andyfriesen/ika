@@ -40,7 +40,7 @@ struct Entity
     Direction   direction;                                          //!< the direction the entity is facing (and moving in, if applicable)
     bool        isMoving;                                           //!< true if the entity is moving
     uint        curFrame;                                           //!< the frame that the engine should render
-    uint        specFrame;                                          //!< 0 if the engine should use normal frame progression, the frame that should be drawn otherwise
+    int         specFrame;                                          //!< 0 if the engine should use normal frame progression, the frame that should be drawn otherwise
     bool        isVisible;                                          //!< true if the entity should be rendered
     bool        obstructedByMap;                                    //!< if true, the entity cannot walk on obstructed map tiles
     bool        obstructedByEntities;                               //!< if true, the entity cannot walk on entities whose bIsobs flag is set
