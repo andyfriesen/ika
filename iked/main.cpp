@@ -10,6 +10,7 @@
 
 #include <wx\resource.h>
 
+
 #include "dlg.wxr"
 
 IMPLEMENT_APP(CApp);
@@ -32,22 +33,32 @@ bool CApp::OnInit()
 }
 
 BEGIN_EVENT_TABLE(CMainWnd,wxMDIParentFrame)
-    EVT_MENU(id_filequit,CMainWnd::FileQuit)
-    EVT_MENU(id_filenewproject,CMainWnd::NewProject)
-    EVT_MENU(id_filenewmap,CMainWnd::NewMap)
-    EVT_MENU(id_filenewscript,CMainWnd::NewScript)
-    EVT_MENU(id_fileopen,CMainWnd::OnOpen)
+    EVT_MENU(CMainWnd::id_filequit,CMainWnd::FileQuit)
+    EVT_MENU(CMainWnd::id_filenewproject,CMainWnd::NewProject)
+    EVT_MENU(CMainWnd::id_filenewmap,CMainWnd::NewMap)
+    EVT_MENU(CMainWnd::id_filenewscript,CMainWnd::NewScript)
+    EVT_MENU(CMainWnd::id_fileopen,CMainWnd::OnOpen)
+
+    // Add more toolbar buttons as iked becomes more functional
+    //   -- khross
+    EVT_MENU(CMainWnd::id_tool, CMainWnd::OnToolLeftClick)
+    EVT_TOOL(CMainWnd::id_toolopen,CMainWnd::OnToolBarOpen)
+    EVT_TOOL(CMainWnd::id_toolnewscript,CMainWnd::OnToolBarNewScript)
+    EVT_TOOL(CMainWnd::id_toolnewmap,CMainWnd::OnToolBarNewMap)
+    
 END_EVENT_TABLE()
 
 CMainWnd::CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
                    const wxPoint& position,const wxSize& size,const long style)
                    : wxMDIParentFrame(parent,id,title,position,size,style)
 {
-    CreateToolBar(wxNO_BORDER | wxTB_FLAT | wxTB_HORIZONTAL);
-    
+
+    wxToolBar* toolbar = CreateBasicToolBar();
+    SetToolBar(toolbar);
+
     wxMenuBar* menu=CreateBasicMenu();
-    
     SetMenuBar(menu);
+
 }
 
 // creates the base menu items that apply to all app windows.
@@ -219,4 +230,101 @@ FileType CMainWnd::GetFileType(const std::string& fname)
         if (sExt==ext[i])
             return (FileType)i;
     return t_unknown;
+}
+
+wxToolBar* CMainWnd::CreateBasicToolBar()
+{
+    wxToolBar* pToolbar = new wxToolBar
+        (
+            this,
+            id_tool,
+            wxDefaultPosition,
+            wxDefaultSize,
+            wxTB_HORIZONTAL | wxNO_BORDER,
+            "iked toolbar"
+         );
+    
+
+    pToolbar->AddTool(
+        id_toolopen,
+        wxIcon("wxicon_small_open_folder",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
+        wxNullBitmap,
+        false,
+        -1,-1,
+        NULL,
+        "Open",
+        "Open a file.");
+
+    pToolbar->AddSeparator();
+
+    pToolbar->AddTool(
+        id_toolnewscript,
+        wxIcon("pyicon",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
+        wxNullBitmap,
+        false,
+        -1,-1,
+        NULL,
+        "Create source",
+        "Create a new source document.");
+
+    // doesn't do anything yet.
+    pToolbar->AddTool(
+        id_toolnewmap,
+        wxIcon("mapicon",wxBITMAP_TYPE_ICO_RESOURCE,16,16),
+        wxNullBitmap,
+        false,
+        -1,-1,
+        NULL,
+        "Create map",
+        "Create a new map.");
+
+    pToolbar->Realize();
+    return pToolbar;
+}
+
+void CMainWnd::OnToolBarNewScript(wxCommandEvent& event)
+{
+    wxToolBar* pToolbar = GetToolBar();
+    if (!pToolbar) return;
+    pToolbar->EnableTool(id_toolnewscript,!pToolbar->GetToolState(id_toolnewscript));
+    NewScript(event);
+}
+
+void CMainWnd::OnToolBarOpen(wxCommandEvent& event)
+{
+    wxToolBar* pToolbar = GetToolBar();
+    if (!pToolbar) return;
+    pToolbar->EnableTool(id_toolopen,!pToolbar->GetToolState(id_toolopen));
+    OnOpen(event);
+}
+
+void CMainWnd::OnToolBarNewMap(wxCommandEvent& event)
+{
+    wxToolBar* pToolbar = GetToolBar();
+    if (!pToolbar) return;
+    pToolbar->EnableTool(id_toolopen,!pToolbar->GetToolState(id_toolopen));
+    // ....
+}
+
+
+void CMainWnd::OnToolLeftClick(wxCommandEvent& event)
+// this handles the left click mouse event.
+{
+    if (event.GetId() == id_toolnewscript)
+    {
+        OnToolBarNewScript(event);
+    }
+
+    else if (event.GetId() == id_toolopen)
+    {
+        OnToolBarOpen(event);
+    }
+
+    else if (event.GetId() == id_toolnewmap)
+    {
+        OnToolBarNewMap(event);
+    }
+
+    // etc.
+
 }

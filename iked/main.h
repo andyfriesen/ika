@@ -4,6 +4,8 @@
 
 #include <string>
 #include <wx/wx.h>
+#include <wx/toolbar.h>
+#include <wx/bitmap.h>
 
 //////////////////////////////////////////
 
@@ -39,6 +41,12 @@ public:
         id_filenewmap,
         id_filenewscript,
         id_fileopen,
+
+        id_tool=31373, // >;D
+        id_toolnewscript,
+        id_toolnewmap,
+        id_toolopen
+        
     };
     
     CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
@@ -52,9 +60,17 @@ public:
     void Bleh(wxCommandEvent& event);
 
     void Open(const std::string& fname);
+    void OnToolBarNewScript(wxCommandEvent& event);
+    void OnToolBarOpen(wxCommandEvent& event);
+    void OnToolBarNewMap(wxCommandEvent& event);
+    void OnToolLeftClick(wxCommandEvent& event);
 
     wxMenuBar*  CreateBasicMenu();
 private:
+    wxToolBar* CreateBasicToolBar();
+    
+
+
     DECLARE_EVENT_TABLE()
         
         
