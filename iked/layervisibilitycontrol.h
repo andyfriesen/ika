@@ -3,25 +3,26 @@
 
 #include "wx/wx.h"
 #include "wx/checklst.h"
-#include <vector>
+
+#include "map.h"
 
 class wxListEvent;
 
-class CMapView;
+class MapView;
 
 class CLayerVisibilityControl : public wxCheckListBox
 {
-    CMapView* pMapview;
+    MapView* pMapview;
 
-    std::vector<int> layidx;
+    std::vector<Map::Layer*> layidx; // lookup table to match layer instances with table indeces
 
 public:
-    CLayerVisibilityControl(wxWindow* parent, int id, CMapView* mapview);
+    CLayerVisibilityControl(wxWindow* parent, int id, MapView* mapview);
 
     void Clear();
-    void AppendLayer(const std::string& name, int idx);
-    void CheckLayer(int idx);
-    void SelectLayer(int idx);
+    void AppendLayer(Map::Layer* lay);
+    void CheckLayer(Map::Layer* lay);
+    void SelectLayer(Map::Layer* lay);
 
     void OnItemSelected(wxCommandEvent& event);
     void OnKeyDown(wxListEvent& event);

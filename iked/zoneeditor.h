@@ -5,13 +5,13 @@
 #include "wx/wx.h"
 #include "types.h"
 
-class CMapView;
-class Map;
+class MapView;
+struct Map;
 
 class ZoneEditor : public wxDialog
 {
 private:
-    CMapView*   _parent;
+    MapView*   _parent;
     Map*        _map;
     uint        _curzone;
 
@@ -36,7 +36,7 @@ private:
     void OnDelZone(wxCommandEvent& event);
 
 public:
-    ZoneEditor(CMapView* parent, Map* m);
+    ZoneEditor(MapView* parent, Map* m);
 };
 
 #endif

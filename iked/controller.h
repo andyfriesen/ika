@@ -42,7 +42,7 @@ private:
 
     Resource* Find(const T* data)
     {
-        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
+        for (ResourceList::iterator i = rsrc.begin(); i != rsrc.end(); i++)
         {
             if (i->pData==data)
                 return &*i;
@@ -55,7 +55,15 @@ private:
     bool LoadFromFile(T* p, const string& name)
     {
         Log::Write("Loading      %s", name.c_str());
-        return p->Load(name.c_str());
+        try
+        {
+            return p->Load(name.c_str());
+        }
+        catch (std::runtime_error err)
+        {
+            Log::Write("Failed to load %s: %s", name.c_str(), err.what());
+            return false;
+        }
     }
 
 public:

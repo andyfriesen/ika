@@ -1,3 +1,5 @@
+#include <stdexcept>
+
 #include "sound.h"
 
 using namespace audiere;

@@ -12,70 +12,64 @@
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
 
+#include <map>
+
 #include "types.h"
 #include "misc.h"
-#include <map>
-#include "wx\wx.h"
-#include "docview.h"
 
-class Map;
+#include "wx\wx.h"
+
+#include "docview.h"
+#include "map.h"
 
 class CMainWnd;
 class CGraphFrame;
 class CTileSet;
 class CSpriteSet;
 class CLayerVisibilityControl;
-class CEntityEditor;
+class EntityEditor;
 class ZoneEditor;
 
 class wxSashLayoutWindow;
 class wxCheckListBox;
 class wxScrolledWindow;
 
-class CMapView;
+class MapView;
 
 namespace MapEditState
 {
     class IEditState
     {
     protected:
-        CMapView* This;
+        MapView* This;
 
-        IEditState(CMapView* t) : This(t){}
+        IEditState(MapView* t) : This(t){}
+
+        // accessors since subclasses aren't privy to the inner workings of MapView
+        Map::Layer* CurLayer() const;
+        CMainWnd*   Parent() const;
+        CTileSet*   TileSet() const;
+        Point       CameraPos() const;
+        Map*        Map() const;
+        std::map<std::string, CSpriteSet*>& SpriteSets() const;
+        void        Render();
 
     public:
         virtual ~IEditState(){}
-        virtual void OnMouseDown(wxMouseEvent& e) = 0;
-        virtual void OnMouseUp(wxMouseEvent& e) = 0;
-        virtual void OnMouseMove(wxMouseEvent& e) = 0;
-        virtual void OnMouseWheel(wxMouseEvent& e) = 0;
+        virtual void OnMouseDown(wxMouseEvent&) = 0;
+        virtual void OnMouseUp(wxMouseEvent&) = 0;
+        virtual void OnMouseMove(wxMouseEvent&) = 0;
+        virtual void OnMouseWheel(wxMouseEvent&) = 0;
+        virtual void OnDoubleClick(wxMouseEvent&){}
         virtual void OnRender(){}
+        virtual void OnKeyPress(wxKeyEvent&){}
     };
 
-    class TileSetState : public IEditState
-    {
-        int oldx, oldy;
-
-        void LayerEdit(wxMouseEvent& e);
-        void UpdateStatBar(wxMouseEvent& e, int x, int y);
-    public:
-        TileSetState(CMapView* t) 
-            : IEditState(t)
-            , oldx(0)
-            , oldy(0)
-        {}
-
-        virtual void OnMouseDown(wxMouseEvent& e);
-        virtual void OnMouseUp(wxMouseEvent& e);
-        virtual void OnMouseMove(wxMouseEvent& e);
-        virtual void OnMouseWheel(wxMouseEvent& e);
-    };
-
-    class CopyState : public IEditState
+    /*class CopyState : public IEditState
     {
         Rect _selection;
     public:
-        CopyState(CMapView* t, int x, int y)
+        CopyState(MapView* t, int x, int y)
             : IEditState(t)
             , _selection(x, y, x, y) {}
 
@@ -90,24 +84,20 @@ namespace MapEditState
     {
         Rect _selection;
     public:
-        PasteState(CMapView* t, int x, int y);
+        PasteState(MapView* t, int x, int y);
 
         virtual void OnMouseDown(wxMouseEvent& e);
         virtual void OnMouseUp(wxMouseEvent& e);
         virtual void OnMouseMove(wxMouseEvent& e);
         virtual void OnMouseWheel(wxMouseEvent& e);
         virtual void OnRender();
-    };
+    };*/
 }
 
-class CMapView : public IDocView
+class MapView : public IDocView
 {
-    friend class CEntityEditor;     // -_-;
-
-    // ...
-    friend class MapEditState::TileSetState;
-    friend class MapEditState::CopyState;
-    friend class MapEditState::PasteState;
+    friend class EntityEditor;
+    friend class MapEditState::IEditState;
 
     enum
     {
@@ -130,24 +120,28 @@ private:
     wxSashLayoutWindow* pLeftbar;
     wxSashLayoutWindow* pRightbar;
     wxScrolledWindow*   pScrollwin;
-    CGraphFrame*        pGraph;
+    CGraphFrame*        _graph;
     CLayerVisibilityControl*
                         _layerList;
 
 protected:
-    CEntityEditor*      _entityEditor;
+    EntityEditor*      _entityEditor;
     ZoneEditor*         _zoneEditor;
 //private:
 
     Map*                _map;
-    CTileSet*           pTileset;
+    CTileSet*           _tileSet;
     ScopedPtr<MapEditState::IEditState> _editState;
 
-    std::vector<CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
+    // Entity spritesets needed for this map.  The key is the filename of the sprite.
+    // I hope that using strings to get sprites like this isn't going to be a performance
+    // liability.
+    typedef std::map<std::string, CSpriteSet*> SpriteMap;
+    SpriteMap _sprites;
 
 public:
-    CMapView(CMainWnd* parent, int width, int height, const string& tilesetname);
-    CMapView(CMainWnd* parent, const string& fname);
+    MapView(CMainWnd* parent, int width, int height, const string& tilesetname);
+    MapView(CMainWnd* parent, const string& fname);
 
     void InitAccelerators();
     void InitMenu();
@@ -162,6 +156,9 @@ public:
     void OnSaveAs(wxCommandEvent& event);
 
     virtual const void* GetResource() const;
+
+    void SetCurrentLayer(Map::Layer* lay);
+    void SetCurrentLayer(const std::string& layerName);
 
     void GoNextTile(wxEvent&);
     void GoPrevTile(wxEvent&);
@@ -179,12 +176,19 @@ public:
     void OnShowVSP(wxCommandEvent&);
     void OnShowScript(wxCommandEvent&);
 
+    void OnLayerMode(wxCommandEvent&);
+    void OnTileMode(wxCommandEvent&);
+    void OnEntityMode(wxCommandEvent&);
+    void OnZoneMode(wxCommandEvent&);
+
     void OnMoveLayerUp(wxCommandEvent&);
     void OnMoveLayerDown(wxCommandEvent&);
     void OnDeleteLayer(wxCommandEvent&);
     void OnNewLayer(wxCommandEvent&);
 
     void OnClose();
+
+    void OnKeyDown(wxKeyEvent&);
 
 //------------------------------------------------------------
 
@@ -194,31 +198,34 @@ public:
 
 public:
     // CLayerVisibilityControl calls these functions
-    void OnLayerChange(int lay);
-    void OnLayerToggleVisibility(int lay, int newstate);
+    void OnLayerChange(Map::Layer* lay);
+    void OnLayerToggleVisibility(Map::Layer* lay, int newstate);
 
 protected:
     int xwin, ywin;
-    int _curLayer;
+    Map::Layer* _curLayer;
     // old mouse coords.  To prevent redundant processing.
     int oldx, oldy;
-    std::map<int, int> nLayertoggle;
-    uint _curZone;
-    Rect _selection;
+    // TODO: reimplement layer hiding.
+    Map::Zone* _curZone;
 
-    void ScreenToMap(int& x, int& y);
+public:
     void MapToTile(int& x, int& y);
     void ScreenToTile(int& x, int& y);
-    void ScreenToTile(int& x, int& y, int layidx);
+    void ScreenToTile(int& x, int& y, Map::Layer* lay);
+
+private:
     void HandleMouse(wxMouseEvent& event);
     void HandleMouseWheel(wxMouseEvent& event);
     void UpdateScrollbars();
-    void UpdateLayerList();
 
     void Render();
-    void RenderEntities();
-    void RenderInfoLayer(int lay);
-    void RenderLayer(int lay);
+    void RenderEntities(Map::Layer* lay, int xoffset, int yoffset);
+    //void RenderInfoLayer(int lay);
+    void RenderLayer(Map::Layer* lay, int xoffset, int yoffset);
+
+public:
+    void UpdateLayerList();
     void RenderSelectionRect(Rect r, RGBA colour);
 
     void Zoom(int nZoomscale);

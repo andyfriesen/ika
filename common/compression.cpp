@@ -3,7 +3,7 @@
 
 namespace Compression
 {
-    int compress(u8* src, int srclen, u8* dest, int destlen)
+    int compress(const u8* src, int srclen, u8* dest, int destlen)
     {
         z_stream stream;
  
@@ -24,7 +24,7 @@ namespace Compression
         // TODO: error returns
     }
 
-    void decompress(u8* src, int srclen, u8* dest, int destlen)
+    void decompress(const u8* src, int srclen, u8* dest, int destlen)
     {
         z_stream stream;
         

@@ -1,3 +1,4 @@
+#if 0
 #include "zoneeditor.h"
 #include "map.h"
 #include "main.h"
@@ -54,7 +55,7 @@ void ZoneEditor::UpdateDlg()
     _adjacentactivate->SetValue(zone.bAdjacentactivation);
 }
 
-ZoneEditor::ZoneEditor(CMapView* parent, Map* m)
+ZoneEditor::ZoneEditor(MapView* parent, Map* m)
     : _parent(parent)
     , _map(m)
     , _curzone(0)
@@ -133,3 +134,4 @@ void ZoneEditor::OnDelZone(wxCommandEvent& event)
         UpdateDlg();
     }
 }
+#endif

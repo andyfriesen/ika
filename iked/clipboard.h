@@ -13,8 +13,8 @@ namespace Clipboard
     void Set(const Canvas& c);
     const Canvas& GetCanvas();
     
-    void Set(const MapClip& m);
-    const MapClip& GetMap();
+//    void Set(const MapClip& m);
+//    const MapClip& GetMap();
 
 };
 

@@ -7,7 +7,7 @@
 namespace
 {
     Canvas _curImage;
-    MapClip _curMapClip;
+    //MapClip _curMapClip;
 }
 
 /**
@@ -26,7 +26,7 @@ namespace Clipboard
         return _curImage;
     }
 
-    void Set(const MapClip& m)
+    /*void Set(const MapClip& m)
     {
         _curMapClip = m;
     }
@@ -34,7 +34,7 @@ namespace Clipboard
     const MapClip& GetMap()
     {
         return _curMapClip;
-    }
+    }*/
 };
 
 #endif

@@ -4,20 +4,20 @@
 
 #include "wx\wx.h"
 
-class CMapView;
-class Map;
+class MapView;
+struct Map;
 
-class CEntityEditor : public wxDialog
+class EntityEditor : public wxDialog
 {
-    CMapView*   pParent;
-    Map*        pMap;
-    int         nCurentidx;
+    MapView*     _parent;
+    Map*         _map;
+    Map::Layer::Entity* _curEnt;
     
     // convenience or the listbox
-    wxListBox*  pEntlist;
+    //wxListBox*   _entList; // TODO: re-enable this
 
 public:
-    CEntityEditor(CMapView* parent, Map* m);
+    EntityEditor(MapView* parent, Map* m);
 
 private:
     void InitControls();
@@ -25,7 +25,9 @@ private:
     template <class T>
         T* get(const char* name, T* = 0)
     {
-        return (T*)FindWindowByName(name);
+        T* t = (T*)FindWindowByName(name);
+        assert(t);
+        return t;
     }
 
 public:
@@ -33,10 +35,12 @@ public:
     void UpdateData();
     void UpdateDlg();
 
-    DECLARE_EVENT_TABLE()
-
     void OnSelectEntity(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
+
+    void Show(Map::Layer::Entity* ent);
+
+    DECLARE_EVENT_TABLE()
 };
 
 #endif

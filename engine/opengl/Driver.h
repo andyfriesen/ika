@@ -100,7 +100,11 @@ namespace OpenGL
 
         Video::BlendMode _blendMode;
 
+#ifdef WIN32
         void (__stdcall *glBlendEquationEXT)(int);
+#else
+        void (*glBlendEquationEXT)(int);
+#endif
     };
 };
 

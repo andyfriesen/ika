@@ -10,7 +10,11 @@
 #include "common/Canvas.h"
 #include "common/log.h"
 
+#ifdef WIN32
 static void __stdcall glBlendEquationStub(int){}
+#else
+static void glBlendEquationStub(int){}
+#endif
 
 namespace OpenGL
 {
@@ -381,7 +385,7 @@ namespace OpenGL
         glBegin(GL_TRIANGLES);
         for (int i = 0; i < 3; i++)
         {
-            glColor3ubv((u8*)&colour[i]);
+            glColor4ubv((u8*)&colour[i]);
             glVertex2i(x[i], y[i]);
         }
         glEnd();

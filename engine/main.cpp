@@ -1,8 +1,9 @@
 #include <algorithm>
+#include <stdexcept>
 #include <SDL/SDL.h>
+#include <SDL/SDL_syswm.h>
 
 #include "main.h"
-#include <SDL/SDL_syswm.h>
 
 #include "timer.h"
 

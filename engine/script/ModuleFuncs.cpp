@@ -24,7 +24,7 @@ namespace Script
         char* message;
 
         if (!PyArg_ParseTuple(args, "s:log", &message))
-            return NULL;
+            return 0;
 
         Log::Write(message);
 
@@ -37,7 +37,7 @@ namespace Script
         char* message="";
 
         if (!PyArg_ParseTuple(args, "|s:exit", &message))
-            return NULL;
+            return 0;
 
         engine->Sys_Error(message);
 
@@ -77,7 +77,7 @@ namespace Script
         int ticks;
 
         if (!PyArg_ParseTuple(args, "i:delay", &ticks))
-            return NULL;
+            return 0;
 
         int endtime = ticks + GetTime();
 
@@ -96,10 +96,10 @@ namespace Script
     {
         int ticks;    
         if (!PyArg_ParseTuple(args, "i:wait", &ticks))
-            return NULL;
+            return 0;
 
         CEntity* pSaveplayer=engine->pPlayer;
-        engine->pPlayer=0;                             // stop the player entity
+        engine->pPlayer = 0;                             // stop the player entity
 
         int t = GetTime();
         int endtime = ticks + t;
@@ -133,7 +133,7 @@ namespace Script
         int min, max;
 
         if (!PyArg_ParseTuple(args, "ii:Random", &min, &max))
-            return NULL;
+            return 0;
 
         return PyInt_FromLong(Random(min, max));
     }
@@ -145,7 +145,7 @@ namespace Script
         int colour;
 
         if (!PyArg_ParseTuple(args, "i:GetRGB", &colour))
-            return NULL;
+            return 0;
 
         int b=colour&255;
         int g=(colour>>8)&255;
@@ -160,7 +160,7 @@ namespace Script
         int r, g, b, a=255;
 
         if (!PyArg_ParseTuple(args, "iii|i:RGB", &r, &g, &b, &a))
-            return NULL;
+            return 0;
 
         return PyInt_FromLong(RGBA(r, g, b, a).i);
     }
@@ -168,7 +168,7 @@ namespace Script
     METHOD(std_processentities)
     {
         if (!PyArg_ParseTuple(args, ""))
-            return NULL;
+            return 0;
 
         engine->ProcessEntities();
 
@@ -181,20 +181,20 @@ namespace Script
         Script::Entity::EntityObject* ent;
 
         if (!PyArg_ParseTuple(args, "O:SetcameraTarget", &ent))
-            return NULL;
+            return 0;
 
-        if ((PyObject*)ent==Py_None)
+        if ((PyObject*)ent == Py_None)
         {
-            engine->pcameraTarget=0;
+            engine->pcameraTarget = 0;
             Py_XDECREF(cameraTarget);
-            cameraTarget=0;
+            cameraTarget = 0;
         }
         else
         {
-            if (ent->ob_type!=&Script::Entity::type)
+            if (ent->ob_type != &Script::Entity::type)
             {
                 PyErr_SetString(PyExc_TypeError, "SetcameraTarget not called with entity/None object");
-                return NULL;
+                return 0;
             }
 
             engine->pcameraTarget = ent->ent;  // oops
@@ -221,20 +221,20 @@ namespace Script
         Script::Entity::EntityObject* ent;
 
         if (!PyArg_ParseTuple(args, "O:SetPlayerEntity", &ent))
-            return NULL;
+            return 0;
 
-        if ((PyObject*)ent==Py_None)
+        if ((PyObject*)ent == Py_None)
         {
             Py_XDECREF(playerent);
-            playerent=0;
-            engine->pPlayer=0;
+            playerent = 0;
+            engine->pPlayer = 0;
         }
         else
         {
             if (ent->ob_type != &Script::Entity::type)
             {
                 PyErr_SetString(PyExc_TypeError, "SetPlayerEntity not called with entity object or None.");
-                return NULL;
+                return 0;
             }
 
             Py_INCREF(ent);
@@ -268,9 +268,9 @@ namespace Script
         int x2=x+width;
         int y2=y+height;
 
-        int count=0;
-        PyObject* pKey=0;
-        PyObject* pValue=0;
+        int count = 0;
+        PyObject* pKey = 0;
+        PyObject* pValue = 0;
         while (PyDict_Next(entityDict, &count, &pKey, &pValue))
         {
             if (pValue->ob_type != &Script::Entity::type)
@@ -298,12 +298,12 @@ namespace Script
         PyObject*    pFunc;
 
         if (!PyArg_ParseTuple(args, "O:HookRetrace", &pFunc))
-            return NULL;
+            return 0;
 
         if (!PyCallable_Check(pFunc))
         {
             PyErr_SetString(PyExc_TypeError, "HookRetrace requires a function as a parameter");
-            return NULL;
+            return 0;
         }
 
         Py_INCREF(pFunc);
@@ -315,16 +315,16 @@ namespace Script
 
     METHOD(std_unhookretrace)
     {
-        PyObject* pFunc=NULL;
+        PyObject* pFunc = 0;
 
         if (!PyArg_ParseTuple(args, "|O:UnhookRetrace", &pFunc))
-            return NULL;
+            return 0;
 
         if (!pFunc)
         {
             /*std::list<ScriptObject>::iterator i;
 
-            for (i=engine->_hookRetrace.begin(); i!=engine->_hookRetrace.end(); i++)
+            for (i=engine->_hookRetrace.begin(); i != engine->_hookRetrace.end(); i++)
                 Py_XDECREF((PyObject*)*i);                                        // dereference*/
 
             engine->_hookRetrace.Clear();
@@ -352,12 +352,12 @@ namespace Script
         PyObject*    pFunc;
 
         if (!PyArg_ParseTuple(args, "O:HookTimer", &pFunc))
-            return NULL;
+            return 0;
 
         if (!PyCallable_Check(pFunc))
         {
             PyErr_SetString(PyExc_TypeError, "HookTimer requires a function as a parameter");
-            return NULL;
+            return 0;
         }
 
         Py_INCREF(pFunc);
@@ -372,16 +372,16 @@ namespace Script
     // GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY
     METHOD(std_unhooktimer)
     {
-        PyObject* pFunc=NULL;
+        PyObject* pFunc = 0;
 
         if (!PyArg_ParseTuple(args, "|O:UnhookTimer", &pFunc))
-            return NULL;
+            return 0;
 
         if (!pFunc)
         {
             std::list<void*>::iterator i;
 
-            /*for (i=engine->_hookTimer.begin(); i!=engine->_hookTimer.end(); i++)
+            /*for (i=engine->_hookTimer.begin(); i != engine->_hookTimer.end(); i++)
                 Py_DECREF((PyObject*)*i);                                    // dereference*/
 
             engine->_hookTimer.Clear();
@@ -390,9 +390,9 @@ namespace Script
         {
             HookList::List::iterator i;
 
-            for (i=engine->_hookTimer.begin(); i!=engine->_hookTimer.end(); i++)
+            for (i=engine->_hookTimer.begin(); i != engine->_hookTimer.end(); i++)
             {
-                if (*i==pFunc)
+                if (*i == pFunc)
                 {
                     Py_DECREF(pFunc);
                     //engine->_hookTimer.remove(*i);

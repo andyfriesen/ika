@@ -167,6 +167,9 @@
 				RelativePath="importframesdlg.cpp">
 			</File>
 			<File
+				RelativePath="layerdlg.cpp">
+			</File>
+			<File
 				RelativePath=".\layervisibilitycontrol.cpp">
 			</File>
 			<File
@@ -250,6 +253,9 @@
 			</File>
 			<File
 				RelativePath="importframesdlg.h">
+			</File>
+			<File
+				RelativePath="layerdlg.h">
 			</File>
 			<File
 				RelativePath=".\layervisibilitycontrol.h">
@@ -358,6 +364,9 @@
 				RelativePath="..\common\map.h">
 			</File>
 			<File
+				RelativePath="..\common\matrix.h">
+			</File>
+			<File
 				RelativePath="..\common\misc.cpp">
 			</File>
 			<File
@@ -383,6 +392,9 @@
 			</File>
 			<File
 				RelativePath="..\common\vsp.h">
+			</File>
+			<File
+				RelativePath="..\common\xmlutil.cpp">
 			</File>
 			<File
 				RelativePath="..\common\xmlutil.h">

@@ -22,13 +22,13 @@ class CImage;
 class CGraphFrame : public wxGLCanvas
 {
     /*    
-        We keep a list of all open CGraphFrame instances so that they can all have the same OpenGL context.
+        We keep a list of all open GraphFrame instances so that they can all have the same OpenGL context.
         When creating a new instance, the constructor uses an (any, it doesn't matter which) element from
         this set, if there is one.  If not, then it creates a new OpenGL context.
 
-        One odd point is that every CImage is dependant on a GL context.  So if any CImages exist, while
-        there is no context, things might get icky.  However, this does not make sense, as CImages exist
-        only so that they may be blitted on CGraphFrames.  Just something to keep in mind.
+        One odd point is that every Image is dependant on a GL context.  So if any CImages exist, while
+        there is no context, things might get icky.  However, this does not make sense, as Images exist
+        only so that they may be blitted on GraphFrames.  Just something to keep in mind.
     */
     static std::set<CGraphFrame*>  pInstances;
 

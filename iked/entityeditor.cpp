@@ -1,4 +1,3 @@
-
 #include "main.h"
 #include "mapview.h"
 #include "entityeditor.h"
@@ -6,117 +5,106 @@
 
 #include <wx/xrc/xmlres.h>
 
-BEGIN_EVENT_TABLE(CEntityEditor, wxDialog)
-    EVT_LISTBOX(XRCID("list_entities"), CEntityEditor::OnSelectEntity)
-    EVT_CLOSE(CEntityEditor::OnClose)
+BEGIN_EVENT_TABLE(EntityEditor, wxDialog)
+    EVT_LISTBOX(XRCID("list_entities"), EntityEditor::OnSelectEntity)
+    EVT_CLOSE(EntityEditor::OnClose)
+    EVT_BUTTON(wxID_OK, EntityEditor::OnClose)
 END_EVENT_TABLE()
 
-CEntityEditor::CEntityEditor(CMapView* parent, Map* m)
-    : pParent(parent)
-    , pMap(m)
+EntityEditor::EntityEditor(MapView* parent, Map* m)
+    : _parent(parent)
+    , _map(m)
+    , _curEnt(0)
 {
-    wxXmlResource::Get()->LoadDialog(this, pParent, wxT("dialog_entity"));
-    pEntlist = XRCCTRL(*this, "list_entities", wxListBox);
+    wxXmlResource::Get()->LoadDialog(this, _parent, wxT("dialog_entity"));
+    //_entList = XRCCTRL(*this, "list_entities", wxListBox);
     wxSizer* s = XRCCTRL(*this, "panel_main", wxPanel)->GetSizer();
 
     // Stretch out the entity list to take up the height of the whole dialog.
-    pEntlist->SetSize(wxSize(pEntlist->GetSize().GetWidth(), s->GetSize().GetHeight()));
-    UpdateList();
+    //_entList->SetSize(wxSize(_entList->GetSize().GetWidth(), s->GetSize().GetHeight()));
+    //UpdateList();
 
     s->Fit(this);
 }
 
-void CEntityEditor::InitControls()
+void EntityEditor::InitControls()
 {
 }
 
-void CEntityEditor::UpdateList()
+void EntityEditor::UpdateList()
 {
-    int nCurrent = pEntlist->GetSelection();
+    /*int nCurrent = _entList->GetSelection();
 
-    pEntlist->Clear();
+    _entList->Clear();
 
-    for (uint i = 0; i < pMap->NumEnts(); i++)
+    for (uint i = 0; i < _map->NumEnts(); i++)
     {
-        const SMapEntity& e = pMap->GetEntity(i);
+        const SMapEntity& e = _map->GetEntity(i);
 
-        pEntlist->Append(e.name.c_str());
+        _entList->Append(e.name.c_str());
     }
 
     if (nCurrent != -1)
-        pEntlist->SetSelection(nCurrent);
+        _entList->SetSelection(nCurrent);
     nCurentidx=-1;
-    UpdateDlg();
+    UpdateDlg();*/
 }
 
-void CEntityEditor::UpdateData()
+void EntityEditor::UpdateData()
 {
-    if (nCurentidx == -1) return;
+    if (!_curEnt)   return;
 
-    SMapEntity& e = pMap->GetEntity(nCurentidx);
+    Map::Entity& ent    = _map->entities[_curEnt->bluePrint];
+    _curEnt->label      = get<wxTextCtrl>("edit_label")->GetValue().c_str();
+    ent.spriteName      = get<wxTextCtrl>("edit_sprite")->GetValue().c_str();
+    ent.speed           = atoi(get<wxTextCtrl>("edit_speed")->GetValue().c_str());
+    ent.moveScript      = get<wxTextCtrl>("edit_movescript")->GetValue().c_str();
+    ent.activateScript  = get<wxTextCtrl>("edit_script")->GetValue().c_str();
+    ent.obstructsEntities = get<wxCheckBox>("check_obstructs")->GetValue();
+    ent.obstructedByEntities = get<wxCheckBox>("check_obstructedbyentities")->GetValue();
+    ent.obstructedByMap = get<wxCheckBox>("check_obstructedbymap")->GetValue();
+    
+    _curEnt->x                 = atoi(get<wxTextCtrl>("edit_x")->GetValue().c_str());
+    _curEnt->y                 = atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
+}
 
-    if (e.name!=get<wxTextCtrl>("edit_name")->GetValue().c_str())
+void EntityEditor::UpdateDlg()
+{
+    if (!_curEnt) return;
+
+    if (_map->entities.count(_curEnt->bluePrint))
     {
-        wxString bleh = get<wxTextCtrl>("edit_name")->GetValue().c_str();
-        pEntlist->InsertItems(1, &bleh, nCurentidx);
-        pEntlist->Delete(nCurentidx + 1);
+        Map::Entity& ent = _map->entities[_curEnt->bluePrint];
+        get<wxTextCtrl>("edit_label")->SetValue(                _curEnt->label.c_str());
+        get<wxTextCtrl>("edit_sprite")->SetValue(               ent.spriteName.c_str());
+        get<wxTextCtrl>("edit_speed")->SetValue(                ToString(ent.speed).c_str());
+        get<wxTextCtrl>("edit_movescript")->SetValue(           ent.moveScript.c_str());
+        get<wxTextCtrl>("edit_script")->SetValue(               ent.activateScript.c_str());
+        get<wxCheckBox>("check_obstructs")->SetValue(           ent.obstructsEntities);
+        get<wxCheckBox>("check_obstructedbyentities")->SetValue(ent.obstructedByMap);
+        get<wxCheckBox>("check_obstructedbymap")->SetValue(     ent.obstructedByEntities);
     }
 
-    e.name              = get<wxTextCtrl>("edit_name")->GetValue().c_str();
-    e.x                 = atoi(get<wxTextCtrl>("edit_x")->GetValue().c_str());
-    e.y                 = atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
-    e.sCHRname          = get<wxTextCtrl>("edit_sprite")->GetValue().c_str();
-    e.nSpeed            = atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
-    e.sActscript        = get<wxTextCtrl>("edit_script")->GetValue().c_str();
-    e.moveScript        = get<wxTextCtrl>("edit_movescript")->GetValue().c_str();
-    e.nWandersteps      = atoi(get<wxTextCtrl>("edit_steps")->GetValue().c_str());
-    e.nWanderdelay      = atoi(get<wxTextCtrl>("edit_delay")->GetValue().c_str());
-    e.wanderrect.left   = atoi(get<wxTextCtrl>("edit_x1")->GetValue().c_str());
-    e.wanderrect.top    = atoi(get<wxTextCtrl>("edit_y1")->GetValue().c_str());
-    e.wanderrect.right  = atoi(get<wxTextCtrl>("edit_x2")->GetValue().c_str());
-    e.wanderrect.bottom = atoi(get<wxTextCtrl>("edit_y2")->GetValue().c_str());
-    e.sZone             = get<wxTextCtrl>("edit_zone")->GetValue().c_str();
-    e.sChasetarget      = get<wxTextCtrl>("edit_chasetarget")->GetValue().c_str();
-    e.bIsobs            = get<wxCheckBox>("check_isobs")->GetValue();
-    e.bMapobs           = get<wxCheckBox>("check_mapobs")->GetValue();
-    e.bEntobs           = get<wxCheckBox>("check_entobs")->GetValue();
-    e.state             = (MoveCode)get<wxRadioBox>("radio_movepattern")->GetSelection();
+    get<wxTextCtrl>("edit_x")->SetValue(            ToString(_curEnt->x).c_str());
+    get<wxTextCtrl>("edit_y")->SetValue(            ToString(_curEnt->y).c_str());
 }
 
-void CEntityEditor::UpdateDlg()
+void EntityEditor::OnSelectEntity(wxCommandEvent& event)
 {
-    const SMapEntity& e = pMap->GetEntity(pEntlist->GetSelection());
-
-    get<wxTextCtrl>("edit_name")->SetValue(e.name.c_str());
-    get<wxTextCtrl>("edit_x")->SetValue(ToString(e.x).c_str());
-    get<wxTextCtrl>("edit_y")->SetValue(ToString(e.y).c_str());
-    get<wxTextCtrl>("edit_sprite")->SetValue(e.sCHRname.c_str());
-    get<wxTextCtrl>("edit_speed")->SetValue(ToString(e.nSpeed).c_str());
-    get<wxTextCtrl>("edit_script")->SetValue(e.sActscript.c_str());
-    get<wxTextCtrl>("edit_movescript")->SetValue(e.moveScript.c_str());
-    get<wxTextCtrl>("edit_steps")->SetValue(ToString(e.nWandersteps).c_str());
-    get<wxTextCtrl>("edit_delay")->SetValue(ToString(e.nWanderdelay).c_str());
-    get<wxTextCtrl>("edit_x1")->SetValue(ToString(e.wanderrect.left).c_str());
-    get<wxTextCtrl>("edit_y1")->SetValue(ToString(e.wanderrect.top).c_str());
-    get<wxTextCtrl>("edit_x2")->SetValue(ToString(e.wanderrect.right).c_str());
-    get<wxTextCtrl>("edit_y2")->SetValue(ToString(e.wanderrect.bottom).c_str());
-    get<wxTextCtrl>("edit_zone")->SetValue(e.sZone.c_str());
-    get<wxTextCtrl>("edit_chasetarget")->SetValue(e.sChasetarget.c_str());
-    get<wxCheckBox>("check_isobs")->SetValue(e.bIsobs);
-    get<wxCheckBox>("check_mapobs")->SetValue(e.bMapobs);
-    get<wxCheckBox>("check_entobs")->SetValue(e.bEntobs);
-    get<wxRadioBox>("radio_movepattern")->SetSelection((int)e.state);
-}
-
-void CEntityEditor::OnSelectEntity(wxCommandEvent& event)
-{
-    UpdateData();
+    /*UpdateData();
     nCurentidx = event.GetInt();
-    UpdateDlg();
+    UpdateDlg();*/
 }
 
-void CEntityEditor::OnClose(wxCommandEvent& event)
+void EntityEditor::OnClose(wxCommandEvent& event)
 {
     UpdateData();
-    Show(false);
+    OnOK(event);
+}
+
+void EntityEditor::Show(Map::Layer::Entity* ent)
+{
+    _curEnt = ent;
+    UpdateDlg();
+    wxDialog::Show(true);
 }

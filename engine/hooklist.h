@@ -8,8 +8,9 @@
 
 class HookList
 {
-private:
+public:
     typedef std::list<ScriptObject> List;
+private:
     typedef std::list<void*> VoidList;
 
     List     _hooks;

@@ -5,8 +5,8 @@
 
 namespace Compression
 {
-    int compress(u8* src, int srclen, u8* dest, int destlen); // returns the amount of space used to compress; 0 on error
-    void decompress(u8* src, int srclen, u8* dest, int destlen);
+    int compress(const u8* src, int srclen, u8* dest, int destlen); // returns the amount of space used to compress; 0 on error
+    void decompress(const u8* src, int srclen, u8* dest, int destlen);
 }
 
 #endif

@@ -5,6 +5,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winmaped", "winmaped\WinMap
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iked", "iked\iked.vcproj", "{86231232-3F9D-440A-A33B-3170501C170E}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ikaMap", "ikaMap\ikaMap.vcproj", "{71F0DE24-F543-42E5-90C7-0B5AF0517458}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
@@ -39,6 +41,14 @@ Global
 		{86231232-3F9D-440A-A33B-3170501C170E}.Release.Build.0 = Release|Win32
 		{86231232-3F9D-440A-A33B-3170501C170E}.Release wx232.ActiveCfg = Debug|Win32
 		{86231232-3F9D-440A-A33B-3170501C170E}.Release wx232.Build.0 = Debug|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug.ActiveCfg = Debug|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug.Build.0 = Debug|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug wx232.ActiveCfg = Debug|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug wx232.Build.0 = Debug|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release.ActiveCfg = Release|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release.Build.0 = Release|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release wx232.ActiveCfg = Release|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release wx232.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

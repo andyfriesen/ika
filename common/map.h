@@ -1,270 +1,175 @@
-/*!
-    Header crap for map.cpp
-    Written by tSB
-    Copyright me and stuff, so ph33r.
-
-    Some of this stuff is vecna's.  ph33r him too.
-  
-    Some of these structs are purely vestigal, for the importing of VERGE maps.
-*/
 
 #ifndef MAP_H
 #define MAP_H
 
 #include "types.h"
-#include "fileio.h"
-#include "rle.h"
+#include "matrix.h"
 
-using std::vector;
+#include <string>
+#include <map>
 
-// Legacy structs for loading v2 stuff
-struct layer_r
+// Partial tile obstruction stuff.
+enum
 {
-    u8              pmultx, pdivx;                           // parallax multiplier / divisor for X
-    u8              pmulty, pdivy;                           // parallax multiplier / divisor for Y
-    u16             sizex, sizey;                           // layer dimensions.
-    u8              trans;                                  // transparency flag
-    u8              hline;                                  // hline (raster fx) (never actually implemented)
-    char            filler[2];                              // make it 12 bytes, so bleh
+    ob_none             = 0x00,
+    ob_top              = 0x01,
+    ob_bottom           = 0x02,
+    ob_left             = 0x04,
+    ob_right            = 0x08,
+    // diagonals
+    ob_upleft_downright = 0x10,
+    ob_upright_downleft = 0x20,
+
+    ob_all = ob_top | ob_bottom | ob_left | ob_right,
 };
 
-struct zoneinfo_r
+struct Map
 {
-    char            name[40];                               // zone name / desc
-    u16             script;                                 // script to call thingy
-    u16             percent;                                // chance of executing
-    u16             delay;                                  // step - delay
-    u16             aaa;                                    // Accept Adjacent Activation
-    u16             entityscript;                           // script to call for entities
-};
 
-struct Sv2entity
-{
-    int             x, y;                                   // x / y pixel position
-    u16             tx, ty;                                 // x / y tile position
-    u8              facing;                                 // direction entity is facing
-    u8              moving, movecnt;                        // direction entity is moving
-    u8              frame;                                  // bottom - line frame to display
-    u8              specframe;                              // if nonzero, this overrides move scripts
-    u8              chrindex, reset;                        // CHR index | Reset animation
-    u8              bCanobs, bIsobs;                         // can be obstructed | Is an obstruction
-    u8              speed, speedct;                         // entity speed, speedcount :)
-    u8              delayct;                                // animation frame - delay
-    char            *animofs, *moveofs;                     // anim script | move script
-    u8              face, actm;                             // auto - face | activation mode
-    u8              movecode, movescript;                   // movement type | movement script
-    u8              ctr, mode;                              // sub - tile move ctr, mode flag (internal)
-    u16             step, delay;                            // step, delay
-    u16             stepctr, delayctr;                      // internal use counters
-    u16             data1, data2, data3;                    // misc junk :P
-    u16             data4, data5, data6;                    //
-    int             actscript;                              // activation script
-    int             expand1, expand2;                       // STOOPID
-    int             expand3, expand4;                       // DUM DUM DUM
-    char            desc[20];                               // Entity description. (ika interprets this field as the entity's name)
-};
-
-struct chrlist_r
-{
-    char            t[60];
-};
-
-struct movescript_r
-{
-    char            t[200];
-};
-
-// New stuff
-struct SMapZone
-{
-    string        name;                                    // purely for the developer's benefit (for now)
-    string        sDescription;                             // purely for the developer's benefit
-    string        sActscript;                               // name of script to execute when teh zone is activated
-    int           nActchance;                               // probability (out of 100) that the zone will activate when stepped upon
-    int           nActdelay;                                // Number of steps before the actscript gets run
-    bool          bAdjacentactivation;                      // if true, the player entity has to activate the zone directly
-    string        sEntactscript;                            // called if nonplayer entities step on the zone
-    
-    SMapZone() 
-        : nActchance(0), nActdelay(0),
-          bAdjacentactivation(false)
-    {}
-};
-
-//! Mapfile representation of an entity.
-struct SMapEntity
-{
-    string      name;                                      //!< entity's name
-    string      sDescription;                               //!< description (purely for the developer's use)
-    int         x, y;                                        //!< position
-    int         direction;                                  //!< the direction the entity is initially facing
-    int         nSpeed;                                     //!< speed, in pixels per second (100 is normal)
-    bool        bMapobs;                                    //!< if true, the entity is obstructed by the map
-    bool        bEntobs;                                    //!< if true, the entity is obstructed by other entities
-    bool        bIsobs;                                     //!< if true, the entity can block other entities
-    string      sCHRname;                                   //!< name of the spriteset to use
-    bool        bAdjacentactivation;                        //!< if true, the entity activates itself when it bumps into the player
-    string      sActscript;                                 //!< script to run when the entity is activated
-    MoveCode    state;                                      //!< what the entity is initially doing
-    string      moveScript;                                 //!< initial move script (if state==mc_script)
-    int         nWandersteps, nWanderdelay;                  //!< wander stuff (if state==mc_wander*)
-    Rect        wanderrect;                                 //!< Rect the entity is restricted to (if state==mc_wanderrect)
-    string      sZone;                                      //!< name of zone to wander on if state==mc_wanderzone
-    string      sChasetarget;                               //!< the entity that this entity wants to be close to (c'est amore!) if state==mc_chase
-    int         nChasedist;                                 //!< how close (if state==mc_chase)
-    
-    SMapEntity()    :
-        x(0), y(0), direction(0), nSpeed(100),
-        bMapobs(true), bEntobs(true), bIsobs(true),
-        bAdjacentactivation(false), state(mc_nothing),
-        nWandersteps(0), nWanderdelay(0), nChasedist(0)
+    struct Zone
     {
-        wanderrect = Rect(0, 0, 0, 0);
-    }
-};
+        std::string label;
+        std::string scriptName;
+    };
 
-struct SMapLayerInfo
-{
-    int            pmulx, pdivx;
-    int            pmuly, pdivy;
-    int            nTransmode;                              // for v2 maps
+    struct Entity
+    {
+        std::string label;
+        std::string spriteName;
+        Direction direction;
+        int speed;
+        std::string moveScript;
+        bool obstructsEntities;
+        bool obstructedByEntities;
+        bool obstructedByMap;
+        std::string adjActivateScript;  // called when the entity touches another entity
+        std::string activateScript;     // called when the entity is activated. (talked to, etc)
+        Entity()
+            : direction(face_up)
+            , speed(100)
+            , obstructedByEntities(true)
+            , obstructedByMap(true)
+            , obstructsEntities(true)
+        {}
+    };
 
-    SMapLayerInfo()
-    :   pmulx(1), pmuly(1),
-        pdivx(1), pdivy(1),
-        nTransmode(0)
-    {}
+    struct WayPoint
+    {
+        int x, y;
+        std::string label;
+        WayPoint()
+            : x(0)
+            , y(0)
+        {}
+    };
 
-    SMapLayerInfo(const layer_r& l)
-    :   pmulx(l.pmultx),
-        pmuly(l.pmulty),
-        pdivx(l.pdivx),
-        pdivy(l.pdivy),
-        nTransmode(l.trans)
-    {}
-};
+    struct Layer
+    {
+        struct Entity
+        {
+            int x, y;
+            std::string bluePrint;
+            std::string label;
+            Entity()
+                : x(0)
+                , y(0)
+            {}
+        };
 
-// blah
+        struct Zone
+        {
+            int x, y;
+            int width, height;
+            std::string label;
+            Zone()
+                : x(0)
+                , y(0)
+                , width(0)
+                , height(0)
+            {}
+        };
 
-class MapClip                                               // a chunk of map (that isn't part of a map itself)  Used for copy / paste operations
-{
-    friend class Map;
+        struct ParallaxInfo
+        {
+            int mulx, muly;
+            int divx, divy;
+
+            ParallaxInfo()
+                : mulx(1)   , muly(1)
+                , divx(1)   , divy(1)
+            {}
+        };
+
+        std::string label;
+        int x, y;
+        ParallaxInfo parallax;        
+
+        bool wrapx;
+        bool wrapy;
+
+        std::vector<Entity> entities;
+        std::vector<Zone> zones;
+
+        // TODO:
+        // std::vector<LineSegments> obstructionVectors;
+        
+        Matrix<u8> obstructions;
+        Matrix<uint> tiles;
+
+        Layer(const std::string& l = "", uint width = 0, uint height = 0)
+            : label(l)
+            , x(0)          , y(0)
+            , wrapx(false)  , wrapy(false)
+            , tiles(width, height)
+            , obstructions(width, height)
+        {}
+
+        uint Width() const  { return tiles.Width();  }
+        uint Height() const { return tiles.Height(); }
+        void Resize(uint newx, uint newy)
+        {
+            tiles.Resize(newx, newy);
+            obstructions.Resize(newx, newy);
+        }
+    };
+
+    uint width, height;
+    std::string tileSetName;
+
+    typedef std::map<std::string, Zone> ZoneMap;
+    typedef std::map<std::string, Entity> EntityMap;
+    typedef std::map<std::string, WayPoint> WayPointMap;
+    
+    ZoneMap             zones;
+    EntityMap           entities;
+    WayPointMap         wayPoints;
 private:
-    int             nLayers;
-    vector<u32*>    pData;                                  // info on any tile layers we've grabbed up
-    vector<bool>    bUsed;                                  // true if the specified layer has valid tile data
-    char*           pObstruct;                              // obstruction data
-    char*           pZone;                                  // zone data
-    
-    int             nWidth, nHeight;
-    
-    bool            bObstruct;                              // true if we've grabbed from the obstruction layer
-    bool            bZone;                                  // true if we've grabbed from the zone layer
-    
-    bool            bMegaclip;                              // true if there's more than one layer in here
-    
-    void Free();
-    
+    std::vector<Layer*> layers;
 public:
-    MapClip();
-    ~MapClip();
-    
-    inline int Width() const { return nWidth; }
-    inline int Height() const { return nHeight; }
-};
 
-class Map
-{
-private:   
-    vector<SMapLayerInfo>    info;
-    vector<u32*>    pData;
-    
-    int             nWidth, nHeight;                         // map dimensions, in tiles
-    
-    u8*             pObstruct;
-    u32*            pZone;
-    
-    string          sVSPname;
-    string          sMusicname;
-    string          sRenderstring;
-    
-    vector<SMapZone> zoneinfo;
-    vector<SMapEntity> entity;
-    
-    int             nStartx, nStarty;                        // unused (TODO: expose these to the scripter)
-    bool            bWrap;                                  // unused for now
-    
-    void Paste(const MapClip &mc, int xs, int ys, uint sourcelayer, uint destlayer, bool transparent);
-    
-    bool Importv2Map(File& f);                              // Loads an old v2 VSP.
-public:
+    std::string title;
+    std::map<std::string, std::string> metaData;
+
     Map();
-    Map(const char* fname);
+    Map(const std::string& filename);
     ~Map();
-    
-    uint GetTile(int x, int y, uint layer) const;           // returns the tile at the specified layer
-    void SetTile(int x, int y, uint layer, u32 tile);       // sets the tile at the specified layer
-    uint* GetDataPtr(uint layer) const;                     // returns a pointer to the raw tile data (BE CAREFUL WITH THIS!  YOU CAN BREAK THINGS!)
-    
-    void Free();                                            // cleanup
-    void New();                                             // creates a new 100x100, 1 layer map
-    bool Load(const char *fname);                           // loads the specified .MAP file.
-    bool Save(const char *fname);                           // saves it (der)
-    bool Exportv2Map(const char* fname);
-    
-    // layer manipulation
-    void Resize(int newx, int newy);                        // resizes all layers and all that
-    uint  NumLayers() const;                                // returns the number of layers the map uses
-    void AddLayer(uint pos);                                // inserts a layer before pos
-    void DeleteLayer(uint pos);                             // deletes the pos - th layer
-    void GetLayerInfo(SMapLayerInfo& nfo, uint layidx);     // fills nfo with information about the specified layer
-    void SetLayerInfo(const SMapLayerInfo&  nfo, uint layidx);// sets the properties of the specified layer according to nfo
-    
-    // General map properties
-    const string& GetRString(void);                         // returns the render string
-    void          SetRString(const string& s);              // sets the render string
-    const string& GetMusic(void);                           // returns the music played on this map
-    void          SetMusic(const string& s);                // sets the music file used
-    const string& GetVSPName(void);                         // returns the name of the VSP used on this map
-    void          SetVSPName(const string& s);              // sets the VSP file used
-    
-    // CHR list
-    int      CountCHRs(void);
-    /*const char* GetCHREntry(int idx);                     // returns what's in the specified slot
-    void  SetCHREntry(const char* newchr, int idx);         // sets the specified slot
-    
-    // move scripts
-    int   CountMoveScripts(void);
-    const char* GetMScript(int idx);                        // returns the movement script in the specified slot
-    void  SetMScript(const char* newscript, int idx);       // sets a movement script*/
-    
-    void SetObs(int x, int y, bool mode);                   // either sets or unsets the obstruction value at the given tile coords
-    bool IsObs(int x, int y);                               // returns true if the tile is obstructed
-    
-    // zone altering functions
-    uint  CountUsedZones(void);
-    void SetZone(int x, int y, int z);                      // Sets the zone at the specified tile position
-    uint  GetZone(int x, int y);                            // returns the zone at the specified tile position
-    SMapZone& GetZoneInfo(uint zonenum);
-    inline const SMapZone& GetZoneInfo(uint zonenum) const;
-    SMapZone& AddZone();
-    void DeleteZone(uint index);
-    inline uint NumZones() const                            // returns the number of used zones
-    { return zoneinfo.size(); }
 
-    int  EntityAt(int x, int y);                            // returns the index of the entity at the specified coords, -1 if no entity is there
-    SMapEntity& GetEntity(uint idx) const;
-    void SetEntity(SMapEntity& e, uint idx);
-    int  CreateEntity(int x, int y);                        // creates a new entity at (x, y) and returns its index.
-    void DestroyEntity(uint entidx);                        // destroys the specified entity
-    uint  NumEnts()    const;                               // returns the number of entities on the map
-    
-    int  Width() { return nWidth; }                         // returns the width of the map (in tiles)
-    int  Height() { return nHeight; }                       // returns the hieght of the map (in tiles)
-    
-    void Copy(MapClip& mc, Rect r, uint layer) const;       // copies part of one layer to the clip
-    void Copy(MapClip& mc, Rect r) const;                   // copies a chunk from all visible layers onto the map clip
-    void Paste(const MapClip& mc, int x, int y, uint destlayer);      // mega - copier.
+    // bool to make iked's template controller thing happy.  always returns 
+    // true.  Throws an exception if something went wrong.
+    bool Load(const std::string& filename); 
+    void Save(const std::string& filename);
+
+    Layer& GetLayer(uint index);
+    uint LayerIndex(Layer& lay) const;
+    uint LayerIndex(const std::string& label) const;
+
+    Map::Layer& AddLayer(const std::string& label = "", uint width = 0, uint height = 0);
+    void AddLayer(Layer* lay);                  // Assumes ownership of lay.  Careful.
+    void InsertLayer(Layer* lay, uint index);   // Also assumes ownership.  The layer is inserted BEFORE index.
+    void DestroyLayer(uint index);
+    void DestroyLayer(Layer& lay);
+    void SwapLayers(uint i, uint j);
+    uint NumLayers() const;
 };
 
 #endif

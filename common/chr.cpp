@@ -1,4 +1,5 @@
 #include <cassert>
+#include <stdexcept>
 
 #include "chr.h"
 #include "fileio.h"
@@ -6,17 +7,13 @@
 #include "rle.h"
 #include "misc.h"
 
-#define USE_XML_GOODNESS
+#include "compression.h"
+#include "base64.h"
+#include "xmlutil.h"
+#include <cppdom/cppdom.h>
+#include <fstream>
 
-#ifdef USE_XML_GOODNESS
-#   include "compression.h"
-#   include "base64.h"
-#   include "xmlutil.h"
-#   include <cppdom/cppdom.h>
-#   include <fstream>
 using namespace cppdom;
-
-#endif
 
 CCHRfile::CCHRfile(int width, int height)
 {
@@ -153,6 +150,7 @@ void CCHRfile::Load(const std::string& fname)
             if (!infoNode.get())
                 throw "<information> tag not found.";
 
+            // grab <information> elements
             XMLNodeList nodes = infoNode->getChildren("meta");
             for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
             {
@@ -166,7 +164,6 @@ void CCHRfile::Load(const std::string& fname)
                 if (!name.empty() && !value.empty())
                     metaData[name] = value;
             }
-            // grab <information> elements that we care about
         }
 
         {
@@ -261,11 +258,11 @@ void CCHRfile::Load(const std::string& fname)
     }
     catch (XMLError)
     {
-        throw std::runtime_error(va("Unable to load %s.", fname));
+        throw std::runtime_error(va("Unable to load %s.", fname.c_str()));
     }
     catch (const char* s)
     {
-        throw std::runtime_error(va("CHRFile::Load(%s): %s", fname, s));
+        throw std::runtime_error(va("CHRFile::Load(%s): %s", fname.c_str(), s));
     }
 }
 
@@ -372,8 +369,8 @@ void CCHRfile::Save(const std::string& fname)
                 const int uncompressedBlockSize = nWidth * nHeight * frame.size() * sizeof(RGBA);
                 const int compressedBlockSize = uncompressedBlockSize * 4 / 3; // more than is needed.  Way more
 
-                ScopedPtr<u8> uncompressed(new u8[uncompressedBlockSize]);
-                ScopedPtr<u8> compressed(new u8[compressedBlockSize]);
+                ScopedArray<u8> uncompressed(new u8[uncompressedBlockSize]);
+                ScopedArray<u8> compressed(new u8[compressedBlockSize]);
 
                 // pack the uncompressed data into one big block
                 RGBA* dest = reinterpret_cast<RGBA*>(uncompressed.get());
@@ -405,7 +402,8 @@ void CCHRfile::Save(const std::string& fname)
         }
 
         document.addChild(rootNode);
-        document.save(std::ofstream(fname.c_str()));
+        std::ofstream ostream(fname.c_str());
+        document.save(ostream);
     }
     catch (XMLError)
     {

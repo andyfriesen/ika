@@ -8,9 +8,11 @@ Locals can be whatever you want, really.  Just be reasonable. ;)
 Class names should follow the Java convention.  (eg. ThisIsAClass)  Namespaces
 should do the same.
 
-Function names should be verbs, with the sole exception of accessor functions,
-which may be nouns.  They should use camel notation, with the first letter
-capitalized.
+Containers should be plural, despite the fact that entity[i] looks more sensical
+than entities[i].
+
+Function names should be verbs.  Accessors should use the GetXXX form.  They
+should use camel notation, with the first letter capitalized.
 
 Preprocessor constants should be in all uppercase, with underscores dilineating
 words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever possbile. (they

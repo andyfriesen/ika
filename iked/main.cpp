@@ -102,7 +102,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     wxMenuBar* menu = CreateBasicMenu();
     SetMenuBar(menu);
 
-    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16));
+    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
 
     CreateStatusBar();
 
@@ -146,7 +146,7 @@ void CMainWnd::NewMap(wxCommandEvent& event)
 {
     NewMapDlg dlg(this);
     if (dlg.ShowModal() == wxID_OK)
-        OpenDocument(new CMapView(this, dlg.width, dlg.height, dlg.tilesetname));
+        OpenDocument(new MapView(this, dlg.width, dlg.height, dlg.tilesetname));
 }
 
 void CMainWnd::NewScript(wxCommandEvent& event)
@@ -180,10 +180,10 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
         "Open File",
         "",
         "",
-        "All known|*.ikaprj;*.py;*.map;*.vsp;*.ika-sprite;*.chr;*.fnt;*.txt;*.dat|"
+        "All known|*.ikaprj;*.py;*.ika-map;*.vsp;*.ika-sprite;*.chr;*.fnt;*.txt;*.dat|"
         "iked Projects (*.ikaprj)|*.ikaprj|"
         "Python Scripts (*.py)|*.py|"
-        "Maps (*.map)|*.map|"
+        "Maps (*.ika-map)|*.ika-map|"
         "VSP Tilesets (*.vsp)|*.vsp|"
         "Sprites (*.ika-sprite;*.chr)|*.ika-sprite;*.chr|"
         "Fonts (*.fnt)|*.fnt|"
@@ -255,7 +255,7 @@ void CMainWnd::Open(const std::string& fname)
     switch (type)
     {
     case t_script:      wnd = new CCodeView     (this, fname);          break;
-    case t_map:         wnd = new CMapView      (this, fname.c_str());  break;
+    case t_map:         wnd = new MapView      (this, fname.c_str());  break;
     case t_vsp:         wnd = new CTileSetView  (this, fname.c_str());  break;
     case t_font:        wnd = new CFontView     (this, fname.c_str());  break;
     case t_text:
@@ -429,7 +429,7 @@ FileType CMainWnd::GetFileType(const std::string& fname)
         { "chr",        t_chr       },
         { "ika-sprite", t_chr       },
         { "fnt",        t_font      },
-        { "map",        t_map       },
+        { "ika-map",    t_map       },
         { "cfg",        t_config    },
         { "txt",        t_text      },
         { "dat",        t_text      }

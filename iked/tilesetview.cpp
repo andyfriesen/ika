@@ -122,6 +122,8 @@ CTileSetView::~CTileSetView()
 
 void CTileSetView::Init()
 {
+    SetIcon(wxIcon("vspicon", wxBITMAP_TYPE_ICO_RESOURCE));
+
     pGraph = new CTileSetFrame(this);
     pGraph->SetSize(GetClientSize());
     wxMenuBar* menubar = pParent->CreateBasicMenu();
@@ -382,8 +384,8 @@ void CTileSetView::Render()
     const int tx = pTileset->Width();
     const int ty = pTileset->Height();
 
-    const int nTilewidth =w / tx;
-    const int nTileheight=(h / ty)+1;
+    const int nTilewidth  = w / tx;
+    const int nTileheight = (h / ty) + 1;
 
     int nTile = ywin * nTilewidth;                  // first tile to draw
 

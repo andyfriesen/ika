@@ -211,6 +211,7 @@ CImage::CImage(const Canvas& src)
 
 CImage::~CImage()
 {
+    SetTex(0);
     glDeleteTextures(1, &hTex);
 }
 
