@@ -17,6 +17,7 @@ typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
 
+//! Everybody has their own Rect struct.  This is mine.
 struct Rect
 {
     int left;
@@ -56,6 +57,7 @@ enum MoveCode											// entity movecodes
 
 #pragma pack (push,1)
 
+//! A color. ;)
 struct RGBA
 {
     u8 r,g,b,a;
@@ -100,6 +102,7 @@ struct RGBA
     //	RGBA(const BGRA& c);
 };
 
+//! Also a colour.
 struct BGRA
 {
     u8 b,g,r,a;
@@ -128,6 +131,7 @@ struct BGRA
 // win32 ;P
 #undef RGB
 
+//! A colour, but without any alpha information.
 struct RGB
 {
     u8 r,g,b;

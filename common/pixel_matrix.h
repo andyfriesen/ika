@@ -3,21 +3,23 @@
 
 #include "types.h"
 
-// Pixel matrices are purely software representations of images.  Nothing more.
-// Any time one is manipulating graphics for more than just user-feedback (editing image files, and such)
-// these are used.
+/*!
+    Pixel matrices are purely software representations of images.  Nothing more.
+    Any time one is manipulating graphics for more than just user-feedback (editing image files, and such)
+    these are used.
 
-// gfx_opengl uses these as well, for offscreen drawing.
+    gfx_opengl uses these as well, for offscreen drawing.
 
-// TODO: Make all this stuff more robust and optimized, so that gfx_soft uses these directly.
-//       Less code doing more work. ^_~
+    TODO: Make all this stuff more robust and optimized, so that gfx_soft uses these directly.
+          Less code doing more work. ^_~
+*/
 class CPixelMatrix
 {
 private:
-    RGBA* pData;
-    int nWidth,nHeight;
+    RGBA* pData;                                                //!< Pointer to raw pixel data
+    int nWidth,nHeight;                                         //!< Dimensions
     
-    Rect cliprect;
+    Rect cliprect;                                              //!< Operations are restricted to this region of the image.
     
 public:
     // con/destructors
@@ -29,10 +31,10 @@ public:
     virtual ~CPixelMatrix();
     
     // The basics
-    void CopyPixelData(u8* data,int width,int height,u8* pal);
-    void CopyPixelData(RGBA* data,int width,int height);
-    CPixelMatrix& operator = (const CPixelMatrix& rhs);
-    bool operator == (const CPixelMatrix& rhs);
+    void CopyPixelData(u8* data,int width,int height,u8* pal);  //!< Copies raw, palettized pixel data into the image
+    void CopyPixelData(RGBA* data,int width,int height);        //!< Copies raw RGBA pixel data into the image
+    CPixelMatrix& operator = (const CPixelMatrix& rhs);         //!< Copies one image into another.
+    bool operator == (const CPixelMatrix& rhs);                 //!< Returns true if the images have the same dimensions, and contain the same data. (SLOW!)
     
     // Accessors
     inline const int& Width()   const { return nWidth;  }

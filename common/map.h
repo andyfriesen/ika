@@ -1,4 +1,4 @@
-/*    map.h
+/*!
     Header crap for map.cpp
     Written by tSB
     Copyright me and stuff, so ph33r.
@@ -91,26 +91,27 @@ struct SMapZone
     {}
 };
 
+//! Mapfile representation of an entity.
 struct SMapEntity
 {
-    string      sName;                                      // entity's name
-    string      sDescription;                               // description (purely for the developer's use)
-    int         x,y;                                        // position
-    int         direction;                                  // the direction the entity is initially facing
-    int         nSpeed;                                     // speed, in pixels per second (100 is normal)
-    bool        bMapobs;                                    // if true, the entity is obstructed by the map
-    bool        bEntobs;                                    // if true, the entity is obstructed by other entities
-    bool        bIsobs;                                     // if true, the entity can block other entities
-    string      sCHRname;                                   // name of the spriteset to use
-    bool        bAdjacentactivation;                        // if true, the entity activates itself when it bumps into the player
-    string      sActscript;                                 // script to run when the entity is activated
-    MoveCode    state;                                      // what the entity is initially doing
-    string      sMovescript;                                // initial move script (if state==mc_script)
-    int         nWandersteps,nWanderdelay;                  // wander stuff (if state==mc_wander*)
-    Rect        wanderrect;                                 // Rect the entity is restricted to (if state==mc_wanderrect)
-    string      sZone;                                      // name of zone to wander on if state==mc_wanderzone
-    string      sChasetarget;                               // the entity that this entity wants to be close to (c'est amore!) if state==mc_chase
-    int         nChasedist;                                 // how close (if state==mc_chase)
+    string      sName;                                      //!< entity's name
+    string      sDescription;                               //!< description (purely for the developer's use)
+    int         x,y;                                        //!< position
+    int         direction;                                  //!< the direction the entity is initially facing
+    int         nSpeed;                                     //!< speed, in pixels per second (100 is normal)
+    bool        bMapobs;                                    //!< if true, the entity is obstructed by the map
+    bool        bEntobs;                                    //!< if true, the entity is obstructed by other entities
+    bool        bIsobs;                                     //!< if true, the entity can block other entities
+    string      sCHRname;                                   //!< name of the spriteset to use
+    bool        bAdjacentactivation;                        //!< if true, the entity activates itself when it bumps into the player
+    string      sActscript;                                 //!< script to run when the entity is activated
+    MoveCode    state;                                      //!< what the entity is initially doing
+    string      sMovescript;                                //!< initial move script (if state==mc_script)
+    int         nWandersteps,nWanderdelay;                  //!< wander stuff (if state==mc_wander*)
+    Rect        wanderrect;                                 //!< Rect the entity is restricted to (if state==mc_wanderrect)
+    string      sZone;                                      //!< name of zone to wander on if state==mc_wanderzone
+    string      sChasetarget;                               //!< the entity that this entity wants to be close to (c'est amore!) if state==mc_chase
+    int         nChasedist;                                 //!< how close (if state==mc_chase)
     
     SMapEntity()    :
         x(0),y(0),direction(0),nSpeed(100),

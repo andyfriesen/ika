@@ -127,6 +127,10 @@ namespace
     };
 };
 
+/*!
+    Class designed to do all image rendering.
+    The template argument is the blending method you want to use.
+*/
 template <typename Blender>
 class CBlitter : public Blender
 {
@@ -158,6 +162,7 @@ class CBlitter : public Blender
 
 public:
 
+    //! Renders an image on another image.
     static void Blit(CPixelMatrix& src,CPixelMatrix& dest,int x,int y)
     {
         const Rect& r=src.GetClipRect();
@@ -191,6 +196,7 @@ public:
         }
     }
 
+    //! Renders an image on another image, stretching as necessary.
     static void ScaleBlit(CPixelMatrix& src,CPixelMatrix& dest,int cx,int cy,int w,int h)
     {
         int	x,y;		// current pixel position
@@ -253,6 +259,7 @@ public:
 
     // ------------------------------------ Primatives ------------------------------------
 
+    //! Draws a dot on the image.
     static inline void SetPixel(CPixelMatrix& img,int x,int y,RGBA colour)
     {
         RGBA* p=img.GetPixelData()+(y*img.Width() + x);
@@ -260,6 +267,7 @@ public:
         *p=Blend(colour,*p);
     }
 
+    //! Draws a horizontal line on the image.
     static inline void HLine(CPixelMatrix& img,int x1,int x2,int y,RGBA colour)
     {
         const Rect& r=img.GetClipRect();
@@ -285,7 +293,8 @@ public:
         
     }
 
-    static inline void VLine(CPixelMatrix& img,int x,int y1,int y2,u32 colour)
+    //! Draws a vertical line on the image.
+    static inline void VLine(CPixelMatrix& img,int x,int y1,int y2,RGBA colour)
     {
         const Rect& r=img.GetClipRect();
         
@@ -310,6 +319,7 @@ public:
         }
     }
 
+    //! Draws a rectangle (outline or filled) on the image.
     static void DrawRect(CPixelMatrix& img,int x1,int y1,int x2,int y2,RGBA colour,bool filled)
     {
         if (filled)
@@ -344,6 +354,10 @@ public:
         }
     }
 
+    /*! 
+        Draws an arbitrary line on the image.
+        Kudos to zeromus for the algorithm.
+    */
     static void Line(CPixelMatrix& img,int x1, int y1, int x2, int y2, u32 colour)
     {
         // check for the cases in which the line is vertical or horizontal or only one pixel big

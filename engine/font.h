@@ -9,7 +9,6 @@ class File;
 /*!
     Encapsulates a hardware dependant copy of a bitmap font.
 */
-
 class CFont
 {
 private:

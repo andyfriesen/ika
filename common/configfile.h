@@ -1,5 +1,5 @@
-/*
-    Since most of the apps use the same configuration files, we'll stuff them here.
+/*!
+    Generic representation of a configuration file.
 
     user.cfg - per USER config options
   

@@ -122,7 +122,7 @@ void CTileSet::AnimateStrand(VSP::AnimState& anim)
     
     switch(anim.mode)
     {
-    case linear:
+    case VSP::linear:
         for (i=anim.nStart; i<anim.nFinish; i++)
         {
             nTileidx[i]++;
@@ -130,7 +130,7 @@ void CTileSet::AnimateStrand(VSP::AnimState& anim)
                 nTileidx[i]=anim.nStart;
         }
         break;
-    case reverse:
+    case VSP::reverse:
         for (i=anim.nStart; i<anim.nFinish; i++)
         {
             nTileidx[i]--;
@@ -138,11 +138,11 @@ void CTileSet::AnimateStrand(VSP::AnimState& anim)
                 nTileidx[i]=anim.nFinish;
         }
         break;
-    case random:
+    case VSP::random:
         for (i=anim.nStart; i<anim.nFinish; i++)
             nTileidx[i]=Random(anim.nStart,anim.nFinish);
         break;
-    case flip:
+    case VSP::  flip:
         for (i=anim.nStart; i<anim.nFinish; i++)
         {
             if (bFlip[i])

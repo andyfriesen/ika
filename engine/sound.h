@@ -34,25 +34,4 @@ extern void (*sfxUpdate)();                                 //!< Call this a lot
 extern bool SetupSound(const char* dllname);                //!< Imports the DLL and assigns function pointers.
 extern void ShutdownSound();                                //!< Releases the DLL
 
-// Hackage!! Get rid of these ASAP.
-class CMusic
-{
-public:
-    SMusic    m;
-    void Init() { m=NULL; }
-    void Free() { if (m) sfxFreeMusic(m); m=NULL; }
-    
-    inline operator SMusic() const { return m; }
-};
-
-class Csfx
-{
-public:
-    Ssfx    s;
-    void Init()    { s=NULL; }
-    void Free() { if (s) sfxFreeEffect(s); s=NULL; }
-    
-    operator Ssfx() const { return s; }
-};
-
 #endif
