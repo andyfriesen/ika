@@ -8,13 +8,15 @@ using Aries;
 using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 
 namespace rho.Import {
+
     public class ikaSprite {
         public ikaSprite() {
             Size.Width = Size.Height = 0;
             HotSpot = Rectangle.FromLTRB(0, 0, 0, 0);
         }
 
-        public ikaSprite(string fileName) : this(new StreamReader(fileName)) { 
+        public ikaSprite(string fileName)
+        : this(new StreamReader(fileName)) { 
         }
 
         public unsafe ikaSprite(System.IO.TextReader sourceStream) {
@@ -30,17 +32,17 @@ namespace rho.Import {
                 MetaData.Add(node.Name, node.GetString());
             }
 
-            DataNode frames = rootNode.GetChild("frames");
+            DataNode framesNode = rootNode.GetChild("frames");
 
-            int frameCount = Convert.ToInt32(frames.GetChild("count").GetString());
+            int frameCount = Convert.ToInt32(framesNode.GetChild("count").GetString());
 
-            DataNode dimNode = frames.GetChild("dimensions");
+            DataNode dimNode = framesNode.GetChild("dimensions");
             Size = new Size(
                 Convert.ToInt32(dimNode.GetChild("width").GetString()),
                 Convert.ToInt32(dimNode.GetChild("height").GetString())
             );
             
-            DataNode hsNode = frames.GetChild("hotspot");
+            DataNode hsNode = framesNode.GetChild("hotspot");
             HotSpot = Rectangle.FromLTRB(
                 Convert.ToInt32(hsNode.GetChild("x").GetString()),
                 Convert.ToInt32(hsNode.GetChild("y").GetString()),
@@ -56,7 +58,7 @@ namespace rho.Import {
             }
 
             // Read pixel data
-            DataNode dataNode = frames.GetChild("data");
+            DataNode dataNode = framesNode.GetChild("data");
 
             string dataFormat = dataNode.GetChild("format").GetString();
             if (dataFormat != "zlib") {
@@ -76,6 +78,8 @@ namespace rho.Import {
             iis.Read(pixels, 0, pixels.Length);
             iis.Close();
             compressed.Close();
+
+            frames.Resize(width, height);
 
             fixed (byte* p = &pixels[0]) {
                 byte* ptr = p;
@@ -103,7 +107,7 @@ namespace rho.Import {
 
                     bmp.UnlockBits(bd);
 
-                    Frames.Add(bmp);
+                    frames.Add(bmp);
                     ptr += width * height * 4;
                 }
             }
@@ -113,11 +117,17 @@ namespace rho.Import {
             get { return frames; }
         }
 
+        public string Title {
+            get {
+                return title;
+            }
+        }
+
         string title;
         public Size Size;
         public Rectangle HotSpot;
         public readonly StringDictionary Scripts = new StringDictionary();
         public readonly StringDictionary MetaData = new StringDictionary();
-        readonly ArrayList frames = new ArrayList();
+        readonly ImageArray frames = new ImageArray(16, 16);
     }
 }

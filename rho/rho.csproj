@@ -104,6 +104,12 @@
                     AssemblyName = "WeifenLuo.WinFormsUI"
                     HintPath = "..\..\..\..\src\DockPanel\WeifenLuo.WinFormsUI.dll"
                 />
+                <Reference
+                    Name = "nunit.framework"
+                    AssemblyName = "nunit.framework"
+                    HintPath = "..\..\..\..\Program Files\NUnit 2.2\bin\nunit.framework.dll"
+                    AssemblyFolderKey = "hklm\dn\nunit.framework"
+                />
             </References>
         </Build>
         <Files>
@@ -121,11 +127,6 @@
                     RelPath = "MainForm.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "MainForm.resx"
-                    DependentUpon = "MainForm.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "ResourceController.cs"
@@ -153,7 +154,22 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Commands\Command.cs"
+                    RelPath = "Aries\Tests\AriesTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Aries\Tests\DataNodeTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Aries\Tests\NodeTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Aries\Tests\StringNodeTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -168,22 +184,22 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Controls\GraphView.resx"
-                    DependentUpon = "GraphView.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "Controls\ScrollWindow.cs"
                     SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Controls\ScrollWindow.resx"
-                    DependentUpon = "ScrollWindow.cs"
-                    BuildAction = "EmbeddedResource"
+                    RelPath = "Documents\AbstractDocument.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Documents\AbstractDocument.cs"
+                    RelPath = "Documents\Command.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Documents\CommandStack.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -198,12 +214,22 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Documents\Tests\DocumentTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Import\ikaSprite.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
                     RelPath = "Import\ikaTileSet.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\ImageArray.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -238,6 +264,16 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Import\Tests\ikaSpriteTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "Import\Tests\ImageArrayTest.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SpriteEditor\FrameEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -253,11 +289,6 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SpriteEditor\SpriteDetailPanel.resx"
-                    DependentUpon = "SpriteDetailPanel.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "SpriteEditor\SpriteDocument.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -268,19 +299,9 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "SpriteEditor\SpriteEditor.resx"
-                    DependentUpon = "SpriteEditor.cs"
-                    BuildAction = "EmbeddedResource"
-                />
-                <File
                     RelPath = "TextEditor\CodeView.cs"
                     SubType = "Form"
                     BuildAction = "Compile"
-                />
-                <File
-                    RelPath = "TextEditor\CodeView.resx"
-                    DependentUpon = "CodeView.cs"
-                    BuildAction = "EmbeddedResource"
                 />
                 <File
                     RelPath = "TextEditor\CSharpHighlightStyle.cs"
