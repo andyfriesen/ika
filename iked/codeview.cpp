@@ -31,6 +31,7 @@ BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
     EVT_MENU(CCodeWnd::id_editcopy,CCodeWnd::OnCopy)
     EVT_MENU(CCodeWnd::id_editcut ,CCodeWnd::OnCut)
     EVT_MENU(CCodeWnd::id_editpaste,CCodeWnd::OnPaste)
+    EVT_MENU(CCodeWnd::id_optionsws,CCodeWnd::OnViewWhiteSpace)
     EVT_MENU(CCodeWnd::id_optionsfont,CCodeWnd::OnSyntaxHighlighting)
 
 #ifdef WX232
@@ -80,8 +81,11 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
 
     wxMenu* optionsmenu = new wxMenu;
     menubar->Append(optionsmenu,"&Options");
+    optionsmenu->Append(id_optionsws,"Visible Whitespace","",true);
+    optionsmenu->AppendSeparator();
     optionsmenu->Append(id_optionsfont,"Co&lors...","");
 
+    pCurmenubar=menubar; // not as elegant as I'd like.
     SetMenuBar(menubar);
 
     // --- Set up the text control ---
@@ -100,6 +104,10 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     pTextctrl->StyleClearAll();
 
+    pTextctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
+    pTextctrl->SetProperty("fold","1");
+
+
     // defaults
     pTextctrl->StyleSetForeground(0,  wxColour(0x80, 0x80, 0x80));  // whitespace
     pTextctrl->StyleSetForeground(1,  wxColour(0x00, 0x7F, 0x00));  // code comments
@@ -116,6 +124,10 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     pTextctrl->StyleSetBold(5,  true);
     pTextctrl->StyleSetBold(10, true);
     pTextctrl->StyleSetItalic(1,true);
+
+
+    
+    pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
 
     pTextctrl->SetKeyWords(0,
         "def lambda class return yield try raise except pass for while if else elif break continue "
@@ -159,6 +171,7 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
 CCodeWnd::~CCodeWnd()
 {
     delete pTextctrl;
+    pCurmenubar=0;
 }
 
 void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
@@ -263,6 +276,32 @@ void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
 
     
 }
+
+void CCodeWnd::OnViewWhiteSpace(wxCommandEvent& event)
+{
+    wxMenu* pMenu = pCurmenubar->GetMenu(2);
+    int nId = pCurmenubar->FindMenuItem("Options","Visible Whitespace");
+    if (nId==wxNOT_FOUND)
+    {
+        // wtf?
+        return;
+    }
+
+    if (pTextctrl->GetViewWhiteSpace() == wxSTC_WS_INVISIBLE)
+    {
+        pTextctrl->SetViewWhiteSpace(wxSTC_WS_VISIBLEALWAYS);
+        pMenu->Check(nId,true);
+    }
+    else
+    {
+        pTextctrl->SetViewWhiteSpace(wxSTC_WS_INVISIBLE);
+        pMenu->Check(nId,false);
+    }
+
+    pTextctrl->Show(true);
+    pTextctrl->SetFocus();
+}
+
 
 void CCodeWnd::OnFind(wxCommandEvent& event)
 {

@@ -33,6 +33,7 @@ public:
         id_editreplace,
 
         id_options,
+        id_optionsws,
         id_optionsfont
     };
 
@@ -57,8 +58,13 @@ public:
     void OnReplace(wxCommandEvent& event);
 
     void OnSyntaxHighlighting(wxCommandEvent& event); // syntax highlighting dialog
+    void OnViewWhiteSpace(wxCommandEvent& event);
 private:
+
     void SetSyntax(int,wxCommandEvent&);
+
+    wxMenuBar* pCurmenubar;
+
 #ifdef WX232
     void DoFind(wxFindDialogEvent& event);
 #endif
