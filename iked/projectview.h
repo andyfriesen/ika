@@ -41,6 +41,7 @@ public:
 
     void OnDoubleClick(wxMouseEvent& event);
     void OnRightClick(wxMouseEvent& event);
+    void OnBeginEdit(wxTreeEvent& event);
     void OnEndEdit(wxTreeEvent& event);
     void OnBeginDrag(wxTreeEvent& event);
     void OnEndDrag(wxTreeEvent& event);

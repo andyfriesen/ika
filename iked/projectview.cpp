@@ -34,6 +34,7 @@ BEGIN_EVENT_TABLE(ProjectView, wxTreeCtrl)
     EVT_LEFT_DCLICK(ProjectView::OnDoubleClick)
     EVT_RIGHT_DOWN(ProjectView::OnRightClick)
     //EVT_CONTEXT_MENU(ProjectView::OnContextMenu)
+    EVT_TREE_BEGIN_LABEL_EDIT(ProjectView::id_treectrl, ProjectView::OnBeginEdit)
     EVT_TREE_END_LABEL_EDIT(ProjectView::id_treectrl, ProjectView::OnEndEdit)
     EVT_TREE_BEGIN_DRAG(ProjectView::id_treectrl, ProjectView::OnBeginDrag)
     EVT_TREE_END_DRAG(ProjectView::id_treectrl, ProjectView::OnEndDrag)
@@ -137,12 +138,22 @@ void ProjectView::OnRightClick(wxMouseEvent& event)
         PopupMenu(_fileMenu, pos);
 }
 
+void ProjectView::OnBeginEdit(wxTreeEvent& event)
+{
+    wxTreeItemId id = event.GetItem();
+    Leaf* leaf = (Leaf*)GetItemData(id);
+    if (leaf->type != t_folder && leaf->type != t_project)
+        event.Veto();
+    else
+        event.Allow();
+}
+
 void ProjectView::OnEndEdit(wxTreeEvent& event)
 {
     wxTreeItemId id = event.GetItem();
-    Leaf* pData=(Leaf*)GetItemData(event.GetItem());
+    Leaf* leaf = (Leaf*)GetItemData(id);
 
-    pData->name = event.GetLabel().c_str();
+    leaf->name = event.GetLabel().c_str();
 }
 
 void ProjectView::OnBeginDrag(wxTreeEvent& event)
