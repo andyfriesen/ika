@@ -404,7 +404,7 @@ bool Map::Importv2Map(File& f)
         entity[i]=e2;
     }
     
-    std::vector<string>    sMovescripts;
+    std::vector<string>    moveScripts;
     char nMovescripts;
     int nCount;
     f.Read(nMovescripts);
@@ -414,12 +414,12 @@ bool Map::Importv2Map(File& f)
     f.Read(nOfstbl, nMovescripts * 4);
     nOfstbl[nMovescripts]=nCount;
     
-    sMovescripts.resize(nMovescripts);
+    moveScripts.resize(nMovescripts);
     
     for (i = 0; i < nMovescripts - 1; i++)
     {
         f.Read(c, nOfstbl[i + 1]-nOfstbl[i]);
-        sMovescripts[i]=c;
+        moveScripts[i]=c;
     }
 
     delete[] nOfstbl;
@@ -427,7 +427,7 @@ bool Map::Importv2Map(File& f)
     for (i = 0; i < nEnts; i++)
     {
         int j = nScriptidx[i];
-        entity[i].sMovescript = sMovescripts[j];
+        entity[i].moveScript = moveScripts[j];
     }
     
     return true;
@@ -633,7 +633,7 @@ bool Map::Load(const char* fname)
         f.Read(e.bAdjacentactivation);
         f.ReadString(c);        e.sActscript = c;
         f.Read(e.state);
-        f.ReadString(c);        e.sMovescript = c;
+        f.ReadString(c);        e.moveScript = c;
         f.Read(e.nWandersteps);
         f.Read(e.nWanderdelay);
 
@@ -718,7 +718,7 @@ bool Map::Save(const char* fname)
         f.Write(entity[i].bAdjacentactivation);
         f.WriteString(entity[i].sActscript.c_str());
         f.Write(entity[i].state);
-        f.WriteString(entity[i].sMovescript.c_str());
+        f.WriteString(entity[i].moveScript.c_str());
         f.Write(entity[i].nWandersteps);
         f.Write(entity[i].nWanderdelay);
 

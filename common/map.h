@@ -106,7 +106,7 @@ struct SMapEntity
     bool        bAdjacentactivation;                        //!< if true, the entity activates itself when it bumps into the player
     string      sActscript;                                 //!< script to run when the entity is activated
     MoveCode    state;                                      //!< what the entity is initially doing
-    string      sMovescript;                                //!< initial move script (if state==mc_script)
+    string      moveScript;                                 //!< initial move script (if state==mc_script)
     int         nWandersteps, nWanderdelay;                  //!< wander stuff (if state==mc_wander*)
     Rect        wanderrect;                                 //!< Rect the entity is restricted to (if state==mc_wanderrect)
     string      sZone;                                      //!< name of zone to wander on if state==mc_wanderzone

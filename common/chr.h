@@ -2,6 +2,7 @@
 #ifndef CHR_H
 #define CHR_H
 
+#include <map>
 #include "types.h"
 #include "Canvas.h"
 
@@ -23,8 +24,8 @@ class CCHRfile
     void UnpackData(u8* data, int size);
 
 public:
-    std::vector<std::string>  sMovescript;      ///< movement scripts
-    std::string               sDescription;     ///< authoring information?  I dunno, but it's here.
+    std::vector<std::string>  moveScripts;          ///< movement scripts
+    std::map<std::string, std::string> metaData;    ///< Authoring information and the like.
     
     CCHRfile(int width = 16, int height = 16);
 
@@ -47,13 +48,15 @@ public:
     void Resize(int width, int height);                                 ///< Resize all the frames.
 
     void New(int framex, int framey);                                   ///< Creates a new sprite of the specified dimensions.
-    bool Load(const char* fname);                                       ///< Loads sprite data from a file
-    void Save(const char* fname);                                       ///< Writes the sprite data to a file.
-    void SaveOld(const char* fname);                                    ///< Writes the sprite data to a file, in VERGE's CHR format.
+    void Load(const std::string& fname);                                ///< Loads sprite data from a file
+    void Save(const std::string& fname);                                ///< Writes the sprite data to a file.
+    void SaveOld(const std::string& fname);                             ///< Writes the sprite data to a file, in VERGE's CHR format.
 
 private:
-    bool Loadv2CHR(class File& f);
-    bool Loadv4CHR(class File& f);
+    void LoadCHR(const std::string& filename);
+    void Loadv2CHR(class File& f);
+    void Loadv4CHR(class File& f);
+    void Loadv5CHR(class File& f);
 };
 
 #endif
