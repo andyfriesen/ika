@@ -40,7 +40,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
             }
         }
     }
-    else
+    else if (event.LeftDown() && event.ShiftDown())
     {
         if (wxMessageBox("Create a new entity here?", "", wxYES_NO, GetMainWindow()) == wxYES)
         {
