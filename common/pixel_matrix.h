@@ -11,6 +11,8 @@ class CPixelMatrix
 private:
 	RGBA* pData;
 	int nWidth,nHeight;
+
+        Rect cliprect;
 	
 public:
 	// con/destructors
@@ -44,6 +46,7 @@ public:
 	void Resize(int x,int y);
 	
 	void Blit(CPixelMatrix& dest,int x,int y);
+        void OpaqueBlit(CPixelMatrix& dest,int x,int y);
 };
 
 #endif

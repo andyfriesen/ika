@@ -7,7 +7,7 @@
 #include "log.h"
 #include "zlib.h"
 
-VSP::VSP()
+VSP::VSP() : nTilex(0), nTiley(0)
 {
     New();
 }
@@ -25,7 +25,7 @@ VSP::~VSP()
 bool VSP::Load(const char *fname)
 {
     File f;
-    int nTiles;
+    int nTiles=0;
     
     Free(); // nuke any existing VSP data
     
@@ -417,7 +417,8 @@ void VSP::CreateTilesFromBuffer(u8* data,u8* pal,int numtiles,int tilex,int tile
     for (int i=0; i<numtiles; i++)
     {
         tiles[i].Resize(nTilex,nTiley);       
-        tiles[i].CopyPixelData(data+(nTilex*nTiley),nTilex,nTiley,pal);
+        tiles[i].CopyPixelData(data,nTilex,nTiley,pal);
+        data+=nTilex*nTiley;
     }
 }
 

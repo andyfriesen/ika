@@ -11,7 +11,7 @@
 // nuke this to disable all logging
 #define LOG_ENABLE
 
-int logging=1;
+int logging=0;
 
 #ifdef _CALLBACK
 char CDebuggingthing::callback[1024];

@@ -1,6 +1,6 @@
 #include "pix_edit.h"
 
-#define ALPHA_BLIT
+//#define ALPHA_BLIT
 
 static const int nMaxundos=10;
 static const int nSwatchsize=128;

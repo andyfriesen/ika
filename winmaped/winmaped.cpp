@@ -27,7 +27,7 @@
 
 int WINAPI WinMain(HINSTANCE hThisInstance,HINSTANCE hPrev,LPSTR lpCmdline,int nCmdShow)
 {
-	Engine engine;
-	engine.Execute(hThisInstance,nCmdShow);
-	return 0;
+    Engine engine;
+    engine.Execute(hThisInstance,nCmdShow);
+    return 0;
 }
