@@ -17,6 +17,7 @@ namespace
 BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
 //    EVT_STC_STYLENEEDED(CCodeWnd::id_ed,CCodeWnd::OnStyleNeeded)
     EVT_STC_CHARADDED(CCodeWnd::id_ed,CCodeWnd::OnCharAdded)
+    EVT_CLOSE(CCodeWnd::OnClose)
 
     EVT_MENU(CCodeWnd::id_filesave,CCodeWnd::OnSave)
     EVT_MENU(CCodeWnd::id_filesaveas,CCodeWnd::OnSaveAs)
@@ -181,6 +182,7 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
 
             pTextctrl->StyleSetBackground(nWhich,nColor);
             pTextctrl->StyleSetForeground(nWhich,nColor);
+            SetBackgroundColour(nColor);
             
             
 
@@ -430,7 +432,45 @@ void CCodeWnd::OnSaveAs(wxCommandEvent& event)
 }
 
 // Trivial stuff
-void CCodeWnd::OnClose(wxCommandEvent& event)       {   Close(true);            }
+void CCodeWnd::OnClose(wxCommandEvent& event)
+{   
+    File f;
+    f.OpenRead(sFilename.c_str(),false);
+
+    if (pTextctrl->GetLength()==0)
+    {
+        Destroy();
+        return;
+    }
+    
+    if (!sFilename.length() || f.Size()!=pTextctrl->GetLength())
+    {
+        wxMessageDialog msgdlg
+            (
+                this,
+                "This file has been modified. Save?",
+                "iked",
+                wxYES_NO | wxCANCEL | wxICON_QUESTION,
+                wxDefaultPosition
+            );
+
+        int nDecision=msgdlg.ShowModal();
+
+        switch(nDecision)
+        {
+
+            case wxID_YES: OnSave(event); break;
+            case wxID_CANCEL: return;
+            //case wxID_NO: 
+
+        }
+    }
+    
+    Destroy();
+}
+
+
+
 void CCodeWnd::OnUndo(wxCommandEvent& event)        {   pTextctrl->Undo();      }
 void CCodeWnd::OnRedo(wxCommandEvent& event)        {   pTextctrl->Redo();      }
 void CCodeWnd::OnCopy(wxCommandEvent& event)        {   pTextctrl->Copy();      }
