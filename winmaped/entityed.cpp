@@ -122,7 +122,7 @@ void CEntityDlg::UpdateDialog(HWND hWnd)
 
 bool CEntityDlg::InitProc(HWND hWnd)
 {
-    pMap->GetEntInfo(curdata,nCurent);
+    curdata=pMap->GetEntity(nCurent);
     UpdateDialog(hWnd);
     return true;
 }
@@ -163,11 +163,11 @@ BOOL CEntityDlg::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
             return true;
         case ID_APPLY:
             UpdateData(hWnd);
-            pMap->SetEntInfo(curdata,nCurent);
+            pMap->SetEntity(curdata,nCurent);
             return true;
         case IDOK:
             UpdateData(hWnd);
-            pMap->SetEntInfo(curdata,nCurent);
+            pMap->SetEntity(curdata,nCurent);
         case IDCANCEL:
             EndDialog(hWnd,IDOK);
             return true;

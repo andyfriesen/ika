@@ -1003,7 +1003,7 @@ int Map::EntityAt(int x,int y)
     return -1;
 }
 
-void Map::GetEntInfo(SMapEntity& info,int entidx)
+/*void Map::GetEntInfo(SMapEntity& info,int entidx)
 {
     if (entidx>=0 && entidx<entity.size())
         info=entity[entidx];
@@ -1013,6 +1013,24 @@ void Map::SetEntInfo(const SMapEntity& info,int entidx)
 {
     if (entidx>=0 && entidx<entity.size())
         entity[entidx]=info;
+}*/
+
+const SMapEntity& Map::GetEntity(int idx) const
+{
+    static SMapEntity dummy;
+
+    if (idx<0 || idx>=entity.size())
+        return dummy;
+
+    return entity[idx];
+}
+
+void Map::SetEntity(SMapEntity& e,int idx)
+{
+    if (idx<0 || idx>=entity.size())
+        return;
+
+    entity[idx]=e;
 }
 
 int Map::CreateEntity(int x,int y)

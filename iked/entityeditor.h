@@ -19,6 +19,7 @@ class CEntityEditor : public wxDialog
     wxCheckBox* pMapobs;
     wxCheckBox* pEntobs;
 
+    wxTextCtrl* pName;
     wxTextCtrl* pY;
     wxTextCtrl* pX;
     wxTextCtrl* pSprite;

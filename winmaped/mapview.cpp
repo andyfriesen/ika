@@ -594,11 +594,10 @@ void CMapView::DrawEntities(const RECT& r)
     
     int idx;
     int x,y;
-    SMapEntity e;
     
     for (idx=0; idx<pMap->NumEnts(); idx++)
     {
-        pMap->GetEntInfo(e,idx);
+        const SMapEntity& e=pMap->GetEntity(idx);
         x=e.x - xwin;
         y=e.y - ywin;
         

@@ -671,9 +671,7 @@ void CEngine::LoadMap(const char* filename)
         
         for (int i=0; i<map.NumEnts(); i++)
         {
-            SMapEntity    ent;
-            
-            map.GetEntInfo(ent,i);
+            const SMapEntity& ent=map.GetEntity(i);
             
             CEntity* pEnt=new CEntity(this,ent);                            // convert the old entity struct into the new one.
             entities.push_back(pEnt);

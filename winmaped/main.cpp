@@ -449,11 +449,10 @@ void Engine::UpdateStatbar(int cursorx,int cursory)
 	
     case lay_ent:
 	{
-	    SMapEntity tempe;
 	    i=map.EntityAt(cursorx,cursory);
 	    if (i!=-1)
 	    {
-		map.GetEntInfo(tempe,i);
+		const SMapEntity& tempe=map.GetEntity(i);
 		SetStatbarText(1, va("Entity #%i: %s",i,tempe.sName.c_str()) );
 		SetStatbarText(2, tempe.sDescription.c_str() );
 	    }

@@ -129,7 +129,7 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
 :   IDocView(parent,name),
 
     pParentwnd(parent),
-    nZoom(32)
+    nZoom(16)
 {
     int w,h;
     GetClientSize(&w,&h);
@@ -344,7 +344,7 @@ void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
 void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
 void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
 
-void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(-nZoom); }  // >:D
+void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(16-nZoom); }  // >:D
 
 //------------------------------------------------------------
 
