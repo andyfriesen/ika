@@ -18,12 +18,34 @@ namespace
         id_insertandpaste,
         id_edittile
     };
+
+    class CTileSetFrame : public CGraphFrame
+    {
+        DECLARE_EVENT_TABLE()
+        
+        CTileSetView* pTilesetview;
+    public:
+        CTileSetFrame(wxWindow* parent, CTileSetView* tilesetview)
+            : CGraphFrame(parent)
+            , pTilesetview(tilesetview)
+        {}
+
+        void OnPaint(wxPaintEvent& event)
+        {
+            wxPaintDC blah(this);
+
+            pTilesetview->Paint();
+        }
+    };
+
+    BEGIN_EVENT_TABLE(CTileSetFrame, CGraphFrame)
+        EVT_PAINT(CTileSetFrame::OnPaint)
+    END_EVENT_TABLE();
 };
 
 BEGIN_EVENT_TABLE(CTileSetView,IDocView)
     EVT_SCROLLWIN(CTileSetView::OnScroll)
     EVT_SIZE(CTileSetView::OnSize)
-    EVT_PAINT(CTileSetView::OnPaint)
     EVT_CLOSE(CTileSetView::OnClose)
     EVT_ERASE_BACKGROUND(CTileSetView::OnEraseBackground)
 
@@ -37,7 +59,7 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
     : IDocView(parentwnd,fname),
       pParent(parentwnd)
 {
-    pGraph=new CGraphFrame(this);
+    pGraph=new CTileSetFrame(this, this); //new CGraphFrame(this);
     pGraph->SetSize(GetClientSize());
 
     pTileset=pParent->vsp.Load(fname);
@@ -58,6 +80,9 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
 CTileSetView::~CTileSetView()
 {
     delete pContextmenu;
+
+    pParent->vsp.Release(pTileset);
+    pTileset = 0;
 }
 
 // --------------------------------- events ---------------------------------
@@ -67,9 +92,10 @@ void CTileSetView::OnSave(wxCommandEvent& event)
     pTileset->Save(sName.c_str());
 }
 
-void CTileSetView::OnPaint()
+void CTileSetView::Paint()
 {
-    wxPaintDC dc(this);
+    if (!pTileset)
+        return; // blech
 
     Render();
 }
@@ -99,8 +125,6 @@ void CTileSetView::OnScroll(wxScrollWinEvent& event)
 
 void CTileSetView::OnClose()
 {
-    pParent->vsp.Release(pTileset);
-
     Destroy();
 }
 

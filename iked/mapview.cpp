@@ -28,7 +28,7 @@
         |                      |
     CMapSash            wxSashLayoutWindow
         |                      |
-    CGraphFrame         wxCheckListBox
+    CMapFrame           wxCheckListBox
     (Map rendering)     (Layer visibility)
 
 */
@@ -105,6 +105,28 @@ namespace
     END_EVENT_TABLE()
 
 //    const int nZoomscale=16;
+
+    class CMapFrame : public CGraphFrame
+    {
+        DECLARE_EVENT_TABLE();
+        
+        CMapView* pMapview;
+    public:
+        CMapFrame(wxWindow* parent, CMapView* mapview)
+            : CGraphFrame(parent)
+            , pMapview(mapview)
+        {}
+
+        void OnPaint(wxPaintEvent& event)
+        {
+            wxPaintDC blah(this);
+            pMapview->Paint();
+        }
+    };
+
+    BEGIN_EVENT_TABLE(CMapFrame, CGraphFrame)
+        EVT_PAINT(CMapFrame::OnPaint)
+    END_EVENT_TABLE()
 };
 
 //-------------------------------------------------------------------------------------
@@ -126,7 +148,7 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_MENU(CMapView::id_filesaveas,CMapView::OnSaveAs)
     EVT_MENU(CMapView::id_fileclose,CMapView::OnClose)
 
-    EVT_PAINT(CMapView::OnPaint)
+    //EVT_PAINT(CMapView::OnPaint)
     EVT_ERASE_BACKGROUND(CMapView::OnErase)
     EVT_SIZE(CMapView::OnSize)
     EVT_SCROLLWIN(CMapView::OnScroll)
@@ -157,7 +179,7 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     pRightbar=new CMapSash(this,-1);
     pRightbar->SetAlignment(wxLAYOUT_RIGHT);
 
-    pGraph=new CGraphFrame(pRightbar);
+    pGraph=new CMapFrame(pRightbar, this);
 
     // Get resources
     pMap=pParentwnd->map.Load(name);                                    // load the map
@@ -283,10 +305,8 @@ void CMapView::InitMenu()
     SetMenuBar(menubar);
 }
 
-void CMapView::OnPaint()
+void CMapView::Paint()
 {
-    wxPaintDC paintdc(this);
-
     if (!pTileset || !pMap)
         return; // .................................................................. really retarded.  wx likes to call this between deallocating my stuff, and actually destroying the frame. ;P
 

@@ -28,7 +28,7 @@ public:
 
     void OnSave(wxCommandEvent& event);
 
-    void OnPaint();
+    void Paint();
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
 

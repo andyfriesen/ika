@@ -103,7 +103,7 @@ public:
     void InitAccelerators();
     void InitMenu();
 
-    void OnPaint();
+    void Paint();
     void OnErase(wxEraseEvent&) {}
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
