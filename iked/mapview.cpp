@@ -436,6 +436,9 @@ void CMapView::HandleLayerEdit(wxMouseEvent& event)
     case mode_normal:
         pMap->SetTile(tilex,tiley,nCurlayer,pTileset->CurTile());
         break;
+    case lay_obstruction:
+        pMap->SetObs(tilex,tiley,!pMap->IsObs(tilex,tiley));
+        break;
     }
 
     Render();
@@ -446,11 +449,10 @@ void CMapView::HandleMouse(wxMouseEvent& event)
 {
     switch (csrmode)
     {
-    case lay_entity:
-    case lay_zone:
-    case lay_obstruction:
-        // NYI
-        break;
+    case lay_entity: break;
+    case lay_zone: break;
+    //case lay_obstruction: break;
+
     default:
         HandleLayerEdit(event);
         break;
@@ -467,6 +469,10 @@ void CMapView::OnLayerChange(int lay)
         pGraph->ShowPage();
         pLayerlist->CheckItem(lay);
     }
+    if (lay==lay_obstruction)
+        csrmode=lay_obstruction;
+    else
+        csrmode=mode_normal;
 }
 
 void CMapView::OnLayerToggleVisibility(int lay,int newstate)

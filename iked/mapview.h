@@ -58,7 +58,7 @@ class CMapView : public IDocView
     {
         lay_entity=-10,
         lay_zone,
-        lay_obstruction
+        //lay_obstruction
     };
 
     enum
@@ -71,6 +71,7 @@ class CMapView : public IDocView
     enum CursorMode
     {
         mode_normal,
+        lay_obstruction=-12
         // copy/paste/etc...
     };
 
