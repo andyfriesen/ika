@@ -16,9 +16,9 @@
 #include "spritesetview.h"
 #include "newmapdlg.h"
 
-#include <wx / xrc / xmlres.h>
-#include <wx / laywin.h>
-#include <wx / sashwin.h>
+#include <wx/xrc/xmlres.h>
+#include <wx/laywin.h>
+#include <wx/sashwin.h>
 
 #include "controller.h"
 

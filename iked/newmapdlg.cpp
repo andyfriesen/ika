@@ -1,4 +1,4 @@
-#include <wx / xrc / xmlres.h>
+#include <wx/xrc/xmlres.h>
 #include "newmapdlg.h"
 
 BEGIN_EVENT_TABLE(NewMapDlg, wxDialog)

@@ -1,7 +1,7 @@
 #ifndef NEWMAPDLG_H
 #define NEWMAPDLG_H
 
-#include <wx / wx.h>
+#include <wx/wx.h>
 #include <string>
 
 class NewMapDlg : public wxDialog

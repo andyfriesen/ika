@@ -8,8 +8,8 @@
 #include "types.h"
 #include "Canvas.h"
 #include <set>
-#include "wx / wx.h"
-#include "wx / glcanvas.h"
+#include "wx/wx.h"
+#include "wx/glcanvas.h"
 
 // win32 is retarded -- andy
 #ifdef WIN32

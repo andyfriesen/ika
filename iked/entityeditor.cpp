@@ -4,7 +4,7 @@
 #include "entityeditor.h"
 #include "map.h"
 
-#include <wx / xrc / xmlres.h>
+#include <wx/xrc/xmlres.h>
 
 BEGIN_EVENT_TABLE(CEntityEditor, wxDialog)
     EVT_LISTBOX(XRCID("list_entities"), CEntityEditor::OnSelectEntity)

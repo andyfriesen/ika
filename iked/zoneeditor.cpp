@@ -2,7 +2,7 @@
 #include "map.h"
 #include "main.h"
 
-#include <wx / xrc / xmlres.h>
+#include <wx/xrc/xmlres.h>
 
 BEGIN_EVENT_TABLE(ZoneEditor, wxDialog)
     EVT_LISTBOX(XRCID("list_zones"), ZoneEditor::OnSelectZone)

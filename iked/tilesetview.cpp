@@ -4,7 +4,7 @@
 
 #include "ImageView.h"
 
-#include "wx / event.h"
+#include "wx/event.h"
 
 namespace
 {
@@ -181,8 +181,11 @@ void CTileSetView::OnRightClick(wxMouseEvent& event)
 
 void CTileSetView::OnMouseWheel(wxMouseEvent& event)
 {
-    int i = event.m_wheelRotation / event.m_wheelDelta;
-    pTileset->SetCurTile(pTileset->CurTile() + i);
+    int t = pTileset->CurTile() + pTileset->Count();
+    if (event.GetWheelRotation() > 0)   t++;
+    else                                t--;
+    pTileset->SetCurTile(t % pTileset->Count());
+
     Render();
 }
 

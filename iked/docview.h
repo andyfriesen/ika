@@ -6,7 +6,7 @@
 #define DOCVIEW_H
 
 #include "types.h"
-#include "wx / wx.h"
+#include "wx/wx.h"
 
 class CMainWnd;
 
