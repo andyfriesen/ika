@@ -11,14 +11,15 @@ namespace
     enum
     {
         id_showLayer = wxID_HIGHEST + 1,
-        id_activateLayer = id_showLayer + RIDICULOUSLY_HUGE_CONSTANT
+        id_activateLayer = id_showLayer + RIDICULOUSLY_HUGE_CONSTANT,
+        id_layerProperties
     };
 }
 
 BEGIN_EVENT_TABLE(LayerBox, wxWindow)
     EVT_BUTTON(LayerBox::VIS_ICON, LayerBox::DoToggleVisibility)
     EVT_BUTTON(LayerBox::ACTIVE_ICON, LayerBox::DoActivateLayer)
-    EVT_RIGHT_DOWN(LayerBox::DoRightDown)
+    EVT_COMMAND_RANGE(0, RIDICULOUSLY_HUGE_CONSTANT, wxEVT_COMMAND_RIGHT_CLICK, LayerBox::DoRightDown)
 END_EVENT_TABLE()
 
 LayerBox::LayerBox(wxWindow* parent, wxPoint position, wxSize size)
@@ -62,6 +63,7 @@ void LayerBox::DoActivateLayer(wxMouseEvent&)
 
 void LayerBox::DoRightDown(wxMouseEvent& event)
 {
+    GetParent()->AddPendingEvent(wxCommandEvent(wxEVT_COMMAND_BUTTON_CLICKED, id_layerProperties + GetId()));
     Log::Write("Right click %s", _label->GetLabel().c_str());
 }
 
@@ -74,6 +76,7 @@ void LayerBox::SetLabel(const std::string& label)
 BEGIN_EVENT_TABLE(LayerList, wxScrolledWindow)
     EVT_COMMAND_RANGE(id_showLayer,     id_showLayer     + RIDICULOUSLY_HUGE_CONSTANT - 1, wxEVT_COMMAND_BUTTON_CLICKED, LayerList::OnToggleVisibility)
     EVT_COMMAND_RANGE(id_activateLayer, id_activateLayer + RIDICULOUSLY_HUGE_CONSTANT - 1, wxEVT_COMMAND_BUTTON_CLICKED, LayerList::OnActivateLayer)
+    EVT_COMMAND_RANGE(id_layerProperties, id_layerProperties + RIDICULOUSLY_HUGE_CONSTANT - 1, wxEVT_COMMAND_BUTTON_CLICKED, LayerList::OnShowLayerMenu)
 END_EVENT_TABLE()
 
 LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxSize size)
@@ -131,6 +134,11 @@ void LayerList::OnActivateLayer(wxCommandEvent& event)
     wxASSERT(layerIndex >= 0 && layerIndex < _executor->GetMap()->NumLayers());
 
     _executor->SetCurrentLayer(layerIndex);
+}
+
+void LayerList::OnShowLayerMenu(wxCommandEvent& event)
+{
+    Log::Write("Layer Menu %i", event.GetId());
 }
 
 void LayerList::Update(Map* map)

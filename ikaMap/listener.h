@@ -9,8 +9,7 @@
 
 namespace
 {
-    // Opaque callable thing.  Wraps anything with an operator()(ArgType)
-    /*
+    /**
      * This is where the rubber hits the road, as it were.  If we're going
      * to store a heterogenious collection of callable objects, we need some
      * way to store them all in a sequence.  This is how.  We inherit 
@@ -31,9 +30,15 @@ namespace
         }
 
         virtual void call(ArgType arg) = 0;
+        virtual ~CallableBase() {}
     };
 };
 
+/**
+ * Generic callable wrapper.
+ * If it has an operator()(ArgType), this can wrap it, and provide the
+ * CallableBase interface.
+ */
 template <typename T, typename ArgType>
 struct Callable : CallableBase<ArgType>
 {
@@ -50,6 +55,12 @@ private:
     T _subject;
 };
 
+/**
+ * Wraps an object instance and a pointer-to-member into a single
+ * callable object.  This also implements the CallableBase interface,
+ * and as such can be stored in the Listener directly, without having
+ * to use Callable as a third proxy.
+ */
 template <typename T, typename ArgType>
 struct Delegate : CallableBase<ArgType>
 {
@@ -70,10 +81,21 @@ private:
     Func _func;
 };
 
+/**
+ *  Convenience method for creating a delegate.
+ *  Template functions can infer the types of their arguments,
+ *  so this is generally much easier to use than the Delegate
+ *  constructor.
+ */
 template <typename T, typename ArgType>
 Delegate<T, ArgType> bind(T* inst, void (T::*func)(ArgType))
 { return Delegate<T, ArgType>(inst, func); }
 
+/**
+ * Multiple dispatch thingie.
+ * You feed it a bunch of callable objects, and it stores them all.
+ * Each is called in succession when the fire() method is invoked.
+ */
 template <class ArgType>
 struct Listener
 {
@@ -93,13 +115,6 @@ struct Listener
     {
         _list.insert(new Delegate<T, ArgType>(inst, func));
     }
-
-#if 0
-    void operator()(ArgType arg)
-    {
-        return fire(arg);
-    }
-#endif
 
     void fire(ArgType arg)
     {

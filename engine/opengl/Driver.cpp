@@ -86,7 +86,7 @@ namespace OpenGL
 
         if (!glBlendEquationEXT) 
         {
-            Log::Write("glBlendEquationEXT not found.  Colour subtraction disabled.");
+            Log::Write("Warning! glBlendEquationEXT not found.  Colour subtraction disabled.");
             glBlendEquationEXT = &glBlendEquationStub;
         }
 
@@ -182,7 +182,7 @@ namespace OpenGL
                 SwitchTexture(tex->handle);
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyShit);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                 _textures.insert(tex);
             }
 
@@ -245,7 +245,7 @@ namespace OpenGL
             SwitchTexture(texture);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             src.Flip();
 
             if (dealloc)
@@ -431,12 +431,14 @@ namespace OpenGL
 
         const float* texCoords = img->_texCoords;
         SwitchTexture(img->_texture->handle);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBegin(GL_QUADS);
         glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2i(x, y);
         glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2i(x + w, y);
         glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2i(x + w, y + h);
         glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + h);
         glEnd();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
     void Driver::DistortBlitImage(Video::Image* i, int x[4], int y[4])
@@ -448,6 +450,8 @@ namespace OpenGL
         const float texY[] = { texCoords[3], texCoords[3], texCoords[1], texCoords[1] };
 
         SwitchTexture(img->_texture->handle);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
         glBegin(GL_QUADS);
         for (int i = 0; i < 4; i++)
         {
@@ -455,12 +459,15 @@ namespace OpenGL
             glVertex2i(x[i], y[i]);
         }
         glEnd();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
     void Driver::TileBlitImage(Video::Image* i, int x, int y, int w, int h, float scalex, float scaley)
     {
         Image* img = static_cast<Image*>(i);
         Texture* tex = img->_texture;
+        SwitchTexture(img->_texture->handle);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
         float texX = float(w) / img->Width()  * scalex;
         float texY = float(h) / img->Height() * scaley;
@@ -468,8 +475,6 @@ namespace OpenGL
         // simplest case.  We can draw one big textured quad for the whole thing.
         if (tex->width == img->_width && tex->height == img->_height)
         {
-
-            SwitchTexture(img->_texture->handle);
             glBegin(GL_QUADS);
             glTexCoord2f(0,    texY);   glVertex2i(x, y);
             glTexCoord2f(texX, texY);   glVertex2i(x + w, y);
@@ -488,8 +493,6 @@ namespace OpenGL
 
             float imgWidth = float(img->_width) * scalex;
             float imgHeight = float(img->_height) * scaley;
-        
-            SwitchTexture(img->_texture->handle);
 
             const float* texCoords = img->_texCoords;
     
@@ -508,6 +511,8 @@ namespace OpenGL
 
             glPopAttrib();
         }
+
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
     void Driver::TintBlitImage(Video::Image* img, int x, int y, u32 tint)
@@ -526,6 +531,7 @@ namespace OpenGL
         const float texY[] = { texCoords[3], texCoords[3], texCoords[1], texCoords[1] };
 
         SwitchTexture(img->_texture->handle);
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
         glBegin(GL_QUADS);
         for (int i = 0; i < 4; i++)
         {
@@ -534,6 +540,7 @@ namespace OpenGL
             glVertex2i(x[i], y[i]);
         }
         glEnd();
+        glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
         glColor4ub(255, 255, 255, 255);
     }
 

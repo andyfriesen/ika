@@ -51,6 +51,7 @@ public:
     // These we recieve from the LayerBoxes.
     void OnToggleVisibility(wxCommandEvent& event);
     void OnActivateLayer(wxCommandEvent& event);
+    void OnShowLayerMenu(wxCommandEvent& event);
 
     void Update(Map* map);
     void UpdateIcons();

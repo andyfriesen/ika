@@ -43,7 +43,37 @@ public:
             std::copy(d, d + w * h, _data);
         }
         else
+        {
+            _width = _height = 0;
             _data = 0;
+        }
+    }
+
+    // Pitch is the number of elements between two vertical lines.
+    // This is exceptionally handy for getting subsections of other
+    // matrices.  Somewhat dangerous because range checking cannot
+    // be done.
+    Matrix(uint w, uint h, T* d, uint pitch)
+        : _width(w)
+        , _height(h)
+    {
+        if (w > 0 && h > 0)
+        {
+            _data = new T[w * h];
+            int y = h;
+            T* dest = _data;
+            while (y--)
+            {
+                std::copy(d, d + w, dest);
+                d += pitch;
+                dest += w;
+            }
+        }
+        else
+        {
+            _width = _height = 0;
+            _data = 0;
+        }
     }
 
     Matrix(const Matrix& rhs)

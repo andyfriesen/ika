@@ -1,7 +1,7 @@
 #ifndef OPENGL_DRIVER_H
 #define OPENGL_DRIVER_H
 
-//#define SHARE_TEXTURES
+#define SHARE_TEXTURES
 
 #ifdef SHARE_TEXTURES
 #include <set>

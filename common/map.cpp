@@ -155,6 +155,20 @@ bool Map::Load(const std::string& filename)
 
                 lay->label = Local::getStringNode(*iter, "label");
 
+                if (!(*iter)->hasChild("type"))
+                {
+                    // Do we change this and forbid a default?  It would break backward compatibility.
+                    Log::Write("Warning: layer lacking 'type' node.  Assuming it is a tile layer.");
+                }
+                else
+                {
+                    // do nothing for now.
+                    // I think I want to implement vector layers.  No tiles, just textures
+                    // and groups of vertices.  Lots and lots of editor work required for that. >_>
+                    
+                    //std::string type = Local::getStringNode(*iter, "type");
+                }
+
                 n = (*iter)->getChild("dimensions");
                 int width = Local::getIntNode(n, "width");
                 int height = Local::getIntNode(n, "height");
@@ -346,6 +360,7 @@ void Map::Save(const std::string& filename)
             DataNode* layNode = newNode("layer");
             layerNode->addChild(layNode);
             layNode
+                ->addChild(newNode("type")->addChild("tile"))
                 ->addChild(newNode("label")->addChild(lay->label))
                 ->addChild(newNode("dimensions")
                     ->addChild(newNode("width")->addChild(lay->Width()))
