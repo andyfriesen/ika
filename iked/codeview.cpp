@@ -488,8 +488,11 @@ void CCodeWnd::OnSave(wxCommandEvent& event)
 
     int nSize=pTextctrl->GetLength();
 
-    wxString s=pTextctrl->GetText();
-    f.Write(s.c_str(),nSize);
+    if (nSize)
+    {
+        wxString s=pTextctrl->GetText();
+        f.Write(s.c_str(),nSize);
+    }
     
     f.Close();
 

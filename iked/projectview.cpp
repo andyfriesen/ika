@@ -21,19 +21,16 @@ class CProjectTree : public wxTreeCtrl
 {
     wxMenu* filemenu;
     wxMenu* foldermenu;
+    wxMenu* rootmenu;
 
     CMainWnd*   pMainwnd;
 
-    CLeaf*    pSelected;  // The context menus use this.
-
-    
+    CLeaf*    pSelected;  // The context menus use this. 
 
     void SetChanged()
     {
         if (!bChanged)
             bChanged=true;
-
-        
     }
 
 public:
@@ -69,6 +66,10 @@ public:
         foldermenu->Append(id_createsubfolder,"Create Sub&folder","");
         foldermenu->Append(id_delete,"&Delete","");
         foldermenu->Append(id_rename,"Rena&me","");
+
+        rootmenu=new wxMenu;
+        rootmenu->Append(id_add,"&Add","");
+        rootmenu->Append(id_createsubfolder,"Create Sub&folder","");
         bChanged=false;
     }
 
@@ -92,8 +93,10 @@ public:
         SelectItem(id);
         pSelected=(CLeaf*)GetItemData(id);
         if (!pSelected) return;
-        
-        if (pSelected->type==t_folder)
+
+        if (id==GetRootItem())
+            PopupMenu(rootmenu,event.GetPosition());
+        else if (pSelected->type==t_folder)
             PopupMenu(foldermenu,event.GetPosition());
         else
             PopupMenu(filemenu,event.GetPosition());
