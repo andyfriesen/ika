@@ -200,6 +200,10 @@ SOURCE=.\projectview.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\textview.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tileset.cpp
 # End Source File
 # Begin Source File
@@ -253,6 +257,10 @@ SOURCE=.\mapview.h
 # Begin Source File
 
 SOURCE=.\projectview.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\textview.h
 # End Source File
 # Begin Source File
 
