@@ -167,6 +167,24 @@ void CCHRfile::Load(const std::string& fname) {
 
         std::string ver = rootNode->getChild("version")->getString();
 
+        if (ver == "1.0" || ver == "1.1") {
+            Log::Write(
+                "Warning: v%s sprite being loaded.\n"
+                "         It should work, but you should load and resave \n"
+                "         %s in iked to update it to 1.2!\n", 
+                ver.c_str(),
+                fname.c_str()
+            );
+
+        } else if (ver != "1.2") {
+            Log::Write(
+                "Warning: Unknown ika-sprite version %s in %s!  Expecting\n"
+                "         1.0 through 1.2.  Trying to load it anyway.\n"
+                "         Cross your fingers!",
+                ver.c_str(), fname.c_str()
+            );
+        }
+
         {
             DataNode* infoNode = rootNode->getChild("information");
 
@@ -179,7 +197,7 @@ void CCHRfile::Load(const std::string& fname) {
                         continue;
                     }
 
-                    DataNode* n = (DataNode*)*iter;
+                    DataNode* n = static_cast<DataNode*>(*iter);
 
                     if (n->getString().empty()) {
                         metaData[n->getName()] = n->getString();
@@ -232,14 +250,10 @@ void CCHRfile::Load(const std::string& fname) {
             int compressedSize;
             if (ver == "1.0") {
                 compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
-            } else if (ver == "1.1") {
+            } else {
                 std::string un64 = base64::decode(d64);
                 std::copy((u8*)(un64.c_str()), (u8*)(un64.c_str() + un64.length()), compressed.get());
                 compressedSize = un64.length();
-            } else {
-                throw std::runtime_error(va("Sprite uses unrecognized version %s.  "
-                    "This build of ika only knows about 1.0 and 1.1", ver.c_str())
-                );
             }
 
             ScopedArray<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
@@ -366,7 +380,8 @@ void CCHRfile::SaveOld(const std::string& fname) {
     
     bool bResult = f.OpenWrite(fname.c_str());
     if (!bResult) {
-        throw std::runtime_error(va("Failed to open %s for writing.", fname.c_str()));                                                     // :(
+        // :(
+        throw std::runtime_error(va("Failed to open %s for writing.", fname.c_str()));
     }
     
     f.Write((char)5);                                               // version - u8

@@ -1,77 +1,85 @@
-Objective:
-
-maps are layers, and have entities initially on them.
-Maps have obstruction and zone data.
-Maps have a default VSP, and a render string.
-Layers have tiles.
-
-Current limitations:
-
-All entities inhabit the same layer.  There is but one obstruction layer, and one zone layer.  Obstructions are still tile based. (no vectors, potential for enhancing the tile scheme, however)
-
---------------------------------------------------
-		types
-
-u32  	a 32 bit unsigned integer.  Takes up 4 bytes.
-byte	a 8 bit integer, signed or not.  I don't care, it's used for ASCII strings and booleans
+Current map format
 
 
-typedef STRING
-	u32		length
-	byte[length]	data
-end
+Old map format
 
-typedef COMPRESSED_BLOCK
-	some stuff we don't really care about, as my File class handles it all transparently
-end
+    This map file format is no longer implemented anywhere.  It is left in 
+    this document for educational purposes only.
 
----------------------------------------------------
+    Objective:
 
-byte[6]		signature "MAPù6\0"
-STRING		Default VSP name
-STRING		Default music
-STRING		Render string
-u32		map width (in tiles)
-u32		map height (in tiles)
-u32		start x postion (not used by the engine, but exposed to the scripter)
-u32		start y position (ditto)
-bool		nonzero if the map is "round" (ie, it wraps around and junk)
+        maps are layers, and have entities initially on them.
+        Maps have obstruction and zone data.
+        Maps have a default VSP, and a render string.
+        Layers have tiles.
 
-u32	layer count
-	u32	pmultx,pdivx
-	u32	pmulty,pdivy
-	COMPRESSED_BLOCK	tile data, width*height in size, one u32 per tile
+    Current limitations:
 
-COMPRESSED_BLOCK	obstruction data (width*height, in chars)
-COMPRESSED_BLOCK	zone data (width*height, in u32's)
+        All entities inhabit the same layer.  There is but one obstruction layer, and one zone layer.  Obstructions are still tile based. (no vectors, potential for enhancing the tile scheme, however)
 
-u32	Different zone types
-	STRING	zone name (purely for the users benefit)
-	STRING	description (also purely for the users benefit()
-	STRING	event name (called when the zone is activated by the player)
-	STRING	event name (called if any nonplayer entity steps upon the zone)
-	u32	Chance that the event will be activated when stepped upon. (chance out of 100)
-	u32	delay (in steps) before the event is activated
-	byte	Adjacent activation flag.  Nonzero if the event is to be activated a la entities, and not stepped upon
+    --------------------------------------------------
+                    Types
 
-u32	Number of entities on the map
-	STRING	name
-	u32	x position
-	u32	y position
-	u32	direction
-	u32	speed
-	byte	if nonzero, the entity is obstructed by the map
-	byte	if nonzero, the entity is obstructed by other entities
-	byte	if nonzero, the entity obstructs other entities
-	STRING	CHR filename
-	byte	nonzero if the entity is to be activated immediately when it collides with the player (as opposed to when the player activates the entity normally)
-	STRING	script to be executed when the entity is activated
+    u32         a 32 bit unsigned integer.  Takes up 4 bytes.
+    byte        a 8 bit integer, signed or not.  I don't care, it's used for ASCII strings and booleans
 
-	u32	state (scripted, etc....)
-	STRING	movement script
-	u32	wander steps
-	u32	wander delay
-	u32[4]	wander rectangle
-	STRING	wander zone
-	STRING	chase target
-	u32	chase distance
+
+    typedef STRING
+            u32             length
+            byte[length]    data
+    end
+
+    typedef COMPRESSED_BLOCK
+            some stuff we don't really care about, as my File class handles it all transparently
+    end
+
+    ---------------------------------------------------
+
+    byte[6] signature "MAPù6\0"
+    STRING  Default VSP name
+    STRING  Default music
+    STRING  Render string
+    u32     map width (in tiles)
+    u32     map height (in tiles)
+    u32     start x postion (not used by the engine, but exposed to the scripter)
+    u32     start y position (ditto)
+    bool    nonzero if the map is "round" (ie, it wraps around and junk)
+
+    u32 layer count
+            u32 pmultx,pdivx
+            u32 pmulty,pdivy
+            COMPRESSED_BLOCK    tile data, width*height in size, one u32 per tile
+
+    COMPRESSED_BLOCK    obstruction data (width*height, in chars)
+    COMPRESSED_BLOCK    zone data (width*height, in u32's)
+
+    u32 Different zone types
+            STRING  zone name (purely for the users benefit)
+            STRING  description (also purely for the users benefit()
+            STRING  event name (called when the zone is activated by the player)
+            STRING  event name (called if any nonplayer entity steps upon the zone)
+            u32     Chance that the event will be activated when stepped upon. (chance out of 100)
+            u32     delay (in steps) before the event is activated
+            byte    Adjacent activation flag.  Nonzero if the event is to be activated a la entities, and not stepped upon
+
+    u32 Number of entities on the map
+            STRING  name
+            u32     x position
+            u32     y position
+            u32     direction
+            u32     speed
+            byte    if nonzero, the entity is obstructed by the map
+            byte    if nonzero, the entity is obstructed by other entities
+            byte    if nonzero, the entity obstructs other entities
+            STRING  CHR filename
+            byte    nonzero if the entity is to be activated immediately when it collides with the player (as opposed to when the player activates the entity normally)
+            STRING  script to be executed when the entity is activated
+
+            u32     state (scripted, etc....)
+            STRING  movement script
+            u32     wander steps
+            u32     wander delay
+            u32[4]  wander rectangle
+            STRING  wander zone
+            STRING  chase target
+            u32     chase distance

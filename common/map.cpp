@@ -42,16 +42,18 @@ Map::Map(const std::string& filename) {
 }
 
 Map::~Map() {
-    for (uint i = 0; i < layers.size(); i++)
+    for (uint i = 0; i < layers.size(); i++) {
         delete layers[i];
+    }
 }
 
 bool Map::Load(const std::string& filename) {
     struct Local {
         static std::string getStringNode(DataNode* parent, const std::string& name) {
             DataNode* n = parent->getChild(name);
-            if (!n)
+            if (!n) {
                 throw std::runtime_error(std::string() + "Unable to find node " + name);
+            }
 
             return n->getString();
         }
@@ -62,8 +64,9 @@ bool Map::Load(const std::string& filename) {
     };
 
     // First, clean up:
-    for (uint i = 0; i < layers.size(); i++)
+    for (uint i = 0; i < layers.size(); i++) {
         delete layers[i];
+    }
     layers.clear();
     zones.clear();
     wayPoints.clear();
@@ -78,8 +81,15 @@ bool Map::Load(const std::string& filename) {
         DataNode* realRoot = rootNode->getChild("ika-map");
 
         const std::string ver = realRoot->getChild("version")->getString();
-        if (ver != "1.0" && ver != "1.1") {
-            throw std::runtime_error(va("Map version is %s.  Expecting 1.0 or 1.1", ver));
+        if (ver == "1.0" || ver == "1.1") {
+            Log::Write(
+                "Warning: Version of %s is %s.  Expected 1.2.  You should\n"
+                "         load and resave the map in the editor to update it.",
+                filename.c_str(),
+                ver.c_str()
+            );
+        } else if (ver != "1.2") {
+            throw std::runtime_error(va("Invalid map version %s.  Was expecting version 1.0, 1.1, or 1.2", ver.c_str()));
         }
 
         {
@@ -110,11 +120,13 @@ bool Map::Load(const std::string& filename) {
 
 #if defined(MULTI_TILESETS)
             DataNodeList nodes = headerNode->getChildren("tileset");
-            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
                 tileSetNames.push_back((*iter)->getString());
+            }
 
-            if (tileSetNames.empty())
+            if (tileSetNames.empty()) {
                 throw std::runtime_error("Map has no tilesets!!");
+            }
 #else
             DataNode* tileSetNode = headerNode->getChild("tileset");
             tileSetName = tileSetNode->getString();
@@ -200,7 +212,8 @@ bool Map::Load(const std::string& filename) {
                         if (!warn1dot0) {
                             Log::Write("Warning: 1.0 tileset loading will be officially dropped in 0.61");
                             Log::Write("    Actually, they may still work, but this isn't guaranteed!");
-                            Log::Write("    To convert the map to v1.1, load and re-save it in ikaMap");
+                            Log::Write("    To convert the map to the current version, load and re-save");
+                            Log::Write("    it in ikaMap");
                             warn1dot0 = true;
                         }
 

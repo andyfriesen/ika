@@ -18,9 +18,9 @@ with operating systems that are sensitive about filename case. Containers
 should be plural, despite the fact that entity[i] looks more sensical than
 entities[i].
 
-Function names should be verbs.  Accessors should use the getXXX form.  They
+Function names should be verbs.  Accessors should use the getXxx form.  They
 should use camel notation.  Methods which return a yes/no query about the
-state of an object should use the isXXX form.  Accessors and query methods
+state of an object should use the isXxx form.  Accessors and query methods
 should never have side effects.
 
     exampleMethod();
@@ -28,10 +28,11 @@ should never have side effects.
     isEmpty()
     getCount()
 
-Types which have a size should expose it as the type's "count".  There are
-too many terms one could use for this sort of thing; we need to pick one and
-stick with it. (this obviously doesn't apply to multidimensional containers
-like matrices) For instance, prefer "getEntityCount()" over "getNumEntities()"
+Types which contain a number of elements should use the word "count", not 
+"size" or "length", or whatever.  There are too many terms one could use for 
+this sort of thing; we need to pick one and stick with it. (this obviously 
+doesn't apply to multidimensional containers like matrices) For instance, 
+prefer "getEntityCount()" over "getNumEntities()"
 
 Prefer the 'struct' keyword over 'class'.  Structs are identical to classes,
 except that they default to public inheritance and visibility.  This helps to
@@ -61,7 +62,7 @@ both statements are extremely simple *and related*.
 example:
 
     struct MyTestClass : BaseClass {
-        void DoSomethingInteresting(int x, int y) {
+        void doSomethingInteresting(int x, int y) {
             bool mylocal;
 
             if (mylocal) {
@@ -80,8 +81,9 @@ example:
     };
 
 Whenever possible, wrap globals in a meaningful namespace.  The simple fact
-is that globals are a pain in the ass, but being overly OOP is retarded too.
-Balance accordingly.
+is that globals are a pain in the ass, but trying to obsess over proper OO
+in the face of arcane C APIs that demand global state is a pointless waste
+of time.
 
 Every line of code is *not* to be commented.  A single line/paragraph
 describing the general jist of a section may be needed if the code becomes
@@ -90,6 +92,8 @@ anyway. The idea is to make the code will comment itself, not to double the
 code size with an english translation of the entire engine. ;)  Doxygen
 comments in header files are a plus, but should only be used in places where
 the method name does not adequately describe itself.
+
+To sum it up: Never use comments to restate the obvious.
 
 When writing C#, use the .NET naming conventions: all public symbols use
 PascalCase.  Brace and indentation rules should be as written in this document.

@@ -179,7 +179,7 @@ namespace iked {
         framey = document->getHeight();
         getImagePos(selectedImage, &x2, &y2);
 
-        Rect(x2 - 1, y2 - 1, framex + 1, framey + 1, RGBA(255, 255, 255));
+        Rect(x2, y2, framex + 1, framey + 1, RGBA(255, 255, 255));
 
         ShowPage();
     }

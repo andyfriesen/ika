@@ -50,11 +50,14 @@ void SeedRandom() {
 int Random(int min, int max) {
     int i;
 
-    if (min == max)
-        return min; // :P
+    if (min == max) {
+        // :P
+        return min;
+    }
     
-    if (max < min)
+    if (max < min) {
         swap(max, min);
+    }
     
     i = (rand() % (max - min)) + min;
     
@@ -65,10 +68,17 @@ int Random(int min, int max) {
 #include <sstream>
 
 const std::string trim(const std::string& s) {
-    uint start = 0, end = s.length();
+    uint start = 0;
+    uint end = s.length();
 
-    while (s[start] == ' ' && start < s.length()) start++;
-    while (s[end - 1] == ' ' && end > 0) end--;
+    while (s[start] == ' ' && start < s.length()) {
+        start++;
+    }
+
+    while (s[end - 1] == ' ' && end > start) {
+        end--;
+    }
+
     if (start >= end) {
         return "";
     } else {

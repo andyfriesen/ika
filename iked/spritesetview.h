@@ -11,8 +11,6 @@
 
 namespace iked {
 
-    class MovescriptEditor;
-
     struct SpriteSetView : DocumentPanel {
         SpriteSetView(MainWindow* parent, Document* doc, const std::string& fileName);
         ~SpriteSetView();

@@ -1,6 +1,5 @@
 
-#ifndef MEM_H
-#define MEM_H
+#pragma once
 
 #ifdef _DEBUG
 
@@ -13,5 +12,3 @@ void operator delete(void* p);
 #endif
 
 void DumpList();
-
-#endif

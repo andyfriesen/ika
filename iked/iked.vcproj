@@ -351,6 +351,12 @@
 			<File
 				RelativePath=".\Commands\projectcommands.h">
 			</File>
+			<File
+				RelativePath=".\Commands\spritecommands.cpp">
+			</File>
+			<File
+				RelativePath=".\Commands\spritecommands.h">
+			</File>
 		</Filter>
 		<Filter
 			Name="UI"

@@ -82,8 +82,7 @@
 #include <string>
 #include <vector>
 
-namespace aries
-{
+namespace aries {
     typedef unsigned int uint;
     typedef std::vector<struct Node*> NodeList;
     typedef std::vector<struct DataNode*> DataNodeList;
@@ -92,15 +91,14 @@ namespace aries
      * Base class for all document nodes.
      * (there are only two anyway)
      */
-    struct Node
-    {
+    struct Node {
         virtual ~Node(){}
 
         /**
          * Basically required so that RTTI doesn't need to be enabled.  Returns true if the node
          * is a StringNode, false if it is a DataNode
          */
-        virtual bool        isString() const = 0;
+        virtual bool isString() const = 0;
 
         /**
          * Returns a string representation of the node.
@@ -110,7 +108,7 @@ namespace aries
         /**
          * Creates a clone of the node, and returns it.  The caller assumes ownership of the new node.
          */
-        virtual Node*       clone() const = 0;
+        virtual Node* clone() const = 0;
 
         /**
          * Writes the node to the stream.
@@ -128,8 +126,7 @@ namespace aries
         static struct DataNode* readDocument(std::istream& stream);
     };
 
-    struct StringNode : Node
-    {
+    struct StringNode : Node {
         StringNode(const std::string& str);
         virtual bool isString() const;
         virtual std::string toString() const;
@@ -141,8 +138,7 @@ namespace aries
         std::string _str;
     };
 
-    struct DataNode : Node
-    {
+    struct DataNode : Node {
         DataNode(const std::string& name);
         virtual ~DataNode();
         virtual bool isString() const;
@@ -187,4 +183,3 @@ namespace aries
 
 std::ostream& operator << (std::ostream& stream, aries::Node* node);   /// Converts the node (and its children) to a human readable format, and dumps it to the stream.
 std::istream& operator >> (std::istream& stream, aries::DataNode*& node);  /// Reads the document in from the stream, and returns the root node.  The caller assumes ownership of the pointer.
-
