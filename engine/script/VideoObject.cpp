@@ -1,5 +1,6 @@
 
 #include "ObjectDefs.h"
+#include "main.h"
 #include "video/Driver.h"
 #include "video/Image.h"
 
@@ -433,6 +434,7 @@ namespace Script
 
         METHOD1(Video_ShowPage)
         {
+            engine->CheckMessages();
             self->video->ShowPage();
 
             Py_INCREF(Py_None);

@@ -98,7 +98,6 @@ void MapView::OnScroll(wxScrollWinEvent& event)
 
 void MapView::OnMouseDown(wxMouseEvent& event)
 {
-    CaptureMouse();
     if (_executor->GetMap()->NumLayers() == 0)
         return;
 
@@ -124,7 +123,6 @@ void MapView::OnMouseUp(wxMouseEvent& event)
 {
     if (_executor->GetMap()->NumLayers() > 0)
         _editState->OnMouseUp(event);
-    ReleaseMouse();
 }
 
 void MapView::OnMouseMove(wxMouseEvent& event)

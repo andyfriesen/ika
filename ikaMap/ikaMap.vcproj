@@ -475,6 +475,9 @@
 				RelativePath="..\common\types.h">
 			</File>
 			<File
+				RelativePath="..\common\vergemap.cpp">
+			</File>
+			<File
 				RelativePath="..\common\vergepal.cpp">
 			</File>
 			<File

@@ -13,6 +13,8 @@
 
 #include "log.h"
 
+#undef USE_GROUP_JUJU
+
 TileSetState::TileSetState(Executor* e)
     : EditState(e)
     , _oldX(-1)
@@ -52,6 +54,7 @@ void TileSetState::OnMouseUp(wxMouseEvent& event)
 {
 	_oldX = _oldY = -1;
         // odd that the mouse button is able to go up without first going down
+#if defined(USE_GROUP_JUJU)
         if (_curGroup)
         {
             if (_curGroup->GetCount() == 1)
@@ -63,6 +66,7 @@ void TileSetState::OnMouseUp(wxMouseEvent& event)
                 GetExecutor()->AddCommand(_curGroup);
         }
         _curGroup = 0;
+#endif
 }
 
 void TileSetState::OnMouseMove(wxMouseEvent& event)
@@ -102,16 +106,20 @@ void TileSetState::SetTile(int x, int y)
 
     if (GetCurLayer()->tiles(x, y) == GetCurTile()) return; // don't flood the undo buffer with commands that don't actually do anything
 
+
+    Command* cmd = new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile());
+#if defined(USE_GROUP_JUJU)
     // Create a new group if we need to
     if (!_curGroup)
         _curGroup = new CompositeCommand();
 
-    Command* cmd = new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile());
-    //HandleCommand(c);
     // naughty.  execute the command, but don't put it on the undo stack
     // when the mouse button is released, we add the list of commands all in one go.
     cmd->Do(GetExecutor());
     _curGroup->Append(cmd);
+#else
+    HandleCommand(cmd);
+#endif
 }
 
 uint TileSetState::GetCurTile() const
