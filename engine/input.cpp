@@ -114,6 +114,14 @@ void Input::JoyButtonChange(uint stick, uint index, bool value) {
     }
 }
 
+void Input::MouseButtonChange(uint button, bool value) {
+    _mouse->Clicked(button, value);
+}
+
+void Input::MouseMoved(int x, int y) {
+    _mouse->Motion(float(x), float(y));
+}
+
 void Input::Update() {
     // All of the current devices update themselves.  Fuckit for now.
     /*_keyboard->Update();

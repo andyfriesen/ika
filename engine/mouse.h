@@ -3,6 +3,7 @@
 #define MOUSE_H
 
 #include "input.h"
+#include "keyboard.h" // EVIL
 #include "common/utility.h"
 
 struct MouseAxisControl;
@@ -25,6 +26,9 @@ struct Mouse : InputDevice {
     MouseAxisControl* GetAxis(MouseAxis axis);
     MouseButtonControl* GetButton(uint button);
 
+    void Motion(float x, float y);
+    void Clicked(uint button, bool isPressed);
+
 private:
     ScopedPtr<MouseAxisControl> _xAxis;
     ScopedPtr<MouseAxisControl> _yAxis;
@@ -35,23 +39,20 @@ private:
 };
 
 struct MouseAxisControl : InputControl {
-    MouseAxisControl(uint axis);
+    MouseAxisControl()
+        : _pos(0)
+    {}
+
+    void SetPosition(float newPos);
 
 protected:
     virtual float GetPosition();
 
 private:
-    uint _axis;
+    float _pos;
 };
 
-struct MouseButtonControl : InputControl {
-    MouseButtonControl(uint index);
-
-protected:
-    virtual float GetPosition();
-
-private:
-    uint _index;
+struct MouseButtonControl : KeyControl {
 };
 
 #endif

@@ -4,17 +4,16 @@
 #include "mouse.h"
 
 Mouse::Mouse()
-    : _xAxis(new MouseAxisControl(X))
-    , _yAxis(new MouseAxisControl(Y))
-    , _wheel(new MouseAxisControl(WHEEL))
-    , _left(new MouseButtonControl(1))
-    , _right(new MouseButtonControl(2))
-    , _middle(new MouseButtonControl(3))
+    : _xAxis(new MouseAxisControl)
+    , _yAxis(new MouseAxisControl)
+    , _wheel(new MouseAxisControl)
+    , _left(new MouseButtonControl)
+    , _right(new MouseButtonControl)
+    , _middle(new MouseButtonControl)
 {
 }
 
-void Mouse::Unpress()
-{
+void Mouse::Unpress() {
     _xAxis->Unpress();
     _yAxis->Unpress();
     _wheel->Unpress();
@@ -23,8 +22,7 @@ void Mouse::Unpress()
     _middle->Unpress();
 }
 
-InputControl* Mouse::GetControl(const std::string& name)
-{
+InputControl* Mouse::GetControl(const std::string& name) {
      //hurk
     if (name == "X")            return _xAxis.get();
     else if (name == "Y")       return _yAxis.get();
@@ -35,10 +33,33 @@ InputControl* Mouse::GetControl(const std::string& name)
     else                        return 0;
 }
 
-MouseAxisControl* Mouse::GetAxis(MouseAxis axis)
-{
-    switch (axis)
-    {
+void Mouse::Motion(float x, float y) {
+    _xAxis->SetPosition(x);
+    _yAxis->SetPosition(y);
+}
+
+void Mouse::Clicked(uint button, bool isPressed) {
+    // EVIL
+
+    if (isPressed) {
+        switch (button) {
+            case 0: _left->KeyDown(); break;
+            case 1: _right->KeyDown(); break;
+            case 2: _middle->KeyDown(); break;
+            default: assert(false);
+        }
+    } else {
+        switch (button) {
+            case 0: _left->KeyUp(); break;
+            case 1: _right->KeyUp(); break;
+            case 2: _middle->KeyUp(); break;
+            default: assert(false);
+        }
+    }
+}
+
+MouseAxisControl* Mouse::GetAxis(MouseAxis axis) {
+    switch (axis) {
     case X: return _xAxis.get();
     case Y: return _yAxis.get();
     case WHEEL: return _wheel.get();
@@ -46,44 +67,19 @@ MouseAxisControl* Mouse::GetAxis(MouseAxis axis)
     }
 }
 
-MouseButtonControl* Mouse::GetButton(uint button)
-{
-    switch (button)
-    {
-    case 1: return _left.get();
-    case 2: return _right.get();
-    case 3: return _middle.get();
-    default: return 0;
+MouseButtonControl* Mouse::GetButton(uint button) {
+    switch (button) {
+        case 1: return _left.get();
+        case 2: return _right.get();
+        case 3: return _middle.get();
+        default: return 0;
     }
 }
 
-MouseAxisControl::MouseAxisControl(uint axis)
-    : _axis(axis)
-{}
-
-float MouseAxisControl::GetPosition()
-{
-    int x, y;
-    SDL_GetMouseState(&x, &y);
-    
-    // gay.
-    switch (_axis)
-    {
-    case Mouse::X: return float(x);
-    case Mouse::Y: return float(y);
-    case Mouse::WHEEL: return 0; // NYI
-    default:
-        assert(false);
-        return 0; // make the compiler shut up.  Never actually happens.
-    }
+void MouseAxisControl::SetPosition(float newPos) {
+    _pos = newPos;
 }
 
-MouseButtonControl::MouseButtonControl(uint index)
-    : _index(index)
-{}
-
-float MouseButtonControl::GetPosition()
-{
-    int b = SDL_GetMouseState(0, 0);
-    return b & SDL_BUTTON(_index) ? 1.0f : 0.0f;
+float MouseAxisControl::GetPosition() {
+    return _pos;
 }

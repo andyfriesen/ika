@@ -404,7 +404,7 @@ namespace OpenGL {
         float texCoords[4] = {0,0,0,0};
         memcpy(texCoords, img->_texCoords, sizeof(float) * 4);
         if (ix > w || ix < 0) ix = 0;
-        if (iy > w || iy < 0) iy = 0;
+        if (iy > h || iy < 0) iy = 0;
         if (iw > w || iw < 0) iw = w;
         if (ih > h || ih < 0) ih = h;
 

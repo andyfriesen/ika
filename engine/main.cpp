@@ -91,6 +91,21 @@ void Engine::CheckMessages() {
                 break;
             }
 
+            case SDL_MOUSEBUTTONDOWN: {
+                the<Input>()->MouseButtonChange(event.button.which, true);
+                break;
+            }
+
+            case SDL_MOUSEBUTTONUP: {
+                the<Input>()->MouseButtonChange(event.button.which, false);
+                break;
+            }
+
+            case SDL_MOUSEMOTION: {
+                the<Input>()->MouseMoved(event.motion.x, event.motion.y);
+                break;
+            }
+
             case SDL_QUIT: {
                 Shutdown();
                 exit(0);
