@@ -166,14 +166,14 @@ namespace OpenGL
 
     void Driver::DrawPixel(int x, int y, u32 colour)
     {
-        glDisable(GL_BLEND_2D);
-        glColor4ubv(&(u8*)&colour);
+        glDisable(GL_TEXTURE_2D);
+        glColor4ubv((u8*)&colour);
         
         glBegin(GL_POINTS);
         glVertex2i(x, y);
         glEnd();
 
-        glEnable(GL_BLEND_2D);
+        glEnable(GL_TEXTURE_2D);
         glColor4ub(255, 255, 255, 255);
     }
 
@@ -333,6 +333,8 @@ namespace OpenGL
             glVertex2i(x[i], y[i]);
         }
         glEnd();
+        glColor4ub(255, 255, 255, 255);
+        glEnable(GL_TEXTURE_2D);
     }
 
     Point Driver::GetResolution() const

@@ -15,10 +15,11 @@ namespace Script
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   1   },
             {   "DistortBlit",  (PyCFunction)Video_DistortBlit, 1   },
             // TODO: more blits.  I want a wrapblit, tintblit, and others
+            {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   1   },
             {   "DrawLine",     (PyCFunction)Video_DrawLine,    1   },
             {   "DrawRect",     (PyCFunction)Video_DrawRect,    1   },
             {   "DrawEllipse",  (PyCFunction)Video_DrawEllipse, 1   },
-            {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   1   },
+            {   "DrawTriangle", (PyCFunction)Video_DrawTriangle,1   },
             {   0   }
         };
 
@@ -114,6 +115,21 @@ namespace Script
             return Py_None;
         }
 
+        METHOD(Video_DrawPixel)
+        {
+            int x, y;
+            u32 colour;
+            int filled = 0;
+
+            if (!PyArg_ParseTuple(args, "iii:Video.DrawPixel", &x, &y, &colour))
+                return 0;
+
+            self->video->DrawPixel(x, y, colour);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
         METHOD(Video_DrawLine)
         {
             int x1, y1, x2, y2;
@@ -159,16 +175,16 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_DrawPixel)
+        METHOD(Video_DrawTriangle)
         {
-            int x, y;
-            u32 colour;
-            int filled = 0;
+            int x[3];
+            int y[3];
+            u32 col[3];
 
-            if (!PyArg_ParseTuple(args, "iii:Video.DrawPixel", &x, &y, &colour))
+            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii):Video.DrawTriangle", x, x + 1, x + 2, y, y + 1, y + 2, col, col + 1, col + 2))
                 return 0;
 
-            self->video->DrawPixel(x, y, colour);
+            self->video->DrawTriangle(x, y, col);
 
             Py_INCREF(Py_None);
             return Py_None;
