@@ -43,5 +43,5 @@ void IDocView::OnClose(wxCloseEvent& event)
         }
     }
     
-    Destroy();
+    event.Skip();
 }

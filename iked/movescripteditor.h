@@ -9,8 +9,9 @@ class CCHRfile;
 class CSpriteSet;
 class CSpriteSetView;
 
-
 using std::vector;
+
+class wxGridEvent;
 
 class CMovescriptEditor : public wxDialog
 {
@@ -22,10 +23,15 @@ class CMovescriptEditor : public wxDialog
         void UpdateData();
         void UpdateDlg();
     
+    private:
+
+        void OnSize(wxCommandEvent& event);
         void OnClose(wxCommandEvent& event);
 
-
-    private:
+        void BeginEdit(wxGridEvent& event);
+        void EditCell(wxGridEvent& event);
+        void EditAnimScript(wxGridEvent& event);
+        void EditMetaData(wxGridEvent& event);
 
         void InitControls();
 
@@ -33,10 +39,15 @@ class CMovescriptEditor : public wxDialog
         CSpriteSet*         pSprite;
         int                 nCurframe;
 
+        class wxGrid*       animScriptGrid;
+        class wxGrid*       metaDataGrid;
+
+        // HACK because wx change events don't tell me what the old value of a cell is.
+        std::string         oldValue;
 
         // controls
 
-        vector<wxTextCtrl*>     movescript;
+        /*vector<wxTextCtrl*>     movescript;
         wxTextCtrl*             pDesc;
         wxTextCtrl*             pHotx;
         wxTextCtrl*             pHoty;
@@ -46,7 +57,7 @@ class CMovescriptEditor : public wxDialog
         wxTextCtrl*             pLeft;
         wxTextCtrl*             pRight;
         wxTextCtrl*             pUp;
-        wxTextCtrl*             pDown;
+        wxTextCtrl*             pDown;*/
 
 
         DECLARE_EVENT_TABLE()

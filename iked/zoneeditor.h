@@ -12,7 +12,7 @@ class ZoneEditor : public wxDialog
 private:
     CMapView*   _parent;
     Map*        _map;
-    int         _curzone;
+    uint        _curzone;
 
     wxListBox*  _zonelist;
     wxTextCtrl* _nameedit;

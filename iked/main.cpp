@@ -173,12 +173,12 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
         "Open File",
         "",
         "",
-        "All known|*.ikaprj;*.py;*.map;*.vsp;*.chr;*.fnt;*.txt;*.dat|"
+        "All known|*.ikaprj;*.py;*.map;*.vsp;*.ika-sprite;*.chr;*.fnt;*.txt;*.dat|"
         "iked Projects (*.ikaprj)|*.ikaprj|"
         "Python Scripts (*.py)|*.py|"
         "Maps (*.map)|*.map|"
         "VSP Tilesets (*.vsp)|*.vsp|"
-        "Sprites (*.chr)|*.chr|"
+        "Sprites (*.ika-sprite;*.chr)|*.ika-sprite;*.chr|"
         "Fonts (*.fnt)|*.fnt|"
         "Text (*.txt)|*.txt|"
         "Dat Files (*.dat)|*.dat|"
@@ -208,13 +208,21 @@ void CMainWnd::OnSize(wxSizeEvent& event)
 
 void CMainWnd::OnQuit(wxCloseEvent& event)
 {
+    /*
+     * Broken, and I have no idea how to fix it.
+     * If windows are open, I close them all, then check to see if any remain.
+     * But they still remain, since the close messages just get queued up, for
+     * later processing.  I have thus far been unable to force this processing
+     * to occur.  Blech.
+     */
+
     for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
     {
         IDocView* pDoc=*i;
         pDoc->Close();
     }
 
-    if (pDocuments.empty())
+    if (pDocuments.empty() || !event.CanVeto())
         event.Skip();
     else
         event.Veto();
@@ -225,7 +233,6 @@ void CMainWnd::Open(const std::string& fname)
     // First, see if the document is already open
     for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
     {
-        // FIXME?  Windows filenames are not case sensitive.
         if (Path::Compare((*i)->GetFileName(), fname))
         {
             (*i)->Activate();
@@ -236,20 +243,19 @@ void CMainWnd::Open(const std::string& fname)
     // okay.  It's not open.  Open it.
     FileType type = GetFileType(fname);
 
-    IDocView* pWnd = 0;
+    IDocView* wnd = 0;
 
     switch (type)
     {
-    case t_project:     _project->Load(fname);                      return;
-    case t_script:      pWnd = new CCodeView(this, fname);            break;
-    case t_map:         pWnd = new CMapView(this, fname.c_str());     break;
-    case t_vsp:         pWnd = new CTileSetView(this, fname.c_str()); break;
-    case t_font:        pWnd = new CFontView(this, fname.c_str());    break;
-    //case t_unknown:
+    case t_script:      wnd = new CCodeView     (this, fname);          break;
+    case t_map:         wnd = new CMapView      (this, fname.c_str());  break;
+    case t_vsp:         wnd = new CTileSetView  (this, fname.c_str());  break;
+    case t_font:        wnd = new CFontView     (this, fname.c_str());  break;
     case t_text:
-    case t_dat:         pWnd = new CTextView(this, fname.c_str());    break;
-    case t_chr:         pWnd = new CSpriteSetView(this, fname.c_str()); break;
+    case t_dat:         wnd = new CTextView     (this, fname.c_str());  break;
+    case t_chr:         wnd = new CSpriteSetView(this, fname.c_str());  break;
 
+    case t_project:     _project->Load(fname);                          return;
     case t_config:
         {
             CConfigDlg* configdlg = new CConfigDlg(
@@ -263,14 +269,13 @@ void CMainWnd::Open(const std::string& fname)
 
             return;
         }
-    default:
-        {
-            wxMessageDialog(this, "Not implemented yet", "NYI", wxOK).ShowModal();
-            return;
-        }
+    case t_unknown: wxMessageDialog(this, "Unknown filetype", "", wxOK).ShowModal();        return;
+    default:        wxMessageDialog(this, "Not implemented yet", "NYI", wxOK).ShowModal();  return;
     };   
 
-    OpenDocument(pWnd);
+    // Control only gets here for the conventional files. (not projects, or config files)
+    wxASSERT(wnd != 0);
+    OpenDocument(wnd);
 }
 
 void CMainWnd::OpenDocument(IDocView* newwnd)
@@ -405,29 +410,33 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
 
 FileType CMainWnd::GetFileType(const std::string& fname)
 {
-    char* ext[] =
+    static const struct
     {
-        "",
-        "",
-        "ikaprj",
-        "py",
-        "vsp",
-        "chr",
-        "fnt",
-        "map",
-        "cfg",
-        "txt",
-        "dat"
+        char* ext;
+        FileType type;
+    } types[] =
+    {
+        { "ikaprj",     t_project   },
+        { "py",         t_script    },
+        { "vsp",        t_vsp       },
+        { "chr",        t_chr       },
+        { "ika-sprite", t_chr       },
+        { "fnt",        t_font      },
+        { "map",        t_map       },
+        { "cfg",        t_config    },
+        { "txt",        t_text      },
+        { "dat",        t_text      }
     };
 
-    const int nExt = sizeof(ext) / sizeof(char*);
+    static const types_count = sizeof types / sizeof types[0];
 
-    std::string sExt = Path::Extension(fname);
+    std::string sExt = ::Lower(Path::Extension(fname));
     
-    strlwr((char*)sExt.c_str());
+    for (int i = 0; i < types_count; i++)
+    {
+        if (sExt == types[i].ext)
+            return types[i].type;
+    }
 
-    for (int i = 2; i < nExt; i++)      // magic number.  Suck.
-        if (sExt==ext[i])
-            return (FileType)i;
     return t_unknown;
 }

@@ -1,9 +1,203 @@
 
+#include <wx/grid.h>
+#include <wx/xrc/xmlres.h>
+
 #include "movescripteditor.h"
 #include "spriteset.h"
 #include "spritesetview.h"
 #include "chr.h"
 
+#if 1
+
+namespace
+{
+    enum
+    {
+        id_animgrid = 666,
+        id_metadatagrid
+    };
+}
+
+BEGIN_EVENT_TABLE(CMovescriptEditor, wxDialog)
+    //EVT_SIZE(CMovescriptEditor::OnSize) // Doesn't work.  Dammit.
+    EVT_CLOSE(CMovescriptEditor::OnClose)
+
+    EVT_GRID_EDITOR_SHOWN(CMovescriptEditor::BeginEdit)
+    EVT_GRID_CELL_CHANGE(CMovescriptEditor::EditCell)
+END_EVENT_TABLE()
+
+CMovescriptEditor::CMovescriptEditor(CSpriteSetView* parent, CSpriteSet* sprite, int idx)
+    : pSprite(sprite)
+    , pParent(parent)
+    , animScriptGrid(0)
+    , metaDataGrid(0)
+{
+    wxXmlResource::Get()->LoadDialog(this, parent, "dialog_spriteproperties");
+
+    animScriptGrid = new wxGrid(this, id_animgrid);
+    animScriptGrid->SetRowLabelSize(0);
+    animScriptGrid->SetColLabelSize(0);
+    animScriptGrid->CreateGrid(8, 2);
+    animScriptGrid->EnableGridLines(false);
+
+    metaDataGrid = new wxGrid(this, id_metadatagrid);
+    metaDataGrid->SetRowLabelSize(0);
+    metaDataGrid->SetColLabelSize(0);
+    metaDataGrid->CreateGrid(8, 2);
+    metaDataGrid->EnableGridLines(false);
+
+
+    wxXmlResource::Get()->AttachUnknownControl("unknown_animscript", animScriptGrid);
+    wxXmlResource::Get()->AttachUnknownControl("unknown_metadata", metaDataGrid);
+
+    XRCCTRL(*this, "panel_main", wxPanel)->GetSizer()->Fit(this);
+
+    UpdateDlg();
+}
+
+void CMovescriptEditor::UpdateDlg()
+{
+    struct Local
+    {
+        static void setInt(CMovescriptEditor* This, const char* name, int value)
+        {
+            XRCCTRL(*This, name, wxTextCtrl)->SetValue(ToString(value).c_str());
+        }
+    };
+
+    CCHRfile& chr = pSprite->GetCHR();
+
+    Local::setInt(this, "edit_hotx", chr.HotX());
+    Local::setInt(this, "edit_hoty", chr.HotY());
+    Local::setInt(this, "edit_hotwidth", chr.HotW());
+    Local::setInt(this, "edit_hotheight", chr.HotH());
+
+    {   
+        // Update the animation script table.
+        wxASSERT(animScriptGrid != 0);
+        animScriptGrid->BeginBatch();
+        int delta = animScriptGrid->GetRows() - (chr.moveScripts.size() + 1); // we want one row per script, plus one at the end.
+        if (delta > 0)          animScriptGrid->DeleteRows(delta);
+        else if (delta < 0)     animScriptGrid->AppendRows(-delta);
+
+        animScriptGrid->ClearGrid();
+        for (uint i = 0; i < chr.moveScripts.size(); i++)
+        {
+            animScriptGrid->SetCellValue(va("Script%i", i), i, 0);
+            animScriptGrid->SetCellValue(chr.moveScripts[i].c_str(), i, 1);
+            animScriptGrid->SetReadOnly(i, 0); // for now, scripts cannot be renamed
+        }
+        animScriptGrid->EndBatch();
+    }
+
+    {   
+        // Update the metadata table
+        wxASSERT(metaDataGrid != 0);
+        metaDataGrid->BeginBatch();
+        int delta = metaDataGrid->GetRows() - (chr.metaData.size() + 1);
+        if (delta > 0)          metaDataGrid->DeleteRows(delta);
+        else if (delta < 0)     metaDataGrid->DeleteRows(-delta);
+
+        metaDataGrid->ClearGrid();
+        int pos=0;
+        for (std::map<std::string, std::string>::iterator i = chr.metaData.begin(); i != chr.metaData.end(); i++)
+        {
+            metaDataGrid->SetCellValue(i->first.c_str(), pos, 0);
+            metaDataGrid->SetCellValue(i->second.c_str(), pos, 1);
+            pos++;
+        }
+        metaDataGrid->EndBatch();
+    }
+}
+
+void CMovescriptEditor::OnSize(wxCommandEvent& event)
+{
+    // this gets called before the constructor finishes. :P
+    if (!animScriptGrid || !metaDataGrid)
+        return;
+
+    wxSize newSize(animScriptGrid->GetSize().GetWidth() - animScriptGrid->GetPosition().x, animScriptGrid->GetSize().GetHeight());
+    animScriptGrid->SetSize(newSize);
+    metaDataGrid->SetSize(newSize);
+    XRCCTRL(*this, "panel_main", wxPanel)->GetSizer()->Layout();
+}
+
+void CMovescriptEditor::OnClose(wxCommandEvent& event)
+{
+    //UpdateData();
+    Show(false);
+}
+
+void CMovescriptEditor::BeginEdit(wxGridEvent& event)
+{
+    wxGrid* grid = wxDynamicCast(event.GetEventObject(), wxGrid);
+    wxASSERT(grid);
+
+    oldValue = grid->GetCellValue(event.GetRow(), event.GetCol());
+}
+
+void CMovescriptEditor::EditCell(wxGridEvent& event)
+{
+    wxGrid* grid = wxDynamicCast(event.GetEventObject(), wxGrid);
+    wxASSERT(grid != 0);
+
+    if (grid == animScriptGrid)     EditAnimScript(event);
+    else if (grid == metaDataGrid)  EditMetaData(event);
+    else
+        wxASSERT(false);
+}
+
+void CMovescriptEditor::EditAnimScript(wxGridEvent& event)
+{
+    int row = event.GetRow();
+    int col = event.GetCol();
+    const wxString cell = animScriptGrid->GetCellValue(row, col);
+
+    if (cell.empty())
+    {
+        pSprite->GetCHR().moveScripts.erase(pSprite->GetCHR().moveScripts.begin() + row);
+        animScriptGrid->DeleteRows(row);
+    }
+    else
+    {
+        if (col == 1) // editing the actual script
+            pSprite->GetCHR().moveScripts[row] = cell.c_str();
+        // else rename the script (NYI.  Scripts are still ordinal)
+    }
+}
+
+void CMovescriptEditor::EditMetaData(wxGridEvent& event)
+{
+    int row = event.GetRow();
+    int col = event.GetCol();
+    const std::string cell = metaDataGrid->GetCellValue(row, col).c_str();
+    std::map<std::string, std::string>& md = pSprite->GetCHR().metaData;
+
+    if (col == 0)
+    {
+        if (cell.empty())           // deleting a key
+        {
+            md.erase(oldValue);
+            metaDataGrid->DeleteRows(row);
+        }
+        else if (!md.count(cell))   // creating a new key
+        {
+            md[cell] = "";
+            metaDataGrid->AppendRows();
+        }
+        else                        // renaming a key
+        {
+            md[cell] = md[oldValue];
+            md.erase(oldValue);
+        }
+    }
+    else // changing the value of a piece of metadata
+    {
+        md[metaDataGrid->GetCellValue(row, 0).c_str()] = cell;
+    }
+}
+
+#else
 //#include "wx\resource.h"
 
 BEGIN_EVENT_TABLE(CMovescriptEditor, wxDialog)
@@ -85,27 +279,27 @@ void CMovescriptEditor::UpdateDlg()
 {
     CCHRfile& chr = pSprite->GetCHR();
 
-    const uint s = min(movescript.size(), chr.sMovescript.size());
+    const uint s = min(movescript.size(), chr.moveScripts.size());
     for (uint i = 0; i < s; i++)
     {
         wxTextCtrl* p = movescript[i];
 
-        const char* c = chr.sMovescript[i].c_str();
+        const char* c = chr.moveScripts[i].c_str();
         
-        p->SetValue(chr.sMovescript[i].c_str());
+        p->SetValue(chr.moveScripts[i].c_str());
     }
 
-    pDesc->SetValue(chr.sDescription.c_str());
+    pDesc->SetValue(chr.metaData["description"].c_str());
 
     pHotx->SetValue(ToString(chr.HotX(nCurframe)).c_str());
     pHoty->SetValue(ToString(chr.HotY(nCurframe)).c_str());
     pHotw->SetValue(ToString(chr.HotW(nCurframe)).c_str());
     pHoth->SetValue(ToString(chr.HotH(nCurframe)).c_str());
 
-    pLeft->SetValue(chr.sMovescript[8 + face_left].c_str());
-    pRight->SetValue(chr.sMovescript[8 + face_right].c_str());
-    pUp->SetValue(chr.sMovescript[8 + face_up].c_str());
-    pDown->SetValue(chr.sMovescript[8 + face_down].c_str());
+    pLeft->SetValue(chr.moveScripts[8 + face_left].c_str());
+    pRight->SetValue(chr.moveScripts[8 + face_right].c_str());
+    pUp->SetValue(chr.moveScripts[8 + face_up].c_str());
+    pDown->SetValue(chr.moveScripts[8 + face_down].c_str());
 
 }
 
@@ -114,15 +308,15 @@ void CMovescriptEditor::UpdateData()
     CCHRfile& chr = pSprite->GetCHR();
 
     for (uint i = 0; i < movescript.size(); i++)
-        chr.sMovescript[i] = movescript[i]->GetValue().c_str();
+        chr.moveScripts[i] = movescript[i]->GetValue().c_str();
 
     
-    chr.sDescription = pDesc->GetValue().c_str();
+    chr.metaData["description"] = pDesc->GetValue().c_str();
 
-    chr.sMovescript[8 + face_left]    =   pLeft->GetValue().c_str();
-    chr.sMovescript[8 + face_right]   =   pRight->GetValue().c_str();
-    chr.sMovescript[8 + face_up]      =   pUp->GetValue().c_str();
-    chr.sMovescript[8 + face_down]    =   pDown->GetValue().c_str();
+    chr.moveScripts[8 + face_left]    =   pLeft->GetValue().c_str();
+    chr.moveScripts[8 + face_right]   =   pRight->GetValue().c_str();
+    chr.moveScripts[8 + face_up]      =   pUp->GetValue().c_str();
+    chr.moveScripts[8 + face_down]    =   pDown->GetValue().c_str();
 
     int& hotx = chr.HotX(nCurframe);
     int& hoty = chr.HotY(nCurframe);
@@ -142,5 +336,4 @@ void CMovescriptEditor::OnClose(wxCommandEvent& event)
     Show(false);
 }
 
-
-
+#endif

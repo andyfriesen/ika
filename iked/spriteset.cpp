@@ -1,6 +1,7 @@
 
 #include "spriteset.h"
 #include "chr.h"
+#include "log.h"
 
 CSpriteSet::CSpriteSet() : pCHR(0)
 {
@@ -16,8 +17,13 @@ bool CSpriteSet::Load(const char* fname)
 {
     CCHRfile* pNewchr = new CCHRfile;
 
-    if (!pNewchr->Load(fname))
+    try
+    {   pNewchr->Load(fname);   }
+    catch (std::runtime_error err)
+    {
+        Log::Write(va("CCHRfile: %s", err.what()));
         return false;
+    }
 
     delete pCHR;
     pCHR = pNewchr;
