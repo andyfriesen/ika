@@ -665,10 +665,10 @@ void CCHRfile::Loadv2CHR(File& f)
     
     // Get the idle frames
     int i;
-    f.Read(i);        moveScripts[8 + face_left]  =string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_right] =string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_up]    =string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_down]  =string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_left]  =std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_right] =std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_up]    =std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_down]  =std::string("F") + ToString(i) + "W10";
     
     for (int b = 0; b < 4; b++)
     {
@@ -713,10 +713,10 @@ void CCHRfile::Loadv4CHR(File& f)
     
     // Get the idle frames
     u16 i;
-    f.Read(i);        moveScripts[8 + face_left]    = string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_right]   = string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_up]      = string("F") + ToString(i) + "W10";
-    f.Read(i);        moveScripts[8 + face_down]    = string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_left]    = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_right]   = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_up]      = std::string("F") + ToString(i) + "W10";
+    f.Read(i);        moveScripts[8 + face_down]    = std::string("F") + ToString(i) + "W10";
     
     f.Read(i);
     int nFrames = i;                // frame count

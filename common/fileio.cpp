@@ -9,15 +9,15 @@
     TODO: Pack files
 */
 
-vector<File::SDirectoryInfo> File::directoryinfo;
+std::vector<File::SDirectoryInfo> File::directoryinfo;
 
-string File::GetRealPath(const string& fname)
+std::string File::GetRealPath(const std::string& fname)
 {
     if (fname.substr(0, 2)==".\\" || fname.substr(0, 2)=="./")	// absolute path specified
         return fname;
     
-    string sExtension = fname;
-    string sResult = fname;
+    std::string sExtension = fname;
+    std::string sResult = fname;
     
     unsigned int i = sExtension.length()-1;
     do
@@ -55,7 +55,7 @@ string File::GetRealPath(const string& fname)
     return sResult;
 }
 
-void File::AddPath(string sExtension, string sPath)
+void File::AddPath(std::string sExtension, std::string sPath)
 {
     SDirectoryInfo di;
    
@@ -107,7 +107,7 @@ bool File::OpenRead(const char *fname, bool bBinary)
     if (!strlen(fname))
         return false;
     
-    string sFilename = GetRealPath(string(fname));
+    std::string sFilename = GetRealPath(std::string(fname));
     
     if (bBinary)
         f = fopen(sFilename.c_str(), "rb");
@@ -129,7 +129,7 @@ bool File::OpenAppend(const char *fname, bool bBinary)
     if (!strlen(fname))
         return false;
     
-    string sFilename = GetRealPath(fname);
+    std::string sFilename = GetRealPath(fname);
     
     if (bBinary)
         f = fopen(sFilename.c_str(), "ab");

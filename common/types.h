@@ -14,9 +14,6 @@
 #include <vector>
 #include <string>
 
-using std::string;
-using std::vector;
-
 typedef unsigned char u8;
 typedef unsigned short u16;
 typedef unsigned int u32;
@@ -59,6 +56,18 @@ struct Point
     int y;
 
     Point(int _x = 0, int _y = 0)
+        : x(_x)
+        , y(_y)
+    {}
+};
+
+// Same as Point, but floating point. (ugh)
+struct Vertex
+{
+    float x;
+    float y;
+
+    Vertex(float _x = 0, float _y = 0)
         : x(_x)
         , y(_y)
     {}

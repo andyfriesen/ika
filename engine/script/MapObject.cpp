@@ -3,6 +3,7 @@ Map manipulation junque.
 */
 #include "ObjectDefs.h"
 #include "main.h"
+#include "common/fileio.h"
 
 namespace Script
 {
@@ -16,7 +17,7 @@ namespace Script
                 "Map.Switch(filename)\n\n"
                 "Switches the current map to the map file specified.\n"
                 "The new map's AutoExec event is executed, if it exists."
-            },
+            },/*
 
             {   "Render",       (PyCFunction)Map_Render,        METH_VARARGS,
                 "Map.Render([rstring])\n\n"
@@ -72,7 +73,7 @@ namespace Script
                 "Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)\n\n"
                 "Sets the specified layer's parallax settings according to the multipliers\n"
                 "and divisors given."
-            },
+            },*/
             {   0   }   // end of list
         };
 
@@ -86,14 +87,14 @@ namespace Script
         GET(NumTiles)   { return PyInt_FromLong(engine->tiles->NumTiles()); }
         GET(TileWidth)  { return PyInt_FromLong(engine->tiles->Width()); }
         GET(TileHeight) { return PyInt_FromLong(engine->tiles->Height()); }
-        GET(Width)      { return PyInt_FromLong(engine->map.Width()); }
-        GET(Height)     { return PyInt_FromLong(engine->map.Height()); }
-        GET(RString)    { return PyString_FromString(engine->map.GetRString().c_str()); }
-        SET(RString)    { engine->map.SetRString(PyString_AsString(value));     return 0;   }
-        GET(VSPName)    { return PyString_FromString(engine->map.GetVSPName().c_str()); }
-        SET(VSPName)    { engine->map.SetVSPName(PyString_AsString(value));     return 0;   }
-        GET(Music)      { return PyString_FromString(engine->map.GetMusic().c_str()); }
-        SET(Music)      { engine->map.SetMusic(PyString_AsString(value));       return 0;   }
+        //GET(Width)      { return PyInt_FromLong(engine->map.Width()); }
+        //GET(Height)     { return PyInt_FromLong(engine->map.Height()); }
+        //GET(RString)    { return PyString_FromString(engine->map.GetRString().c_str()); }
+        //SET(RString)    { engine->map.SetRString(PyString_AsString(value));     return 0;   }
+        GET(TileSetName)    { return PyString_FromString(engine->map.tileSetName.c_str()); }
+        SET(TileSetName)    { engine->map.tileSetName = PyString_AsString(value);     return 0;   }
+        //GET(Music)      { return PyString_FromString(engine->map.GetMusic().c_str()); }
+        //SET(Music)      { engine->map.SetMusic(PyString_AsString(value));       return 0;   }
         GET(Entities)   { Py_INCREF(entityDict); return entityDict; }
 
 #undef GET
@@ -106,11 +107,11 @@ namespace Script
             {   "numtiles",     (getter)getNumTiles,        0,                  "Gets the number of tiles in the current tileset"   },
             {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset"         },
             {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset"        },
-            {   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in tiles"   },
-            {   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in tiles"  },
-            {   "rstring",      (getter)getRString,         (setter)setRString, "Gets or sets the current render string of the map" },
-            {   "vspname",      (getter)getVSPName,         (setter)setVSPName, "Gets or sets the name of the current tileset"  },
-            {   "defaultmusic", (getter)getMusic,           (setter)setMusic,   "Gets or sets the default music of the current map" },
+            //{   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in tiles"   },
+            //{   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in tiles"  },
+            //{   "rstring",      (getter)getRString,         (setter)setRString, "Gets or sets the current render string of the map" },
+            {   "tilesetname",      (getter)getTileSetName,         (setter)setTileSetName, "Gets or sets the name of the current tileset"  },
+            //{   "defaultmusic", (getter)getMusic,           (setter)setMusic,   "Gets or sets the default music of the current map" },
             {   "entities",     (getter)getEntities,        0,                  "Gets a dictionary of entities currently tied to the map"   },
             {   0   }
         };
@@ -165,7 +166,7 @@ namespace Script
 
             Py_INCREF(Py_None);
             return Py_None;
-        }
+        }/*
 
         METHOD(Map_Render)
         {
@@ -290,7 +291,7 @@ namespace Script
 
             Py_INCREF(Py_None);
             return Py_None;
-        }
+        }*/
 
 #undef METHOD
     }

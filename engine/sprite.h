@@ -19,18 +19,18 @@ struct SpriteException{};
 */
 class CSprite
 {
-    vector<string>  sScript;                            ///< move scripts
+    std::vector<std::string>  sScript;                            ///< move scripts
     Video::Driver* video;
 
     int nFramex, nFramey;                               ///< frame size
 
 public:
-    string sFilename;
+    std::string sFilename;
 
     short int	nHotx, nHoty;		                ///< hotspot position
     short int	nHotw, nHoth;		                ///< hotspot size
 
-    vector<Video::Image*> hFrame;                       ///< array of frame images
+    std::vector<Video::Image*> hFrame;                       ///< array of frame images
 
     CSprite(const std::string& fname, Video::Driver* v);
     virtual ~CSprite();
@@ -39,7 +39,7 @@ public:
   
     inline int Width() const { return nFramex; }
     inline int Height() const { return nFramey; }
-    const string& Script(uint s) const;
+    const std::string& Script(uint s) const;
 };
 
 /**

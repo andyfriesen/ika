@@ -182,7 +182,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
     _topBar = new wxSashLayoutWindow(this, id_topbar);
 #ifdef VERTICAL_FUN
-    _topBar->SetAlignment(wxLAYOUT_RIGHT);
+    _topBar->SetAlignment(wxLAYOUT_LEFT);
     _topBar->SetOrientation(wxLAYOUT_VERTICAL);
 #else
     _topBar->SetAlignment(wxLAYOUT_TOP);
@@ -192,9 +192,9 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     _bottomBar = new wxSashLayoutWindow(this, id_bottombar);
     _bottomBar->SetDefaultSize(wxSize(330, 100));
 #ifdef VERTICAL_FUN
-    _bottomBar->SetAlignment(wxLAYOUT_LEFT);
+    _bottomBar->SetAlignment(wxLAYOUT_RIGHT);
     _bottomBar->SetOrientation(wxLAYOUT_VERTICAL);
-    _bottomBar->SetSashVisible(wxSASH_RIGHT, true);
+    _bottomBar->SetSashVisible(wxSASH_LEFT, true);
 #else
     _bottomBar->SetAlignment(wxLAYOUT_BOTTOM);
     _bottomBar->SetOrientation(wxLAYOUT_HORIZONTAL);

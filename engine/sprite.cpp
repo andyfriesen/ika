@@ -37,9 +37,9 @@ CSprite::~CSprite()
         video->FreeImage(hFrame[i]);//delete hFrame[i];
 }
 
-const string& CSprite::Script(uint s) const
+const std::string& CSprite::Script(uint s) const
 {
-    static string dummy;
+    static std::string dummy;
 
     if (s >= sScript.size())
         return dummy;

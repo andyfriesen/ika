@@ -14,7 +14,7 @@
  */
 class CCHRfile
 {
-    vector<Canvas>    frame;                    ///< frame data
+    std::vector<Canvas>    frame;                    ///< frame data
 
     int        nWidth, nHeight;
     int        nHotx, nHoty;                    ///< hotspot position

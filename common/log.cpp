@@ -13,7 +13,7 @@ using std::endl;
 namespace Log
 {
     bool bLogging = false;
-    string sLogname;
+    std::string sLogname;
 
     std::ofstream logfile;
 };

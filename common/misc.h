@@ -48,12 +48,12 @@ int sgn(int x);
 int Random(int min, int max);
 char* va(char* format, ...);
 
-const string Trim(const std::string& s);
+const std::string Trim(const std::string& s);
 
-string Lower(const string& s);
-string Upper(const string& s);
+std::string Lower(const std::string& s);
+std::string Upper(const std::string& s);
 
-string ToString(int i);
+std::string ToString(int i);
 
 template <class T>
 class ScopedPtr
@@ -114,14 +114,14 @@ namespace Path
     // strips the path from the filename, and returns it.
     // If relativeto is not specified or is empty, then the entire path is returned.
     // If it is specified, then the path returned is relative to the path contained therein.
-    string Directory(const string& s, const string& relativeto=""); 
+    std::string Directory(const std::string& s, const std::string& relativeto=""); 
 
-    string Filename(const string& s);           // same idea, but just returns the filename
+    std::string Filename(const std::string& s);           // same idea, but just returns the filename
 
-    string Extension(const string& s);          // returns the extension. (excluding the period)
-    string ReplaceExtension(const string& s, const string& extension); // swaps the extension, and returns the result
+    std::string Extension(const std::string& s);          // returns the extension. (excluding the period)
+    std::string ReplaceExtension(const std::string& s, const std::string& extension); // swaps the extension, and returns the result
 
-    bool Compare(const string& s, const string& t); // returns true if the two paths are the same.  Disregards case in win32.
+    bool Compare(const std::string& s, const std::string& t); // returns true if the two paths are the same.  Disregards case in win32.
 };
 
 #endif

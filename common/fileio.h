@@ -15,16 +15,16 @@ class File
 
     struct SDirectoryInfo
     {
-        string sExtension;
-        string sPath;
+        std::string sExtension;
+        std::string sPath;
     };
 
     // Directory structure handling things
 private:
-    static vector<SDirectoryInfo> directoryinfo;
-    string GetRealPath(const string& fname);
+    static std::vector<SDirectoryInfo> directoryinfo;
+    std::string GetRealPath(const std::string& fname);
 public:
-    static void AddPath(string sExtension, string sPath);
+    static void AddPath(std::string sExtension, std::string sPath);
     static void ClearPaths();
 
     // Misc handy file stuff

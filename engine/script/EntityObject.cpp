@@ -26,7 +26,7 @@ namespace Script
         
         PyMethodDef methods [] =
         {
-            {    "Move",            (PyCFunction)Entity_Move,             METH_VARARGS,
+            /*{    "Move",            (PyCFunction)Entity_Move,             METH_VARARGS,
                 "Entity.Move(movepattern)\n\n"
                 "Directs the entity to move in the pattern specified."
             },
@@ -49,7 +49,7 @@ namespace Script
                 "Directs the entity to wander around randomly.  Unlike Entity.Wander, however\n"
                 "the entity will not wander off the specified zone.  This is a good way to confine\n"
                 "an entity to an irregular region of the map."
-            },
+            },*/
 
             {    "Stop",            (PyCFunction)Entity_Stop,             METH_VARARGS,    
                 "Entity.Stop()\n\n"
@@ -73,25 +73,25 @@ namespace Script
 #define SET(x) PyObject* set ## x(EntityObject* self, PyObject* value)
             GET(X)                  { return PyInt_FromLong(self->ent->x); }
             GET(Y)                  { return PyInt_FromLong(self->ent->y); }
-            GET(Speed)              { return PyInt_FromLong(self->ent->nSpeed); }
+            GET(Speed)              { return PyInt_FromLong(self->ent->speed); }
             GET(Direction)          { return PyInt_FromLong(self->ent->direction); }
-            GET(CurFrame)           { return PyInt_FromLong(self->ent->nCurframe); }
-            GET(SpecFrame)          { return PyInt_FromLong(self->ent->nSpecframe); }
-            GET(Visible)            { return PyInt_FromLong(self->ent->bVisible?1:0); }
-            GET(Name)               { return PyString_FromString(self->ent->sName.c_str()); }
-            GET(ActScript)          { return PyString_FromString(self->ent->sActscript.c_str()); }
-            GET(AdjacentActivate)   { return PyInt_FromLong(self->ent->bAdjacentactivate?1:0); }
+            GET(CurFrame)           { return PyInt_FromLong(self->ent->curFrame); }
+            GET(SpecFrame)          { return PyInt_FromLong(self->ent->specFrame); }
+            GET(Visible)            { return PyInt_FromLong(self->ent->isVisible ? 1 : 0); }
+            GET(Name)               { return PyString_FromString(self->ent->name.c_str()); }
+            GET(ActScript)          { return PyString_FromString(self->ent->activateScript.c_str()); }
+            GET(AdjacentActivate)   { return PyString_FromString(self->ent->adjActivateScript.c_str()); }
 //            GET(AutoFace)           { return PyInt_FromLong(self->ent->bAutoface?1:0; }
-            GET(IsObs)              { return PyInt_FromLong(self->ent->bIsobs?1:0); }
-            GET(MapObs)             { return PyInt_FromLong(self->ent->bMapobs?1:0); }
-            GET(EntObs)             { return PyInt_FromLong(self->ent->bEntobs?1:0); }
-            GET(Sprite)             { return PyString_FromString(self->ent->pSprite->sFilename.c_str()); }
-            GET(HotX)               { return PyInt_FromLong(self->ent->pSprite->nHotx); }
-            GET(HotY)               { return PyInt_FromLong(self->ent->pSprite->nHoty); }
-            GET(HotWidth)           { return PyInt_FromLong(self->ent->pSprite->nHotw); }
-            GET(HotHeight)          { return PyInt_FromLong(self->ent->pSprite->nHoth); }
-            GET(MovePattern)        { return PyInt_FromLong(self->ent->movecode);   }
-            GET(ChaseTarget)
+            GET(IsObs)              { return PyInt_FromLong(self->ent->obstructsEntities?1:0); }
+            GET(MapObs)             { return PyInt_FromLong(self->ent->obstructedByMap?1:0); }
+            GET(EntObs)             { return PyInt_FromLong(self->ent->obstructedByEntities?1:0); }
+            GET(Sprite)             { return PyString_FromString(self->ent->sprite->sFilename.c_str()); }
+            GET(HotX)               { return PyInt_FromLong(self->ent->sprite->nHotx); }
+            GET(HotY)               { return PyInt_FromLong(self->ent->sprite->nHoty); }
+            GET(HotWidth)           { return PyInt_FromLong(self->ent->sprite->nHotw); }
+            GET(HotHeight)          { return PyInt_FromLong(self->ent->sprite->nHoth); }
+            //GET(MovePattern)        { return PyInt_FromLong(self->ent->movecode);   }
+            /*GET(ChaseTarget)
             {
                 if (!self->ent->pChasetarget || self->ent->movecode != mc_chase)
                 {
@@ -108,40 +108,40 @@ namespace Script
 
                 PyErr_SetString(PyExc_RuntimeError, "Internal error: chasetarget points to something wacky.  Bug andy if you see this!");
                 return 0;
-            }
+            }*/
 
             SET(X)                  { self->ent->x = PyInt_AsLong(value); return 0; }
             SET(Y)                  { self->ent->y = PyInt_AsLong(value); return 0; }
-            SET(Speed)              { self->ent->nSpeed = PyInt_AsLong(value); return 0; }
+            SET(Speed)              { self->ent->speed = PyInt_AsLong(value); return 0; }
             SET(Direction)
             {
                 self->ent->direction = (Direction)PyInt_AsLong(value);
 
                 int i = (int)self->ent->direction;
-                if (!self->ent->bMoving) i += 8;
-                self->ent->SetAnimScript(self->ent->pSprite->Script(i));
+                if (!self->ent->isMoving) i += 8;
+                self->ent->SetAnimScript(self->ent->sprite->Script(i));
 
                 self->ent->UpdateAnimation();
                 return 0;
             }
 
-            SET(SpecFrame)          { self->ent->nSpecframe = PyInt_AsLong(value); return 0; }
-            SET(Visible)            { self->ent->bVisible = PyInt_AsLong(value)!=0 ; return 0; }
-            SET(Name)               { self->ent->sName = PyString_AsString(value); return 0; }
-            SET(ActScript)          { self->ent->sActscript = PyString_AsString(value); return 0; }
-            SET(AdjacentActivate)   { self->ent->bAdjacentactivate = (PyInt_AsLong(value) != 0); return 0; }
+            SET(SpecFrame)          { self->ent->specFrame = PyInt_AsLong(value); return 0; }
+            SET(Visible)            { self->ent->isVisible = PyInt_AsLong(value)!=0 ; return 0; }
+            SET(Name)               { self->ent->name = PyString_AsString(value); return 0; }
+            SET(ActScript)          { self->ent->activateScript = PyString_AsString(value); return 0; }
+            SET(AdjacentActivate)   { self->ent->adjActivateScript = PyString_AsString(value); return 0; }
 //            SET(AutoFace)           { self->ent->bAutoface = PyInt_AsLong(value) != 0; return 0; }
-            SET(IsObs)              { self->ent->bIsobs = (PyInt_AsLong(value)!=0) ; return 0; }
-            SET(MapObs)             { self->ent->bMapobs = (PyInt_AsLong(value)!=0) ; return 0; }
-            SET(EntObs)             { self->ent->bEntobs = (PyInt_AsLong(value)!=0) ; return 0; }
+            SET(IsObs)              { self->ent->obstructsEntities = (PyInt_AsLong(value)!=0) ; return 0; }
+            SET(MapObs)             { self->ent->obstructedByMap = (PyInt_AsLong(value)!=0) ; return 0; }
+            SET(EntObs)             { self->ent->obstructedByEntities = (PyInt_AsLong(value)!=0) ; return 0; }
             SET(Sprite)
             {
-                engine->sprite.Free(self->ent->pSprite);
-                self->ent->pSprite=engine->sprite.Load(PyString_AsString(value), engine->video);
+                engine->sprite.Free(self->ent->sprite);
+                self->ent->sprite = engine->sprite.Load(PyString_AsString(value), engine->video);
 
                 int i = (int)self->ent->direction;
-                if (!self->ent->bMoving) i += 8;
-                self->ent->SetAnimScript(self->ent->pSprite->Script(i));
+                if (!self->ent->isMoving) i += 8;
+                self->ent->SetAnimScript(self->ent->sprite->Script(i));
                 self->ent->UpdateAnimation();
                 return 0;
             }
@@ -159,7 +159,7 @@ namespace Script
             {   "visible",          (getter)getVisible,             (setter)setVisible,         "If nonzero, the entity is drawn when onscreen" },
             {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
             {   "actscript",        (getter)getActScript,           (setter)setActScript,       "Gets or sets the name of the function called when the entity is activated."    },
-            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "If nonzero, the entity will activate when it touches the player entity. (not implemented)" },
+            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "Gets the name of the script called when the entity touches the player. (not implemented)" },
 //            {   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated."  },
             {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
             {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
@@ -169,14 +169,14 @@ namespace Script
             {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
             {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
             {   "hotheight",        (getter)getHotHeight,           0,                          "Gets the height of the entity's hotspot."  },
-            {   "movepattern",      (getter)getMovePattern,         0,                          "Gets a value representing the entity's current movement pattern:\n\n"
+            /*{   "movepattern",      (getter)getMovePattern,         0,                          "Gets a value representing the entity's current movement pattern:\n\n"
                                                                                                 "   ika.nothing - The entity is standing still.\n"
                                                                                                 "   ika.wander - The entity is wandering.\n"
                                                                                                 "   ika.wanderrect - The entity is wandering within a rect.\n"
                                                                                                 "   ika.wanderzone - The entity is wandering within a zone.\n"
                                                                                                 "   ika.scripted - The entity is following a movement script.\n"
                                                                                                 "   ika.chase - The entity is chasing another entity." },
-            {   "chasetarget",      (getter)getChaseTarget,         0,                          "Gets the entity that this entity is chasing, or None if it is not chasing another entity." },
+            {   "chasetarget",      (getter)getChaseTarget,         0,                          "Gets the entity that this entity is chasing, or None if it is not chasing another entity." },*/
             {   0   }
         };
 
@@ -197,7 +197,7 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New(CEntity* e)
+        PyObject* New(::Entity* e)
         {
             EntityObject* ent=PyObject_New(EntityObject, &type);
             if (!ent)
@@ -233,7 +233,7 @@ namespace Script
             ent->ent = engine->SpawnEntity();
             ent->ent->x = x;
             ent->ent->y = y;
-            ent->ent->pSprite = sprite;
+            ent->ent->sprite = sprite;
 
             _entInstances.insert(ent);
 
@@ -256,20 +256,20 @@ namespace Script
 
         METHOD(Entity_Move)
         {
-            char* sPattern;
+            /*char* sPattern;
 
             if (!PyArg_ParseTuple(args, "s:Entity.Move", &sPattern))
                 return NULL;
 
-            CEntity& ent=*self->ent;
-            ent.movecode=mc_script;
-            ent.SetMoveScript(sPattern);
+            ::Entity* ent = self->ent;
+            ent->movecode = mc_script;
+            ent->SetMoveScript(sPattern);*/
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD(Entity_Chase)
+        /*METHOD(Entity_Chase)
         {
             int nDistance=0;
             EntityObject* pChasetarget;
@@ -277,7 +277,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "O!|i:Entity.Chase", &type, &pChasetarget, &nDistance))
                 return NULL;
 
-            CEntity& ent=*self->ent;
+            Entity& ent=*self->ent;
             ent.movecode=mc_chase;
             ent.pChasetarget=pChasetarget->ent;
             ent.nMinchasedist=nDistance;
@@ -294,7 +294,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "ii|iiii:Entity.Wander", &nSteps, &nDelay, &x1, &y1, &x2, &y2))
                 return NULL;
 
-            CEntity& ent=*self->ent;
+            Entity& ent=*self->ent;
             ent.nWandersteps=nSteps;
             ent.nWanderdelay=nDelay;
 
@@ -321,21 +321,22 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iii:Entity.Wander", &nSteps, &nDelay, &nZone))
                 return NULL;
 
-            CEntity& ent=*self->ent;
+            Entity& ent=*self->ent;
             ent.nWandersteps=nSteps;
             ent.nWanderdelay=nDelay;
             ent.nWanderzone=nZone;
 
             Py_INCREF(Py_None);
             return Py_None;
-        }
+        }*/
 
         METHOD(Entity_Stop)
         {
             if (!PyArg_ParseTuple(args, ""))
                 return NULL;
 
-            self->ent->movecode=mc_nothing;
+            //self->ent->movecode=mc_nothing;
+            self->ent->Stop();
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -346,9 +347,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, ""))
                 return NULL;
 
-            CEntity& ent=*self->ent;    
-
-            return PyInt_FromLong(ent.bMoving?1:0);
+            return PyInt_FromLong(self->ent->isMoving ? 1 : 0);
         }
 
         METHOD(Entity_DetectCollision)
@@ -356,25 +355,25 @@ namespace Script
             if (!PyArg_ParseTuple(args, ""))
                 return NULL;
 
-            const CEntity& e1=*self->ent;
+            const ::Entity* e1 = self->ent;
 
-            int x1=e1.x;
-            int y1=e1.y;
-            int x2=x1+e1.pSprite->nHotw;
-            int y2=y1+e1.pSprite->nHoth;
+            int x1=e1->x;
+            int y1=e1->y;
+            int x2=x1+e1->sprite->nHotw;
+            int y2=y1+e1->sprite->nHoth;
 
             int nCount=0;
             PyObject* pKey=NULL;
             PyObject* pValue=NULL;
             while (PyDict_Next(entityDict, &nCount, &pKey, &pValue))
             {
-                CEntity& e2=*((EntityObject*)pValue)->ent;
-                if (&e1==&e2)   continue;
+                ::Entity* e2 = ((EntityObject*)pValue)->ent;
+                if (e1 == e2)   continue;
 
-                if (x1>e2.x+e2.pSprite->nHotw)    continue;
-                if (y1>e2.y+e2.pSprite->nHoth)    continue;
-                if (x2<e2.x)    continue;
-                if (y2<e2.y)    continue;
+                if (x1>e2->x+e2->sprite->nHotw)    continue;
+                if (y1>e2->y+e2->sprite->nHoth)    continue;
+                if (x2<e2->x)    continue;
+                if (y2<e2->y)    continue;
 
                 Py_INCREF(pValue);
                 return pValue;

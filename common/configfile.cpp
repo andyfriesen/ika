@@ -12,7 +12,7 @@ CConfigFile::CConfigFile(const char* fname)
     Load(fname);
 }
 
-void CConfigFile::Add(const string& key, const string& value)
+void CConfigFile::Add(const std::string& key, const std::string& value)
 {
     if (key.length()==0 || value.length()==0)
         return;
@@ -20,7 +20,7 @@ void CConfigFile::Add(const string& key, const string& value)
     keys[key]=value;
 }
 
-string CConfigFile::operator [](const string& key)
+std::string CConfigFile::operator [](const std::string& key)
 {
     ConfigMap::iterator i = keys.find(key);
 
@@ -30,7 +30,7 @@ string CConfigFile::operator [](const string& key)
     return i->second;
 }
 
-int CConfigFile::Int(const string& key)
+int CConfigFile::Int(const std::string& key)
 {
     return atoi((*this)[key].c_str());
 }

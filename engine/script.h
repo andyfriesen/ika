@@ -22,15 +22,15 @@ public:
     void Init(CEngine* pEngine);                // -_-
     void Shutdown();
 
-    bool LoadSystemScripts(char* fname);
-    bool LoadMapScripts(const char* fname);
+    bool LoadSystemScripts(const std::string& fname);
+    bool LoadMapScripts(const std::string& fname);
 
     bool ExecFunction(const ScriptObject& func);
 
     void ClearEntityList();
-    void AddEntityToList(class CEntity* e);
+    void AddEntityToList(class Entity* e);
 
-    void CallEvent(const char* sName);
+    void CallEvent(const std::string& sName);
 };
 
 /// Smart pointer for holding a Python object.  I don't want the rest

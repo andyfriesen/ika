@@ -100,9 +100,9 @@ void ScriptEngine::Shutdown()
     Py_Finalize();
 }
 
-bool ScriptEngine::LoadSystemScripts(char* fname)
+bool ScriptEngine::LoadSystemScripts(const std::string& fname)
 {
-    Py_XDECREF(sysModule);                                            // free it if it's already allocated
+    Py_XDECREF(sysModule);                                              // free it if it's already allocated
     
     sysModule = PyImport_ImportModule("system");
     if (!sysModule)
@@ -114,11 +114,11 @@ bool ScriptEngine::LoadSystemScripts(char* fname)
     return true;
 }
 
-bool ScriptEngine::LoadMapScripts(const char* fname)
+bool ScriptEngine::LoadMapScripts(const std::string& fname)
 {
     Py_XDECREF(mapModule);
     
-    string sTemp = fname;
+    std::string sTemp = fname;
     
     int nExtension = sTemp.find_last_of(".", sTemp.length());
     sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
@@ -181,16 +181,16 @@ void ScriptEngine::ClearEntityList()
     Py_DECREF(pKeys);
 }
 
-void ScriptEngine::AddEntityToList(CEntity* e)
+void ScriptEngine::AddEntityToList(::Entity* e)
 {
     PyObject* pEnt = Script::Entity::New(e);                // make an object for the entity
 
-    PyDict_SetItemString(Script::entityDict, const_cast<char*>(e->sName.c_str()), pEnt);
+    PyDict_SetItemString(Script::entityDict, const_cast<char*>(e->name.c_str()), pEnt);
     
     Py_DECREF(pEnt);
 }
 
-void ScriptEngine::CallEvent(const char* sName)
+void ScriptEngine::CallEvent(const std::string& sName)
 {
     CDEBUG("ScriptEngine::CallEvent");
     
@@ -200,7 +200,7 @@ void ScriptEngine::CallEvent(const char* sName)
     engine->input.Unpress();
     
     PyObject* pDict=PyModule_GetDict(mapModule);
-    PyObject* pFunc=PyDict_GetItemString(pDict, (char*)sName);
+    PyObject* pFunc=PyDict_GetItemString(pDict, const_cast<char*>(sName.c_str()));
     
     if (!pFunc)
     {

@@ -35,17 +35,17 @@ class CEngine
     // This sucks.
     friend class ScriptEngine;
 
-    typedef std::list<CEntity*>     EntityList;
-    typedef EntityList::iterator    EntityIterator;
+    typedef std::list<Entity*>      EntityList;
     
 public:                                                                             // Too many components need access to this class.  Kinda sucks. :/
     
     Map                             map;                                            ///< tile placement and stuff
     CTileSet*                       tiles;                                          ///< Images.  Of Tiles.
-    ScriptEngine                   script;                                         ///< c0de
+    ScriptEngine                    script;                                         ///< c0de
     
     CSpriteController               sprite;                                         ///< CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
     EntityList                      entities;                                       ///< entities ;P
+public:
     
     Input                           input;                                          ///< keyboard/mouse (todo: joystick)
     Video::Driver*                  video;                                          ///< video. ;)
@@ -57,10 +57,11 @@ public:                                                                         
     bool                            bMaploaded;                                     ///< true if a map is... loaded. -_-
     
 private:
-    int                             xwin, ywin;                                      ///< world coordinates of the viewport
+    int                             xwin, ywin;                                     ///< world coordinates of the viewport
+
 public:
-    CEntity*                        pPlayer;                                        ///< Points to the current player entity
-    CEntity*                        pcameraTarget;                                  ///< Points to the current camera target
+    Entity*                         pPlayer;                                        ///< Points to the current player entity
+    Entity*                         cameraTarget;                                   ///< Points to the current camera target
     
     // Odds and ends
     HookList                        _hookRetrace;
@@ -76,20 +77,25 @@ public:
     void      CheckKeyBindings();                                                   ///< checks to see if any bound keys are pressed
     
     // Entity handling
-    bool      DetectMapCollision(int x1, int y1, int w, int h);                     ///< returns true if there is a map obstruction within the passed rect
-    CEntity*  DetectEntityCollision(const CEntity* ent, int x1, int y1, int w, int h, bool wantobstructable=false);  ///< if an entity is within the rect, return it, else return NULL.  If wantobstructable is true, then entities whose bIsobs attribute is unset will be ignored.
+    bool      DetectMapCollision(int x1, int y1, int w, int h, uint layerIndex);    ///< returns true if there is a map obstruction within the passed rect, on the specified layer
+    
+    /// If an entity is within the rect, return it, else return 0.  If wantobstructable 
+    /// is true, then entities whose bIsobs attribute is unset will be ignored.
+    Entity*   DetectEntityCollision(const Entity* ent, 
+                                    int x1, int y1, int w, int h, 
+                                    uint layerIndex, bool wantobstructable = false);  
     void      ProcessEntities();                                                    ///< one tick of AI for each entity
   
-    void      TestActivate(const CEntity& player);                                  ///< checks to see if the player has talked to an entity, stepped on a zone, etc...
+    void      TestActivate(const Entity* player);                                   ///< checks to see if the player has talked to an entity, stepped on a zone, etc...
 
-    CEntity*  SpawnEntity();                                                        ///< Creates an entity, and returns it
-    void      DestroyEntity(CEntity* e);                                            ///< Annihilates the entity
+    Entity*   SpawnEntity();                                                        ///< Creates an entity, and returns it
+    void      DestroyEntity(Entity* e);                                             ///< Annihilates the entity
 
-    void      RenderEntities();                                                     ///< Draws entities
-    void      RenderLayer(uint lay, bool transparent);                              ///< renders a single layer
-    void      Render(const char* sTemprstring=NULL);                                ///< renders everything
+    void      RenderEntities(uint layerIndex);                                      ///< Draws entities
+    void      RenderLayer(uint layerIndex);                                         ///< renders a single layer
+    void      Render();                                                             ///< renders everything
     
-    void      LoadMap(const char* filename);                                        ///< switches maps
+    void      LoadMap(const std::string& filename);                                 ///< switches maps
     
     void      DoHook(HookList& hooklist);                                           ///< Calls every function in the list, then flushes any pending adds/removals from said list
 

@@ -22,7 +22,7 @@ namespace Log
 
     class CCallbackLog
     {
-        static string sHistory;
+        static std::string sHistory;
 
         int nOldlen;
     public:

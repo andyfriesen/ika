@@ -1,3 +1,4 @@
+
 #include <math.h>
 
 #include "common/misc.h"
@@ -6,72 +7,52 @@
 #include "sprite.h"
 #include "main.h"
 
-CEntity::CEntity(CEngine* njin)
+Entity::Entity(CEngine* njin)
     : engine              (*njin)
-    , animscriptofs       (0)
-    , animscriptct        (0)
-    , movescriptofs       (0)
-    , movescriptct        (0)
     , x                   (0)
     , y                   (0)
-    , nSpeed              (entspeed_normal)
-    , nSpeedcount         (0)
-    , pSprite             (0)
+    , layerIndex          (0)
+    , animscriptofs       (0)
+    , animscriptct        (0)
+    , speed               (entspeed_normal)
+    , speedCount          (0)
+    , sprite              (0)
     , direction           (face_down)
-    , bMoving             (false)
-    , movecode            (mc_nothing)
-    , bVisible            (true)
+    , isMoving            (false)
+    , isVisible           (true)
     
-    , nCurframe           (0)
-    , nSpecframe          (0)
-    
-    , nWandersteps        (0)
-    , nWanderdelay        (0)
-    , bAdjacentactivate   (false)
-    , bIsobs              (true)
-    , bMapobs             (true)
-    , bEntobs             (true)
-
-    , pChasetarget        (0)
-    , nMinchasedist       (0)
+    , curFrame            (0)
+    , specFrame           (-1)
 {}
 
-CEntity::CEntity(CEngine* njin, const SMapEntity& e)
+Entity::Entity(CEngine* njin, const Map::Entity& e, uint _layerIndex)
     : engine(*njin)
     , animscriptofs       (0)
     , animscriptct        (0)
-    , movescriptofs       (0)
-    , movescriptct        (0)
     , x                   (e.x)
     , y                   (e.y)
-    , nSpeed              (e.nSpeed)
-    , nSpeedcount         (0)
-    , pSprite             (0)
+    , layerIndex          (_layerIndex) // :x
+    , name                (e.label)
+    , speed               (e.speed)
+    , speedCount          (0)
+    , sprite              (0)
+    , spriteName          (e.spriteName)
     , direction           ((Direction)e.direction)
-    , bMoving             (false)
-    , movecode            (e.state)
-    , bVisible            (true)
+    , isMoving            (false)
+    , isVisible           (true)
     
-    , nCurframe           (0)
-    , nSpecframe          (0)
+    , curFrame            (0)
+    , specFrame           (-1)
     
-    , nWandersteps        (e.nWandersteps)
-    , nWanderdelay        (e.nWanderdelay)
-    , wanderrect          (e.wanderrect)
-    , nWanderzone         (0)
-    , bAdjacentactivate   (false)
-    , bIsobs              (e.bIsobs)
-    , bMapobs             (e.bMapobs)
-    , bEntobs             (e.bEntobs)
+    , obstructsEntities   (e.obstructsEntities)
+    , obstructedByMap     (e.obstructedByMap)
+    , obstructedByEntities(e.obstructedByEntities)
 
-    , sName               (e.name)
-    , sActscript          (e.sActscript)
-
-    , pChasetarget        (0)
-    , nMinchasedist       (0)
+    , adjActivateScript   (e.adjActivateScript)
+    , activateScript      (e.activateScript)
 {}
 
-static uint get_int(const string& s, uint& offset)
+static uint get_int(const std::string& s, uint& offset)
 // Grabs the next howevermany numerical characters from s, starting at offset.  On exit, offset is equal 
 // to the next non-numeric character in the string.
 {
@@ -86,7 +67,7 @@ static uint get_int(const string& s, uint& offset)
     }
 }
 
-void CEntity::UpdateAnimation()
+void Entity::UpdateAnimation()
 {
     if (animscriptct<1)
     {
@@ -108,7 +89,7 @@ void CEntity::UpdateAnimation()
             switch(c)
             {
             case 'F': 
-                nCurframe		 =get_int(curanimscript, animscriptofs);		// tee hee.  get_int also updates animscriptofs for us. :D
+                curFrame		 =get_int(curanimscript, animscriptofs);		// tee hee.  get_int also updates animscriptofs for us. :D
                 break;
             case 'W': 
                 animscriptct	+=get_int(curanimscript, animscriptofs);
@@ -120,7 +101,7 @@ void CEntity::UpdateAnimation()
         animscriptct--;
 }
 
-void CEntity::SetAnimScript(const string& newscript)
+void Entity::SetAnimScript(const std::string& newscript)
 {
     curanimscript=newscript;
     animscriptofs=0;
@@ -128,30 +109,28 @@ void CEntity::SetAnimScript(const string& newscript)
     UpdateAnimation();									// and immediately update the frame
 }
 
-void CEntity::SetMoveScript(const string& newscript)
+void Entity::SetMoveScript(const std::string& newScript)
 {
-    curmovescript=newscript;
-    movescriptofs=0;
-    movescriptct=0;
+    moveScript = newScript;
 }
 
-void CEntity::SetFace(Direction d)
+void Entity::SetFace(Direction d)
 {
     if (d==direction)
         return;
 }
 
-void CEntity::Stop()
+void Entity::Stop()
 {
-    if (!bMoving)
+    if (!isMoving)
         return;
 
-    bMoving=false;
-    SetAnimScript(pSprite->Script((int)direction+8));
+    isMoving=false;
+    SetAnimScript(sprite->Script((int)direction+8));
 }
 
 // Handles all the nasty stuff required to make entities "slide" along a surface if they walk diagonally into it.
-Direction CEntity::MoveDiagonally(Direction d)
+Direction Entity::MoveDiagonally(Direction d)
 {
     Direction d1, d2;
 
@@ -168,16 +147,16 @@ Direction CEntity::MoveDiagonally(Direction d)
     int newx=x + (d2==face_left ? -1 : 1);
     int newy=y + (d1==face_up   ? -1 : 1);
 
-    CEntity* pEnt=0;
+    Entity* pEnt=0;
 
-    if (bMapobs && engine.DetectMapCollision(x, newy, pSprite->nHotw, pSprite->nHoth))
+    if (obstructedByMap && engine.DetectMapCollision(x, newy, sprite->nHotw, sprite->nHoth, layerIndex))
          d1=face_nothing;
-    else if (bEntobs && engine.DetectEntityCollision(this, x, newy, pSprite->nHotw, pSprite->nHoth, true))
+    else if (obstructedByEntities && engine.DetectEntityCollision(this, x, newy, sprite->nHotw, sprite->nHoth, layerIndex, true))
             d1=face_nothing;
 
-    if (bMapobs && engine.DetectMapCollision(newx, y, pSprite->nHotw, pSprite->nHoth))
+    if (obstructedByMap && engine.DetectMapCollision(newx, y, sprite->nHotw, sprite->nHoth, layerIndex))
          d2=face_nothing;
-    else if (bEntobs && engine.DetectEntityCollision(this, newx, y, pSprite->nHotw, pSprite->nHoth, true))
+    else if (obstructedByEntities && engine.DetectEntityCollision(this, newx, y, sprite->nHotw, sprite->nHoth, layerIndex, true))
          d2=face_nothing;
 
     if (d1==face_nothing)
@@ -201,17 +180,17 @@ Direction CEntity::MoveDiagonally(Direction d)
     }
 }
 
-void CEntity::Move(Direction d)
+void Entity::Move(Direction d)
 {
     Direction movedir=MoveDiagonally(d);    // bleh.  TODO: make this more elegant.
     Direction olddir=direction;
 
     direction=d;
 
-    if (direction != olddir || !bMoving)
+    if (direction != olddir || !isMoving)
     {
-        bMoving=true;
-        SetAnimScript(pSprite->Script((int)direction));
+        isMoving=true;
+        SetAnimScript(sprite->Script((int)direction));
     }
 
     int newx=x, newy=y;
@@ -230,16 +209,16 @@ void CEntity::Move(Direction d)
     case face_downright:    newy++; newx++; break;
     }
 
-    if (bMapobs && engine.DetectMapCollision(newx, newy, pSprite->nHotw, pSprite->nHoth))
+    if (obstructedByMap && engine.DetectMapCollision(newx, newy, sprite->nHotw, sprite->nHoth, layerIndex))
     {   Stop(); return; }
 
-    if (bEntobs)
+    if (obstructedByEntities)
     {
-        CEntity* pEnt=engine.DetectEntityCollision(this, newx, newy, pSprite->nHotw, pSprite->nHoth, true);
-        if (pEnt && pEnt->bIsobs)
+        Entity* pEnt = engine.DetectEntityCollision(this, newx, newy, sprite->nHotw, sprite->nHoth, layerIndex, true);
+        if (pEnt && pEnt->obstructsEntities)
         {
-            if (this==engine.pPlayer && pEnt->bAdjacentactivate)                                    // Adjacent activation
-                engine.script.CallEvent(pEnt->sActscript.c_str());
+            if (this==engine.pPlayer && pEnt->adjActivateScript.length() != 0)                                    // Adjacent activation
+                engine.script.CallEvent(pEnt->adjActivateScript.c_str());
         
             Stop(); 
             return;
@@ -249,134 +228,17 @@ void CEntity::Move(Direction d)
     x=newx; y=newy;
 }
 
-Direction CEntity::Wander()
+Direction Entity::GetMoveScriptCommand()
 {
-    if (movescriptct<1)
-    {
-        if (!bMoving)
-        {            
-            movescriptct=nWandersteps;
-            return (Direction)Random(0, 4);
-        }
-        else
-        {
-            movescriptct=nWanderdelay;
-            return face_nothing;
-        }
-    }
-    else
-        movescriptct--;
-
-    return bMoving?direction:face_nothing;
-}
-
-Direction CEntity::Chase()
-{
-    if (!pChasetarget)
-    {
-        Log::Write( "Chasing entity with no chasing target!!");
-        return face_nothing;
-    }
-
-    int nDeltax=pChasetarget->x-x;
-    int nDeltay=pChasetarget->y-y;
-
-    // close enough?
-    if (sqrt(nDeltax*nDeltax + nDeltay*nDeltay)<nMinchasedist)
-        return face_nothing;
-
-    if (nDeltay<0)
-    {
-        if (nDeltax<0)  return face_upleft;
-        if (nDeltax>0)  return face_upright;
-        return face_up;
-    }
-    if (nDeltay>0)
-    {
-        if (nDeltax<0)  return face_downleft;
-        if (nDeltax>0)  return face_downright;
-        return face_down;
-    }
-    if (nDeltax<0)
-        return face_left;
-    if (nDeltax>0)
-        return face_right;
-
-    // if we get this far, then the entity is standing directly on top of its target
+    //engine.script.CallEvent(moveScript); // not quite.  I want to pass the entity as an argument.
     return face_nothing;
 }
 
-Direction CEntity::GetMoveScriptCommand()
+Direction Entity::HandlePlayer()
 {
-    // TODO: check for diagonals here.
-    char c;
-    
-    if (movescriptct<1)
-    {
-        do
-        {
-            c=curmovescript[movescriptofs++];
-            
-            if (movescriptofs>curmovescript.length())			// if we've reached the end of the move script,
-            {
-                Stop();
-                return face_nothing;
-            }
-            
-        } while (c==' ');
-        
-        if (c>='a' && c<='z') c^=32;
-        
-        Direction newdir;
-
-        switch(c)
-        {
-        case 'U': newdir=face_up;         movescriptct=get_int(curmovescript, movescriptofs);            break;
-        case 'D': newdir=face_down;       movescriptct=get_int(curmovescript, movescriptofs);            break;
-        case 'L': newdir=face_left;       movescriptct=get_int(curmovescript, movescriptofs);            break;
-        case 'R': newdir=face_right;      movescriptct=get_int(curmovescript, movescriptofs);            break;
-        case 'F': Stop();                 newdir=(Direction)get_int(curmovescript, movescriptofs);       break;
-        case 'Z': newdir = face_nothing;  nSpecframe=get_int(curmovescript, movescriptofs);              break;
-        case 'W': newdir = face_nothing;  Stop(); movescriptct=get_int(curmovescript, movescriptofs);    break;
-    
-        case 'X':
-            {
-                int destx=get_int(curmovescript, movescriptofs);
-                if      (x>destx)  {    bMoving=true;               newdir=face_left;                        movescriptct=x-destx;   }
-                else if (x<destx)  {    bMoving=true;               newdir=face_right;                       movescriptct=destx-x;   }
-                else               {    bMoving=false;                                                          movescriptct=1;         }
-                break;
-            }
-        case 'Y':
-            {
-                int desty=get_int(curmovescript, movescriptofs);
-                if      (y>desty)  {    bMoving=true;               newdir=face_down;                        movescriptct=y-desty;   }
-                else if (y<desty)  {    bMoving=true;               newdir=face_up;                          movescriptct=desty-y;   }
-                else               {    bMoving=false;                                                          movescriptct=1;         } 
-                break;
-            }
-            
-        case 'B':
-            movescriptofs=0;										// start over
-            movescriptct=0;
-            bMoving=false;					// the entity will get a new command next tick, so make it stand still for this one
-            break;
-        }
-
-        return newdir;
-    }
-    else
-        movescriptct--;
-
-    return bMoving?direction:face_nothing;
-}
-
-Direction CEntity::HandlePlayer()
-{
-    engine.TestActivate(*this);
+    engine.TestActivate(this);
     
     Input& input=engine.input;
-    //input.Update();
 
     if (input.Up())
     {
@@ -396,35 +258,27 @@ Direction CEntity::HandlePlayer()
     return face_nothing;
 }
 
-void CEntity::Update()
+void Entity::Update()
 {
-    Direction newdir;
+    Direction newDir;
 
     UpdateAnimation();
 
-    if (this == engine.pPlayer && movecode == mc_nothing)
-        newdir=HandlePlayer();
+    if (this == engine.pPlayer)
+        newDir = HandlePlayer();
+    else if (x == destLocation.x && y == destLocation.y)
+        newDir = GetMoveScriptCommand();
     else
-        switch (movecode)
-        {
-        case mc_nothing:    newdir = face_nothing;              break;
-        case mc_wander:
-        case mc_wanderzone:
-        case mc_wanderrect: newdir = Wander();                  break;
-        case mc_chase:      newdir = Chase();                   break;
-        case mc_script:     newdir = GetMoveScriptCommand();    break;
+    {
+        // move towards destLocation, on heading destVector. (oooo math)
+        newDir = face_nothing;
+    }
 
-        default:
-            Log::Write( "CEntity::Update: Internal error -- bogus movecode %i", movecode);
-            movecode = mc_nothing;
-            return;
-        }
-
-    if (newdir==face_nothing)
+    if (newDir == face_nothing)
     {
         Stop();
         return;
     }
 
-    Move(newdir);
+    Move(newDir);
 }

@@ -98,7 +98,7 @@ namespace Script
         if (!PyArg_ParseTuple(args, "i:wait", &ticks))
             return 0;
 
-        CEntity* pSaveplayer=engine->pPlayer;
+        ::Entity* pSaveplayer=engine->pPlayer;
         engine->pPlayer = 0;                             // stop the player entity
 
         int t = GetTime();
@@ -185,7 +185,7 @@ namespace Script
 
         if ((PyObject*)ent == Py_None)
         {
-            engine->pcameraTarget = 0;
+            engine->cameraTarget = 0;
             Py_XDECREF(cameraTarget);
             cameraTarget = 0;
         }
@@ -197,7 +197,7 @@ namespace Script
                 return 0;
             }
 
-            engine->pcameraTarget = ent->ent;  // oops
+            engine->cameraTarget = ent->ent;  // oops
 
             Py_INCREF(ent);
             Py_XDECREF(cameraTarget);
@@ -239,10 +239,10 @@ namespace Script
 
             Py_INCREF(ent);
             Py_XDECREF(playerent);
-            playerent=(PyObject*)ent;
+            playerent = (PyObject*)ent;
 
-            engine->pPlayer=ent->ent;
-            ent->ent->movecode=mc_nothing;
+            engine->pPlayer = ent->ent;
+            //ent->ent->movecode=mc_nothing;
         }
 
         PyObject* result = std_setcameraTarget(self, args);
@@ -279,11 +279,12 @@ namespace Script
                 continue;
             }
 
-            CEntity& ent=*((Script::Entity::EntityObject*)pValue)->ent;
-            if (x>ent.x+ent.pSprite->nHotw)    continue;
-            if (y>ent.y+ent.pSprite->nHoth)    continue;
-            if (x2<ent.x)    continue;
-            if (y2<ent.y)    continue;
+            ::Entity* ent=((Script::Entity::EntityObject*)pValue)->ent;
+            
+            if (x>ent->x+ent->sprite->nHotw)    continue;
+            if (y>ent->y+ent->sprite->nHoth)    continue;
+            if (x2<ent->x)    continue;
+            if (y2<ent->y)    continue;
 
             Py_INCREF(pValue);
             return pValue;

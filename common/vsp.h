@@ -49,12 +49,12 @@ public:
     };
     
 private:
-    vector<Canvas>   tiles;     // tile images
+    std::vector<Canvas>   tiles;     // tile images
     
     std::string desc;
     std::string name;           // the VSPs filename
     
-    vector<AnimState>  vspanim;
+    std::vector<AnimState>  vspanim;
     
     int _width, _height;
     

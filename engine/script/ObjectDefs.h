@@ -8,7 +8,7 @@
 #include <Python.h>
 #include "input.h"
 class CFont;
-class CEntity;
+class Entity;
 class CEngine;
 class Canvas;
 namespace audiere   {   class OutputStream; }
@@ -128,7 +128,7 @@ namespace Script
         void Destroy(CanvasObject* self);
     }
 
-    /// Reflects a bitmap font. (maybe a vector font later on)
+    /// Reflects a bitmap font. (maybe a std::vector font later on)
     namespace Font
     {
         // Object type
@@ -162,7 +162,7 @@ namespace Script
         struct EntityObject
         {
             PyObject_HEAD
-            CEntity* ent;
+            ::Entity* ent;
         };
 
         // Methods
@@ -175,7 +175,7 @@ namespace Script
         METHOD(Entity_DetectCollision, EntityObject);
 
         void Init();
-        PyObject* New(CEntity* ent);
+        PyObject* New(::Entity* ent);
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(EntityObject* self);
 

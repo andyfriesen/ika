@@ -31,13 +31,13 @@ int sgn(int x)
 char* va(char* format, ...)
 {
     va_list argptr;
-    static char string[1024];
+    static char str[1024];
     
     va_start(argptr, format);
-    vsprintf(string, format, argptr);
+    vsprintf(str, format, argptr);
     va_end(argptr);
     
-    return string;
+    return str;
 }
 
 int Random(int min, int max)
@@ -55,7 +55,7 @@ int Random(int min, int max)
 #include <string>
 #include <sstream>
 
-const string Trim(const std::string& s)
+const std::string Trim(const std::string& s)
 {
     uint start = 0, end = s.length();
 
@@ -67,9 +67,9 @@ const string Trim(const std::string& s)
         return s.substr(start, end - start);
 }
 
-string Lower(const string& s)
+std::string Lower(const std::string& s)
 {
-    string t(s);
+    std::string t(s);
 
     for (uint i = 0; i < t.length(); i++)
         if (t[i] >= 'A' && t[i] <= 'Z')
@@ -78,9 +78,9 @@ string Lower(const string& s)
     return t;
 }
 
-string Upper(const string& s)
+std::string Upper(const std::string& s)
 {
-    string t(s);
+    std::string t(s);
 
     for (uint i = 0; i < t.length(); i++)
         if (t[i] >= 'a' && t[i] <= 'z')
@@ -89,7 +89,7 @@ string Upper(const string& s)
     return t;
 }
 
-string ToString(int i)
+std::string ToString(int i)
 {
     std::stringstream s;
     s << i << '\0';
@@ -99,12 +99,12 @@ string ToString(int i)
 //---------------------------------------
 // put this in its own file? --andy
 
-string Path::Directory(const string& s, const string& relativeto)
+std::string Path::Directory(const std::string& s, const std::string& relativeto)
 {
     int p = s.rfind(Path::cDelimiter);
-    if (p==string::npos) return "";
+    if (p==std::string::npos) return "";
 
-    string sPath = s.substr(0, p + 1);
+    std::string sPath = s.substr(0, p + 1);
 
     // FIXME?  This assumes that relativeto and s are both absolute paths.
     // Or, at the least, that the two paths have the same reference point.
@@ -115,36 +115,36 @@ string Path::Directory(const string& s, const string& relativeto)
 
     p = sPath.rfind(cDelimiter, i);    // go back to the last slash we found
 
-    return p!=string::npos ? sPath.substr(p) : sPath;
+    return p!=std::string::npos ? sPath.substr(p) : sPath;
 }
 
-string Path::Filename(const string& s)
+std::string Path::Filename(const std::string& s)
 {
     int p = s.rfind(Path::cDelimiter);
 
-    if (p==string::npos) return s;
+    if (p==std::string::npos) return s;
     return s.substr(p + 1);
 }
 
-string Path::Extension(const string& s)
+std::string Path::Extension(const std::string& s)
 {
     int pos = s.rfind('.');
-    if (pos == string::npos)
+    if (pos == std::string::npos)
         return "";
 
     return s.substr(pos + 1);
 }
 
-string Path::ReplaceExtension(const string& s, const string& extension)
+std::string Path::ReplaceExtension(const std::string& s, const std::string& extension)
 {
     int pos = s.rfind('.');
-    if (pos == string::npos)
+    if (pos == std::string::npos)
         return s + "." + extension;
 
     return s.substr(0, pos + 1) + extension;
 }
 
-bool Path::Compare(const string& s, const string& t)
+bool Path::Compare(const std::string& s, const std::string& t)
 {
 #ifdef WIN32
     return Upper(s) == Upper(t);

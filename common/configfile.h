@@ -23,7 +23,7 @@
 
 class CConfigFile
 {
-    typedef std::map < string, string> ConfigMap;
+    typedef std::map < std::string, std::string> ConfigMap;
     
     ConfigMap keys;
     bool _good;
@@ -32,9 +32,9 @@ public:
     CConfigFile();
     CConfigFile(const char* fname);
 
-    void        Add(const string& key, const string& value);
-    string      operator [](const string& key);
-    int         Int(const string& key);
+    void        Add(const std::string& key, const std::string& value);
+    std::string      operator [](const std::string& key);
+    int         Int(const std::string& key);
 
     void        Load(const char* fname);
     void        Save(const char* fname);

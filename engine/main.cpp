@@ -6,6 +6,7 @@
 #include "main.h"
 
 #include "timer.h"
+#include "common/fileio.h"
 
 #include "opengl/Driver.h"
 #include "soft32/Driver.h"
@@ -261,7 +262,6 @@ void CEngine::Shutdown()
 #endif
     
     Log::Write("---- shutdown ----");
-    map.Free();
     Sound::Shutdown();
     script.Shutdown();
 
@@ -275,37 +275,42 @@ namespace
     class CompareEntities
     {
     public:
-        int operator () (const CEntity* a, const CEntity* b)
+        int operator () (const Entity* a, const Entity* b)
         {
             return a->y < b->y;
         }
     };
 };
 
-void CEngine::RenderEntities()
+void CEngine::RenderEntities(uint layerIndex)
 {
     CDEBUG("renderentities");
-    std::vector < CEntity*>     drawlist;
+
+    std::vector<Entity*>     drawlist;
     const Point res = video->GetResolution();
-    
+    const Map::Layer* layer = &map.GetLayer(layerIndex);
+   
     // first, get a list of entities onscreen
     int width, height;
-    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
+    for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
     {    
-        CEntity& e=**i;
-        CSprite& sprite=*e.pSprite;
+        Entity* e = *i;
+        const CSprite* sprite = e->sprite;
+
+        if (e->layerIndex != layerIndex)    continue;   // wrong layer
+        if (!sprite)                        continue;   // no sprite? @_x
         
-        width =sprite.Width();
-        height = sprite.Height();
+        width = sprite->Width();
+        height = sprite->Height();
         
         // get the coodinates at which the sprite would be drawn
-        int x = e.x-sprite.nHotx;
-        int y = e.y-sprite.nHoty;
+        int x = e->x - sprite->nHotx + layer->x - xwin;
+        int y = e->y - sprite->nHoty + layer->y - ywin;
         
-        if (x+width-xwin > 0 && y+height-ywin > 0 &&
-            x-xwin < res.x   && y-ywin < res.y    &&
-            e.bVisible)
-            drawlist.push_back(&e);                                                         // the entity is onscreen, tag it.
+        if (x + width > 0 && y + height > 0 &&
+            x < res.x     && y < res.y      &&
+            e->isVisible)
+            drawlist.push_back(e);                                                          // the entity is onscreen, tag it.
     }
     
     if (!drawlist.size())
@@ -315,33 +320,31 @@ void CEngine::RenderEntities()
     std::sort(drawlist.begin(), drawlist.end(), CompareEntities());
 
     video->SetBlendMode(Video::Normal);
-    for (std::vector < CEntity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++)
+    for (std::vector<Entity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++)
     {
-        const CEntity& e=**j;
-        CSprite& s = *e.pSprite;
+        const Entity* e = *j;
+        CSprite* s = e->sprite;
         
-        int frame = e.nSpecframe ? e.nSpecframe : e.nCurframe;
+        int frame = (e->specFrame != -1) ? e->specFrame : e->curFrame;
        
-        video->BlitImage(s.GetFrame(frame), e.x - xwin - s.nHotx, e.y - ywin - s.nHoty);
+        video->BlitImage(s->GetFrame(frame), e->x - xwin - s->nHotx, e->y - ywin - s->nHoty);
     }
 }
 
-void CEngine::RenderLayer(uint lay, bool transparent)
+void CEngine::RenderLayer(uint layerIndex)
 {
     CDEBUG("renderlayer");
     int        xl, yl;        // x/y run length
     int        xs, ys;        // x/y start
     int        xofs, yofs;    // sub-tile offset
     int        xw, yw;
-    SMapLayerInfo    linf;
-    
-    if (lay > map.NumLayers())
-        return;
-    
-    map.GetLayerInfo(linf, lay);
-    
-    xw = (xwin * linf.pmulx) / linf.pdivx;
-    yw = (ywin * linf.pmulx) / linf.pdivy;
+    const Map::Layer* layer = &map.GetLayer(layerIndex);
+
+    int layerWidth = layer->Width() * tiles->Width();
+    int layerHeight = layer->Height() * tiles->Height();
+   
+    xw = (xwin * layer->parallax.mulx) / layer->parallax.divx;
+    yw = (ywin * layer->parallax.mulx) / layer->parallax.divy;
     
     xs = xw / tiles->Width();
     ys = yw / tiles->Height();
@@ -353,113 +356,59 @@ void CEngine::RenderLayer(uint lay, bool transparent)
     xl = res.x / tiles->Width() + 1;
     yl = res.y / tiles->Height() + 2;
     
-    if (xs+xl > map.Width()) xl = map.Width() - xs;        // clip yo
-    if (ys+yl > map.Height()) yl = map.Height() - ys;
+    if (xs + xl > layer->Width()) xl = layer->Width() - xs;        // clip yo
+    if (ys + yl > layer->Height()) yl = layer->Height() - ys;
+
+    if (xl < 1 || yl < 1) return;   // not visible
     
-    u32*   t = map.GetDataPtr(lay) + (ys * map.Width() + xs);
-    int xinc = map.Width() - xl;
+    const uint*  t = layer->tiles.GetPointer(xs, ys);
+    int xinc = layer->Width() - xl;
     
     int curx = xofs;
     int cury = yofs;
-    if (transparent)
-    {
-        video->SetBlendMode(Video::Normal);
-        for (int y = 0; y < yl; y++)
-        {
-            for (int x = 0; x < xl; x++)
-            {
-                if (*t)
-                    video->BlitImage(tiles->GetTile(*t), curx, cury);
 
-                curx += tiles->Width();
-                t++;
-            }
-            cury += tiles->Height();
-            curx = xofs;
-            t += xinc;
-        }
-    }
-    else
+    video->SetBlendMode(Video::Normal);
+    for (int y = 0; y < yl; y++)
     {
-        video->SetBlendMode(Video::None);
-        for (int y = 0; y < yl; y++)
+        for (int x = 0; x < xl; x++)
         {
-            for (int x = 0; x < xl; x++)
-            {
+            //if (*t)
                 video->BlitImage(tiles->GetTile(*t), curx, cury);
 
-                curx += tiles->Width();
-                t++;
-            }
-            cury += tiles->Height();
-            curx = xofs;
-            t += xinc;
+            curx += tiles->Width();
+            t++;
         }
+        cury += tiles->Height();
+        curx = xofs;
+        t += xinc;
     }
 }
 
-void CEngine::Render(const char* sTemprstring)
+void CEngine::Render()
 {
     CDEBUG("render");
     const Point res = video->GetResolution();
-    char    rstring[255];
-    char*   p;
-    int     numlayers;
     
     if (!bMaploaded)    return;
     
     tiles->UpdateAnimation(GetTime());
     
-    if (pcameraTarget)
+    if (cameraTarget)
     {        
         SetCamera(Point(
-            pcameraTarget->x - res.x / 2,
-            pcameraTarget->y - res.y / 2));
+            cameraTarget->x - res.x / 2,
+            cameraTarget->y - res.y / 2));
         
-        int maxx=(map.Width()  * tiles->Width() ) - res.x;   // and make sure it's still in range
-        int maxy=(map.Height() * tiles->Height()) - res.y;
+        int maxx=(map.width  * tiles->Width() ) - res.x;   // and make sure it's still in range
+        int maxy=(map.height * tiles->Height()) - res.y;
     }
     
-    if (!sTemprstring)
-        strcpy(rstring, map.GetRString().c_str());
-    else
-        strcpy(rstring, sTemprstring);
-
-    if (!strlen(rstring))
-        return;
-    
-    p = rstring;
-    numlayers = 0;
-    
-    while (*p)
+    for (uint i = 0; i < map.NumLayers(); i++)
     {
-        switch (*p)
-        {
-        case '1':
-        case '2':
-        case '3':
-        case '4':
-        case '5':
-        case '6':
-        case '7':
-        case '8':
-        case '9':
-            RenderLayer(*p - '1', numlayers != 0);
-            ++numlayers;
-            break;
-        case '0':
-            RenderLayer(9, numlayers != 0);
-            ++numlayers;
-            break;
-        case 'E':
-            RenderEntities();
-            break;
-        case 'R':
-            DoHook(_hookRetrace);
-            break;
-        }
-        p++;
+        RenderLayer(i);
+        RenderEntities(i);
     }
+//    DoHook(_hookRetrace);
 }
 
 void CEngine::DoHook(HookList& hooklist)
@@ -505,28 +454,28 @@ void CEngine::CheckKeyBindings()
 
 void CEngine::ProcessEntities()
 {
-    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
+    for (EntityList::iterator curEnt = entities.begin(); curEnt != entities.end(); curEnt++)
     {
-        CEntity& ent=**i;
-        
-        ent.nSpeedcount += ent.nSpeed;
-        while (ent.nSpeedcount >= 100)
+        Entity* ent = *curEnt;
+        ent->speedCount += ent->speed;
+        while (ent->speedCount >= 100)
         {
-            ent.Update();
-            ent.nSpeedcount -= 100;
+            ent->Update();
+            ent->speedCount -= 100;
         }
     }
 }
 
 // --------------------------------------- Entity Handling --------------------------------------
 
-bool CEngine::DetectMapCollision(int x, int y, int w, int h)
+bool CEngine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
 // returns true if there is an obstructed map square anywhere along a specified vertical or horizontal line
 // Also TODO: think up a better obstruction system
 {
     CDEBUG("detectmapcollision");
     int tx = tiles->Width();
     int ty = tiles->Height();
+    Map::Layer* layer = &map.GetLayer(layerIndex);
     
     int y2 = (y + h - 1) / ty;
     int x2 = (x + w - 1) / tx;
@@ -535,37 +484,38 @@ bool CEngine::DetectMapCollision(int x, int y, int w, int h)
 
     for (int cy = y; cy <= y2; cy++)
         for(int cx = x; cx <= x2; cx++)
-            if (map.IsObs(cx, cy))
+            if (layer->obstructions(cx, cy))
                 return true;
     
     return false;
 }
 
-CEntity* CEngine::DetectEntityCollision(const CEntity* ent, int x1, int y1, int w, int h, bool wantobstructable)
+Entity* CEngine::DetectEntityCollision(const Entity* ent, int x1, int y1, int w, int h, uint layerIndex, bool wantobstructable)
 // returns the entity colliding with the specified entity, or 0 if none.
 // Note that passing 0 for ent is valid, indicating that you simply want to know if there are any entities in a given area
 {
     CDEBUG("detectentitycollision");
-    
-    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
-    {
-        CEntity& e=**i;
-        CSprite& s=*e.pSprite;
 
-        if (wantobstructable && !e.bIsobs)   continue;
-        if (&e == ent)                       continue;         // the entity is colliding with itself. ;P  That's not overly useful.
+    for (EntityList::const_iterator i = entities.begin(); i != entities.end(); i++)
+    {
+        Entity* e = *i;
+        const CSprite* s = e->sprite;
+
+        if ((e->layerIndex != layerIndex) ||                    // wrong layer
+            (wantobstructable && !e->obstructsEntities) ||      // obstructable entities only?
+            (e == ent))                         continue;       // self collision isn't all that useful.
         
-        if (x1              >= e.x+s.nHotw)  continue;
-        if (y1              >= e.y+s.nHoth)  continue;
-        if (x1+w            <= e.x)          continue;
-        if (y1+h            <= e.y)          continue;
+        if (x1              >= e->x+s->nHotw)    continue;
+        if (y1              >= e->y+s->nHoth)    continue;
+        if (x1 + w          <= e->x)            continue;
+        if (y1 + h          <= e->y)            continue;
         
-        return &e;
+        return e;
     }
     return 0;
 }
 
-void CEngine::TestActivate(const CEntity& player)
+void CEngine::TestActivate(const Entity* player)
 // checks to see if we're supposed to run some VC, due to the player's actions.
 // Thus far, that's one of three things.
 // 2) the player steps on a zone
@@ -577,12 +527,12 @@ void CEngine::TestActivate(const CEntity& player)
     CDEBUG("testactivate");
     static int    nOldtx = -1;
     static int    nOldty = -1;
-    CSprite& sprite = *player.pSprite;
+    CSprite* sprite = player->sprite;
     
-    int tx = (player.x + sprite.nHotw / 2) / tiles->Width();
-    int ty = (player.y + sprite.nHoth / 2) / tiles->Height();
+    int tx = (player->x + sprite->nHotw / 2) / tiles->Width();
+    int ty = (player->y + sprite->nHoth / 2) / tiles->Height();
     
-    int n = map.GetZone(tx, ty);
+    /*int n = map.GetZone(tx, ty);
     // stepping on a zone?
     if ((tx != nOldtx || ty != nOldty) && n)                        // the player is not on the same zone it was before, check for activation
     {
@@ -590,7 +540,7 @@ void CEngine::TestActivate(const CEntity& player)
         const SMapZone& zone = map.GetZoneInfo(map.GetZone(tx, ty));
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
             script.CallEvent(zone.sActscript.c_str());
-    }
+    }*/
     
     nOldtx = tx; nOldty = ty;
     
@@ -599,34 +549,34 @@ void CEngine::TestActivate(const CEntity& player)
     if (!input.Enter().Pressed()) return;                           // From this point on, the only time we'd have to check this crap is if enter was pressed.
     //input.Unpress();
     
-    tx = player.x; ty = player.y;
+    tx = player->x; ty = player->y;
     // entity activation
-    switch(player.direction)
+    switch(player->direction)
     {
-    case face_up:        ty -= sprite.nHoth;    break;
-    case face_down:      ty += sprite.nHoth;    break;
-    case face_left:      tx -= sprite.nHotw;    break;
-    case face_right:     tx += sprite.nHotw;    break;
+    case face_up:        ty -= sprite->nHoth;    break;
+    case face_down:      ty += sprite->nHoth;    break;
+    case face_left:      tx -= sprite->nHotw;    break;
+    case face_right:     tx += sprite->nHotw;    break;
         
-    case face_upleft:    tx -= sprite.nHotw;    ty -= sprite.nHoth;    break;
-    case face_upright:   tx += sprite.nHotw;    ty -= sprite.nHoth;    break;
-    case face_downleft:  tx -= sprite.nHotw;    ty += sprite.nHoth;    break;
-    case face_downright: tx += sprite.nHotw;    ty += sprite.nHoth;    break;
+    case face_upleft:    tx -= sprite->nHotw;    ty -= sprite->nHoth;    break;
+    case face_upright:   tx += sprite->nHotw;    ty -= sprite->nHoth;    break;
+    case face_downleft:  tx -= sprite->nHotw;    ty += sprite->nHoth;    break;
+    case face_downright: tx += sprite->nHotw;    ty += sprite->nHoth;    break;
     }
     
-    CEntity* pEnt = DetectEntityCollision(0 , tx, ty, sprite.nHotw, sprite.nHoth);
+    Entity* pEnt = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
     if (pEnt)
     {
-        if (!pEnt->bAdjacentactivate && pEnt->sActscript.length() != 0)
+        if (!pEnt->activateScript.length() != 0)
         {
-            script.CallEvent(pEnt->sActscript.c_str());
+            script.CallEvent(pEnt->activateScript.c_str());
             input.Flush();
             return;
         }
     }
     
     // Activating a zone?
-    uint z = map.GetZone(tx / tiles->Width(), ty / tiles->Height());
+    /*uint z = map.GetZone(tx / tiles->Width(), ty / tiles->Height());
     
     if (z >= map.NumZones())
         return; // invalid zone
@@ -637,39 +587,39 @@ void CEngine::TestActivate(const CEntity& player)
     {
         script.CallEvent(zone.sActscript.c_str());
         input.Flush();
-    }
+    }*/
 }
 
-CEntity* CEngine::SpawnEntity()
+Entity* CEngine::SpawnEntity()
 {
-    CEntity* e = new CEntity(this);
+    Entity* e = new Entity(this);
     
     entities.push_back(e);
     
     return e;
 }
 
-void CEngine::DestroyEntity(CEntity* e)
+void CEngine::DestroyEntity(Entity* e)
 {
-    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
+    for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
         if (e == (*i))
         {
-            sprite.Free(e->pSprite);
+            sprite.Free(e->sprite);
             
             // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
-            if (pcameraTarget == e)   pcameraTarget = 0;
+            if (cameraTarget == e)   cameraTarget = 0;
             if (pPlayer == e)         pPlayer = 0;
             
-            // O(n**2) I think.  Gay.
-            for (EntityIterator ii = entities.begin(); ii != entities.end(); ii++)
+            /*// O(n**2) I think.  Gay.
+            for (EntityList::iterator ii = entities.begin(); ii != entities.end(); ii++)
             {
-                CEntity& e=*(*ii);
+                Entity& e=*(*ii);
                 
                 if (e.pChasetarget == (*i))
                     e.pChasetarget = 0, e.movecode = mc_nothing;
                 
                 // TODO: add others, if needed
-            }
+            }*/
             
             // actually nuke it
             entities.remove(e);
@@ -683,32 +633,35 @@ void CEngine::DestroyEntity(CEntity* e)
 
 // --------------------------------- Misc (interface with old file formats, etc...) ----------------------
 
-void CEngine::LoadMap(const char* filename)
+void CEngine::LoadMap(const std::string& filename)
 // Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure.
 {
     CDEBUG("loadmap");
     
     try
     {
-        Log::Write("Loading map \"%s\"", filename);
+        Log::Write("Loading map \"%s\"", filename.c_str());
         
         if (!map.Load(filename)) throw filename;                        // actually load the map
         
         delete tiles;                                                   // nuke the old tileset
-        tiles = new CTileSet(map.GetVSPName(), video);          // load up them tiles
+        tiles = new CTileSet(map.tileSetName, video);                   // load up them tiles
         
         script.ClearEntityList();                                       // DEI
-        
-        for (uint i = 0; i < map.NumEnts(); i++)
+
+        // for each layer, create entities
+        for (uint curLayer = 0; curLayer < map.NumLayers(); curLayer++)
         {
-            const SMapEntity& ent = map.GetEntity(i);
-            
-            CEntity* pEnt = new CEntity(this, ent);                     // convert the old entity struct into the new one.
-            entities.push_back(pEnt);
-            
-            pEnt->pSprite = sprite.Load(ent.sCHRname, video);                   // wee
-            
-            script.AddEntityToList(pEnt);
+            const Map::Layer* lay = &map.GetLayer(curLayer);
+            const std::vector<Map::Entity>& ents = lay->entities;
+
+            for (uint curEnt = 0; curEnt < ents.size(); curEnt++)
+            {
+                Entity* ent = new Entity(this, ents[curEnt], curLayer);
+                entities.push_back(ent);
+                ent->sprite = sprite.Load(ent->spriteName, video);
+                script.AddEntityToList(ent);
+            }
         }
         
         xwin = ywin = 0;                                                // just in case
@@ -717,12 +670,10 @@ void CEngine::LoadMap(const char* filename)
         if (!script.LoadMapScripts(filename))
             Script_Error();
     }
-    catch (std::runtime_error err)
-    {   Sys_Error(err.what());  }
-    catch (const char* msg)
-    {    Sys_Error(va("Failed to load %s", msg));    }
-    catch (...)
-    {    Sys_Error(va("Unknown error loading map %s", filename));    }
+    catch (std::runtime_error err)  {   Sys_Error(va("LoadMap(\"%s\"): %s", filename.c_str(), err.what())); }
+    catch (const char* msg)         {   Sys_Error(va("Failed to load %s", msg));                            }
+    catch (const std::string& msg)  {   Sys_Error(va("Failed to load %s", msg.c_str()));                    }
+    catch (...)                     {   Sys_Error(va("Unknown error loading map %s", filename));            }
 }
 
 Point CEngine::GetCamera()
@@ -733,15 +684,15 @@ Point CEngine::GetCamera()
 void CEngine::SetCamera(Point p)
 {
     Point res = video->GetResolution();
-    xwin = clamp(p.x, 0, map.Width()  * tiles->Width()  - res.x - 1);   // (tile width * number of tiles) - resolution - 1
-    ywin = clamp(p.y, 0, map.Height() * tiles->Height() - res.y - 1);
+    xwin = clamp<int>(p.x, 0, map.width  * tiles->Width()  - res.x - 1);   // (tile width * number of tiles) - resolution - 1
+    ywin = clamp<int>(p.y, 0, map.height * tiles->Height() - res.y - 1);
 }
 
 CEngine::CEngine()
     : tiles(0)
     , video(0)
     , pPlayer(0)
-    , pcameraTarget(0)
+    , cameraTarget(0)
     , bMaploaded(false)
     , bKillFlag(false)
 {}
