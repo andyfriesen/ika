@@ -289,8 +289,11 @@ void Engine::RenderEntity(const Entity* e)
     const Sprite* const s = e->sprite;
     const Map::Layer* layer = map.GetLayer(e->layerIndex);
 
-    int x = e->x - xwin - s->nHotx + layer->x;
-    int y = e->y - ywin - s->nHoty + layer->y;
+    int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
+    int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
+
+    int x = e->x - xw - s->nHotx + layer->x;
+    int y = e->y - yw - s->nHoty + layer->y;
 
     RenderEntity(e, x, y);
 }
@@ -334,6 +337,9 @@ void Engine::RenderEntities(uint layerIndex)
     const Point res = video->GetResolution();
     const Map::Layer* layer = map.GetLayer(layerIndex);
 
+    int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
+    int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
+
     // first, get a list of entities onscreen
     int width, height;
     for (EntityList::iterator i = entities.begin(); i != entities.end(); i++)
@@ -348,8 +354,8 @@ void Engine::RenderEntities(uint layerIndex)
         height = sprite->Height();
 
         // get the coodinates at which the sprite would be drawn
-        int x = e->x - sprite->nHotx + layer->x - xwin;
-        int y = e->y - sprite->nHoty + layer->y - ywin;
+        int x = e->x - sprite->nHotx + layer->x - xw;
+        int y = e->y - sprite->nHoty + layer->y - yw;
 
         if (x + width > 0 && y + height > 0 &&
             x < res.x     && y < res.y      &&
@@ -381,14 +387,13 @@ void Engine::RenderLayer(uint layerIndex)
     int        lenX, lenY;        // x/y run length
     int        firstX, firstY;        // x/y start
     int        adjustX, adjustY;    // sub-tile offset
-    int        xw, yw;
     const Map::Layer* layer = map.GetLayer(layerIndex);
 
     int layerWidth = layer->Width() * tiles->Width();
     int layerHeight = layer->Height() * tiles->Height();
 
-    xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
-    yw = (ywin * layer->parallax.mulx / layer->parallax.divy) - layer->y;
+    int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
+    int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
 
     firstX = xw / tiles->Width();
     firstY = yw / tiles->Height();
@@ -743,6 +748,8 @@ void Engine::LoadMap(const std::string& filename)
 {
     CDEBUG("loadmap");
 
+    int bleah = 0;
+
     try
     {
         Log::Write("Loading map \"%s\"", filename.c_str());
@@ -767,6 +774,7 @@ void Engine::LoadMap(const std::string& filename)
         {
             const Map::Layer* lay = map.GetLayer(curLayer);
             const std::vector<Map::Entity>& ents = lay->entities;
+            bleah += ents.size();
 
             for (uint curEnt = 0; curEnt < ents.size(); curEnt++)
             {
@@ -801,7 +809,7 @@ void Engine::LoadMap(const std::string& filename)
     catch (TileSetException)        {   Sys_Error(va("Unable to load tileset %s", map.tileSetName.c_str())); }
     catch (const char* msg)         {   Sys_Error(va("Failed to load %s", msg));                            }
     catch (const std::string& msg)  {   Sys_Error(va("Failed to load %s", msg.c_str()));                    }
-    catch (...)                     {   Sys_Error(va("Unknown error loading map %s", filename.c_str()));    }
+    //catch (...)                     {   Sys_Error(va("Unknown error loading map %s", filename.c_str()));    }
 }
 
 Point Engine::GetCamera()
@@ -820,6 +828,8 @@ Engine::Engine()
     : tiles(0)
     , video(0)
     , player(0)
+    , xwin(0)
+    , ywin(0)
     , cameraTarget(0)
     , _isMapLoaded(false)
     , _recurseStop(false)

@@ -19,97 +19,15 @@ Script::Script(const std::string& fileName)
     , onEndState(0)
     , onSwitchLayers(0)
     , onActivated(0)
+
+    , _name(fileName)
 {
-    struct Local
-    {
-        static void GetSymbol(PyObject* dict, PyObject*& object, const char* name)
-        {
-            object = PyDict_GetItemString(dict, name);
-            if (object)
-            {
-                if (!PyCallable_Check(object))
-                    object = 0;
-            }
-
-            Py_XINCREF(object);
-        }
-    };
-
-    // All this trouble just to import something from an arbitrary file.
-    // Christ.
-    uint s = max<int>(fileName.rfind('/'), fileName.rfind('\\')) + 1;
-    uint e = s;
-    std::string name;
-    do
-    {
-        char c = fileName[++e];
-        if (!(
-            (c >= 'a' && c <= 'z') ||
-            (c >= 'A' && c <= 'Z') ||
-            (c >= '0' && c <= '9')
-            ))
-        {
-            name = fileName.substr(s, e - s);
-            break;
-        }
-    } while (e < fileName.length());
-
-    if (name.empty())
-        throw std::runtime_error(va("Could not parse module name from %s", fileName.c_str()));
-
-    // Got a name for the module now.  woo.
-
-    File sourceFile;
-    sourceFile.OpenRead(fileName.c_str(), false);
-    std::string source = sourceFile.ReadAll();
-    sourceFile.Close();
-
-    PyObject* code = Py_CompileString(const_cast<char*>(source.c_str()), fileName.c_str(), Py_file_input);
-    if (!code)  ReportError();
-
-    module = PyImport_ExecCodeModule(const_cast<char*>(name.c_str()), code);
-    Py_DECREF(code);
-    if (!module) ReportError();
-
-    // FINALLY got the module loaded now.  Time to gank the relevant methods from it.
-   
-    PyObject* dict = PyModule_GetDict(module);
-    assert(dict);
-
-    Local::GetSymbol(dict, onMouseDown,   "OnMouseDown");
-    Local::GetSymbol(dict, onMouseUp,     "OnMouseUp");
-    Local::GetSymbol(dict, onMouseMove,   "OnMouseMove");
-    Local::GetSymbol(dict, onMouseWheel,  "OnMouseWheel");
-    Local::GetSymbol(dict, onRender,      "OnRender");
-    Local::GetSymbol(dict, onRenderCurrentLayer, "OnRenderCurrentLayer");
-    Local::GetSymbol(dict, onBeginState,  "OnBeginState");
-    Local::GetSymbol(dict, onEndState,    "OnEndState");
-    Local::GetSymbol(dict, onSwitchLayers, "OnSwitchLayers");
-    Local::GetSymbol(dict, onActivated,   "OnActivated");
-    //Local::GetSymbol(dict, onKeyPress,    "OnKeyPress");
-
-    // Meta!
-    _name = name;
-    PyObject* docString = PyDict_GetItemString(dict, "__doc__");
-    if (docString != Py_None)
-        _desc = PyString_AsString(docString);
-    else
-        _desc = "No description available";
+    Reload();
 }
 
 Script::~Script()
 {
-    Py_XDECREF(onMouseDown);
-    Py_XDECREF(onMouseUp);
-    Py_XDECREF(onMouseMove);
-    Py_XDECREF(onMouseWheel);
-    Py_XDECREF(onRender);
-    Py_XDECREF(onRenderCurrentLayer);
-    Py_XDECREF(onBeginState);
-    Py_XDECREF(onEndState);
-    Py_XDECREF(onSwitchLayers);
-    Py_XDECREF(onActivated);
-    Py_XDECREF(module);
+    Deallocate();
 }
 
 void Script::OnMouseDown(int x, int y)
@@ -282,4 +200,100 @@ void Script::ReportError()
     msg += ScriptObject::pyErrors.str();
     ScriptObject::pyErrors.str("");
     throw std::runtime_error(msg);
+}
+
+void Script::Reload()
+{
+    struct Local
+    {
+        static void GetSymbol(PyObject* dict, PyObject*& object, const char* name)
+        {
+            object = PyDict_GetItemString(dict, name);
+            if (object)
+            {
+                if (!PyCallable_Check(object))
+                    object = 0;
+            }
+
+            Py_XINCREF(object);
+        }
+    };
+
+    Deallocate();
+
+    // All this trouble just to import something from an arbitrary file.
+    // Christ.
+    uint s = max<int>(_name.rfind('/'), _name.rfind('\\')) + 1;
+    uint e = s;
+    std::string name;
+    do
+    {
+        char c = _name[++e];
+        if (!(
+            (c >= 'a' && c <= 'z') ||
+            (c >= 'A' && c <= 'Z') ||
+            (c >= '0' && c <= '9')
+            ))
+        {
+            name = _name.substr(s, e - s);
+            break;
+        }
+    } while (e < _name.length());
+
+    if (name.empty())
+        throw std::runtime_error(va("Could not parse module name from %s", _name.c_str()));
+
+    // Got a name for the module now.  woo.
+
+    File sourceFile;
+    sourceFile.OpenRead(_name.c_str(), false);
+    std::string source = sourceFile.ReadAll();
+    sourceFile.Close();
+
+    PyObject* code = Py_CompileString(const_cast<char*>(source.c_str()), _name.c_str(), Py_file_input);
+    if (!code)  ReportError();
+
+    module = PyImport_ExecCodeModule(const_cast<char*>(name.c_str()), code);
+    Py_DECREF(code);
+    if (!module) ReportError();
+
+    // FINALLY got the module loaded now.  Time to gank the relevant methods from it.
+   
+    PyObject* dict = PyModule_GetDict(module);
+    assert(dict);
+
+    Local::GetSymbol(dict, onMouseDown,   "OnMouseDown");
+    Local::GetSymbol(dict, onMouseUp,     "OnMouseUp");
+    Local::GetSymbol(dict, onMouseMove,   "OnMouseMove");
+    Local::GetSymbol(dict, onMouseWheel,  "OnMouseWheel");
+    Local::GetSymbol(dict, onRender,      "OnRender");
+    Local::GetSymbol(dict, onRenderCurrentLayer, "OnRenderCurrentLayer");
+    Local::GetSymbol(dict, onBeginState,  "OnBeginState");
+    Local::GetSymbol(dict, onEndState,    "OnEndState");
+    Local::GetSymbol(dict, onSwitchLayers, "OnSwitchLayers");
+    Local::GetSymbol(dict, onActivated,   "OnActivated");
+    //Local::GetSymbol(dict, onKeyPress,    "OnKeyPress");
+
+    // Meta!
+    _name = name;
+    PyObject* docString = PyDict_GetItemString(dict, "__doc__");
+    if (docString != Py_None)
+        _desc = PyString_AsString(docString);
+    else
+        _desc = "No description available";
+}
+
+void Script::Deallocate()
+{
+    Py_XDECREF(onMouseDown);            onMouseDown = 0;
+    Py_XDECREF(onMouseUp);              onMouseUp = 0;
+    Py_XDECREF(onMouseMove);            onMouseMove = 0;
+    Py_XDECREF(onMouseWheel);           onMouseWheel = 0;
+    Py_XDECREF(onRender);               onRender = 0;
+    Py_XDECREF(onRenderCurrentLayer);   onRenderCurrentLayer = 0;
+    Py_XDECREF(onBeginState);           onBeginState = 0;
+    Py_XDECREF(onEndState);             onEndState = 0;
+    Py_XDECREF(onSwitchLayers);         onSwitchLayers = 0;
+    Py_XDECREF(onActivated);            onActivated = 0;
+    Py_XDECREF(module);                 module = 0;
 }

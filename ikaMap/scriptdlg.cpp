@@ -57,13 +57,19 @@ void ScriptDlg::OnAddScript(wxCommandEvent&)
 
 void ScriptDlg::OnReloadScript(wxCommandEvent&)
 {
-    ::wxMessageBox("Not yet implemented", "Sorry!");
+    int index = _scriptList->GetSelection();
+    if (index < 0 || index >= _scriptList->GetCount())  return;
+
+    Script* script = reinterpret_cast<Script*>(_scriptList->GetClientData(index));
+    wxASSERT(script != 0);
+    script->Reload();
+    RefreshScriptList();
 }
 
 void ScriptDlg::OnUnloadScript(wxCommandEvent&)
 {
     int index = _scriptList->GetSelection();
-    if (index < 0 || index > _scriptList->GetCount())   return;
+    if (index < 0 || index >= _scriptList->GetCount())   return;
 
     Script* script = reinterpret_cast<Script*>(_scriptList->GetClientData(index));
 

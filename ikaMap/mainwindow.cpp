@@ -479,6 +479,7 @@ void MainWindow::OnSaveMapAs(wxCommandEvent&)
     {
         _map->Save(name);
         _curMapName = name;
+        _changed = false;
         UpdateTitle();
     }
     catch (std::runtime_error err)
@@ -666,6 +667,7 @@ void MainWindow::OnChangeCurrentLayer(wxCommandEvent& event)
 {
     wxASSERT(_map != 0 && (uint)event.GetInt() < _map->NumLayers());
     _mapView->SetCurLayer(event.GetInt());
+    _layerList->Check(event.GetInt());
 
     _mapView->Render();
     _mapView->ShowPage();

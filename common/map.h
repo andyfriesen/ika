@@ -109,6 +109,16 @@ struct Map
             , obstructions(width, height)
         {}
 
+        Layer(const Layer& l)
+            : label(l.label)
+            , x(l.x)        , y(l.y)
+            , wrapx(l.wrapx), wrapy(l.wrapy)
+            , tiles(l.tiles)
+            , obstructions(l.obstructions)
+        {}
+
+        // note to self: copy constructor
+
         uint Width() const  { return tiles.Width();  }
         uint Height() const { return tiles.Height(); }
         void Resize(uint newx, uint newy)

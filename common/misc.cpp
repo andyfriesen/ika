@@ -49,6 +49,9 @@ char* va(char* format, ...)
 int Random(int min, int max)
 {
     int i;
+
+    if (min == max)
+        return min; // :P
     
     if (max < min)
         swap(max, min);

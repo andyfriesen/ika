@@ -114,6 +114,14 @@ void MapView::OnMouseUp(wxMouseEvent& event)
 
 void MapView::OnMouseMove(wxMouseEvent& event)
 {
+    if (_curLayer < _mainWnd->GetMap()->NumLayers())
+    {
+        int x = event.GetX();
+        int y = event.GetY();
+        ScreenToTile(x, y);
+        _mainWnd->GetStatusBar()->SetStatusText(va("(%i, %i)", x, y));
+    }
+
     if (event.MiddleIsDown())
     {
         // Middlemouse + drag scrolls the map around.

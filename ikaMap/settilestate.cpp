@@ -50,10 +50,10 @@ void TileSetState::OnMouseUp(wxMouseEvent& event)
 
 void TileSetState::OnMouseMove(wxMouseEvent& event)
 {
-    int x = event.GetX();
+    /*int x = event.GetX();
     int y = event.GetY();
     GetMapView()->ScreenToTile(x, y);
-    GetMainWindow()->GetStatusBar()->SetStatusText(va("(%i, %i)", x, y));
+    GetMainWindow()->GetStatusBar()->SetStatusText(va("(%i, %i)", x, y));*/
 
     if (event.LeftIsDown() && !event.ShiftDown())
         SetTile(event.m_x, event.m_y);

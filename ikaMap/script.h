@@ -129,6 +129,9 @@ public:
     bool IsTool() const;
     bool IsActivatable() const;
 
+    void Reload();
+    void Deallocate();
+
 private:
     void ReportError();
 };
