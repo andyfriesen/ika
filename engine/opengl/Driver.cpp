@@ -361,6 +361,7 @@ namespace OpenGL
 
         fps.Update();
         SDL_GL_SwapBuffers();
+        glClear(GL_COLOR_BUFFER_BIT);
     }
 
     Video::BlendMode Driver::SetBlendMode(Video::BlendMode bm)

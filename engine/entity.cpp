@@ -350,15 +350,19 @@ void Entity::Update()
             int deltaY = abs(y - targetY);
             
             // If deltaY is exactly one pixel (+/-), then we go diagonally.
-            // If deltaY is zero, then we go left/right.
+            // If deltaY is zero, then we go left/right, then recalculate. (if it stays zero, then we just go left/right)
             // If deltaY is greater than one pixel, we go up/down
 
             if (deltaY == 0)
             {
                 newDir = (x > destLocation.x) ? face_left 
                                             : face_right;
+
+                targetY = int((x - startX) * m) + startY;
+                deltaY = abs(y - targetY);
             }
-            else if (deltaY == 1)
+
+            if (deltaY == 1)
             {
                 // ternary p1mpin
                 newDir =
@@ -369,7 +373,7 @@ void Entity::Update()
                         ((x > destLocation.x) ? face_downleft
                                               : face_downright);
             }
-            else
+            else if (deltaY > 1)
             {
                 newDir =
                     (y > destLocation.y) ? face_up
