@@ -3,7 +3,6 @@
 #include "log.h"
 
 static const int nZoomscale = 16;
-static int numImages = 0;
 
 //-------------------------------------------------------
 
@@ -12,7 +11,7 @@ BEGIN_EVENT_TABLE(CGraphFrame, wxGLCanvas)
     //EVT_PAINT(CGraphFrame::OnPaint)
     EVT_SIZE(CGraphFrame::OnSize)
 
-    // hack -- GraphFrames Send all mouse events to their parent window.
+    // GraphFrames send all mouse events to their parent window, after adapting for zoom
     EVT_MOUSE_EVENTS(CGraphFrame::OnMouseEvent)
 END_EVENT_TABLE()
 
@@ -61,7 +60,6 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
 CGraphFrame::~CGraphFrame()
 {
     pInstances.erase(this);
-    Log::Write("%i images", numImages);
 }
 
 void CGraphFrame::OnSize(wxSizeEvent& event)
@@ -209,13 +207,11 @@ CImage::CImage(const Canvas& src)
 {
     glGenTextures(1, &hTex);
     Update(src);
-    numImages++;
 }
 
 CImage::~CImage()
 {
     glDeleteTextures(1, &hTex);
-    numImages--;
 }
 
 void CImage::Update(const Canvas& src)

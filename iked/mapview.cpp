@@ -179,7 +179,6 @@ BEGIN_EVENT_TABLE(CMapView, wxMDIChildFrame)
     EVT_MENU(id_filesaveas, CMapView::OnSaveAs)
     EVT_MENU(id_fileclose, CMapView::OnClose)
 
-    //EVT_PAINT(CMapView::OnPaint)
     EVT_ERASE_BACKGROUND(CMapView::OnErase)
     EVT_SIZE(CMapView::OnSize)
     EVT_SCROLLWIN(CMapView::OnScroll)
@@ -286,22 +285,29 @@ void CMapView::Init()
     pLeftbar->SetDefaultSize(wxSize(100, 100));
     pLeftbar->SetSashVisible(wxSASH_RIGHT, true);
 
+    wxPanel* panel = new wxPanel(pLeftbar);
+
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
-        pLayerlist = new CLayerVisibilityControl(pLeftbar, -1, this);
-        pLayerlist->SetSize(200,200);
-        mainSizer->Add(pLayerlist, 1, wxALL | wxEXPAND, 10);
-        
         wxBoxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
 
-            sizer->Add(new wxButton(pLeftbar, id_movelayerup, "^"), 0, wxALL);
-            sizer->Add(new wxButton(pLeftbar, id_movelayerdown, "v"), 0, wxALL);
+/*          
+            //It'd be sweet if this worked.
+
+            wxToolBar* tb = new wxToolBar(panel, -1);
+            tb->AddTool(id_movelayerup, wxIcon("mapicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16), wxNullBitmap, false, -1, -1, 0, "Blah", "blah blah");
+            tb->AddTool(id_movelayerdown, wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16));
+            SetToolBar(tb);
+*/
+
+            sizer->Add(new wxButton(panel, id_movelayerup, "^", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), 0, wxALL);
+            sizer->Add(new wxButton(panel, id_movelayerdown, "v", wxDefaultPosition, wxDefaultSize, wxBU_EXACTFIT), 0, wxALL);
 
         mainSizer->Add(sizer, 0, wxALIGN_CENTER);
     
-    pLeftbar->SetSizer(mainSizer);
-    mainSizer->SetSizeHints(pLeftbar);
+        pLayerlist = new CLayerVisibilityControl(panel, -1, this);
+        mainSizer->Add(pLayerlist, 1, wxALL | wxEXPAND);
 
-    mainSizer->RecalcSizes();
+    panel->SetSizer(mainSizer);
 
     // Right side -- Map view
     pRightbar = new CMapSash(this, -1);

@@ -376,11 +376,11 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
     wxToolBar* pToolbar = new wxToolBar
         (
             this,
-            -1,
+            -1/*,
             wxDefaultPosition,
             wxDefaultSize,
             wxTB_HORIZONTAL | wxNO_BORDER,
-            "iked toolbar"
+            "iked toolbar"*/
          );
 
     for (int i = 0; i < numtools; i++)
