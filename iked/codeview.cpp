@@ -25,6 +25,7 @@ BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
     EVT_MENU(CCodeWnd::id_editcopy,CCodeWnd::OnCopy)
     EVT_MENU(CCodeWnd::id_editcut ,CCodeWnd::OnCut)
     EVT_MENU(CCodeWnd::id_editpaste,CCodeWnd::OnPaste)
+    EVT_MENU(CCodeWnd::id_optionsfont,CCodeWnd::OnSyntaxHighlighting)
 END_EVENT_TABLE()
 
 CCodeWnd::CCodeWnd(CMainWnd* parent,
@@ -56,16 +57,22 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     editmenu->Append(id_editselectall,"Select &All\tCtrl+a","");
     menubar->Append(editmenu,"&Edit");
 
+    wxMenu* optionsmenu = new wxMenu;
+    menubar->Append(optionsmenu,"&Options");
+    optionsmenu->Append(id_optionsfont,"&Syntax Highlighting...","");
+
     SetMenuBar(menubar);
 
     // --- Set up the text control ---
     pTextctrl=new wxStyledTextCtrl(this,id_ed,position,size,wxSTC_STYLE_INDENTGUIDE);
 
-    // TODO: make this all mutable
+    // TODO: User syntax saving.  -- khross
+
     wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
     pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     pTextctrl->StyleClearAll();
 
+    // defaults
     pTextctrl->StyleSetForeground(0,  wxColour(0x80, 0x80, 0x80));  // whitespace
     pTextctrl->StyleSetForeground(1,  wxColour(0x00, 0x7F, 0x00));  // code comments
     pTextctrl->StyleSetForeground(2,  wxColour(0x00, 0x7f, 0x00));  // numeric constants
@@ -129,6 +136,70 @@ CCodeWnd::~CCodeWnd()
 {
     delete pTextctrl;
 }
+
+void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
+{
+    // Sets the chosen font/color/style
+    //  -- khross
+    wxFontData f;
+    wxFontDialog fontd(this,&f);
+
+    if (fontd.ShowModal() == wxID_OK)
+    {
+
+        wxFontData retData  =   fontd.GetFontData();
+        wxFont font         =   retData.GetChosenFont();
+        wxColour color      =   retData.GetColour();
+
+        pTextctrl->StyleSetFont(font.GetStyle(),font);
+        pTextctrl->StyleSetForeground(nWhich,color);
+        pTextctrl->StyleSetBold(nWhich,(font.GetStyle()==wxBOLD)?true:false);
+        pTextctrl->StyleSetItalic(nWhich,(font.GetStyle()==wxITALIC)?true:false);
+        pTextctrl->StyleSetUnderline(nWhich,font.GetUnderlined());
+        pTextctrl->StyleSetSize(nWhich,font.GetPointSize());
+        pTextctrl->StyleSetFaceName(nWhich,font.GetFaceName());
+       
+        pTextctrl->Show(true);
+        pTextctrl->SetFocus();
+    }
+}
+
+void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
+{
+    const wxString szChoices[] = 
+        {
+        "Whitespace",
+        "Comments",
+        "Numerical constants",
+        "\" Style string literals",
+        "' Style string literals",
+        "Keywords",
+        "'' Style strings",
+        "\"\" Style strings",
+        "Class declarations",
+        "Function declarations",
+        "Operators",
+        "Identifiers" 
+        };
+
+    wxSingleChoiceDialog sdialog(
+        this,
+        "",
+        "Syntax highlighting options",
+        WXSIZEOF(szChoices),
+        szChoices,
+        NULL,
+        wxOK | wxCANCEL | wxCENTRE,
+        wxDefaultPosition
+        );
+
+    if (sdialog.ShowModal() == wxID_OK)
+        SetSyntax(sdialog.GetSelection(),event);
+
+    
+}
+
+
 
 void CCodeWnd::OnStyleNeeded(wxStyledTextEvent& event)
 {

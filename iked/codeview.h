@@ -4,6 +4,7 @@
 
 #include <string>
 #include <wx\wx.h>
+#include <wx\fontdlg.h>
 #include <wx\stc\stc.h>
 
 class CMainWnd;
@@ -27,6 +28,9 @@ public:
         id_editcut,
         id_editpaste,
         id_editselectall,
+
+        id_options,
+        id_optionsfont
     };
 
     CCodeWnd(CMainWnd* parent,const wxString& title,const wxPoint& position,const wxSize& size,const long style,const char* fname=0);
@@ -45,6 +49,11 @@ public:
     void OnCut (wxCommandEvent& event);
     void OnPaste(wxCommandEvent& event);
     void OnSelectAll(wxCommandEvent& event);
+
+    void OnSyntaxHighlighting(wxCommandEvent& event); // syntax highlighting dialog
+private:
+    void SetSyntax(int,wxCommandEvent&);
+public:
 
     DECLARE_EVENT_TABLE()
 };
