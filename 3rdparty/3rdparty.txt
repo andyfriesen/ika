@@ -1,3 +1,0 @@
-I put this stuff here because libpng and zlib have a wacky directory structure.  I can't just demand that one has libpng, then include from $LIBPNG/include, and so forth. -_-
-
-Sucks, huh?
