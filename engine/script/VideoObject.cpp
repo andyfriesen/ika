@@ -22,6 +22,18 @@ namespace Script
             {   0   }
         };
 
+#define GET(x) PyObject* get ## x(VideoObject* self)
+        GET(XRes) { return PyInt_FromLong(self->video->GetResolution().x);  }
+        GET(YRes) { return PyInt_FromLong(self->video->GetResolution().y);  }
+#undef GET
+
+        PyGetSetDef properties[] =
+        {
+            {   "xres",     (getter)getXRes,    0,  "Gets the horizontal resolution of the current display mode, in pixels."    },
+            {   "yres",     (getter)getYRes,    0,  "Gets the vertical resolution of the current display mode, in pixels."      },
+            {   0   }
+        };
+
         void Init()
         {
             memset(&type, 0, sizeof type);
@@ -31,6 +43,7 @@ namespace Script
             type.tp_name = "Video";
             type.tp_basicsize = sizeof type;
             type.tp_methods = methods;
+            type.tp_getset = properties;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_doc = "Interface for ika's graphics engine.";
 
