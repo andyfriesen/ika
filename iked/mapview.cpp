@@ -7,22 +7,25 @@
 
 #include <wx\laywin.h>
 #include <wx\sashwin.h>
+#include <wx\checklst.h>
 
 /*
+
     blegh, didn't want this to get complicated.
 
     wxMDIChildFrame
         |----------------------|
         |                      |
-    wxSashLayoutWindow  wxSashLayoutWindow
+    CMapSash            wxSashLayoutWindow
         |                      |
-    CGraphFrame         Layer visibility stuff, not finalized
+    CGraphFrame         wxCheckListBox
+    (Map rendering)     (Layer visibility)
 
 */
 
-// itty bitty sashlayoutwin class derivative, that passes size events down
 namespace
 {
+    // wxSashLayoutWindow tweak that passes size events to its parent.
     class CMapSash : public wxSashLayoutWindow
     {
     public:
@@ -35,7 +38,7 @@ namespace
             int max=GetScrollRange(event.GetOrientation());
             int thumbsize=GetScrollThumb(event.GetOrientation());
 
-            amount+=GetScrollPos(event.GetOrientation());//event.GetPosition();
+            amount+=GetScrollPos(event.GetOrientation());
             if (amount<0) amount=0;
             if (amount>max-thumbsize)
                 amount=max-thumbsize;
@@ -74,7 +77,6 @@ namespace
     };
 
     BEGIN_EVENT_TABLE(CMapSash,wxSashLayoutWindow)
-       // EVT_SCROLLWIN(CMapSash::OnScroll)
         EVT_SCROLLWIN_TOP(CMapSash::ScrollTop)
         EVT_SCROLLWIN_BOTTOM(CMapSash::ScrollBottom)
         EVT_SCROLLWIN_LINEUP(CMapSash::ScrollLineUp)
@@ -85,6 +87,8 @@ namespace
         EVT_SCROLLWIN_THUMBRELEASE(CMapSash::OnScroll)
     END_EVENT_TABLE()
 };
+
+//-------------------------------------------------------------------------------------
 
 BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_PAINT(CMapView::OnPaint)
@@ -103,24 +107,58 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     int w,h;
     GetClientSize(&w,&h);
 
+    // Left side -- layer properties
     pLeftbar=new wxSashLayoutWindow(this,-1);
     pLeftbar->SetAlignment(wxLAYOUT_LEFT);
     pLeftbar->SetOrientation(wxLAYOUT_VERTICAL);
     pLeftbar->SetDefaultSize(wxSize(100,100));
-    //pLeftbar->SetSashVisible(wxSASH_RIGHT,true);
+    pLeftbar->SetSashVisible(wxSASH_RIGHT,true);
 
-    pRightbar=new CMapSash(this,-1);//wxSashLayoutWindow(this,-1);
+    pLayerlist=new wxCheckListBox(pLeftbar,-1);    
+
+    // Right side -- Map view
+    pRightbar=new CMapSash(this,-1);
     pRightbar->SetAlignment(wxLAYOUT_RIGHT);
 
     pGraph=new CGraphFrame(pRightbar);
-    Show();
 
     // Get resources
-    pMap=pParentwnd->map.Load(fname);
-    pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());
+    pMap=pParentwnd->map.Load(fname);                                   // load the map
+    pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());                  // load the VSP
 
-    pRightbar->SetScrollbar(wxVERTICAL,1,100,pMap->Height()*pTileset->Height());
-    pRightbar->SetScrollbar(wxHORIZONTAL,1,100,pMap->Width()*pTileset->Width());
+    pRightbar->SetScrollbar(wxVERTICAL,0,100,pMap->Height()*pTileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL,0,100,pMap->Width()*pTileset->Width());
+    xwin=ywin=0;
+
+    InitLayerVisibilityControl();
+
+    Show();
+}
+
+void CMapView::InitLayerVisibilityControl()
+{
+    // Fill up the layer info bar
+    const string& s=pMap->GetRString();
+    
+    for (int idx=0; idx<s.length(); idx++)
+    {
+        char c=s[idx];
+        if (c>='0' && c<='9')
+        {
+            c= c=='0' ? 10 : c-'1';
+
+            SMapLayerInfo lay;
+            pMap->GetLayerInfo(lay,c);
+            pLayerlist->Append(va("Layer %i",c));
+            pLayerlist->Check(pLayerlist->Number()-1);
+        }
+        else
+            switch (c)
+            {
+            case 'E':   pLayerlist->Append("Entities");     break;
+            case 'R':   pLayerlist->Append("HookRetrace");  break;                
+            }
+    }
 }
 
 void CMapView::OnPaint()
@@ -128,11 +166,9 @@ void CMapView::OnPaint()
     wxPaintDC paintdc(this);
 
     pGraph->SetCurrent();
+    pGraph->Clear();    
 
-    glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-
-    xwin=ywin=0;
-    RenderLayer(0);
+    Render();
 
     glFlush();
     pGraph->ShowPage();
@@ -159,7 +195,7 @@ void CMapView::OnScroll(wxScrollWinEvent& event)
     pRightbar->SetScrollPos(wxHORIZONTAL,xwin);
     pRightbar->SetScrollPos(wxVERTICAL,ywin);
 
-    RenderLayer(0);
+    Render();
     pGraph->ShowPage();
 }
 
@@ -172,31 +208,58 @@ void CMapView::OnClose()
 
 // ------------------------------ Core logic -------------------------
 
+void CMapView::Render()
+{
+    const string& r=pMap->GetRString();
+
+    pGraph->SetCurrent();
+    pGraph->Clear();
+
+    for (int i=0; i<r.length(); i++)
+    {
+        if (r[i]>='0' && r[i]<='9')
+        {
+            int l=r[i]-'1';
+            if (r[i]=='0') l=10;
+            
+            if (l>=0 && l<pMap->NumLayers())
+                RenderLayer(l);
+        }
+    }
+}
+
 void CMapView::RenderLayer(int lay)
 {
     int nWidth,nHeight;
 
     pGraph->GetClientSize(&nWidth,&nHeight);
 
-    int tx=pTileset->Width();
-    int ty=pTileset->Height();
+    SMapLayerInfo l;
+    pMap->GetLayerInfo(l,lay);
 
-    int nFirstx=xwin/tx;
-    int nFirsty=ywin/ty;
+    const int xw=xwin*l.pmulx/l.pdivx;
+    const int yw=ywin*l.pmuly/l.pdivy;
+
+    const int tx=pTileset->Width();
+    const int ty=pTileset->Height();
+
+    const int nFirstx=xw/tx;
+    const int nFirsty=yw/ty;
     
-    int nLenx=nWidth/tx+1;
-    int nLeny=nHeight/ty+1;
+    const int nLenx=nWidth/tx+2;
+    const int nLeny=nHeight/ty+2;
 
-    int nAdjx=xwin%tx;
-    int nAdjy=ywin%ty;
+    const int nAdjx=xw%tx;
+    const int nAdjy=yw%ty;
 
     for (int y=0; y<nLeny; y++)
     {
         for (int x=0; x<nLenx; x++)
         {
             int t=pMap->GetTile(x+nFirstx, y+nFirsty, lay);
-
-            pTileset->DrawTile(x*tx-nAdjx, y*ty-nAdjy, t, *pGraph);
+            
+            if (lay==0 || t!=0)
+                pTileset->DrawTile(x*tx-nAdjx, y*ty-nAdjy, t, *pGraph);
         }
     }
 }

@@ -12,7 +12,7 @@ class CGraphFrame;
 class CTileSet;
 
 class wxSashLayoutWindow;
-class wxSashWindow;
+class wxCheckListBox;
 class wxScrolledWindow;
 
 class CMapView : public wxMDIChildFrame
@@ -23,6 +23,7 @@ class CMapView : public wxMDIChildFrame
     wxSashLayoutWindow* pRightbar;
     wxScrolledWindow*   pScrollwin;
     CGraphFrame*        pGraph;
+    wxCheckListBox*     pLayerlist;
 
     Map*         pMap;
 
@@ -30,6 +31,8 @@ class CMapView : public wxMDIChildFrame
 
 public:
     CMapView(CMainWnd* parent,const string& fname,const wxPoint& position=wxDefaultPosition,const wxSize& size=wxDefaultSize,const long style=wxDEFAULT_FRAME_STYLE | wxVSCROLL | wxHSCROLL);
+
+    void InitLayerVisibilityControl();
 
     void OnPaint();
     void OnErase(wxEraseEvent&) {}
@@ -40,12 +43,15 @@ public:
 
     DECLARE_EVENT_TABLE()
 
+    // Stuff that's not directly related to the UI
 
 private:
-
     int xwin,ywin;
 
+    void Render();
     void RenderLayer(int lay);
+
+    bool Save(const char* fname);
 };
 
 #endif

@@ -31,6 +31,8 @@ public:
     void Blit(CImage& src,int x,int y,bool trans);
     void ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans);
 
+    void Clear();
+
     void ShowPage();
 
     void OnErase(wxEraseEvent&) {}

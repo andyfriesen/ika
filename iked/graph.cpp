@@ -107,6 +107,11 @@ void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
 {
 }
 
+void CGraphFrame::Clear()
+{
+    glClear(GL_COLOR_BUFFER_BIT);
+}
+
 void CGraphFrame::ShowPage()
 {
     SwapBuffers();
