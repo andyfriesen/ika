@@ -59,7 +59,7 @@ class MainMenu(Menu):
         trans.AddWindowReverse(_, (_.x, -_.height))
         
         _.statwindow.DockRight().DockBottom()
-        trans.AddWindowReverse(_.statwindow, (XRes(), YRes()))
+        trans.AddWindowReverse(_.statwindow, (ika.Video.xres, ika.Video.yres))
         
         while not trans.Done:
             trans.Update(1)
@@ -71,7 +71,7 @@ class MainMenu(Menu):
         
     def Hide(_):
         trans.AddWindow(_, (_.x, -_.height), remove = True)
-        trans.AddWindow(_.statwindow, (XRes(), YRes()), remove = True)
+        trans.AddWindow(_.statwindow, (ika.Video.xres, ika.Video.yres), remove = True)
         
         while not trans.Done:
             trans.Update(1)

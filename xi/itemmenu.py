@@ -32,7 +32,7 @@ class ItemMenu(object):
 
         _.menu.DockLeft().DockTop(_.description)
         _.description.Right = _.statbar.x - _.statbar.border * 2
-        _.menu.YMax = (ika.GetScreenImage().height - _.menu.y - 20) / _.menu.Font.height
+        _.menu.YMax = (ika.Video.yres - _.menu.y - 20) / _.menu.Font.height
 
     #--------------------------------------------
     
@@ -43,13 +43,13 @@ class ItemMenu(object):
         _.Refresh()
 
         trans.AddWindowReverse(_.description, (_.description.x, -_.description.height) )
-        trans.AddWindowReverse(_.menu, (_.menu.x, YRes()) )
+        trans.AddWindowReverse(_.menu, (_.menu.x, ika.Video.yres) )
 
     #--------------------------------------------
     
     def StartHide(_):
         trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True )
-        trans.AddWindow(_.menu, (_.menu.x, YRes()), remove = True )
+        trans.AddWindow(_.menu, (_.menu.x, ika.Video.yres), remove = True )
 
     #--------------------------------------------
 
@@ -66,7 +66,7 @@ class ItemMenu(object):
         while True:
             _.description.text[0] = party.inv[_.menu.CursorPos].Description
 
-            ika.map.Render()
+            ika.Map.Render()
             for x in (_.menu, _.statbar, _.description):
                 x.Draw()
             ika.ShowPage()

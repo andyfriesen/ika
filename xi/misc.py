@@ -38,13 +38,16 @@ def WrapText(s,wrapwidth):
 
 #--------------------------------------------------------------
 
-import ika
-
-def XRes():
-    return ika.GetScreenImage().width
-    
-def YRes():
-    return ika.GetScreenImage().height
-    
 def clamp(value, lower, upper):
     return max(min(value, upper), lower)
+
+import ika
+
+a = lambda n: ika.Input[n].Pressed
+up = a('UP')
+down = a('DOWN')
+left = a('LEFT')
+right = a('RIGHT')
+enter = a('RETURN')
+cancel = a('ESCAPE')
+del a

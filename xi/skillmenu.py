@@ -9,7 +9,6 @@
 # suitability of this code for any purpose.
 
 import ika
-from ika import input
 
 import party
 import menu
@@ -40,15 +39,15 @@ class SkillMenu(object):
         _.Refresh(_.CurChar)
         
         trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
-        trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
+        trans.AddWindowReverse(_.statwindow, (ika.Video.xres, _.statwindow.y))
         trans.AddWindowReverse(_.description, (_.description.x, -_.description.height))
-        trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, YRes()))
+        trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, ika.Video.yres))
         
     def StartHide(_):
-        trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
+        trans.AddWindow(_.portraitwindow, (ika.Video.xres, _.portraitwindow.y), remove = True)
         trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
         trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True)
-        trans.AddWindow(_.skillwindow, (_.skillwindow.x, YRes()), remove = True)
+        trans.AddWindow(_.skillwindow, (_.skillwindow.x, ika.Video.yres), remove = True)
 
     def Refresh(_, char):
         for x in (_.portraitwindow, _.statwindow):
@@ -74,13 +73,11 @@ class SkillMenu(object):
         trans.Reset()
         
     def UpdateSkillWindow(_):
-        if input.left and _.charidx > 0:
-            input.left = False
+        if left() and _.charidx > 0:
             _.charidx -= 1
             _.Refresh(party.party[_.charidx])
 
-        if input.right and _.charidx < len(party.party) - 1:
-            input.right = False
+        if right() and _.charidx < len(party.party) - 1:
             _.charidx += 1
             _.Refresh(party.party[_.charidx])
 
@@ -102,9 +99,9 @@ class SkillMenu(object):
         curstate = _.UpdateSkillWindow
 
         while True:
-            input.Update()
+            ika.Input.Update()
             
-            ika.map.Render()
+            ika.Map.Render()
 
             for x in (_.skillwindow, _.portraitwindow, _.statwindow, _.statbar, _.description):
                 x.Draw()
@@ -113,7 +110,7 @@ class SkillMenu(object):
 
             result = curstate()
 
-            if input.cancel:
+            if cancel():
                 break
             if result is None:
                 continue

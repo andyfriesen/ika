@@ -12,28 +12,28 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Blit",         (PyCFunction)Video_Blit,        METH_VARARGS,
-                "Video.Blit(image, x, y[, transparent])\n"
+                "Video.Blit(image, x, y[, transparent])\n\n"
                 "Draws the image at (x,y) at its original size.\n"
                 "If transparent is sepcified and zero, alpha blending is disabled,\n"
                 "else it is enabled."
             },
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
-                "Video.ScaleBlit(image, x, y, width, height[, transparent])\n"
+                "Video.ScaleBlit(image, x, y, width, height[, transparent])\n\n"
                 "Draws the image at (x,y), stretching it out to the size given.\n"
                 "If transparent is sepcified and zero, alpha blending is disabled,\n"
                 "else it is enabled."
             },
             
             {   "DistortBlit",  (PyCFunction)Video_DistortBlit, METH_VARARGS,
-                "Video.DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[,transparent])\n"
+                "Video.DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[,transparent])\n\n"
                 "Draws the image onscreen, stretched to the four points specified.\n"
                 "If transparent is sepcified and zero, alpha blending is disabled,\n"
                 "else it is enabled."
             },
 
             {   "TileBlit",     (PyCFunction)Video_TileBlit,    METH_VARARGS,
-                "Video.TileBlit(image, x, y, width, height[, scalex[, scaley[, transparent]]])\n"
+                "Video.TileBlit(image, x, y, width, height[, scalex[, scaley[, transparent]]])\n\n"
                 "Draws the image onscreen, \"tiling\" it as necessary to fit the rectangle specified.\n"
                 "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
                 "If transparent is specified and zero, then alpha blending is disabled, else it is enabled."
@@ -41,30 +41,30 @@ namespace Script
 
             // TODO: more blits.  I want a wrapblit, tintblit, and others
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   METH_VARARGS,
-                "Video.DrawPixel(x, y, colour)\n"
+                "Video.DrawPixel(x, y, colour)\n\n"
                 "Draws a dot at (x,y) with the colour specified."
             },
 
             {   "DrawLine",     (PyCFunction)Video_DrawLine,    METH_VARARGS,
-                "Video.DrawLine(x1, y1, x2, y2, colour)\n"
+                "Video.DrawLine(x1, y1, x2, y2, colour)\n\n"
                 "Draws a straight line from (x1, y1) to (x2, y2) in the colour specified."
             },
 
             {   "DrawRect",     (PyCFunction)Video_DrawRect,    METH_VARARGS,
-                "Video.DrawRect(x1, y1, x2, y2, colour[, fill])\n"
+                "Video.DrawRect(x1, y1, x2, y2, colour[, fill])\n\n"
                 "Draws a rectangle with (x1, y1) and (x2, y2) as opposite corners.\n"
                 "If fill is omitted or zero, an outline is drawn, else it is filled in."
             },
 
             {   "DrawEllipse",  (PyCFunction)Video_DrawEllipse, METH_VARARGS,
-                "Video.DrawEllipse(cx, cy, rx, ry, colour[, filled])"
+                "Video.DrawEllipse(cx, cy, rx, ry, colour[, filled])\n\n"
                 "Draws an ellipse, centred at (cx, cy), of radius rx and ry on the X and\n"
                 "Y axis, respectively.  If filled is omitted or nonzero, the ellipse is filled in\n"
                 "else it is drawn as an outline."
             },
             
             {   "DrawTriangle", (PyCFunction)Video_DrawTriangle,METH_VARARGS,
-                "Video.DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))\n"
+                "Video.DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))\n\n"
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
 

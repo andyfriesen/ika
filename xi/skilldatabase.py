@@ -67,8 +67,8 @@ class SkillDatabase(StatelessProxy):
                 elif t == 'basic':          i.basic = True
                 elif t == 'minlevel':       i.minlevel = int(f.Next())
                 elif t == 'mp':             i.mp = int(f.Next())
-                elif t == 'fieldeffect':    i.fieldeffect  = fieldeffects[f.Next()]
-                elif t == 'battleeffect':   i.battleeffect = battleeffects[f.Next()]
+                elif t == 'fieldeffect':    i.fieldeffect  = fieldeffects.__dict__[f.Next()]
+                elif t == 'battleeffect':   i.battleeffect = battleeffects.__dict__[f.Next()]
 
                 elif t == 'end':
                     break

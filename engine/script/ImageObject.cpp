@@ -15,7 +15,7 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Blit",         (PyCFunction)Image_Blit,         METH_VARARGS,
-                "Image.Blit(x, y[, transparent])\n"
+                "Image.Blit(x, y[, transparent])\n\n"
                 "Draws the image at (x,y).\n"
                 "If transparent is specified and 0 the image is opaque.\n"
                 "Otherwise, alpha blending is enabled."
@@ -23,18 +23,18 @@ namespace Script
             },
 
             {   "ScaleBlit",    (PyCFunction)Image_ScaleBlit,    METH_VARARGS,
-                "Image.ScaleBlit(x, y, width, height[, transparent])\n"
+                "Image.ScaleBlit(x, y, width, height[, transparent])\n\n"
                 "Blits the image, but stretches it out to the dimensions\n"
                 "specified in (width,height)."
             },
 
             {   "DistortBlit",  (PyCFunction)Image_DistortBlit,  METH_VARARGS,
-                "Image.DistortBlit((x1, y1), (x2, y2), (x3, y3), (x4, y4)[, transparency])\n"
+                "Image.DistortBlit((x1, y1), (x2, y2), (x3, y3), (x4, y4)[, transparency])\n\n"
                 "Blits the image scaled to the four points specified."
             },
 
             {   "Clip",         (PyCFunction)Image_Clip,         METH_VARARGS,
-                "Image.Clip(x, y, x2, y2)\n"
+                "Image.Clip(x, y, x2, y2)\n\n"
                 "Sets the dimensions of the image's clipping rectangle.\n"
                 "When images are drawn they will only be drawn in this area."
             },

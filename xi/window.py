@@ -8,123 +8,75 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from ika import *
+import ika
 
-class Window:
-    def __init__(self):
-        self.iLeft = None
-        self.iRight = None
-        self.iTop = None
-        self.iBottom = None
-        self.iTopleft = None
-        self.iTopright = None
-        self.iBottomleft = None
-        self.iBottomRight = None
-        self.iCentre = None
+i = 0
 
-    #----------------------------------------------------------------
+class Window(object):
+    __slots__ = [ 'iLeft', 'iRight', 'iTop', 'iBottom', 'iTopleft', 'iTopright', 'iBottomleft', 'iBottomright', 'iCentre', 'borderwidth' ]
+    def __init__(_, srcimage, bordersize):
+        def ss(x, y, w, h):
+            global i
+            
+            c = ika.Canvas(w, h)
+            srcimage.Blit(c, -x, -y)
+            i += 1
+            return ika.Image(c)
 
-    def _CreateCorners(self, img, borderwidth):
-        self.iTopleft = Image(borderwidth, borderwidth)
-        self.iTopright = Image(borderwidth, borderwidth)
-        self.iBottomleft = Image(borderwidth, borderwidth)
-        self.iBottomright = Image(borderwidth, borderwidth)
-
-        SetRenderDest(self.iTopleft)
-        img.Blit(0, 0, 0)
-
-        SetRenderDest(self.iTopright)
-        img.Blit(-(img.width - borderwidth), 0, 0)
-
-        SetRenderDest(self.iBottomleft)
-        img.Blit(0, -(img.height - borderwidth), 0)
-
-        SetRenderDest(self.iBottomright)
-        img.Blit(-(img.width - borderwidth), -(img.height - borderwidth), 0)
-
-    #----------------------------------------------------------------
-
-    def _CreateEdges(self, img, borderwidth):
-        self.iTop = Image(img.width - borderwidth * 2, borderwidth)
-        self.iBottom = Image(img.width - borderwidth * 2, borderwidth)
-        self.iLeft = Image(borderwidth, img.height - borderwidth * 2)
-        self.iRight = Image(borderwidth, img.height - borderwidth * 2)
-
-        SetRenderDest(self.iTop)
-        img.Blit(-borderwidth, 0, 0)
-
-        SetRenderDest(self.iBottom)
-        img.Blit(-borderwidth, borderwidth - img.height, 0)
-
-        SetRenderDest(self.iLeft)
-        img.Blit(0, -borderwidth, 0)
-
-        SetRenderDest(self.iRight)
-        img.Blit(borderwidth - img.width, -borderwidth, 0)
-
-    #----------------------------------------------------------------
-
-    def Load(self, filename, borderwidth):
-        img = Image()
-        img.Load(filename)
-
-        if img.width < borderwidth * 2:
-            self.iCentre = img
-            return
-
-        centrewidth = img.width - borderwidth * 2
-        centreheight = img.height - borderwidth * 2
-
-        oldrenderdest = GetRenderDest()
-
-        self._CreateCorners(img, borderwidth)
-        self._CreateEdges(img, borderwidth)
-
-        # lastly, the centre image
-        self.iCentre = Image(img.width - borderwidth * 2, img.height - borderwidth * 2)
-        SetRenderDest(self.iCentre)
-        img.Blit(-borderwidth, -borderwidth, 0)
+        if isinstance(srcimage, str):
+            srcimage = ika.Canvas(srcimage)
         
-        SetRenderDest(oldrenderdest)
+        edgex = srcimage.width  - (bordersize * 2)
+        edgey = srcimage.height - (bordersize * 2)
+
+        _.iLeft         = ss(0,                 bordersize,     bordersize, edgey)
+        _.iRight        = ss(edgex + bordersize, bordersize,    bordersize, edgey)
+        _.iTop          = ss(bordersize,        0,                  edgex, bordersize)
+        _.iBottom       = ss(bordersize,        edgey + bordersize, edgex, bordersize)
+        _.iTopleft      = ss(0,                 0,              bordersize, bordersize)
+        _.iTopright     = ss(edgex + bordersize, 0,             bordersize, bordersize)
+        _.iBottomleft   = ss(0,                 edgey + bordersize, bordersize, bordersize)
+        _.iBottomright  = ss(edgex + bordersize, edgey + bordersize, bordersize, bordersize)
+        _.iCentre       = ss(bordersize,        bordersize,     edgex, edgey)
 
     #----------------------------------------------------------------
 
-    def Draw(self, x1, y1, x2, y2):
-        b = self.Left / 2
+    def Draw(_, x1, y1, x2, y2):
+        b = _.Left / 2
         x1 -= b
         y1 -= b
         x2 += b
         y2 += b
-        self.iTopleft.Blit(x1 - self.iTopleft.width, y1 - self.iTopleft.height)
-        self.iTopright.Blit(x2, y1-self.iTopright.height)
-        self.iBottomleft.Blit(x1 - self.iBottomleft.width, y2)
-        self.iBottomright.Blit(x2, y2)
 
-        self.iLeft.ScaleBlit (x1 - self.iLeft.width, y1, self.iLeft.width, y2 - y1)
-        self.iRight.ScaleBlit(x2, y1, self.iRight.width, y2-y1)
+        ika.Video.Blit(_.iTopleft,  x1 - _.iTopleft.width, y1 - _.iTopleft.height)
+        ika.Video.Blit(_.iTopright, x2, y1 - _.iTopright.height)
+        ika.Video.Blit(_.iBottomleft, x1 - _.iBottomleft.width, y2)
+        ika.Video.Blit(_.iBottomright, x2, y2)
 
-        self.iTop.ScaleBlit   (x1, y1 - self.iTop.height, x2 - x1, self.iTop.height)
-        self.iBottom.ScaleBlit(x1, y2, x2 - x1, self.iBottom.height)
-        #self.iCentre.ScaleBlit(x1, y1, 900,900)
-        self.iCentre.ScaleBlit(x1, y1, x2 - x1, y2 - y1)
+        ika.Video.TileBlit(_.iLeft, x1 - _.iLeft.width, y1, _.iLeft.width, y2 - y1)
+        ika.Video.TileBlit(_.iRight, x2, y1, _.iRight.width, y2 - y1)
 
-    """Left   = property( lambda self: self.iLeft.width )
-    Right  = property( lambda self: self.iRight.width )
-    Top    = property( lambda self: self.iTop.height )
-    Bottom = property( lambda self: self.iBottom.height )"""
-    Left = Right = property( lambda self: self.iLeft.width )
-    Top = Bottom = property( lambda self: self.iTop.height )
+        ika.Video.TileBlit(_.iTop, x1, y1 - _.iTop.height, x2 - x1, _.iTop.height)
+        ika.Video.TileBlit(_.iBottom, x1, y2, x2 - x1, _.iBottom.height)
+
+        ika.Video.TileBlit(_.iCentre, x1, y1, x2 - x1, y2 - y1)    
+
+    """Left   = property( lambda _: _.iLeft.width )
+    Right  = property( lambda _: _.iRight.width )
+    Top    = property( lambda _: _.iTop.height )
+    Bottom = property( lambda _: _.iBottom.height )"""
+    Left = Right = property( lambda _: _.iLeft.width )
+    Top = Bottom = property( lambda _: _.iTop.height )
 
 
 #--------------------------------------------------------------------
 
 class SimpleWindow(object):
-    def __init__(self, bordercolour = RGB(0, 0, 0), backgroundcolour = RGB(0, 0, 255)):
-        self.__border = bordercolour
-        self.__bg = backgroundcolour
-        self.Top = self.Bottom = self.Left = self.Right = 1 # border size
+    def __init__(_, bordercolour = ika.RGB(0, 0, 0), backgroundcolour = ika.RGB(0, 0, 255)):
+        _.__border = bordercolour
+        _.__bg = backgroundcolour
+        _.Top = _.Bottom = _.Left = _.Right = 1 # border size
 
-    def Draw(self, x1, y1, x2, y2):
-        scr = GetScreenImage()
-        scr.Rect(x1, y1, x2, y2, __bg, 1)
-        scr.Rect(x1, y1, x2, y2, __border, 0)
+    def Draw(_, x1, y1, x2, y2):
+        ika.Video.DrawRect(x1, y1, x2, y2, _.__bg, True)
+        ika.Video.DrawRect(x1, y1, x2, y2, _.__border, False)

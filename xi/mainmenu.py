@@ -39,7 +39,7 @@ class MainMenu(StatelessProxy):
 
         dummy = Dummy()
         self.submenu = [ itemmenu.ItemMenu(self.statbar),
-			 skillmenu.SkillMenu(self.statbar),
+                         skillmenu.SkillMenu(self.statbar),
                          equipmenu.EquipMenu(self.statbar),
                          statusmenu.StatusMenu(self.statbar),
                          dummy,
@@ -59,13 +59,13 @@ class MainMenu(StatelessProxy):
         self.statbar.DockRight().DockTop()
         self.mainmenu.DockLeft().DockTop()
 
-        trans.AddWindowReverse(self.statbar, (self.statbar.Left, YRes()))
+        trans.AddWindowReverse(self.statbar, (self.statbar.Left, ika.Video.yres))
         trans.AddWindowReverse(self.mainmenu, (-self.mainmenu.width, self.mainmenu.Top))
         trans.Execute()
         
     def Hide(self):
         trans.AddWindow(self.statbar, (self.statbar.Left, -self.statbar.height), remove = True)
-        trans.AddWindow(self.mainmenu, (XRes(), self.mainmenu.y), remove = True)
+        trans.AddWindow(self.mainmenu, (ika.Video.xres, self.mainmenu.y), remove = True)
         trans.Execute()
         trans.Reset()
         
@@ -74,7 +74,7 @@ class MainMenu(StatelessProxy):
         r = self.mainmenu.Rect
         
         menu.StartShow()
-        trans.AddWindow(self.mainmenu, (XRes() + 20, self.mainmenu.y) )
+        trans.AddWindow(self.mainmenu, (ika.Video.xres + 20, self.mainmenu.y) )
         trans.Execute()
         
         result = menu.Execute()
@@ -88,12 +88,13 @@ class MainMenu(StatelessProxy):
 
     def Execute(self):
         self.Show()
+        #ika.Input.cancel.Pressed() # flush
         
         self.statbar.Refresh()
         
         done = 0
         while not done:
-            ika.map.Render()
+            ika.Map.Render()
             self.Draw()
             ika.ShowPage()
             
@@ -104,8 +105,6 @@ class MainMenu(StatelessProxy):
             
             elif result != None:
                 result = self.RunMenu(self.submenu[result])
-                ika.input.enter = 0
-                ika.input.cancel = 0
                 if not result:
                     break
 

@@ -15,11 +15,11 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Play",     (PyCFunction)Sound_Play,  METH_NOARGS,
-                "Sound.Play()\n"
+                "Sound.Play()\n\n"
                 "Plays the stream."
             },
             {   "Pause",    (PyCFunction)Sound_Pause, METH_NOARGS,
-                "Sound.Pause()\n"
+                "Sound.Pause()\n\n"
                 "Pauses the stream.  Calling Sound.Play() will cause playback to resume\n"
                 "where it left off."
             },

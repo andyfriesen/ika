@@ -8,7 +8,7 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from ika import *
+import ika
 import token
 from exception import XiException
 from item import *
@@ -38,7 +38,7 @@ class Character(object):
         self.datfilename = datfile
 
         self.name = 'null'
-        self.portrait = Image()
+        self.portrait = ika.Image(ika.Canvas(16,16))
         self.chrfile = 'null'
         self.charclass = 'null'
         self.equip = [] # list of _EquipSlot objects
@@ -239,7 +239,7 @@ class Character(object):
             if t =='name':
                 self.name = tokens.Next()
             elif t =='portrait':
-                self.portrait.Load(tokens.Next())
+                self.portrait = ika.Image(tokens.Next())
             elif t =='chr':
                 self.chrfile = tokens.Next()
             elif t =='class':
@@ -279,6 +279,6 @@ class Character(object):
 
     def Spawn(self, x, y):
         if self.ent is None:
-            self.ent = Entity(x, y, self.chrfile)
+            self.ent = ika.Entity(x, y, self.chrfile)
 
 #------------------------------------------------------------------

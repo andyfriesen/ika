@@ -20,42 +20,42 @@ namespace Script
         PyMethodDef methods [] =
         {
             {    "Move",            (PyCFunction)Entity_Move,             METH_VARARGS,
-                "Entity.Move(movepattern)\n"
+                "Entity.Move(movepattern)\n\n"
                 "Directs the entity to move in the pattern specified."
             },
 
             {    "Chase",           (PyCFunction)Entity_Chase,            METH_VARARGS,    
-                "Entity.Chase(entity, distance)\n"
+                "Entity.Chase(entity, distance)\n\n"
                 "Directs the entity to chase the entity specified.  It will attempt to close\n"
                 "within the specified distance (in pixels) before it stops."
             },
 
             {    "Wander",          (PyCFunction)Entity_Wander,           METH_VARARGS,    
-                "Entity.Wander(pixels, delay)\n"
+                "Entity.Wander(pixels, delay)\n\n"
                 "Directs the entity to wander around randomly.  It will move the specified\n"
                 "number of pixels in one direction, then delay for the specified amount of\n"
                 "time."
             },
 
             {    "WanderZone",      (PyCFunction)Entity_Wanderzone,       METH_VARARGS,    
-                "Entity.WanderZone(pixels, delay, zone)\n"
+                "Entity.WanderZone(pixels, delay, zone)\n\n"
                 "Directs the entity to wander around randomly.  Unlike Entity.Wander, however\n"
                 "the entity will not wander off the specified zone.  This is a good way to confine\n"
                 "an entity to an irregular region of the map."
             },
 
             {    "Stop",            (PyCFunction)Entity_Stop,             METH_VARARGS,    
-                "Entity.Stop()\n"
+                "Entity.Stop()\n\n"
                 "Directs the entity to stop whatever it is doing."
             },
 
             {    "IsMoving",        (PyCFunction)Entity_IsMoving,         METH_VARARGS,    
-                "Entity.IsMoving()\n"
+                "Entity.IsMoving() -> int\n\n"
                 "If the entity is moving, the result is 1.  If not, it is 0."
             },
 
             {    "DetectCollision", (PyCFunction)Entity_DetectCollision,  METH_VARARGS,    
-                "Entity.DetectCollision()\n"
+                "Entity.DetectCollision() -> Entity\n\n"
                 "If an entity is touching the entity, then it is returned.\n"
                 "None is returned if there is no entity touching it."
             },

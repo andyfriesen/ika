@@ -9,7 +9,6 @@
 # suitability of this code for any purpose.
 
 import ika
-from ika import input
 
 import party
 import menu
@@ -45,17 +44,17 @@ class EquipMenu(object):
         _.Refresh(_.CurChar)
         
         trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
-        trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
+        trans.AddWindowReverse(_.statwindow, (ika.Video.xres, _.statwindow.y))
         trans.AddWindowReverse(_.description, (_.description.x, -_.description.height))
         trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
-        trans.AddWindowReverse(_.itemlist, (_.itemlist.x, YRes()))
+        trans.AddWindowReverse(_.itemlist, (_.itemlist.x, ika.Video.yres))
         
     def StartHide(_):
-        trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
+        trans.AddWindow(_.portraitwindow, (ika.Video.xres, _.portraitwindow.y), remove = True)
         trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
         trans.AddWindow(_.description, (_.description.x, -_.description.height), remove = True)
         trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)
-        trans.AddWindow(_.itemlist, (_.itemlist.x, YRes()), remove = True)
+        trans.AddWindow(_.itemlist, (_.itemlist.x, ika.Video.yres), remove = True)
 
     def Refresh(_, char):
         for x in (_.equipwindow, _.portraitwindow, _.statwindow):
@@ -80,13 +79,11 @@ class EquipMenu(object):
     def UpdateEquipWindow(_):
         char = _.CurChar
         
-        if input.left and _.charidx > 0:
-            input.left = False
+        if left() and _.charidx > 0:
             _.charidx -= 1
             _.Refresh(_.CurChar)
             
-        if input.right and _.charidx < len(party.party) - 1:
-            input.right = False
+        if right() and _.charidx < len(party.party) - 1:
             _.charidx += 1
             _.Refresh(_.CurChar)
 
@@ -138,9 +135,9 @@ class EquipMenu(object):
         _.state = _.UpdateEquipWindow
 
         while True:
-            input.Update()
+            ika.Input.Update()
             
-            ika.map.Render()
+            ika.Map.Render()
 
             for x in (_.equipwindow, _.portraitwindow, _.statwindow, _.itemlist, _.statbar, _.description):
                 x.Draw()
@@ -149,7 +146,7 @@ class EquipMenu(object):
 
             result = _.state()
 
-            if input.cancel:
+            if cancel():
                 break
             if result is not None:
                 break

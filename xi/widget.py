@@ -16,12 +16,15 @@ import window
 
 # globals (hurk)
 
-defaultwindow = window.Window()
+defaultwindow = window.SimpleWindow()
 
-defaultwindow.Load('window.png', 4)
 defaultfont = ika.Font('arial.fnt')
 #defaultfont = Font('eb.fnt')
 defaultfont.tabsize = 64
+
+def SetDefaultWindow(wnd):
+    global defaultwindow
+    defaultwindow = wnd
 
 class Widget(object):
     "Basic widget interface."
@@ -43,7 +46,7 @@ class Widget(object):
         return self
     
     def DockRight(self, wnd = None):
-        x = wnd and wnd.Right or ika.GetScreenImage().width
+        x = wnd and wnd.Right or ika.Video.xres
         self.x = x - self.width - self.border * 2
         return self
     
@@ -54,7 +57,7 @@ class Widget(object):
         return self
     
     def DockBottom(self, wnd = None):
-        y = wnd and wnd.Bottom or ika.GetScreenImage().height
+        y = wnd and wnd.Bottom or ika.Video.yres
         self.y = y - self.height - self.border * 2
         return self
 
@@ -85,10 +88,10 @@ class Frame(Widget):
     "Base frame class.  A window, with things in it."
     __slots__ = Widget.__slots__ + [ 'wnd', 'widgets' ]
     
-    def __init__(self, wnd = defaultwindow, x = 0, y = 0, width = 0, height = 0):
+    def __init__(self, wnd = None, x = 0, y = 0, width = 0, height = 0):
         Widget.__init__(self, x, y, width, height)
         
-        self.wnd = wnd
+        self.wnd = wnd or defaultwindow
         self.widgets = []
         self.border = int(1.5 * self.wnd.Left)     # or right or whatever
 
@@ -115,7 +118,7 @@ class TextFrame(Frame):
     "A frame with a simple text widget.  Nothing else."
     __slots__ = Frame.__slots__ + [ '_TextFrame__text', 'text' ]
     
-    def __init__(self, wnd = defaultwindow, x = 0, y = 0, width = 0, height = 0):
+    def __init__(self, wnd = None, x = 0, y = 0, width = 0, height = 0):
         Frame.__init__(self, wnd, x, y, width, height)
         self.__text = TextLabel()
         self.widgets.append(self.__text)
@@ -203,7 +206,7 @@ class TextLabel(Widget):
         if self.ymax != 0:
             maxy = self.ymax * self.font.height
         else:
-            maxy = ika.GetScreenImage().height - self.y
+            maxy = ika.Video.yres - self.y
 
         self.height = min(self.height, maxy)
 

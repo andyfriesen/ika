@@ -14,7 +14,6 @@ import mainmenu
 import party
 import equipmenu
 
-from ika import input
 from party import party
 
 from transition import *
@@ -39,15 +38,15 @@ class StatusMenu(object):
         
         trans = Transition()
         trans.AddWindowReverse(_.portraitwindow, (-_.portraitwindow.width, _.portraitwindow.y))
-        trans.AddWindowReverse(_.statwindow, (XRes(), _.statwindow.y))
+        trans.AddWindowReverse(_.statwindow, (ika.Video.xres, _.statwindow.y))
         trans.AddWindowReverse(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height))
-        trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, YRes()))
+        trans.AddWindowReverse(_.skillwindow, (_.skillwindow.x, ika.Video.yres))
         
     def StartHide(_):
-        trans.AddWindow(_.portraitwindow, (XRes(), _.portraitwindow.y), remove = True)
+        trans.AddWindow(_.portraitwindow, (ika.Video.xres, _.portraitwindow.y), remove = True)
         trans.AddWindow(_.statwindow, (-_.statwindow.width, _.statwindow.y), remove = True)
         trans.AddWindow(_.equipwindow, (_.equipwindow.x, -_.equipwindow.height), remove = True)
-        trans.AddWindow(_.skillwindow, (_.skillwindow.x, YRes()), remove = True)
+        trans.AddWindow(_.skillwindow, (_.skillwindow.x, ika.Video.yres), remove = True)
 
     def Refresh(_, curchar):
         _.portraitwindow.Refresh(curchar)
@@ -74,25 +73,22 @@ class StatusMenu(object):
         _.Refresh(party[curchar])
     
         while 1:
-            ika.map.Render()
+            ika.Map.Render()
             for x in (_.equipwindow, _.statwindow, _.statbar, _.portraitwindow, _.skillwindow):
                 x.Draw()
                 
             ika.ShowPage()
     
-            input.Update()
-            if input.left and curchar > 0:
-                input.left = 0
+            ika.Input.Update()
+            if left() and curchar > 0:
                 curchar -= 1
                 _.Refresh(party[curchar])
     
-            if input.right and curchar < len(party) - 1:
-                input.right = 0
+            if right() and curchar < len(party) - 1:
                 curchar += 1
                 _.Refresh(party[curchar])
     
-            if input.enter or input.cancel:
-                input.enter = input.cancel = False
+            if enter() or cancel():
                 break
     
         return True

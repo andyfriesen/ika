@@ -12,7 +12,8 @@ import ika
 import widget
 import cursor
 
-input = ika.input
+from misc import *
+
 #------------------------------------------------------------------------------
 
 CURSOR_WIDTH=20
@@ -82,33 +83,28 @@ class Menu(widget.Frame):
         self.pagesize = self.height / self.menuitems.font.height
 
     def Update(self):
-        input.Update()
-        if input.up:
-            input.up=0
+        ika.Input.Update()
+        if up():
             if self.ypos > 0:
                 self.ypos -= 1
             elif self.YPage > 0:
                 self.YPage -= 1
             
-        if input.down:
-            input.down=0
+        if down():
             if self.ypos < self.pagesize - 1:
                 self.ypos += 1
             elif self.YPage < len(self.menuitems) - self.pagesize:
                 self.YPage += 1
 
-        if input.enter:
-            input.enter=0
+        if enter():
             return self.CursorPos
 
-        if input.cancel:
-            input.cancel=0
+        if cancel():
             return -1
 
         return None
 
     def Execute(self):
-        input.enter=0
         self.ypos = self.YPage = 0
 
         while 1:

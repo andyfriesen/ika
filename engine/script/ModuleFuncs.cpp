@@ -436,55 +436,55 @@ namespace Script
 
         // Misc
         { "Log",            (PyCFunction)std_log,               METH_VARARGS,
-            "Log(message)\n"
+            "Log(message)\n\n"
             "Writes a string to ika.log, if logging is enabled."
         },
 
         { "Exit",           (PyCFunction)std_exit,              METH_VARARGS,
-            "Exit([message])\n"
+            "Exit([message])\n\n"
             "Exits ika immediately, displaying the message onscreen, if specified."
         },
 
         { "GetCaption",     (PyCFunction)std_getcaption,        METH_NOARGS,
-            "GetCaption()\n"
+            "GetCaption() -> string\n\n"
             "Returns the caption on the ika window title bar."
         },
 
         { "SetCaption",     (PyCFunction)std_setcaption,        METH_VARARGS,
-            "SetCaption(newcaption)\n"
+            "SetCaption(newcaption)\n\n"
             "Sets the caption on the ika window title bar."
         },
 
         { "GetFrameRate",   (PyCFunction)std_getframerate,      METH_NOARGS,
-            "GetFrameRate()\n"
+            "GetFrameRate() -> int\n\n"
             "Returns the current engine framerate, in frames per second."
         },
 
         { "Delay",          (PyCFunction)std_delay,             METH_VARARGS,
-            "Delay(time)\n"
+            "Delay(time)\n\n"
             "Freezes the engine for a number of 'ticks'. (one tick is 1/100th of a second)"
         },
 
         { "Wait",           (PyCFunction)std_wait,              METH_VARARGS,
-            "Wait(time)\n"
+            "Wait(time)\n\n"
             "Runs the engine for a number of ticks, disallowing player input.\n"
             "Unlike Delay, Wait causes entities to be processed, the tileset to be animated, and the map drawn."
         },
 
         { "GetTime",        (PyCFunction)std_gettime,           METH_NOARGS,
-            "GetTime()\n"
+            "GetTime() -> int\n\n"
             "Returns the number of ticks since the engine was started."
         },
 
         { "Random",         (PyCFunction)std_random,            METH_VARARGS,
-            "Random(min, max)\n"
+            "Random(min, max) -> int\n\n"
             "Returns a random integer less than or equal to min, and less than max.\n"
             "ie.  min <= value < max"
         },
 
         // Video
         { "ShowPage",       (PyCFunction)std_showpage,          METH_VARARGS,
-            "ShowPage()\n"
+            "ShowPage()\n\n"
             "Flips the back and front video buffers.  This must be called after the screen\n"
             "has been completely drawn, or the scene will never be presented to the player.\n"
             "This method is not guaranteed to preserve the contents of the screen, so it is\n"
@@ -492,13 +492,13 @@ namespace Script
         },
 
         { "RGB",            (PyCFunction)std_rgb,               METH_VARARGS,
-            "RGB(r, g, b[, a])\n"
+            "RGB(r, g, b[, a]) -> int\n\n"
             "Creates a 32bpp colour value from the four colour levels passed.  If alpha is\n"
             "omitted, it is assumed to be 255. (opaque)"
         },
 
         { "GetRGB",         (PyCFunction)std_getrgb,            METH_VARARGS,
-            "GetRGB(colour)\n"
+            "GetRGB(colour) -> tuple(int, int, int, int)\n\n"
             "Returns a 4-tuple containing the red, blue, green, and alpha values of the colour\n"
             "passed, respectively."
         },
@@ -507,61 +507,61 @@ namespace Script
 
         // Entity
         { "ProcessEntities", (PyCFunction)std_processentities,  METH_VARARGS,
-            "ProcessEntities()\n"
+            "ProcessEntities()\n\n"
             "Performs 1/100th of a second of entity AI.  Calling this 100 times a second\n"
             "will cause entities to move around as if the engine was in control."
         },
 
         { "SetCameraTarget", (PyCFunction)std_setcameratarget,  METH_VARARGS,
-            "SetCameraTarget(entity)\n"
+            "SetCameraTarget(entity)\n\n"
             "Sets the camera target to the entity specified.  If None is passed instead,\n"
             "the camera remains stationary, and can be altered with the Map.xwin and map.ywin\n"
             "properties."
         },
 
         { "GetCameraTarget", (PyCFunction)std_getcameratarget,  METH_NOARGS,
-            "GetCameraTarget()\n"
+            "GetCameraTarget() -> Entity\n\n"
             "Returns the entity that the camera is following, or None if it is free."
         },
 
         { "SetPlayer",      (PyCFunction)std_setplayer,         METH_VARARGS,
-            "SetPlayer(entity)\n"
+            "SetPlayer(entity)\n\n"
             "Sets the player entity to the entity passed.  The player entity is the entity\n"
             "that moves according to user input.  Passing None instead unsets any player entity\n"
             "that may have been previously set."
         },
 
         { "GetPlayer",      (PyCFunction)std_getplayer,         METH_NOARGS,
-            "GetPlayer(entity)\n"
+            "GetPlayer(entity) -> Entity\n\n"
             "Returns the current player entity, or None if there isn't one."
         },
         { "EntityAt",       (PyCFunction)std_entityat,          METH_VARARGS,
-            "EntityAt(x, y, width, height)\n"
+            "EntityAt(x, y, width, height) -> Entity\n\n"
             "If there is an entity within the rectangle passed, it is returned.\n"
             "If not, then None is returned."
         },
 
         { "HookRetrace",    (PyCFunction)std_hookretrace,       METH_VARARGS,
-            "HookRetrace(function)\n"
+            "HookRetrace(function)\n\n"
             "Adds the function to the retrace queue. (it will be called whenever the map is drawn,\n"
             "whether by Map.Render or by other means)"
         },
 
         { "UnhookRetrace",  (PyCFunction)std_unhookretrace,     METH_VARARGS,
-            "UnhookRetrace([function])\n"
+            "UnhookRetrace([function])\n\n"
             "Removes the function from the retrace queue if it is present.  If not, the call does\n"
             "nothing.  If the argument is omitted, then the list is cleared in its entirety."
         },
 
         { "HookTimer",      (PyCFunction)std_hooktimer,         METH_VARARGS,
-            "HookTimer(function)\n"
+            "HookTimer(function)\n\n"
             "Adds the function to the timer queue. (the function will be called 100 times per second.\n"
             "This feature should be used sparingly, as it will cause serious problems if the queue\n"
             "cannot be executed in less than 1/100th of a second."
         },
 
         { "UnhookTimer",    (PyCFunction)std_unhooktimer,       METH_VARARGS,
-            "UnhookTimer([function])\n"
+            "UnhookTimer([function])\n\n"
             "Removes the function from the timer queue if it is present.  If not, the call does\n"
             "nothing.  If the argument is omitted, then the list is cleared in its entirety."
         },

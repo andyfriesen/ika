@@ -13,13 +13,13 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Switch",       (PyCFunction)Map_Switch,        METH_VARARGS,
-                "Map.Switch(filename)\n"
+                "Map.Switch(filename)\n\n"
                 "Switches the current map to the map file specified.\n"
                 "The new map's AutoExec event is executed, if it exists."
             },
 
             {   "Render",       (PyCFunction)Map_Render,        METH_VARARGS,
-                "Map.Render([rstring])\n"
+                "Map.Render([rstring])\n\n"
                 "Draws the map and entities, according to rstring.  If rstring is\n"
                 "omitted, the map's default render string is used instead. (this\n"
                 "can be set from the map editor)\n"
@@ -27,41 +27,41 @@ namespace Script
                 "The render string format is as follows:\n"
                 "1-9 - Render a tile layer.  The bottom layer is layer number 1.\n"
                 "E - Render the entities.\n"
-                "R - Execute the functions in the HookRetrace queue.\n"
+                "R - Execute the functions in the HookRetrace queue."
             },
 
             {   "GetTile",      (PyCFunction)Map_GetTile,       METH_VARARGS,
-                "Map.GetTile(x, y, layer)\n"
+                "Map.GetTile(x, y, layer) -> int\n\n"
                 "Returns the index of the tile at (x,y) on the layer specified."
             },
 
             {   "SetTile",      (PyCFunction)Map_SetTile,       METH_VARARGS,
-                "Map.SetTile(x, y, layer, tile)\n"
+                "Map.SetTile(x, y, layer, tile)\n\n"
                 "Sets the tile at (x,y) of the layer specified."
             },
 
             {   "GetObs",       (PyCFunction)Map_GetObs,        METH_VARARGS,
-                "Map.GetObs(x, y)\n"
+                "Map.GetObs(x, y) -> int\n\n"
                 "Returns 1 if the tile at (x,y) is obstructed, or 0 if not."
             },
 
             {   "SetObs",       (PyCFunction)Map_SetObs,        METH_VARARGS,
-                "Map.SetObs(x, y, obs)\n"
+                "Map.SetObs(x, y, obs)\n\n"
                 "If obs is nonzero, the tile at (x,y) is obstructed, else it is\n"
                 "unobstructed."
             },
 
             {   "GetZone",      (PyCFunction)Map_GetZone,       METH_VARARGS,
-                "Map.GetZone(x, y)\n"
+                "Map.GetZone(x, y) -> int\n\n"
                 "Returns the id number of the zone at (x,y)"
             },
             {   "SetZone",      (PyCFunction)Map_SetZone,       METH_VARARGS,
-                "Map.SetZone(x, y, zone)\n"
+                "Map.SetZone(x, y, zone)\n\n"
                 "Sets the zone id number at (x,y)."
             },
             {   "GetParallax",  (PyCFunction)Map_GetParallax,   METH_VARARGS,
-                "Map.GetParallax(layer)\n"
-                "Returns a 5-tuple containing parallax settings for the layer specified.\n"
+                "Map.GetParallax(layer) -> (int, int, int, int)\n\n"
+                "Returns a 4-tuple containing parallax settings for the layer specified.\n"
                 "Its contents are as follows:\n"
                 "( parallax X multiplier,\n"
                 "  parallax X divisor,\n"
@@ -69,7 +69,7 @@ namespace Script
                 "  parallax Y divisor )"
             },
             {   "SetParallax",  (PyCFunction)Map_SetParallax,   METH_VARARGS,
-                "Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)\n"
+                "Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)\n\n"
                 "Sets the specified layer's parallax settings according to the multipliers\n"
                 "and divisors given."
             },

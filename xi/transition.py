@@ -15,6 +15,9 @@
 # Second note: Functional stuff is so nifty.
 
 import ika
+
+from misc import *
+
 from statelessproxy import *
 
 DEFAULT_TIME = 30
@@ -94,14 +97,14 @@ class Transition(StatelessProxy):
             dt = t2 - t
             t = t2
             
-            ika.map.Render()
+            ika.Map.Render()
             
             _.Update(dt)
             _.Draw()
             
             ika.ShowPage()
             while t == ika.GetTime():
-                ika.input.Update()
+                ika.Input.Update()
             
     Done = property(lambda _: _.curtime == _.time)
 
