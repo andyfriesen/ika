@@ -56,7 +56,7 @@ BSC32=bscmake.exe
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"../../lib" /libpath:"../../contrib/lib" /libpath:"\ika\common" /libpath:"\ika\3rdparty"
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"../common" /libpath:"../3rdparty"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"../common" /libpath:"../3rdparty"
 
 !ELSEIF  "$(CFG)" == "iked - Win32 Debug"
 
@@ -256,113 +256,5 @@ SOURCE=.\resource.h
 SOURCE=.\vsp.ico
 # End Source File
 # End Group
-# Begin Source File
-
-SOURCE=.\wx\msw\blank.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\bullseye.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\cdrom.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\colours.bmp
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\computer.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\cross.bmp
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\csquery.bmp
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\disable.bmp
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\drive.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\file1.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\floppy.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\folder1.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\folder2.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\hand.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\magnif1.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\noentry.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pbrush.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pencil.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pntleft.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\pntright.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\query.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\removble.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\roller.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\size.cur
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\tick.bmp
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\tip.ico
-# End Source File
-# Begin Source File
-
-SOURCE=.\wx\msw\watch1.cur
-# End Source File
 # End Target
 # End Project

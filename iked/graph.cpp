@@ -15,6 +15,7 @@ CImage* CGraphFactory::CreateImage(const CPixelMatrix& src)
 
 BEGIN_EVENT_TABLE(CGraphFrame,wxGLCanvas)
     EVT_ERASE_BACKGROUND(CGraphFrame::OnErase)
+    EVT_SIZE(CGraphFrame::OnSize)
 END_EVENT_TABLE()
 
 CGraphFrame::CGraphFrame(wxWindow* parent)
@@ -29,8 +30,8 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
     glClearColor(0,0,0,0);
     glClearDepth(1);
 
-//    glEnable(GL_SCISSOR_TEST);
-//    glScissor(0,0,w,h);
+    glEnable(GL_SCISSOR_TEST);
+    glScissor(0,0,w,h);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
     glShadeModel(GL_SMOOTH);
@@ -47,6 +48,25 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
 
 CGraphFrame::~CGraphFrame()
 {
+}
+
+void CGraphFrame::OnSize(wxSizeEvent& event)
+{
+    int w=event.GetSize().GetWidth();
+    int h=event.GetSize().GetHeight();
+
+    SetSize(w,h);
+    SetCurrent();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0f,w,h,0.0f,-1.0f,1.0f);
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+    glViewport(0,0,w,h);
+
+    glScissor(0, 0, w,h);
 }
 
 void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
