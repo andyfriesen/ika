@@ -211,10 +211,10 @@ void CMainWnd::OnQuit(wxCloseEvent& event)
         pDoc->Close();
     }
 
-    pDocuments.empty();
-
-    // continue with the default behaviour
-    event.Skip();        
+    if (pDocuments.empty())
+        event.Skip();
+    else
+        event.Veto();
 }
 
 void CMainWnd::Open(const std::string& fname)

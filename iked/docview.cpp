@@ -20,7 +20,7 @@ IDocView::~IDocView()
     pParent->OnChildClose(this);
 }
 
-void IDocView::OnClose(wxCommandEvent& event)
+void IDocView::OnClose(wxCloseEvent& event)
 {
     if (bChanged)
     {
@@ -37,8 +37,8 @@ void IDocView::OnClose(wxCommandEvent& event)
 
         switch(nDecision)
         {
-            case wxID_YES: OnSave(event); break;
-            case wxID_CANCEL: return;
+            case wxID_YES:    OnSave(wxCommandEvent()); break;
+            case wxID_CANCEL: event.Veto(); return;
             //case wxID_NO:
         }
     }

@@ -23,7 +23,7 @@ public:
     IDocView(CMainWnd* parent, const string& fname);
     virtual ~IDocView();
 
-    virtual void OnClose(wxCommandEvent& event);
+    virtual void OnClose(wxCloseEvent& event);
     virtual void OnSave(wxCommandEvent& event) = 0;
 
     const string& GetFileName() { return name; }
