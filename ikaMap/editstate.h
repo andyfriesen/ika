@@ -16,7 +16,8 @@ class Command;
  * and so forth.
  *
  * Not quite an interface, because it's more convenient if EditState
- * can perform some convenience things on its own.
+ * can do some simple things on its own. (mostly accessors to keep
+ * the code brief)
  */
 class EditState
 {

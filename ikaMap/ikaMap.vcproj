@@ -115,6 +115,12 @@
 				RelativePath="editstate.cpp">
 			</File>
 			<File
+				RelativePath="entitydlg.cpp">
+			</File>
+			<File
+				RelativePath="entitystate.cpp">
+			</File>
+			<File
 				RelativePath="ikamap.cpp">
 			</File>
 			<File
@@ -168,6 +174,12 @@
 			</File>
 			<File
 				RelativePath="editstate.h">
+			</File>
+			<File
+				RelativePath="entitydlg.h">
+			</File>
+			<File
+				RelativePath="entitystate.h">
 			</File>
 			<File
 				RelativePath="imagebank.h">

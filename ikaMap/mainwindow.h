@@ -18,6 +18,12 @@ class TileSetView;
 struct Map;
 class TileSet;
 
+/**
+ * The main application frame.
+ * The ultimate source of all the actual map resources. (sprites, the tileset, and the map itself)
+ * Also deals with the layer list, tool buttons, drop down menu, and the Command interface used
+ * to actually modify the map.
+ */
 class MainWindow : public wxFrame
 {
 private:
@@ -37,9 +43,8 @@ private:
 
     static const float _version;
     std::string _curMapName;
-    bool _modified;
 
-    // lil helper function
+    // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
     static void ClearList(std::stack<::Command*>& list);
 
 public:
@@ -66,6 +71,7 @@ public:
     void OnToggleLayer(wxCommandEvent& event);
     void OnSetTilePaintState(wxCommandEvent&);
     void OnSetObstructionState(wxCommandEvent&);
+    void OnSetEntityState(wxCommandEvent&);
 
     void OnNewLayer(wxCommandEvent&);
     void OnDestroyLayer(wxCommandEvent&);

@@ -242,3 +242,38 @@ void ChangeMapPropertiesCommand::Undo(MainWindow* m)
     m->GetMapView()->UpdateScrollBars();
     m->UpdateTitle();
 }
+
+//-----------------------------------------------------------------------------
+
+ChangeEntityPropertiesCommand::ChangeEntityPropertiesCommand(
+    uint layerIndex, uint entityIndex, Map::Layer::Entity newData, Map::Entity newBlueprint)
+    : _layerIndex(layerIndex)
+    , _entityIndex(entityIndex)
+    , _newData(newData)
+    , _newBlueprint(newBlueprint)
+{}
+
+void ChangeEntityPropertiesCommand::Do(MainWindow* m)
+{
+    Map* map = m->GetMap();
+    Map::Layer* lay = &map->GetLayer(_layerIndex);
+
+    _oldData = lay->entities[_entityIndex];
+    _oldBlueprint = map->entities[_oldData.bluePrint];
+
+    lay->entities[_entityIndex] = _newData;
+    map->entities[_newData.bluePrint] = _newBlueprint;
+
+    m->GetMapView()->Refresh();
+}
+
+void ChangeEntityPropertiesCommand::Undo(MainWindow* m)
+{
+    Map* map = m->GetMap();
+    Map::Layer* lay = &map->GetLayer(_layerIndex);
+
+    lay->entities[_entityIndex] = _oldData;
+    map->entities[_oldData.bluePrint] = _oldBlueprint;
+
+    m->GetMapView()->Refresh();
+}

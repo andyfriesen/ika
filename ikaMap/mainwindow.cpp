@@ -73,6 +73,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 
     EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
+    EVT_BUTTON(id_entityedit, MainWindow::OnSetEntityState)
 
     EVT_BUTTON(id_newlayer, MainWindow::OnNewLayer)
     EVT_BUTTON(id_destroylayer, MainWindow::OnDestroyLayer)
@@ -103,7 +104,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     _sideBar->SetAlignment(wxLAYOUT_LEFT);
     _sideBar->SetOrientation(wxLAYOUT_VERTICAL);
     _sideBar->SetSashVisible(wxSASH_RIGHT, true);
-    _sideBar->SetDefaultSize(wxSize(100, 1000));
+    _sideBar->SetDefaultSize(wxSize(150, 1000));
 
     wxPanel* sidePanel = new wxPanel(_sideBar);
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
@@ -426,6 +427,11 @@ void MainWindow::OnSetTilePaintState(wxCommandEvent&)
 void MainWindow::OnSetObstructionState(wxCommandEvent&)
 {
     _mapView->SetObstructionState();
+}
+
+void MainWindow::OnSetEntityState(wxCommandEvent&)
+{
+    _mapView->SetEntityState();
 }
 
 void MainWindow::OnNewLayer(wxCommandEvent&)

@@ -13,7 +13,7 @@ class MainWindow; // bleh. ;P
  *
  * If the number of commands grows too much, move them all into 
  * their own separate source files, so we don't wind up with a
- * single monsterous source file.
+ * single monstrous source file.
  */
 class Command
 {
@@ -155,6 +155,23 @@ class ChangeMapPropertiesCommand : public Command
 
 public:
     ChangeMapPropertiesCommand(const std::string& newTitle, uint newWidth, uint newHeight);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class ChangeEntityPropertiesCommand : public Command
+{
+    uint _layerIndex;
+    uint _entityIndex;
+    Map::Layer::Entity _newData;
+    Map::Entity _newBlueprint;
+
+    Map::Layer::Entity _oldData;
+    Map::Entity _oldBlueprint;
+
+public:
+    ChangeEntityPropertiesCommand(uint layerIndex, uint entityIndex, Map::Layer::Entity newData, Map::Entity newBlueprint);
 
     virtual void Do(MainWindow* m);
     virtual void Undo(MainWindow* m);

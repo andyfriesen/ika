@@ -18,6 +18,7 @@ BEGIN_EVENT_TABLE(MapView, wxPanel)
     EVT_MIDDLE_DOWN(MapView::OnMouseDown)
     EVT_LEFT_UP(MapView::OnMouseUp)
     EVT_RIGHT_UP(MapView::OnMouseUp)
+    EVT_LEFT_DCLICK(MapView::OnMouseDown)
     EVT_MOTION(MapView::OnMouseMove)
     EVT_MOUSEWHEEL(MapView::OnMouseWheel)
 END_EVENT_TABLE()
@@ -27,6 +28,7 @@ MapView::MapView(MainWindow* mw, wxWindow* parent)
     , _mainWnd(mw)
     , _tileSetState(mw)
     , _obstructionState(mw)
+    , _entityState(mw)
     , _editState(&_tileSetState)
 
     , _xwin(0)
@@ -107,6 +109,8 @@ void MapView::OnMouseMove(wxMouseEvent& event)
 {
     if (event.MiddleIsDown())
     {
+        // Middlemouse + drag scrolls the map around.
+        // Hold down the Ctrl key to scroll really really fast.
         int dx = _scrollX - event.GetX();
         int dy = _scrollY - event.GetY();
         _scrollX = event.GetX();
@@ -148,8 +152,6 @@ void MapView::Render()
             // TODO: Parallax, and possibly wrapping.
             RenderLayer(&lay, _xwin - lay.x, _ywin - lay.y);
             RenderEntities(&lay, _xwin - lay.x, _ywin - lay.y);
-
-            //RenderObstructions(&lay, _xwin - lay.x, _ywin - lay.y);
         }
     }
 
@@ -214,7 +216,6 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
 {
     for (std::vector<Map::Layer::Entity>::iterator iter = lay->entities.begin(); iter != lay->entities.end(); iter++)
     {
-        SpriteSet* ss = 0;
         // default position/size if the sprite cannot be found
         int hotx = 0;
         int hoty = 0;
@@ -223,12 +224,7 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
         int width = 16;
         int height = 16;
 
-        if (_mainWnd->GetMap()->entities.count(iter->bluePrint))
-        {
-            Map::Entity* bluePrint = &_mainWnd->GetMap()->entities[iter->bluePrint];
-            ss = _mainWnd->GetSprite(bluePrint->spriteName);
-        }
-
+        SpriteSet* ss = GetEntitySpriteSet(&*iter);
         if (ss != 0)
         {
             hotx = ss->GetCHR()->HotX();
@@ -311,6 +307,21 @@ void MapView::UpdateScrollBars()
     SetScrollbar(wxVERTICAL,   _ywin, _video->LogicalHeight(), map->height);
 }
 
+void MapView::ScreenToMap(int& x, int& y)
+{
+    ScreenToMap(x, y, _curLayer);
+}
+
+void MapView::ScreenToMap(int& x, int& y, uint layer)
+{
+    wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
+
+    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+
+    x = x + _xwin - lay->x;
+    y = y + _ywin - lay->y;
+}
+
 void MapView::ScreenToTile(int& x, int& y)
 {
     ScreenToTile(x, y, _curLayer);
@@ -322,10 +333,10 @@ void MapView::ScreenToTile(int& x, int& y, uint layer)
     wxASSERT(_mainWnd->GetTileSet() != 0);
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+    ScreenToMap(x, y, layer);
 
-    x = (x + _xwin - lay->x) / _mainWnd->GetTileSet()->Width();
-    y = (y + _ywin - lay->y) / _mainWnd->GetTileSet()->Height();
+    x /= _mainWnd->GetTileSet()->Width();
+    y /= _mainWnd->GetTileSet()->Height();
 }
 
 void MapView::TileToScreen(int& x, int& y)
@@ -352,6 +363,45 @@ void MapView::SetCurLayer(uint i)
     _curLayer = i;
 }
 
+Map::Layer::Entity* MapView::EntityAt(int x, int y, uint layer)
+{
+    wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
+
+    std::vector<Map::Layer::Entity>& ents = _mainWnd->GetMap()->GetLayer(layer).entities;
+
+    for (uint i = 0; i < ents.size(); i++)
+    {
+        Map::Layer::Entity& ent = ents[i];
+
+        if (ent.x > x)  continue;
+        if (ent.y > y)  continue;
+
+        SpriteSet* ss = GetEntitySpriteSet(&ents[i]);
+        if (ent.x + (ss ? ss->Width() : 16)  < x) continue;
+        if (ent.y + (ss ? ss->Height() : 16) < y) continue;
+
+        return &ent;
+    }
+
+    return 0;
+}
+
+SpriteSet* MapView::GetEntitySpriteSet(Map::Layer::Entity* ent) const
+{
+    if (_mainWnd->GetMap()->entities.count(ent->bluePrint))
+    {
+        Map::Entity* bluePrint = &_mainWnd->GetMap()->entities[ent->bluePrint];
+        return _mainWnd->GetSprite(bluePrint->spriteName);
+    }
+    else
+        return 0;
+}
+
+VideoFrame* MapView::GetVideo() const
+{
+    return _video;
+}
+
 void MapView::Cock()
 {
     _editState = &_tileSetState;
@@ -362,6 +412,12 @@ void MapView::Cock()
 void MapView::SetObstructionState()
 {
     _editState = &_obstructionState;
+    Render();
+    ShowPage();
+}
+void MapView::SetEntityState()
+{
+    _editState = &_entityState;
     Render();
     ShowPage();
 }
