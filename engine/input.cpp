@@ -212,12 +212,6 @@ Input::~Input()
         KeyControl* kc = i->second;
         delete kc;
     }
-
-    for (std::map<std::string, Control*>::iterator i = _controls.begin(); i != _controls.end(); i++)
-    {
-        Control* c = i->second;
-        delete c;
-    }
 }
 
 void Input::KeyDown(int key)

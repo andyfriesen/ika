@@ -69,6 +69,13 @@ namespace Script
 #undef GET
 #undef SET
 
+        PyGetSetDef properties[] =
+        {
+            {   "onpress",      (getter)getOnPress,     (setter)setOnPress,     "Gets or sets the function to be executed when the key is pressed."   },
+            {   "onunpress",    (getter)getOnUnpress,   (setter)setOnUnpress,   "Gets or sets the function to be executed when the key is released."  },
+            {   0   }
+        };
+
         void Init()
         {
             memset(&type, 0, sizeof type);
@@ -79,6 +86,7 @@ namespace Script
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
+            type.tp_getset = properties;
             type.tp_doc = "Represents a single button or axis. (such as a key, or a joystick button)";
 
             PyType_Ready(&type);
