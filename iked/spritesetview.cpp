@@ -101,7 +101,8 @@ namespace iked {
     }
 
     void SpriteSetView::deleteDocument(Document* doc) {
-        getParent()->spriteset.free(doc);
+        //getParent()->spriteset.free(doc);
+        the<Controller<SpriteSet> >()->free(doc);
     }
 
     void SpriteSetView::onSave(wxCommandEvent& event) {
@@ -190,7 +191,25 @@ namespace iked {
     void SpriteSetView::onNewAnimScript(wxCommandEvent& event) {
         int q = rand();
         SpriteSet* sprite = getSprite();
-        sprite->sendCommand(new commands::UpdateSpriteAnimScriptCommand(sprite, toString(q), toString(q / 2)));
+        CCHRfile* chr = &sprite->GetCHR();
+
+        ScopedPtr<wxDialog> dialog = createScriptEditDialog("", "", false);
+        int result = dialog->ShowModal();
+        if (result == wxID_OK) {
+            wxTextCtrl* nameEdit = wxDynamicCast(dialog->FindWindowByName("name"), wxTextCtrl);
+            wxTextCtrl* valueEdit = wxDynamicCast(dialog->FindWindowByName("value"), wxTextCtrl);
+            wxASSERT(nameEdit != 0);
+            wxASSERT(valueEdit != 0);
+
+            std::string name = nameEdit->GetValue().c_str();
+            std::string value = valueEdit->GetValue().c_str();
+
+            if (chr->moveScripts.count(name)) {
+                wxMessageBox("There already exists a script with that name", "Error", wxOK, this);
+            } else {
+                sprite->sendCommand(new commands::UpdateSpriteAnimScriptCommand(sprite, name, value));
+            }
+        }
     }
 
     void SpriteSetView::onDestroyAnimScript(wxCommandEvent& event) {
@@ -213,26 +232,12 @@ namespace iked {
 
         const std::string scriptName = animScriptGrid->getString(selection, 0);
 
-        // Create a little dialog window, run it, etc.
-        wxDialog dlg(this, -1, "Edit animation script", wxDefaultPosition);
-        wxDialog* const dialog = &dlg; // so we can be consistent and use pointer syntax
-
-        wxTextCtrl* nameEdit = new wxTextCtrl(dialog, -1, scriptName.c_str());
-        wxTextCtrl* valueEdit = new wxTextCtrl(dialog, -1, getSprite()->GetCHR().moveScripts[scriptName].c_str());
-        nameEdit->Disable(); // TODO: provide a way to rename animation scripts
-
-        wxSizer* sizer = new wxFlexGridSizer(2, 3);
-        sizer->Add(new wxStaticText(dialog, -1, "Name"));
-        sizer->Add(nameEdit);
-        sizer->Add(new wxStaticText(dialog, -1, "Value"));
-        sizer->Add(valueEdit);
-        sizer->Add(new wxButton(dialog, wxID_OK, "Ok"));
-        sizer->Add(new wxButton(dialog, wxID_CANCEL, "Cancel"));
-
-        dialog->SetSizer(sizer);
-        sizer->Fit(dialog);
+        ScopedPtr<wxDialog> dialog = createScriptEditDialog(scriptName, getSprite()->GetCHR().moveScripts[scriptName], true);
         int result = dialog->ShowModal();
         if (result == wxID_OK) {
+            wxTextCtrl* valueEdit = wxDynamicCast(dialog->FindWindowByName("value"), wxTextCtrl);
+            wxASSERT(valueEdit != 0);
+
             getSprite()->sendCommand(
                 new commands::UpdateSpriteAnimScriptCommand(
                     getSprite(), 
@@ -431,6 +436,33 @@ namespace iked {
         SpriteSet* sprite = static_cast<SpriteSet*>(getDocument()->asSpriteSet());
         wxASSERT(sprite != 0);
         return sprite;
+    }
+
+    wxDialog* SpriteSetView::createScriptEditDialog(const std::string& name, const std::string& value, bool nameReadOnly) {
+        // Create a little dialog to edit animation scripts or metadata
+        wxDialog* dialog = new wxDialog(this, -1, "Edit animation script", wxDefaultPosition);
+
+        wxTextCtrl* nameEdit = new wxTextCtrl(dialog, -1, name.c_str());
+        nameEdit->SetName("name");
+
+        wxTextCtrl* valueEdit = new wxTextCtrl(dialog, -1, value.c_str());
+        valueEdit->SetName("value");
+
+        if (nameReadOnly) {
+            nameEdit->Enable(false);
+        }
+
+        wxSizer* sizer = new wxFlexGridSizer(2, 3);
+        sizer->Add(new wxStaticText(dialog, -1, "Name"));
+        sizer->Add(nameEdit);
+        sizer->Add(new wxStaticText(dialog, -1, "Value"));
+        sizer->Add(valueEdit);
+        sizer->Add(new wxButton(dialog, wxID_OK, "Ok"));
+        sizer->Add(new wxButton(dialog, wxID_CANCEL, "Cancel"));
+
+        dialog->SetSizer(sizer);
+        sizer->Fit(dialog);
+        return dialog;
     }
 
     void SpriteSetView::importFrames(

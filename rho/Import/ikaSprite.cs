@@ -10,13 +10,18 @@ using ICSharpCode.SharpZipLib.Zip.Compression.Streams;
 namespace rho.Import {
 
     public class ikaSprite {
-        public ikaSprite() {
-            Size.Width = Size.Height = 0;
-            HotSpot = Rectangle.FromLTRB(0, 0, 0, 0);
+        public ikaSprite()
+        : this(16, 16) {
         }
 
         public ikaSprite(string fileName)
         : this(new StreamReader(fileName)) { 
+        }
+
+        public ikaSprite(int width, int height) {
+            Size.Width = width;
+            Size.Height = height;
+            HotSpot = Rectangle.FromLTRB(0, 0, 0, 0);
         }
 
         public unsafe ikaSprite(System.IO.TextReader sourceStream) {
@@ -29,7 +34,7 @@ namespace rho.Import {
             DataNode metaNode = infoNode.GetChild("meta");
             foreach (DataNode n in metaNode.Children) {
                 DataNode node = (DataNode)n.Children[0];
-                MetaData.Add(node.Name, node.GetString());
+                Metadata.Add(node.Name, node.GetString());
             }
 
             DataNode framesNode = rootNode.GetChild("frames");
@@ -127,7 +132,7 @@ namespace rho.Import {
         public Size Size;
         public Rectangle HotSpot;
         public readonly StringDictionary Scripts = new StringDictionary();
-        public readonly StringDictionary MetaData = new StringDictionary();
+        public readonly StringDictionary Metadata = new StringDictionary();
         readonly ImageArray frames = new ImageArray(16, 16);
     }
 }

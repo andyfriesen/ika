@@ -265,7 +265,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     _tileSetView = new TileSetView(this, _bottomBar);
 
     _map = new Map;
-    _tileSet = new TileSet;
+    _tileSet = new Tileset;
     _tileSet->New(16, 16);
 
     /*
@@ -439,7 +439,7 @@ void MainWindow::OnNewMap(wxCommandEvent&)
     if (result == wxID_OK)
     {
         Map* newMap;
-        TileSet* newTileSet;
+        Tileset* newTileSet;
         try
         {
             newMap = new Map();
@@ -447,7 +447,7 @@ void MainWindow::OnNewMap(wxCommandEvent&)
             newMap->height = dlg.height;
             newMap->tileSetName = dlg.tileSetName;
 
-            newTileSet = new TileSet();
+            newTileSet = new Tileset();
             if (!dlg.newTileSet)
                 newTileSet->Load(dlg.tileSetName);
             else
@@ -569,7 +569,7 @@ void MainWindow::OnLoadTileSet(wxCommandEvent&)
 
     if (dlg.ShowModal() == wxID_OK)
     {
-        TileSet* ts = new TileSet();
+        Tileset* ts = new Tileset();
         try
         {
             wxFileName fName(dlg.GetPath());
@@ -931,7 +931,7 @@ void MainWindow::LoadMap(const std::string& fileName) {
     extern Map* ImportVerge1Map(const std::string& fileName);
     extern Map* ImportVerge2Map(const std::string& fileName);
     extern Map* ImportVerge3Map(const std::string& fileName);
-    extern VSP* ImportVerge3TileSet(const std::string& fileName);
+    extern VSP* ImportVerge3Tileset(const std::string& fileName);
 
     Map* newMap = 0;
     bool result = false;
@@ -971,15 +971,15 @@ void MainWindow::LoadMap(const std::string& fileName) {
         return;
     }
 
-    TileSet* ts = new TileSet;
+    Tileset* ts = new Tileset;
     result = ts->Load(newMap->tileSetName.c_str());
 
     if (!result) {
         delete ts;
         ts = 0;
         try {
-            VSP* v = ImportVerge3TileSet(newMap->tileSetName.c_str());
-            ts = new TileSet(v);
+            VSP* v = ImportVerge3Tileset(newMap->tileSetName.c_str());
+            ts = new Tileset(v);
             result = 1;
         } catch (...) {}
     }
@@ -1144,7 +1144,7 @@ void MainWindow::SetZoomRelative(int factor)
 }
 
 Map* MainWindow::GetMap()         { return _map; }
-TileSet* MainWindow::GetTileSet() { return _tileSet; }
+Tileset* MainWindow::GetTileSet() { return _tileSet; }
 
 SpriteSet* MainWindow::GetSpriteSet(const std::string& fileName)
 {
@@ -1180,7 +1180,7 @@ wxWindow* MainWindow::GetParentWindow()
     return this;
 }
 
-void MainWindow::SwitchTileSet(TileSet* ts)
+void MainWindow::SwitchTileSet(Tileset* ts)
 {
     _tileSet = ts;
     tileSetChanged.fire(MapTileSetEvent(_map, _tileSet));

@@ -4,15 +4,15 @@
 #include "imageview.h"
 
 class MainWindow;
-class TileSet;
+class Tileset;
 
 class CTileEdit : CImageView
 {
     MainWindow* pParent;
-    TileSet* pTileset;
+    Tileset* pTileset;
     int nTile;
 
 public:
-    CTileEdit(MainWindow* parent, TileSet* tileset, int tileidx);
+    CTileEdit(MainWindow* parent, Tileset* tileset, int tileidx);
 };
 #endif

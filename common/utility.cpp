@@ -112,7 +112,7 @@ std::string toUpper(const std::string& s) {
 
 std::string toString(int i) {
     std::stringstream s;
-    s << i << '\0';
+    s << i;
     return s.str();
 }
 

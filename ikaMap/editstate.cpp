@@ -25,7 +25,7 @@ Map::Layer*  EditState::GetCurLayer() const
 }
 
 uint      EditState::GetCurLayerIndex()     const { return _executor->GetCurrentLayer(); }
-TileSet*  EditState::GetTileSet()           const { return _executor->GetTileSet(); }
+Tileset*  EditState::GetTileSet()           const { return _executor->GetTileSet(); }
 wxWindow* EditState::GetParentWindow()      const { return _executor->GetParentWindow(); }
 
 void EditState::HandleCommand(::Command* cmd)

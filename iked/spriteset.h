@@ -10,6 +10,7 @@ struct CCHRfile;
 namespace iked {
 
     struct SpriteSet : ImageArrayDocument {
+        SpriteSet(const std::string& filename);
         SpriteSet(int width, int height, int numFrames);
         SpriteSet(CCHRfile* c, const std::string& fileName);
         ~SpriteSet();
@@ -36,7 +37,7 @@ namespace iked {
     private:
         DECLARE_INVARIANT();
 
-        CCHRfile* chr;
+        ScopedPtr<CCHRfile> chr;
     };
 
 }

@@ -7,7 +7,7 @@
 #include "video/Driver.h"
 #include "video/Image.h"
 
-TileSet::TileSet(const std::string& fname, Video::Driver* v)
+Tileset::Tileset(const std::string& fname, Video::Driver* v)
     : video(v)
     , nAnimtimer(0)
 {
@@ -29,7 +29,7 @@ TileSet::TileSet(const std::string& fname, Video::Driver* v)
         }
     }
     catch(...) {	
-        throw TileSetException();
+        throw TilesetException();
     }
     
     // Next up, set up the tile animation stuff
@@ -47,17 +47,17 @@ TileSet::TileSet(const std::string& fname, Video::Driver* v)
     }
 }
 
-TileSet::~TileSet()
+Tileset::~Tileset()
 {
     for (int i = 0; i < nFrames; i++)
         video->FreeImage(hFrame[i]);
 }
 
-void TileSet::Save(const std::string& fileName) const {
+void Tileset::Save(const std::string& fileName) const {
     vsp->Save(fileName);
 }
 
-Video::Image* TileSet::GetTile(uint index) const {
+Video::Image* Tileset::GetTile(uint index) const {
     if (hFrame.empty()) {
         return 0;
     }
@@ -75,7 +75,7 @@ Video::Image* TileSet::GetTile(uint index) const {
     return hFrame[index];
 }
 
-void TileSet::UpdateAnimation(int time)
+void Tileset::UpdateAnimation(int time)
 {
     int i = time - nAnimtimer;					// how many ticks have elapsed?
     nAnimtimer = time;
@@ -90,7 +90,7 @@ void TileSet::UpdateAnimation(int time)
     }
 }
 
-void TileSet::AnimateStrand(VSP::AnimState& anim)
+void Tileset::AnimateStrand(VSP::AnimState& anim)
 {
     int i;
     

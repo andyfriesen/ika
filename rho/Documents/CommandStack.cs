@@ -2,8 +2,6 @@ using System;
 using System.Collections;
 
 namespace rho.Documents {
-    using rho.Commands;
-
     public class CommandStack : Stack {
         public new Command Pop() {
             return (Command)base.Pop();

@@ -1,7 +1,9 @@
+#include "freetype/ft2build.h"
 #include "freetype/freetype.h"
-#include "fileio.h"
-#include "fontfile.h"
-#include "Canvas.h"
+
+#include "common/fileio.h"
+#include "common/fontfile.h"
+#include "common/Canvas.h"
 #include <iostream>
 #include <sstream>
 
@@ -102,7 +104,7 @@ int main(int c, char **args) {
         // min two-pixel width (for missing glyphs)
         int w2 = w + face->glyph->bitmap_left;
         if(!w2) w2 = max((int)(face->glyph->advance.x * xRatio), pixelSize / 2);  // guess space width
-        CBlitter<Opaque>::DrawRect(image, x2, y, x2+w2, y+fnth, (RGBA)0, 1);
+        Blitter::DrawRect(image, x2, y, x2+w2, y+fnth, (RGBA)0, 1, Blitter::OpaqueBlend());
         x2 += face->glyph->bitmap_left;
 
         for(int j=0; j < h; j++, y2++) {

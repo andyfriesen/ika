@@ -11,68 +11,71 @@ using std::endl;
 
 // -----------------------
 
-namespace Log
-{
-    bool bLogging = false;
-    std::string sLogname;
+namespace Log {
+    bool isLogging = false;
+    std::string logName;
 
-    std::ofstream logfile;
+    std::ofstream logFile;
 };
 
 // -----------------------
 
-void Log::Init(const char* fname)
-{
-    if (bLogging) return;
-    bLogging = true;
+void Log::Init(const char* fname) {
+    if (isLogging) {
+        return;
+    }
+    isLogging = true;
 
     remove(fname);
 
-    sLogname = fname;
+    logName = fname;
 
-    logfile.open(fname);
+    logFile.open(fname);
 
 #ifdef LOG_CALLBACK
     remove("callback.log");
 #endif
 };
 
-void Log::Writen(const char* s, ...)
-{
-    if (!bLogging) return;
+void Log::Writen(const char* s, ...) {
+    if (!isLogging) {
+        return;
+    }
     
     va_list lst;
     
     va_start(lst, s);
 
 #ifdef _MSC_VER
+
     int bufferLength = _vscprintf(s, lst) + 1; // plus terminating null
     ScopedArray<char> buffer = new char[bufferLength];
     vsprintf(buffer.get(), s, lst);
-    logfile << buffer.get();
+    logFile << buffer.get();
+
 #elif defined(GNUC)
     
     char* buffer = 0;
     int len = asprintf(&buffer, s, lst);
     if (len == -1) {
-        logfile << "Log system error: Unable to write some stuff.";
+        logFile << "Log system error: Unable to write some stuff.";
     } else {
-        logfile << buffer;
+        logFile << buffer;
         ::free(buffer);
     }
 
 #else
-#    error buffer overrun gayness that must be overcome!
+#   error buffer overrun gayness that must be overcome!
     char buffer[1024];
     vsprintf(buffer, s, lst);
-    logfile << buffer;
+    logFile << buffer;
 #endif
 
     va_end(lst);
 }
 
 void Log::Write(const char* s, ...) {
-    if (!bLogging) {
+    if (!isLogging) {
         return;
     }
 
@@ -83,15 +86,15 @@ void Log::Write(const char* s, ...) {
     vsprintf(sTemp, s, lst);
     va_end(lst);
 
-    logfile << sTemp << endl;
+    logFile << sTemp << endl;
 }
 
 void Log::Write(const std::string& s) {
-    logfile << s << endl;
+    logFile << s << endl;
 }
 
 void Log::Writen(const std::string& s) {
-    logfile << s;
+    logFile << s;
 }
 
 // -----------------------
@@ -103,15 +106,14 @@ string CCallbackLog::sHistory;
 CCallbackLog::CCallbackLog(const char* s)
     : nOldlen(sHistory.length())
 {
-    sHistory+="-> ";
+    sHistory += "-> ";
     sHistory += s;
     
     std::ofstream f("callback.log", ios::app);
     f << sHistory << std::endl;
 }
 
-CCallbackLog::~CCallbackLog()
-{
+CCallbackLog::~CCallbackLog() {
     sHistory = sHistory.substr(0, nOldlen);
 }
 

@@ -302,7 +302,7 @@ namespace Script {
                 sprite = engine->sprite.Load(spritename, engine->video);
 
             } catch (std::runtime_error error) {
-                PyErr_SetString(PyExc_OSError, va("sprite.Load(\"%s\") failed: %s", spritename, error.what()));
+                PyErr_SetString(PyExc_IOError, va("sprite.Load(\"%s\") failed: %s", spritename, error.what()));
                 return 0;
             }
 

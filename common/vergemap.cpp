@@ -49,7 +49,7 @@ Map* ImportVerge1Map(const std::string& fileName) {
         char buffer[256];
         std::fill(buffer, buffer + 256, 0);
 
-        fread(buffer, 1, 13, f);    map->tileSetName = buffer;
+        fread(buffer, 1, 13, f);    map->tilesetName = buffer;
         fread(buffer, 1, 13, f);    map->metaData["music"] = buffer;
 
         int layerCount = fgetc(f);
@@ -205,7 +205,7 @@ Map* ImportVerge2Map(const std::string& fileName) {
 
         fseek(f, 4, SEEK_CUR);
 
-        fread(buffer, 1, 60, f);    map->tileSetName = buffer;
+        fread(buffer, 1, 60, f);    map->tilesetName = buffer;
         fread(buffer, 1, 60, f);    map->metaData["music"] = buffer;
         fread(buffer, 1, 20, f);    map->metaData["rstring"] = buffer;
 
@@ -419,7 +419,7 @@ Map* ImportVerge3Map(const std::string& fileName) {
         fseek(f, 4, SEEK_CUR); // skip vc offset
 
         fread(buffer, 1, 256, f);   map->title = buffer;
-        fread(buffer, 1, 256, f);   map->tileSetName = buffer;
+        fread(buffer, 1, 256, f);   map->tilesetName = buffer;
         fread(buffer, 1, 256, f);   map->metaData["music"] = buffer;
         fread(buffer, 1, 256, f);   map->metaData["rstring"] = buffer;
         fread(buffer, 1, 256, f);   map->metaData["startupscript"] = buffer;
@@ -473,7 +473,7 @@ Map* ImportVerge3Map(const std::string& fileName) {
     }
 }
 
-VSP* ImportVerge3TileSet(const std::string& fileName) {
+VSP* ImportVerge3Tileset(const std::string& fileName) {
     const char* VSP_SIGNATURE = "VSP";
     const int VSP_VERSION = 6;
     enum {
@@ -592,7 +592,7 @@ void ExportVerge3Map(const std::string& fileName, Map* map) {
     buffer.reserve(256);
     
     buffer = map->title;           fwrite(buffer.c_str(), 1, 256, f);
-    buffer = map->tileSetName;     fwrite(buffer.c_str(), 1, 256, f);
+    buffer = map->tilesetName;     fwrite(buffer.c_str(), 1, 256, f);
     buffer = map->metaData.count("music") ? map->metaData["music"] : "";     
     fwrite(buffer.c_str(), 1, 256, f);
     

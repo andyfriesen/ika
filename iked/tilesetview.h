@@ -8,7 +8,7 @@ class wxMenu;
 
 namespace iked {
     struct MainWindow;
-    struct TileSet;
+    struct Tileset;
     struct ImageBank;
 
     struct TileSetPanel : DocumentPanel {
@@ -68,7 +68,7 @@ namespace iked {
         MainWindow*       parent;
         GraphicsFrame*    graph;
 
-        TileSet*        tileSet;
+        Tileset*        tileSet;
 
         wxMenu*         contextMenu;
 

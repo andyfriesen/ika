@@ -45,29 +45,33 @@ namespace iked {
 	}
     };
 
+    template <typename T>
+    struct Singleton {
+    };
+
     /**
      * Document controller for a set of documents which are identified by their filename.
+     *
      */
     template <typename T>
     struct Controller {
-        Controller()
-            : allocator(new DefaultAllocator<T>)
-        {
-            assert(allocator != 0);
+        // Singleton pattern
+        static void initialize(Allocator<T>* alloc) {
+            if (instance == 0) {
+                instance = new Controller(alloc);
+            }
         }
 
-	explicit Controller(Allocator<T>* alloc)
-	    : allocator(alloc)
-	{
-            assert(allocator != 0);
+        static void initialize() {
+            if (instance == 0) {
+                instance = new Controller;
+            }
         }
 
-	~Controller() {
-            foreach (Document* doc, documents) {
-		Log::Write("Leak detected! %s", doc->getName().c_str());
-	    }
-	    delete allocator;
-	}
+        static Controller* getInstance() {
+            assert(instance != 0);
+            return instance.get();
+        }
 
 	Document* get(const std::string& name) {
 #ifdef WIN32
@@ -124,6 +128,27 @@ namespace iked {
         }
 
     private:
+        friend class ScopedPtr<Controller>;
+        static ScopedPtr<Controller > instance;
+
+        explicit Controller()
+            : allocator(new DefaultAllocator<T>)
+        {
+            assert(allocator != 0);
+        }
+
+	explicit Controller(Allocator<T>* alloc)
+	    : allocator(alloc)
+	{
+            assert(allocator != 0);
+        }
+
+	~Controller() {
+            foreach (Document* doc, documents) {
+		Log::Write("Leak detected! %s", doc->getName().c_str());
+	    }
+	}
+
 	Document* find(const std::string& name) {
             foreach (Document* doc, documents) {
 		if (Path::equals(doc->getName(), name)) {
@@ -136,7 +161,9 @@ namespace iked {
 	typedef std::set<Document*> DocumentSet;
 	DocumentSet documents;
 
-	Allocator<T>* allocator;
+	ScopedPtr<Allocator<T> > allocator;
     };
-}
 
+    // This is just weird. :P
+    template <typename T> ScopedPtr<Controller<T> > Controller<T>::instance;
+}

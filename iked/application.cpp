@@ -12,13 +12,13 @@ namespace iked {
     struct MainWindow;
 
     bool Application::OnInit() {
-	extern void InitXmlResource(); // resource.cpp
+        extern void InitXmlResource(); // resource.cpp
 
-	wxXmlResource::Get()->InitAllHandlers();
+        wxXmlResource::Get()->InitAllHandlers();
 #if 0 && defined(DEBUG)
-	wxXmlResource::Get()->Load("resource.xrc");
+        wxXmlResource::Get()->Load("resource.xrc");
 #else
-	InitXmlResource();
+        InitXmlResource();
 #endif
 
         std::vector<std::string> args;
@@ -26,18 +26,13 @@ namespace iked {
             args.push_back(argv[i]);
         }
 
-	Log::Init("iked.log");
-/*	MainWindow* mainwnd = new MainWindow(NULL, -1, va("iked %s", IKA_VERSION),
-	    wxPoint(-1, -1),
-	    wxSize(600, 400),
-	    wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL);*/
+        Log::Init("iked.log");
+
         MainWindow* mainwnd = new MainWindow(args);
+        mainwnd->Show(TRUE);
+        SetTopWindow(mainwnd);
 
-	mainwnd->Show(TRUE);
-
-	SetTopWindow(mainwnd);
-
-	return TRUE;
+        return true;
     }
 
 }

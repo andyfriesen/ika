@@ -10,14 +10,14 @@ namespace Video
     struct Image;
 }
 
-struct TileSetException{};
+struct TilesetException{};
 
 /**
  * Hardware-dependant, runtime-relevant information concerning a VSP.
  */
-struct TileSet {
-    TileSet(const std::string& fname, Video::Driver* v);
-    ~TileSet();
+struct Tileset {
+    Tileset(const std::string& fname, Video::Driver* v);
+    ~Tileset();
 
     void Save(const std::string& fileName) const;
 

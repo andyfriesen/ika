@@ -8,25 +8,25 @@
 #include <cassert>
 
 namespace Script {
-    namespace TileSet {
+    namespace Tileset {
         PyTypeObject type;
 
         PyMethodDef methods[] = {
-            {   "Save",         (PyCFunction)TileSet_Save,      METH_VARARGS,
-                "TileSet.Save(filename)\n\n"
+            {   "Save",         (PyCFunction)Tileset_Save,      METH_VARARGS,
+                "Tileset.Save(filename)\n\n"
                 "Save the tileset as the given name."
             },
 
-            {   "Load",         (PyCFunction)TileSet_Load,      METH_VARARGS,
-                "TileSet.Load(filename)\n\n"
+            {   "Load",         (PyCFunction)Tileset_Load,      METH_VARARGS,
+                "Tileset.Load(filename)\n\n"
                 "Replace the current map's tileset with one loaded from a file."
             },
 
             { 0 }
         };
 
-#define GET(x) PyObject* get ## x(TileSetObject* self)
-#define SET(x) PyObject* set ## x(TileSetObject* self, PyObject* value)
+#define GET(x) PyObject* get ## x(TilesetObject* self)
+#define SET(x) PyObject* set ## x(TilesetObject* self, PyObject* value)
 
         GET(TileCount)  { return PyInt_FromLong(engine->tiles->NumTiles()); }
         GET(TileWidth)  { return PyInt_FromLong(engine->tiles->Width());    }
@@ -49,7 +49,7 @@ namespace Script {
 
             type.ob_refcnt = 1;
             type.ob_type = &PyType_Type;
-            type.tp_name = "TileSet";
+            type.tp_name = "Tileset";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
@@ -65,14 +65,14 @@ namespace Script {
             return obj;
         }
 
-        void Destroy(TileSetObject* self) {
+        void Destroy(TilesetObject* self) {
             // ???
             PyObject_Del(self);
         }
 
-#define METHOD(x) PyObject* x(TileSetObject* self, PyObject* args)
+#define METHOD(x) PyObject* x(TilesetObject* self, PyObject* args)
 
-        METHOD(TileSet_Save) {
+        METHOD(Tileset_Save) {
             char* fileName = 0;
 
             if (!PyArg_ParseTuple(args, "s:Save", &fileName)) {
@@ -85,7 +85,7 @@ namespace Script {
             return Py_None;
         }
 
-        METHOD(TileSet_Load) {
+        METHOD(Tileset_Load) {
             char* fileName = 0;
 
             if (!PyArg_ParseTuple(args, "s:Load", &fileName)) {
@@ -93,15 +93,15 @@ namespace Script {
             }
 
             if (!engine->_isMapLoaded) {
-                PyErr_SetString(PyExc_RuntimeError, "Can't load a tileset before a map!!");
+                PyErr_SetString(PyExc_IOError, "Can't load a tileset before a map!!");
                 return 0;
             }
 
-            ::TileSet* newTiles = 0;
+            ::Tileset* newTiles = 0;
             try {
-                newTiles = new ::TileSet(fileName, engine->video);
+                newTiles = new ::Tileset(fileName, engine->video);
             } catch (std::runtime_error err) {
-                PyErr_SetString(PyExc_RuntimeError, va("Unable to load tileset \"%s\"", fileName));
+                PyErr_SetString(PyExc_IOError, va("Unable to load tileset \"%s\"", fileName));
                 return 0;
             }
 

@@ -77,23 +77,20 @@ namespace Script {
 
             MusicObject* sound;
 
-            try {
-                if (!File::Exists(filename)) {
-                    throw va("%s does not exist", filename);
-                }
-
-                sound = PyObject_New(MusicObject, type);
-                if (!sound) {
-                    throw va("Can't load %s due to internal Python weirdness!  Very Bad!", filename);
-                }
-
-                sound->music = ::Sound::OpenSound(filename);
-                if (!sound->music) {
-                    throw va("Failed to load %s", filename);
-                }
+            if (!File::Exists(filename)) {
+                PyErr_SetString(PyExc_IOError, va("%s does not exist", filename));
+                return 0;
             }
-            catch(const char* s) {
-                PyErr_SetString(PyExc_RuntimeError, s);
+
+            sound = PyObject_New(MusicObject, type);
+            if (!sound) {
+                PyErr_SetString(PyExc_RuntimeError, va("Can't load %s due to internal Python weirdness!  Very Bad!", filename));
+                return 0;
+            }
+
+            sound->music = ::Sound::OpenSound(filename);
+            if (!sound->music) {
+                PyErr_SetString(PyExc_IOError, va("Failed to load %s", filename));
                 return 0;
             }
 

@@ -30,15 +30,15 @@ namespace rho.TextEditor {
             style.SetStyle(text);
 
             using (StreamReader txt = new StreamReader(fname)) {
-#if true
                 string content = txt.ReadToEnd();
+                if (content == "") {
+                    content = " "; // bug in scintillaNET: freaks out if you give it an empty string. :P
+                }
+                    
                 text.Text = content;
-#else
-                text.Text = txt.ReadToEnd();
-#endif
             }
 
-            Text=fname;
+            Text = fname;
         }
     }
 }

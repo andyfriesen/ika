@@ -41,8 +41,8 @@ namespace Script
                 "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
             },
 
-            {   "WrapBlit", (PyCFunction)Canvas_WrapBlit,   METH_VARARGS,
-                "Canvas.WrapBlit(destcanvas, x, y, width, height, [offsetx, offsety, blendmode])\n\n"
+            {   "TileBlit", (PyCFunction)Canvas_TileBlit,   METH_VARARGS,
+                "Canvas.TileBlit(destcanvas, x, y, width, height, [offsetx, offsety, blendmode])\n\n"
                 "Tiles the image within the region specified, on destcanvas.  The tiling is offset\n"
                 "(moved) by offsetx and offsety. (both default to zero) blendmode is either ika.Opaque, ika.Matte\n"
                 "ika.AlphaBlend.  blendmode defaults to Opaque"
@@ -170,14 +170,12 @@ namespace Script
             {
                 char* fname = PyString_AsString(o);
                 CanvasObject* c = PyObject_New(CanvasObject, type);
-                try
-                {
+                try {
                     c->canvas = new ::Canvas(fname);
                     c->ref = false;
                     return (PyObject*)c;
                 }
-                catch (std::runtime_error)
-                {
+                catch (std::runtime_error) {
                     PyErr_SetString(PyExc_IOError, va("Couldn't open image file '%s'", fname));
                     return 0;
                 }
@@ -260,7 +258,7 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Canvas_WrapBlit)
+        METHOD(Canvas_TileBlit)
         {
             CanvasObject* dest;
             int x, y;
@@ -269,16 +267,16 @@ namespace Script
             int ofsy = 0;
             int mode = 0;
 
-            if (!PyArg_ParseTuple(args, "O!iiii|iii:WrapBlit", &type, &dest, &x, &y, &w, &h, &ofsx, &ofsy, &mode))
+            if (!PyArg_ParseTuple(args, "O!iiii|iii:TileBlit", &type, &dest, &x, &y, &w, &h, &ofsx, &ofsy, &mode))
                 return 0;
 
             switch (mode)
             {
-            case 0: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::OpaqueBlend());   break;
-            case 1: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::MatteBlend());   break;
-            case 2: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AlphaBlend());   break;
-            case 3: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AddBlend());   break;
-            case 4: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::SubtractBlend());   break;
+            case 0: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::OpaqueBlend());   break;
+            case 1: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::MatteBlend());   break;
+            case 2: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AlphaBlend());   break;
+            case 3: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AddBlend());   break;
+            case 4: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::SubtractBlend());   break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", mode));
                 return 0;

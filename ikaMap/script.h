@@ -36,7 +36,7 @@
  * ika.Map class members:
  *      title - the title of the map.  read/write
  *      layercount - Number of layers
- *      tilecount - Number of tiles (most definitely needs to be moved to a ika.TileSet object)
+ *      tilecount - Number of tiles (most definitely needs to be moved to a ika.Tileset object)
  *      tilewidth/tileheight - Size of the tileset. (ditto)
  *
  *      GetTile(x, y, layer)       - Returns the tile at x,y on the layer requested.

@@ -428,7 +428,7 @@ void DestroyEntityCommand::Undo(Executor* e)
 
 //-----------------------------------------------------------------------------
 
-ChangeTileSetCommand::ChangeTileSetCommand(TileSet* tileSet, const std::string& fileName)
+ChangeTileSetCommand::ChangeTileSetCommand(Tileset* tileSet, const std::string& fileName)
     : _tileSet(tileSet)
     , _fileName(fileName)
 {}
@@ -441,7 +441,7 @@ ChangeTileSetCommand::~ChangeTileSetCommand()
 void ChangeTileSetCommand::Do(Executor* e)
 {
     std::string s = _fileName;
-    TileSet* t    = _tileSet;
+    Tileset* t    = _tileSet;
 
     _tileSet  = e->GetTileSet();
     _fileName = e->GetMap()->tileSetName;
@@ -467,7 +467,7 @@ InsertTilesCommand::InsertTilesCommand(uint pos, std::vector<Canvas >& tiles)
 
 void InsertTilesCommand::Do(Executor* e)
 {
-    TileSet* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileSet();
 
     for (uint i = 0; i < _tiles.size(); i++)
         ts->InsertTile(_startPos + i, _tiles[i]);
@@ -477,7 +477,7 @@ void InsertTilesCommand::Do(Executor* e)
 
 void InsertTilesCommand::Undo(Executor* e)
 {
-    TileSet* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileSet();
 
     for (uint i = 0; i < _tiles.size(); i++)
         ts->DeleteTile(ts->Count() - 1);
@@ -496,7 +496,7 @@ DeleteTilesCommand::DeleteTilesCommand(uint firstTile, uint lastTile)
 
 void DeleteTilesCommand::Do(Executor* e)
 {
-    TileSet* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileSet();
 
     _savedTiles.reserve(_lastTile - _firstTile + 1);
 
@@ -511,7 +511,7 @@ void DeleteTilesCommand::Do(Executor* e)
 
 void DeleteTilesCommand::Undo(Executor* e)
 {
-    TileSet* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileSet();
 
     for (uint i = _firstTile; i <= _lastTile; i++)
     {
@@ -530,7 +530,7 @@ ResizeTileSetCommand::ResizeTileSetCommand(uint newWidth, uint newHeight)
 
 void ResizeTileSetCommand::Do(Executor* e)
 {
-    TileSet* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileSet();
 
     _oldWidth = ts->Width();
     _oldHeight = ts->Height();
@@ -549,7 +549,7 @@ void ResizeTileSetCommand::Do(Executor* e)
 
 void ResizeTileSetCommand::Undo(Executor* e)
 {
-    TileSet* ts = e->GetTileSet();
+    Tileset* ts = e->GetTileSet();
 
     ts->New(_oldWidth, _oldHeight);
     for (uint i = 0; i < _savedTiles.size(); i++)

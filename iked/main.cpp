@@ -70,8 +70,8 @@ namespace iked {
         /*EVT_MENU(id_filenewproject, MainWindow::NewProject)
         EVT_MENU(id_filenewmap, MainWindow::NewMap)
         EVT_MENU(id_filenewscript, MainWindow::NewScript)
-        EVT_MENU(id_filenewsprite, MainWindow::NewSprite)
         EVT_MENU(id_filenewtileset, MainWindow::NewTileSet)*/
+        EVT_MENU(id_filenewsprite, MainWindow::NewSprite)
         EVT_MENU(id_fileopen, MainWindow::OnOpen)
         EVT_MENU(id_filesaveproject, MainWindow::OnSaveProject)
         EVT_MENU(id_filesaveprojectas, MainWindow::OnSaveProjectAs)
@@ -87,8 +87,10 @@ namespace iked {
                         wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL
                     )
 //                    , _project(new ProjectView(this))
-                    , spriteset(new SpriteSetAllocator())
+//                    , spriteset(new SpriteSetAllocator())
     {
+        Controller<SpriteSet>::initialize(new SpriteSetAllocator());
+
         wxToolBar* toolbar = CreateBasicToolBar();
         SetToolBar(toolbar);
         toolbar->Realize();
@@ -143,12 +145,6 @@ namespace iked {
         codeview->Activate();
     }
 
-    void MainWindow::NewSprite(wxCommandEvent& event) {
-        NewSpriteDlg dlg(this);
-        if (dlg.ShowModal() == wxID_OK)
-            OpenDocument(new SpriteSetView(this, dlg.width, dlg.height));
-    }
-
     void MainWindow::NewTileSet(wxCommandEvent& event) {
         NewSpriteDlg dlg(this);
         dlg.SetTitle("New Tileset");
@@ -159,13 +155,48 @@ namespace iked {
 
 #endif
 
+    void MainWindow::NewSprite(wxCommandEvent& event) {
+        //NewSpriteDlg dlg(this);
+
+        // Create a dialog to ask the user for the size of the sprite.
+        wxDialog dlg(this, -1, "New Sprite", wxDefaultPosition);
+        wxDialog* const dialog = &dlg; // I like pointer syntax better
+
+        wxTextCtrl* widthEdit = new wxTextCtrl(dialog, -1);
+        wxTextCtrl* heightEdit = new wxTextCtrl(dialog, -1);
+
+        wxSizer* s = new wxFlexGridSizer(2, 3);
+        s->Add(new wxStaticText(dialog, -1, "Width"));
+        s->Add(widthEdit);
+        s->Add(new wxStaticText(dialog, -1, "Height"));
+        s->Add(heightEdit);
+        s->Add(new wxButton(dialog, wxID_OK, "Ok"));
+        s->Add(new wxButton(dialog, wxID_CANCEL, "Cancel"));
+        dialog->SetSizer(s);
+        s->Fit(dialog);
+
+        int result = dialog->ShowModal();
+
+        if (result == wxID_OK) {
+            int width = atoi(widthEdit->GetValue().c_str());
+            int height = atoi(heightEdit->GetValue().c_str());
+            SpriteSet* sprite = new SpriteSet(new CCHRfile(width, height), "");
+            SpriteSetView* view = new SpriteSetView(this, sprite, "");
+
+            OpenDocument(view);
+        }
+    }
+
     void MainWindow::OnOpen(wxCommandEvent& event) {
         wxFileDialog dlg(
             this,
             "Open File",
             "",
             "",
-            "All known|*.ikaprj;*.py;*.ika-map;*.vsp;*.ika-sprite;*.chr;*.fnt;*.txt;*.dat|"
+            "All known|*.ika-sprite;*.chr|"
+            "Sprites (*.ika-sprite;*.chr)|*.ika-sprite;*.chr|"
+            "All files (*.*)|*.*"
+            /*"All known|*.ikaprj;*.py;*.ika-map;*.vsp;*.ika-sprite;*.chr;*.fnt;*.txt;*.dat|"
             "iked Projects (*.ikaprj)|*.ikaprj|"
             "Python Scripts (*.py)|*.py|"
             "Maps (*.ika-map)|*.ika-map|"
@@ -174,13 +205,14 @@ namespace iked {
             "Fonts (*.fnt)|*.fnt|"
             "Text (*.txt)|*.txt|"
             "Dat Files (*.dat)|*.dat|"
-            "All files (*.*)|*.*",
+            "All files (*.*)|*.*"*/,
             wxOPEN | wxMULTIPLE
-            );
+        );
 
         int result = dlg.ShowModal();
-        if (result==wxID_CANCEL)
+        if (result==wxID_CANCEL) {
             return;
+        }
 
         wxArrayString filenames;
         dlg.GetPaths(filenames);
@@ -239,7 +271,7 @@ namespace iked {
 
             switch (type) {
                 case t_chr: {
-                    wnd = new SpriteSetView(this, spriteset.get(fname), fname.c_str());  
+                    wnd = new SpriteSetView(this, the<Controller<SpriteSet> >()->get(fname), fname.c_str());  
                     break;
                 }
 

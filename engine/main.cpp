@@ -218,7 +218,7 @@ void Engine::Startup() {
 
         Log::Write("Initializing Input");
         SDL_JoystickEventState(SDL_ENABLE);
-        Input::GetInstance(); // force creation of the singleton instance.
+        Input::getInstance(); // force creation of the singleton instance.
 
         Log::Write("Initializing sound");
         Sound::Init(cfg.Int("nosound") != 0);
@@ -698,7 +698,7 @@ void Engine::LoadMap(const std::string& filename) {
     try {
         Log::Write("Loading map \"%s\"", filename.c_str());
 
-        std::string oldTileSetName = map.tileSetName;
+        std::string oldTilesetName = map.tilesetName;
 
         if (!map.Load(filename)) throw filename;                        // actually load the map
 
@@ -709,9 +709,9 @@ void Engine::LoadMap(const std::string& filename) {
         }
 
         // Only load the tileset if it's different
-        if (map.tileSetName != oldTileSetName) {
+        if (map.tilesetName != oldTilesetName) {
             delete tiles;                                               // nuke the old tileset
-            tiles = new TileSet(map.tileSetName, video);               // load up them tiles
+            tiles = new Tileset(map.tilesetName, video);               // load up them tiles
         }
 
         script.ClearEntityList();
@@ -764,8 +764,8 @@ void Engine::LoadMap(const std::string& filename) {
         SyncTime();
     } catch (std::runtime_error err) {   
         Sys_Error(va("LoadMap(\"%s\"): %s", filename.c_str(), err.what())); 
-    } catch (TileSetException) {
-        Sys_Error(va("Unable to load tileset %s", map.tileSetName.c_str())); 
+    } catch (TilesetException) {
+        Sys_Error(va("Unable to load tileset %s", map.tilesetName.c_str())); 
 
 #if 0 // pending removal    
     } catch (const char* msg) {

@@ -1,6 +1,5 @@
 using System;
 using rho.Documents;
-using rho.Commands;
 
 namespace rho.TextEditor {
     public class TextDocument : AbstractDocument {

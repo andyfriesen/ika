@@ -1,5 +1,4 @@
 using System;
-using rho.Commands;
 
 namespace rho.Documents {
     public delegate void ChangeEventHandler();

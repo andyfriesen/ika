@@ -63,8 +63,8 @@ namespace iked {
         /*void NewProject(wxCommandEvent& event);
         void NewMap(wxCommandEvent& event);
         void NewScript(wxCommandEvent& event);
-        void NewSprite(wxCommandEvent& event);
         void NewTileSet(wxCommandEvent& event);*/
+        void NewSprite(wxCommandEvent& event);
         void OnOpen(wxCommandEvent& event);
         void OnSize(wxSizeEvent& event);
         void OnQuit(wxCloseEvent& event);
@@ -103,8 +103,8 @@ namespace iked {
          */
 
         //Controller<Map> map;
-        //Controller<TileSet> vsp;
-        Controller<SpriteSet> spriteset;
+        //Controller<Tileset> vsp;
+        //Controller<SpriteSet> spriteset;
         // TODO: fonts, scripts, (?) anything else that comes to mind
 
     public:

@@ -1,7 +1,7 @@
-#include "fileio.h"
-#include "fontfile.h"
-#include "Canvas.h"
-#include "types.h"
+#include "common/fileio.h"
+#include "common/fontfile.h"
+#include "common/Canvas.h"
+#include "common/types.h"
 #include <iostream>
 #include <sstream>
 #include <stdexcept>

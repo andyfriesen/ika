@@ -5,11 +5,11 @@ namespace rho
 {
     using ika = Import.ika;
 
-    class TileSetController : ResourceController
+    class TilesetController : ResourceController
     {
         public override object Load(string fname)
         {
-            return ika.TileSet.Load(fname);
+            return ika.Tileset.Load(fname);
         }
     }
 

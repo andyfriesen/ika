@@ -22,7 +22,7 @@ class InputControl;
 class Keyboard;
 class Mouse;
 class Joystick;
-struct TileSet;
+struct Tileset;
 
 namespace audiere   {   
     class OutputStream; 
@@ -140,7 +140,7 @@ namespace Script {
         METHOD(Canvas_Save, CanvasObject);
         METHOD(Canvas_Blit, CanvasObject);
         METHOD(Canvas_ScaleBlit, CanvasObject);
-        METHOD(Canvas_WrapBlit, CanvasObject);
+        METHOD(Canvas_TileBlit, CanvasObject);
         METHOD(Canvas_GetPixel, CanvasObject);
         METHOD(Canvas_SetPixel, CanvasObject);
         METHOD(Canvas_DrawText, CanvasObject);
@@ -395,21 +395,21 @@ namespace Script {
         extern PyTypeObject type;
     }
 
-    namespace TileSet {
+    namespace Tileset {
         // object type
-        struct TileSetObject {
+        struct TilesetObject {
             PyObject_HEAD
-            //::TileSet* tileSet;
+            //::Tileset* tileset;
         };
 
         // methods
-        METHOD(TileSet_Save, TileSetObject);
-        METHOD(TileSet_Load, TileSetObject);
+        METHOD(Tileset_Save, TilesetObject);
+        METHOD(Tileset_Load, TilesetObject);
 
         void Init();
-        PyObject* New();//::TileSet* tileset);
+        PyObject* New();//::Tileset* tileset);
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
-        void Destroy(TileSetObject* self);
+        void Destroy(TilesetObject* self);
 
         // method table
         extern PyMethodDef methods[];

@@ -83,7 +83,7 @@ namespace Script {
                 }
             }
             catch(const char* s) {
-                PyErr_SetString(PyExc_RuntimeError, s);
+                PyErr_SetString(PyExc_IOError, s);
                 return 0;
             }
 

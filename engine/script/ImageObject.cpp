@@ -6,14 +6,11 @@
 
 #include <stdexcept>
 
-namespace Script
-{
-    namespace Image
-    {
+namespace Script {
+    namespace Image {
         PyTypeObject type;
 
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Blit",         (PyCFunction)Image_Blit,         METH_VARARGS,
                 "Image.Blit(x, y[, transparent])\n\n"
                 "Draws the image at (x, y).\n"
@@ -49,15 +46,13 @@ namespace Script
 #undef GET
 #undef SET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "width",    (getter)getWidth,   0,  "Gets the width of the image."  },
             {   "height",   (getter)getHeight,  0,  "Gets the height of the image." },
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt = 1;
@@ -72,39 +67,33 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        void Destroy(ImageObject* self)
-        {
+        void Destroy(ImageObject* self) {
             //delete self->img;
             engine->video->FreeImage(self->img);
             PyObject_Del(self);
         }
 
-        PyObject* New(::Video::Image* image)
-        {
+        PyObject* New(::Video::Image* image) {
             ImageObject* img = PyObject_New(ImageObject, &type);
             img->img = image;
             return (PyObject*)img;
         }
 
-        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
-        {
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
             static char* keywords[] = { "src", 0 };
             PyObject* obj;
 
             if (!PyArg_ParseTupleAndKeywords(args, kw, "O:__new__", keywords, &obj))
                 return NULL;
 
-            if (obj->ob_type == &PyString_Type)
-            {
-                try
-                {
+            if (obj->ob_type == &PyString_Type) {
+                try {
                     const char* filename = PyString_AsString(obj);
 
                     ::Canvas img(filename);
 
-                    ImageObject* image=PyObject_New(ImageObject, type);
-                    if (!image)
-                    {
+                    ImageObject* image = PyObject_New(ImageObject, type);
+                    if (!image) {
                         PyErr_SetString(PyExc_MemoryError, "newimage: This should never happen. :o");
                         return 0;
                     }
@@ -113,14 +102,12 @@ namespace Script
 
                     return (PyObject*)image;
                 }
-                catch (std::runtime_error e)
-                {
+                catch (std::runtime_error e) {
                     PyErr_SetString(PyExc_RuntimeError, e.what());
                     return 0;
                 }
             }
-            else if (obj->ob_type == &Script::Canvas::type)
-            {
+            else if (obj->ob_type == &Script::Canvas::type) {
                 ImageObject* image = PyObject_New(ImageObject, type);
                 if (!image)
                     return 0;
@@ -129,15 +116,13 @@ namespace Script
 
                 return (PyObject*)image;
             }
-            else
-            {
+            else {
                 PyErr_SetString(PyExc_TypeError, "Image constructor accepts a string (filename) or a Canvas object.");
                 return 0;
             }
         }
 
-        PyObject* Image_Blit(ImageObject* self, PyObject* args)
-        {
+        PyObject* Image_Blit(ImageObject* self, PyObject* args) {
             int x, y;
             int trans = ::Video::Normal;
 
@@ -151,8 +136,7 @@ namespace Script
             return Py_None;
         }
 
-        PyObject* Image_ScaleBlit(ImageObject* self, PyObject* args)
-        {
+        PyObject* Image_ScaleBlit(ImageObject* self, PyObject* args) {
             int x, y, w, h;
             int trans = ::Video::Normal;
 
@@ -166,8 +150,7 @@ namespace Script
             return Py_None;
         }
 
-        PyObject* Image_DistortBlit(ImageObject* self, PyObject* args)
-        {
+        PyObject* Image_DistortBlit(ImageObject* self, PyObject* args) {
             int x[4], y[4];
             int trans = ::Video::Normal;
 
@@ -181,8 +164,7 @@ namespace Script
             return Py_None;
         };
 
-        PyObject* Image_Clip(ImageObject* self, PyObject* args)
-        {
+        PyObject* Image_Clip(ImageObject* self, PyObject* args) {
            
             Py_INCREF(Py_None);
             return Py_None;

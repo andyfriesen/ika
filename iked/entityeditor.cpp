@@ -86,8 +86,8 @@ void EntityEditor::UpdateDlg()
         get<wxCheckBox>("check_obstructedbymap")->SetValue(     ent.obstructedByEntities);
     }
 
-    get<wxTextCtrl>("edit_x")->SetValue(            toString(_curEnt->x).c_str());
-    get<wxTextCtrl>("edit_y")->SetValue(            toString(_curEnt->y).c_str());
+    get<wxTextCtrl>("edit_x")->SetValue(toString(_curEnt->x).c_str());
+    get<wxTextCtrl>("edit_y")->SetValue(toString(_curEnt->y).c_str());
 }
 
 void EntityEditor::OnSelectEntity(wxCommandEvent& event)

@@ -236,7 +236,7 @@ namespace MapEditState
 {
     Map::Layer* IEditState::CurLayer() const { return This->_curLayer; }
     MainWindow* IEditState::Parent() const { return This->pParent; }
-    TileSet* IEditState::TileSet() const { return This->_tileSet; }
+    Tileset* IEditState::Tileset() const { return This->_tileSet; }
     Point IEditState::CameraPos() const
     {
         return Point(This->xwin, This->ywin);
@@ -339,17 +339,17 @@ namespace MapEditState
             if (e.ShiftDown())
             {
                 // Grab the current tile from the map
-                TileSet()->SetCurTile(CurLayer()->tiles(x, y));
+                Tileset()->SetCurTile(CurLayer()->tiles(x, y));
 
                 // Find the tileset window, if it is open
-                CTileSetView* tsv = (CTileSetView*)Parent()->FindWindow(TileSet());
+                CTileSetView* tsv = (CTileSetView*)Parent()->FindWindow(Tileset());
                 // Tell it to refresh if it is.
                 if (tsv)
                     tsv->Render();
             }
             else
             {
-                CurLayer()->tiles(x, y) = TileSet()->CurTile();
+                CurLayer()->tiles(x, y) = Tileset()->CurTile();
                 Render();
             }
 
@@ -412,8 +412,8 @@ namespace MapEditState
                 return Rect(
                     CurLayer()->x, 
                     CurLayer()->y, 
-                    CurLayer()->x + CurLayer()->Width()  * TileSet()->Width(), 
-                    CurLayer()->y + CurLayer()->Height() * TileSet()->Height());
+                    CurLayer()->x + CurLayer()->Width()  * Tileset()->Width(), 
+                    CurLayer()->y + CurLayer()->Height() * Tileset()->Height());
             else
                 return Rect();
         }
@@ -442,8 +442,8 @@ namespace MapEditState
             for (uint i = 0; i < Map()->NumLayers(); i++)
             {
                 Map::Layer& lay = Map()->GetLayer(i);
-                if (e.m_x >= lay.x && e.m_x <= lay.x + lay.Width()  * TileSet()->Width() &&
-                    e.m_y >= lay.y && e.m_y <= lay.y + lay.Height() * TileSet()->Height())
+                if (e.m_x >= lay.x && e.m_x <= lay.x + lay.Width()  * Tileset()->Width() &&
+                    e.m_y >= lay.y && e.m_y <= lay.y + lay.Height() * Tileset()->Height())
                     curLayer = &lay;
             }
 
@@ -487,8 +487,8 @@ namespace MapEditState
                 Map::Layer& lay = Map()->GetLayer(i);
 
                 r.left = lay.x;       r.top = lay.y;
-                r.right  = r.left + lay.Width() * TileSet()->Width();
-                r.bottom = r.top + lay.Height() * TileSet()->Height();
+                r.right  = r.left + lay.Width() * Tileset()->Width();
+                r.bottom = r.top + lay.Height() * Tileset()->Height();
 
                 This->RenderSelectionRect(r, 
                     (&lay == CurLayer()) ?
@@ -503,8 +503,8 @@ namespace MapEditState
             for (uint i = 0; i < Map()->NumLayers(); i++)
             {
                 Map::Layer& lay = Map()->GetLayer(i);
-                if (e.m_x >= lay.x && e.m_x <= lay.x + lay.Width()  * TileSet()->Width() &&
-                    e.m_y >= lay.y && e.m_y <= lay.y + lay.Height() * TileSet()->Height())
+                if (e.m_x >= lay.x && e.m_x <= lay.x + lay.Width()  * Tileset()->Width() &&
+                    e.m_y >= lay.y && e.m_y <= lay.y + lay.Height() * Tileset()->Height())
                     curLayer = &lay;
             }
 

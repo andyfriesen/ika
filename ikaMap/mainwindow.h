@@ -25,7 +25,7 @@ struct LayerList;
 struct ImportTilesDlg;
 
 struct Map;
-struct TileSet;
+struct Tileset;
 struct SpriteSet;
 struct Script;
 
@@ -100,7 +100,7 @@ struct MainWindow : public wxFrame, Executor
     void HighlightToolButton(uint buttonId);
 
     Map* GetMap() const;
-    TileSet* GetTileSet() const;
+    Tileset* GetTileSet() const;
     MapView* GetMapView() const;
     TileSetView* GetTileSetView() const;
 
@@ -129,20 +129,20 @@ struct MainWindow : public wxFrame, Executor
     void SetZoomRelative(int factor);
 
     virtual Map* GetMap();
-    virtual TileSet* GetTileSet();
+    virtual Tileset* GetTileSet();
     virtual SpriteSet* GetSpriteSet(const std::string& fileName);
 
     virtual MapView* GetMapView();
     virtual TileSetView* GetTileSetView();
     virtual wxWindow* GetParentWindow();
 
-    virtual void SwitchTileSet(TileSet* ts);
+    virtual void SwitchTileSet(Tileset* ts);
 
 protected:
     std::vector<Script*>& GetScripts();
 
     Map*     _map;
-    TileSet* _tileSet;
+    Tileset* _tileSet;
 
     DECLARE_EVENT_TABLE()
 

@@ -20,7 +20,7 @@
                 PostBuildEvent = ""
                 RootNamespace = "rho"
                 RunPostBuildEvent = "OnBuildSuccess"
-                StartupObject = ""
+                StartupObject = "rho.MainForm"
             >
                 <Config
                     Name = "Debug"
@@ -90,11 +90,6 @@
                     HintPath = "..\..\WINNT\Microsoft.NET\Framework\v1.0.3705\System.XML.dll"
                 />
                 <Reference
-                    Name = "ScintillaNET"
-                    AssemblyName = "ScintillaNET"
-                    HintPath = "..\..\..\..\src\scintilla\ScintillaNET\Release\ScintillaNET.dll"
-                />
-                <Reference
                     Name = "ICSharpCode.SharpZipLib"
                     AssemblyName = "ICSharpCode.SharpZipLib"
                     HintPath = "..\..\..\..\src\ICSharpCode.SharpZipLib.dll"
@@ -109,6 +104,11 @@
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\..\..\Program Files\NUnit 2.2\bin\nunit.framework.dll"
                     AssemblyFolderKey = "hklm\dn\nunit.framework"
+                />
+                <Reference
+                    Name = "ScintillaNET"
+                    AssemblyName = "ScintillaNET"
+                    HintPath = "..\..\..\..\src\scintilla\ScintillaNET\Release\ScintillaNET.dll"
                 />
             </References>
         </Build>
@@ -126,6 +126,16 @@
                 <File
                     RelPath = "MainForm.cs"
                     SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MainForm.resx"
+                    DependentUpon = "MainForm.cs"
+                    BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MenuBuilder.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -164,18 +174,13 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Aries\Tests\NodeTest.cs"
-                    SubType = "Code"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "Aries\Tests\StringNodeTest.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Commands\RenameCommand.cs"
-                    SubType = "Code"
+                    RelPath = "Controls\DictionaryGrid.cs"
+                    SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File
@@ -209,6 +214,11 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "Documents\GroupCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "Documents\IDocumentView.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -224,7 +234,7 @@
                     BuildAction = "Compile"
                 />
                 <File
-                    RelPath = "Import\ikaTileSet.cs"
+                    RelPath = "Import\ikaTileset.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
                 />
@@ -274,6 +284,26 @@
                     BuildAction = "Compile"
                 />
                 <File
+                    RelPath = "SpriteEditor\ChangeHotSpotCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\DeleteAnimScriptCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\DeleteFrameCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\DeleteMetadataCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
                     RelPath = "SpriteEditor\FrameEventArgs.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -281,6 +311,16 @@
                 <File
                     RelPath = "SpriteEditor\FramePanel.cs"
                     SubType = "Component"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\InsertFrameCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\ReplaceFrameCommand.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -296,6 +336,21 @@
                 <File
                     RelPath = "SpriteEditor\SpriteEditor.cs"
                     SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\UpdateAnimScriptCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\UpdateMetadataCommand.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\Tests\CommandTest.cs"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

@@ -211,7 +211,7 @@ void MapView::ShowPage()
 
 void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
 {
-    TileSet* ts = _executor->GetTileSet();
+    Tileset* ts = _executor->GetTileSet();
     if (!ts->Count())
         return;
 
@@ -316,7 +316,7 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
 void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
 {
     // Draw a gray square over obstructed things.
-    TileSet* ts = _executor->GetTileSet();
+    Tileset* ts = _executor->GetTileSet();
 
     int width  = _video->LogicalWidth();
     int height = _video->LogicalHeight();

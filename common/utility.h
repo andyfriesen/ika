@@ -106,7 +106,7 @@ inline T clamp(T val, T lower, T toUpper) {
 // Neato singleton helper function.  Chad Austin's idea.
 template <typename T>
 inline T* the() {
-    return T::GetInstance();
+    return T::getInstance();
 }
 
 // Simple little predicate for for_each

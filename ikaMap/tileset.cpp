@@ -3,22 +3,22 @@
 #include "common/Canvas.h"
 #include "video.h"
 
-TileSet::TileSet()
+Tileset::Tileset()
     : pVsp(0)
 {
 }
 
-TileSet::TileSet(VSP* v)
+Tileset::Tileset(VSP* v)
     : pVsp(v) 
 {
     SyncAll();
 }
 
-TileSet::~TileSet() {
+Tileset::~Tileset() {
     delete pVsp;
 }
 
-bool TileSet::Load(const std::string& fileName) {
+bool Tileset::Load(const std::string& fileName) {
     VSP* pNewvsp = new VSP;
 
     if(!pNewvsp->Load(fileName)) {
@@ -34,12 +34,12 @@ bool TileSet::Load(const std::string& fileName) {
     return true;
 }
 
-bool TileSet::Save(const std::string& fileName) {
+bool Tileset::Save(const std::string& fileName) {
     pVsp->Save(fileName);
     return true;
 }
 
-void TileSet::New(int width, int height) {
+void Tileset::New(int width, int height) {
     if (!pVsp) {
         pVsp = new VSP;
     }
@@ -48,53 +48,53 @@ void TileSet::New(int width, int height) {
     SyncAll();
 }
 
-Canvas& TileSet::Get(uint tileidx) {
+Canvas& Tileset::Get(uint tileidx) {
     return pVsp->GetTile(tileidx);
 }
 
-void TileSet::SetImage(const Canvas& newtile, uint tileidx) {
+void Tileset::SetImage(const Canvas& newtile, uint tileidx) {
     pVsp->GetTile(tileidx)=newtile;
 }
 
-uint TileSet::Count() const {
+uint Tileset::Count() const {
     return pVsp ? pVsp->NumTiles() : 0;
 }
 
-int TileSet::Width() const {
+int Tileset::Width() const {
     return pVsp ? pVsp->Width() : 0;
 }
 
-int TileSet::Height() const {
+int Tileset::Height() const {
     return pVsp ? pVsp->Height() : 0;
 }
 
-void TileSet::AppendTile() {
+void Tileset::AppendTile() {
     pVsp->AppendTile();
     SyncAll();
 }
 
-void TileSet::AppendTile(Canvas& c) {
+void Tileset::AppendTile(Canvas& c) {
     pVsp->AppendTile();
     pVsp->PasteTile(c, pVsp->NumTiles() - 1);
     SyncAll();
 }
 
-void TileSet::InsertTile(uint pos) {
+void Tileset::InsertTile(uint pos) {
     pVsp->InsertTile(pos);
     SyncAll();
 }
 
-void TileSet::InsertTile(uint pos, Canvas& c) {
+void Tileset::InsertTile(uint pos, Canvas& c) {
     pVsp->InsertTile(pos);
     pVsp->PasteTile(c, pos);
     SyncAll();
 }
 
-void TileSet::DeleteTile(uint pos) {
+void Tileset::DeleteTile(uint pos) {
     pVsp->DeleteTile(pos);
     SyncAll();
 }
 
-std::vector<VSP::AnimState>& TileSet::GetAnim() {
+std::vector<VSP::AnimState>& Tileset::GetAnim() {
     return pVsp->vspAnim;
 }

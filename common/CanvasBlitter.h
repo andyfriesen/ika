@@ -1,7 +1,7 @@
 // This is pretty cool stuff.  Basically, I'm using C++ templates to inline the pixel blending functions.
 // Not a lot of code doing a whole lot of work. :)
 
-// I may run into some problems with namespaces later on; the blending modes, 
+// I may run into some problems with namespaces later on; the blending modes,
 // and the namespace 'Blitter' is general to the point of being vague.
 
 #include "types.h"
@@ -70,14 +70,14 @@ namespace Blitter {
 
 
     /**
-     * Helper function: Adjusts start and run length values on 
+     * Helper function: Adjusts start and run length values on
      * x and y axes based on the clip rectangle given.
      */
     void DoClipping(int& x, int& y, int& xstart, int& xlen, int& ystart, int& ylen, const Rect& rClip);
 
     /// Renders an image on another image.
     template <typename Blender>
-    void Blit(Canvas& src, Canvas& dest, int x, int y, Blender& blend) {
+    void Blit(const Canvas& src, Canvas& dest, int x, int y, Blender& blend) {
         const Rect& r = src.GetClipRect();
 
         int xstart = r.left;
@@ -112,7 +112,7 @@ namespace Blitter {
 
     /// Renders an image on another image, stretching as necessary.
     template <typename Blender>
-    static void ScaleBlit(Canvas& src, Canvas& dest, int cx, int cy, int w, int h, Blender& blend) {
+    static void ScaleBlit(const Canvas& src, Canvas& dest, int cx, int cy, int w, int h, Blender& blend) {
         int x, y;               // current pixel position
         int ix, iy;             // current image location (fixed point 16.16)
         int xinc, yinc;         // Increment to ix, iy per screen pixel (fixed point)
@@ -170,7 +170,7 @@ namespace Blitter {
     }
 
     template <typename Blender>
-    static void WrapBlit(Canvas& src, Canvas& dest, int startX, int startY, int w, int h, int offsetX, int offsetY, Blender& blend) {
+    static void TileBlit(const Canvas& src, Canvas& dest, int startX, int startY, int w, int h, int offsetX, int offsetY, Blender& blend) {
         Rect oldClipRect = dest.GetClipRect();
         dest.SetClipRect(Rect(startX, startY, startX + w, startY + h));
 
@@ -210,7 +210,7 @@ namespace Blitter {
             return;
 
         if (x1 > x2)
-            swap(x1, x2);      
+            swap(x1, x2);
 
         //keepinrange(x1, r.left, r.right - 1);
         //keepinrange(x2, r.left, r.right - 1);
@@ -282,7 +282,7 @@ namespace Blitter {
         }
     }
 
-    /** 
+    /**
     *  Draws an arbitrary line on the image.
     *  Kudos to zeromus for the algorithm.
     */
@@ -332,15 +332,15 @@ namespace Blitter {
                     x1 -= ((x1 - x2) * (cy1 - y1))/(y2 - y1 + 1);
                     y1 = cy1;
                 } else if(v1 & 4) {
-                    // clip below 
+                    // clip below
                     x1 -= ((x1 - x2) * (y1 - cy2))/(y1 - y2 + 1);
                     y1 = cy2;
                 } else if(v1 & 2) {
-                    // clip right 
+                    // clip right
                     y1 -= ((y1 - y2) * (x1 - cx2))/(x1 - x2 + 1);
                     x1 = cx2;
                 } else {
-                    // clip left 
+                    // clip left
                     y1 -= ((y1 - y2) * (cx1 - x1))/(x2 - x1 + 1);
                     x1 = cx1;
                 }
@@ -351,19 +351,19 @@ namespace Blitter {
                 if(x1 < cx1) v1 |= 1;
             } else {
                 if(v2 & 8) {
-                    // clip above 
+                    // clip above
                     x2 -= ((x2 - x1) * (cy1 - y2))/(y1 - y2 + 1);
                     y2 = cy1;
                 } else if(v2 & 4) {
-                    // clip below 
+                    // clip below
                     x2 -= ((x2 - x1) * (y2 - cy2))/(y2 - y1 + 1);
                     y2 = cy2;
                 } else if(v2 & 2) {
-                    // clip right 
+                    // clip right
                     y2 -= ((y2 - y1) * (x2 - cx2))/(x2 - x1 + 1);
                     x2 = cx2;
                 } else {
-                    // clip left 
+                    // clip left
                     y2 -= ((y2 - y1) * (cx1 - x2))/(x1 - x2 + 1);
                     x2 = cx1;
                 }

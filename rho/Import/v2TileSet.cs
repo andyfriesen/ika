@@ -6,9 +6,9 @@ using System.IO;
 
 namespace Import
 {
-	public class v2TileSet
+	public class v2Tileset
 	{
-		unsafe static void CreateTileImages(TileSet tileset,int numtiles,byte[] pixeldata,byte[] pal)
+		unsafe static void CreateTileImages(Tileset tileset,int numtiles,byte[] pixeldata,byte[] pal)
 		{		
 			int idx=0;
 
@@ -47,16 +47,16 @@ namespace Import
 			}
 		}
 		
-		public static TileSet Load(string fname)
+		public static Tileset Load(string fname)
 		{
 			FileStream f=new FileStream(fname,FileMode.Open);
 			BinaryReader stream=new BinaryReader(f);
 			
-			TileSet t=new TileSet();
+			Tileset t=new Tileset();
 	
 			UInt16 version=stream.ReadUInt16();
 			if (version!=3)
-				throw new Exception(String.Format("v2TileSet: {0} is not a valid VERGE VSP",fname));
+				throw new Exception(String.Format("v2Tileset: {0} is not a valid VERGE VSP",fname));
 				
 			byte[] pal=new byte[768];
 			stream.Read(pal,0,768);	// palette

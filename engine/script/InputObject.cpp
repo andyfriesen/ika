@@ -79,10 +79,11 @@ namespace Script
         {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type)
+            if (o->ob_type != &Script::Control::type) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
-            else
+            } else {
                 the< ::Input>() ->SetStandardControl(the< ::Input>()->up, o->control);
+            }
             return 0;
         }
 

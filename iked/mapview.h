@@ -23,7 +23,7 @@
 
 class MainWindow;
 class GraphicsFrame;
-class TileSet;
+class Tileset;
 class SpriteSet;
 class CLayerVisibilityControl;
 class EntityEditor;
@@ -47,7 +47,7 @@ namespace MapEditState
         // accessors since subclasses aren't privy to the inner workings of MapView
         Map::Layer* CurLayer() const;
         MainWindow*   Parent() const;
-        TileSet*   TileSet() const;
+        Tileset*   Tileset() const;
         Point       CameraPos() const;
         Map*        Map() const;
         std::map<std::string, SpriteSet*>& SpriteSets() const;
@@ -129,7 +129,7 @@ protected:
 //private:
 
     Map*                _map;
-    TileSet*           _tileSet;
+    Tileset*           _tileSet;
     ScopedPtr<MapEditState::IEditState> _editState;
 
     // Entity spritesets needed for this map.  The key is the filename of the sprite.

@@ -29,7 +29,7 @@ float InputControl::PeekDelta()
 
 ScopedPtr<Input> Input::_theInstance;
 
-Input* Input::GetInstance()
+Input* Input::getInstance()
 {
     if (!_theInstance)
         _theInstance = new Input;

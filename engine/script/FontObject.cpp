@@ -6,14 +6,11 @@ Python font object
 #include "font.h"
 #include "main.h"
 
-namespace Script
-{
-    namespace Font
-    {
+namespace Script {
+    namespace Font {
         PyTypeObject type;
 
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Print",        (PyCFunction)Font_Print,        METH_VARARGS,
                 "Font.Print(x, y, text)\n\n"
                 "Prints a string of text on screen at (x, y)."
@@ -46,16 +43,14 @@ namespace Script
 #undef GET
 #undef SET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "width",    (getter)getWidth,       0,                  "Gets the width of the widest glyph in the font."   },
             {   "height",   (getter)getHeight,      0,                  "Gets the height of the font."  },
             {   "tabsize",  (getter)getTabSize,     (setter)setTabSize, "Gets or sets the tab size of the font."    },
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt=1;
@@ -73,33 +68,30 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
-        {
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
             static char* keywords[] = { "filename", 0 };
             char* filename;
 
-            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:Font", keywords, &filename))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "s:Font", keywords, &filename)) {
                 return 0;
+            }
 
             FontObject* font=PyObject_New(FontObject, type);
-            if (!font)
+            if (!font) {
                 return 0;
-
-            try
-            {
-                font->font = new Ika::Font(filename, engine->video);
             }
-            catch (Ika::FontException)
-            {
-                PyErr_SetString(PyExc_OSError, va("Failed to load %s", filename));
+
+            try {
+                font->font = new Ika::Font(filename, engine->video);
+            } catch (Ika::FontException) {
+                PyErr_SetString(PyExc_IOError, va("Failed to load %s", filename));
                 return 0;
             }
 
             return (PyObject*)font;
         }
 
-        void Destroy(FontObject* self)
-        {
+        void Destroy(FontObject* self) {
             delete self->font;
 
             PyObject_Del(self);
@@ -107,8 +99,7 @@ namespace Script
 
 #define METHOD(x) PyObject* x(FontObject* self, PyObject* args)
 
-        METHOD(Font_Print)
-        {
+        METHOD(Font_Print) {
             int x, y;
             char* message;
 
@@ -121,13 +112,13 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Font_CenterPrint)
-        {
+        METHOD(Font_CenterPrint) {
             int x, y;
             char* message;
 
-            if (!PyArg_ParseTuple(args, "iis:Font.CenterPrint", &x, &y, &message))
+            if (!PyArg_ParseTuple(args, "iis:Font.CenterPrint", &x, &y, &message)) {
                 return 0;
+            }
 
             Ika::Font* f=self->font;
             f->PrintString(x - f->StringWidth(message) / 2 , y, message);
@@ -136,13 +127,13 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Font_RightPrint)
-        {
+        METHOD(Font_RightPrint) {
             int x, y;
             char* message;
 
-            if (!PyArg_ParseTuple(args, "iis:Font.RightPrint", &x, &y, &message))
+            if (!PyArg_ParseTuple(args, "iis:Font.RightPrint", &x, &y, &message)) {
                 return 0;
+            }
 
             Ika::Font* f = self->font;
             f->PrintString(x - f->StringWidth(message) , y, message);
@@ -151,12 +142,12 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Font_StringWidth)
-        {
+        METHOD(Font_StringWidth) {
             char* message;
 
-            if (!PyArg_ParseTuple(args, "s:Font.Width", &message))
+            if (!PyArg_ParseTuple(args, "s:Font.Width", &message)) {
                 return 0;
+            }
 
             return PyInt_FromLong(self->font->StringWidth(message));
         }

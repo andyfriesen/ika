@@ -88,9 +88,9 @@ namespace iked {
         event.Skip();
     }
 
-
     void DocumentPanel::onSave(wxCommandEvent& event) {
     }
+
     void DocumentPanel::onUndo(wxCommandEvent& event) {
         if (document->canUndo()) {
             document->undo();

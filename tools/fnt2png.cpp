@@ -1,6 +1,6 @@
-#include "fileio.h"
-#include "fontfile.h"
-#include "Canvas.h"
+#include "common/fileio.h"
+#include "common/fontfile.h"
+#include "common/Canvas.h"
 #include <iostream>
 #include <sstream>
 
@@ -54,8 +54,9 @@ int main(int c, char **args) {
             x = 0;
             y += fnth;
         }
-        Canvas &glyph = font.GetGlyph(i);
-        CBlitter<Opaque>::Blit(glyph, image, x*fntw+1, y);
+        const Canvas& glyph = font.GetGlyph(i);
+        //CBlitter<Opaque>::Blit(glyph, image, x*fntw+1, y);
+        Blitter::Blit(glyph, image, x * fntw + 1, y, Blitter::OpaqueBlend());
     }
     image.Save(args[2]);
 

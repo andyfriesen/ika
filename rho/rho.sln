@@ -1,27 +1,20 @@
-Microsoft Visual Studio Solution File, Format Version 7.00
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rho", "rho.csproj", "{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ikaImport", "..\ikaImport\ikaImport.vcproj", "{E522652F-513B-4694-9518-8760F2F17F4C}"
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C# Express 2005
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rho.vs8", "rho.vs8.csproj", "{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}"
 EndProject
 Global
-	GlobalSection(SolutionConfiguration) = preSolution
-		ConfigName.0 = Debug
-		ConfigName.1 = Release
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectDependencies) = postSolution
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
-	GlobalSection(ProjectConfiguration) = postSolution
-		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug.ActiveCfg = Debug|.NET
-		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug.Build.0 = Debug|.NET
-		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.ActiveCfg = Release|.NET
-		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.Build.0 = Release|.NET
-		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.ActiveCfg = Debug|Win32
-		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.Build.0 = Debug|Win32
-		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.ActiveCfg = Release|Win32
-		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.Build.0 = Release|Win32
-	EndGlobalSection
-	GlobalSection(ExtensibilityGlobals) = postSolution
-	EndGlobalSection
-	GlobalSection(ExtensibilityAddIns) = postSolution
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
 	EndGlobalSection
 EndGlobal

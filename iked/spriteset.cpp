@@ -6,6 +6,15 @@
 
 namespace iked {
 
+    SpriteSet::SpriteSet(const std::string& fileName)
+        : ImageArrayDocument(fileName)
+    {
+        chr = new CCHRfile;
+        chr->Load(fileName);
+        flush();
+        invariant();
+    }
+
     SpriteSet::SpriteSet(int width, int height, int numFrames) 
         : ImageArrayDocument("")
     {
@@ -24,7 +33,6 @@ namespace iked {
 
     SpriteSet::~SpriteSet() {
         invariant();
-        delete chr;
     }
 
     void SpriteSet::save(const std::string& fileName) {

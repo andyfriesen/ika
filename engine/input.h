@@ -69,7 +69,7 @@ class Input
     friend class ScopedPtr<Input>;
 
 public:
-    static Input* GetInstance();
+    static Input* getInstance();
     static void Destroy();
 
     Keyboard* GetKeyboard() const;

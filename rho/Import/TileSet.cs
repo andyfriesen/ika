@@ -6,15 +6,15 @@ using System.Collections;
 
 namespace Import
 {
-	public class TileSet
+	public class Tileset
 	{
 		ArrayList tiles;		//!< Array of Bitmaps; used for tile images
 		int tilex,tiley;		//!< Tile dimensions
 		
-		public TileSet() : this(16,16)
+		public Tileset() : this(16,16)
 		{}
 		
-		public TileSet(int x,int y) 
+		public Tileset(int x,int y) 
 		{
 			tilex=x;
 			tiley=y;

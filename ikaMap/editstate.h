@@ -9,7 +9,7 @@ class wxKeyEvent;
 struct Executor;
 struct MapView;
 struct TileSetView;
-struct TileSet;
+struct Tileset;
 struct Command;
 
 /**
@@ -48,7 +48,7 @@ protected:
     Map*            GetMap() const;
     Map::Layer*     GetCurLayer() const;
     uint            GetCurLayerIndex() const;
-    TileSet*        GetTileSet() const;
+    Tileset*        GetTileSet() const;
     wxWindow*       GetParentWindow() const;
     void            HandleCommand(::Command* cmd);
 

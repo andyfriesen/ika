@@ -5,14 +5,14 @@
 // Lots of little event arg structs.  Nothing special.
 
 struct Map;
-struct TileSet;
+struct Tileset;
 
 
 struct MapTileSetEvent {
     Map* map;
-    TileSet* tileSet;
+    Tileset* tileSet;
     int arg;
-    MapTileSetEvent(Map* m, TileSet* ts, int a = 0)
+    MapTileSetEvent(Map* m, Tileset* ts, int a = 0)
         : map(m)
         , tileSet(ts)
         , arg(a)
@@ -33,9 +33,9 @@ struct MapEvent {
 };
 
 struct TileSetEvent {
-    TileSet* tileSet;
+    Tileset* tileSet;
     int arg; // context dependant
-    TileSetEvent(TileSet* ts, int a = 0)
+    TileSetEvent(Tileset* ts, int a = 0)
         : tileSet(ts), arg(a)
     {}
 

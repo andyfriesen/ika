@@ -12,13 +12,13 @@ struct VSP;
 
 namespace iked {
 
-    struct TileSet : ImageDocumentResource {
-        TileSet(int width, int height, int numTiles);
-        TileSet(VSP* v);
-        ~TileSet();
+    struct Tileset : ImageDocumentResource {
+        Tileset(int width, int height, int numTiles);
+        Tileset(VSP* v);
+        ~Tileset();
 
 	// Resource
-	virtual TileSet* clone();
+	virtual Tileset* clone();
 	// --
 
         void save(const std::string& fname);

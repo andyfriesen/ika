@@ -47,7 +47,7 @@ void TileSetView::OnScroll(wxScrollWinEvent& event) {
         }
     };
 
-    const TileSet* ts = _executor->GetTileSet();
+    const Tileset* ts = _executor->GetTileSet();
 
     Local::HandleEvent(
         _ywin, 
@@ -80,7 +80,7 @@ void TileSetView::Render() {
     SetCurrent();
     Clear();
 
-    TileSet* ts = _executor->GetTileSet();
+    Tileset* ts = _executor->GetTileSet();
     assert(ts != 0);
 
     if (ts->Count() == 0) {
@@ -139,7 +139,7 @@ breakLoop:;
 }
 
 void TileSetView::UpdateScrollBars() {
-    const TileSet* ts = _executor->GetTileSet();
+    const Tileset* ts = _executor->GetTileSet();
 
     uint tileWidth  = ts->Width()  + (_pad ? 1 : 0);
     uint tileHeight = ts->Height() + (_pad ? 1 : 0);
@@ -157,7 +157,7 @@ void TileSetView::OnCurrentTileChange(uint newTile) {
 }
 
 uint TileSetView::PointToTile(int x, int y) const {
-    const TileSet* ts = _executor->GetTileSet();
+    const Tileset* ts = _executor->GetTileSet();
 
     uint tileWidth  = ts->Width()  + (_pad ? 1 : 0);
     uint tileHeight = ts->Height() + (_pad ? 1 : 0);
@@ -169,7 +169,7 @@ uint TileSetView::PointToTile(int x, int y) const {
 }
 
 void TileSetView::TileToPoint(uint index, int& x, int& y) const {
-    const TileSet* ts = _executor->GetTileSet();
+    const Tileset* ts = _executor->GetTileSet();
 
     if (index > ts->Count()) {
         x = y = -1;

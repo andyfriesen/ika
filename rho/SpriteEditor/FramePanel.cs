@@ -1,21 +1,53 @@
 using System;
 using System.Windows.Forms;
 using System.Drawing;
+using System.Diagnostics;
 
 namespace rho.SpriteEditor {
     public class FramePanel : Panel {
         public FramePanel(SpriteDocument doc) {
             document = doc;
+            backBuffer = new Bitmap(Size.Width, Size.Height);
+            document.Changed += new rho.Documents.ChangeEventHandler(OnSpriteChanged);
         }
 
         public int Zoom {
-            get { return zoom; }
-            set { zoom = value; }
+            get { 
+                return zoom; 
+            }
+            set { 
+                zoom = value; 
+                Refresh();
+            }
         }
 
         public int Pad {
-            get { return pad; }
-            set { pad = value; }
+            get { 
+                return pad;
+            }
+            set { 
+                pad = value;
+                Refresh();
+            }
+        }
+
+        /// <summary>
+        /// Returns the index of the selected frame.
+        /// If no frame is selected at all, the value is -1
+        /// </summary>
+        public int SelectedFrame {
+            get { 
+                Debug.Assert(
+                    -1 <= selectedFrame && 
+                    selectedFrame < document.Frames.Count
+                    );
+                return selectedFrame;
+            }
+            set {
+                Debug.Assert(-1 <= value && value < document.Frames.Count);
+                selectedFrame = value;
+                Refresh();
+            }
         }
 
         public event FrameEventHandler FrameSelected;
@@ -57,15 +89,12 @@ namespace rho.SpriteEditor {
             if (backBuffer == null) {
                 backBuffer = new Bitmap(Width, Height);
             } else if (Width > backBuffer.Width || Height > backBuffer.Height) {
-                if (backBuffer != null) {
-                    backBuffer.Dispose();
-                }
+                backBuffer.Dispose();
                 backBuffer = new Bitmap(Width, Height);
             }
 
             Invalidate();
         }
-
 
         protected override void OnClick(EventArgs e) {
             base.OnClick(e);
@@ -94,13 +123,12 @@ namespace rho.SpriteEditor {
         }
 
         protected virtual void OnFrameSelected(FrameEventArgs e) {
-            selectedFrame = e.Index;
+            //selectedFrame = e.Index;
+            //Refresh();
 
             if (FrameSelected != null) {
                 FrameSelected(e);
             }
-
-            Refresh();
         }
 
         protected virtual void OnFrameRightClicked(FrameEventArgs e) {
@@ -116,6 +144,10 @@ namespace rho.SpriteEditor {
             using (Pen pen = new Pen(Color.White)) {
                 g.DrawRectangle(pen, framePos.X, framePos.Y, frameSize.Width, frameSize.Height);
             }
+        }
+
+        void OnSpriteChanged() {
+            Refresh();
         }
 
         /// <returns>

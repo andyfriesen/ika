@@ -49,7 +49,7 @@ void MapDlg::OnOk(wxCommandEvent& event)
 void MapDlg::OnAutoSize(wxCommandEvent&)
 {
     Map* map = _mainWnd->GetMap();
-    TileSet* tileSet = _mainWnd->GetTileSet();
+    Tileset* tileSet = _mainWnd->GetTileSet();
 
     width = height = 0;
 

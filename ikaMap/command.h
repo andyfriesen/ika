@@ -256,11 +256,11 @@ public:
 struct ChangeTileSetCommand : Command
 {
 private:
-    struct TileSet* _tileSet;
+    struct Tileset* _tileSet;
     std::string _fileName;
 
 public:
-    ChangeTileSetCommand(struct TileSet* tileSet, const std::string& fileName);
+    ChangeTileSetCommand(struct Tileset* tileSet, const std::string& fileName);
     virtual ~ChangeTileSetCommand();
 
     virtual void Do(Executor* e);

@@ -7,7 +7,7 @@
 #include "imagebank.h"
 #include "common/vsp.h"
 
-struct TileSet : ImageBank
+struct Tileset : ImageBank
 {
 private:
     VSP* pVsp;
@@ -16,9 +16,9 @@ private:
 
 public:
 
-    TileSet();
-    TileSet(VSP* vsp);
-    ~TileSet();
+    Tileset();
+    Tileset(VSP* vsp);
+    ~Tileset();
 
     bool Load(const std::string& fileName);
     bool Save(const std::string& fileName);

@@ -47,21 +47,21 @@ void ScriptEngine::Init(Engine* njin) {
     Script::Video::Init();
     Script::Colours::Init();
     Script::Map::Init();
-    Script::TileSet::Init();
+    Script::Tileset::Init();
     Script::Input::Init();
     Script::Error::Init();
 
     // Create singletons
     PyObject* input = Script::Input::New();
     PyObject* map = Script::Map::New();
-    PyObject* tileSet = Script::TileSet::New();
+    PyObject* tileset = Script::Tileset::New();
     PyObject* video = Script::Video::New(engine->video);
 
     // We don't need to decref here because we should be increffing as we add the objects.  So
     // we're basically "moving" the reference
     PyModule_AddObject(module, "Input", input);
     PyModule_AddObject(module, "Map",   map);
-    PyModule_AddObject(module, "TileSet",   tileSet);
+    PyModule_AddObject(module, "Tileset",   tileset);
     PyModule_AddObject(module, "Video", video);
 
     PyModule_AddIntConstant(module, "Opaque", 0);

@@ -56,6 +56,8 @@ namespace iked {
         void refresh();             // copies sprite data onto the form
         void refreshSprite();       // copies form data into the dialog
 
+        wxDialog* createScriptEditDialog(const std::string& name, const std::string& value, bool nameReadOnly);
+
         void importFrames(
             const std::string& fileName, 
             int frameWidth, 

@@ -1,6 +1,5 @@
 using System;
 using System.Collections;
-using rho.Commands;
 
 namespace rho.Documents {
     public abstract class AbstractDocument : Document {
@@ -67,7 +66,7 @@ namespace rho.Documents {
             }
         }
 
-        void FireChanged() {
+        public void FireChanged() {
             if (Changed != null) {
                 Changed();
             }

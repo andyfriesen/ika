@@ -154,7 +154,7 @@ namespace Script {
         GET(NumTiles)   { 
             static bool warned = false;
             if (!warned) {
-                Log::Write("Map.numtiles is deprecated: use TileSet.tilecount instead");
+                Log::Write("Map.numtiles is deprecated: use Tileset.tilecount instead");
                 warned = true;
             }
 
@@ -164,7 +164,7 @@ namespace Script {
         GET(TileWidth)  { 
             static bool warned = false;
             if (!warned) {
-                Log::Write("Map.tileheight is deprecated: use TileSet.tilecount instead");
+                Log::Write("Map.tileheight is deprecated: use Tileset.tilecount instead");
                 warned = true;
             }
 
@@ -174,7 +174,7 @@ namespace Script {
         GET(TileHeight) { 
             static bool warned = false;
             if (!warned) {
-                Log::Write("Map.tileheight is deprecated: use TileSet.tilecount instead");
+                Log::Write("Map.tileheight is deprecated: use Tileset.tilecount instead");
                 warned = true;
             }
 
@@ -185,8 +185,8 @@ namespace Script {
         GET(Height)     { return PyInt_FromLong(engine->map.height); }
         //GET(RString)    { return PyString_FromString(engine->map.GetRString().c_str()); }
         //SET(RString)    { engine->map.SetRString(PyString_AsString(value));     return 0;   }
-        GET(TileSetName)    { return PyString_FromString(engine->map.tileSetName.c_str()); }
-        SET(TileSetName)    { engine->map.tileSetName = PyString_AsString(value);     return 0;   }
+        GET(TilesetName)    { return PyString_FromString(engine->map.tilesetName.c_str()); }
+        SET(TilesetName)    { engine->map.tilesetName = PyString_AsString(value);     return 0;   }
         //GET(Music)      { return PyString_FromString(engine->map.GetMusic().c_str()); }
         //SET(Music)      { engine->map.SetMusic(PyString_AsString(value));       return 0;   }
         GET(Entities)   { Py_INCREF(entityDict); return entityDict; }
@@ -201,18 +201,18 @@ namespace Script {
             {   "ywin",         (getter)getYWin,            (setter)setYWin,    "Gets or sets the Y coordinate of the camera"       },
             {   "layercount",   (getter)getLayerCount,      0,                  "Gets the number of layers on the current map."     },
             {   "numtiles",     (getter)getNumTiles,        0,                  "Gets the number of tiles in the current tileset.\n"
-                                                                                "Deprecated: Use ika.TileSet.tilecount instead."
+                                                                                "Deprecated: Use ika.Tileset.tilecount instead."
             },
             {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset.\n" 
-                                                                                "Deprecated: Use ika.TileSet.tilewidth instead."
+                                                                                "Deprecated: Use ika.Tileset.tilewidth instead."
             },
             {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset.\n"
-                                                                                "Deprecated: Use ika.TileSet.tilewidth instead."
+                                                                                "Deprecated: Use ika.Tileset.tilewidth instead."
             },
             {   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in pixels"      },
             {   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in pixels"     },
-            {   "tilesetname",  (getter)getTileSetName, (setter)setTileSetName, "Gets or sets the name of the current tileset.\n"
-                                                                                "Don't set this: use ika.TileSet.Load instead."
+            {   "tilesetname",  (getter)getTilesetName, (setter)setTilesetName, "Gets or sets the name of the current tileset.\n"
+                                                                                "Don't set this: use ika.Tileset.Load instead."
             },
             {   "entities",     (getter)getEntities,        0,                  "Gets a dictionary of entities currently tied to the map"   },
             {   0   }
@@ -253,7 +253,7 @@ namespace Script {
             }
 
             if (!File::Exists(filename)) {
-                PyErr_SetString(PyExc_OSError, va("Unable to load %s", filename));
+                PyErr_SetString(PyExc_IOError, va("Unable to load %s", filename));
                 return 0;
             }
 

@@ -12,7 +12,7 @@ class wxWindow; // -_-.  Okay because we don't have to actually include wx stuff
 struct Command;
 
 struct Map;
-struct TileSet;
+struct Tileset;
 struct SpriteSet;
 
 struct MapView;
@@ -59,7 +59,7 @@ struct Executor {
 
     // Mustn't use these to mutate!!  Send a command!
     virtual Map* GetMap() = 0;
-    virtual TileSet* GetTileSet() = 0;
+    virtual Tileset* GetTileSet() = 0;
     virtual SpriteSet* GetSpriteSet(const std::string& filename) = 0;
 
     virtual MapView* GetMapView() = 0;
@@ -69,7 +69,7 @@ struct Executor {
     // ---------- ASSUMES THAT THE CALLER WILL CLEAN UP THE OLD TILESET ------------
     // (this is because it is not always desirable to delete the old tileset; we may
     //  want it back later)
-    virtual void SwitchTileSet(TileSet* ts) = 0;
+    virtual void SwitchTileSet(Tileset* ts) = 0;
 
     /*
      * I'm not a fan of implementation inheritance, but doing this

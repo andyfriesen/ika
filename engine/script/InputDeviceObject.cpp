@@ -2,15 +2,12 @@
 #include "ObjectDefs.h"
 #include "input.h"
 
-namespace Script
-{
-    namespace InputDevice
-    {
+namespace Script {
+    namespace InputDevice {
         PyTypeObject type;
         PyMappingMethods mappingmethods;
 
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Update",   (PyCFunction)Device_Update, METH_NOARGS,
                 "Update()\n\n"
                 "Polls the device for changes."
@@ -26,8 +23,7 @@ namespace Script
 
         PyObject* Device_Subscript(DeviceObject* self, PyObject* key);
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             mappingmethods.mp_length = 0;
@@ -48,8 +44,7 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New(::InputDevice* device)
-        {
+        PyObject* New(::InputDevice* device) {
             DeviceObject* obj = PyObject_New(DeviceObject, &type);
 
             if (!obj)
@@ -58,27 +53,25 @@ namespace Script
             return (PyObject*)obj;
         }
 
-        void Destroy(DeviceObject* self)
-        {
+        void Destroy(DeviceObject* self) {
             PyObject_Del(self);
         }
 
 #define METHOD(x)  PyObject* x(DeviceObject* self, PyObject* args)
 #define METHOD1(x) PyObject* x(DeviceObject* self)
 
-        METHOD1(Device_Update)
-        {
+        METHOD1(Device_Update) {
             self->device->Update();
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD(Device_GetControl)
-        {
+        METHOD(Device_GetControl) {
             char* s;
 
-            if (!PyArg_ParseTuple(args, "s:GetControl", &s))
+            if (!PyArg_ParseTuple(args, "s:GetControl", &s)) {
                 return 0;
+            }
 
             return ::Script::Control::New(self->device->GetControl(s));
         }
@@ -86,30 +79,26 @@ namespace Script
 #undef METHOD
 #undef METHOD1
 
-        PyObject* Device_Subscript(DeviceObject* self, PyObject* key)
-        {
-            try
-            {
-                const char* name = PyString_AsString(key);
-                if (!name)
-                    throw "Control names must be strings!";
-
-                ::InputControl* control = self->device->GetControl(name);
-                if (!control)
-                    throw va("%s is not a valid control name", name);
-
-                PyObject* obj = Script::Control::New(control);
-
-                if (!obj)
-                    throw "Internal Python weirdness!";
-
-                return obj;
-            }
-            catch (const char* s)
-            {
-                PyErr_SetString(PyExc_SyntaxError, s);
+        PyObject* Device_Subscript(DeviceObject* self, PyObject* key) {
+            const char* name = PyString_AsString(key);
+            if (!name) {
+                PyErr_SetString(PyExc_KeyError, "Control names must be strings!");
                 return 0;
             }
+
+            ::InputControl* control = self->device->GetControl(name);
+            if (!control) {
+                PyErr_SetString(PyExc_KeyError, va("%s is not a valid control name", name));
+                return 0;
+            }
+
+            PyObject* obj = Script::Control::New(control);
+
+            if (!obj) {
+                throw "Internal Python weirdness!";
+            }
+
+            return obj;
         }
     }
 }

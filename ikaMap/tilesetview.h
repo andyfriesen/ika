@@ -6,7 +6,7 @@
 #include "video.h"
 
 struct Executor;
-struct TileSet;
+struct Tileset;
 struct TileSetEvent;
 struct MapTileSetEvent;
 

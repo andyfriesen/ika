@@ -18,7 +18,7 @@ CopyPasteState::CopyPasteState(Executor* e)
 
 void CopyPasteState::OnMouseDown(wxMouseEvent& event)
 {
-    const TileSet* ts = GetTileSet();
+    const Tileset* ts = GetTileSet();
     const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 
@@ -168,7 +168,7 @@ void CopyPasteState::OnMouseMove(wxMouseEvent& event)
 
 void CopyPasteState::OnRenderCurrentLayer()
 {
-    const TileSet* ts = GetTileSet();
+    const Tileset* ts = GetTileSet();
     const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 

@@ -45,7 +45,7 @@ namespace iked {
         virtual void redo() = 0;
 
         // Temp hack: (icky!)
-        virtual struct TileSet* asTileSet() = 0;
+        virtual struct Tileset* asTileSet() = 0;
         virtual struct Font* asFont() = 0;
         virtual struct Text* asText() = 0;
         virtual struct SpriteSet* asSpriteSet() = 0;
@@ -87,7 +87,7 @@ namespace iked {
         virtual void redo();
 
         // Temp hack: (icky!)
-        virtual struct TileSet* asTileSet() { return 0; }
+        virtual struct Tileset* asTileSet() { return 0; }
         virtual struct Font* asFont() { return 0; }
         virtual struct Text* asText() { return 0; }
         virtual struct SpriteSet* asSpriteSet() { return 0; }

@@ -4,8 +4,8 @@ using System.Drawing;
 
 
 namespace Import {
-    class ikaTileSet {
-        TileSet Load(string fname) {
+    class ikaTileset {
+        Tileset Load(string fname) {
             return null;	// TODO: Implement
         }
     }

@@ -1,3 +1,4 @@
+
 // project created on 26/05/2002 at 6:38 AM
 using System;
 using System.Windows.Forms;
@@ -33,7 +34,7 @@ namespace rho {
 
         static readonly string fileFilter = CreateFilter(knownExtensions);
 
-        //public TileSetController tilesets=new TileSetController();
+        //public TilesetController tilesets=new TilesetController();
         readonly DockPanel dockManager = new DockPanel();
 
         #region Stupid convenience functions that make me REALLY wish Python was faster and ran on .NET better
@@ -56,52 +57,52 @@ namespace rho {
             return sb.ToString();
         }
 
-        private static MenuItem menu(string name, params MenuItem[] children) {
-            return new MenuItem(name, children);
-        }
-
-        private static MenuItem menu(string name, EventHandler func) {
-            return new MenuItem(name, func);
-        }
-
-        private static MenuItem menu(string name, EventHandler func, Shortcut shortcut) {
-            return new MenuItem(name, func, shortcut);
-        }
-
-        private static MenuItem separator() {
-            return new MenuItem("-");
-        }
         #endregion
 	
         public MainForm() {
-            Text = "rho alpha 1";
+            System.Resources.ResourceManager resources = new System.Resources.ResourceManager(typeof(MainForm));
+            Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
+
+            Text = "rho alpha 2";
 		
             dockManager.Parent = this;
             dockManager.Dock = DockStyle.Fill;
+            dockManager.MdiIntegration = true;
+            IsMdiContainer = true;
 
             MenuItem file = 
-                menu("&File",
-                    menu("&New",
-                        menu("&Script", new EventHandler(NewScript))
-                ),
-                menu("&Open", new EventHandler(OpenFile), Shortcut.CtrlO),
-                separator(),
-                menu("E&xit", new EventHandler(Exit))
+                MenuBuilder.menu("&File",
+                    MenuBuilder.menu(0, "&New",
+                        MenuBuilder.menu("&Script", new EventHandler(NewScript))
+                    ),
+                    MenuBuilder.menu(1, "&Open", new EventHandler(OpenFile), Shortcut.CtrlO),
+                    MenuBuilder.menu(998, "-"),
+                    MenuBuilder.menu(999, "E&xit", new EventHandler(Exit))
                 );
-            file.MergeType=MenuMerge.MergeItems;
-            file.MergeOrder=1;
 
-            MenuItem window=new MenuItem("&Window", new MenuItem[] {
-                                                                   });
-            window.MdiList=true;
-            window.MergeType=MenuMerge.MergeItems;
-            window.MergeOrder=3;
-		
-            Menu=new MainMenu(new MenuItem[] {
+            file.MergeType = MenuMerge.MergeItems;
+            file.MergeOrder = 1;
+
+            MenuItem window = new MenuItem("&Window", new MenuItem[0]);
+            window.MdiList = true;
+            //window.MergeType = MenuMerge.MergeItems;
+            window.MergeOrder = 3;
+
+            Menu = new MainMenu(new MenuItem[] {
                     file,
                     window,                              
                 }
             );
+
+            int width = Width;
+            if (width < 630) {
+                width = 630;
+            }
+            int height = Height;
+            if (height < 470) {
+                height = 470;
+            }
+            Size = new System.Drawing.Size(width, height);
         }
 
         void CreateDocumentWindow(string filename) {
@@ -161,11 +162,14 @@ namespace rho {
         void Exit(object o, EventArgs e) {
             Close();
         }
+
 	
+        [STAThread]
         public static void Main(string[] args) {
             MainForm f=new MainForm();
-            foreach (string s in args)
+            foreach (string s in args) {
                 f.CreateDocumentWindow(s);
+            }
 
             Application.Run(new MainForm());
         }

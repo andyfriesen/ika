@@ -103,7 +103,7 @@ namespace iked {
     {
         Init();
 
-        tileSet = new TileSet(width, height, 0);
+        tileSet = new Tileset(width, height, 0);
     }
 
     TileSetPanel::~TileSetPanel() {
@@ -183,7 +183,7 @@ namespace iked {
         std::string newName = dlg.GetPath().c_str();
 
         if (oldName != newName) {
-            TileSet* clone = parent->vsp.clone(tileSet);
+            Tileset* clone = parent->vsp.clone(tileSet);
             if (clone != tileSet) {
                 // TODO: revert tileSet to last saved state
                 wxASSERT_MSG(0, "NYI");
