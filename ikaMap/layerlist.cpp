@@ -67,6 +67,7 @@ void LayerBox::DoActivateLayer(wxCommandEvent& event)
 
 void LayerBox::DoContextMenu(wxContextMenuEvent& event)
 {
+    // Write our layer index to the event, then skip, so the enclosing control can recieve it.
     event.SetInt(GetId());
     event.Skip();
     Log::Write("Right click %s", _label->GetLabel().c_str());
@@ -158,7 +159,12 @@ void LayerList::OnActivateLayer(wxCommandEvent& event)
 void LayerList::OnShowContextMenu(wxContextMenuEvent& event)
 {
     _contextMenuIndex = event.GetId();
-    PopupMenu(_contextMenu.get(), ScreenToClient(::wxGetMousePosition()));
+    if (0 <= _contextMenuIndex && _contextMenuIndex < _boxes.size()) {
+        // open the menu iff we have a valid layer index.
+        PopupMenu(_contextMenu.get(), ScreenToClient(::wxGetMousePosition()));
+    } else {
+        _contextMenuIndex = -1;
+    }
 }
 
 void LayerList::OnEditLayerProperties(wxCommandEvent& event)

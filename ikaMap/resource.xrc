@@ -804,6 +804,32 @@
             </object>
             <object class="sizeritem">
               <object class="wxStaticBoxSizer">
+                <object class="sizeritem">
+                  <object class="wxGridSizer">
+                    <cols>2</cols>
+                    <object class="sizeritem">
+                      <object class="wxStaticText">
+                        <label>X</label>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <object class="wxTextCtrl" name="edit_parallax_x"/>
+                    </object>
+                    <object class="sizeritem">
+                      <object class="wxStaticText">
+                        <label>Y</label>
+                      </object>
+                    </object>
+                    <object class="sizeritem">
+                      <object class="wxTextCtrl" name="edit_parallax_y"/>
+                    </object>
+                  </object>
+                </object>
+                <label>Parallax</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticBoxSizer">
                 <orient>wxHORIZONTAL</orient>
                 <label>Wrap</label>
                 <object class="sizeritem">

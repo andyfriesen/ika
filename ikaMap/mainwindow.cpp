@@ -1092,7 +1092,9 @@ void MainWindow::EditLayerProperties(uint index)
             dlg.wrapx,
             dlg.wrapy,
             dlg.x,
-            dlg.y));
+            dlg.y,
+            dlg.parallax_x,
+            dlg.parallax_y));
     }
 }
 

@@ -25,6 +25,8 @@ public:
     bool wrapy;
     int x;
     int y;
+    float parallax_x;
+    float parallax_y;
 
     DECLARE_EVENT_TABLE()
 };
