@@ -88,6 +88,10 @@ public:
     typedef std::map<std::string, Control*>::iterator iterator;
     iterator begin() { return _controls.begin(); }
     iterator end()   { return _controls.end();   }
+
+    void Unpress(const std::string& name);
+    void Unpress(int i);
+    void Unpress();
 };
 
 #endif

@@ -60,10 +60,13 @@ void CEngine::CheckMessages()
 //            if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
 //                ScreenShot();
 
-            // Alt-F4.  Quit.
+            // Alt-F4.  Quit.  NOW.
             if (event.key.keysym.sym == SDLK_F4 && 
                 (SDL_GetModState() & (KMOD_LALT | KMOD_RALT)))
-                bKillFlag = true;
+            {
+                Shutdown();
+                exit(0);
+            }
             break;
 
         case SDL_KEYUP:
@@ -453,26 +456,13 @@ void CEngine::CheckKeyBindings()
     
     if (void* func = input.GetNextControlEvent())
     {
+        // I don't like this, but if I don't, then the key triggerings start to do weird things.
+        // Like, the key that triggered the hook will always initially be pressed. (not useful behaviour)
+        input.Unpress();
+
         script.ExecFunction(func);
         input.ClearEventQueue();
     }
-
-    /*int c;
-    while ((c = input.NextControl()) != -1)    // while keys are in the queue
-    {
-        if (c < 0 || c > nControls)
-        {
-            Log::Write("CEngine::CheckKeyBindings control out of range");
-            return;
-        }
-
-        if (pBindings[c] != 0)
-        {
-            input.control[c]=0;
-            script.ExecFunction(pBindings[c]);
-            input.ClearControls();                // Not the perfect end result, but it'll have to do.  Don't want to call a script if one's already running.
-        }
-    }*/
 }
 
 void CEngine::ProcessEntities()

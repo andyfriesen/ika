@@ -275,3 +275,21 @@ void Input::ClearEventQueue()
     while (_hookqueue.size())
         _hookqueue.pop();
 }
+
+void Input::Unpress(const std::string& name)
+{
+    GetControl(name)->Pressed();
+}
+
+void Input::Unpress(int i)
+{
+    Control* c = _keys[i];
+    if (c)
+        c->Pressed();
+}
+
+void Input::Unpress()
+{
+    for (std::map<std::string, Control*>::iterator i = _controls.begin(); i != _controls.end(); i++)
+        i->second->Pressed();
+}
