@@ -116,6 +116,16 @@ namespace OpenGL
         delete (Image*)img;
     }
 
+    void Driver::ClipScreen(int left, int top, int right, int bottom)
+    {
+        if (left > right)
+            swap(left, right);
+        if (top > bottom)
+            swap(top, bottom);
+
+        glScissor(max(0, left), max(0, top), min(_xres, right), min(_yres, bottom));
+    }
+
     void Driver::ShowPage()
     {
         fps.Update();
@@ -219,10 +229,10 @@ namespace OpenGL
 
         SwitchTexture(img->_texture);
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0);         glVertex2i(x, y);
-        glTexCoord2f(texX, 0);      glVertex2i(x + w, y);
-        glTexCoord2f(texX, texY);   glVertex2i(x + w, y + h);
-        glTexCoord2f(0, texY);      glVertex2i(x, y + h);
+        glTexCoord2f(0,    texY);   glVertex2i(x, y);
+        glTexCoord2f(texX, texY);   glVertex2i(x + w, y);
+        glTexCoord2f(texX, 0);      glVertex2i(x + w, y + h);
+        glTexCoord2f(0,    0);      glVertex2i(x, y + h);
         glEnd();
     }
 

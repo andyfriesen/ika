@@ -708,8 +708,8 @@ Point CEngine::GetCamera()
 void CEngine::SetCamera(Point p)
 {
     Point res = video->GetResolution();
-    xwin = clamp<int>(p.x, 0, map.width  * tiles->Width()  - res.x - 1);   // (tile width * number of tiles) - resolution - 1
-    ywin = clamp<int>(p.y, 0, map.height * tiles->Height() - res.y - 1);
+    xwin = max<int>(0, min<int>(p.x, map.width - res.x - 1));
+    ywin = max<int>(0, min<int>(p.y, map.height - res.y - 1));
 }
 
 CEngine::CEngine()
@@ -730,3 +730,4 @@ int main(int argc, char* args[])
     
     return 0;
 }
+ 

@@ -43,11 +43,8 @@ namespace Video
         /// Frees the previously created image.
         virtual void FreeImage(Image* img) = 0;
 
-        /// Creates a copy of the provided image.
-        //virtual Image* CopyImage(Image* img) = 0;
-
         /// Clips the image to the provided rectangle.
-        virtual void ClipImage(Image* img, Rect& r) = 0;
+        virtual void ClipScreen(int left, int top, int right, int bottom) = 0;
 
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage() = 0;

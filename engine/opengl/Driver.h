@@ -37,7 +37,7 @@ namespace OpenGL
         virtual void FreeImage(Video::Image* img);
 
         /// Clips the image to the provided rectangle.
-        virtual void ClipImage(Video::Image* img, Rect& r) NYI
+        virtual void ClipScreen(int left, int top, int right, int bottom);
 
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage();

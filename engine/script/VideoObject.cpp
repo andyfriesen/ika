@@ -73,6 +73,14 @@ namespace Script
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
 
+            {   "ClipScreen",   (PyCFunction)Video_ClipScreen, METH_VARARGS,
+                "Video.ClipScreen(left=0, top=0, right=xres, bottom=yres)\n\n"
+                "Clips the video display to the rectangle specfied.  All drawing\n"
+                "operations will be confined to this region.\n\n"
+                "Calling ClipScreen with no arguments will reset the clipping rect\n"
+                "to its default setting. (the whole screen)"
+            },
+
             {   "GrabImage",    (PyCFunction)Video_GrabImage, METH_VARARGS,
                 "Video.GrabImage(x1, y1, x2, y2) -> image\n\n"
                 "Grabs a rectangle from the screen, copies it to an image, and returns it."
@@ -279,6 +287,24 @@ namespace Script
 
             self->video->SetBlendMode(::Video::Normal);
             self->video->DrawTriangle(x, y, col);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Video_ClipScreen)
+        {
+            Point p = self->video->GetResolution();
+
+            int left = 0;
+            int top = 0;
+            int right = p.x;
+            int bottom = p.y;
+
+            if (!PyArg_ParseTuple(args, "|iiii:Video.ClipScreen", &left, &top, &right, &bottom))
+                return 0;
+
+            self->video->ClipScreen(left, top, right, bottom);
 
             Py_INCREF(Py_None);
             return Py_None;
