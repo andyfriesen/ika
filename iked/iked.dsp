@@ -252,19 +252,19 @@ SOURCE=..\common\configfile.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\fileio.cpp
+SOURCE=..\common\fileio.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\fileio.h
+SOURCE=..\common\fileio.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\log.cpp
+SOURCE=..\common\log.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\log.h
+SOURCE=..\common\log.h
 # End Source File
 # Begin Source File
 
@@ -276,11 +276,11 @@ SOURCE=..\common\map.h
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\misc.cpp
+SOURCE=..\common\misc.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\misc.h
+SOURCE=..\common\misc.h
 # End Source File
 # Begin Source File
 
@@ -288,11 +288,23 @@ SOURCE=..\common\pixel_matrix.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\pixel_matrix.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\pixel_matrix_blitter.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\common\rle.cpp
 # End Source File
 # Begin Source File
 
-SOURCE=..\..\ika\common\types.h
+SOURCE=..\common\rle.h
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\types.h
 # End Source File
 # Begin Source File
 
