@@ -13,6 +13,10 @@ BEGIN_EVENT_TABLE(CFontView,IDocView)
     EVT_LEFT_DOWN(CFontView::OnLeftClick)
     EVT_RIGHT_DOWN(CFontView::OnRightClick)
 
+    EVT_MENU(CFontView::id_filesave,CFontView::OnSave)
+    EVT_MENU(CFontView::id_filesaveas,CFontView::OnSaveAs)
+    EVT_MENU(CFontView::id_optionscolor,CFontView::OnChangeBackgroundColor)
+
 END_EVENT_TABLE()
 
 CFontView::CFontView(CMainWnd* parentwnd,const string& fname):
@@ -29,6 +33,21 @@ nCurfont(0)
     pFontfile->Load(sFilename.c_str());
 
     ywin=0;
+
+    wxMenuBar* menubar=pParent->CreateBasicMenu();
+    wxMenu* filemenu=menubar->Remove(0);
+    filemenu->Insert(2,new wxMenuItem(filemenu,id_filesave,"&Save","Save the font to disk."));
+    filemenu->Insert(3,new wxMenuItem(filemenu,id_filesaveas,"Save &As","Save the font under a new filename."));
+    filemenu->Insert(4,new wxMenuItem(filemenu,id_fileclose,"&Close","Close the font window."));
+    menubar->Append(filemenu,"&File");
+
+    wxMenu* optionsmenu = new wxMenu;
+    menubar->Append(optionsmenu,"&Options");
+    optionsmenu->Append(id_optionscolor,"Change background color...","");
+
+    SetMenuBar(menubar);
+
+
 
 }
 
@@ -146,6 +165,29 @@ void CFontView::OnSave(wxCommandEvent& event)
     pFontfile->Save(sFilename.c_str());
 }
 
+void CFontView::OnSaveAs(wxCommandEvent& event)
+{
+    wxFileDialog dlg
+    (
+        this,
+        "Open File",
+        "",
+        "",
+        "Font files (*.fnt)|*.fnt|"
+        "All files (*.*)|*.*",
+        wxSAVE | wxOVERWRITE_PROMPT
+    );
+
+    int result=dlg.ShowModal();
+    if (result==wxID_CANCEL)
+        return;
+
+    sName=dlg.GetFilename().c_str();
+    SetTitle(sName.c_str());
+
+    OnSave(event);
+}
+
 void CFontView::OnClose()
 {
     
@@ -194,4 +236,37 @@ void CFontView::UpdateScrollbar()
         ywin=0;
 
     SetScrollbar(wxVERTICAL,ywin,nFontheight,nTotalheight,true);
+}
+
+void CFontView::OnChangeBackgroundColor(wxCommandEvent& event)
+{
+        wxColour nColor;
+        nColor=GetBackgroundColour();
+        
+        wxColourData hData;
+        hData.SetColour(nColor);
+        hData.SetChooseFull(false);
+
+        for (int i=0; i<16; i++)
+        {
+            wxColour nCustom(i*16, i*16, i*16);
+            hData.SetCustomColour(i,nCustom);
+        }
+
+        wxColourDialog cdialog(this, &hData);
+        cdialog.SetTitle("Choose the background color");
+        if (cdialog.ShowModal() == wxID_OK)
+        {
+            wxColourData retData = cdialog.GetColourData();
+            nColor               = retData.GetColour();
+            SetBackgroundColour(nColor);
+
+            u8 r=nColor.Red();
+            u8 g=nColor.Green();
+            u8 b=nColor.Blue();
+
+            glClearColor(r,g,b,0);
+            Render();
+            
+        }
 }

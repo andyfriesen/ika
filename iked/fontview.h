@@ -3,6 +3,7 @@
 #define FONTVIEW_H
 
 #include <wx\wx.h>
+#include <wx\colordlg.h>
 
 #include "types.h"
 #include "docview.h"
@@ -11,12 +12,23 @@
 
 class CFontView : public IDocView
 {
+    enum
+    {
+        id_font=300,
+        id_filesave,
+        id_filesaveas,
+        id_fileclose,
+        id_optionscolor
+    };
+
     public:
 
         CFontView(CMainWnd* parentwnd,const string& fname);
         ~CFontView() {}
 
+        void OnChangeBackgroundColor(wxCommandEvent&);
         void OnSave(wxCommandEvent&);
+        void OnSaveAs(wxCommandEvent&);
         void OnSize(wxSizeEvent&);
         void OnPaint();
         void OnEraseBackground(wxEraseEvent&) {}
