@@ -8,6 +8,7 @@
 #include "codeview.h"
 #include "fileio.h"
 
+
 namespace
 {
     enum    {   linecountmargin, foldmargin };
@@ -27,6 +28,16 @@ BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
     EVT_MENU(CCodeWnd::id_editcut ,CCodeWnd::OnCut)
     EVT_MENU(CCodeWnd::id_editpaste,CCodeWnd::OnPaste)
     EVT_MENU(CCodeWnd::id_optionsfont,CCodeWnd::OnSyntaxHighlighting)
+
+    EVT_MENU(CCodeWnd::id_editfind,CCodeWnd::OnFind)
+    EVT_MENU(CCodeWnd::id_editreplace,CCodeWnd::OnReplace)
+    
+    EVT_FIND(-1,CCodeWnd::DoFind)
+    EVT_FIND_NEXT(-1,CCodeWnd::DoFind)
+    EVT_FIND_REPLACE(-1,CCodeWnd::DoFind)
+    EVT_FIND_REPLACE_ALL(-1,CCodeWnd::DoFind)
+    EVT_FIND_CLOSE(-1,CCodeWnd::DoFind)
+
 END_EVENT_TABLE()
 
 CCodeWnd::CCodeWnd(CMainWnd* parent,
@@ -56,6 +67,9 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     editmenu->Append(id_editcut,  "C&ut\tShift+Del","");
     editmenu->Append(id_editpaste,"&Paste\tShift+Ins","");
     editmenu->Append(id_editselectall,"Select &All\tCtrl+a","");
+    editmenu->AppendSeparator();
+    editmenu->Append(id_editfind,"&Find...","");
+    editmenu->Append(id_editreplace,"Replace...","");
     menubar->Append(editmenu,"&Edit");
 
     wxMenu* optionsmenu = new wxMenu;
@@ -140,7 +154,7 @@ CCodeWnd::~CCodeWnd()
 
 void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
 {
-    // Sets the chosen font/color/style
+    // set script font/color/style
     //  -- khross
 
     if (nWhich==0) // whitespace
@@ -168,10 +182,12 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
             pTextctrl->StyleSetBackground(nWhich,nColor);
             pTextctrl->StyleSetForeground(nWhich,nColor);
             
+            
 
             for(int j=1; j<11; j++)
                 pTextctrl->StyleSetBackground(j,nColor);
 
+            
             pTextctrl->Show(true);
             pTextctrl->SetFocus();
             
@@ -236,6 +252,89 @@ void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
         SetSyntax(sdialog.GetSelection(),event);
 
     
+}
+
+void CCodeWnd::OnFind(wxCommandEvent& event)
+{
+    wxFindReplaceData fdata;
+
+    wxFindReplaceDialog* pDialog = new wxFindReplaceDialog
+        (
+            this,
+            &fdata,
+            "Find"
+            
+        );
+    pDialog->Show(true);
+}
+
+void CCodeWnd::OnReplace(wxCommandEvent& event)
+{
+    wxFindReplaceData fdata;
+
+    wxFindReplaceDialog* pDialog = new wxFindReplaceDialog
+        (
+            this,
+            &fdata,
+            "Replace",
+            wxFR_REPLACEDIALOG
+        );
+    pDialog->Show(true);
+}
+
+void CCodeWnd::DoFind(wxFindDialogEvent& event)
+{
+    // Handles find/replace stuff.
+    // TODO: break this up, maybe.
+    //   --  khross
+
+    wxEventType type;
+
+    type=event.GetEventType();
+    if (type == wxEVT_COMMAND_FIND || type == wxEVT_COMMAND_FIND_NEXT)
+    {
+
+        int nLine=pTextctrl->FindText
+        (
+            pTextctrl->GetCurrentLine(),
+            event.GetFlags() & wxFR_DOWN ? pTextctrl->GetLength():-pTextctrl->GetLength(),
+            event.GetFindString(),
+            event.GetFlags() & wxFR_MATCHCASE ? true : false,
+            event.GetFlags() & wxFR_WHOLEWORD ? true : false
+        );
+
+        if (nLine)
+        {
+            pTextctrl->GotoPos(nLine);
+            pTextctrl->SetSelection(nLine,nLine+(event.GetFindString().length()));
+        }
+
+    }
+
+    else if (type == wxEVT_COMMAND_FIND_REPLACE || type == wxEVT_COMMAND_FIND_REPLACE_ALL)
+    {
+        int nLine=pTextctrl->FindText
+        (
+            pTextctrl->GetCurrentLine(),
+            event.GetFlags() & wxFR_DOWN ? pTextctrl->GetLength():-pTextctrl->GetLength(),
+            event.GetFindString(),
+            event.GetFlags() & wxFR_MATCHCASE ? true : false,
+            event.GetFlags() & wxFR_WHOLEWORD ? true : false
+        );
+
+        if (nLine)
+        {
+            pTextctrl->GotoPos(nLine);
+            pTextctrl->SetSelection(nLine,nLine+(event.GetFindString().length()));
+            pTextctrl->ReplaceSelection(event.GetReplaceString());
+
+            if (type == wxEVT_COMMAND_FIND_REPLACE_ALL) DoFind(event);
+        }
+    }
+
+    wxFindReplaceDialog *pDlg = event.GetDialog();
+    pDlg->Destroy();
+
 }
 
 

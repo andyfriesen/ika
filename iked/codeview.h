@@ -4,6 +4,8 @@
 
 #include "types.h"
 #include <wx\wx.h>
+#include <wx\fdrepdlg.h>
+#include <wx\colordlg.h>
 #include <wx\fontdlg.h>
 #include <wx\stc\stc.h>
 
@@ -28,6 +30,8 @@ public:
         id_editcut,
         id_editpaste,
         id_editselectall,
+        id_editfind,
+        id_editreplace,
 
         id_options,
         id_optionsfont
@@ -50,9 +54,13 @@ public:
     void OnPaste(wxCommandEvent& event);
     void OnSelectAll(wxCommandEvent& event);
 
+    void OnFind(wxCommandEvent& event);
+    void OnReplace(wxCommandEvent& event);
+
     void OnSyntaxHighlighting(wxCommandEvent& event); // syntax highlighting dialog
 private:
     void SetSyntax(int,wxCommandEvent&);
+    void DoFind(wxFindDialogEvent& event);
 public:
 
     DECLARE_EVENT_TABLE()
