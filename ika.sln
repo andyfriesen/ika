@@ -1,0 +1,98 @@
+Microsoft Visual Studio Solution File, Format Version 7.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gfx_soft", "gfx_soft\gfx_soft.vcproj", "{EEC1569B-7827-473D-BDBD-FDB0DFB77252}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gfx_soft16", "gfx_soft16\gfx_soft16.vcproj", "{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ika", "engine\ika.vcproj", "{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "gfx_opengl", "gfx_opengl\gfx_opengl.vcproj", "{F1E0C269-334A-4F30-99EE-14BDBB27D25E}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "sfx_mikmod", "sfx_mikmod\sfx_mikmod.vcproj", "{E207CE42-06DF-46E1-8449-40D051A2EC4C}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "winmaped", "winmaped\WinMapEd.vcproj", "{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rho", "rho\rho.csproj", "{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ikaImport", "ikaImport\ikaImport.vcproj", "{E522652F-513B-4694-9518-8760F2F17F4C}"
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		ConfigName.0 = Debug
+		ConfigName.1 = Debug wx232
+		ConfigName.2 = Release
+		ConfigName.3 = Release wx232
+	EndGlobalSection
+	GlobalSection(ProjectDependencies) = postSolution
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.0 = {E522652F-513B-4694-9518-8760F2F17F4C}
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Debug.ActiveCfg = Debug|Win32
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Debug.Build.0 = Debug|Win32
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Debug wx232.ActiveCfg = Debug|Win32
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Debug wx232.Build.0 = Debug|Win32
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Release.ActiveCfg = Release|Win32
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Release.Build.0 = Release|Win32
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Release wx232.ActiveCfg = Release|Win32
+		{EEC1569B-7827-473D-BDBD-FDB0DFB77252}.Release wx232.Build.0 = Release|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Debug.ActiveCfg = Release|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Debug.Build.0 = Release|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Debug wx232.ActiveCfg = Debug|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Debug wx232.Build.0 = Debug|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Release.ActiveCfg = Release|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Release.Build.0 = Release|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Release wx232.ActiveCfg = Release|Win32
+		{4E8E1525-A6A0-4319-A584-AECB4D60EAE2}.Release wx232.Build.0 = Release|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug.ActiveCfg = Release|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug.Build.0 = Release|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug wx232.ActiveCfg = Debug|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Debug wx232.Build.0 = Debug|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Release.ActiveCfg = Release|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Release.Build.0 = Release|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Release wx232.ActiveCfg = Release|Win32
+		{4B4E2FC6-CDAC-4CBD-AE28-DA5529F0CB6E}.Release wx232.Build.0 = Release|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Debug.ActiveCfg = Debug|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Debug.Build.0 = Debug|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Debug wx232.ActiveCfg = Debug|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Debug wx232.Build.0 = Debug|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Release.ActiveCfg = Release|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Release.Build.0 = Release|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Release wx232.ActiveCfg = Release|Win32
+		{F1E0C269-334A-4F30-99EE-14BDBB27D25E}.Release wx232.Build.0 = Release|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Debug.ActiveCfg = Debug|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Debug.Build.0 = Debug|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Debug wx232.ActiveCfg = Debug|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Debug wx232.Build.0 = Debug|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Release.ActiveCfg = Release|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Release.Build.0 = Release|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Release wx232.ActiveCfg = Release|Win32
+		{E207CE42-06DF-46E1-8449-40D051A2EC4C}.Release wx232.Build.0 = Release|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Debug.ActiveCfg = Debug|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Debug.Build.0 = Debug|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Debug wx232.ActiveCfg = Debug|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Debug wx232.Build.0 = Debug|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Release.ActiveCfg = Release|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Release.Build.0 = Release|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Release wx232.ActiveCfg = Release|Win32
+		{D00E70E1-F2C5-4DCC-BB41-3CC03FFAFB48}.Release wx232.Build.0 = Release|Win32
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug.ActiveCfg = Debug|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug.Build.0 = Debug|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug wx232.ActiveCfg = Debug|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug wx232.Build.0 = Debug|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.ActiveCfg = Debug|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.Build.0 = Debug|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release wx232.ActiveCfg = Release|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release wx232.Build.0 = Release|.NET
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.ActiveCfg = Debug|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.Build.0 = Debug|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug wx232.ActiveCfg = Debug|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug wx232.Build.0 = Debug|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.ActiveCfg = Release|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.Build.0 = Release|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Release wx232.ActiveCfg = Release|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Release wx232.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

@@ -237,7 +237,7 @@ METHOD(std_unhookretrace)
         pEngine->pHookretrace.Clear();
     }
     else
-    {    
+    {
         std::list<void*>::iterator i;
         
         for (i=pEngine->pHookretrace.begin(); i!=pEngine->pHookretrace.end(); i++)
@@ -250,6 +250,7 @@ METHOD(std_unhookretrace)
             }
         }
     }        
+
     Py_INCREF(Py_None);
     return Py_None;
 }

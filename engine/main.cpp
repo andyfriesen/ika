@@ -413,7 +413,6 @@ void CEngine::Render(const char* sTemprstring)
             RenderEntities();
             break;
         case 'R':
-            //HookRetrace();
             DoHook(pHookretrace);
             break;
         }
@@ -423,23 +422,10 @@ void CEngine::Render(const char* sTemprstring)
 
 void CEngine::DoHook(HookList& hooklist)
 {
-/*    if (pHooktimer.empty())
-        return;
-    
-    std::list<void*>::iterator i;
-    for (i=pHooktimer.begin(); i!=pHooktimer.end(); i++)
-    {
-        script.ExecFunction(*i);
-
-        // In case scripts are unhooked from within a hooked script.
-        if (pHooktimer.size()==0)
-            break;
-    }*/
+    hooklist.Flush(); // handle any pending insertions/deletions
 
     for (std::list<void*>::iterator i=hooklist.begin(); i!=hooklist.end(); i++)
         script.ExecFunction(*i);
-
-    hooklist.Flush(); // handle any hook list alterations done within hooks.
 }
 /*
 void CEngine::HookRetrace()
@@ -465,7 +451,6 @@ void CEngine::GameTick()
     CDEBUG("gametick");
     
     CheckKeyBindings();
-    //HookTimer();
     DoHook(pHooktimer);
     ProcessEntities();
 }

@@ -7,10 +7,9 @@
 
 class HookList
 {
+private:
     typedef std::list<void*> List;
 
-    // public 'cause I'm lazy.
-private:
     List pHooks;
     List pKilllist;
     List pAddlist;
@@ -30,12 +29,17 @@ public:
     {
         for (List::iterator i=pAddlist.begin(); i!=pAddlist.end(); i++)
         {
-            pHooks.push_back(*i);
+            void* p=*i;
+            pHooks.push_back(p);
         }
 
-        for (List::iterator j=pKilllist.begin(); j!=pKilllist.end(); j++)
+        if (pKilllist.size())
         {
-            pHooks.erase(j);
+            for (List::iterator j=pKilllist.begin(); j!=pKilllist.end(); j++)
+            {
+                void* p=*j;
+                pHooks.remove(p);
+            }
         }
 
         pAddlist.clear();
