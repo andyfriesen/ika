@@ -61,6 +61,8 @@ void SynchTexture(IMAGE img)
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,pTemp);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_LINEAR);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
     
     if (nTexwidth!=width || nTexheight!=height)
         delete[] pTemp;
@@ -79,9 +81,6 @@ void RenderTexture(IMAGE img,int x,int y,bool transparent)
     else
         glDisable(GL_BLEND);
     
-    glDisable(GL_COLOR_MATERIAL);            // no tinting
-    
-//    glBindTexture(GL_TEXTURE_2D,img->hTex);
     SwitchTexture(img->hTex);
     glBegin(GL_QUADS);
     glColor4ub(255,255,255,255);
@@ -102,9 +101,6 @@ void ScaleRenderTexture(IMAGE img,int x,int y,int width,int height,bool transpar
     else
         glDisable(GL_BLEND);
     
-    glDisable(GL_COLOR_MATERIAL);
-    
-    //glBindTexture(GL_TEXTURE_2D,img->hTex);
     SwitchTexture(img->hTex);
     glBegin(GL_QUADS);
     glColor4ub(255,255,255,255);
@@ -187,6 +183,120 @@ void HardRect(int x1,int y1,int x2,int y2,u32 colour,bool filled)
         glColor4ub(255,255,255,255);
         glEnd();
     }
+}
+
+void HardEllipse(int cx,int cy,int rx,int ry,u32 colour,bool filled)
+{
+	if(rx==0 || ry==0) return;
+	RGBA col=colour;
+	SwitchTexture(0);
+	glColor4ub(col.b,col.g,col.r,col.a);
+	rx=abs(rx);	ry=abs(ry);
+	if(filled)
+	{
+		if(rx>ry)
+		{
+			float rx2=rx*rx*1.0f, ry2=ry*ry*1.0f;
+			float ry2rx2=ry2/rx2*1.0f, rxry=rx/ry*1.0f;
+			float sfac=rxry*0.2f*1.0f;
+			float i=0.0f,curr=0.0f;
+			glBegin(GL_TRIANGLE_STRIP); // left part
+			glVertex2i(cx-rx,cy);
+			for(i=-rx+1*1.0f; i<=-1; i+=(rx-fabsf(i))*sfac+1)
+			{
+				curr=sqrtf(ry2-i*i*ry2rx2);
+				glVertex2f(cx+i,cy-curr); glVertex2f(cx+i,cy+curr);
+			}
+			glVertex2i(cx,cy-ry); glVertex2i(cx,cy+ry);
+			glEnd();
+			glBegin(GL_TRIANGLE_STRIP); // right part
+			glVertex2i(cx+rx,cy);
+			for(i=rx-1*1.0f; i>=1; i-=(rx-fabsf(i))*sfac+1)
+			{
+				curr=sqrtf(ry2-i*i*ry2rx2);
+				glVertex2f(cx+i,cy-curr); glVertex2f(cx+i,cy+curr);
+			}
+			glVertex2i(cx,cy-ry); glVertex2i(cx,cy+ry);
+			glEnd();
+		}
+		else // ry>rx
+		{
+			float rx2=rx*rx*1.0f, ry2=ry*ry*1.0f;
+			float rx2ry2=rx2/ry2*1.0f, ryrx=ry/rx*1.0f;
+			float sfac=ryrx*0.2f*1.0f;
+			float i=0.0f,curr=0.0f;
+			glBegin(GL_TRIANGLE_STRIP); // upper part
+			glVertex2i(cx,cy-ry);
+			for(i=-ry+1*1.0f; i<=-1; i+=(ry-fabsf(i))*sfac+1)
+			{
+				curr=sqrtf(rx2-i*i*rx2ry2);
+				glVertex2f(cx-curr,cy+i); glVertex2f(cx+curr,cy+i);
+			}
+			glVertex2i(cx-rx,cy); glVertex2i(cx+rx,cy);
+			glEnd();
+			glBegin(GL_TRIANGLE_STRIP);  //lower part
+			glVertex2i(cx,cy+ry);
+			for(i=ry-1*1.0f; i>=1; i-=(ry-fabsf(i))*sfac+1)
+			{
+				curr=sqrtf(rx2-i*i*rx2ry2);
+				glVertex2f(cx-curr,cy+i); glVertex2f(cx+curr,cy+i);
+			}
+			glVertex2i(cx-rx,cy); glVertex2i(cx+rx,cy);
+			glEnd();
+		}
+	}
+	else //outlined
+	{
+		if(rx>ry)
+		{
+			double rx2=rx*rx*1.0, ry2=ry*ry*1.0;
+			double ry2rx2=ry2/rx2*1.0, rxry=rx/(ry*1.0);
+			double sfac=rxry*0.2;
+			double i=rx*1.0,curr=0.0;
+			double lastcurr=curr,lasti=i;
+			glBegin(GL_LINES);
+			for(; i>=0; i-=(rx-i)*sfac+1)
+			{
+				curr=sqrt(ry2-i*i*ry2rx2);
+				glVertex2d(cx+lasti,cy+lastcurr); glVertex2d(cx+i,cy+curr);
+				glVertex2d(cx+lasti,cy-lastcurr); glVertex2d(cx+i,cy-curr);
+				glVertex2d(cx-lasti,cy+lastcurr); glVertex2d(cx-i,cy+curr);
+				glVertex2d(cx-lasti,cy-lastcurr); glVertex2d(cx-i,cy-curr);
+				lastcurr=curr;
+				lasti=i;
+			}
+			glVertex2d(cx+lasti,cy+lastcurr); glVertex2i(cx,cy+ry);
+			glVertex2d(cx+lasti,cy-lastcurr); glVertex2i(cx,cy-ry);
+			glVertex2d(cx-lasti,cy+lastcurr); glVertex2i(cx,cy+ry);
+			glVertex2d(cx-lasti,cy-lastcurr); glVertex2i(cx,cy-ry);
+			glEnd();
+		}
+		else // ry>rx
+		{
+			double rx2=rx*rx*1.0, ry2=ry*ry*1.0;
+			double rx2ry2=rx2/ry2*1.0, ryrx=ry/(rx*1.0);
+			double sfac=ryrx*0.2;
+			double i=ry*1.0,curr=0.0;
+			double lastcurr=curr,lasti=i;
+			glBegin(GL_LINES);
+			for(; i>=0; i-=(ry-i)*sfac+1)
+			{
+				curr=sqrt(rx2-i*i*rx2ry2);
+				glVertex2d(cx+lastcurr,cy+lasti); glVertex2d(cx+curr,cy+i);
+				glVertex2d(cx-lastcurr,cy+lasti); glVertex2d(cx-curr,cy+i);
+				glVertex2d(cx+lastcurr,cy-lasti); glVertex2d(cx+curr,cy-i);
+				glVertex2d(cx-lastcurr,cy-lasti); glVertex2d(cx-curr,cy-i);
+				lastcurr=curr;
+				lasti=i;
+			}
+			glVertex2d(cx+lastcurr,cy+lasti); glVertex2i(cx+rx,cy);
+			glVertex2d(cx-lastcurr,cy+lasti); glVertex2i(cx-rx,cy);
+			glVertex2d(cx+lastcurr,cy-lasti); glVertex2i(cx+rx,cy);
+			glVertex2d(cx-lastcurr,cy-lasti); glVertex2i(cx-rx,cy);
+			glEnd();
+		}
+	}
+	glColor4ub(255,255,255,255);
 }
 
 void HardPoly(IMAGE img,int x[3],int y[3],u32 colour[3])
