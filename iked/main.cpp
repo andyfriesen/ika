@@ -210,6 +210,13 @@ void CMainWnd::Open(const std::string& fname)
                 -1,
                 fname
                 );
+
+            configdlg->ShowModal();
+            configdlg->Close(true);
+            /*wxDialog* dlg=new wxDialog(this,-1,"Config",wxDefaultPosition);
+            dlg->LoadFromResource(this,"ConfigDlg");
+            dlg->ShowModal();
+            dlg->Close(true);*/
             return;
         }
     default:

@@ -1,6 +1,3 @@
-/*
-STEEEEENKEY POO!!
-*/
 
 #include "main.h"
 
@@ -311,7 +308,7 @@ void CEngine::RenderLayer(int lay,bool transparent)
     xl= gfxImageWidth(hRenderdest)/tiles.Width()+1;
     yl=gfxImageHeight(hRenderdest)/tiles.Height()+2;
     
-    if (xs+xl>map.Width()) xl=map.Height()-xs;        // clip yo
+    if (xs+xl>map.Width()) xl=map.Width()-xs;        // clip yo
     if (ys+yl>map.Height()) yl=map.Height()-ys;
     
     u32*    t   =map.GetDataPtr(lay)+((ys)*map.Width() + xs);
