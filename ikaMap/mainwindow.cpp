@@ -231,9 +231,9 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     viewMenu->Append(id_zoommapout, "Zoom Map Out\t-");
     viewMenu->Append(id_zoommapnormal, "Zoom Map to 100%\t=", "Stop zooming the map.");
     viewMenu->AppendSeparator();
-    viewMenu->Append(id_zoomtilesetin, "Zoom Tileset In\tCtrl-plus");
-    viewMenu->Append(id_zoomtilesetout, "Zoom Tileset Out\tCtrl-minus");
-    viewMenu->Append(id_zoomtilesetnormal, "Zoom Tileset to 100%\tCtrl-equals", "Stop zooming on the tileset.");
+    viewMenu->Append(id_zoomtilesetin, "Zoom Tileset In\tNumpad 8");
+    viewMenu->Append(id_zoomtilesetout, "Zoom Tileset Out\tNumpad 2");
+    viewMenu->Append(id_zoomtilesetnormal, "Zoom Tileset to 100%\tNumpad 5", "Stop zooming on the tileset.");
 
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(fileMenu, "&File");
@@ -253,9 +253,9 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     entries[i++].Set(wxACCEL_NORMAL, WXK_ADD, id_zoommapin);
     entries[i++].Set(wxACCEL_NORMAL, WXK_SUBTRACT, id_zoommapout);
     entries[i++].Set(wxACCEL_NORMAL, (int)'=', id_zoommapnormal);
-    entries[i++].Set(wxACCEL_CTRL, WXK_ADD, id_zoomtilesetin);
-    entries[i++].Set(wxACCEL_CTRL, WXK_SUBTRACT, id_zoomtilesetout);
-    entries[i++].Set(wxACCEL_CTRL, (int)'=', id_zoomtilesetnormal);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_NUMPAD8, id_zoomtilesetin);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_NUMPAD2, id_zoomtilesetout);
+    entries[i++].Set(wxACCEL_NORMAL, WXK_NUMPAD5, id_zoomtilesetnormal);
     wxAcceleratorTable table(tableSize, entries);
     SetAcceleratorTable(table);
 
@@ -542,11 +542,11 @@ void MainWindow::OnShowLayerProperties(wxCommandEvent& event)
     }
 }
 
-void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   _mapView->IncZoom(+1);      _mapView->Refresh();        }
-void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   _mapView->IncZoom(-1);      _mapView->Refresh();        }
+void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   _mapView->IncZoom(-1);      _mapView->Refresh();        }
+void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   _mapView->IncZoom(+1);      _mapView->Refresh();        }
 void MainWindow::OnZoomMapNormal(wxCommandEvent&)       {   _mapView->SetZoom(16);      _mapView->Refresh();        } // 16:16 == 100%
-void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    }
-void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(-1);  _tileSetView->Refresh();    }
+void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoom(-1);  _tileSetView->Refresh();    }
+void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    }
 void MainWindow::OnZoomTileSetNormal(wxCommandEvent&)   {   _tileSetView->SetZoom(16);  _tileSetView->Refresh();    } // 16:16 == 100%
 
 void MainWindow::OnToggleLayer(wxCommandEvent& event)

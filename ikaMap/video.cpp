@@ -199,15 +199,13 @@ int VideoFrame::GetZoom() const
 
 void VideoFrame::SetZoom(int z)
 {
-    _curZoom = (z > 0) ? z : 1;
+    _curZoom = max(1, z);
 }
 
 void VideoFrame::IncZoom(int amt)
 {
-    if (_curZoom + amt < 0)
-        _curZoom = 1;
-    else
-        _curZoom += amt;
+    _curZoom = max(1, _curZoom + amt);
+
 }
 
 Image::Image(const Canvas& src)
