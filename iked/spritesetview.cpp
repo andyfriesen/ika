@@ -64,8 +64,9 @@ BEGIN_EVENT_TABLE(CSpriteSetView,IDocView)
     EVT_CLOSE(CSpriteSetView::OnClose)
     //EVT_ERASE_BACKGROUND(CSpriteSetView::OnEraseBackground)
 
-    EVT_LEFT_DOWN(CSpriteSetView::OnLeftClick)
+    //EVT_LEFT_DOWN(CSpriteSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CSpriteSetView::OnRightClick)
+    EVT_MOUSE_EVENTS(CSpriteSetView::HandleMouse)
 
 END_EVENT_TABLE()
 
@@ -120,6 +121,30 @@ CSpriteSetView::~CSpriteSetView()
 {
     delete pContextmenu;
 }
+
+void CSpriteSetView::HandleMouse(wxMouseEvent& event)
+{
+    if (!event.LeftIsDown()) return;
+
+    int x=event.GetPosition().x;
+    int y=event.GetPosition().y;
+
+    const int tx=pSprite->Width();
+    const int ty=pSprite->Height();
+
+    int nSpritewidth=GetClientSize().GetWidth()/tx;
+
+    x/=tx;      
+    y/=ty;
+
+    int t=(y+ywin)*nSpritewidth+x;
+
+    if (t>pSprite->Count()) t=0;
+    
+    nCurframe=t;
+}
+
+    
 
 void CSpriteSetView::InitMenu()
 {
