@@ -85,15 +85,20 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     SetMenuBar(menubar);
 
     // --- Set up the text control ---
-    pTextctrl=new wxStyledTextCtrl(this,id_ed,position,size,wxSTC_STYLE_INDENTGUIDE);
+    pTextctrl=new wxStyledTextCtrl(this,id_ed,position,size,0);
+    pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
+    pTextctrl->SetProperty("fold","1");
 
     // TODO: User syntax saving.  -- khross
 
+    // dunno, the font sizes come out differently.  Compensating here.
+#ifdef WX232
     wxFont font(10, wxMODERN, wxNORMAL, wxNORMAL, false);
+#else
+    wxFont font(8, wxMODERN, wxNORMAL, wxNORMAL, false);
+#endif
     pTextctrl->StyleSetFont(wxSTC_STYLE_DEFAULT, font);
     pTextctrl->StyleClearAll();
-
-    pTextctrl->SetProperty("fold","1");
 
     // defaults
     pTextctrl->StyleSetForeground(0,  wxColour(0x80, 0x80, 0x80));  // whitespace
@@ -112,7 +117,6 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     pTextctrl->StyleSetBold(10, true);
     pTextctrl->StyleSetItalic(1,true);
 
-    pTextctrl->SetLexer(wxSTC_LEX_PYTHON);
     pTextctrl->SetKeyWords(0,
         "def lambda class return yield try raise except pass for while if else elif break continue "
         "global as import finally exec del print in is assert from and not or None"
@@ -127,11 +131,8 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     pTextctrl->SetMarginType        (foldmargin,wxSTC_MARGIN_SYMBOL);
     pTextctrl->SetMarginSensitive   (foldmargin,true);
     pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
-    pTextctrl->MarkerDefine         (wxSTC_MARKNUM_FOLDEROPEN,wxSTC_MARK_MINUS);
-    pTextctrl->MarkerDefine         (wxSTC_MARKNUM_FOLDER,wxSTC_MARK_PLUS);
     pTextctrl->SetModEventMask      (wxSTC_MOD_CHANGEFOLD);
-    pTextctrl->SetFoldFlags         (16);
-
+ 
     if (fname)
     {
         File f;
