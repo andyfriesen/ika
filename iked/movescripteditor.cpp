@@ -58,16 +58,16 @@ void CMovescriptEditor::InitControls()
     pUp         =new wxTextCtrl(this,-1,"",wxPoint(column[1],line[8]),editsize);
     pDown       =new wxTextCtrl(this,-1,"",wxPoint(column[3],line[8]),editsize);
 
-    new wxStaticText(this,-1,"Moving right",        wxPoint(column[0],line[0]),labelsize);
-    new wxStaticText(this,-1,"Moving left",         wxPoint(column[0],line[1]),labelsize);
-    new wxStaticText(this,-1,"Moving up",           wxPoint(column[0],line[2]),labelsize);
-    new wxStaticText(this,-1,"Moving down",         wxPoint(column[0],line[3]),labelsize);
+    new wxStaticText(this,-1,"Moving up",           wxPoint(column[0],line[0]),labelsize);
+    new wxStaticText(this,-1,"Moving down",         wxPoint(column[0],line[1]),labelsize);
+    new wxStaticText(this,-1,"Moving left",         wxPoint(column[0],line[2]),labelsize);
+    new wxStaticText(this,-1,"Moving right",        wxPoint(column[0],line[3]),labelsize);
 
     new wxStaticText(this,-1,"Description",         wxPoint(column[0],line[4]),labelsize);
     new wxStaticText(this,-1,"Hot X",               wxPoint(column[0],line[5]),labelsize);
     new wxStaticText(this,-1,"Hot Y",               wxPoint(column[2],line[5]),labelsize);
-    new wxStaticText(this,-1,"Hot Width",           wxPoint(column[0],line[6]),labelsize);
-    new wxStaticText(this,-1,"Hot Height",          wxPoint(column[2],line[6]),labelsize);
+    new wxStaticText(this,-1,"Hot width",           wxPoint(column[0],line[6]),labelsize);
+    new wxStaticText(this,-1,"Hot height",          wxPoint(column[2],line[6]),labelsize);
 
     new wxStaticText(this,-1,"Idle left",           wxPoint(column[0],line[7]),labelsize);
     new wxStaticText(this,-1,"Idle right",          wxPoint(column[2],line[7]),labelsize);
