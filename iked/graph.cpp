@@ -14,8 +14,32 @@ CImage* CGraphFactory::CreateImage(const CPixelMatrix& src)
 CGraphFrame::CGraphFrame(wxWindow* parent)
 :   wxGLCanvas(parent,(wxGLCanvas*)0)
 {
+    int w,h;
+    GetSize(&w,&h);
+
     Show();
-    SwapBuffers();
+
+    SetCurrent();
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
+
+ //   glEnable(GL_SCISSOR_TEST);
+   // glScissor(0,0,w,h);
+    glEnable(GL_TEXTURE_2D);
+    glShadeModel(GL_SMOOTH);
+    glEnable(GL_BLEND);
+    glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+
+    glViewport(0,0,w,h);
+    glMatrixMode(GL_PROJECTION);
+    glLoadIdentity();
+    glOrtho(0.0f,w,h,0.0f,-1.0f,1.0f);
+    
+    glMatrixMode(GL_MODELVIEW);
+    glLoadIdentity();
 }
 
 CGraphFrame::~CGraphFrame()
@@ -26,7 +50,6 @@ void CGraphFrame::Rect(int x,int y,int w,int h,RGBA colour)
 {
     SetCurrent();
 
-    glBindTexture(GL_TEXTURE_2D,-1);
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
 
     glBegin(GL_LINE_LOOP);
@@ -43,7 +66,7 @@ void CGraphFrame::RectFill(int x,int y,int w,int h,RGBA colour)
 {
     SetCurrent();
 
-    glBindTexture(GL_TEXTURE_2D,-1);
+    glBindTexture(GL_TEXTURE_2D,0);
     glColor4ub(colour.r,colour.g,colour.b,colour.a);
 
     glBegin(GL_QUADS);
