@@ -34,6 +34,22 @@ LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM 
     case WM_DESTROY:           
 	PostQuitMessage(0);				        // send a WM_QUIT to the message queue
 	break;
+
+    case WM_LBUTTONDOWN:
+        e->input.mouseb|=1;
+        return 0;
+
+    case WM_LBUTTONUP:
+        e->input.mouseb&=~1;
+        return 0;
+
+    case WM_RBUTTONDOWN:
+        e->input.mouseb|=2;
+        return 0;
+
+    case WM_RBUTTONUP:
+        e->input.mouseb&=~2;
+        return 0;
 	
     default:							// for messages that we don't deal with           
 	return DefWindowProc(hwnd, message, wParam, lParam);

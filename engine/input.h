@@ -29,7 +29,6 @@ private:
     // DirectInput objects
     LPDIRECTINPUT       lpdi;
     LPDIRECTINPUTDEVICE keybd;
-    LPDIRECTINPUTDEVICE mouse;
     // LPDIRECTINPUTDEVICE joystick;
     
     // key buffer
@@ -48,7 +47,7 @@ public:
     Input();                                                // constructor
     ~Input();                                               // destructor
     
-    int        Init(HINSTANCE hinst,HWND hwnd);
+    int     Init(HINSTANCE hinst,HWND hwnd);
     void    ShutDown();
     
     void    Poll();                                         // updates key queue and key array

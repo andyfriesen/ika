@@ -51,7 +51,6 @@ Input::Input()
 {
     lpdi=NULL;
     keybd=NULL;
-    mouse=NULL;
     
     for (int i=0; i<nControls; i++)
         control[i]=false;
@@ -118,16 +117,6 @@ int Input::Init(HINSTANCE hinst,HWND hwnd)
         
         keybd->Acquire();
         kb_start=kb_end=0;
-        
-        // ---------------mouse-----------------
-        result=lpdi->CreateDevice(GUID_SysMouse,&mouse,NULL);
-        if (FAILED(result)) throw "DI:CreateMouseDevice";
-        
-        result=mouse->SetDataFormat(&c_dfDIMouse);
-        if (FAILED(result)) throw "DI:SetMouseDataFormat";
-        
-        result=mouse->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-        if (FAILED(result)) throw "DI:SetMouseCoOpLevel";
     }
     catch (const char* s)
     {
@@ -152,13 +141,7 @@ void Input::ShutDown()
         keybd->Release();
         keybd=NULL;
     }
-    if (mouse!=NULL)
-    {
-        mouse->Unacquire();
-        mouse->Release();
-        mouse=NULL;
-    }
-    // etc... for mouse/joystick/etc...
+    // etc... for joystick/etc...
     lpdi->Release();
     lpdi=NULL;
 }
@@ -291,35 +274,24 @@ char Input::Scan2ASCII(int scancode)
 void Input::MoveMouse(int x,int y)
 {
     mousex=x; mousey=y;
+
+    SetCursorPos(x,y);
 }
 
 void Input::UpdateMouse()
 {
-    DIMOUSESTATE dims;
-    HRESULT result;
-    
-    if (!mouse) 
-    {
-        log("input::updatemouse: mouse object is null!");
-        return;
-    }
-    mouse->Acquire();
-    result=mouse->GetDeviceState(sizeof(dims),&dims);
-    if (!Test(result,"DirectInput Error: Error reading the mouse")) return;
-    
-    mousex+=dims.lX;
-    mousey+=dims.lY;
-    
+    POINT p;
+
+    GetCursorPos(&p);
+    ScreenToClient(hWnd,&p);
+
+    mousex=p.x;
+    mousey=p.y;
+
     if (mousex<mclip.left) mousex=mclip.left;
     if (mousex>mclip.right) mousex=mclip.right;
     if (mousey<mclip.top) mousey=mclip.top;
     if (mousey>mclip.bottom) mousey=mclip.bottom;
-    
-    mouseb=0;
-    if (dims.rgbButtons[0]&0x80) mouseb|=1;
-    if (dims.rgbButtons[1]&0x80) mouseb|=2;
-    if (dims.rgbButtons[2]&0x80) mouseb|=4;
-    if (dims.rgbButtons[3]&0x80) mouseb|=8;
 }
 
 void Input::ClipMouse(int x1,int y1,int x2,int y2)
@@ -332,15 +304,10 @@ void Input::ClipMouse(int x1,int y1,int x2,int y2)
 
 void Input::HideMouse()
 {
-    HRESULT result=mouse->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_EXCLUSIVE);
-    if (FAILED(result))
-        log("input.hidemouse failed");
+    ShowCursor(false);
 }
 
 void Input::ShowMouse()
 {
-    HRESULT result=mouse->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-    
-    if (FAILED(result))
-        log("input.showmouse failed");
+    ShowCursor(true);
 }

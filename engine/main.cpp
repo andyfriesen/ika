@@ -166,7 +166,8 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
         return;
     }
     input.ClipMouse(0,0,cfg.GetInt("xres"),cfg.GetInt("yres"));
-    if (cfg.GetInt("fullscreen"))        input.HideMouse();
+    //if (cfg.GetInt("fullscreen"))
+        input.HideMouse();
     // Clear key bindings
     ZeroMemory(pBindings,nControls*sizeof(void*));
     logok();

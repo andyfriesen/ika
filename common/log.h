@@ -8,7 +8,7 @@ This also comprises of some handy dandy debugging tricks I've accumulated.
 #include <windows.h>
 
 //#ifdef _DEBUG
-#define _CALLBACK
+//#define _CALLBACK
 //#endif
 
 extern void log(const char *s,...);
