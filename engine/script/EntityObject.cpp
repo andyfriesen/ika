@@ -115,9 +115,14 @@ namespace Script
             SET(Speed)              { self->ent->nSpeed = PyInt_AsLong(value); return 0; }
             SET(Direction)
             {
-                self->ent->direction = (Direction)PyInt_AsLong(value);    return 0;
-                self->ent->SetAnimScript(self->ent->pSprite->Script((int)self->ent->direction + self->ent->bMoving ? 0 : 8));
+                self->ent->direction = (Direction)PyInt_AsLong(value);
+
+                int i = (int)self->ent->direction;
+                if (!self->ent->bMoving) i += 8;
+                self->ent->SetAnimScript(self->ent->pSprite->Script(i));
+
                 self->ent->UpdateAnimation();
+                return 0;
             }
 
             SET(SpecFrame)          { self->ent->nSpecframe = PyInt_AsLong(value); return 0; }
@@ -132,9 +137,12 @@ namespace Script
             SET(Sprite)
             {
                 engine->sprite.Free(self->ent->pSprite);
-
                 self->ent->pSprite=engine->sprite.Load(PyString_AsString(value), engine->video);
-                self->ent->SetAnimScript(self->ent->pSprite->Script((int)self->ent->direction + self->ent->bMoving ? 0 : 8));
+
+                int i = (int)self->ent->direction;
+                if (!self->ent->bMoving) i += 8;
+                self->ent->SetAnimScript(self->ent->pSprite->Script(i));
+                self->ent->UpdateAnimation();
                 return 0;
             }
 #undef SET
