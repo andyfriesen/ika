@@ -14,13 +14,16 @@ bool IsPowerOf2(uint i)
     return (i & (i - 1)) == 0;
 }
 
+// http://bob.allegronetwork.com/prog/tricks.html#nextpowerof2
 uint NextPowerOf2(uint i)
 {
-    if (IsPowerOf2(i)) return i;
-    
-    uint j = 1;
-    while ((j <<= 1) < i);
-    return j;
+    i--;
+    i |= (i >> 1);
+    i |= (i >> 2);
+    i |= (i >> 4);
+    i |= (i >> 8);
+    i |= (i >> 16);
+    i++;
 }
 
 int sgn(int x)
