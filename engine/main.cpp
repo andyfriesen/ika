@@ -524,7 +524,7 @@ bool CEngine::DetectMapCollision(int x,int y,int w,int h)
     return false;
 }
 
-CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h)
+CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h,bool wantobstructable)
 // returns the entity colliding with the specified entity, or 0 if none.
 // Note that passing 0 for ent is valid, indicating that you simply want to know if there are any entities in a given area
 {
@@ -535,7 +535,8 @@ CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,i
         CEntity& e=**i;
         CSprite& s=*e.pSprite;
 
-        if (&e==ent || !e.bEntobs)          continue;
+        if (wantobstructable && !e.bIsobs)   continue;
+        if (&e==ent)                         continue;         // the entity is colling with itself. ;P  That's not overly useful.
         
         if (x1              >= e.x+s.nHotw)  continue;
         if (y1              >= e.y+s.nHoth)  continue;

@@ -11,6 +11,7 @@
 #include "codeview.h"
 #include "configdlg.h"
 #include "textview.h"
+#include "imageview.h"
 
 #include <wx\resource.h>
 #include "controller.h"

@@ -79,7 +79,7 @@ public:                                                                         
     
     // Entity handling
     bool      DetectMapCollision(int x1,int y1,int w,int h);                        //!< returns true if there is a map obstruction within the passed rect
-    CEntity*  DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h);  //!< if an obstructable entity is within the rect, return it, else return NULL
+    CEntity*  DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h,bool wantobstructable=false);  //!< if an entity is within the rect, return it, else return NULL.  If wantobstructable is true, then entities whose bIsobs attribute is unset will be ignored.
     void      ProcessEntities();                                                    //!< one tick of AI for each entity
   
     void      TestActivate(const CEntity& player);                                  //!< checks to see if the player has talked to an entity, stepped on a zone, etc...

@@ -159,14 +159,16 @@ Direction CEntity::MoveDiagonally(Direction d)
     int newx=x + (d2==face_left ? -1 : 1);
     int newy=y + (d1==face_up   ? -1 : 1);
 
+    CEntity* pEnt=0;
+
     if (bMapobs && engine.DetectMapCollision(x,newy,pSprite->nHotw,pSprite->nHoth))
          d1=face_nothing;
-    else if (bEntobs && engine.DetectEntityCollision(this,x,newy,pSprite->nHotw,pSprite->nHoth))
-         d1=face_nothing;
+    else if (bEntobs && engine.DetectEntityCollision(this,x,newy,pSprite->nHotw,pSprite->nHoth,true))
+            d1=face_nothing;
 
     if (bMapobs && engine.DetectMapCollision(newx,y,pSprite->nHotw,pSprite->nHoth))
          d2=face_nothing;
-    else if (bEntobs && engine.DetectEntityCollision(this,newx,y,pSprite->nHotw,pSprite->nHoth))
+    else if (bEntobs && engine.DetectEntityCollision(this,newx,y,pSprite->nHotw,pSprite->nHoth,true))
          d2=face_nothing;
 
     if (d1==face_nothing)
@@ -192,15 +194,24 @@ Direction CEntity::MoveDiagonally(Direction d)
 
 void CEntity::Move(Direction d)
 {
-    d=MoveDiagonally(d);    // bleh.  TODO: make this more elegant.
+    Direction movedir=MoveDiagonally(d);    // bleh.  TODO: make this more elegant.
+    Direction olddir=direction;
+
+    direction=d;
+
+    if (direction!=olddir || !bMoving)
+    {
+        bMoving=true;
+        SetAnimScript(pSprite->Script((int)direction));
+    }
 
     int newx=x,newy=y;
 
-    switch (d)
+    switch (movedir)
     {
     case face_up:           newy--; break;
     case face_down:         newy++; break;
-    case face_left:         newx--; break;
+    case face_left:         newx--; break;  
     case face_right:        newx++; break;
     case face_nothing:      return;
        
@@ -227,13 +238,6 @@ void CEntity::Move(Direction d)
     }
 
     x=newx; y=newy;
-
-    if (direction!=d || !bMoving)
-    {
-        bMoving=true;
-        direction=d;
-        SetAnimScript(pSprite->Script((int)direction));
-    }
 }
 
 Direction CEntity::Wander()
