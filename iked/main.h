@@ -5,10 +5,6 @@
 #include <string>
 #include <wx/wx.h>
 
-//#include "map.h"
-//#include "vsp.h"
-//#include "resource.h"
-
 //////////////////////////////////////////
 
 // TODO: make this user configurable?
@@ -53,6 +49,7 @@ public:
     void NewMap(wxCommandEvent& event);
     void NewScript(wxCommandEvent& event);
     void OnOpen(wxCommandEvent& event);
+    void Bleh(wxCommandEvent& event);
 
     void Open(const std::string& fname);
 

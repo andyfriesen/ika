@@ -1,25 +1,31 @@
-
+/*
 #ifndef TILESET_H
 #define TILESET_H
 
-#include <wx\wx.h>
 #include "types.h"
-class VSP;
+#include <wx\wx.h>
 
+//#include "vsp.h"
+class VSP;
+class CPixelMatrix;
+
+template <class Image>
 class CTileSet
 {
     VSP*                pVsp;
     vector<bool>        bAltered;   // true if a tile has been tweaked
-    vector<wxBitmap>    bitmaps;    // hardware dependant copies of the tiles
+    vector<Image*>      bitmaps;    // hardware dependant copies of the tiles
 
     void Sync();                    // updates bitmaps to mirror the VSP
+    void FreeBitmaps();             // Deallocates the bitmaps vector
 
 public:
 
     CTileSet();
+    ~CTileSet();
 
-    void Load(const char* fname);
-    void Save(const char* fname);
+    bool Load(const char* fname);
+    bool Save(const char* fname);
 
     const CPixelMatrix&   GetTile(int tileidx);                 // returns the pixel data for the tile
     void SetTile(int tileidx,const CPixelMatrix& newtile);      // assigns the pixel data for the tile
@@ -29,4 +35,4 @@ public:
     // TODO: methods for inserting/deleting tiles, and moving them around
 };
 
-#endif
+#endif*/

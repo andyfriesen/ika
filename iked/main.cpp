@@ -4,6 +4,7 @@
 #include "resource.h"
 #include "log.h"
 
+#include "mapview.h"
 #include "projectview.h"
 #include "codeview.h"
 
