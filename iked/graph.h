@@ -7,6 +7,7 @@
 
 #include "types.h"
 #include "pixel_matrix.h"
+#include <set>
 #include <wx\wx.h>
 #include <wx\glcanvas.h>
 
@@ -20,6 +21,15 @@ class CImage;
 
 class CGraphFrame : public wxGLCanvas
 {
+    // We keep a list of all open CGraphFrame instances so that they can all have the same OpenGL context.
+    // When creating a new instance, the constructor uses a random element from this set, if there is one.
+    // If not, then it creates a new OpenGL context.
+    
+    // One odd point is that every CImage is dependant on a GL context.  So if any CImages exist, while
+    // there is no context, things might get icky.  However, this does not make sense, as CImages exist
+    // only so that they may be blitted on CGraphFrames.  Just something to keep in mind.
+
+    static std::set<CGraphFrame*>  pInstances;
 public:
 
     CGraphFrame(wxWindow* parent);

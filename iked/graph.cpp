@@ -9,8 +9,10 @@ BEGIN_EVENT_TABLE(CGraphFrame,wxGLCanvas)
     EVT_SIZE(CGraphFrame::OnSize)
 END_EVENT_TABLE()
 
+std::set<CGraphFrame*> CGraphFrame::pInstances;
+
 CGraphFrame::CGraphFrame(wxWindow* parent)
-:   wxGLCanvas(parent,(wxGLCanvas*)0)
+:   wxGLCanvas(parent,pInstances.empty() ? (wxGLCanvas*)0 : *pInstances.begin())
 {
     int w,h;
     GetClientSize(&w,&h);
@@ -35,10 +37,13 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
+    
+    pInstances.insert(this);
 }
 
 CGraphFrame::~CGraphFrame()
 {
+    pInstances.erase(this);
 }
 
 void CGraphFrame::OnSize(wxSizeEvent& event)
