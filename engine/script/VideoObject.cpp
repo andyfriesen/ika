@@ -113,6 +113,11 @@ namespace Script
                 "Grabs a rectangle from the screen, copies it to a canvas, and returns it."
             },
 
+            {   "ClearScreen",  (PyCFunction)Video_ClearScreen, METH_NOARGS,
+                "ClearScreen()\n\n"
+                "Clears the screen. (with blackness)"
+            },
+
             {   "ShowPage",     (PyCFunction)Video_ShowPage, METH_NOARGS,
                 "ShowPage()\n\n"
                 "Flips the back and front video buffers.  This must be called after the screen\n"
@@ -416,6 +421,14 @@ namespace Script
             }
 
             return ::Script::Canvas::New(c);
+        }
+
+        METHOD1(Video_ClearScreen)
+        {
+            self->video->ClearScreen();
+
+            Py_INCREF(Py_None);
+            return Py_None;
         }
 
         METHOD1(Video_ShowPage)

@@ -54,6 +54,9 @@ namespace Video
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage() = 0;
 
+        /// Clears the screen!  With blackness!
+        virtual void ClearScreen() = 0;
+
         /// Sets the blending mode.
         /// @returns The old blending mode.
         virtual BlendMode SetBlendMode(BlendMode bm) = 0;

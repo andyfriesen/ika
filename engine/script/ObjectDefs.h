@@ -316,6 +316,7 @@ namespace Script
         METHOD(Video_ClipScreen, VideoObject);
         METHOD(Video_GrabImage, VideoObject);
         METHOD(Video_GrabCanvas, VideoObject);
+        METHOD1(Video_ClearScreen, VideoObject);
         METHOD1(Video_ShowPage, VideoObject);
         METHOD(Video_SetResolution, VideoObject);
 

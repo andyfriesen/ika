@@ -66,7 +66,7 @@ namespace OpenGL
         glViewport(0, 0, xres, yres);
 #endif
 
-        glClearColor(0, 0, 0, 0);
+        glClearColor(0, 0, 0, 1);
         glClear(GL_COLOR_BUFFER_BIT);
 
         glDisable(GL_DEPTH_TEST);
@@ -361,6 +361,11 @@ namespace OpenGL
 
         fps.Update();
         SDL_GL_SwapBuffers();
+        glClear(GL_COLOR_BUFFER_BIT);
+    }
+
+    void Driver::ClearScreen()
+    {
         glClear(GL_COLOR_BUFFER_BIT);
     }
 
@@ -733,9 +738,6 @@ namespace OpenGL
         // Way fast, since there are no pixels going from the video card to system memory.
         // They just get copied from the screen to a texture (which also video memory)
 
-        //y1 = _yres - y1;
-        //y2 = _yres - y2;
-
         // clip
         if (x1 > x2) swap(x1, x2);
         if (y1 > y2) swap(y1, y2);
@@ -745,12 +747,16 @@ namespace OpenGL
         int h = y2 - y1;
         if (w < 0 || h < 0) return 0;
 
+        if (_doubleSize)
+            y2 -= _yres;
+
         uint texwidth = NextPowerOf2(w);
         uint texheight = NextPowerOf2(h);
         uint handle;
         glGenTextures(1, &handle);
         SwitchTexture(handle);
         glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x1, _yres - y2, texwidth, texheight, 0);
+
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 

@@ -73,6 +73,9 @@ namespace OpenGL
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage();
 
+        /// Clears the screen!  With blackness!
+        virtual void ClearScreen();
+
         /// Sets the current blend mode.
         virtual Video::BlendMode SetBlendMode(Video::BlendMode bm);
 
