@@ -21,7 +21,7 @@ class File
 
     // Directory structure handling things
 private:
-    static vector < SDirectoryInfo> directoryinfo;
+    static vector<SDirectoryInfo> directoryinfo;
     string GetRealPath(const string& fname);
 public:
     static void AddPath(string sExtension, string sPath);

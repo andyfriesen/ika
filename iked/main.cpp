@@ -106,7 +106,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     GetStatusBar()->SetFieldsCount(2);
     GetStatusBar()->SetStatusWidths(2, widths);
 
-    vector < wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
+    vector<wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
     wxAcceleratorTable table(accel.size(), &*accel.begin());
 
     SetAcceleratorTable(table);
@@ -152,7 +152,9 @@ void CMainWnd::NewSprite(wxCommandEvent& event)
 
 void CMainWnd::NewTileSet(wxCommandEvent& event)
 {
-
+    NewSpriteDlg dlg(this);
+    if (dlg.ShowModal() == wxID_OK)
+        OpenDocument(new CTileSetView(this, dlg.width, dlg.height));
 }
 
 void CMainWnd::OnOpen(wxCommandEvent& event)
@@ -335,9 +337,9 @@ wxMenuBar* CMainWnd::CreateBasicMenu()
     return menu;
 }
 
-vector < wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
+vector<wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
 {
-    vector < wxAcceleratorEntry> accel;
+    vector<wxAcceleratorEntry> accel;
     accel.resize(2);
     accel[0].Set(wxACCEL_CTRL, (int)'O', id_fileopen);
     accel[1].Set(wxACCEL_CTRL, (int)'Q', id_filequit);

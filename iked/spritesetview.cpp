@@ -412,7 +412,7 @@ void CSpriteSetView::InitMenu()
 
 void CSpriteSetView::InitAccelerators()
 {
-    vector < wxAcceleratorEntry> accel = _parent->CreateBasicAcceleratorTable();
+    vector<wxAcceleratorEntry> accel = _parent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
     accel.resize(accel.size()+4);

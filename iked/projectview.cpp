@@ -1,3 +1,7 @@
+#include <wx/wx.h>
+#include <wx/imaglist.h>
+#include <wx/filename.h>
+
 #include "projectview.h"
 #include "main.h"
 #include "misc.h"
@@ -182,9 +186,12 @@ void ProjectView::OnDelete(wxCommandEvent& event)
 void ProjectView::OnRename(wxCommandEvent& event)
 {
     wxTreeItemId id = _selected->GetId();
-    
-    EditLabel(id);
-    _changed = true;
+    Leaf* leaf = (Leaf*)GetItemData(id);
+    if (leaf->type == t_folder || leaf->type == t_project)    
+    {
+        EditLabel(id);
+        _changed = true;
+    }
 }
 
 void ProjectView::OnAdd(wxCommandEvent& event)
@@ -327,12 +334,11 @@ void ProjectView::Save(const std::string& fname)
             }
             else
             {
-                string name = Path::Directory(leaf->name, Path::Directory(tree->GetFileName()));
-                name.append(Path::Filename(leaf->name));
-                if (name[0] == '\\')
-                    name.erase(0, 1);    // nuke the leading slash
+                wxFileName name(leaf->name.c_str());
+                if (name.IsAbsolute())
+                    name.MakeRelativeTo(tree->GetProjectPath().c_str());
 
-                fprintf(f, "%s   FILE\n", name.c_str());
+                fprintf(f, "%s   FILE\n", name.GetFullPath().c_str());
             }
         }
     };
@@ -391,15 +397,18 @@ void ProjectView::Load(const std::string& fname)
                 if (p!=std::string::npos)
                 {
                     string name = Trim(sLine.substr(0, p - 1));
-                    string path = Path::Directory(tree->GetFileName()) + name;
 
-                    tree->AddItem(parentid, Path::Filename(name), path);
+                    wxFileName fullName(name.c_str());
+                    if (fullName.IsAbsolute())
+                        fullName.InsertDir(0, tree->GetProjectPath().c_str());
+
+                    tree->AddItem(parentid, Path::Filename(name), fullName.GetFullPath().c_str());
                 }
             }
         }
     };
 
-    wxSetWorkingDirectory(Path::Directory(fname).c_str());
+    wxFileName::SetCwd(wxFileName(fname.c_str()).GetPath());
     
     _fileName = fname;
     FILE* f = fopen(_fileName.c_str(), "r");
@@ -430,4 +439,11 @@ void ProjectView::New()
 
     _changed = false;
     this->_fileName = "";
+}
+
+std::string ProjectView::GetProjectPath() const
+{
+    wxFileName projectPath(_fileName.c_str());
+    projectPath.MakeRelativeTo(wxFileName::GetCwd());
+    return projectPath.GetPath(true).c_str();
 }

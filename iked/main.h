@@ -84,7 +84,7 @@ public:
     It merely promises random access at O(1).  Fix if it becomes an issue. (unlikely)
 
 */
-    vector < wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
+    vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
 
 private:
     wxToolBar* CreateBasicToolBar();
@@ -98,9 +98,9 @@ public:
      and nukes things that no longer need to be in memory
 */
 
-    CController < Map> map;
-    CController < CTileSet> vsp;
-    CController < CSpriteSet> spriteset;
+    CController<Map> map;
+    CController<CTileSet> vsp;
+    CController<CSpriteSet> spriteset;
     // TODO: fonts, scripts, (?) anything else that comes to mind
 
 public:

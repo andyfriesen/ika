@@ -49,12 +49,12 @@ public:
     };
     
 private:
-    vector < Canvas>   tiles;   // tile images
+    vector<Canvas>   tiles;   // tile images
     
     char sDesc[64];
     char name[64];		    // the VSPs filename
     
-    vector < AnimState>  vspanim;
+    vector<AnimState>  vspanim;
     
     int nTilex, nTiley;
     

@@ -15,6 +15,8 @@ namespace
         id_filesave,
         id_filesaveas,
         id_fileclose,
+        id_importtiles,
+
         id_deletetile,
         id_inserttile,
         id_copytile,
@@ -64,6 +66,10 @@ BEGIN_EVENT_TABLE(CTileSetView, IDocView)
     EVT_LEFT_DOWN(CTileSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CTileSetView::OnRightClick)
     EVT_MOUSEWHEEL(CTileSetView::OnMouseWheel)
+
+    EVT_MENU(id_filesave, CTileSetView::OnSave)
+    EVT_MENU(id_filesaveas, CTileSetView::OnSaveAs)
+    EVT_MENU(id_importtiles, CTileSetView::OnImportTiles)
 
     EVT_MENU(id_edittile, CTileSetView::OnEditTile)
 
@@ -122,6 +128,10 @@ void CTileSetView::Init()
     filemenu->Insert(4, new wxMenuItem(filemenu, id_filesaveas, "&Save As", "Save the tileset to disk under a new name."));
     filemenu->Insert(5, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the tileset window."));
     menubar->Append(filemenu, "&File");
+
+    wxMenu* tilesetmenu = new wxMenu;
+    tilesetmenu->Append(id_importtiles, "Import from image...", "");
+    menubar->Append(tilesetmenu, "Tileset");
 
     wxMenu* viewmenu = new wxMenu;
     viewmenu->Append(id_zoomnormal, "Zoom %&100", "");
@@ -313,15 +323,15 @@ void CTileSetView::Render()
     {
         for (int x = 0; x < nTilewidth; x++)
         {
+            if (nTile >= pTileset->Count())
+                goto breakloop;
+
             pGraph->ScaleBlit(pTileset->GetImage(nTile),
                 x * tx, y * ty,
                 tx, ty,
                 false);
 
             nTile++;
-
-            if (nTile >= pTileset->Count())
-                goto breakloop;
         }
     }
 breakloop:

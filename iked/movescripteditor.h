@@ -36,7 +36,7 @@ class CMovescriptEditor : public wxDialog
 
         // controls
 
-        vector < wxTextCtrl*>     movescript;
+        vector<wxTextCtrl*>     movescript;
         wxTextCtrl*             pDesc;
         wxTextCtrl*             pHotx;
         wxTextCtrl*             pHoty;

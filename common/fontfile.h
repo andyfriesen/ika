@@ -24,8 +24,8 @@ public:
     
 private:
     // ------------------ Data ---------------------
-    std::vector < SSubSet>    set;                            //!< font subsets.
-    std::vector < Canvas>       glyph;                  //!< Actual font glyphs.
+    std::vector<SSubSet>    set;                            //!< font subsets.
+    std::vector<Canvas>       glyph;                  //!< Actual font glyphs.
 
     int nWidth, nHeight;                                     //!< For convenience only.  The width and height of the largest characters in the font.
     

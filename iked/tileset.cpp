@@ -34,6 +34,9 @@ bool CTileSet::Save(const char* fname)
 
 void CTileSet::New(int width, int height)
 {
+    if (!pVsp)
+        pVsp = new VSP;
+
     pVsp->New(width, height, 0);
     SyncAll();
 }

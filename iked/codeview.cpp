@@ -116,7 +116,7 @@ void CCodeView::InitTextControl()
 
 void CCodeView::InitAccelerators()
 {
-    vector < wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
+    vector<wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
 
     int p = accel.size();                 // where we start appending to the table
     accel.resize(accel.size()+2);

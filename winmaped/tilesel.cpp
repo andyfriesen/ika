@@ -203,7 +203,7 @@ void CTileSel::SaveVSP()
 // kudos to JL for this.  I just ported it from Python.
 bool CTileSel::ExportPNG(const char* fname)
 {
-    const int nTilewidth = 32;
+    const int nTilewidth = 18;
     int nTileheight = (pVsp->NumTiles() + nTilewidth - 1) / nTilewidth;
     int nPixwidth = nTilewidth * pVsp->Width();
     int nPixheight= nTileheight* pVsp->Height();

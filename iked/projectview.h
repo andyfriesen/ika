@@ -2,9 +2,7 @@
 #define PROJECTVIEW_H
 
 #include "types.h"
-#include <wx\wx.h>
 #include <wx\treectrl.h>
-#include <wx\imaglist.h>
 #include "docview.h"
 
 class CMainWnd; // in main.cpp / h
@@ -64,6 +62,7 @@ public:
     void New();
 
     const std::string& GetFileName() const { return _fileName; }
+    std::string GetProjectPath() const;
 
     DECLARE_EVENT_TABLE()
 };

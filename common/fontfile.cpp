@@ -135,8 +135,8 @@ bool CFontFile::Load32bppFont(File& f)
             set[nSet].nGlyphtbl[j]=i[j];
     }
     
-    std::vector < int>	nGlyphwidth;
-    std::vector < int>	nGlyphheight;
+    std::vector<int>	nGlyphwidth;
+    std::vector<int>	nGlyphheight;
     int nGlyphdatasize = 0;
 
     nWidth = nHeight = 0;

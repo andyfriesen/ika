@@ -1,5 +1,9 @@
-// Note to self: Tweak this so that it uses the new CGraphFrame zooming stuff, and not its present hacked crap.
-// Further note: delete these notes afterwards.
+#include <list>
+#include <wx/wx.h>
+#include <wx/laywin.h>
+#include <wx/sashwin.h>
+#include <wx/checklst.h>
+#include <wx/filename.h>
 
 #include "mapview.h"
 #include "main.h"
@@ -13,11 +17,6 @@
 #include "tilesetview.h"
 #include "vsp.h"
 #include <gl\glu.h>
-
-#include <list>
-#include "wx\laywin.h"
-#include "wx\sashwin.h"
-#include "wx\checklst.h"
 
 /*
 
@@ -203,7 +202,7 @@ CMapView::CMapView(CMainWnd* parent, const string& name)
 
 void CMapView::InitAccelerators()
 {
-    vector < wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
+    vector<wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
     accel.resize(accel.size()+4);
@@ -283,11 +282,17 @@ void CMapView::Init()
 
     pGraph = new CMapFrame(pRightbar, this);
 
-    string sTilesetname = Path::Directory(name) + pMap->GetVSPName();   // get the absolute path to the map, and add it to the tileset filename
-    pTileset = pParentwnd->vsp.Load(sTilesetname);                      // load the VSP
+    wxString mapPath(wxFileName(name.c_str()).GetPath());
+    
+    // If it's not an absolute path, then it is assumed to be relative to the map file.
+    wxFileName tileSetName(pMap->GetVSPName().c_str());
+    if (!tileSetName.IsAbsolute())
+        tileSetName.InsertDir(0, mapPath);
+
+    pTileset = pParentwnd->vsp.Load(tileSetName.GetFullPath().c_str()); // load the VSP
     if (!pTileset)
     {
-        wxMessageBox(va("Unable to load tileset %s", sTilesetname.c_str()), "Error", wxOK | wxCENTER, this);
+        wxMessageBox(va("Unable to load tileset %s", tileSetName.GetFullPath().c_str()), "Error", wxOK | wxCENTER, this);
         Close();
         return;
     }
@@ -296,9 +301,12 @@ void CMapView::Init()
 
     for (int i = 0; i < pMap->NumEnts(); i++)
     {
-        // Get the absolute path.  I'm paranoid.
-        string sFilename = Path::Directory(name) + pMap->GetEntity(i).sCHRname;
-        pSprite.push_back(pParentwnd->spriteset.Load(sFilename));
+        // If it's not an absolute path, then it is assumed to be relative to the map file.
+        wxFileName spriteName(pMap->GetEntity(i).sCHRname.c_str());
+        if (!spriteName.IsAbsolute())
+            spriteName.InsertDir(0, mapPath);
+
+        pSprite.push_back(pParentwnd->spriteset.Load(spriteName.GetFullPath().c_str()));
     }
 
     // --
@@ -370,7 +378,7 @@ void CMapView::OnClose()
     pParentwnd->vsp.Release(pTileset);
 
     Log::Write("Releasing spritesets.");
-    for (std::vector < CSpriteSet*>::iterator i = pSprite.begin(); i!= pSprite.end(); i++)
+    for (std::vector<CSpriteSet*>::iterator i = pSprite.begin(); i!= pSprite.end(); i++)
         pParentwnd->spriteset.Release(*i);
     
     pSprite.clear();
@@ -385,7 +393,16 @@ void CMapView::OnClose()
 void CMapView::OnSave(wxCommandEvent& event)
 {
     if (name.length())
+    {
+        // More path junk.  Absolute paths need to be converted to relative paths, or the game won't run in any other directory.
+        wxFileName tileSetName(pMap->GetVSPName().c_str());
+        if (tileSetName.IsAbsolute())
+            tileSetName.MakeRelativeTo(wxFileName(name.c_str(), "", "").GetPath());
+
+        pMap->SetVSPName(tileSetName.GetFullPath().c_str());
+
         pMap->Save(name.c_str());
+    }
     else
         OnSaveAs(event);
 }
@@ -703,7 +720,7 @@ void CMapView::Render()
 }
 
 typedef std::pair < SMapEntity*, CSpriteSet*> EntSpritePair;
-typedef std::list < EntSpritePair> EntRenderList;
+typedef std::list<EntSpritePair> EntRenderList;
 
 void CMapView::RenderEntities()
 {

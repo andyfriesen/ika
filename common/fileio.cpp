@@ -9,7 +9,7 @@
     TODO: Pack files
 */
 
-vector < File::SDirectoryInfo> File::directoryinfo;
+vector<File::SDirectoryInfo> File::directoryinfo;
 
 string File::GetRealPath(const string& fname)
 {

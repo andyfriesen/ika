@@ -351,7 +351,7 @@ bool Map::Importv2Map(File& f)
     int nEnts = cTemp;
     
     // grargh
-    std::vector < int>    nScriptidx;
+    std::vector<int>    nScriptidx;
     nScriptidx.resize(nEnts);
     entity.resize(nEnts);
     
@@ -402,7 +402,7 @@ bool Map::Importv2Map(File& f)
         entity[i]=e2;
     }
     
-    std::vector < string>    sMovescripts;
+    std::vector<string>    sMovescripts;
     char nMovescripts;
     int nCount;
     f.Read(nMovescripts);

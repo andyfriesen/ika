@@ -76,7 +76,7 @@ private:
     Map*                pMap;
     CTileSet*           pTileset;
 
-    std::vector < CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
+    std::vector<CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
 
     int  nZoom;                                                     // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
 
