@@ -13,19 +13,20 @@ struct v_ImageObject
 
 PyMethodDef CScriptEngine::image_methods[] =
 {
-    {    "Load",         CScriptEngine::image_load,         1    },
-    {    "Copy",         CScriptEngine::image_copy,         1    },
-    {    "Blit",         CScriptEngine::image_blit,         1    },
-    {    "ScaleBlit",    CScriptEngine::image_scaleblit,    1    },
-    {    "CopyChannel",  CScriptEngine::image_copychannel,  1    },
-    {    "Clip",         CScriptEngine::image_clip,         1    },
-    {    "Line",         CScriptEngine::image_line,         1    },
-    {    "Rect",         CScriptEngine::image_rect,         1    },
-    {    "Ellipse",      CScriptEngine::image_ellipse,      1    },
-    {    "SetPixel",     CScriptEngine::image_setpixel,     1    },
-    {    "GetPixel",     CScriptEngine::image_getpixel,     1    },
-    {    "FlatPoly",     CScriptEngine::image_flatpoly,     1    },
-    {    NULL,    NULL }
+    {   "Load",         CScriptEngine::image_load,         1    },
+    {   "Copy",         CScriptEngine::image_copy,         1    },
+    {   "Blit",         CScriptEngine::image_blit,         1    },
+    {   "ScaleBlit",    CScriptEngine::image_scaleblit,    1    },
+    {   "DistortBlit",  CScriptEngine::image_distortblit,  1    },
+    {   "CopyChannel",  CScriptEngine::image_copychannel,  1    },
+    {   "Clip",         CScriptEngine::image_clip,         1    },
+    {   "Line",         CScriptEngine::image_line,         1    },
+    {   "Rect",         CScriptEngine::image_rect,         1    },
+    {   "Ellipse",      CScriptEngine::image_ellipse,      1    },
+    {   "SetPixel",     CScriptEngine::image_setpixel,     1    },
+    {   "GetPixel",     CScriptEngine::image_getpixel,     1    },
+    {   "FlatPoly",     CScriptEngine::image_flatpoly,     1    },
+    {   NULL,    NULL }
 };
 
 PyTypeObject CScriptEngine::imagetype;
@@ -159,6 +160,22 @@ METHOD(image_scaleblit)
     Py_INCREF(Py_None);
     return Py_None;
 }
+
+METHOD(image_distortblit)
+{
+    int x[4],y[4];
+    int trans=1;
+
+    if (!PyArg_ParseTuple(args,"(iiii)(iiii)|i:Image.DistortBlit",&x[0],&x[1],&x[2],&x[3],&y[0],&y[1],&y[2],&y[3],&trans))
+        return NULL;
+
+    gfxDistortBlitImage(
+        ((v_ImageObject*)self)->data,
+        x,y,trans!=0);
+
+    Py_INCREF(Py_None);
+    return Py_None;
+};
 
 METHOD(image_copychannel)
 {

@@ -9,26 +9,26 @@
 #include "log.h"
 
 // =====================================Interface=======================================
-int (*gfxGetVersion)();                                                                                        // returns the version # of the driver
+int (*gfxGetVersion)();                                                                                     // returns the version # of the driver
 
-bool (*gfxInit)(HWND hWnd,int xres,int yres,int bpp,bool fullscreen);                                        // sets up the graphics mode at the specified resolution (if you want, you can ignore bpp)
-void (*gfxShutdown)();                                                                                        // cleans up, IT IS THE APP'S RESPONSIBILITY TO FREE IMAGES, the DLL doesn't have to.
+bool (*gfxInit)(HWND hWnd,int xres,int yres,int bpp,bool fullscreen);                                       // sets up the graphics mode at the specified resolution (if you want, you can ignore bpp)
+void (*gfxShutdown)();                                                                                      // cleans up, IT IS THE APP'S RESPONSIBILITY TO FREE IMAGES, the DLL doesn't have to.
 bool (*gfxSwitchToFullScreen)();
 bool (*gfxSwitchToWindowed)();
 bool (*gfxSwitchResolution)(int x,int y);
 
-handle (*gfxCreateImage)(int x,int y);                                                                        // Creates a new image of the specified size, and returns the handle
-bool (*gfxFreeImage)(handle img);                                                                            // deallocates the image
-handle (*gfxCopyImage)(handle img);                                                                            // returns a copy of the image passed
+handle (*gfxCreateImage)(int x,int y);                                                                      // Creates a new image of the specified size, and returns the handle
+bool (*gfxFreeImage)(handle img);                                                                           // deallocates the image
+handle (*gfxCopyImage)(handle img);                                                                         // returns a copy of the image passed
 bool (*gfxCopyPixelData)(handle img,u32* data,int width,int height);                                        // Give it an array of RGBA quads, and this function will copy the whole of it to the specified image.
 bool (*gfxClipWnd)(int x1,int y1,int x2,int y2);
 
-bool (*gfxClipImage)(handle img,Rect& r);                                                                    // All subsequent blit ops will only blit the specified subsection
+bool (*gfxClipImage)(handle img,Rect& r);                                                                   // All subsequent blit ops will only blit the specified subsection
 handle (*gfxGetScreenImage)();
 
-bool (*gfxBlitImage)(handle img,int x,int y,bool transparent);                                                // blits the image on the current renderdest
+bool (*gfxBlitImage)(handle img,int x,int y,bool transparent);                                              // blits the image on the current renderdest
 bool (*gfxScaleBlitImage)(handle img,int x,int y,int width,int height,bool transparent);                    // scale blit
-bool (*gfxRotScaleImage)(handle img,int cx,int cy,float angle,int scale,bool transparent);                    // rotate/scale blit
+bool (*gfxDistortBlitImage)(handle img,int x[4],int y[4],bool transparent);                                  // rotate/scale blit
 bool (*gfxCopyChan)(handle src,int nSrcchan,handle dest,int nDestchan);
 bool (*gfxSetPixel)(handle img,int x,int y,int colour);
 int  (*gfxGetPixel)(handle img,int x,int y);
@@ -38,10 +38,10 @@ bool (*gfxEllipse)(handle img,int cx,int cy,int rx,int ry,int colour,bool filled
 bool (*gfxFlatPoly)(handle img,int x[3],int y[3],int colour[3]);
 // bool (*gfxTMapPoly)
 
-bool (*gfxSetRenderDest)(handle newrenderdest);                                                                // All subsequent blits go to this image, if it's valid
+bool (*gfxSetRenderDest)(handle newrenderdest);                                                             // All subsequent blits go to this image, if it's valid
 handle (*gfxGetRenderDest)();
 
-bool (*gfxShowPage)();                                                                                        // copies the back buffer to the front.
+bool (*gfxShowPage)();                                                                                      // copies the back buffer to the front.
 
 int  (*gfxImageWidth)(handle img);
 int  (*gfxImageHeight)(handle img);
@@ -87,7 +87,7 @@ bool SetUpGraphics(const char* dllname)
         
         Assign(gfxBlitImage             ,GetProcAddress(hGraph,"gfxBlitImage"));
         Assign(gfxScaleBlitImage        ,GetProcAddress(hGraph,"gfxScaleBlitImage"));
-        Assign(gfxRotScaleImage         ,GetProcAddress(hGraph,"gfxRotScaleImage"));
+        Assign(gfxDistortBlitImage      ,GetProcAddress(hGraph,"gfxDistortBlitImage"));
         Assign(gfxSetPixel              ,GetProcAddress(hGraph,"gfxSetPixel"));
         Assign(gfxGetPixel              ,GetProcAddress(hGraph,"gfxGetPixel"));
         Assign(gfxLine                  ,GetProcAddress(hGraph,"gfxLine"));

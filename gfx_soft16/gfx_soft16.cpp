@@ -463,7 +463,7 @@ bool gfxScaleBlitImage(handle img,int cx,int cy,int w,int h,bool transparent)
     return img->ScaleBlit(img,cx,cy,w,h);
 }
 
-bool gfxRotScaleImage(handle,int,int,float,int,bool)
+bool gfxDistortBlitImage(handle img,int x[4],int y[4],bool transparent)
 {
     return false;
 }

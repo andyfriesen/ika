@@ -326,17 +326,7 @@ bool gfxCopyPixelData(handle img,u32* data,int width,int height)
     {
         for (int x=0; x<width; x++)
         {
-/*            u32 c=*data++;
-            
-            int r,g,b,a;
-            a=c>>24;
-            r=(c>>16)&255;
-            g=(c>>8)&255;
-            b=c&255;*/
-
-            RGBA c=*data++;
-            
-            img->pData[y*width+x]=c;//(a<<24)|(b<<16)|(g<<8)|r;
+            img->pData[y*width+x]=*data++;
         }
     }   
 
@@ -456,7 +446,7 @@ bool gfxScaleBlitImage(handle img,int cx,int cy,int w,int h,bool transparent)
     return img->ScaleBlit(img,cx,cy,w,h);
 }
 
-bool gfxRotScaleImage(handle,int,int,float,int,bool)
+bool gfxDistortBlitImage(handle img,int x[4],int y[4],bool transparent)
 {
     return false;
 }

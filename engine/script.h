@@ -170,6 +170,7 @@ public:                                                        // too bad
     METHOD(image_copy);
     METHOD(image_blit);
     METHOD(image_scaleblit);
+    METHOD(image_distortblit);
     METHOD(image_copychannel);
     METHOD(image_clip);
     METHOD(image_line);

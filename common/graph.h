@@ -26,7 +26,7 @@ extern handle (*gfxGetScreenImage)();
 	  
 extern bool (*gfxBlitImage)(handle img,int x,int y,bool transparent);									// blits the image on the current renderdest
 extern bool (*gfxScaleBlitImage)(handle img,int x,int y,int width,int height,bool transparent);			// scale blit
-extern bool (*gfxRotScaleImage)(handle img,int cx,int cy,float angle,int scale,bool transparent);		// rotate/scale blit
+extern bool (*gfxDistortBlitImage)(handle img,int x[4],int y[4],bool transparent);		// rotate/scale blit
 extern bool (*gfxCopyChan)(handle src,int nSrcchan,handle dest,int nDestchan);
 extern bool (*gfxSetPixel)(handle img,int x,int y,int colour);
 extern int  (*gfxGetPixel)(handle img,int x,int y);

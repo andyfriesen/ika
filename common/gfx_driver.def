@@ -21,7 +21,7 @@ gfxClipImage
 gfxShowPage
 gfxBlitImage
 gfxScaleBlitImage
-gfxRotScaleImage
+gfxDistortBlitImage
 gfxCopyChan
 gfxSetPixel
 gfxGetPixel

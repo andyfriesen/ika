@@ -363,10 +363,10 @@ bool EXPORT gfxScaleBlitImage(handle img,int x,int y,int w,int h,bool transparen
     return true;
 }
 
-bool EXPORT gfxRotScaleImage(handle img,int cx,int cy,float angle,int scale,bool transparent)
+bool EXPORT gfxDistortBlitImage(handle img,int x[4],int y[4],bool transparent)
 {
     if (img->hTex && hRenderdest==hScreen)
-	RotScaleRenderTexture(img,cx,cy,angle,scale,transparent);
+	DistortRenderTexture(img,x,y,transparent);
     return true;
 }
 

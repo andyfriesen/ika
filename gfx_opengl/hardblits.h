@@ -103,7 +103,7 @@ void ScaleRenderTexture(handle img,int x,int y,int width,int height,bool transpa
     glEnd();
 }
 
-void RotScaleRenderTexture(handle img,int cx,int cy,float angle,int scale,bool transparent)
+void DistortRenderTexture(handle img,int x[4],int y[4],bool transparent)
 {
     GLfloat nTexendx=1.0f*img->nWidth/img->nTexwidth;
     GLfloat nTexendy=1.0f*img->nHeight/img->nTexheight;
@@ -114,20 +114,16 @@ void RotScaleRenderTexture(handle img,int cx,int cy,float angle,int scale,bool t
         glDisable(GL_BLEND);
     
     glDisable(GL_COLOR_MATERIAL);
-    
-    glPushMatrix();
-    glRotatef(angle, GLfloat(img->nWidth/2), GLfloat(img->nHeight/2), 0.0f);
-    
+
     glBindTexture(GL_TEXTURE_2D,img->hTex);
+
     glBegin(GL_QUADS);
-    glColor4ub(255,255,255,255);
-    glTexCoord2f(0.0f,0.0f);            glVertex2i(cx                  ,cy                   );
-    glTexCoord2f(nTexendx,0.0f);        glVertex2i(cx+img->nWidth*scale,cy                   );
-    glTexCoord2f(nTexendx,nTexendy);    glVertex2i(cx+img->nWidth*scale,cy+img->nHeight*scale);
-    glTexCoord2f(0,nTexendy);           glVertex2i(cx                  ,cy+img->nHeight*scale);
+
+    glTexCoord2f(0.0f,0.0f);            glVertex2i(x[0],y[0]);
+    glTexCoord2f(nTexendx,0.0f);        glVertex2i(x[1],y[1]);
+    glTexCoord2f(nTexendx,nTexendy);    glVertex2i(x[2],y[2]);
+    glTexCoord2f(0.0f,nTexendy);        glVertex2i(x[3],y[3]);
     glEnd();
-    
-    glPopMatrix();
 }
 
 //----------------------------------- Primatives ----------------------------------
