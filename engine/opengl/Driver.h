@@ -88,6 +88,7 @@ namespace OpenGL
 
         /// Returns the number of times ShowPage() has been called in the past second.
         virtual int GetFrameRate() const;
+
     private:
         FPSCounter fps;
         SDL_Surface* _screen;

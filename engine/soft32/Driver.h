@@ -79,6 +79,12 @@ namespace Soft32
         /// Draws a triangle on the screen.
         virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]) NYI
 
+        /// Grabs a rect from the screen, constructs an image from it, and returns it
+        virtual ::Video::Image* GrabImage(int x1, int y1, int x2, int y2) NYI
+
+        /// Like GrabImage, but stores the contents on a canvas, not an image
+        virtual Canvas* GrabCanvas(int x1, int y1, int x2, int y2) NYI
+
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const;
 
@@ -99,6 +105,7 @@ namespace Soft32
         void Driver::VLine(int x, int y1, int y2, u32 colour);
 
     };
+#undef NYI
 };
 
 #endif

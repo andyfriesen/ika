@@ -9,54 +9,22 @@
 #include "opengl/Driver.h"
 #include "soft32/Driver.h"
 
-#if (defined WIN32)
 void CEngine::Sys_Error(const char* errmsg)
 {
     CDEBUG("sys_error");
     
+#if (defined WIN32)
     SDL_SysWMinfo info;
     SDL_VERSION(&info.version);
     HWND hWnd = SDL_GetWMInfo(&info) ? info.window : HWND_DESKTOP;
 
     if (strlen(errmsg))
         MessageBox(hWnd, errmsg, "Error", 0);
-
-    Shutdown();
-    exit(-1);
-}
-
-void CEngine::Script_Error()
-{
-    CDEBUG("script_error");
-
-    SDL_SysWMinfo info;
-    SDL_VERSION(&info.version);
-    HWND hWnd = SDL_GetWMInfo(&info) ? info.window : HWND_DESKTOP;
-
-    File f;
-    if (f.OpenRead("pyout.log"))
-    {
-        int nSize = f.Size();
-        char* c = new char[nSize + 1];
-        memset(c, 0, nSize + 1);
-        f.Read(c, nSize);
-        f.Close();
-        MessageBox(info.window, c, "Script error", 0);
-        delete[] c;
-    }
-    else
-        MessageBox(hWnd, "Unknown error!", "Script error", 0);
-    
-    Shutdown();
-    
-    exit(-1);
-    return;
-}
 #else
-void CEngine::Sys_Error(const char* errmsg)
-{
-    CDEBUG("sys_error");
     printf("%s", errmsg);
+#endif
+
+    Shutdown();
     exit(-1);
 }
 
@@ -64,25 +32,31 @@ void CEngine::Script_Error()
 {
     CDEBUG("script_error");
     Shutdown();
+
+    std::string err;
     
     File f;
     if (f.OpenRead("pyout.log"))
-    {
-        int nSize = f.Size();
-        char* c = new char[nSize + 1];
-        memset(c, 0, nSize + 1);
-        f.Read(c, nSize);
-        f.Close();
-        printf("%s", c);
-        delete[] c;
-    }
+        err = f.ReadAll();
     else
-        printf("%s", "Nonspecific script error.  Truly, the Tao is not with us in these dark times.");
-    
-    exit(-1);
-    return;
-}
+        err = "Nonspecific script error.  Truly, the Tao is not with us in these dark times.";
+
+#if (defined WIN32)
+    if (!err.empty())
+    {
+        SDL_SysWMinfo info;
+        SDL_VERSION(&info.version);
+        HWND hWnd = SDL_GetWMInfo(&info) ? info.window : HWND_DESKTOP;
+   
+        MessageBox(hWnd, err.c_str(), "Script Error", 0);
+    }
+#else
+    printf("%s", err.c_str());
 #endif
+
+    Shutdown();
+    exit(-1);
+}
 
 void CEngine::CheckMessages()
 {
@@ -135,7 +109,7 @@ void CEngine::MainLoop()
     catch (FontException)
     {
         font = 0;
-        bShowfps = false;
+        _showFramerate = false;
     }
 
     int now = GetTime();
@@ -160,7 +134,7 @@ void CEngine::MainLoop()
 
         Render();
 
-        if (bShowfps)
+        if (_showFramerate)
         {
             font->PrintString(0, 0, va("FPS: %i", video->GetFrameRate()));
         }
@@ -186,7 +160,7 @@ void CEngine::Startup()
         Sys_Error("No user.cfg found.");
 
     // init a few values
-    bShowfps        = cfg.Int("showfps") != 0 ;
+    _showFramerate        = cfg.Int("showfps") != 0 ;
     nFrameskip      = cfg.Int("frameskip");
 
     // Now the tricky stuff.
@@ -209,12 +183,24 @@ void CEngine::Startup()
         atexit(SDL_Quit);
           
         Log::Write("Initializing Video");
-#if 1
-        video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
-#else
-        video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
-#endif
+        std::string driver = Lower(cfg["videodriver"]);
+
+        if (0)//driver == "soft" || driver == "sdl") // disabled because it's unstable and scary.
+        {
+            Log::Write("Using SDL video driver");
+            video = new Soft32::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+        }
+        else // if (driver == "opengl")
+        {
+            Log::Write("Using OpenGL video driver");
+            video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+        }
+
+#if (!defined _DEBUG)
         SDL_WM_SetCaption("ika " VERSION, 0);
+#else
+        SDL_WM_SetCaption("ika " VERSION " (debug)", 0);
+#endif
 
 #ifdef WIN32
         {

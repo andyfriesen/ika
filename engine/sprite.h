@@ -2,7 +2,6 @@
 #define SPRITE_H
 
 #include "common/types.h"
-#include "common/fileio.h"
 
 #include <list>
 using std::list;

@@ -2,13 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VER "0.45"
-
-#ifdef _DEBUG
-#   define VERSION VER " (debug)"
-#else
-#   define VERSION VER
-#endif
+#define VERSION "0.46"
 
 // low level components/containers/etc..
 #include <list>
@@ -56,7 +50,7 @@ public:                                                                         
     Input                           input;                                          ///< keyboard/mouse (todo: joystick)
     Video::Driver*                  video;                                          ///< video. ;)
 
-    bool                            bShowfps;                                       ///< Shows the current framerate in the window title if set.
+    bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if set.
     
     bool                            bKillFlag;                                      ///< set to true if a certain something hits the fan
     bool                            bActive;                                        ///< set to false if we're supposed to sleep

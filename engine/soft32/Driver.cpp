@@ -36,19 +36,8 @@ namespace Soft32
         //SDL_FreeSurface(_screen);
     }
 
-    void Driver::SwitchResolution(int x, int y) {
-        if (_screen != NULL)
-            SDL_FreeSurface(_screen);
-        _screen = SDL_SetVideoMode(x, y, _bpp, SDL_HWSURFACE | SDL_ASYNCBLIT | (_fullscreen ? SDL_FULLSCREEN : 0));
-        if (!_screen)
-            throw Video::Exception();
-        SDL_SetClipRect(_screen, NULL);
-        _xres = x;
-        _yres = y;
-        return;
-    }
-
-    void Driver::SwitchToFullScreen() {
+    void Driver::SwitchToFullScreen()
+    {
         if (_screen != NULL)
             SDL_FreeSurface(_screen);
         _fullscreen = true;
@@ -59,7 +48,8 @@ namespace Soft32
         return;
     }
 
-    void Driver::SwitchToWindowed() {
+    void Driver::SwitchToWindowed()
+    {
         if (_screen != NULL)
             SDL_FreeSurface(_screen);
         _fullscreen = false;
@@ -67,6 +57,19 @@ namespace Soft32
         if (!_screen)
             throw Video::Exception();
         SDL_SetClipRect(_screen, NULL);
+        return;
+    }
+
+    void Driver::SwitchResolution(int x, int y)
+    {
+        if (_screen != NULL)
+            SDL_FreeSurface(_screen);
+        _screen = SDL_SetVideoMode(x, y, _bpp, SDL_HWSURFACE | SDL_ASYNCBLIT | (_fullscreen ? SDL_FULLSCREEN : 0));
+        if (!_screen)
+            throw Video::Exception();
+        SDL_SetClipRect(_screen, NULL);
+        _xres = x;
+        _yres = y;
         return;
     }
 
@@ -116,7 +119,8 @@ namespace Soft32
         SDL_BlitSurface(iImage->_surface, NULL, _screen, &rDest);
     }
 
-    void Driver::ScaleBlitImage(Video::Image* i, int x, int y, int w, int h) {
+    void Driver::ScaleBlitImage(Video::Image* i, int x, int y, int w, int h)
+    {
         if (i == NULL) throw Video::Exception();
         Image* iImage = (Image*)i;
         if (iImage->_surface == NULL) throw Video::Exception();
@@ -133,35 +137,39 @@ namespace Soft32
             pDest = ((RGBA*)_screen->pixels) + (y * _screen->w) + (x);
             switch (_blendMode)
             {
-                case Video::None:
-                default:
-                    while (cy--) {
-                        while (cx--) {
-                            *pDest = *((RGBA*)iImage->_surface->pixels + ((int)sy * iImage->_surface->w) + (int)sx);
-                            pDest++;
-                            sx += xi;
-                        }
-                        sx = 0;
-                        sy += yi;
-                        iy++;
-                        cx = w;
-                        pDest = ((RGBA*)_screen->pixels) + (iy * _screen->w) + (x);
+            case Video::None:
+            default:
+                while (cy--)
+                {
+                    while (cx--)
+                    {
+                        *pDest = *((RGBA*)iImage->_surface->pixels + ((int)sy * iImage->_surface->w) + (int)sx);
+                        pDest++;
+                        sx += xi;
                     }
-                    break;
-                case Video::Normal:
-                    while (cy--) {
-                        while (cx--) {
-                            *pDest = Alpha::Blend(*((RGBA*)iImage->_surface->pixels + ((int)sy * iImage->_surface->w) + (int)sx), *pDest);
-                            pDest++;
-                            sx += xi;
-                        }
-                        sx = 0;
-                        sy += yi;
-                        iy++;
-                        cx = w;
-                        pDest = ((RGBA*)_screen->pixels) + (iy * _screen->w) + (x);
+                    sx = 0;
+                    sy += yi;
+                    iy++;
+                    cx = w;
+                    pDest = ((RGBA*)_screen->pixels) + (iy * _screen->w) + (x);
+                }
+                break;
+            case Video::Normal:
+                while (cy--)
+                {
+                    while (cx--)
+                    {
+                        *pDest = Alpha::Blend(*((RGBA*)iImage->_surface->pixels + ((int)sy * iImage->_surface->w) + (int)sx), *pDest);
+                        pDest++;
+                        sx += xi;
                     }
-                    break;
+                    sx = 0;
+                    sy += yi;
+                    iy++;
+                    cx = w;
+                    pDest = ((RGBA*)_screen->pixels) + (iy * _screen->w) + (x);
+                }
+                break;
             }
             SDL_UnlockSurface(iImage->_surface);
             SDL_UnlockSurface(_screen);
@@ -172,45 +180,342 @@ namespace Soft32
     {
         switch (_blendMode)
         {
-            case Video::None:
-            default:
-                SDL_Rect rPixel;
-                CreateRect(rPixel, x, y, 1, 1);
-                SDL_FillRect(_screen, &rPixel, colour);
-                break;
-            case Video::Normal:
-                RGBA pSrc;
-                RGBA *pDst;
-                if (ClipCoordinate(_screen, x, y))
-                {
-                    SDL_LockSurface(_screen);
-                    pSrc.i = colour;
-                    pDst = ((RGBA*)_screen->pixels + (y * _screen->w) + (x));
-                    *pDst = Alpha::Blend(pSrc, *pDst);
-                    SDL_UnlockSurface(_screen);
-                }
-                break;
+        case Video::None:
+        default:
+            SDL_Rect rPixel;
+            CreateRect(rPixel, x, y, 1, 1);
+            SDL_FillRect(_screen, &rPixel, colour);
+            break;
+        case Video::Normal:
+            RGBA pSrc;
+            RGBA *pDst;
+            if (ClipCoordinate(_screen, x, y))
+            {
+                SDL_LockSurface(_screen);
+                pSrc.i = colour;
+                pDst = ((RGBA*)_screen->pixels + (y * _screen->w) + (x));
+                *pDst = Alpha::Blend(pSrc, *pDst);
+                SDL_UnlockSurface(_screen);
+            }
+            break;
         }
         return;
     }
-    
+
+    void Driver::DrawLine(int x1, int y1, int x2, int y2, u32 colour)
+    {
+        //check for the cases in which the line is vertical or horizontal or only one pixel big
+        //we can do those faster through other means
+        if(y1==y2&&x1==x2)
+        {
+            this->DrawPixel(x1, y1, colour);
+            return;
+        }
+        if(y1==y2)
+        {
+            this->HLine(x1, x2, y1, colour);
+            return;
+        }
+        if(x1==x2)
+        {
+            this->VLine(x1, y1, y2, colour);
+            return;
+        }
+
+        //its good to have these handy
+        int cx1=_screen->clip_rect.x;
+        int cx2=(_screen->clip_rect.x + _screen->w) - 1;
+        int cy1=_screen->clip_rect.y;
+        int cy2=(_screen->clip_rect.y + _screen->h) - 1;
+
+        //variables for the clipping code
+        int v1=0, v2=0;
+        //	int diff;
+        //	int j;
+
+        //here begins what is apparently the Cohen-Sutherland line clipping algorithm
+        //there's a doc on it here: http://reality.sgi.com/tomcat_asd/algorithms.html#clipping
+        if(y1<cy1) v1|=8;
+        if(y1>cy2) v1|=4;
+        if(x1>cx2) v1|=2;
+        if(x1<cx1) v1|=1;
+        if(y2<cy1) v2|=8;
+        if(y2>cy2) v2|=4;
+        if(x2>cx2) v2|=2;
+        if(x2<cx1) v2|=1;
+
+        while((v1&v2)==0&&(v1|v2)!=0)
+        {
+            if(v1)
+            {
+                if(v1&8) //clip above
+                {
+                    x1-=((x1-x2)*(cy1-y1))/(y2-y1+1);
+                    y1=cy1;
+                }
+                else if(v1&4) //clip below
+                {
+                    x1-=((x1-x2)*(y1-cy2))/(y1-y2+1);
+                    y1=cy2;
+                }
+                else if(v1&2) //clip right
+                {
+                    y1-=((y1-y2)*(x1-cx2))/(x1-x2+1);
+                    x1=cx2;
+                }
+                else //clip left
+                {
+                    y1-=((y1-y2)*(cx1-x1))/(x2-x1+1);
+                    x1=cx1;
+                }
+                v1=0;
+                if(y1<cy1) v1|=8;
+                if(y1>cy2) v1|=4;
+                if(x1>cx2) v1|=2;
+                if(x1<cx1) v1|=1;
+            }
+            else
+            {
+                if(v2&8) //clip above
+                {
+                    x2-=((x2-x1)*(cy1-y2))/(y1-y2+1);
+                    y2=cy1;
+                }
+                else if(v2&4) //clip below
+                {
+                    x2-=((x2-x1)*(y2-cy2))/(y2-y1+1);
+                    y2=cy2;
+                }
+                else if(v2&2) //clip right
+                {
+                    y2-=((y2-y1)*(x2-cx2))/(x2-x1+1);
+                    x2=cx2;
+                }
+                else //clip left
+                {
+                    y2-=((y2-y1)*(cx1-x2))/(x1-x2+1);
+                    x2=cx1;
+                }
+                v2=0;
+                if(y2<cy1) v2|=8;
+                if(y2>cy2) v2|=4;
+                if(x2>cx2) v2|=2;
+                if(x2<cx1) v2|=1;
+            }
+        }
+
+        //this tells us if the line was clipped in its entirety. yum!
+        if(v1&v2)
+            return;
+
+        //make these checks again
+        if(y1==y2&&x1==x2)
+        {
+            this->DrawPixel(x1, y1, colour);
+            return;
+        }
+        if(y1==y2)
+        {
+            this->HLine(x1, x2, y1, colour);
+            return;
+        }
+        if(x1==x2)
+        {
+            this->VLine(x1, y1, y2, colour);
+            return;
+        }
+
+        //for the line renderer
+        int xi, yi, xyi;
+        int d, dir, diu, dx, dy;
+
+        //two pointers because we render the line from both ends
+        u32* w1=&((u32*)_screen->pixels)[_screen->w*y1+x1];
+        u32* w2=&((u32*)_screen->pixels)[_screen->w*y2+x2];
+
+        SDL_LockSurface(_screen);
+
+        //start algorithm presently.
+        xi=1;
+        if((dx=x2-x1)<0)
+        {
+            dx=-dx;
+            xi=-1;
+        }
+
+        yi=_screen->w;
+        if((dy=y2-y1)<0)
+        {
+            yi=-yi;
+            dy=-dy;
+        }
+
+        xyi=xi+yi;
+
+        switch(_blendMode)
+        {
+        case Video::None:
+        default:
+            if(dy<dx)
+            {
+                dir=dy*2;
+                d=-dx;
+                diu=2*d;
+                dy=dx/2;
+
+                while(true)
+                {
+                    *w1=colour;
+                    *w2=colour;
+                    if((d+=dir)<=0)
+                    {
+                        w1+=xi;
+                        w2-=xi;
+                        if((--dy)>0) continue;
+                        *w1=colour;
+                        if((dx&1)==0) break;
+                        *w2=colour;
+                        break;
+                    }
+                    else
+                    {
+                        w1+=xyi;
+                        w2-=xyi;
+                        d+=diu;
+                        if((--dy)>0) continue;
+                        *w1=colour;
+                        if((dx&1)==0) break;
+                        *w2=colour;
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                dir=dx*2;
+                d=-dy;
+                diu=d*2;
+                dx=dy/2;
+                while(true)
+                {
+                    *w1=colour;
+                    *w2=colour;
+                    if((d+=dir)<=0)
+                    {
+                        w1+=yi;
+                        w2-=yi;
+                        if((--dx)>0) continue;
+                        *w1=colour;
+                        if((dy&1)==0) break;
+                        *w2=colour;
+                        break;
+                    }
+                    else
+                    {
+                        w1+=xyi;
+                        w2-=xyi;
+                        d+=diu;
+                        if((--dx)>0) continue;
+                        *w1=colour;
+                        if((dy&1)==0) break;
+                        *w2=colour;
+                        break;
+                    }
+                }
+            }
+            break;
+        case Video::Normal:
+            if(dy<dx)
+            {
+                dir=dy*2;
+                d=-dx;
+                diu=2*d;
+                dy=dx/2;
+
+                while(true)
+                {
+                    *w1=Alpha::Blend(colour, *w1);
+                    *w2=Alpha::Blend(colour, *w2);
+                    if((d+=dir)<=0)
+                    {
+                        w1+=xi;
+                        w2-=xi;
+                        if((--dy)>0) continue;
+                        *w1=Alpha::Blend(colour, *w1);
+                        if((dx&1)==0) break;
+                        *w2=Alpha::Blend(colour, *w2);
+                        break;
+                    }
+                    else
+                    {
+                        w1+=xyi;
+                        w2-=xyi;
+                        d+=diu;
+                        if((--dy)>0) continue;
+                        *w1=Alpha::Blend(colour, *w1);
+                        if((dx&1)==0) break;
+                        *w2=Alpha::Blend(colour, *w2);
+                        break;
+                    }
+                }
+            }
+            else
+            {
+                dir=dx*2;
+                d=-dy;
+                diu=d*2;
+                dx=dy/2;
+                while(true)
+                {
+                    *w1=Alpha::Blend(colour, *w1);
+                    *w2=Alpha::Blend(colour, *w2);
+                    if((d+=dir)<=0)
+                    {
+                        w1+=yi;
+                        w2-=yi;
+                        if((--dx)>0) continue;
+                        *w1=Alpha::Blend(colour, *w1);
+                        if((dy&1)==0) break;
+                        *w2=Alpha::Blend(colour, *w2);
+                        break;
+                    }
+                    else
+                    {
+                        w1+=xyi;
+                        w2-=xyi;
+                        d+=diu;
+                        if((--dx)>0) continue;
+                        *w1=Alpha::Blend(colour, *w1);
+                        if((dy&1)==0) break;
+                        *w2=Alpha::Blend(colour, *w2);
+                        break;
+                    }
+                }
+            }
+            break;
+        }
+
+        SDL_UnlockSurface(_screen);
+        return;
+    }
+
     void Driver::DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled)
     {
         if (filled)
         {
             switch (_blendMode)
             {
-                case Video::None:
-                default:
-                    SDL_Rect rFill;
-                    CreateRect(rFill, x1, y1, x2-x1, y2-y1);
-                    SDL_FillRect(_screen, &rFill, colour);
-                    break;
-                case Video::Normal:
-                    int ydir=y1<y2?1:-1;
-                    for (int y=y1; y!=y2; y+=ydir)
-                        this->HLine(x1, x2, y, colour);
-                    break;
+            case Video::None:
+            default:
+                SDL_Rect rFill;
+                CreateRect(rFill, x1, y1, x2-x1, y2-y1);
+                SDL_FillRect(_screen, &rFill, colour);
+                break;
+            case Video::Normal:
+                int ydir=y1<y2?1:-1;
+                for (int y=y1; y!=y2; y+=ydir)
+                    this->HLine(x1, x2, y, colour);
+                break;
             }
         } else {
             if (abs(y1-y2)>1)
@@ -223,7 +528,7 @@ namespace Soft32
                 this->HLine(x1, x2, y1, colour);
                 return;
             }
-        
+
             if (abs(x1-x2)>1)
             {
                 this->HLine(x1, x2, y1, colour);
@@ -235,43 +540,44 @@ namespace Soft32
                 return;
             }
         }
-    
+
         return;
     }
 
     void Driver::HLine(int x1, int x2, int y, u32 colour)
     {
-        if (x1 == x2) {
+        if (x1 == x2)
+        {
             this->DrawPixel(x1, y, colour);
             return;
         }
 
         if (x1>x2)
             swap(x1, x2);	
-    
+
         if (ClipCoordinate(_screen, x1, y) && ClipCoordinate(_screen, x2, y))
         {
-    
+
             switch (_blendMode)
             {
-                case Video::None:
-                default:
-                    SDL_Rect rFill;
-                    CreateRect(rFill, x1, y, x2-x1, 1);
-                    SDL_FillRect(_screen, &rFill, colour);
-                    break;
-                case Video::Normal:
-                    SDL_LockSurface(_screen);
-                    RGBA* p = ((RGBA*)_screen->pixels) + (y * _screen->w) + x1;
-                    int xlen=x2-x1;
-                    do
-                    {
-                        *p=Alpha::Blend(colour, *p);
-                        p++;
-                    }
-                    while (xlen--);
-                    SDL_UnlockSurface(_screen);
-                    break;
+            case Video::None:
+            default:
+                SDL_Rect rFill;
+                CreateRect(rFill, x1, y, x2-x1, 1);
+                SDL_FillRect(_screen, &rFill, colour);
+                break;
+            case Video::Normal:
+                SDL_LockSurface(_screen);
+                RGBA* p = ((RGBA*)_screen->pixels) + (y * _screen->w) + x1;
+                int xlen=x2-x1;
+                do
+                {
+                    *p=Alpha::Blend(colour, *p);
+                    p++;
+                }
+                while (xlen--);
+                SDL_UnlockSurface(_screen);
+                break;
             }
 
         }
@@ -279,47 +585,48 @@ namespace Soft32
 
     void Driver::VLine(int x, int y1, int y2, u32 colour)
     {
-        
-        if (y1 == y2) {
+
+        if (y1 == y2)
+        {
             this->DrawPixel(x, y1, colour);
             return;
         }
 
         if (y1>y2)
             swap(y1, y2);
-    
+
         if (ClipCoordinate(_screen, x, y1) && ClipCoordinate(_screen, x, y2))
         {
-    
+
             switch (_blendMode)
             {
-                case Video::None:
-                default:
-                    SDL_Rect rFill;
-                    CreateRect(rFill, x, y1, 1, y2-y1);
-                    SDL_FillRect(_screen, &rFill, colour);
-                    break;
-                case Video::Normal:
-                    SDL_LockSurface(_screen);
-                    RGBA* p = ((RGBA*)_screen->pixels) + (y1 * _screen->w) + x;
-    
-                    int yinc=_screen->w;
-    
-                    int ylen=y2-y1;
-    
-                    do
-                    {
-                        *p=Alpha::Blend(colour, *p);
-                        p+=yinc;
-                    }
-                    while (ylen--);
-                    SDL_UnlockSurface(_screen);
-                    break;
+            case Video::None:
+            default:
+                SDL_Rect rFill;
+                CreateRect(rFill, x, y1, 1, y2-y1);
+                SDL_FillRect(_screen, &rFill, colour);
+                break;
+            case Video::Normal:
+                SDL_LockSurface(_screen);
+                RGBA* p = ((RGBA*)_screen->pixels) + (y1 * _screen->w) + x;
+
+                int yinc=_screen->w;
+
+                int ylen=y2-y1;
+
+                do
+                {
+                    *p=Alpha::Blend(colour, *p);
+                    p+=yinc;
+                }
+                while (ylen--);
+                SDL_UnlockSurface(_screen);
+                break;
             }
         }
     }
 
-    
+
     void Driver::DrawEllipse(int cx, int cy, int radx, int rady, u32 colour, bool fill)
     {
         // fear this algorithm, for 'twas spawned in the very depths of hell itself
@@ -334,7 +641,7 @@ namespace Soft32
         // convert negative radii to positive ones
         radx = abs(radx);
         rady = abs(rady);
-    
+
         // storage array for scanline start/end values
         rc = new scanspan[(rady*2)+1];
         // clear the scanline array
@@ -342,11 +649,11 @@ namespace Soft32
 
         // offset value for quick access to scanline array
         scanoffset = -cy+(rady);
-    
+
         // your somewhat typical ellipse algorithm...
         mx1=cx-radx; my1=cy;
         mx2=cx+radx; my2=cy;
-    
+
         aq=radx*radx;
         bq=rady*rady;
         dx=aq<<1;
@@ -355,7 +662,7 @@ namespace Soft32
         rx=r<<1;
         ry=0;
         x=radx;
-    
+
         while (x>0)
         {
             if (r>0)
@@ -465,311 +772,6 @@ namespace Soft32
         // delete the lookup table, we don't need it anymore
         delete rc;
 
-        return;
-    }
-
-    /*
-    //bool gfxFlatPoly(handle img, int x[3], int y[3], u32 colour[3])
-    bool gfxFlatPoly(handle, int[3], int[3], u32[3])
-    {
-        return false;
-    }
-    */
-
-    void Driver::DrawLine(int x1, int y1, int x2, int y2, u32 colour)
-    {
-        //check for the cases in which the line is vertical or horizontal or only one pixel big
-        //we can do those faster through other means
-        if(y1==y2&&x1==x2)
-        {
-            this->DrawPixel(x1, y1, colour);
-            return;
-        }
-        if(y1==y2)
-        {
-            this->HLine(x1, x2, y1, colour);
-            return;
-        }
-        if(x1==x2)
-        {
-            this->VLine(x1, y1, y2, colour);
-            return;
-        }
-
-        //its good to have these handy
-        int cx1=_screen->clip_rect.x;
-        int cx2=(_screen->clip_rect.x + _screen->w) - 1;
-        int cy1=_screen->clip_rect.y;
-        int cy2=(_screen->clip_rect.y + _screen->h) - 1;
-    
-        //variables for the clipping code
-        int v1=0, v2=0;
-        //	int diff;
-        //	int j;
-    
-        //here begins what is apparently the Cohen-Sutherland line clipping algorithm
-        //there's a doc on it here: http://reality.sgi.com/tomcat_asd/algorithms.html#clipping
-        if(y1<cy1) v1|=8;
-        if(y1>cy2) v1|=4;
-        if(x1>cx2) v1|=2;
-        if(x1<cx1) v1|=1;
-        if(y2<cy1) v2|=8;
-        if(y2>cy2) v2|=4;
-        if(x2>cx2) v2|=2;
-        if(x2<cx1) v2|=1;
-    
-        while((v1&v2)==0&&(v1|v2)!=0)
-        {
-            if(v1)
-            {
-                if(v1&8) //clip above
-                {
-                    x1-=((x1-x2)*(cy1-y1))/(y2-y1+1);
-                    y1=cy1;
-                }
-                else if(v1&4) //clip below
-                {
-                    x1-=((x1-x2)*(y1-cy2))/(y1-y2+1);
-                    y1=cy2;
-                }
-                else if(v1&2) //clip right
-                {
-                    y1-=((y1-y2)*(x1-cx2))/(x1-x2+1);
-                    x1=cx2;
-                }
-                else //clip left
-                {
-                    y1-=((y1-y2)*(cx1-x1))/(x2-x1+1);
-                    x1=cx1;
-                }
-                v1=0;
-                if(y1<cy1) v1|=8;
-                if(y1>cy2) v1|=4;
-                if(x1>cx2) v1|=2;
-                if(x1<cx1) v1|=1;
-            }
-            else
-            {
-                if(v2&8) //clip above
-                {
-                    x2-=((x2-x1)*(cy1-y2))/(y1-y2+1);
-                    y2=cy1;
-                }
-                else if(v2&4) //clip below
-                {
-                    x2-=((x2-x1)*(y2-cy2))/(y2-y1+1);
-                    y2=cy2;
-                }
-                else if(v2&2) //clip right
-                {
-                    y2-=((y2-y1)*(x2-cx2))/(x2-x1+1);
-                    x2=cx2;
-                }
-                else //clip left
-                {
-                    y2-=((y2-y1)*(cx1-x2))/(x1-x2+1);
-                    x2=cx1;
-                }
-                v2=0;
-                if(y2<cy1) v2|=8;
-                if(y2>cy2) v2|=4;
-                if(x2>cx2) v2|=2;
-                if(x2<cx1) v2|=1;
-            }
-        }
-    
-        //this tells us if the line was clipped in its entirety. yum!
-        if(v1&v2)
-            return;
-    
-        //make these checks again
-        if(y1==y2&&x1==x2)
-        {
-            this->DrawPixel(x1, y1, colour);
-            return;
-        }
-        if(y1==y2)
-        {
-            this->HLine(x1, x2, y1, colour);
-            return;
-        }
-        if(x1==x2)
-        {
-            this->VLine(x1, y1, y2, colour);
-            return;
-        }
-    
-        //for the line renderer
-        int xi, yi, xyi;
-        int d, dir, diu, dx, dy;
-    
-        //two pointers because we render the line from both ends
-        u32* w1=&((u32*)_screen->pixels)[_screen->w*y1+x1];
-        u32* w2=&((u32*)_screen->pixels)[_screen->w*y2+x2];
-
-        SDL_LockSurface(_screen);
-    
-        //start algorithm presently.
-        xi=1;
-        if((dx=x2-x1)<0)
-        {
-            dx=-dx;
-            xi=-1;
-        }
-    
-        yi=_screen->w;
-        if((dy=y2-y1)<0)
-        {
-            yi=-yi;
-            dy=-dy;
-        }
-    
-        xyi=xi+yi;
-
-        switch(_blendMode)
-        {
-            case Video::None:
-            default:
-                if(dy<dx)
-                {
-                    dir=dy*2;
-                    d=-dx;
-                    diu=2*d;
-                    dy=dx/2;
-    
-                    while(true)
-                    {
-                        *w1=colour;
-                        *w2=colour;
-                        if((d+=dir)<=0)
-                        {
-                            w1+=xi;
-                            w2-=xi;
-                            if((--dy)>0) continue;
-                            *w1=colour;
-                            if((dx&1)==0) break;
-                            *w2=colour;
-                            break;
-                        }
-                        else
-                        {
-                            w1+=xyi;
-                            w2-=xyi;
-                            d+=diu;
-                            if((--dy)>0) continue;
-                            *w1=colour;
-                            if((dx&1)==0) break;
-                            *w2=colour;
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    dir=dx*2;
-                    d=-dy;
-                    diu=d*2;
-                    dx=dy/2;
-                    while(true)
-                    {
-                        *w1=colour;
-                        *w2=colour;
-                        if((d+=dir)<=0)
-                        {
-                            w1+=yi;
-                            w2-=yi;
-                            if((--dx)>0) continue;
-                            *w1=colour;
-                            if((dy&1)==0) break;
-                            *w2=colour;
-                            break;
-                        }
-                        else
-                        {
-                            w1+=xyi;
-                            w2-=xyi;
-                            d+=diu;
-                            if((--dx)>0) continue;
-                            *w1=colour;
-                            if((dy&1)==0) break;
-                            *w2=colour;
-                            break;
-                        }
-                    }
-                }
-                break;
-            case Video::Normal:
-                if(dy<dx)
-                {
-                    dir=dy*2;
-                    d=-dx;
-                    diu=2*d;
-                    dy=dx/2;
-    
-                    while(true)
-                    {
-                        *w1=Alpha::Blend(colour, *w1);
-                        *w2=Alpha::Blend(colour, *w2);
-                        if((d+=dir)<=0)
-                        {
-                            w1+=xi;
-                            w2-=xi;
-                            if((--dy)>0) continue;
-                            *w1=Alpha::Blend(colour, *w1);
-                            if((dx&1)==0) break;
-                            *w2=Alpha::Blend(colour, *w2);
-                            break;
-                        }
-                        else
-                        {
-                            w1+=xyi;
-                            w2-=xyi;
-                            d+=diu;
-                            if((--dy)>0) continue;
-                            *w1=Alpha::Blend(colour, *w1);
-                            if((dx&1)==0) break;
-                            *w2=Alpha::Blend(colour, *w2);
-                            break;
-                        }
-                    }
-                }
-                else
-                {
-                    dir=dx*2;
-                    d=-dy;
-                    diu=d*2;
-                    dx=dy/2;
-                    while(true)
-                    {
-                        *w1=Alpha::Blend(colour, *w1);
-                        *w2=Alpha::Blend(colour, *w2);
-                        if((d+=dir)<=0)
-                        {
-                            w1+=yi;
-                            w2-=yi;
-                            if((--dx)>0) continue;
-                            *w1=Alpha::Blend(colour, *w1);
-                            if((dy&1)==0) break;
-                            *w2=Alpha::Blend(colour, *w2);
-                            break;
-                        }
-                        else
-                        {
-                            w1+=xyi;
-                            w2-=xyi;
-                            d+=diu;
-                            if((--dx)>0) continue;
-                            *w1=Alpha::Blend(colour, *w1);
-                            if((dy&1)==0) break;
-                            *w2=Alpha::Blend(colour, *w2);
-                            break;
-                        }
-                    }
-                }
-                break;
-        }
-    
-        SDL_UnlockSurface(_screen);
         return;
     }
 
