@@ -23,6 +23,8 @@ bool CSpriteSet::Load(const char* fname)
 bool CSpriteSet::Save(const char* fname)
 {
     pCHR->Save(fname);
+
+    return true;
 }
 
 void CSpriteSet::SetImage(const CPixelMatrix& img,int idx)
