@@ -418,8 +418,12 @@ void Engine::RenderLayer(uint layerIndex)
         firstY = 0;
     }
 
-    if ((uint)(firstX + lenX) > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
-    if ((uint)(firstY + lenY) > layer->Height()) lenY = layer->Height() - firstY;
+    if (!layer->wrapx) {
+      if ((uint)(firstX + lenX) > layer->Width())  lenX = layer->Width() - firstX;        // clip yo
+    }
+    if (!layer->wrapy) {
+      if ((uint)(firstY + lenY) > layer->Height()) lenY = layer->Height() - firstY;
+    }
 
     if (lenX < 1 || lenY < 1) return;   // not visible
 
@@ -434,6 +438,9 @@ void Engine::RenderLayer(uint layerIndex)
     {
         for (int x = 0; x < lenX; x++)
         {
+            if (layer->wrapx || layer->wrapy) {
+              t = layer->tiles.GetPointer((firstX + x) % layer->Width(), (firstY + y) % layer->Height());
+            }
             //if (*t)
                 video->BlitImage(tiles->GetTile(*t), curx, cury);
 
