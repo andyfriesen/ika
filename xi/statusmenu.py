@@ -54,6 +54,9 @@ class StatusMenu(object):
         _.statwindow.Refresh(curchar)
         _.equipwindow.Refresh(curchar)
         _.skillwindow.Refresh(curchar)
+
+        if len(_.skillwindow.Text) == 0:
+            _.skillwindow.AddText('No skills')
     
         _.statbar.Refresh()
         _.portraitwindow.DockTop().DockLeft()
@@ -63,6 +66,7 @@ class StatusMenu(object):
         _.skillwindow.DockTop(_.equipwindow).DockLeft(_.statwindow)
         _.equipwindow.Right = _.statbar.x - _.statbar.border * 2
         _.skillwindow.width = _.equipwindow.width
+        
 
     def Execute(_):
         curchar = 0

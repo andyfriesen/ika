@@ -11,7 +11,7 @@
 from itemdatabase import ItemDatabase
 
 # constants
-equiptypes= [ 'weapon', 'shield', 'armour', 'accessory' ]
+equiptypes= [ 'weapon', 'armour', 'accessory' ]
 
 class Item(object):
     __slots__ = [ 'equiptype', 'name', 'desc', 'atk', 'Def', 'hit', 'eva',

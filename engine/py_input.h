@@ -37,6 +37,7 @@ void CScriptEngine::Init_Input()
     inputtype.tp_dealloc=(destructor)Input_Destroy;
     inputtype.tp_getattr=(getattrfunc)Input_GetAttribute;
     inputtype.tp_setattr=(setattrfunc)Input_SetAttribute;
+    inputtype.tp_doc="Singleton representing the state of the keyboard and mouse.";
 }
 
 PyObject* CScriptEngine::Input_New()

@@ -92,8 +92,8 @@ class EquipMenu(object):
 
         result = _.equipwindow.Update()
 
-        k = item.equiptypes[_.equipwindow.CursorPos]
-        i = char.equip[k]
+        #k = item.equiptypes[_.equipwindow.CursorPos]
+        i = char.equip[_.equipwindow.CursorPos].item
         _.description.text[0] = i and i.desc or ''
 
         if result == -1 or result == None:
@@ -120,12 +120,12 @@ class EquipMenu(object):
             return None
 
         # actually change equipment here
-        char = party.party[_.charidx]
+        char = _.CurChar
         selecteditem = party.inv[_.itemlist.CursorPos].item
-        slot = item.equiptypes[_.equipwindow.CursorPos]
+        slot = char.equip[_.equipwindow.CursorPos].type
 
         if char.CanEquip(selecteditem.name) and slot == selecteditem.equiptype:
-            char.Equip(selecteditem.name)
+            char.Equip(selecteditem.name, _.equipwindow.CursorPos)
 
             _.Refresh(party.party[_.charidx])
         

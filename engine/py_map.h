@@ -36,6 +36,7 @@ void CScriptEngine::Init_Map()
     maptype.tp_dealloc=(destructor)Map_Destroy;
     maptype.tp_getattr=(getattrfunc)Map_GetAttribute;
     maptype.tp_setattr=(setattrfunc)Map_SetAttribute;
+    maptype.tp_doc="Represents the currently executing map.";
 }
 
 PyObject* CScriptEngine::Map_New()

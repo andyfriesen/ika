@@ -35,7 +35,11 @@ void CScriptEngine::Init(CEngine* p)
     PySys_SetPath((char*)s.c_str());
     
     PyImport_AddModule("ika");
-    PyObject* module=Py_InitModule("ika",standard_methods);
+    PyObject* module=Py_InitModule3("ika",standard_methods,
+        "ika standard module. \n"
+        "\n"
+        "Contains functions and crap for manipulating the ika game engine at runtime.\n"
+        );
     PyObject* dict  =PyModule_GetDict(module);
     
     pEngine=p;                                                  // urk

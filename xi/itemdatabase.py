@@ -43,7 +43,7 @@ class ItemDatabase(StatelessProxy):
                 if t == 'desc':
                     s = f.GetLine()
                     while s != 'end':
-                        i.desc += s 
+                        i.desc += s
                         s = f.GetLine()
                         
                 elif t == 'equiptype':

@@ -45,3 +45,6 @@ def XRes():
     
 def YRes():
     return ika.GetScreenImage().height
+    
+def clamp(value, lower, upper):
+    return max(min(value, upper), lower)

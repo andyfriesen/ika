@@ -19,9 +19,13 @@ class StatusBar(widget.TextFrame):
     def Refresh(self):
         self.Clear()
         for char in party.party:
+            # Red if zero, yellow if less than a 4th max, and white otherwise.
+            c = char.HP == 0 and '4' or char.HP < char.maxHP / 4 and '3' or '0'
+            d = char.MP == 0 and '4' or char.MP < char.maxMP / 4 and '3' or '0'
+                
             self.AddText( '%s\tLv %i' % (char.name, char.level) )
-            self.AddText( 'HP\t%i/%i' % (char.HP, char.maxHP) )
-            self.AddText( 'MP\t%i/%i' % (char.MP, char.maxMP) )
+            self.AddText( 'HP\t~%c%i~0/~%c%i' % (c, char.HP, c, char.maxHP) )
+            self.AddText( 'MP\t~%c%i~0/~%c%i' % (d, char.MP, d, char.maxMP) )
             self.AddText( '' )
         self.Text.pop() # drop the last blank line
         self.AutoSize()
@@ -74,7 +78,7 @@ class StatusWindow(widget.Frame):
         add('Evade %', char.eva)
 
         def add(n, a, b):
-            self.__text.AddText(n, str(a), '(~3%i~0)' % b )
+            self.__text.AddText(n, str(a), '(~2%i~0)' % b )
 
         self.__text.AddText( '' )
         add('Strength', char.str, char.nstr)
@@ -96,10 +100,12 @@ class EquipWindow(menu.Menu):
     def Refresh(self, char):
         self.__text.Clear()
 
-        for e in item.equiptypes:
-            i = char.equip[e]
-            self.__text.AddText(e.capitalize() + ':', i and i.name or '')
+        for e in char.equip:
+            i = e.item
+            self.__text.AddText(e.type.capitalize() + ':', i and i.name or '')
         self.AutoSize()
+        
+        self.CursorPos = min(self.CursorPos, len(self.menuitems) - 1)
 
 class SkillWindow(menu.Menu):
     "Displays a character's skills."
@@ -112,12 +118,14 @@ class SkillWindow(menu.Menu):
     def Refresh(self, char, condition = lambda s: True):
         self.__text.Clear()
         for s in char.skills:
-            c = (condition(s) and '~0' or '~3')
+            c = (condition(s) and '~0' or '~2')
             self.__text.AddText(
                 c + s.name,
                 c + s.type.capitalize(),
                 c + str(s.mp))
         self.AutoSize()
+        
+        self.CursorPos = min(self.CursorPos, len(self.menuitems) - 1)
 
 class InventoryWindow(menu.Menu):
     "Displays the group's inventory."
@@ -129,7 +137,7 @@ class InventoryWindow(menu.Menu):
     def Refresh(self, condition = lambda i: True):
         self.__text.Clear()
         for i in party.inv:
-            c = (condition(i.item) and '~0' or '~3')
+            c = (condition(i.item) and '~0' or '~2')
             self.__text.AddText(
                 c + i.item.name,
                 c + i.item.equiptype.capitalize(),
@@ -138,5 +146,4 @@ class InventoryWindow(menu.Menu):
 
         self.AutoSize()
 
-        if self.CursorPos >= len(self.__text):
-            self.CursorPos = len(self.__text) - 1
+        self.CursorPos = min(self.CursorPos, len(self.menuitems) - 1)

@@ -54,24 +54,25 @@ class SkillMenu(object):
         for x in (_.portraitwindow, _.statwindow):
             x.Refresh(char)
 
-        _.skillwindow.Refresh(char, lambda s: s.fieldeffect is not None)            
+        _.skillwindow.Refresh(char, lambda skill: (skill.fieldeffect is not None) and (skill.mp <= char.MP))
         if len(char.skills) > 0:
             _.skillwindow.active = True
         else:
             _.skillwindow.AddText('No skills')
             _.skillwindow.active = False
+            _.skillwindow.CursorPos = 0
 
         # Layout
         _.portraitwindow.DockTop().DockLeft()
         _.statwindow.DockTop(_.portraitwindow).DockLeft()
         _.statwindow.width = _.portraitwindow.width
         _.description.DockTop().DockLeft(_.portraitwindow)
-        #_.description.Clear()
         _.description.Right = _.statbar.x - _.statbar.border * 2
         _.skillwindow.DockTop(_.description).DockLeft(_.portraitwindow)
         _.skillwindow.Right = _.statbar.x - _.statbar.border * 2
         _.statbar.Refresh()
-
+        trans.Reset()
+        
     def UpdateSkillWindow(_):
         if input.left and _.charidx > 0:
             input.left = False
@@ -120,10 +121,14 @@ class SkillMenu(object):
                 break
             else:
                 skill = _.CurChar.skills[result]
-                if skill.fieldeffect is not None:
-                    skill.fieldeffect(_.CurChar)
-                    break
+                if skill.fieldeffect is not None and _.CurChar.MP >= skill.mp:
+                    result = skill.fieldeffect(_.CurChar)
+                    
+                    # if the effect wasn't cancelled somehow...
+                    if result is None:
+                        _.CurChar.MP -= skill.mp
+                        _.Refresh(_.CurChar)
                 else:
-                    pass # battle-only
+                    pass # battle-only?  Not useable at all? @_x
 
         return True

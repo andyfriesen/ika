@@ -54,8 +54,10 @@ class ItemMenu(object):
     #--------------------------------------------
 
     def Refresh(_):
-        _.menu.Refresh(lambda i: i.consumable)
+        _.menu.Refresh(lambda i: i.fieldeffect is not None)
         _.menu.AutoSize()
+        _.statbar.Refresh()
+        trans.Reset()
 
     #--------------------------------------------
 
@@ -74,7 +76,12 @@ class ItemMenu(object):
                 break
             
             if result is not None:
-                pass # Handle item use here
+                item = party.inv[_.menu.CursorPos].item
+                if item.fieldeffect is not None:
+                    result = item.fieldeffect()
+                    if result is None and item.consumable:
+                        party.inv.Take(item.name)
+                    _.Refresh()
 
         return True
 

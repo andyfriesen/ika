@@ -61,6 +61,7 @@ class Menu(widget.Frame):
     YPage = property(lambda self: self.menuitems.YPage, set_YPage)
     YMax = property(lambda self: self.menuitems.YMax, set_YMax)
     Font = property(lambda self: self.menuitems.font)
+    Text = property(lambda self: self.menuitems)
 
     def Draw(self):
         widget.Frame.Draw(self)

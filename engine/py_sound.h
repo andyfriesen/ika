@@ -35,6 +35,7 @@ void CScriptEngine::Init_Sound()
     soundtype.tp_dealloc=(destructor)Sound_Destroy;
     soundtype.tp_getattr=(getattrfunc)Sound_GetAttribute;
     soundtype.tp_setattr=(setattrfunc)Sound_SetAttribute;
+    soundtype.tp_doc="A hunk of sound data, like a sound effect, or a piece of music.";
 }
 
 PyObject* CScriptEngine::Sound_New(PyObject* self,PyObject* args)

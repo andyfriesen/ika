@@ -42,6 +42,7 @@ void CScriptEngine::Init_Entity()
     entitytype.tp_dealloc=(destructor)Entity_Destroy;
     entitytype.tp_getattr=(getattrfunc)Entity_GetAttribute;
     entitytype.tp_setattr=(setattrfunc)Entity_SetAttribute;
+    entitytype.tp_doc="Represents an entity in the ika game engine.";
 }
 
 PyObject* CScriptEngine::Entity_New(CEntity* e)

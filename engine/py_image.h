@@ -41,6 +41,7 @@ void CScriptEngine::Init_Image()
     imagetype.tp_basicsize=sizeof imagetype;
     imagetype.tp_dealloc=(destructor)Image_Destroy;
     imagetype.tp_getattr=(getattrfunc)Image_GetAttribute;
+    imagetype.tp_doc="A hardware-dependant image.";
     
     // Create the Python screen image
     pScreenobject=(PyObject*)PyObject_New(v_ImageObject,&imagetype);

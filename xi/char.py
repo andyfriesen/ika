@@ -20,7 +20,20 @@ import party
 itemdb = ItemDatabase()
 skilldb = SkillDatabase()
 
+class _EquipSlot(object):
+    __slots__ = ['type', 'item']
+    def __init__(self, type, item = None):
+        self.type = type
+        self.item = item
+    
+    def __str__(self):
+        return self.type + '\t' + self.item.name
+        
+    def __repr__(self):
+        return self.__str__()
+
 class Character(object):
+            
     def __init__(self, datfile):
         self.datfilename = datfile
 
@@ -28,6 +41,7 @@ class Character(object):
         self.portrait = Image()
         self.chrfile = 'null'
         self.charclass = 'null'
+        self.equip = [] # list of _EquipSlot objects
 
         self.LoadDatFile(datfile)
 
@@ -50,13 +64,20 @@ class Character(object):
 
         self.ent = None        
 
-        self.equip = {}
-        for it in equiptypes:
-            self.equip[it]=None
-
         self.skills = SkillList()        
 
         self.CalcEquip()
+
+    #--------------------------------------------------------------------
+
+    def Heal(self, amount):
+        if self.HP > 0:
+            self.HP = min(self.maxHP, self.HP + amount)
+
+    #--------------------------------------------------------------------
+
+    def Hurt(self, amount):
+        self.HP = max(0, self.HP - amount)
 
     #--------------------------------------------------------------------
 
@@ -66,11 +87,10 @@ class Character(object):
         #if type(item) is str:   # you can pass a string or an Item object
         item = itemdb[itemname]
         
-        if self.charclass in item.equipby:
+        if self.charclass in item.equipby or 'all' in item.equipby:
             return True
-        if 'all' in item.equipby:
-            return True
-        return False
+        else:
+            return False
 
     #--------------------------------------------------------------------
 
@@ -104,27 +124,34 @@ class Character(object):
 
     #--------------------------------------------------------------------
 
-    def Equip(self, itemname):
-        """
+    def Equip(self, itemname, slot = None):
+        '''
         Equips the specified item.equipby
 
         If there's one in the group's inventory, it's taken from there.
         The currently equipped item is put in the inventory, if applicable.
-        """
         
+        If slot is omitted, the first applicable slot in the character's equip
+        list is chosen.
+        '''
+
         item = itemdb[itemname]
         
-        if not item.equiptype in equiptypes:
-            raise XiException('Invalid equipment type '+`item.equiptype`)
-
+        if slot is None:
+            for i in range(len(self.equip)):
+                if self.equip[i].type == item.equiptype:
+                    self.Equip(itemname, i)
+                    return
+            return        
+        
         # put what was equipped before back (if anything was there)
-        if self.equip[item.equiptype]:
-            party.inv.Give(self.equip[item.equiptype].name)
+        if self.equip[slot].item:
+            party.inv.Give(self.equip[slot].item.name)
 
         if party.inv.Find(itemname) is not None:
             party.inv.Take(itemname)
             
-        self.equip[item.equiptype] = item
+        self.equip[slot].item = item
         self.CalcEquip()
 
     #--------------------------------------------------------------------
@@ -155,31 +182,34 @@ class Character(object):
         self.atk = 0
         self.Def = 0
         self.hit = 0
-        self.eva = 0
+        self.eva = self.spd * 4
 
         # equipment bonuses
-        for equip in self.equip.values():
-            if equip is None:
+        for equip in self.equip:
+            type = equip.type
+            item = equip.item
+            
+            if item is None:
                 continue
-            #self.maxHP += equip.hp
-            #self.maxMP += equip.mp
-            self.str += equip.str
-            self.vit += equip.vit
-            self.mag += equip.mag
-            self.wil += equip.wil
-            self.spd += equip.spd
-            self.luk += equip.luk
+            #self.maxHP += item.hp
+            #self.maxMP += item.mp
+            self.str += item.str
+            self.vit += item.vit
+            self.mag += item.mag
+            self.wil += item.wil
+            self.spd += item.spd
+            self.luk += item.luk
 
-            self.atk += equip.atk
-            self.Def += equip.Def
-            self.hit += equip.hit
-            self.eva += equip.eva
+            self.atk += item.atk
+            self.Def += item.Def
+            self.hit += item.hit
+            self.eva += item.eva
 
         # calculate the derived stats
         self.atk += self.str
         self.Def += self.vit
-        self.eva = min(self.eva + self.spd * 4, 99)    # cap evade and hit# to 99%
-        self.hit = min(self.hit, 99)                   # hit% is dependant PURELY on equipment
+        self.eva = min(self.eva, 99)    # cap evade and hit# to 99%
+        self.hit = min(self.hit, 99)
 
     #--------------------------------------------------------------------
 
@@ -232,12 +262,15 @@ class Character(object):
                 self.initSPD, self.endSPD = GetPairOfNumbers(tokens)
             elif t =='luk':
                 self.initLUK, self.endLUK = GetPairOfNumbers(tokens)
+            elif t == 'equipslots':
+                s = tokens.Next().lower()
+                while s != 'end':
+                    self.equip.append(_EquipSlot(s))
+                    s = tokens.Next().lower()
 
             elif t =='/*':                  # comment skipper
-                t = tokens.Next()
                 while t != '*/':
                     t = tokens.Next()
-                continue
 
             else:
                 Exit('Unknown '+datfile+' token, '+`t`)

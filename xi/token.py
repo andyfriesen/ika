@@ -33,6 +33,13 @@ class TokenStream:
     def WhiteSpace(self):
         while 1:
             c = self.text[self.curpos]
+
+            # comment skipper
+            if c == '#':
+                while self.text[self.curpos] != '\n' and not self.EOF():
+                    self.curpos += 1
+                continue
+                    
             if not c in self.delimiters:
                 return
 

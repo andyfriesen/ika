@@ -64,16 +64,17 @@ class MainMenu(StatelessProxy):
         trans.Execute()
         
     def Hide(self):
-        trans.AddWindow(self.statbar, (self.statbar.Left, -self.statbar.height) )
-        trans.AddWindow(self.mainmenu, (XRes(), self.mainmenu.y) )
+        trans.AddWindow(self.statbar, (self.statbar.Left, -self.statbar.height), remove = True)
+        trans.AddWindow(self.mainmenu, (XRes(), self.mainmenu.y), remove = True)
         trans.Execute()
+        trans.Reset()
         
     def RunMenu(self, menu):
         # hold onto this so we can put the menu back later
         r = self.mainmenu.Rect
         
-        trans.AddWindow(self.mainmenu, (XRes(), self.mainmenu.y) )
         menu.StartShow()
+        trans.AddWindow(self.mainmenu, (XRes() + 20, self.mainmenu.y) )
         trans.Execute()
         
         result = menu.Execute()
@@ -113,9 +114,9 @@ class MainMenu(StatelessProxy):
 #------------------------------------------------------------------------------
 
 class Dummy(object):
-    def StartShow(_, trans):
+    def StartShow(_):
         pass
-    def StartHide(_, trans):
+    def StartHide(_):
         pass
     def Execute(_):
         return True

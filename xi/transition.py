@@ -51,6 +51,11 @@ class Transition(StatelessProxy):
     def RemoveWindow(_, window):
         del _.windows[window]
         
+    def Reset(_):
+        _.curtime = 0
+        for wnd in _.windows.keys():
+            r = wnd.Rect
+            _.windows[wnd] = (r, r)
             
     def Finish(_):
         _.curtime = _.time

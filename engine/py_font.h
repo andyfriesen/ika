@@ -32,6 +32,7 @@ void CScriptEngine::Init_Font()
     fonttype.tp_dealloc=(destructor)Font_Destroy;
     fonttype.tp_getattr=(getattrfunc)Font_GetAttribute;
     fonttype.tp_setattr=(setattrfunc)Font_SetAttribute;
+    fonttype.tp_doc="An ika font.\nTODO: say something interesting in here. :P";
 }
 
 PyObject* CScriptEngine::Font_New(PyObject* self,PyObject* args)
