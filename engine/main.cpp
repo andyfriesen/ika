@@ -372,10 +372,10 @@ void CEngine::Render(const char* sTemprstring)
         int maxx=(map.Width() *tiles.Width() ) - gfxImageWidth (hRenderdest);                // and make sure it's still in range
         int maxy=(map.Height()*tiles.Height()) - gfxImageHeight(hRenderdest);
         
-        if (xwin<0)        xwin=0;
-        if (ywin<0)        ywin=0;
         if (xwin>=maxx)    xwin=maxx-1;
         if (ywin>=maxy)    ywin=maxy-1;
+        if (xwin<0)        xwin=0;
+        if (ywin<0)        ywin=0;
     }
     
     if (!sTemprstring)
