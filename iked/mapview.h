@@ -132,7 +132,7 @@ private:
     wxScrolledWindow*   pScrollwin;
     CGraphFrame*        pGraph;
     CLayerVisibilityControl*
-                        pLayerlist;
+                        _layerList;
 
 protected:
     CEntityEditor*      _entityEditor;

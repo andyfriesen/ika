@@ -23,14 +23,14 @@ void CLayerVisibilityControl::Clear()
     wxCheckListBox::Clear();
 }
 
-void CLayerVisibilityControl::AppendItem(const std::string& name, int idx)
+void CLayerVisibilityControl::AppendLayer(const std::string& name, int idx)
 {
     layidx.push_back(idx);
 
     Append(name.c_str());
 }
 
-void CLayerVisibilityControl::CheckItem(int idx)
+void CLayerVisibilityControl::CheckLayer(int idx)
 {
     for (uint i = 0; i < layidx.size(); i++)
     {
@@ -42,7 +42,7 @@ void CLayerVisibilityControl::CheckItem(int idx)
     }
 }
 
-void CLayerVisibilityControl::SelectItem(int idx)
+void CLayerVisibilityControl::SelectLayer(int idx)
 {
     for (uint i = 0; i < layidx.size(); i++)
     {
@@ -63,12 +63,6 @@ void CLayerVisibilityControl::OnKeyDown(wxListEvent& event) {}
 
 void CLayerVisibilityControl::OnItemChecked(wxCommandEvent& event)
 {
-/*    int idx=-1;
-    for (int i = 0; i < layidx.size(); i++)
-        if (layidx[i]==event.GetInt())
-        {   idx = i;  break;  }
-
-    if (idx==-1) return;*/
     int idx = layidx[event.GetInt()];
 
     pMapview->OnLayerToggleVisibility(idx, IsChecked( event.GetInt() ));

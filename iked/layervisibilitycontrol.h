@@ -19,9 +19,9 @@ public:
     CLayerVisibilityControl(wxWindow* parent, int id, CMapView* mapview);
 
     void Clear();
-    void AppendItem(const std::string& name, int idx);
-    void CheckItem(int idx);
-    void SelectItem(int idx);
+    void AppendLayer(const std::string& name, int idx);
+    void CheckLayer(int idx);
+    void SelectLayer(int idx);
 
     void OnItemSelected(wxCommandEvent& event);
     void OnKeyDown(wxListEvent& event);

@@ -555,8 +555,8 @@ void CMapView::Init()
     wxBoxSizer* mainSizer = new wxBoxSizer(wxVERTICAL);
 
         mainSizer->Add(new LayerToolBar(panel, this), 0, wxALL);
-        pLayerlist = new CLayerVisibilityControl(panel, -1, this);
-        mainSizer->Add(pLayerlist, 1, wxALL | wxEXPAND);
+        _layerList = new CLayerVisibilityControl(panel, -1, this);
+        mainSizer->Add(_layerList, 1, wxALL | wxEXPAND);
 
     panel->SetSizer(mainSizer);
 
@@ -600,6 +600,9 @@ void CMapView::Init()
     pRightbar->SetScrollbar(wxVERTICAL,   0, w, _map->Height() * pTileset->Height());
     pRightbar->SetScrollbar(wxHORIZONTAL, 0, h, _map->Width()  * pTileset->Width());
     xwin = ywin = 0;
+
+    for (int i = 0; i < _map->NumLayers(); i++)
+        nLayertoggle[i] = true;
 
     UpdateLayerList();
     InitAccelerators();
@@ -870,6 +873,9 @@ void CMapView::OnMoveLayerDown(wxCommandEvent&)
 
 void CMapView::OnDeleteLayer(wxCommandEvent&)
 {
+    if (_curLayer < 0 || _curLayer > 9)
+        return; // can't delete special layers.
+
     int result = wxMessageBox("Are you sure you want to delete this layer?\nThis cannot be undone!", "You sure?", wxYES_NO | wxCENTRE, this);
     if (result == wxYES)
     {
@@ -886,6 +892,7 @@ void CMapView::OnDeleteLayer(wxCommandEvent&)
                 continue;
             }
             
+            // adjust the rest of the rstring, bump the character down one.
             if (s[i] > c && s[i] < '9')
                 s[i]--;
             i++;
@@ -905,6 +912,7 @@ void CMapView::OnNewLayer(wxCommandEvent&)
         _map->AddLayer(10);
         std::string s = _map->GetRString();
         _map->SetRString(s + (char)('0' + _map->NumLayers()));
+        nLayertoggle[_map->NumLayers() - 1] = true;
         UpdateLayerList();
     }
     else
@@ -969,7 +977,7 @@ void CMapView::OnLayerChange(int lay)
         nLayertoggle[lay] = visible;
         Render();
         pGraph->ShowPage();
-        pLayerlist->CheckItem(lay);
+        _layerList->CheckLayer(lay);
     }
 }
 
@@ -1003,7 +1011,7 @@ void CMapView::UpdateLayerList()
     // Fill up the layer info bar
     const string& s = _map->GetRString();
 
-    pLayerlist->Clear();
+    _layerList->Clear();
     
     for (uint idx = 0; idx < s.length(); idx++)
     {
@@ -1017,27 +1025,30 @@ void CMapView::UpdateLayerList()
 
             SMapLayerInfo lay;
             _map->GetLayerInfo(lay, c);
-            pLayerlist->AppendItem(va("Layer %i", c + 1), c);
-            pLayerlist->Check(pLayerlist->Number() - 1);
+            _layerList->AppendLayer(va("Layer %i", c + 1), c);
 
-            nLayertoggle[c]= visible;
+            if (nLayertoggle[c])
+                _layerList->CheckLayer(c);
         }
         else if (c == 'E')
         {
-            pLayerlist->AppendItem("Entities", lay_entity);
-            pLayerlist->Check(pLayerlist->Number() - 1);
-            nLayertoggle[lay_entity] = visible;
+            _layerList->AppendLayer("Entities", lay_entity);
+            if (nLayertoggle[lay_entity])
+                _layerList->CheckLayer(lay_entity);
         }
         else if (c == 'R')
-            pLayerlist->AppendItem("Render Hook", lay_render);
+            _layerList->AppendLayer("Render Hook", lay_render);
 //        else if (c =='R')
 //            pLayerlist->AppendItem("HookRetrace", -1);  // we don't do anything when the hookretrace "layer" is selected.
     }
 
-    pLayerlist->AppendItem("Zones", lay_zone);
-    pLayerlist->AppendItem("Obstructions", lay_obstruction);
+    _layerList->AppendLayer("Zones", lay_zone);
+    _layerList->AppendLayer("Obstructions", lay_obstruction);
 
-    pLayerlist->SelectItem(_curLayer);
+    if (nLayertoggle[lay_zone])         _layerList->CheckLayer(lay_zone);
+    if (nLayertoggle[lay_obstruction])  _layerList->CheckLayer(lay_obstruction);
+
+    _layerList->SelectLayer(_curLayer);
 }
 
 // ------------------------------ Rendering -------------------------

@@ -821,6 +821,12 @@ void Map::AddLayer(int pos)
 
 void Map::DeleteLayer(int pos)
 {
+    if (pos < 0 || pos >= NumLayers())
+        return;
+
+    info.erase(info.begin() + pos);
+    delete[] pData[pos];
+    pData.erase(pData.begin() + pos);
 }
 
 void Map::GetLayerInfo(SMapLayerInfo& nfo, int layidx)
