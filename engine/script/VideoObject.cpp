@@ -14,6 +14,7 @@ namespace Script
             {   "Blit",         (PyCFunction)Video_Blit,        1   },
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   1   },
             {   "DistortBlit",  (PyCFunction)Video_DistortBlit, 1   },
+            {   "TileBlit",     (PyCFunction)Video_TileBlit,    1   },
             // TODO: more blits.  I want a wrapblit, tintblit, and others
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   1   },
             {   "DrawLine",     (PyCFunction)Video_DrawLine,    1   },
@@ -110,6 +111,24 @@ namespace Script
 
             self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
             self->video->DistortBlitImage(image->img, x, y);
+            
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Video_TileBlit)
+        {
+            Script::Image::ImageObject* image;
+            int x, y;
+            int w, h;
+            float scalex = 1, scaley = 1;
+            int trans = 1;
+
+            if (!PyArg_ParseTuple(args, "Oiiii|ffi:Video.DistortBlit", &image, &x, &y, &w, &h, &scalex, &scaley, &trans))
+                return 0;
+
+            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->TileBlitImage(image->img, x, y, w, h, scalex, scaley);
             
             Py_INCREF(Py_None);
             return Py_None;

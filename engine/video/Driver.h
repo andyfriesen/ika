@@ -64,6 +64,9 @@ namespace Video
         /// Blits a distorted version of the image to the screen, given the provided corner points.
         virtual void DistortBlitImage(Image* img, int x[4], int y[4]) = 0;
 
+        /// "tile" blits an image to fill the rect specified.
+        virtual void TileBlitImage(Image* img, int x, int y, int w, int h, float scalex, float scaley) = 0;
+
         /// Draws a single pixel on the screen.
         virtual void DrawPixel(int x, int y, u32 colour) = 0;
 

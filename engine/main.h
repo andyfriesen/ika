@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VER "0.40alpha"
+#define VER "0.40"
 
 #ifdef _DEBUG
 #   define VERSION VER " (debug)"

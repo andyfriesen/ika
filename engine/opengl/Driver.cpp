@@ -164,6 +164,22 @@ namespace OpenGL
         glEnd();
     }
 
+    void Driver::TileBlitImage(Video::Image* i, int x, int y, int w, int h, float scalex, float scaley)
+    {
+        Image* img = (Image*)i;
+
+        float texX = float(w) / img->Width()  * scalex;
+        float texY = float(h) / img->Height() * scaley;
+
+        SwitchTexture(img->_texture);
+        glBegin(GL_QUADS);
+        glTexCoord2f(0, 0);         glVertex2i(x, y);
+        glTexCoord2f(texX, 0);      glVertex2i(x + w, y);
+        glTexCoord2f(texX, texY);   glVertex2i(x + w, y + h);
+        glTexCoord2f(0, texY);      glVertex2i(x, y + h);
+        glEnd();
+    }
+
     void Driver::DrawPixel(int x, int y, u32 colour)
     {
         glDisable(GL_TEXTURE_2D);
@@ -342,6 +358,10 @@ namespace OpenGL
         return Point(_xres, _yres);
     }
 
+    int Driver::GetFrameRate() const
+    {
+        return fps.FPS();
+    }
     void Driver::SwitchTexture(uint tex)
     {
         if (tex == _lasttex)
@@ -349,10 +369,5 @@ namespace OpenGL
 
         _lasttex = tex;
         glBindTexture(GL_TEXTURE_2D, tex);
-    }
-
-    int Driver::GetFrameRate() const
-    {
-        return fps.FPS();
     }
 };

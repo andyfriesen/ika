@@ -212,6 +212,7 @@ namespace Script
         METHOD(Video_Blit, VideoObject);
         METHOD(Video_ScaleBlit, VideoObject);
         METHOD(Video_DistortBlit, VideoObject);
+        METHOD(Video_TileBlit, VideoObject);
         METHOD(Video_DrawPixel, VideoObject);
         METHOD(Video_DrawLine, VideoObject);
         METHOD(Video_DrawRect, VideoObject);
