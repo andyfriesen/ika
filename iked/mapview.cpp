@@ -8,6 +8,8 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_PAINT(CMapView::OnPaint)
     EVT_ERASE_BACKGROUND(CMapView::OnErase)
     EVT_SIZE(CMapView::OnSize)
+
+    EVT_CLOSE(CMapView::OnClose)
 END_EVENT_TABLE()
 
 CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,const wxSize& size,const long style)
@@ -27,13 +29,6 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());
 }
 
-CMapView::~CMapView()
-{
-    pParentwnd->map.Release(pMap);
-    pParentwnd->vsp.Release(pTileset);
-    delete pTileset;
-}
-
 void CMapView::OnPaint()
 {
     wxPaintDC paintdc(this);
@@ -42,11 +37,8 @@ void CMapView::OnPaint()
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-    glBegin(GL_TRIANGLES);
-    glColor3f(1,0,0);   glVertex2i(50,0);
-    glColor3f(0,1,0);   glVertex2i(0,100);
-    glColor3f(0,0,1);   glVertex2i(100,100);
-    glEnd();
+    for (int x=0; x<20; x++)
+        pTileset->DrawTile(x*16,0,x,*pGraph);
 
     glFlush();
     pGraph->ShowPage();
@@ -55,4 +47,10 @@ void CMapView::OnPaint()
 void CMapView::OnSize(wxSizeEvent& event)
 {
     pGraph->SetSize(event.GetSize());
+}
+
+void CMapView::OnClose()
+{
+    pParentwnd->map.Release(pMap);
+    pParentwnd->vsp.Release(pTileset);
 }

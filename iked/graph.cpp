@@ -24,9 +24,9 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
     glScissor(0,0,w,h);
     glDisable(GL_DEPTH_TEST);
     glEnable(GL_TEXTURE_2D);
-    glShadeModel(GL_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA,GL_ONE_MINUS_SRC_ALPHA);
+    glShadeModel(GL_SMOOTH);
 
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
@@ -136,5 +136,5 @@ void CImage::Update(const CPixelMatrix& src)
     int nTexheight=nHeight;
 
     glBindTexture(GL_TEXTURE_2D,hTex);
-    glTexImage2D(GL_TEXTURE_2D,0,4,nWidth,nHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)src.GetPixelData());
+    glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nWidth,nHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)src.GetPixelData());
 }

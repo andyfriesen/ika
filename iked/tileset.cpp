@@ -4,6 +4,7 @@
 #include "graph.h"
 
 CTileSet::CTileSet()
+: pVsp(0)
 {
 }
 
@@ -66,4 +67,12 @@ bool CTileSet::Load(const char* fname)
 bool CTileSet::Save(const char* fname)
 {
     return false;
+}
+
+void CTileSet::DrawTile(int x,int y,int tileidx,CGraphFrame& dest)
+{
+    if (tileidx<0 || tileidx>=bitmaps.size())
+        return;
+
+    dest.Blit(*bitmaps[tileidx].pImg,x,y,true);
 }

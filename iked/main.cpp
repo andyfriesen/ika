@@ -69,6 +69,10 @@ CMainWnd::CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
     GetStatusBar()->SetStatusWidths(2,nWidths);
 }
 
+CMainWnd::~CMainWnd()
+{
+}
+
 // creates the base menu items that apply to all app windows.
 // This is here because wxWindows won't let me just tack on an extra menu depending on the active MDI child. ;P
 wxMenuBar* CMainWnd::CreateBasicMenu()

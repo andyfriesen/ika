@@ -58,6 +58,7 @@ public:
     
     CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
         const wxPoint& position,const wxSize& size,const long style);
+    ~CMainWnd();
     
     void FileQuit(wxCommandEvent& event);
     void NewProject(wxCommandEvent& event);

@@ -21,11 +21,12 @@ class CMapView : public wxMDIChildFrame
 
 public:
     CMapView(CMainWnd* parent,const string& fname,const wxPoint& position=wxDefaultPosition,const wxSize& size=wxDefaultSize,const long style=wxDEFAULT_FRAME_STYLE);
-    ~CMapView();
 
     void OnPaint();
     void OnErase(wxEraseEvent&) {}
     void OnSize(wxSizeEvent& event);
+
+    void OnClose();
 
     DECLARE_EVENT_TABLE()
 };

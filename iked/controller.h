@@ -73,6 +73,11 @@ public:
         pRsrc->nRefcount--;
         if (!pRsrc->nRefcount)
         {
+            if (resources.find(pRsrc->sName)==resources.end())
+            {
+                return;
+            }
+
             resources.erase(pRsrc->sName);
             delete pRsrc;
         }
