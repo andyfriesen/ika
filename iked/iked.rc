@@ -48,7 +48,7 @@ END
 // Menu
 //
 
-WXWINDOWMENU MENU DISCARDABLE
+WXWINDOWMENU MENU DISCARDABLE 
 BEGIN
     POPUP "&Window"
     BEGIN
@@ -120,6 +120,13 @@ END
 
 #endif    // APSTUDIO_INVOKED
 
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXT
+//
+
+DIALOGS                 TEXT    DISCARDABLE     "dlg.wxr"
 #endif    // English (Canada) resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -134,6 +141,4 @@ END
 
 /////////////////////////////////////////////////////////////////////////////
 #endif    // not APSTUDIO_INVOKED
-
-
 

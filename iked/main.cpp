@@ -31,6 +31,9 @@ bool CApp::OnInit()
     SetTopWindow(mainwnd);
 
     wxResourceParseData(ConfigDlg);
+    wxResourceParseData(Entities);
+    /*wxString sDlginfo=wxLoadUserResource("DIALOGS","TEXT");
+    wxResourceParseString(const_cast<char*>(sDlginfo.c_str()));*/
   
     return TRUE;
 }

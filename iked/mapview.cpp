@@ -4,11 +4,13 @@
 #include "tileset.h"
 #include "log.h"
 #include "layervisibilitycontrol.h"
+#include "entityeditor.h"
 #include <gl\glu.h>
 
 #include <wx\laywin.h>
 #include <wx\sashwin.h>
 #include <wx\checklst.h>
+#include <wx\minifram.h>
 
 /*
 
@@ -36,7 +38,7 @@ namespace
 
         void ScrollRel(wxScrollWinEvent& event,int amount)
         {
-            int max=GetScrollRange(event.GetOrientation());
+                int max=GetScrollRange(event.GetOrientation());
             int thumbsize=GetScrollThumb(event.GetOrientation());
 
             amount+=GetScrollPos(event.GetOrientation());
@@ -163,6 +165,9 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
 
     nCurlayer=0;
     csrmode=mode_normal;
+
+    CEntityEditor* bleh=new CEntityEditor(this);
+    bleh->Show(true);
 
     Show();
 }
@@ -319,12 +324,11 @@ void CMapView::Zoom(const int& nZoomscale)
 {
     nZoom+=nZoomscale;
     if (nZoom<1) nZoom=1;
-    if (nZoom>32) nZoom=32;
+    if (nZoom>255) nZoom=255;
 
     UpdateScrollbars();
     Render();   pGraph->ShowPage();
 }
-
 
 void CMapView::OnZoomIn(wxCommandEvent& event)    { Zoom(1);  }
 void CMapView::OnZoomOut(wxCommandEvent& event)   { Zoom(-1); }
@@ -333,12 +337,7 @@ void CMapView::OnZoomOut2x(wxCommandEvent& event) { Zoom(-2); }
 void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
 void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
 
-void CMapView::OnZoomNormal(wxCommandEvent& event)
-{
-    nZoom=nZoomscale;
-    UpdateScrollbars();
-    Render();   pGraph->ShowPage();
-}
+void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(-nZoom); }  // >:D
 
 //------------------------------------------------------------
 

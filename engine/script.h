@@ -5,7 +5,9 @@
 #include "types.h"
 #include "python.h"
 
-/*
+/*!
+    Python API encapsulation class.
+
     Due to the way the Python API is structured, the script engine simply will not support multiple instances.
     Don't even try it. ^_~
 
@@ -14,7 +16,7 @@
     A very, very good idea to try would be to make a template class for all these Python objects.
     
     I hate this.  It's retarded.  Either wrap it in a namespace and live with its globalness, or
-    figure out how to do it the Right Way.
+    figure out how to make it not so gay and full of static things. -_-;
 */
 
 class CEngine;                                                // proto

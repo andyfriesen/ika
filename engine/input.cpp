@@ -72,7 +72,7 @@ Input::~Input()
         ShutDown();
 }
 
-inline int Input::Test(HRESULT result,char* errmsg)
+inline bool Input::Test(HRESULT result,char* errmsg)
 // Just to keep the error checking code from taking up so much space in the init routine.
 {
     if (result!=DI_OK)

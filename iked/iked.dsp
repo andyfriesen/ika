@@ -172,6 +172,10 @@ SOURCE=.\docview.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\entityeditor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\fontview.cpp
 # End Source File
 # Begin Source File
@@ -221,6 +225,10 @@ SOURCE=.\controller.h
 # Begin Source File
 
 SOURCE=.\docview.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\entityeditor.h
 # End Source File
 # Begin Source File
 
@@ -399,5 +407,41 @@ SOURCE=.\resource.h
 SOURCE=.\vsp.ico
 # End Source File
 # End Group
+# Begin Source File
+
+SOURCE=.\wx\msw\cdrom.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\computer.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\drive.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\file1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\floppy.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\folder1.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\folder2.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\removble.ico
+# End Source File
+# Begin Source File
+
+SOURCE=.\wx\msw\tip.ico
+# End Source File
 # End Target
 # End Project

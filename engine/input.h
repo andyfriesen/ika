@@ -1,9 +1,5 @@
-// Input module for v2.6 by the Speed Bump
-// This file is GPL.
-// In short: there is NO WARRANTY on this, you can't keep it secret, and you can't steal credit from me.
-
-#ifndef w_input_h
-#define w_input_h
+#ifndef INPUT_H
+#define INPUT_H
 
 #include <windows.h>
 #include <dinput.h>
@@ -11,80 +7,86 @@
 
 const int nControls=20;                                     // ugh
 
+/*!
+    Main input class.
+
+    Encapsulates all input devices, and presents a single, unified interface.
+*/
 class Input
 {
 private:
     // TODO: also make a struct for a joystick button.
+
+    //! Information regarding a single keyboard key
     struct SKey
     {
-        bool    bPressed;                                   // true if the key is down
-        int     nControl;                                   // the index of the virtual control this key is bound to
-        bool    bIsbound;                                   // true if nControl is valid
+        bool    bPressed;                                   //!< true if the key is down
+        int     nControl;                                   //!< the index of the virtual control this key is bound to
+        bool    bIsbound;                                   //!< true if nControl is valid
     };
     
     // handles
-    HINSTANCE hInst;                                        // app handle
-    HWND      hWnd;                                         // window handle
+    HINSTANCE hInst;                                        //!< app handle
+    HWND      hWnd;                                         //!< window handle
     
-    // DirectInput objects
-    LPDIRECTINPUT       lpdi;
-    LPDIRECTINPUTDEVICE keybd;
-    // LPDIRECTINPUTDEVICE joystick;
+    LPDIRECTINPUT       lpdi;                               //!< DirectInput instance
+    LPDIRECTINPUTDEVICE keybd;                              //!< Keyboard instance
+    // LPDIRECTINPUTDEVICE joystick;                        //!< Joystick(s)?
     
     // key buffer
-    // keep this, or std::queue?  I rather like this setup, it's so elegant.  But a little limiting.
-    unsigned char key_buffer[256];                          // remember up to 256 events
-    unsigned char kb_start,kb_end;                          // start/end of keyboard buffer.  Since they're bytes, they automaticly wrap around.
+    //! keep this, or std::queue?  I rather like this setup, it's so elegant.  But a little limiting.
+    unsigned char key_buffer[256];                          //!< 256 entry long key queue
+    unsigned char kb_start,kb_end;                          //!< start/end index of keyboard buffer.  Since they're bytes, they automaticly wrap around.
     
-    std::queue<char> controlbuffer;                         // virtual control event queue
+    std::queue<char> controlbuffer;                         //!< virtual control event queue
     
-    RECT    mclip;
+    RECT    mclip;                                          //!< The rect that the mouse cursor is confined to
     
-    int        Test(HRESULT result,char* errmsg);
+    bool    Test(HRESULT result,char* errmsg);              //!< Little test function to make the init code cleaner.
     
 public:
     
-    Input();                                                // constructor
-    ~Input();                                               // destructor
+    Input();                                                //!< constructor
+    ~Input();                                               //!< destructor
     
-    int     Init(HINSTANCE hinst,HWND hwnd);
-    void    ShutDown();
+    int     Init(HINSTANCE hinst,HWND hwnd);                //!< Initialization
+    void    ShutDown();                                     //!< Cleanup
     
-    void    Poll();                                         // updates key queue and key array
-    void    Update();                                       // updates left, down, etc...
+    void    Poll();                                         //!< updates key queue and key array
+    void    Update();                                       //!< updates left, down, etc...
     
     // Virtual controls (a control is basically a button)
-    bool    control[nControls];                             // virtual key thingies
-    bool&    up;                                            // "standard" controls.
-    bool&    down;
-    bool&    left;
-    bool&    right;
-    bool&    enter;
-    bool&    cancel;
+    bool    control[nControls];                             //!< virtual key thingies    
+    bool&   up;
+    bool&   down;                                                 
+    bool&   left;
+    bool&   right;
+    bool&   enter;
+    bool&   cancel;
     
-    int        NextControl();                               // returns the code of the last button pressed
-    void    ClearControls();                                // clears the control queue
-    void    BindKey(int nButtonidx,int nKeycode);           // Links nKeycode with nButtonidx
-    void    UnbindKey(int nKeycode);                        // unbinds a key.
+    int     NextControl();                                  //!< returns the code of the last button pressed
+    void    ClearControls();                                //!< clears the control queue
+    void    BindKey(int nButtonidx,int nKeycode);           //!< Links nKeycode with nButtonidx
+    void    UnbindKey(int nKeycode);                        //!< unbinds a key.
     
     // Keyboard stuff
-    SKey    keys[256];
-    char    last_pressed;                                   // last key event here
+    SKey    keys[256];                                      //!< Current key states
+    char    last_pressed;                                   //!< last key event here
     
-    int        GetKey();                                    // returns the next key in the queue
-    void    StuffKey(int key);                              // adds the key to the queue, as if it had been pressed
-    void    ClearKeys();
-    char    Scan2ASCII(int scancode);                       // returns the ASCII code. ;)
+    int     GetKey();                                       //!< returns the next key in the queue
+    void    StuffKey(int key);                              //!< adds the key to the queue, as if it had been pressed
+    void    ClearKeys();                                    //!< Clears the key queue
+    char    Scan2ASCII(int scancode);                       //!< Converts a keyboard scan code to its ASCII equivalent
     
     // mouse stuff
-    int        mousex,mousey;                               // mouse coordinates
-    int        mouseb;
+    int        mousex,mousey;                               //!< Current mouse coordinates
+    int        mouseb;                                      //!< Current mouse state. (bitmask)
     
-    void    MoveMouse(int x,int y);
-    void    UpdateMouse();
-    void    ClipMouse(int x1,int y1,int x2,int y2);
-    void    HideMouse();
-    void    ShowMouse();
+    void    MoveMouse(int x,int y);                         //!< Sets the mouse position
+    void    UpdateMouse();                                  //!< Polls the hardware for changes in the mouse's state.
+    void    ClipMouse(int x1,int y1,int x2,int y2);         //!< Clips the mouse to the specified rect.  The user will not be able to move the mouse cursor outside of this rect.
+    void    HideMouse();                                    //!< Hides the win32 mouse cursor
+    void    ShowMouse();                                    //!< Shows the win32 mouse cursor
 };
 
 #endif

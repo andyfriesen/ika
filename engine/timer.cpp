@@ -29,7 +29,7 @@ Timer::~Timer()
     Shutdown();
 }
 
-void CALLBACK TimeProc(UINT uID,UINT uMsg,DWORD dwUser,DWORD dw1,DWORD dw2)
+void CALLBACK Timer::TimeProc(UINT uID,UINT uMsg,DWORD dwUser,DWORD dw1,DWORD dw2)
 {
     Timer* This=(Timer*)dwUser;
     This->systime++;

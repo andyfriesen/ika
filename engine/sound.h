@@ -2,37 +2,43 @@
 #ifndef SOUND_H
 #define SOUND_H
 
+/*!
+    Sound interface.
+
+    TODO: Get rid of all this gay global business.
+*/
+
 typedef void* SMusic;
 typedef void* Ssfx;
 
-extern bool (*sfxInit)();		// inits the whole thing, returns true on success
-extern void (*sfxShutdown)();	// shuts everything down
+extern bool (*sfxInit)();                                   //!< inits the audio system, returns true on success
+extern void (*sfxShutdown)();                               //!< shuts everything down
 
-extern SMusic (*sfxLoadMusic)(const char* fname);	// Loads the music into m
-extern bool (*sfxFreeMusic)(SMusic m);						// stops playing and deallocates the music file
-extern bool (*sfxPlayMusic)(SMusic m);						// plays the music file
-extern void (*sfxStopMusic)(SMusic m);						// stops playback. (play can be called again to resume playback)
-extern int  (*sfxGetMusicPos)(SMusic m);
-extern void (*sfxSetMusicPos)(SMusic m,long newtime);
-extern int  (*sfxGetMusicVolume)(SMusic m);
-extern void (*sfxSetMusicVolume)(SMusic m,int newvol);		// sets the volume.  0-255
+extern SMusic (*sfxLoadMusic)(const char* fname);           //!< Loads the music file and returns it
+extern bool (*sfxFreeMusic)(SMusic m);                      //!< stops playing and deallocates the music file
+extern bool (*sfxPlayMusic)(SMusic m);                      //!< plays the music file
+extern void (*sfxStopMusic)(SMusic m);                      //!< stops playback. (play can be called again to resume playback)
+extern int  (*sfxGetMusicPos)(SMusic m);                    //!< Returns the current playback time
+extern void (*sfxSetMusicPos)(SMusic m,long newtime);       //!< Seeks to the specified position.
+extern int  (*sfxGetMusicVolume)(SMusic m);                 //!< Returns the volume the music is playing at.
+extern void (*sfxSetMusicVolume)(SMusic m,int newvol);      //!< sets the volume.  0-255
 
 
-extern Ssfx (*sfxLoadEffect)(const char* fname);		// loads the .wav file into s
-extern bool (*sfxFreeEffect)(Ssfx s);
+extern Ssfx (*sfxLoadEffect)(const char* fname);            //!< loads a .wav file and returns it
+extern bool (*sfxFreeEffect)(Ssfx s);                       //!< Deallocates a sound effect.
 
-extern bool (*sfxPlayEffect)(Ssfx s,int vol,int pan);		// vol is 0-255, pan is 0 (left) - 255 (right)
+extern bool (*sfxPlayEffect)(Ssfx s,int vol,int pan);       //!< vol is 0-255, pan is 0 (left) - 255 (right)
 
-extern void (*sfxUpdate)();
+extern void (*sfxUpdate)();                                 //!< Call this a lot or things will skip
 
-extern bool SetupSound(const char* dllname);
-extern void ShutdownSound();
+extern bool SetupSound(const char* dllname);                //!< Imports the DLL and assigns function pointers.
+extern void ShutdownSound();                                //!< Releases the DLL
 
 // Hackage!! Get rid of these ASAP.
 class CMusic
 {
 public:
-    SMusic	m;
+    SMusic    m;
     void Init() { m=NULL; }
     void Free() { if (m) sfxFreeMusic(m); m=NULL; }
     
@@ -42,8 +48,8 @@ public:
 class Csfx
 {
 public:
-    Ssfx	s;
-    void Init()	{ s=NULL; }
+    Ssfx    s;
+    void Init()    { s=NULL; }
     void Free() { if (s) sfxFreeEffect(s); s=NULL; }
     
     operator Ssfx() const { return s; }
