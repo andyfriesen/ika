@@ -6,6 +6,7 @@
 #include "vergepal.h"
 #include "rle.h"
 #include "misc.h"
+#include "log.h"
 
 #include "compression.h"
 #include "base64.h"
@@ -236,7 +237,7 @@ void CCHRfile::Load(const std::string& fname)
     }
     catch (std::runtime_error err)
     {
-        //Log::Write("LoadCHR(\"%s\"): %s", fname.c_str(), err.what());
+        Log::Write("LoadCHR(\"%s\"): %s", fname.c_str(), err.what());
         throw err;
     }
 

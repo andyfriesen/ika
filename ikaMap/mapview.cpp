@@ -397,8 +397,13 @@ uint MapView::EntityAt(int x, int y, uint layer)
         if (ent.y > y)  continue;
 
         SpriteSet* ss = GetEntitySpriteSet(&ents[i]);
-        if (ent.x + (ss ? ss->Width() : 16)  < x) continue;
-        if (ent.y + (ss ? ss->Height() : 16) < y) continue;
+        int hotx = ss ? ss->GetCHR()->HotX() : 0;
+        int hoty = ss ? ss->GetCHR()->HotY() : 0;
+        int width = ss ? ss->Width() : 16;
+        int height = ss ? ss->Height() : 16;
+
+        if (ent.x - hotx + width  < x) continue;
+        if (ent.y - hoty + height < y) continue;
 
         return i;
     }

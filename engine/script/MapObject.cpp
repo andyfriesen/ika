@@ -85,15 +85,10 @@ namespace Script
                 "each waypoint defined within the editor."
             },
 
-            /*{   "GetAllEntities",   (PyCFunction)Map_GetAllEntities,    METH_NOARGS,
+            {   "GetAllEntities",   (PyCFunction)Map_GetAllEntities,    METH_NOARGS,
                 "Map.GetAllEntities) -> list\n\n"
                 "Creates a list of every single existing entity, and returns it."
             },
-
-            {   "GetEntitiesOnLayer",   (PyCFunction)Map_GetEntitiesOnLayer,    METH_VARARGS,
-                "GetEntitiesOnLayer(layerIndex) -> list\n\n"
-                "Returns a list containing every entity on the specified layer.\n"
-            },*/
 
             {   0   }   // end of list
         };
@@ -419,6 +414,27 @@ namespace Script
             }
 
             return list;
+        }
+
+        METHOD(Map_GetAllEntities)
+        {
+            PyObject* list = PyList_New(Script::Entity::instances.size());
+
+            int i = 0;
+            for (std::map<::Entity*, Script::Entity::EntityObject*>::iterator iter = Script::Entity::instances.begin();
+                iter != Script::Entity::instances.end();
+                iter++)
+            {
+                PyList_SetItem(list, i, reinterpret_cast<PyObject*>(iter->second));
+                i++;
+            }
+
+            return list;
+
+            /*
+                def GetEntitiesOnLayer(layerIndex):
+                    return [ent for ent in ika.Map.GetAllEntities() if ent.layer == layerIndex]
+            */
         }
 
 #undef METHOD

@@ -588,7 +588,7 @@ void CEngine::TestActivate(const Entity* player)
     Entity* pEnt = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
     if (pEnt)
     {
-        if (!pEnt->activateScript.length() != 0)
+        if (!pEnt->activateScript.empty())
         {
             script.CallScript(pEnt->activateScript.c_str());
             input.Flush();

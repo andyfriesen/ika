@@ -258,8 +258,7 @@ namespace Script
         METHOD(Map_GetParallax, PyObject);
         METHOD(Map_SetParallax, PyObject);
         METHOD(Map_GetWaypoints, PyObject);
-        //METHOD(Map_GetAllEntities, PyObject);
-        //METHOD(Map_GetEntitiesOnLayer, PyObject);
+        METHOD(Map_GetAllEntities, PyObject);
 
         void Init();
         PyObject* New();

@@ -195,11 +195,26 @@ void Canvas::Rotate()
 
 void Canvas::Flip()
 {
+    /*
     Canvas temp(*this);
     
     for (int y = 0; y<_height; y++)
         for (int x = 0; x<_width; x++)
             SetPixel(x, y, temp.GetPixel(x, _height - y-1));
+    /*/
+    RGBA* topRow = _pixels;
+    RGBA* bottomRow = _pixels + (_height - 1) * _width;
+    ScopedArray<RGBA> tempRow(new RGBA[_width]);
+
+    while (topRow < bottomRow)
+    {
+        memcpy(tempRow.get(), topRow, _width * sizeof(RGBA));
+        memcpy(topRow, bottomRow, _width * sizeof(RGBA));
+        memcpy(bottomRow, tempRow.get(), _width * sizeof(RGBA));
+        topRow += _width;
+        bottomRow -= _width;
+    }
+    //*/
 }
 
 void Canvas::Mirror()

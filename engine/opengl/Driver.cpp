@@ -47,7 +47,12 @@ namespace OpenGL
 
         //Log::Write("%s", glGetString(GL_EXTENSIONS));
 
+#ifdef WIN32
         glBlendEquationEXT = (void (__stdcall *)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
+#else
+        glBlendEquationEXT = (void (*)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
+#endif
+
         if (!glBlendEquationEXT) 
         {
             Log::Write("glBlendEquationEXT not found.  Colour subtraction disabled.");
@@ -65,6 +70,8 @@ namespace OpenGL
         RGBA* pixels;
         int texwidth;
         int texheight;
+
+        src.Flip(); // GAY
 
         if (IsPowerOf2(src.Width()) && IsPowerOf2(src.Height()))
         {
@@ -95,6 +102,7 @@ namespace OpenGL
         glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+        src.Flip();
 
         if (dealloc)
             delete[] pixels;
@@ -131,7 +139,7 @@ namespace OpenGL
         switch (bm)
         {
         case Video::None:    glDisable(GL_BLEND);     break;
-        case Video::Matte:   // TODO: see if we can get GL to do matte?
+        case Video::Matte:   // TODO: see if we can get GL to do matte?  A shader would do it, but I think that's overkill. :)
         case Video::Normal:  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;
         case Video::Add:     glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;
         case Video::Subtract:
@@ -159,10 +167,10 @@ namespace OpenGL
 
         SwitchTexture(img->_texture);
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0);         glVertex2i(x, y);
-        glTexCoord2f(texX, 0);      glVertex2i(x + w, y);
-        glTexCoord2f(texX, texY);   glVertex2i(x + w, y + h);
-        glTexCoord2f(0, texY);      glVertex2i(x, y + h);
+        glTexCoord2f(0, texY);         glVertex2i(x, y);
+        glTexCoord2f(texX, texY);      glVertex2i(x + w, y);
+        glTexCoord2f(texX, 0);   glVertex2i(x + w, y + h);
+        glTexCoord2f(0, 0);      glVertex2i(x, y + h);
         glEnd();
     }
 
@@ -175,10 +183,10 @@ namespace OpenGL
 
         SwitchTexture(img->_texture);
         glBegin(GL_QUADS);
-        glTexCoord2f(0, 0);         glVertex2i(x, y);
-        glTexCoord2f(texX, 0);      glVertex2i(x + w, y);
-        glTexCoord2f(texX, texY);   glVertex2i(x + w, y + h);
-        glTexCoord2f(0, texY);      glVertex2i(x, y + h);
+        glTexCoord2f(0, texY);         glVertex2i(x, y);
+        glTexCoord2f(texX, texY);      glVertex2i(x + w, y);
+        glTexCoord2f(texX, 0);   glVertex2i(x + w, y + h);
+        glTexCoord2f(0, 0);      glVertex2i(x, y + h);
         glEnd();
     }
 
@@ -190,7 +198,7 @@ namespace OpenGL
         float endY = 1.0f * img->_height / img->_texHeight;
 
         float texX[] = { 0, endX, endX, 0 };
-        float texY[] = { 0, 0, endY, endY };
+        float texY[] = { endY, endY, 0, 0 };
 
         SwitchTexture(img->_texture);
         glBegin(GL_QUADS);
@@ -395,7 +403,7 @@ namespace OpenGL
 
     ::Video::Image* Driver::GrabImage(int x1, int y1, int x2, int y2)
     {
-#if 1
+#if 0
         ScopedPtr<Canvas> c(GrabCanvas(x1, y1, x2, y2));
         if (!c.get()) return 0;
 
@@ -403,9 +411,10 @@ namespace OpenGL
 #else
         // It'd be real nice if I could get this to work.  It'd be a lot faster, since it doesn't involve
         // copying pixels from the display to system memory.  Pixels go straight from the screen to the texture.
+        // Okay what the fuck.  It works now.  Awesomely. :D:D:D:D:D
 
-        y1 = _yres - y1;
-        y2 = _yres - y2;
+        //y1 = _yres - y1;
+        //y2 = _yres - y2;
 
         // clip
         if (x1 > x2) swap(x1, x2);

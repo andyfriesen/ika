@@ -18,6 +18,7 @@
 #include "importtilesdlg.h"
 
 // Other stuff
+#include "canvas.h"
 #include "tileset.h"
 #include "command.h"
 
@@ -37,6 +38,7 @@ namespace
         id_filesavemapas,
         id_fileloadtileset,
         id_filesavetilesetas,
+        id_fileexporttiles,
         id_fileexit,
 
         id_editundo,
@@ -465,6 +467,52 @@ void MainWindow::OnSaveTileSetAs(wxCommandEvent&)
     _tileSet->Save(dlg.GetPath().c_str());
 }
 
+void MainWindow::OnExportTileSet(wxCommandEvent&)
+{
+    wxFileDialog dlg(
+        this,
+        "Export Tileset to PNG",
+        "",
+        "",
+        "PNG images (*.png)|*.png|"
+        "All files (*.*)|*.*",
+        wxSAVE | wxOVERWRITE_PROMPT
+        );
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        const bool pad = true;
+        const int colSize = 18; // gay arbitrary constant until I get around to making a dialog.
+
+        int numRows = max<int>(1, _tileSet->Count() / colSize);
+        int tileWidth = _tileSet->Width() + (pad ? 1 : 0);
+        int tileHeight = _tileSet->Height() + (pad ? 1 : 0);
+
+        int width = tileWidth * colSize;
+        int height = tileHeight * numRows;
+
+        Canvas bigImage(width, height);
+        int i = 0;
+        for (int y = 0; y < numRows; y++)
+        {
+            for (int x = 0; x < colSize; x++)
+            {
+                CBlitter<Opaque>::Blit(_tileSet->Get(i), bigImage,
+                    -(x * tileWidth),
+                    -(y * tileHeight));
+
+                i++;
+                if (i >= _tileSet->Count())
+                    goto breakLoop;
+            }
+        }
+
+        bigImage.Save(dlg.GetPath().c_str());
+
+breakLoop:;
+    }
+}
+
 void MainWindow::OnExit(wxCommandEvent&)
 {
     Close(true);
@@ -580,14 +628,15 @@ void MainWindow::OnNewLayer(wxCommandEvent&)
 
 void MainWindow::OnDestroyLayer(wxCommandEvent&)
 {
-    HandleCommand(new DestroyLayerCommand(_mapView->GetCurLayer()));
+    if (_mapView->GetCurLayer() < _map->NumLayers())
+        HandleCommand(new DestroyLayerCommand(_mapView->GetCurLayer()));
 }
 
 void MainWindow::OnMoveLayerUp(wxCommandEvent&)
 {
     uint curLay = _mapView->GetCurLayer();
 
-    if (curLay != 0)
+    if (curLay != 0 && curLay < _map->NumLayers())
         HandleCommand(new SwapLayerCommand(curLay, curLay - 1));
 }
 

@@ -18,7 +18,7 @@ TileSetView::TileSetView(MainWindow* mw, wxWindow* parent)
     , _mainWnd(mw)
     , _ywin(0)
     , _curTile(0)
-    , _pad(false)
+    , _pad(true)
 {}
 
 TileSetView::~TileSetView()
@@ -104,8 +104,8 @@ void TileSetView::Render()
     int tileHeight = ts->Height() + (_pad ? 1 : 0);
 
     // Number of tiles high and wide to be drawn.
-    uint rowWidth = clientWidth  / tileWidth;
-    uint numCols  = clientHeight / tileHeight + 1;
+    uint rowWidth = max(1, clientWidth  / tileWidth);
+    uint numCols  = max(1, clientHeight / tileHeight + 2);
 
     // Index of the tile to be drawn in the upperleft corner.
     uint curTile  = (_ywin / tileHeight) * rowWidth;
@@ -143,7 +143,7 @@ breakLoop:;
         int x, y;
         TileToPoint(_curTile, x, y);
 
-        Rect(x - 1, y, ts->Width() + 1, ts->Height() + 1, RGBA(255, 255, 255));
+        Rect(x + 1, y, ts->Width(), ts->Height(), RGBA(255, 255, 255));
     }
 }
 
@@ -212,7 +212,10 @@ uint TileSetView::TilesPerRow() const
     if (_mainWnd->GetTileSet()->Count() == 0)
         return 1;
     else
-        return LogicalWidth() / (_mainWnd->GetTileSet()->Width() + (_pad ? 1 : 0));
+    {
+        int i = LogicalWidth() / (_mainWnd->GetTileSet()->Width() + (_pad ? 1 : 0));
+        return max(1, i);
+    }
 }
 
 uint TileSetView::NumTileRows() const

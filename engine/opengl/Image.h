@@ -18,9 +18,10 @@ namespace OpenGL
         uint _texture;
         int _texWidth, _texHeight;
         int _width, _height;
+        bool _flip;                         // FUCKING RETARDED HACK BECAUSE OPENGL WAS DESIGNED BY APES.  (if true, we invert texture coords when blitting)
 
         Image(uint tex, int tw, int th, int w, int h);
-        ~Image();
+        ~Image();       // protected for a reason.  Use Driver::FreeImage to nuke it.
 
     public:
         virtual int Width();

@@ -68,6 +68,7 @@ public:
     void OnSaveMapAs(wxCommandEvent&);
     void OnLoadTileSet(wxCommandEvent&);
     void OnSaveTileSetAs(wxCommandEvent&);
+    void OnExportTileSet(wxCommandEvent&);
     void OnExit(wxCommandEvent&);
     void OnUndo(wxCommandEvent&);
     void OnRedo(wxCommandEvent&);

@@ -10,6 +10,7 @@ namespace OpenGL
         , _texHeight(th)
         , _width(w)
         , _height(h)
+        , _flip(false)
     {
     }
 

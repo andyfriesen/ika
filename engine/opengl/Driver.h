@@ -34,8 +34,6 @@ namespace OpenGL
         virtual Video::Image* CreateImage(Canvas &pm);
 
         /// Frees the previously created image.
-        /// @note As of yet, this isn't really necessary.
-        /// deleting the image is safe.
         virtual void FreeImage(Video::Image* img);
 
         /// Clips the image to the provided rectangle.
