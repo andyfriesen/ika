@@ -239,7 +239,7 @@ void LayerList::Update(Map* map)
 
 void LayerList::UpdateIcons()
 {
-    const curLayer = _executor->GetCurrentLayer();
+    const uint curLayer = _executor->GetCurrentLayer();
 
     for (uint i = 0; i < _boxes.size(); i++)
     {

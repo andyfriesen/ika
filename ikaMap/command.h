@@ -3,7 +3,7 @@
 
 #include "types.h"
 #include "map.h"
-#include "canvas.h"
+#include "Canvas.h"
 
 struct Executor;
 

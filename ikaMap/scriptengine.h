@@ -1,7 +1,7 @@
 #ifndef SCRIPTENGINE_H
 #define SCRIPTENGINE_H
 
-#include "python.h"
+#include "Python.h"
 #include "script.h"
 
 struct MainWindow;

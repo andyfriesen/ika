@@ -4,8 +4,9 @@
 
 #include "imagebank.h"
 #include "misc.h"
+#include "chr.h"
 
-class CCHRfile;
+//class CCHRfile;
 
 struct SpriteSet : ImageBank
 {

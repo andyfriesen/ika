@@ -118,7 +118,7 @@ struct Listener
 
     void fire(ArgType arg)
     {
-        for (CallSet::iterator
+        for (typename CallSet::iterator
             iter = _list.begin();
             iter != _list.end();
             iter++)

@@ -4,6 +4,7 @@
 
 #include <wx/wx.h>
 
+#include <stdexcept>
 #include <stack>
 #include <map>
 
@@ -159,8 +160,8 @@ private:
     std::vector<Script*> _scripts;
     uint _curScript;    // the currently active tool script
     
-    std::stack<::Command*> _undoList;
-    std::stack<::Command*> _redoList;
+    std::stack< ::Command*> _undoList;
+    std::stack< ::Command*> _redoList;
 
     std::vector<bool>      _layerVisibility;
 
@@ -171,7 +172,7 @@ private:
     uint _curLayer;
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
-    static void ClearList(std::stack<::Command*>& list);
+    static void ClearList(std::stack< ::Command*>& list);
 };
 
 #endif

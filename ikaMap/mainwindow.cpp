@@ -24,7 +24,7 @@
 #include "map.h"
 #include "tileset.h"
 #include "spriteset.h"
-#include "canvas.h"
+#include "Canvas.h"
 
 // Other stuff
 #include "command.h"
@@ -145,7 +145,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_BUTTON(id_movelayerdown, MainWindow::OnMoveLayerDown)
 END_EVENT_TABLE()
 
-void MainWindow::ClearList(std::stack<::Command*>& list)
+void MainWindow::ClearList(std::stack< ::Command*>& list)
 {
     while (!list.empty())
     {
@@ -266,41 +266,41 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
      * more than one thing fire exactly one event.
      */
     {
-        tilesSet.add            (_mapView, MapView::OnMapChange);
-        obsSet.add              (_mapView, MapView::OnMapChange);
-        zonesChanged.add        (_mapView, MapView::OnMapChange);
+        tilesSet.add            (_mapView, &MapView::OnMapChange);
+        obsSet.add              (_mapView, &MapView::OnMapChange);
+        zonesChanged.add        (_mapView, &MapView::OnMapChange);
 
-        layerCreated.add        (_mapView, MapView::OnMapChange);
-        layerCreated.add        (_layerList, LayerList::OnMapLayersChanged);
+        layerCreated.add        (_mapView, &MapView::OnMapChange);
+        layerCreated.add        (_layerList, &LayerList::OnMapLayersChanged);
         
-        layerDestroyed.add      (_mapView, MapView::OnMapChange);
-        layerDestroyed.add      (_layerList, LayerList::OnMapLayersChanged);
+        layerDestroyed.add      (_mapView, &MapView::OnMapChange);
+        layerDestroyed.add      (_layerList, &LayerList::OnMapLayersChanged);
 
-        layersReordered.add     (_mapView, MapView::OnMapChange);
-        layersReordered.add     (_layerList, LayerList::OnMapLayersChanged);
+        layersReordered.add     (_mapView, &MapView::OnMapChange);
+        layersReordered.add     (_layerList, &LayerList::OnMapLayersChanged);
 
-        layerPropertiesChanged.add(_mapView, MapView::OnMapChange);
-        layerPropertiesChanged.add(_layerList, LayerList::OnMapLayersChanged);
+        layerPropertiesChanged.add(_mapView, &MapView::OnMapChange);
+        layerPropertiesChanged.add(_layerList, &LayerList::OnMapLayersChanged);
 
-        layerResized.add        (_mapView, MapView::OnMapChange);
+        layerResized.add        (_mapView, &MapView::OnMapChange);
 
-        entitiesChanged.add     (_mapView, MapView::OnMapChange);
-        mapPropertiesChanged.add(_mapView, MapView::OnMapChange);
+        entitiesChanged.add     (_mapView, &MapView::OnMapChange);
+        mapPropertiesChanged.add(_mapView, &MapView::OnMapChange);
 
-        tilesImported.add       (_tileSetView, TileSetView::OnTileSetChange);
-        tileSetChanged.add      (_tileSetView, TileSetView::OnTileSetChange);
+        tilesImported.add       (_tileSetView, &TileSetView::OnTileSetChange);
+        tileSetChanged.add      (_tileSetView, &TileSetView::OnTileSetChange);
 
-        mapLoaded.add           (bind(_mapView, MapView::OnMapChange));
-        mapLoaded.add           (bind(_tileSetView, TileSetView::OnTileSetChange));
-        mapLoaded.add           (bind(_layerList, LayerList::OnMapLayersChanged));
+        mapLoaded.add           (bind(_mapView, &MapView::OnMapChange));
+        mapLoaded.add           (bind(_tileSetView, &TileSetView::OnTileSetChange));
+        mapLoaded.add           (bind(_layerList, &LayerList::OnMapLayersChanged));
 
-        mapVisibilityChanged.add(_mapView, MapView::OnMapChange);
-        mapVisibilityChanged.add(_layerList, LayerList::OnVisibilityChanged);
+        mapVisibilityChanged.add(_mapView, &MapView::OnMapChange);
+        mapVisibilityChanged.add(_layerList, &LayerList::OnVisibilityChanged);
 
-        curLayerChanged.add     (_mapView, MapView::OnCurLayerChange);
-        curLayerChanged.add     (_layerList, LayerList::OnLayerActivated);
+        curLayerChanged.add     (_mapView, &MapView::OnCurLayerChange);
+        curLayerChanged.add     (_layerList, &LayerList::OnLayerActivated);
 
-        curTileChanged.add      (_tileSetView, TileSetView::OnCurrentTileChange);
+        curTileChanged.add      (_tileSetView, &TileSetView::OnCurrentTileChange);
     }
 
     // Create the menu.
@@ -683,7 +683,7 @@ void MainWindow::OnImportTiles(wxCommandEvent&)
         {
             // This might start to get a bit RAM intensive.
 
-            std::vector<::Command*> commands; // commands to be sent
+            std::vector< ::Command*> commands; // commands to be sent
 
             if (_tileSet->Count())  // if there are tiles to delete, delete them
                 commands.push_back(new DeleteTilesCommand(0, _tileSet->Count() - 1));   // One copy

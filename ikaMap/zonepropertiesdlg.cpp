@@ -27,7 +27,7 @@ Map* ZonePropertiesDlg::GetMap() const
 void ZonePropertiesDlg::UpdateList()
 {
     Map* map = GetMap();
-    std::string pos = _bluePrintList->GetStringSelection();
+    std::string pos = _bluePrintList->GetStringSelection().c_str();
 
     _bluePrintList->Clear();
     if (map->zones.empty()) return;

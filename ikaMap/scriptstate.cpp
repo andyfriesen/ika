@@ -2,8 +2,9 @@
 #include "scriptstate.h"
 #include "script.h"
 #include <cassert>
+#include <stdexcept>
 
-#include "Executor.h"
+#include "executor.h"
 #include "mapview.h"
 
 ScriptState::ScriptState(Executor* mainWnd)

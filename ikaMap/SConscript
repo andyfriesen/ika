@@ -11,6 +11,7 @@ ikamap = env.Program('ikamap',
         imagebank.cpp
         importtilesdlg.cpp
         layerdlg.cpp
+        layerlist.cpp
         mainwindow.cpp
         mapdlg.cpp
         mapview.cpp
@@ -23,6 +24,7 @@ ikamap = env.Program('ikamap',
         scriptstate.cpp
         settilestate.cpp
         spriteset.cpp
+        tileanimdlg.cpp
         tileset.cpp
         tilesetview.cpp
         video.cpp

@@ -1,7 +1,8 @@
 
 #include "spriteset.h"
-#include "chr.h"
+// #include "chr.h"
 #include "log.h"
+#include <stdexcept>
 
 SpriteSet::SpriteSet() 
     : _chr(new CCHRfile)
