@@ -16,9 +16,9 @@
 #include "spritesetview.h"
 #include "newmapdlg.h"
 
-#include <wx/xrc/xmlres.h>
-#include <wx/laywin.h>
-#include <wx/sashwin.h>
+#include <wx / xrc / xmlres.h>
+#include <wx / laywin.h>
+#include <wx / sashwin.h>
 
 #include "controller.h"
 
@@ -37,7 +37,7 @@ bool CApp::OnInit()
     extern void InitXmlResource(); // resource.cpp
 
     Log::Init("iked.log");
-    CMainWnd* mainwnd=new CMainWnd(NULL, -1, "iked",
+    CMainWnd* mainwnd = new CMainWnd(NULL, -1, "iked",
         wxPoint(-1, -1),
         wxSize(600, 400),
         wxDEFAULT_FRAME_STYLE | wxHSCROLL | wxVSCROLL);
@@ -81,7 +81,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     SetToolBar(toolbar);
     toolbar->Realize();
 
-    wxMenuBar* menu=CreateBasicMenu();
+    wxMenuBar* menu = CreateBasicMenu();
     SetMenuBar(menu);
 
 
@@ -92,7 +92,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
     GetStatusBar()->SetFieldsCount(2);
     GetStatusBar()->SetStatusWidths(2, widths);
 
-    vector<wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
+    vector < wxAcceleratorEntry> accel(CreateBasicAcceleratorTable());
     wxAcceleratorTable table(accel.size(), &*accel.begin());
 
     SetAcceleratorTable(table);
@@ -140,7 +140,7 @@ void CMainWnd::NewMap(wxCommandEvent& event)
 
 void CMainWnd::NewScript(wxCommandEvent& event)
 {
-    CCodeView* codeview=new CCodeView(this, "");
+    CCodeView* codeview = new CCodeView(this, "");
     
     pDocuments.insert(codeview);
     codeview->Activate();
@@ -166,14 +166,14 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
         wxOPEN | wxMULTIPLE
         );
 
-    int result=dlg.ShowModal();
+    int result = dlg.ShowModal();
     if (result==wxID_CANCEL)
         return;
 
     wxArrayString filenames;
     dlg.GetPaths(filenames);
 
-    for (uint i=0; i<filenames.Count(); i++)
+    for (uint i = 0; i < filenames.Count(); i++)
         Open(std::string( filenames[i].c_str() ));
 }
 
@@ -188,7 +188,7 @@ void CMainWnd::OnSize(wxSizeEvent& event)
 
 void CMainWnd::OnQuit(wxCloseEvent& event)
 {
-    for (std::set<IDocView*>::iterator i=pDocuments.begin(); i!=pDocuments.end(); i++)
+    for (std::set < IDocView*>::iterator i = pDocuments.begin(); i!=pDocuments.end(); i++)
     {
         IDocView* pDoc=*i;
         pDoc->Close();
@@ -203,7 +203,7 @@ void CMainWnd::OnQuit(wxCloseEvent& event)
 void CMainWnd::Open(const std::string& fname)
 {
     // First, see if the document is already open
-    for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+    for (std::set < IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
     {
         // FIXME?  Windows filenames are not case sensitive.
         if (Path::Compare((*i)->GetFileName(), fname))
@@ -214,25 +214,25 @@ void CMainWnd::Open(const std::string& fname)
     }
 
     // okay.  It's not open.  Open it.
-    FileType type=GetFileType(fname);
+    FileType type = GetFileType(fname);
 
-    IDocView* pWnd=0;
+    IDocView* pWnd = 0;
 
     switch (type)
     {
     case t_project:     _project->Load(fname);                      return;
-    case t_script:      pWnd=new CCodeView(this, fname);            break;
-    case t_map:         pWnd=new CMapView(this, fname.c_str());     break;
-    case t_vsp:         pWnd=new CTileSetView(this, fname.c_str()); break;
-    case t_font:        pWnd=new CFontView(this, fname.c_str());    break;
+    case t_script:      pWnd = new CCodeView(this, fname);            break;
+    case t_map:         pWnd = new CMapView(this, fname.c_str());     break;
+    case t_vsp:         pWnd = new CTileSetView(this, fname.c_str()); break;
+    case t_font:        pWnd = new CFontView(this, fname.c_str());    break;
     case t_unknown:
     case t_text:
-    case t_dat:         pWnd=new CTextView(this, fname.c_str());    break;
-    case t_chr:         pWnd=new CSpriteSetView(this, fname.c_str()); break;
+    case t_dat:         pWnd = new CTextView(this, fname.c_str());    break;
+    case t_chr:         pWnd = new CSpriteSetView(this, fname.c_str()); break;
 
     case t_config:
         {
-            CConfigDlg* configdlg=new CConfigDlg(
+            CConfigDlg* configdlg = new CConfigDlg(
                 this,
                 -1,
                 fname
@@ -261,7 +261,7 @@ void CMainWnd::OpenDocument(IDocView* newwnd)
 
 IDocView* CMainWnd::FindWindow(const void* rsrc) const
 {
-    for (std::set<IDocView*>::const_iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+    for (std::set < IDocView*>::const_iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
         if ((*i)->GetResource() == rsrc)
             return *i;
 
@@ -340,11 +340,11 @@ void CMainWnd::OnChildClose(IDocView* child)
 
 wxMenuBar* CMainWnd::CreateBasicMenu()
 {
-    wxMenuBar* menu=new wxMenuBar;
+    wxMenuBar* menu = new wxMenuBar;
     
-    wxMenu* filemenu=new wxMenu;
+    wxMenu* filemenu = new wxMenu;
 
-    wxMenu* filenew=new wxMenu;
+    wxMenu* filenew = new wxMenu;
     filenew->Append(id_filenewproject, "&Project", "Create an empty project workspace.");
     filenew->AppendSeparator();
     filenew->Append(id_filenewmap, "&Map", "Create an empty map.");
@@ -362,9 +362,9 @@ wxMenuBar* CMainWnd::CreateBasicMenu()
     return menu;
 }
 
-vector<wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
+vector < wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
 {
-    vector<wxAcceleratorEntry> accel;
+    vector < wxAcceleratorEntry> accel;
     accel.resize(2);
     accel[0].Set(wxACCEL_CTRL, (int)'O', id_fileopen);
     accel[1].Set(wxACCEL_CTRL, (int)'Q', id_filequit);
@@ -439,13 +439,13 @@ FileType CMainWnd::GetFileType(const std::string& fname)
         "dat"
     };
 
-    const int nExt=sizeof(ext);
+    const int nExt = sizeof(ext);
 
-    std::string sExt=Path::Extension(fname);
+    std::string sExt = Path::Extension(fname);
     
     strlwr((char*)sExt.c_str());
 
-    for (int i=2; i<nExt; i++)      // magic number.  Suck.
+    for (int i = 2; i < nExt; i++)      // magic number.  Suck.
         if (sExt==ext[i])
             return (FileType)i;
     return t_unknown;

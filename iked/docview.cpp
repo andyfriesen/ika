@@ -2,12 +2,12 @@
 #include "docview.h"
 #include "main.h"
 
-BEGIN_EVENT_TABLE(IDocView,wxMDIChildFrame)
+BEGIN_EVENT_TABLE(IDocView, wxMDIChildFrame)
     EVT_CLOSE(IDocView::OnClose)
 END_EVENT_TABLE()
 
-IDocView::IDocView(CMainWnd* parent,const string& fname)
-    :   wxMDIChildFrame(parent,-1,fname.c_str(),wxDefaultPosition,wxDefaultSize),
+IDocView::IDocView(CMainWnd* parent, const string& fname)
+    :   wxMDIChildFrame(parent, -1, fname.c_str(), wxDefaultPosition, wxDefaultSize),
         pParent(parent),    name(fname),   bChanged(false)
 {
     SetTitle(fname.length()?
@@ -33,7 +33,7 @@ void IDocView::OnClose(wxCommandEvent& event)
                 wxDefaultPosition
             );
 
-        int nDecision=msgdlg.ShowModal();
+        int nDecision = msgdlg.ShowModal();
 
         switch(nDecision)
         {

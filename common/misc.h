@@ -13,12 +13,12 @@ Things that just don't fit anywhere else, but are handy to have around.
 #undef max
 
 template <typename T>
-inline void swap(T& a,T& b)
+inline void swap(T& a, T& b)
 {
     T c;
-    c=a;
-    a=b;
-    b=c;
+    c = a;
+    a = b;
+    b = c;
 }
 
 template <typename T>
@@ -42,7 +42,7 @@ inline T clamp(T val, T lower, T upper)
 bool IsPowerOf2(int i);
 
 int sgn(int x);
-int Random(int min,int max);
+int Random(int min, int max);
 char* va(char* format, ...);
 
 const string Trim(string s);
@@ -60,7 +60,7 @@ namespace Path
     // strips the path from the filename, and returns it.
     // If relativeto is not specified or is empty, then the entire path is returned.
     // If it is specified, then the path returned is relative to the path contained therein.
-    string Directory(const string& s,const string& relativeto=""); 
+    string Directory(const string& s, const string& relativeto=""); 
 
     string Filename(const string& s);           // same idea, but just returns the filename
 

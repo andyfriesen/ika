@@ -1,12 +1,12 @@
 
 #include "configdlg.h"
-#include "wx/resource.h"
-#include "wx/utils.h"
+#include "wx / resource.h"
+#include "wx / utils.h"
 #include "configfile.h"
 
 enum
 {
-    ID_FULLSCREEN=20001,
+    ID_FULLSCREEN = 20001,
     ID_ENABLESOUND,
     ID_ENABLELOGGING,
     ID_PIXELDEPTH,

@@ -217,7 +217,7 @@ void ProjectView::OnAdd(wxCommandEvent& event)
     dlg.GetFilenames(names);
     dlg.GetPaths(paths);
     
-    for (uint i = 0; i<names.Count(); i++)
+    for (uint i = 0; i < names.Count(); i++)
         AddItem(id, names[i].c_str(), paths[i].c_str());
 
     Expand(id);
@@ -253,7 +253,7 @@ void ProjectView::MoveItem(const wxTreeItemId& id, const wxTreeItemId& newparent
         long cookie=-1;
         wxTreeItemId iid;
 
-        for (int i = 0; i<nChildren; i++)
+        for (int i = 0; i < nChildren; i++)
         {
             iid = GetFirstChild(id, cookie);                           // note that we keep nuking the first child, so don't bother with getnextchild
             MoveItem(iid, newid);
@@ -297,7 +297,7 @@ void ProjectView::Save(const std::string& fname)
     {
         static void WriteIndentation(FILE* f, const int amount)
         {
-            char* c = new char[amount+1];
+            char* c = new char[amount + 1];
             memset(c, 32, amount);
             c[amount]=0;
             fprintf(f, "%s", c);
@@ -330,7 +330,7 @@ void ProjectView::Save(const std::string& fname)
                 string name = Path::Directory(leaf->name, Path::Directory(tree->GetFileName()));
                 name.append(Path::Filename(leaf->name));
                 if (name[0] == '\\')
-                    name.erase(0,1);    // nuke the leading slash
+                    name.erase(0, 1);    // nuke the leading slash
 
                 fprintf(f, "%s   FILE\n", name.c_str());
             }
@@ -373,7 +373,7 @@ void ProjectView::Load(const std::string& fname)
                 p = sLine.rfind("FOLDER");
                 if (p!=std::string::npos)
                 {
-                    std::string name = Trim(sLine.substr(0, p-1));
+                    std::string name = Trim(sLine.substr(0, p - 1));
 
                     wxTreeItemId id;
 
@@ -390,7 +390,7 @@ void ProjectView::Load(const std::string& fname)
                 p = sLine.rfind("FILE");
                 if (p!=std::string::npos)
                 {
-                    string name = Trim(sLine.substr(0, p-1));
+                    string name = Trim(sLine.substr(0, p - 1));
                     string path = Path::Directory(tree->GetFileName()) + name;
 
                     tree->AddItem(parentid, Path::Filename(name), path);

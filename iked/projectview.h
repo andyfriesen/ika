@@ -7,7 +7,7 @@
 #include <wx\imaglist.h>
 #include "docview.h"
 
-class CMainWnd; // in main.cpp/h
+class CMainWnd; // in main.cpp / h
 
 class ProjectView : public wxTreeCtrl
 {
@@ -28,7 +28,7 @@ public:
 
     enum
     {
-        id_filler=100,
+        id_filler = 100,
         id_treectrl,
 
         id_open,
@@ -58,7 +58,7 @@ public:
     wxTreeItemId AddFolder(const wxTreeItemId& parentid, const char* name);
     wxTreeItemId AddItem(const wxTreeItemId& parentid, const string& name, const string& fname);
 
-    // I/O
+    // I / O
     void Save(const std::string& fname = "");
     void Load(const std::string& fname);
     void New();

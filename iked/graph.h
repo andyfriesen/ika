@@ -8,8 +8,8 @@
 #include "types.h"
 #include "Canvas.h"
 #include <set>
-#include "wx/wx.h"
-#include "wx/glcanvas.h"
+#include "wx / wx.h"
+#include "wx / glcanvas.h"
 
 // win32 is retarded -- andy
 #ifdef WIN32
@@ -30,7 +30,7 @@ class CGraphFrame : public wxGLCanvas
         there is no context, things might get icky.  However, this does not make sense, as CImages exist
         only so that they may be blitted on CGraphFrames.  Just something to keep in mind.
     */
-    static std::set<CGraphFrame*>  pInstances;
+    static std::set < CGraphFrame*>  pInstances;
 
     // The GraphFrame does its own zooming.  Everything possible is done to make this invisible to the parent window.
     int nZoom;
@@ -39,11 +39,11 @@ public:
     CGraphFrame(wxWindow* parent);
     ~CGraphFrame();
 
-    void Rect(int x,int y,int w,int h,RGBA colour);
-    void RectFill(int x,int y,int w,int h,RGBA colour);
+    void Rect(int x, int y, int w, int h, RGBA colour);
+    void RectFill(int x, int y, int w, int h, RGBA colour);
 
-    void Blit(CImage& src,int x,int y,bool trans);
-    void ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans);
+    void Blit(CImage& src, int x, int y, bool trans);
+    void ScaleBlit(CImage& src, int x, int y, int w, int h, bool trans);
 
     void Clear();
 
@@ -68,8 +68,8 @@ class CImage
     friend CGraphFrame;
 protected:
     GLuint hTex;
-    int nWidth,nHeight;
-    int nTexwidth,nTexheight;
+    int nWidth, nHeight;
+    int nTexwidth, nTexheight;
 
 public:
     CImage(const Canvas& src);

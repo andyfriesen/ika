@@ -6,9 +6,9 @@
 
 CCHRfile::CCHRfile()
 {
-    nHotx=nHoty=0;
-    nHotw=nHoth=16;
-    nWidth=nHeight=16;
+    nHotx = nHoty = 0;
+    nHotw = nHoth = 16;
+    nWidth = nHeight = 16;
     frame.clear();
     AppendFrame();
 }
@@ -23,9 +23,9 @@ Canvas& CCHRfile::GetFrame(int nFrame) const
     return (Canvas&)frame[nFrame];
 }
 
-void CCHRfile::UpdateFrame(const Canvas& newdata,int nFrame)
+void CCHRfile::UpdateFrame(const Canvas& newdata, int nFrame)
 {
-    if (nFrame<0 || nFrame>=frame.size())
+    if (nFrame < 0 || nFrame >= frame.size())
         return;
 
     frame[nFrame]=newdata;
@@ -33,33 +33,33 @@ void CCHRfile::UpdateFrame(const Canvas& newdata,int nFrame)
 
 void CCHRfile::AppendFrame()
 {
-    frame.push_back(Canvas(nWidth,nHeight));
+    frame.push_back(Canvas(nWidth, nHeight));
 }
 
 void CCHRfile::InsertFrame(int idx)
 {
-    if (idx>=frame.size() || !frame.size())
+    if (idx >= frame.size() || !frame.size())
     {
         AppendFrame();
         return;
     }
     
-    if (idx<0)
-        idx=0;
+    if (idx < 0)
+        idx = 0;
     
     Canvas p(frame[frame.size()-1]);        // copy the last frame
     
-    for (int i=idx; i<frame.size(); i++)
+    for (int i = idx; i < frame.size(); i++)
         frame[i + 1]=frame[i];
     
-    InsertFrame(frame.size(),p);                    // and tack it on the end.
+    InsertFrame(frame.size(), p);                    // and tack it on the end.
 }
 
-void CCHRfile::InsertFrame(int idx,Canvas& p)
+void CCHRfile::InsertFrame(int idx, Canvas& p)
 {
-    if (idx<0)
-        idx=0;
-    if (idx>=frame.size())
+    if (idx < 0)
+        idx = 0;
+    if (idx >= frame.size())
     {
         AppendFrame();
         frame[frame.size()-1]=p;
@@ -72,29 +72,29 @@ void CCHRfile::InsertFrame(int idx,Canvas& p)
 
 void CCHRfile::DeleteFrame(int idx)
 {
-    if (idx<0 || idx>=frame.size())
+    if (idx < 0 || idx >= frame.size())
         return;
     
-    for (int i=idx; i<frame.size(); i++)
+    for (int i = idx; i < frame.size(); i++)
         frame[i]=frame[i + 1];
     
     frame.resize(frame.size()-1);
 }
 
-void CCHRfile::PackData(u8* data,int& size)
+void CCHRfile::PackData(u8* data, int& size)
 {
 }
 
-void CCHRfile::UnpackData(u8* data,int size)
+void CCHRfile::UnpackData(u8* data, int size)
 {
 }
 
-void CCHRfile::New(int framex,int framey)
+void CCHRfile::New(int framex, int framey)
 {
-    nWidth=framex;
-    nHeight=framey;
-    nHotx=0;        nHoty=0;
-    nHotw=framex;    nHoth=framey;
+    nWidth = framex;
+    nHeight = framey;
+    nHotx = 0;        nHoty = 0;
+    nHotw = framex;    nHoth = framey;
     frame.clear();
 }
 
@@ -103,7 +103,7 @@ bool CCHRfile::Load(const char* fname)
 {
     File f;
     
-    bool bResult=f.OpenRead(fname);
+    bool bResult = f.OpenRead(fname);
     if (!bResult)
         return false;
     
@@ -113,11 +113,11 @@ bool CCHRfile::Load(const char* fname)
     switch (ver)
     {
     case 2:
-        bResult=Loadv2CHR(f);
+        bResult = Loadv2CHR(f);
         f.Close();
         return bResult;
     case 4:
-        bResult=Loadv4CHR(f);
+        bResult = Loadv4CHR(f);
         f.Close();
         return bResult;
     case 5:
@@ -130,22 +130,22 @@ bool CCHRfile::Load(const char* fname)
     // Load the new format
     
     char s[65];
-    f.Read(s,64);
+    f.Read(s, 64);
     s[64]=0;
-    sDescription=s;
+    sDescription = s;
     
     int nScripts;
     
     f.Read(nScripts);
     
     int i;
-    for (i=0; i<nScripts; i++)
+    for (i = 0; i < nScripts; i++)
     {
         int nLen;
         f.Read(nLen);
         
-        char* s=new char[nLen + 1];
-        f.Read(s,nLen);
+        char* s = new char[nLen + 1];
+        f.Read(s, nLen);
         s[nLen]=0;
         sMovescript.push_back(s);
         delete[] s;
@@ -155,9 +155,9 @@ bool CCHRfile::Load(const char* fname)
     int nFrames;
     f.Read(nFrames);
     frame.clear();
-    for (i=0; i<nFrames; i++)
+    for (i = 0; i < nFrames; i++)
     {
-        int x,y;
+        int x, y;
         f.Read(x);
         f.Read(y);
         f.Read(nHotx);
@@ -165,10 +165,10 @@ bool CCHRfile::Load(const char* fname)
         f.Read(nHotw);
         f.Read(nHoth);
         
-        RGBA* pTemp=new RGBA[x*y];
-        f.ReadCompressed(pTemp,x*y*sizeof(RGBA));
+        RGBA* pTemp = new RGBA[x * y];
+        f.ReadCompressed(pTemp, x * y * sizeof(RGBA));
         
-        frame.push_back(Canvas(pTemp,x,y));
+        frame.push_back(Canvas(pTemp, x, y));
         
         delete[] pTemp;
     }
@@ -180,27 +180,27 @@ void CCHRfile::Save(const char* fname)
 {
     File f;
     
-    bool bResult=f.OpenWrite(fname);
+    bool bResult = f.OpenWrite(fname);
     if (!bResult)
         return;                                                     // :(
     
     f.Write((char)5);                                               // version - u8
     
-    f.Write(sDescription.c_str(),64);                               // desc    - 64 byte string
+    f.Write(sDescription.c_str(), 64);                               // desc    - 64 byte string
     
     int i;
     
     f.Write(sMovescript.size());                                    // write the number of scripts
     
-    for (i=0; i<sMovescript.size(); i++)
+    for (i = 0; i < sMovescript.size(); i++)
     {
         f.Write(sMovescript[i].length());                           // write the length
-        f.Write(sMovescript[i].c_str(),sMovescript[i].length());    // write the actual script
+        f.Write(sMovescript[i].c_str(), sMovescript[i].length());    // write the actual script
     }
     
     // Write the frame data
     f.Write((int)frame.size());
-    for (i=0; i<frame.size(); i++)
+    for (i = 0; i < frame.size(); i++)
     {
         f.Write(frame[i].Width());
         f.Write(frame[i].Height());
@@ -219,33 +219,33 @@ void CCHRfile::Save(const char* fname)
 
 bool CCHRfile::Loadv2CHR(File& f)
 {
-    nWidth=nHeight=0;
-    nHotx=nHoty=0;
-    nHotw=nHoth=0;
+    nWidth = nHeight = 0;
+    nHotx = nHoty = 0;
+    nHotw = nHoth = 0;
     
-    f.Read(&nWidth,2);
-    f.Read(&nHeight,2);
-    f.Read(&nHotx,2);
-    f.Read(&nHoty,2);
-    f.Read(&nHotw,2);
-    f.Read(&nHoth,2);
+    f.Read(&nWidth, 2);
+    f.Read(&nHeight, 2);
+    f.Read(&nHotx, 2);
+    f.Read(&nHoty, 2);
+    f.Read(&nHotw, 2);
+    f.Read(&nHoth, 2);
     
     u16 nFrames;
     f.Read(nFrames);
     
     int nBufsize;
     f.Read(nBufsize);
-    u8* pCompbuf=new u8[nBufsize];
-    u8* pUncompbuf=new u8[nFrames*nWidth*nHeight];
-    f.Read(pCompbuf,nBufsize);
-    ReadCompressedLayer1(pUncompbuf,nFrames*nWidth*nHeight,pCompbuf);
+    u8* pCompbuf = new u8[nBufsize];
+    u8* pUncompbuf = new u8[nFrames * nWidth * nHeight];
+    f.Read(pCompbuf, nBufsize);
+    ReadCompressedLayer1(pUncompbuf, nFrames * nWidth * nHeight, pCompbuf);
     delete[] pCompbuf;
     
     frame.resize(nFrames);
-    u8* src=pUncompbuf;
-    for (int nCurframe=0; nCurframe<nFrames; nCurframe++)
+    u8* src = pUncompbuf;
+    for (int nCurframe = 0; nCurframe < nFrames; nCurframe++)
     {
-        frame[nCurframe].CopyPixelData(src,nWidth,nHeight,cVergepal);
+        frame[nCurframe].CopyPixelData(src, nWidth, nHeight, cVergepal);
         src += nWidth * nHeight;
     }
     
@@ -258,15 +258,15 @@ bool CCHRfile::Loadv2CHR(File& f)
     f.Read(i);        sMovescript[8 + face_up]    =string("F") + ToString(i) + "W10";
     f.Read(i);        sMovescript[8 + face_down]  =string("F") + ToString(i) + "W10";
     
-    for (int b=0; b<4; b++)
+    for (int b = 0; b < 4; b++)
     {
         char ptr[255];
         int n;
         f.Read(n);
         
-        if (n>99)
+        if (n > 99)
             return false;                    // blargh
-        f.Read(ptr,n);
+        f.Read(ptr, n);
         ptr[n]=0;                    // terminating null
         
         switch (b)
@@ -288,16 +288,16 @@ bool CCHRfile::Loadv2CHR(File& f)
 bool CCHRfile::Loadv4CHR(File& f)
 {
     // VERGE v2 chrs store two bytes for these, but ika has four.  Must nuke the high bits or anality will ensue.
-    nWidth=nHeight=0;
-    nHotx=nHoty=0;
-    nHotw=nHoth=0;
+    nWidth = nHeight = 0;
+    nHotx = nHoty = 0;
+    nHotw = nHoth = 0;
     
-    f.Read(&nWidth,2);
-    f.Read(&nHeight,2);
-    f.Read(&nHotx,2);
-    f.Read(&nHoty,2);
-    f.Read(&nHotw,2);
-    f.Read(&nHoth,2);
+    f.Read(&nWidth, 2);
+    f.Read(&nHeight, 2);
+    f.Read(&nHotx, 2);
+    f.Read(&nHoty, 2);
+    f.Read(&nHotw, 2);
+    f.Read(&nHoth, 2);
     
     sMovescript.resize(16);
     
@@ -309,17 +309,17 @@ bool CCHRfile::Loadv4CHR(File& f)
     f.Read(i);        sMovescript[8 + face_down]    = string("F") + ToString(i) + "W10";
     
     f.Read(i);
-    int nFrames=i;                // frame count
+    int nFrames = i;                // frame count
     
-    for (int b=0; b<4; b++)
+    for (int b = 0; b < 4; b++)
     {
         char ptr[255];
         int n;
         f.Read(n);
         
-        if (n>99)
+        if (n > 99)
             return false;                    // blargh
-        f.Read(ptr,n);
+        f.Read(ptr, n);
         ptr[n]=0;                    // terminating null
         
         switch (b)
@@ -337,24 +337,24 @@ bool CCHRfile::Loadv4CHR(File& f)
     
     int n;
     f.Read(n);
-    char* ptr=new char[n];
+    char* ptr = new char[n];
     
-    f.Read(ptr,n);
+    f.Read(ptr, n);
     
-    u16* pTemp=new u16[nWidth*nHeight*nFrames];
-    ReadCompressedLayer2(pTemp,nWidth*nHeight*nFrames,(u16*)ptr);
+    u16* pTemp = new u16[nWidth * nHeight * nFrames];
+    ReadCompressedLayer2(pTemp, nWidth * nHeight * nFrames, (u16*)ptr);
     delete[] ptr;
     
     frame.resize(nFrames);
     
     // adjust to 32bpp
-    RGBA* p=new RGBA[nWidth*nHeight];
-    for (int nCurframe=0; nCurframe<nFrames; nCurframe++)
+    RGBA* p = new RGBA[nWidth * nHeight];
+    for (int nCurframe = 0; nCurframe < nFrames; nCurframe++)
     {
-        for (int n=0; n<nWidth*nHeight; n++)
-            p[n]=RGBA( pTemp[ nCurframe*nWidth*nHeight + n]);
+        for (int n = 0; n < nWidth * nHeight; n++)
+            p[n]=RGBA( pTemp[ nCurframe * nWidth * nHeight + n]);
         
-        frame[nCurframe].CopyPixelData(p,nWidth,nHeight);
+        frame[nCurframe].CopyPixelData(p, nWidth, nHeight);
     }
     
     delete[] pTemp;

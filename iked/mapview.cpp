@@ -50,8 +50,8 @@ namespace
 
             amount+= GetScrollPos(event.GetOrientation());
             if (amount < 0) amount = 0;
-            if (amount > max-thumbsize)
-                amount = max-thumbsize;
+            if (amount > max - thumbsize)
+                amount = max - thumbsize;
 
             ((CMapView*)GetParent())->OnScroll(wxScrollWinEvent(-1, amount, event.GetOrientation()));
         }
@@ -62,8 +62,8 @@ namespace
             int thumbsize = GetScrollThumb(event.GetOrientation());
 
             if (pos < 0) pos = 0;
-            if (pos > max-thumbsize)
-                pos = max-thumbsize;
+            if (pos > max - thumbsize)
+                pos = max - thumbsize;
 
             ((CMapView*)GetParent())->OnScroll(wxScrollWinEvent(-1, pos, event.GetOrientation()));
         }
@@ -129,7 +129,7 @@ namespace
 
     enum
     {
-        id_zoomin=100,
+        id_zoomin = 100,
         id_zoomout,
         id_zoomnormal,
         id_zoomin2x,
@@ -203,7 +203,7 @@ CMapView::CMapView(CMainWnd* parent, const string& name)
 
 void CMapView::InitAccelerators()
 {
-    vector<wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
+    vector < wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
     accel.resize(accel.size()+4);
@@ -313,7 +313,7 @@ void CMapView::Init()
     nCurlayer = 0;
     //csrmode = mode_select;
     csrmode = mode_normal;
-    _selection = Rect(5,2,8,12);
+    _selection = Rect(5, 2, 8, 12);
 
     pEntityeditor = new CEntityEditor(this, pMap);
     _zoneeditor = new ZoneEditor(this, pMap);
@@ -369,7 +369,7 @@ void CMapView::OnClose()
     pParentwnd->vsp.Release(pTileset);
 
     Log::Write("Releasing spritesets.");
-    for (std::vector<CSpriteSet*>::iterator i = pSprite.begin(); i!= pSprite.end(); i++)
+    for (std::vector < CSpriteSet*>::iterator i = pSprite.begin(); i!= pSprite.end(); i++)
         pParentwnd->spriteset.Release(*i);
     
     pSprite.clear();
@@ -524,11 +524,20 @@ void CMapView::LayerEdit(wxMouseEvent& event)
 
 void CMapView::HandleMouse(wxMouseEvent& event)
 {
-    if (event.GetWheelDelta())
+    if (int delta = event.GetWheelRotation())
     {
+        int t = pTileset->CurTile() + pTileset->Count();    // add the tile count so that we don't go negative
+        if (delta > 0)  t++;
+        else            t--;
+        pTileset->SetCurTile(t % pTileset->Count());        // then drop it.  This is just a cheap way to do wrap - around.
+
+        // And redraw the tileset window, if one is open.
+        CTileSetView* tsv = (CTileSetView*)pParent->FindWindow(pTileset);
+        if (tsv)    tsv->Render();
+
         return;
     }
-
+    
     switch (csrmode)
     {
     case mode_normal:
@@ -581,8 +590,8 @@ void CMapView::UpdateScrollbars()
     int maxy = pMap->Height() * pTileset->Height();
 
     // clip the viewport
-    if (xwin+w > maxx) xwin = maxx-w;
-    if (ywin+h > maxy) ywin = maxy-h;
+    if (xwin + w > maxx) xwin = maxx - w;
+    if (ywin + h > maxy) ywin = maxy - h;
     if (xwin < 0) xwin = 0;
     if (ywin < 0) ywin = 0;
 
@@ -660,8 +669,8 @@ void CMapView::Render()
 //    RenderSelectionRect();
 }
 
-typedef std::pair<SMapEntity*, CSpriteSet*> EntSpritePair;
-typedef std::list<EntSpritePair> EntRenderList;
+typedef std::pair < SMapEntity*, CSpriteSet*> EntSpritePair;
+typedef std::list < EntSpritePair> EntRenderList;
 
 void CMapView::RenderEntities()
 {
@@ -720,8 +729,8 @@ void CMapView::RenderInfoLayer(int lay)
     int nLenx = nWidth / tx + 2;
     int nLeny = nHeight / ty + 2;
 
-    if (nFirstx+nLenx > pMap->Width())  nLenx = pMap->Width()-nFirstx;
-    if (nFirsty+nLeny > pMap->Height()) nLeny = pMap->Height()-nFirsty;
+    if (nFirstx + nLenx > pMap->Width())  nLenx = pMap->Width()-nFirstx;
+    if (nFirsty + nLeny > pMap->Height()) nLeny = pMap->Height()-nFirsty;
 
     int nAdjx = xw % tx;
     int nAdjy = yw % ty;
@@ -752,7 +761,7 @@ void CMapView::RenderInfoLayer(int lay)
             
                 if (lay == 0 || z!= 0)
                     pGraph->RectFill(
-                        x * tx-nAdjx, y * ty-nAdjy,
+                        x * tx - nAdjx, y * ty - nAdjy,
                         tx, ty,
                         c);
             }
@@ -782,8 +791,8 @@ void CMapView::RenderLayer(int lay)
     int nLenx = nWidth / tx + 2;
     int nLeny = nHeight / ty + 2;
 
-    if (nFirstx+nLenx > pMap->Width())  nLenx = pMap->Width() - nFirstx;
-    if (nFirsty+nLeny > pMap->Height()) nLeny = pMap->Height() - nFirsty;
+    if (nFirstx + nLenx > pMap->Width())  nLenx = pMap->Width() - nFirstx;
+    if (nFirsty + nLeny > pMap->Height()) nLeny = pMap->Height() - nFirsty;
 
     int nAdjx = (xw % tx);
     int nAdjy = (yw % ty);
@@ -797,7 +806,7 @@ void CMapView::RenderLayer(int lay)
             if (lay == 0 || t != 0)
                 pGraph->Blit(
                     pTileset->GetImage(t),
-                    x * tx-nAdjx, y * ty-nAdjy,
+                    x * tx - nAdjx, y * ty - nAdjy,
                     //tx, ty,
                     true);
         }

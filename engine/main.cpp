@@ -558,7 +558,7 @@ CEntity* CEngine::DetectEntityCollision(const CEntity* ent, int x1, int y1, int 
         CSprite& s=*e.pSprite;
 
         if (wantobstructable && !e.bIsobs)   continue;
-        if (&e == ent)                       continue;         // the entity is colling with itself. ;P  That's not overly useful.
+        if (&e == ent)                       continue;         // the entity is colliding with itself. ;P  That's not overly useful.
         
         if (x1              >= e.x+s.nHotw)  continue;
         if (y1              >= e.y+s.nHoth)  continue;

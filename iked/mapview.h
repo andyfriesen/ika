@@ -46,7 +46,7 @@ class CMapView : public IDocView
 
     enum
     {
-        hidden=0,
+        hidden = 0,
         visible,
         darkened,
     };
@@ -55,7 +55,7 @@ class CMapView : public IDocView
     {
         mode_normal,
         mode_select,
-        // copy/paste/etc...
+        // copy / paste / etc...
     };
 
 private:
@@ -76,7 +76,7 @@ private:
     Map*                pMap;
     CTileSet*           pTileset;
 
-    std::vector<CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
+    std::vector < CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
 
     int  nZoom;                                                     // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
 
@@ -84,7 +84,7 @@ private:
 
 public:
     CMapView(CMainWnd* parent, int width, int height, const string& tilesetname);
-    CMapView(CMainWnd* parent,const string& fname);
+    CMapView(CMainWnd* parent, const string& fname);
 
     void InitAccelerators();
     void InitMenu();
@@ -125,19 +125,19 @@ public:
 public:
     // CLayerVisibilityControl calls these functions
     void OnLayerChange(int lay);
-    void OnLayerToggleVisibility(int lay,int newstate);
+    void OnLayerToggleVisibility(int lay, int newstate);
 
     // Stuff that's not directly related to the UI
 
 private:
-    int xwin,ywin;
+    int xwin, ywin;
     int nCurlayer;
     // old mouse coords.  To prevent redundant processing.
-    int oldx,oldy;
+    int oldx, oldy;
     CursorMode          csrmode;
-    std::map<int,int> nLayertoggle;
+    std::map < int, int> nLayertoggle;
 
-    void ScreenToMap(int& x,int& y);
+    void ScreenToMap(int& x, int& y);
     void LayerEdit(wxMouseEvent& event);
     void HandleMouse(wxMouseEvent& event);
     void UpdateScrollbars();

@@ -1,8 +1,8 @@
 
 #pragma warning (disable:4786)
 
-#include "wx/wx.h"
-#include "wx/checklst.h"
+#include "wx / wx.h"
+#include "wx / checklst.h"
 #include <vector>
 
 class wxListEvent;
@@ -13,13 +13,13 @@ class CLayerVisibilityControl : public wxCheckListBox
 {
     CMapView* pMapview;
 
-    std::vector<int> layidx;
+    std::vector < int> layidx;
 
 public:
-    CLayerVisibilityControl(wxWindow* parent,int id,CMapView* mapview);
+    CLayerVisibilityControl(wxWindow* parent, int id, CMapView* mapview);
 
     void Clear();
-    void AppendItem(const std::string& name,int idx);
+    void AppendItem(const std::string& name, int idx);
     void CheckItem(int idx);
 
     void OnDrag(wxListEvent& event);

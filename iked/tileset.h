@@ -14,7 +14,7 @@ class CTileSet : public CImageBank
 {
     VSP* pVsp;
 
-    virtual void SetImage(const Canvas& img,int idx);
+    virtual void SetImage(const Canvas& img, int idx);
 private:
 
     // Don't think this is the Right Thing.  UI stuff doesn't belong here.

@@ -12,7 +12,7 @@ using std::endl;
 
 namespace Log
 {
-    bool bLogging=false;
+    bool bLogging = false;
     string sLogname;
 
     std::ofstream logfile;
@@ -23,11 +23,11 @@ namespace Log
 void Log::Init(const char* fname)
 {
     if (bLogging) return;
-    bLogging=true;
+    bLogging = true;
 
     remove(fname);
 
-    sLogname=fname;
+    sLogname = fname;
 
     logfile.open(fname);
 
@@ -36,29 +36,29 @@ void Log::Init(const char* fname)
 #endif
 };
 
-void Log::Writen(const char* s,...)
+void Log::Writen(const char* s, ...)
 {
     if (!bLogging) return;
     
     char sTemp[1024];
     va_list lst;
     
-    va_start(lst,s);
-    vsprintf(sTemp,s,lst);
+    va_start(lst, s);
+    vsprintf(sTemp, s, lst);
     va_end(lst);
   
     logfile << sTemp;
 }
 
-void Log::Write(const char* s,...)
+void Log::Write(const char* s, ...)
 {
     if (!bLogging) return;
 
     char sTemp[1024];
     va_list lst;
     
-    va_start(lst,s);
-    vsprintf(sTemp,s,lst);
+    va_start(lst, s);
+    vsprintf(sTemp, s, lst);
     va_end(lst);
 
     logfile << sTemp << endl;
@@ -74,15 +74,15 @@ CCallbackLog::CCallbackLog(const char* s)
     : nOldlen(sHistory.length())
 {
     sHistory+="-> ";
-    sHistory+=s;
+    sHistory += s;
     
-    std::ofstream f("callback.log",ios::app);
+    std::ofstream f("callback.log", ios::app);
     f << sHistory << std::endl;
 }
 
 CCallbackLog::~CCallbackLog()
 {
-    sHistory=sHistory.substr(0,nOldlen);
+    sHistory = sHistory.substr(0, nOldlen);
 }
 
 #endif

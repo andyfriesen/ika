@@ -6,7 +6,7 @@
 #define DOCVIEW_H
 
 #include "types.h"
-#include "wx/wx.h"
+#include "wx / wx.h"
 
 class CMainWnd;
 
@@ -20,7 +20,7 @@ protected:
     bool bChanged;
 
 public:
-    IDocView(CMainWnd* parent,const string& fname);
+    IDocView(CMainWnd* parent, const string& fname);
     virtual ~IDocView();
 
     virtual void OnClose(wxCommandEvent& event);

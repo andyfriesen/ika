@@ -4,7 +4,7 @@
 // It's conveniant for now.
 //  --khross
 
-#include "wx/event.h"
+#include "wx / event.h"
 
 #include "spritesetview.h"
 #include "imageview.h"
@@ -141,7 +141,7 @@ void CSpriteSetView::OnLeftClick(wxMouseEvent& event)
     x /= tx;      
     y /= ty;
 
-    int t = (y + ywin) * nSpritewidth+x;
+    int t = (y + ywin) * nSpritewidth + x;
 
     if (t > pSprite->Count()) t = 0;
     
@@ -149,8 +149,6 @@ void CSpriteSetView::OnLeftClick(wxMouseEvent& event)
 
     Render();
 }
-
-    
 
 void CSpriteSetView::InitMenu()
 {
@@ -173,7 +171,7 @@ void CSpriteSetView::InitMenu()
 
 void CSpriteSetView::InitAccelerators()
 {
-    vector<wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
+    vector < wxAcceleratorEntry> accel = pParent->CreateBasicAcceleratorTable();
 
     int p = accel.size();
     accel.resize(accel.size()+4);
@@ -244,7 +242,7 @@ void CSpriteSetView::OnPaint()
 
 void CSpriteSetView::OnPreviousFrame(wxCommandEvent& event)
 {
-    if (nCurframe>0)
+    if (nCurframe > 0)
         nCurframe--;
     else
         nCurframe = pSprite->Count();
@@ -254,7 +252,7 @@ void CSpriteSetView::OnPreviousFrame(wxCommandEvent& event)
 
 void CSpriteSetView::OnNextFrame(wxCommandEvent& event)
 {
-    if (nCurframe<pSprite->Count())
+    if (nCurframe < pSprite->Count())
         nCurframe++;
     else
         nCurframe = 0;
@@ -266,8 +264,8 @@ void CSpriteSetView::Zoom(int nZoomscale)
 {
     int nZoom = pGraph->Zoom()-nZoomscale;
 
-    if (nZoom<1) nZoom = 1;
-    if (nZoom>255) nZoom = 255;
+    if (nZoom < 1) nZoom = 1;
+    if (nZoom > 255) nZoom = 255;
 
     pGraph->Zoom(nZoom);
 
@@ -301,37 +299,37 @@ void CSpriteSetView::Render()
     int ty = pSprite->Height();
 
 
-    int nSpritewidth = nWidth/tx;
-    int nSpriteheight=(nHeight/ty)+1;
-    int nSprite = ywin*nSpritewidth;
+    int nSpritewidth = nWidth / tx;
+    int nSpriteheight=(nHeight / ty)+1;
+    int nSprite = ywin * nSpritewidth;
 
 
     pGraph->SetCurrent();
     pGraph->Clear();     
 
 
-    for(int y = 0; y<nSpriteheight; y++)
+    for(int y = 0; y < nSpriteheight; y++)
     {
-        for(int x = 0; x<nSpritewidth; x++)
+        for(int x = 0; x < nSpritewidth; x++)
         {
             
             Canvas& rBitmap = pSprite->Get(nSprite);
 
             CImage img(rBitmap);
             
-            pGraph->Blit(img, x*tx, y*ty, true);
+            pGraph->Blit(img, x * tx, y * ty, true);
 
             nSprite++;
 
 
-            if (nSprite>=pSprite->Count()) 
+            if (nSprite >= pSprite->Count()) 
             {
-                y = nSpriteheight+1;
+                y = nSpriteheight + 1;
                 break;
             }
 
-            nSpritewidth = nWidth/tx;
-            nSpriteheight=(nHeight/ty)+1;
+            nSpritewidth = nWidth / tx;
+            nSpriteheight=(nHeight / ty)+1;
         }
     }
 

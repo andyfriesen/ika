@@ -8,13 +8,13 @@ CSpriteSet::CSpriteSet() : pCHR(0)
 
 bool CSpriteSet::Load(const char* fname)
 {
-    CCHRfile* pNewchr=new CCHRfile;
+    CCHRfile* pNewchr = new CCHRfile;
 
     if (!pNewchr->Load(fname))
         return false;
 
     delete pCHR;
-    pCHR=pNewchr;
+    pCHR = pNewchr;
 
     SyncAll();
     return true;
@@ -27,7 +27,7 @@ bool CSpriteSet::Save(const char* fname)
     return true;
 }
 
-void CSpriteSet::SetImage(const Canvas& img,int idx)
+void CSpriteSet::SetImage(const Canvas& img, int idx)
 {
     pCHR->GetFrame(idx)=img;
 }

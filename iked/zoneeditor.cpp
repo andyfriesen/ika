@@ -2,7 +2,7 @@
 #include "map.h"
 #include "main.h"
 
-#include <wx/xrc/xmlres.h>
+#include <wx / xrc / xmlres.h>
 
 BEGIN_EVENT_TABLE(ZoneEditor, wxDialog)
     EVT_LISTBOX(XRCID("list_zones"), ZoneEditor::OnSelectZone)
@@ -118,11 +118,11 @@ void ZoneEditor::OnDelZone(wxCommandEvent& event)
         }
         UpdateList();
 
-        // TODO: Have the map re-adjust itself so that all the indeces are still correct.
+        // TODO: Have the map re - adjust itself so that all the indeces are still correct.
     }
     else
     {
-        // Not allowed to delete the first zone.  Re-initialize it instead.
+        // Not allowed to delete the first zone.  Re - initialize it instead.
         SMapZone& zone = _map->Zones()[0];
         zone.name = "Default zone";
         zone.sDescription = "";

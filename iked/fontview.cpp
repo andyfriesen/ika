@@ -1,5 +1,5 @@
 
-#include "wx/event.h"
+#include "wx / event.h"
 
 #include "fontview.h"
 #include "main.h"
@@ -31,7 +31,7 @@ namespace
     END_EVENT_TABLE()
 }
 
-BEGIN_EVENT_TABLE(CFontView,IDocView)
+BEGIN_EVENT_TABLE(CFontView, IDocView)
 
     EVT_SCROLLWIN(CFontView::OnScroll)
     EVT_CLOSE(CFontView::OnClose)
@@ -40,14 +40,14 @@ BEGIN_EVENT_TABLE(CFontView,IDocView)
     EVT_LEFT_DOWN(CFontView::OnLeftClick)
     EVT_RIGHT_DOWN(CFontView::OnRightClick)
 
-    EVT_MENU(CFontView::id_filesave,CFontView::OnSave)
-    EVT_MENU(CFontView::id_filesaveas,CFontView::OnSaveAs)
-    EVT_MENU(CFontView::id_optionscolor,CFontView::OnChangeBackgroundColor)
+    EVT_MENU(CFontView::id_filesave, CFontView::OnSave)
+    EVT_MENU(CFontView::id_filesaveas, CFontView::OnSaveAs)
+    EVT_MENU(CFontView::id_optionscolor, CFontView::OnChangeBackgroundColor)
 
 END_EVENT_TABLE()
 
-CFontView::CFontView(CMainWnd* parentwnd,const string& fname)
-    : IDocView(parentwnd,fname)
+CFontView::CFontView(CMainWnd* parentwnd, const string& fname)
+    : IDocView(parentwnd, fname)
     , pParent(parentwnd)
     , sFilename(fname)
     , nCurfont(0)
@@ -60,16 +60,16 @@ CFontView::CFontView(CMainWnd* parentwnd,const string& fname)
     pFontfile = new CFontFile();
     pFontfile->Load(sFilename.c_str());
 
-    wxMenuBar* menubar=pParent->CreateBasicMenu();
-    wxMenu* filemenu=menubar->Remove(0);
-    filemenu->Insert(2,new wxMenuItem(filemenu,id_filesave,"&Save","Save the font to disk."));
-    filemenu->Insert(3,new wxMenuItem(filemenu,id_filesaveas,"Save &As","Save the font under a new filename."));
-    filemenu->Insert(4,new wxMenuItem(filemenu,id_fileclose,"&Close","Close the font window."));
-    menubar->Append(filemenu,"&File");
+    wxMenuBar* menubar = pParent->CreateBasicMenu();
+    wxMenu* filemenu = menubar->Remove(0);
+    filemenu->Insert(2, new wxMenuItem(filemenu, id_filesave, "&Save", "Save the font to disk."));
+    filemenu->Insert(3, new wxMenuItem(filemenu, id_filesaveas, "Save &As", "Save the font under a new filename."));
+    filemenu->Insert(4, new wxMenuItem(filemenu, id_fileclose, "&Close", "Close the font window."));
+    menubar->Append(filemenu, "&File");
 
     wxMenu* optionsmenu = new wxMenu;
-    menubar->Append(optionsmenu,"&Options");
-    optionsmenu->Append(id_optionscolor,"Change background color...","");
+    menubar->Append(optionsmenu, "&Options");
+    optionsmenu->Append(id_optionscolor, "Change background color...", "");
 
     SetMenuBar(menubar);
 }
@@ -85,9 +85,9 @@ void CFontView::OnRightClick(wxMouseEvent& event)
 
 void CFontView::OnLeftClick(wxMouseEvent& event)
 {
-    int x,y;
-    event.GetPosition(&x,&y);
-    nCurfont=FontAt(x,y);
+    int x, y;
+    event.GetPosition(&x, &y);
+    nCurfont = FontAt(x, y);
 
     Render();
 }
@@ -101,12 +101,12 @@ void CFontView::Render()
 
     GetClientSize(&nWidth, &nHeight);
 
-    tx=pFontfile->Width();
-    ty=pFontfile->Height();
+    tx = pFontfile->Width();
+    ty = pFontfile->Height();
 
     int nFontwidth = nWidth / tx;
     int nFontheight = (nHeight / ty) + 1;
-    int nFont=ywin * nFontwidth;
+    int nFont = ywin * nFontwidth;
 
     pGraph->SetCurrent();
     pGraph->Clear();     
@@ -147,31 +147,31 @@ nomoredrawing:
     pGraph->ShowPage();
 }
 
-void CFontView::FontPos(int fontidx,int& x,int& y) const
+void CFontView::FontPos(int fontidx, int& x, int& y) const
 {
-    int nFontwidth=GetClientSize().GetWidth()/pFontfile->Width();
+    int nFontwidth = GetClientSize().GetWidth()/pFontfile->Width();
     
 
-    x=fontidx%nFontwidth;
-    y=fontidx/nFontwidth-ywin;
+    x = fontidx%nFontwidth;
+    y = fontidx / nFontwidth - ywin;
 
-    x*=pFontfile->Width();
-    y*=pFontfile->Height();
+    x *= pFontfile->Width();
+    y *= pFontfile->Height();
 }
 
-int CFontView::FontAt(int x,int y) const
+int CFontView::FontAt(int x, int y) const
 {
-    const int tx=pFontfile->Width();
-    const int ty=pFontfile->Height();
+    const int tx = pFontfile->Width();
+    const int ty = pFontfile->Height();
 
     int nFontwidth = GetClientSize().GetWidth()/tx;
 
-    x/=tx;      
-    y/=ty;
+    x /= tx;      
+    y /= ty;
 
-    int t=(y+ywin)*nFontwidth+x;
+    int t=(y + ywin)*nFontwidth + x;
 
-    if (t>pFontfile->NumGlyphs()) return 0;
+    if (t > pFontfile->NumGlyphs()) return 0;
     return t;
 }
 
@@ -202,11 +202,11 @@ void CFontView::OnSaveAs(wxCommandEvent& event)
         wxSAVE | wxOVERWRITE_PROMPT
     );
 
-    int result=dlg.ShowModal();
+    int result = dlg.ShowModal();
     if (result==wxID_CANCEL)
         return;
 
-    name=dlg.GetFilename().c_str();
+    name = dlg.GetFilename().c_str();
     SetTitle(name.c_str());
 
     OnSave(event);
@@ -244,37 +244,37 @@ void CFontView::OnScroll(wxScrollWinEvent& event)
 
 void CFontView::UpdateScrollbar()
 {
-    Canvas& rGlyph=pFontfile->GetGlyph(nCurfont);
-    int nWidth,nHeight;
+    Canvas& rGlyph = pFontfile->GetGlyph(nCurfont);
+    int nWidth, nHeight;
     GetClientSize(&nWidth, &nHeight);
 
-    int nFontwidth  = nWidth/rGlyph.Width();
-    int nFontheight = nHeight/rGlyph.Height();
+    int nFontwidth  = nWidth / rGlyph.Width();
+    int nFontheight = nHeight / rGlyph.Height();
 
     int nTotalheight=(pFontfile->NumGlyphs())/nFontwidth;
 
-    if (ywin>nTotalheight-nFontheight)  
-        ywin=nTotalheight-nFontheight;
+    if (ywin > nTotalheight - nFontheight)  
+        ywin = nTotalheight - nFontheight;
 
-    if (ywin<0)                         
-        ywin=0;
+    if (ywin < 0)                         
+        ywin = 0;
 
-    SetScrollbar(wxVERTICAL,ywin,nFontheight,nTotalheight,true);
+    SetScrollbar(wxVERTICAL, ywin, nFontheight, nTotalheight, true);
 }
 
 void CFontView::OnChangeBackgroundColor(wxCommandEvent& event)
 {
         wxColour nColor;
-        nColor=GetBackgroundColour();
+        nColor = GetBackgroundColour();
         
         wxColourData hData;
         hData.SetColour(nColor);
         hData.SetChooseFull(false);
 
-        for (int i=0; i<16; i++)
+        for (int i = 0; i < 16; i++)
         {
-            wxColour nCustom(i*16, i*16, i*16);
-            hData.SetCustomColour(i,nCustom);
+            wxColour nCustom(i * 16, i * 16, i * 16);
+            hData.SetCustomColour(i, nCustom);
         }
 
         wxColourDialog cdialog(this, &hData);
@@ -285,11 +285,11 @@ void CFontView::OnChangeBackgroundColor(wxCommandEvent& event)
             nColor               = retData.GetColour();
             SetBackgroundColour(nColor);
 
-            u8 r=nColor.Red();
-            u8 g=nColor.Green();
-            u8 b=nColor.Blue();
+            u8 r = nColor.Red();
+            u8 g = nColor.Green();
+            u8 b = nColor.Blue();
 
-            glClearColor(r,g,b,0);
+            glClearColor(r, g, b, 0);
             Render();
             
         }

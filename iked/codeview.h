@@ -22,7 +22,7 @@ public:
 
     enum        // commands specific to this window
     {
-        id_ed=100,
+        id_ed = 100,
         id_filesave,
         id_filesaveas,
         id_fileclose,
@@ -42,7 +42,7 @@ public:
         id_viewws,
     };
 
-    CCodeView(CMainWnd* parent,const string& name);
+    CCodeView(CMainWnd* parent, const string& name);
 
     void OnStyleNeeded(wxStyledTextEvent& event);
     void OnCharAdded(wxStyledTextEvent& event);
@@ -67,7 +67,7 @@ public:
     void OnViewWhiteSpace(wxCommandEvent& event);
 private:
 
-    void SetSyntax(int,wxCommandEvent&);
+    void SetSyntax(int, wxCommandEvent&);
 
     void DoFind(wxFindDialogEvent& event);
 public:

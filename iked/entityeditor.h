@@ -17,7 +17,7 @@ class CEntityEditor : public wxDialog
     wxListBox*  pEntlist;
 
 public:
-    CEntityEditor(CMapView* parent,Map* m);
+    CEntityEditor(CMapView* parent, Map* m);
 
 private:
     void InitControls();

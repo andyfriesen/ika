@@ -22,16 +22,16 @@ private:
         int     nRefcount;
         T*      pData;
 
-        Resource(const string& s="",T* d=0) : sFilename(s),nRefcount(1),pData(d) {}
+        Resource(const string& s="", T* d = 0) : sFilename(s), nRefcount(1), pData(d) {}
     };
 
-    typedef std::list<Resource> ResourceList;
+    typedef std::list < Resource> ResourceList;
 
     ResourceList    rsrc;
 
     Resource* Find(const string& name)
     {
-        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
+        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
         {
             if (i->sFilename==name)
                 return &*i;
@@ -42,7 +42,7 @@ private:
 
     Resource* Find(const T* data)
     {
-        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
+        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
         {
             if (i->pData==data)
                 return &*i;
@@ -52,9 +52,9 @@ private:
     }
 
     // Specialize this if T doesn't have a bool Load(const char* s) method.
-    bool LoadFromFile(T* p,const string& name)
+    bool LoadFromFile(T* p, const string& name)
     {
-        Log::Write("Loading      %s",name.c_str());
+        Log::Write("Loading      %s", name.c_str());
         return p->Load(name.c_str());
     }
 
@@ -63,27 +63,27 @@ public:
     T* Load(string name)
     {
 #ifdef WIN32
-        name=Upper(name);
+        name = Upper(name);
 #endif
 
-        Resource* ri=Find(name);
+        Resource* ri = Find(name);
 
         if (ri)
         {
-            Log::Write("Addref       %s",name.c_str());
+            Log::Write("Addref       %s", name.c_str());
             ri->nRefcount++;
             return ri->pData;
         }
         else
         {
-            T* pData=new T;
-            if (!LoadFromFile(pData,name))
+            T* pData = new T;
+            if (!LoadFromFile(pData, name))
             {
                 delete pData;
                 return 0;
             }
 
-            rsrc.push_back(Resource(name,pData));
+            rsrc.push_back(Resource(name, pData));
 
             return pData;
         }
@@ -91,7 +91,7 @@ public:
 
     void Release(T* data)
     {
-        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
+        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
         {
             if (i->pData==data)
             {
@@ -99,27 +99,27 @@ public:
 
                 if (i->nRefcount == 0)
                 {
-                    Log::Write("Deallocating %s",i->sFilename.c_str());
+                    Log::Write("Deallocating %s", i->sFilename.c_str());
                     delete i->pData;
                     rsrc.erase(i);
                     
                 }
                 else
-                    Log::Write("Decref       %s",i->sFilename.c_str());
+                    Log::Write("Decref       %s", i->sFilename.c_str());
 
                 return;
             }
         }
 
-        Log::Write("Attempt to deallocate unallocated resource! %8x",data);
+        Log::Write("Attempt to deallocate unallocated resource! %8x", data);
         // !!!
     }
 
     ~CController()
     {
-        for (ResourceList::iterator i=rsrc.begin(); i!=rsrc.end(); i++)
+        for (ResourceList::iterator i = rsrc.begin(); i!=rsrc.end(); i++)
         {
-            Log::Write("Leak! %s",i->sFilename.c_str());
+            Log::Write("Leak! %s", i->sFilename.c_str());
             delete i->pData;
         }
     }

@@ -33,11 +33,11 @@ struct Rect
     int right;
     int bottom;
     
-    inline int Width() const  { return right-left; }
-    inline int Height() const { return bottom-top; }
+    inline int Width() const  { return right - left; }
+    inline int Height() const { return bottom - top; }
 
-    Rect(int x1,int y1,int x2,int y2) : left(x1),right(x2),top(y1),bottom(y2) {}
-    Rect() : left(0),right(0),top(0),bottom(0) {}
+    Rect(int x1, int y1, int x2, int y2) : left(x1), right(x2), top(y1), bottom(y2) {}
+    Rect() : left(0), right(0), top(0), bottom(0) {}
 };
 
 /// Simple 2D point
@@ -62,20 +62,20 @@ enum Direction											///< directions an entity can be facing
     face_upright,
     face_downleft,
     face_downright,
-    face_nothing,										///< a special case, entity::getcommand returns this if the entity in question isn't walking
+    face_nothing, 										///< a special case, entity::getcommand returns this if the entity in question isn't walking
 };
 
 enum MoveCode											///< entity movecodes
 {
-    mc_nothing=0,										///< entity just stands there
-    mc_wander,											///< entity wanders around like an idiot
-    mc_wanderrect,										///< ditto, but the entity is restricted to a rectangular region
-    mc_wanderzone,										///< ditto again, but the entity is restricted to a particular zone
-    mc_script,											///< entity follows its script
-    mc_chase,											///< the entity is following another entity
+    mc_nothing = 0, 										///< entity just stands there
+    mc_wander, 											///< entity wanders around like an idiot
+    mc_wanderrect, 										///< ditto, but the entity is restricted to a rectangular region
+    mc_wanderzone, 										///< ditto again, but the entity is restricted to a particular zone
+    mc_script, 											///< entity follows its script
+    mc_chase, 											///< the entity is following another entity
 };
 
-#pragma pack (push,1)
+#pragma pack (push, 1)
 
 //! A color. ;)
 union RGBA

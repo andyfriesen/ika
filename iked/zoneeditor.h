@@ -2,7 +2,7 @@
 #ifndef ZONEEDITOR_H
 #define ZONEEDITOR_H
 
-#include "wx/wx.h"
+#include "wx / wx.h"
 
 class CMapView;
 class Map;

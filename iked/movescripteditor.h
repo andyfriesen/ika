@@ -16,7 +16,7 @@ class CMovescriptEditor : public wxDialog
 {
     public:
 
-        CMovescriptEditor(CSpriteSetView* parent, CSpriteSet* sprite, int idx=0);
+        CMovescriptEditor(CSpriteSetView* parent, CSpriteSet* sprite, int idx = 0);
 
         
         void UpdateData();
@@ -36,7 +36,7 @@ class CMovescriptEditor : public wxDialog
 
         // controls
 
-        vector<wxTextCtrl*>     movescript;
+        vector < wxTextCtrl*>     movescript;
         wxTextCtrl*             pDesc;
         wxTextCtrl*             pHotx;
         wxTextCtrl*             pHoty;

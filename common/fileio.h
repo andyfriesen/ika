@@ -21,10 +21,10 @@ class File
 
     // Directory structure handling things
 private:
-    static vector<SDirectoryInfo> directoryinfo;
+    static vector < SDirectoryInfo> directoryinfo;
     string GetRealPath(const string& fname);
 public:
-    static void AddPath(string sExtension,string sPath);
+    static void AddPath(string sExtension, string sPath);
     static void ClearPaths();
 
     // Misc handy file stuff
@@ -37,26 +37,26 @@ private:
 public:
     File(void);
     ~File(void);
-    bool OpenRead(const char* fname,bool bBinary=true);
-    bool OpenAppend(const char* fname,bool bBinary=true);
-    bool OpenWrite(const char* fname,bool bBinary=true);
+    bool OpenRead(const char* fname, bool bBinary = true);
+    bool OpenAppend(const char* fname, bool bBinary = true);
+    bool OpenWrite(const char* fname, bool bBinary = true);
     void Close(void);
     
-    void Read(void* dest,int numbytes);
+    void Read(void* dest, int numbytes);
     template <typename T>
         void Read(T& dest)
-    {   Read(&dest,sizeof dest);    }
+    {   Read(&dest, sizeof dest);    }
     void ReadString(char* dest);
     void ReadToken(char* dest);
-    void ReadCompressed(void* dest,int numbytes);
+    void ReadCompressed(void* dest, int numbytes);
     
-    void Write(const void* source,int numbytes);
+    void Write(const void* source, int numbytes);
     void Write(const char* source);
     template <typename T>
         void Write(const T& dest)
-    {   Write(&dest,sizeof dest);   }
+    {   Write(&dest, sizeof dest);   }
     void WriteString(const char* source);
-    void WriteCompressed(const void* source,int numbytes);
+    void WriteCompressed(const void* source, int numbytes);
     
     void Seek(int position);
     int  Size(void);

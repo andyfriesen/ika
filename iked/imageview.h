@@ -25,7 +25,7 @@ protected:
 
 public:
 
-    CImageView(CMainWnd* parent,Canvas* img);
+    CImageView(CMainWnd* parent, Canvas* img);
     virtual ~CImageView();
 
     // events

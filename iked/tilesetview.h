@@ -19,13 +19,13 @@ class CTileSetView : public IDocView
     wxMenu*         pContextmenu;
 
     int ywin;                                       // scrollbar position
-    bool bPad;                                      // pixel padding on/off
+    bool bPad;                                      // pixel padding on / off
 
-    int nTile;                                      // used for the context menu; the tile index of the tile that was right-clicked
-    int zoom;                                       // zoom scale.  16 is normal.  1 is 1/16th scale.
+    int nTile;                                      // used for the context menu; the tile index of the tile that was right - clicked
+    int zoom;                                       // zoom scale.  16 is normal.  1 is 1 / 16th scale.
 
 public:
-    CTileSetView(CMainWnd* parentwnd,const string& fname);
+    CTileSetView(CMainWnd* parentwnd, const string& fname);
     ~CTileSetView();
 
     virtual void OnSave(wxCommandEvent& event);
@@ -61,8 +61,8 @@ public:
     void Render();
     void UpdateScrollbar();
 
-    int  TileAt(int x,int y) const;                 // returns the tile under the specified client coordinates
-    void TilePos(int t,int& x,int& y) const;        // x and y are set to the position at which the specified tile is rendered at
+    int  TileAt(int x, int y) const;                 // returns the tile under the specified client coordinates
+    void TilePos(int t, int& x, int& y) const;        // x and y are set to the position at which the specified tile is rendered at
 
     DECLARE_EVENT_TABLE()
 };

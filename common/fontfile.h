@@ -11,7 +11,7 @@ Font file
 class File;
 
 /*!
-    Hardware-independant representation of a bitmap font.
+    Hardware - independant representation of a bitmap font.
 */
 class CFontFile
 {
@@ -24,10 +24,10 @@ public:
     
 private:
     // ------------------ Data ---------------------
-    std::vector<SSubSet>    set;                            //!< font subsets.
-    std::vector<Canvas>       glyph;                  //!< Actual font glyphs.
+    std::vector < SSubSet>    set;                            //!< font subsets.
+    std::vector < Canvas>       glyph;                  //!< Actual font glyphs.
 
-    int nWidth,nHeight;                                     //!< For convenience only.  The width and height of the largest characters in the font.
+    int nWidth, nHeight;                                     //!< For convenience only.  The width and height of the largest characters in the font.
     
     // ---------- Implementation Details -----------
     bool Load8bppFont(File& f);

@@ -6,9 +6,9 @@
 #define MAIN_H
 
 #include "types.h"
-#include "wx/wx.h"
-#include "wx/toolbar.h"
-#include "wx/bitmap.h"
+#include "wx / wx.h"
+#include "wx / toolbar.h"
+#include "wx / bitmap.h"
 #include <set>
 
 // Resource objects
@@ -49,13 +49,13 @@ public:
 
 class CMainWnd : public wxMDIParentFrame
 {
-    std::set<IDocView*> pDocuments;
+    std::set < IDocView*> pDocuments;
     ProjectView* _project;
 
 public:
     enum
     {
-        id_filequit=1,
+        id_filequit = 1,
         id_filenewproject,
         id_filenewmap,
         id_filenewscript,
@@ -70,8 +70,8 @@ public:
         
     };
     
-    CMainWnd(wxWindow* parent,const wxWindowID id,const wxString& title,
-        const wxPoint& position,const wxSize& size,const long style);
+    CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
+        const wxPoint& position, const wxSize& size, const long style);
     ~CMainWnd();
     
     void FileQuit(wxCommandEvent& event);
@@ -104,7 +104,7 @@ public:
     It merely promises random access at O(1).  Fix if it becomes an issue. (unlikely)
 
 */
-    vector<wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
+    vector < wxAcceleratorEntry>  CreateBasicAcceleratorTable(); 
 
 private:
     wxToolBar* CreateBasicToolBar();
@@ -118,9 +118,9 @@ public:
      and nukes things that no longer need to be in memory
 */
 
-    CController<Map> map;
-    CController<CTileSet> vsp;
-    CController<CSpriteSet> spriteset;
+    CController < Map> map;
+    CController < CTileSet> vsp;
+    CController < CSpriteSet> spriteset;
     // TODO: fonts, scripts, (?) anything else that comes to mind
 
 public:

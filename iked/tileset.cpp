@@ -4,13 +4,13 @@
 #include "graph.h"
 
 CTileSet::CTileSet()
-: pVsp(0),nCurtile(0)
+: pVsp(0), nCurtile(0)
 {
 }
 
 bool CTileSet::Load(const char* fname)
 {
-    VSP* pNewvsp=new VSP;
+    VSP* pNewvsp = new VSP;
 
     if(!pNewvsp->Load(fname))
     {
@@ -19,7 +19,7 @@ bool CTileSet::Load(const char* fname)
     }
 
     delete pVsp;
-    pVsp=pNewvsp;
+    pVsp = pNewvsp;
 
     SyncAll();
 
@@ -37,7 +37,7 @@ Canvas& CTileSet::Get(int tileidx)
     return pVsp->GetTile(tileidx);
 }
 
-void CTileSet::SetImage(const Canvas& newtile,int tileidx)
+void CTileSet::SetImage(const Canvas& newtile, int tileidx)
 {
     pVsp->GetTile(tileidx)=newtile;
 }
@@ -59,6 +59,6 @@ int CTileSet::Height() const
 
 void CTileSet::SetCurTile(uint t)
 {
-    if (t<0 || t>=pVsp->NumTiles()) return;
-    nCurtile=t;
+    if (t < 0 || t >= pVsp->NumTiles()) return;
+    nCurtile = t;
 }

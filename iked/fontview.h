@@ -14,7 +14,7 @@ class CFontView : public IDocView
 {
     enum
     {
-        id_font=300,
+        id_font = 300,
         id_filesave,
         id_filesaveas,
         id_fileclose,
@@ -23,7 +23,7 @@ class CFontView : public IDocView
 
     public:
 
-        CFontView(CMainWnd* parentwnd,const string& fname);
+        CFontView(CMainWnd* parentwnd, const string& fname);
         ~CFontView();
 
         void Paint();
@@ -50,8 +50,8 @@ class CFontView : public IDocView
         int nCurfont;
         string sFilename;
 
-        void FontPos(int fontidx,int& x,int& y) const;
-        int FontAt(int x,int y) const;
+        void FontPos(int fontidx, int& x, int& y) const;
+        int FontAt(int x, int y) const;
         void UpdateScrollbar();
 
 

@@ -18,7 +18,7 @@ class CTextView : public IDocView
 {
     public:
 
-        CTextView(CMainWnd* parent,const string& name);
+        CTextView(CMainWnd* parent, const string& name);
 
         void OnStyleNeeded(wxStyledTextEvent& event);
         void OnCharAdded(wxStyledTextEvent& event);
@@ -46,7 +46,7 @@ class CTextView : public IDocView
 #endif
         enum
         {
-            id_ed=100,
+            id_ed = 100,
             id_filesave,
             id_filesaveas,
             id_fileclose,

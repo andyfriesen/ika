@@ -14,8 +14,8 @@
 namespace Log
 {
     void Init(const char* fname);
-    void Write(const char*,...);        // writes to the log file
-    void Writen(const char*,...);       // same, but does not append a newline
+    void Write(const char*, ...);        // writes to the log file
+    void Writen(const char*, ...);       // same, but does not append a newline
 };
 
 #ifdef LOG_CALLBACK

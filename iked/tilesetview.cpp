@@ -4,7 +4,7 @@
 
 #include "ImageView.h"
 
-#include "wx/event.h"
+#include "wx / event.h"
 
 namespace
 {
@@ -50,7 +50,7 @@ namespace
     END_EVENT_TABLE();
 };
 
-BEGIN_EVENT_TABLE(CTileSetView,IDocView)
+BEGIN_EVENT_TABLE(CTileSetView, IDocView)
     EVT_SCROLLWIN(CTileSetView::OnScroll)
     EVT_SIZE(CTileSetView::OnSize)
     EVT_CLOSE(CTileSetView::OnClose)
@@ -60,7 +60,7 @@ BEGIN_EVENT_TABLE(CTileSetView,IDocView)
     EVT_RIGHT_DOWN(CTileSetView::OnRightClick)
     EVT_MOUSEWHEEL(CTileSetView::OnMouseWheel)
 
-    EVT_MENU(id_edittile,CTileSetView::OnEditTile)
+    EVT_MENU(id_edittile, CTileSetView::OnEditTile)
 
     EVT_MENU(id_zoomnormal, CTileSetView::OnZoomNormal)
     EVT_MENU(id_zoomin, CTileSetView::OnZoomIn)
@@ -73,16 +73,16 @@ BEGIN_EVENT_TABLE(CTileSetView,IDocView)
 
 END_EVENT_TABLE()
 
-CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
-    : IDocView(parentwnd,fname)
+CTileSetView::CTileSetView(CMainWnd* parentwnd, const string& fname)
+    : IDocView(parentwnd, fname)
     , pParent(parentwnd)
     , ywin(0)
     , zoom(16)
 {
-    pGraph=new CTileSetFrame(this, this); //new CGraphFrame(this);
+    pGraph = new CTileSetFrame(this, this); //new CGraphFrame(this);
     pGraph->SetSize(GetClientSize());
 
-    pTileset=pParent->vsp.Load(fname);
+    pTileset = pParent->vsp.Load(fname);
 
     wxMenuBar* menubar = pParent->CreateBasicMenu();
     wxMenu* viewmenu = new wxMenu;
@@ -99,15 +99,15 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd,const string& fname)
     menubar->Append(viewmenu, "&View");
     SetMenuBar(menubar);
 
-    pContextmenu=new wxMenu();
-    pContextmenu->Append(id_deletetile,"Delete");
-    pContextmenu->Append(id_inserttile,"Insert");
-    pContextmenu->Append(id_copytile,"Copy");
-    pContextmenu->Append(id_pasteinto,"Paste into");
-    pContextmenu->Append(id_pasteover,"Paste over");
-    pContextmenu->Append(id_insertandpaste,"Insert and paste");
+    pContextmenu = new wxMenu();
+    pContextmenu->Append(id_deletetile, "Delete");
+    pContextmenu->Append(id_inserttile, "Insert");
+    pContextmenu->Append(id_copytile, "Copy");
+    pContextmenu->Append(id_pasteinto, "Paste into");
+    pContextmenu->Append(id_pasteover, "Paste over");
+    pContextmenu->Append(id_insertandpaste, "Insert and paste");
     pContextmenu->AppendSeparator();
-    pContextmenu->Append(id_edittile,"Edit");
+    pContextmenu->Append(id_edittile, "Edit");
 }
 
 CTileSetView::~CTileSetView()
@@ -142,13 +142,13 @@ void CTileSetView::OnSize(wxSizeEvent& event)
 
 void CTileSetView::OnScroll(wxScrollWinEvent& event)
 {
-    if (event.m_eventType == wxEVT_SCROLLWIN_TOP)           ywin=0;                     
-    else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM)   ywin=pTileset->Count();        // guaranteed to be too big, so that the usual scroll handler will clip it
+    if (event.m_eventType == wxEVT_SCROLLWIN_TOP)           ywin = 0;                     
+    else if (event.m_eventType == wxEVT_SCROLLWIN_BOTTOM)   ywin = pTileset->Count();        // guaranteed to be too big, so that the usual scroll handler will clip it
     else if (event.m_eventType == wxEVT_SCROLLWIN_LINEUP)   ywin--;                     
     else if (event.m_eventType == wxEVT_SCROLLWIN_LINEDOWN) ywin++;                     
-    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEUP)   ywin-=GetScrollThumb(wxVERTICAL);   
-    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEDOWN) ywin+=GetScrollThumb(wxVERTICAL);   
-    else                                                    ywin=event.GetPosition();
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEUP)   ywin -= GetScrollThumb(wxVERTICAL);   
+    else if (event.m_eventType == wxEVT_SCROLLWIN_PAGEDOWN) ywin += GetScrollThumb(wxVERTICAL);   
+    else                                                    ywin = event.GetPosition();
 
     UpdateScrollbar();
     Render();
@@ -166,17 +166,17 @@ const void* CTileSetView::GetResource() const
 
 void CTileSetView::OnLeftClick(wxMouseEvent& event)
 {
-    int x,y;
-    event.GetPosition(&x,&y);
+    int x, y;
+    event.GetPosition(&x, &y);
 
-    pTileset->SetCurTile(TileAt(x,y));
+    pTileset->SetCurTile(TileAt(x, y));
     Render();
 }
 
 void CTileSetView::OnRightClick(wxMouseEvent& event)
 {
-    PopupMenu(pContextmenu,event.GetPosition());
-    nTile=TileAt(event.GetX(),event.GetY());
+    PopupMenu(pContextmenu, event.GetPosition());
+    nTile = TileAt(event.GetX(), event.GetY());
 }
 
 void CTileSetView::OnMouseWheel(wxMouseEvent& event)
@@ -202,7 +202,7 @@ void CTileSetView::Zoom(int factor)
 void CTileSetView::OnEditTile(wxCommandEvent& event)
 {
 //    pParent->
-    pParent->OpenDocument( new CImageView(pParent,&pTileset->Get(nTile)) );
+    pParent->OpenDocument( new CImageView(pParent, &pTileset->Get(nTile)) );
 }
 
 void CTileSetView::OnZoomNormal(wxCommandEvent&)    {   Zoom(16 - zoom);  }
@@ -216,23 +216,23 @@ void CTileSetView::OnZoomOut4x(wxCommandEvent&)     {   Zoom(-4);   }
 
 void CTileSetView::Render()
 {
-    int w,h;
-    GetClientSize(&w,&h);
+    int w, h;
+    GetClientSize(&w, &h);
 
-    const int tx=pTileset->Width() * 16 / zoom;
-    const int ty=pTileset->Height() * 16 / zoom;
+    const int tx = pTileset->Width() * 16 / zoom;
+    const int ty = pTileset->Height() * 16 / zoom;
 
-    int nTilewidth =w/tx;
-    int nTileheight=(h/ty)+1;
+    int nTilewidth =w / tx;
+    int nTileheight=(h / ty)+1;
 
-    int nTile=ywin*nTilewidth;                  // first tile to draw
+    int nTile = ywin * nTilewidth;                  // first tile to draw
 
     pGraph->SetCurrent();
     pGraph->Clear();
 
-    for (int y=0; y<nTileheight; y++)
+    for (int y = 0; y < nTileheight; y++)
     {
-        for (int x=0; x<nTilewidth; x++)
+        for (int x = 0; x < nTilewidth; x++)
         {
             pGraph->ScaleBlit(pTileset->GetImage(nTile),
                 x * tx, y * ty,
@@ -241,24 +241,22 @@ void CTileSetView::Render()
 
             nTile++;
 
-            if (nTile>pTileset->Count())
-            {
-                y=nTileheight;  // hack, so that we bomb out of the outer loop too.
-                break;
-            }
+            if (nTile >= pTileset->Count())
+                goto breakloop;
         }
     }
+breakloop:
 
-    int cx,cy;
-    TilePos(pTileset->CurTile(),cx,cy);
-    pGraph->Rect(cx-1,cy-1,tx+1,ty+1,RGBA(255,255,255));
+    int cx, cy;
+    TilePos(pTileset->CurTile(), cx, cy);
+    pGraph->Rect(cx - 1, cy - 1, tx + 1, ty + 1, RGBA(255, 255, 255));
 
     pGraph->ShowPage();
 }
 
 void CTileSetView::UpdateScrollbar()
 {
-    int w,h;
+    int w, h;
     GetClientSize(&w, &h);
 
     int nTilewidth  = w / pTileset->Width() * zoom / 16;
@@ -272,7 +270,7 @@ void CTileSetView::UpdateScrollbar()
     SetScrollbar(wxVERTICAL, ywin, nTileheight, nTotalheight, true);
 }
 
-int CTileSetView::TileAt(int x,int y) const
+int CTileSetView::TileAt(int x, int y) const
 {
     const int tx = pTileset->Width() * 16 / zoom;
     const int ty = pTileset->Height() * 16 / zoom;
@@ -288,7 +286,7 @@ int CTileSetView::TileAt(int x,int y) const
 }
 
 // Returns the position at which the tile is drawn at
-void CTileSetView::TilePos(int tileidx,int& x,int& y) const
+void CTileSetView::TilePos(int tileidx, int& x, int& y) const
 {
     int nTilewidth = GetClientSize().GetWidth() / (pTileset->Width() * 16 / zoom);
 

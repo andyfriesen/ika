@@ -419,6 +419,12 @@
             <label>&amp;1 Pixel padding between frames</label>
           </object>
         </object>
+        <object class="sizeritem">
+          <object class="wxCheckBox" name="check_append">
+            <label>&amp;Append frames</label>
+            <checked>1</checked>
+          </object>
+        </object>
         <object class="spacer">
           <size>10,10</size>
         </object>

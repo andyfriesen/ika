@@ -14,7 +14,7 @@ class CTileEdit : CImageView
     int nTile;
 
 public:
-    CTileEdit(CMainWnd* parent,CTileSet* tileset,int tileidx);
+    CTileEdit(CMainWnd* parent, CTileSet* tileset, int tileidx);
 };
 
 #endif

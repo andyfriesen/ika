@@ -15,7 +15,7 @@ class CSpriteSetView : public IDocView
 {
     public:
 
-        CSpriteSetView(CMainWnd* parentwnd,const string& fname);
+        CSpriteSetView(CMainWnd* parentwnd, const string& fname);
         ~CSpriteSetView();
 
 
@@ -52,7 +52,7 @@ class CSpriteSetView : public IDocView
 
         void InitMenu();
         void InitAccelerators();
-        void SpritePos(int idx,int& x,int& y) const;
+        void SpritePos(int idx, int& x, int& y) const;
         void Zoom(int nZoomscale);
 
         CMainWnd*       pParent;
