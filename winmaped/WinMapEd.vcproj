@@ -39,7 +39,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="comctl32.lib zlib.lib odbc32.lib odbccp32.lib corona.lib cppdom_d.lib"
+				AdditionalDependencies="comctl32.lib zlib.lib odbc32.lib odbccp32.lib corona.lib"
 				OutputFile=".\Debug/WinMapEd.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
@@ -98,7 +98,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="comctl32.lib zlib.lib odbc32.lib odbccp32.lib corona.lib cppdom.lib"
+				AdditionalDependencies="comctl32.lib zlib.lib odbc32.lib odbccp32.lib corona.lib"
 				OutputFile=".\Release/WinMapEd.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"

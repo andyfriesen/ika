@@ -47,7 +47,7 @@ int Random(int min, int max)
     if (max < min)
         swap(max, min);
     
-    i=(rand()%(max - min))+min;
+    i = (rand() % (max - min)) + min;
     
     return i;
 }

@@ -69,6 +69,17 @@ protected:
     // This essentially boils down to a speed hack. (it also simplifies the KeyUp and KeyDown methods considerably.
     std::map<int, KeyControl*> _keys;
 
+    // Mouse
+    Control* _mouseX;
+    Control* _mouseY;
+    Control* _mouseWheel;
+    Control* _mouseL;
+    Control* _mouseR;
+    Control* _mouseM;
+
+    // Joysticks
+    //--
+
 public: 
     Input();
     ~Input();

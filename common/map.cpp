@@ -1,7 +1,4 @@
 
-//#include <cppdom/cppdom.h>
-//#include "xmlutil.h"
-
 #include "map.h"
 #include "log.h"
 #include "compression.h"
@@ -11,12 +8,12 @@
 #include "aries.h"
 #include <fstream>
 
-//using namespace cppdom;
 using aries::newNode;
 using aries::Node;
 using aries::DataNode;
 using aries::StringNode;
 using aries::DataNodeList;
+using aries::NodeList;
 
 namespace
 {
@@ -84,15 +81,20 @@ bool Map::Load(const std::string& filename)
 
             title = Local::getStringNode(infoNode, "title");
 
-            DataNodeList metaNodes = infoNode->getChildren("meta");
-            for (DataNodeList::iterator iter = metaNodes.begin(); iter != metaNodes.end(); iter++)
+            DataNode* metaNode = infoNode->getChild("meta");
+            const NodeList& metaNodes = metaNode->getChildren();
+            for (NodeList::const_iterator iter = metaNodes.begin(); iter != metaNodes.end(); iter++)
             {
-                DataNode* node = *iter;
+                if (!(*iter)->isString())
+                {
+                    DataNode* node = reinterpret_cast<DataNode*>(*iter);
 
-                std::string name = node->getName();
-                std::string value = node->getString();
+                    std::string name = node->getName();
+                    std::string value = node->getString();
 
-                metaData[name] = value;
+                    metaData[name] = value;
+                }
+                // else warn?  String nodes should not be here, though they won't damage anything.
             }
         }
 

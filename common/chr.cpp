@@ -10,13 +10,10 @@
 
 #include "compression.h"
 #include "base64.h"
-//#include "xmlutil.h"
-//#include <cppdom/cppdom.h>
 #include "aries.h"
 #include <fstream>
 #include <stdexcept>
 
-//using namespace cppdom;
 using aries::NodeList;
 using aries::DataNodeList;
 using aries::DataNode;
@@ -141,8 +138,6 @@ void CCHRfile::Load(const std::string& fname)
         return;
     }
 
-#if 1
-
     try
     {
         if (!fname.length())
@@ -240,140 +235,6 @@ void CCHRfile::Load(const std::string& fname)
         Log::Write("LoadCHR(\"%s\"): %s", fname.c_str(), err.what());
         throw err;
     }
-
-#else
-    // blech.  This is still here for some stupid reason I cannot fathom.
-    // It'll be purged at some point.  Probably before ika 0.48 goes public.
-    XMLContextPtr context(new XMLContext);
-    XMLDocument document;
-
-    try
-    {
-        document.load(std::ifstream(fname.c_str()), context);
-        XMLNodePtr rootNode = document.getChild("ika-sprite");
-        if (!rootNode.get())
-            throw "No document root!";
-
-        {
-            XMLNodePtr infoNode = rootNode->getChild("information");
-            if (!infoNode.get())
-                throw "<information> tag not found.";
-
-            // grab <information> elements
-            XMLNodeList nodes = infoNode->getChildren("meta");
-            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-            {
-                std::string name = (*iter)->getAttribute("type");
-                std::string value;
-
-                XMLNodePtr cnode = (*iter)->getChildren().front();
-                if (cnode.get() != 0 && cnode->getType() == xml_nt_cdata)
-                    value = cnode->getCdata();
-
-                if (!name.empty() && !value.empty())
-                    metaData[name] = value;
-            }
-        }
-
-        {
-            XMLNodePtr headerNode = rootNode->getChild("header");
-            if (!headerNode.get())
-                throw "<header> tag not found.";
-
-            // grab header stuff
-        }
-
-        {
-            XMLNodePtr scriptNode = rootNode->getChild("scripts");
-            if (!scriptNode.get())
-                throw "<scripts> tag not found.";
-
-            const XMLNodeList nodes = scriptNode->getChildren("script");
-            for (XMLNodeList::const_iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-            {
-                std::string name((*iter)->getAttribute("label").getString());
-                if (name.empty())
-                    throw "<script> tag lacking label attribute.";
-                
-                XMLNodePtr n((*iter)->getChildren().front());
-                if (!n.get() || n->getType() != xml_nt_cdata)
-                    throw va("Script \"%s\" has no cdata", name.c_str());
-
-                // TODO: deal with the names
-                moveScripts.push_back(n->getCdata());
-            }
-        }
-
-        {
-            XMLNodePtr framesNode = rootNode->getChild("frames");
-            if (!framesNode.get())
-                throw "<frames> tag not found.";
-
-            int frameCount = atoi(framesNode->getAttribute("count").getString().c_str());
-
-            {
-                XMLNodePtr dimNode = framesNode->getChild("dimensions");
-                if (!dimNode.get())
-                    throw "<dimensions> tag not found.";
-
-                nWidth  = atoi(dimNode->getAttribute("width").getString().c_str());
-                nHeight = atoi(dimNode->getAttribute("height").getString().c_str());
-            }
-
-            {
-                XMLNodePtr hsNode = framesNode->getChild("hotspot");
-                if (!hsNode.get())
-                    throw "<hotspot> tag not found.";
-
-                nHotx = atoi(hsNode->getAttribute("x").getString().c_str());
-                nHoty = atoi(hsNode->getAttribute("y").getString().c_str());
-                nHotw = atoi(hsNode->getAttribute("width").getString().c_str());
-                nHoth = atoi(hsNode->getAttribute("height").getString().c_str());
-            }
-            
-            {
-                XMLNodePtr dataNode = framesNode->getChild("data");
-                if (!dataNode.get())
-                    throw "<data> tag not found.";
-
-                std::string compressionScheme = dataNode->getAttribute("format");
-                if (Lower(compressionScheme) != "zlib")
-                    throw va("Unsupported data format %s", compressionScheme.c_str());
-
-                XMLNodePtr n(dataNode->getChildren().front());
-                if (!n.get() || n->getType() != xml_nt_cdata)
-                    throw va("No pixel data!");
-
-                std::string cdata = n->getCdata();
-
-                ScopedArray<u8> compressed(new u8[cdata.length()]); // the actual number should be 3/4ths as long as cdata.length, but I don't see a reason to take chances
-
-                int compressedSize = base64::decode(cdata, compressed.get(), cdata.length());
-
-                ScopedArray<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
-
-                Compression::decompress(compressed.get(), compressedSize, pixels.get(), nWidth * nHeight * frameCount * sizeof(RGBA));
-
-                frame.clear();
-                frame.reserve(frameCount);
-                RGBA* ptr = (RGBA*)pixels.get();
-                for (int i = 0; i < frameCount; i++)
-                {
-                    frame.push_back(Canvas(ptr, nWidth, nHeight));
-                    ptr += nWidth * nHeight;
-                }
-            }
-        }
-    }
-    catch (XMLError)
-    {
-        throw std::runtime_error(va("Unable to load %s.", fname.c_str()));
-    }
-    catch (const char* s)
-    {
-        throw std::runtime_error(va("CHRFile::Load(%s): %s", fname.c_str(), s));
-    }
-#endif
 }
 
 void CCHRfile::Save(const std::string& fname)
@@ -384,8 +245,6 @@ void CCHRfile::Save(const std::string& fname)
         return;
     }
 
-
-#if 1
     DataNode* rootNode = newNode("ika-sprite");
     rootNode->addChild(newNode("version")->addChild("1.0"));
 
@@ -472,146 +331,6 @@ void CCHRfile::Save(const std::string& fname)
     file << rootNode;
     delete rootNode;
 
-#else
-    XMLContextPtr context(new XMLContext);
-    XMLDocument document;
-    XMLNodePtr rootNode(new XMLNode(context));
-    rootNode->setName("ika-sprite");
-    rootNode->setAttribute("version", "1.0");
-
-    try
-    {
-        {
-            XMLNodePtr infoNode(new XMLNode(context));
-            infoNode->setName("information");
-            
-            {
-                XMLNodePtr titleNode(new XMLNode(context));
-                titleNode->setName("title");
-                titleNode->addChild(CData(context, "Untitled")); // FIXME
-
-                infoNode->addChild(titleNode);
-            }
-
-            // Fill this in later.
-            for (std::map<std::string, std::string>::iterator iter = metaData.begin(); iter != metaData.end(); iter++)
-            {
-                infoNode->addChild(MetaNode(context, iter->first.c_str(), iter->second.c_str()));
-            }
-
-            rootNode->addChild(infoNode);
-        }
-
-        {
-            XMLNodePtr headerNode(new XMLNode(context));
-            headerNode->setName("header");
-
-            {
-                XMLNodePtr depthNode(new XMLNode(context));
-                depthNode->setName("depth");
-                depthNode->addChild(CData(context, "32")); // Don't expect to do anything but 32bpp for awhile
-
-                headerNode->addChild(depthNode);
-            }
-
-            rootNode->addChild(headerNode);
-        }
-
-        {
-            XMLNodePtr scriptNode(new XMLNode(context));
-            scriptNode->setName("scripts");
-
-            for (uint i = 0; i < moveScripts.size(); i++)
-            {
-                if (!moveScripts[i].empty())
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("script");
-                    n->setAttribute("label", va("script%i", i));
-                    
-                    n->addChild(CData(context, moveScripts[i].c_str()));
-
-                    scriptNode->addChild(n);
-                }
-            }
-
-            rootNode->addChild(scriptNode);
-        }
-
-        {
-            XMLNodePtr framesNode(new XMLNode(context));
-            framesNode->setName("frames");
-            framesNode->setAttribute("count", va("%i", frame.size()));
-
-            {
-                XMLNodePtr dimNode(new XMLNode(context));
-                dimNode->setName("dimensions");
-                dimNode->setAttribute("width", va("%i", nWidth));
-                dimNode->setAttribute("height", va("%i", nHeight));
-
-                framesNode->addChild(dimNode);
-            }
-
-            {
-                XMLNodePtr hsNode(new XMLNode(context));
-                hsNode->setName("hotspot");
-                hsNode->setAttribute("x", va("%i", nHotx));
-                hsNode->setAttribute("y", va("%i", nHoty));
-                hsNode->setAttribute("width", va("%i", nHotw));
-                hsNode->setAttribute("height", va("%i", nHoth));
-
-                framesNode->addChild(hsNode);
-            }
-
-            {
-                const int uncompressedBlockSize = nWidth * nHeight * frame.size() * sizeof(RGBA);
-                const int compressedBlockSize = uncompressedBlockSize * 4 / 3; // more than is needed.  Way more
-
-                ScopedArray<u8> uncompressed(new u8[uncompressedBlockSize]);
-                ScopedArray<u8> compressed(new u8[compressedBlockSize]);
-
-                // pack the uncompressed data into one big block
-                RGBA* dest = reinterpret_cast<RGBA*>(uncompressed.get());
-                for (uint i = 0; i < frame.size(); i++)
-                {
-                    RGBA* src = frame[i].GetPixels();
-                    memcpy(dest, src, nWidth * nHeight * sizeof(RGBA));
-                    
-                    dest += nWidth * nHeight;
-                }
-
-                // compress
-                int compressSize = Compression::compress(
-                    uncompressed.get(), uncompressedBlockSize, 
-                    compressed.get(), compressedBlockSize);
-
-                // base64
-                std::string d64 = base64::encode(compressed.get(), compressSize);
-
-                XMLNodePtr dataNode(new XMLNode(context));
-                dataNode->setName("data");
-                dataNode->setAttribute("format", "zlib");
-                dataNode->addChild(CData(context, d64.c_str()));
-                
-                framesNode->addChild(dataNode);
-            }
-
-            rootNode->addChild(framesNode);
-        }
-
-        document.addChild(rootNode);
-        std::ofstream ostream(fname.c_str());
-        document.save(ostream);
-    }
-    catch (XMLError)
-    {
-        throw std::runtime_error(va("Unable to write %s.", fname.c_str()));
-    }
-    catch (const char* s)
-    {
-        throw std::runtime_error(va("CHRFile::Save(%s): %s", fname.c_str(), s));
-    }
-#endif
 }
 
 void CCHRfile::LoadCHR(const std::string& fileName)

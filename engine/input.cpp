@@ -178,6 +178,28 @@ public:
     virtual float Delta()       {   return Pressed() ? 1.0f : 0.0f; }
 };
 
+class MouseAxisX : public Input::Control
+{
+    float _old;
+public:
+    MouseAxisX(Input* p)
+        : Control(p)
+        , _old(0)
+    {}
+
+    virtual bool Pressed()
+    {
+        bool b = Position() == _old;
+        _old = Position();
+        return b;
+    }
+
+    virtual float Position()
+    {
+
+    }
+};
+
 /*class CompositeControl : public Control
 {
     // NYI
