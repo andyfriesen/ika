@@ -927,6 +927,8 @@ void MainWindow::LoadMap(const std::string& fileName)
 {
     extern Map* ImportVerge1Map(const std::string& fileName);
     extern Map* ImportVerge2Map(const std::string& fileName);
+    extern Map* ImportVerge3Map(const std::string& fileName);
+    extern VSP* ImportVerge3TileSet(const std::string& fileName);
 
     Map* newMap = 0;
     bool result = false;
@@ -942,9 +944,17 @@ void MainWindow::LoadMap(const std::string& fileName)
         try {
             newMap = ImportVerge1Map(fileName);
         } catch (...) { newMap = 0; }
-        if (!newMap) {
-            newMap = ImportVerge2Map(fileName);
-        }
+
+        if (!newMap)
+            try {
+                newMap = ImportVerge2Map(fileName);
+            } catch (...) { newMap = 0; }
+
+        if (!newMap)
+            //try {
+                newMap = ImportVerge3Map(fileName);
+            //} catch (...) { newMap = 0; }
+
         result = newMap != 0;
     }
 
@@ -961,6 +971,17 @@ void MainWindow::LoadMap(const std::string& fileName)
 
     TileSet* ts = new TileSet;
     result = ts->Load(newMap->tileSetName.c_str());
+
+    if (!result)
+    {
+        delete ts;
+        ts = 0;
+        try {
+            VSP* v = ImportVerge3TileSet(newMap->tileSetName.c_str());
+            ts = new TileSet(v);
+            result = 1;
+        } catch (...) {}
+    }
 
     if (!result)
     {

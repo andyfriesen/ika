@@ -8,6 +8,12 @@ TileSet::TileSet()
 {
 }
 
+TileSet::TileSet(VSP* v)
+    : pVsp(v)
+{
+    SyncAll();
+}
+
 TileSet::~TileSet()
 {
     delete pVsp;

@@ -116,8 +116,17 @@ bool Map::Load(const std::string& filename)
             width = Local::getIntNode(dimNode, "width");
             height = Local::getIntNode(dimNode, "height");
 
+#if defined(MULTI_TILESETS)
+            DataNodeList nodes = headerNode->getChildren("tileset");
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+                tileSetNames.push_back((*iter)->getString());
+
+            if (tileSetNames.empty())
+                throw std::runtime_error("Map has no tilesets!!");
+#else
             DataNode* tileSetNode = headerNode->getChild("tileset");
             tileSetName = tileSetNode->getString();
+#endif
         }
 
         {
@@ -330,6 +339,19 @@ void Map::Save(const std::string& filename)
     }
 
     {
+#if defined(MULTI_TILESETS)
+        DataNode* headerNode = newNode("header");
+        headerNode->addChild(
+                newNode("dimensions")
+                    ->addChild(newNode("width")->addChild(width))
+                    ->addChild(newNode("height")->addChild(height))
+            );
+
+        for (uint i = 0; i < tileSetNames.size(); i++)
+            headerNode->addChild(
+                newNode("tileset")->addChild(tileSetNames[i])
+            );
+#else
         rootNode->addChild(
         newNode("header")
             ->addChild(
@@ -341,6 +363,7 @@ void Map::Save(const std::string& filename)
                 newNode("tileset")->addChild(tileSetName)
             )
         );
+#endif
     }
 
     {

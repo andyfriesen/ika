@@ -3,9 +3,13 @@
 #include <stdexcept>
 #include <stdio.h>
 
+#include "zlib.h"
+
 #include "map.h"
+#include "vsp.h"
 #include "rle.h"
 #include "misc.h"
+#include "types.h"
 
 static u16 fgetw(FILE* f)
 {
@@ -25,7 +29,7 @@ Map* ImportVerge1Map(const std::string& fileName)
 {
     FILE* f = fopen(fileName.c_str(), "rb");
     if (!f)
-        return 0;
+        throw std::runtime_error(va("Unable to open %s", fileName.c_str()));
 
     Map* map = new Map;
 
@@ -184,7 +188,7 @@ Map* ImportVerge2Map(const std::string& fileName)
 {
     FILE* f = fopen(fileName.c_str(), "rb");
     if (!f)
-        return 0;
+        throw std::runtime_error(va("Unable to open %s", fileName.c_str()));
 
     Map* map = new Map;
 
@@ -360,4 +364,215 @@ Map* ImportVerge2Map(const std::string& fileName)
         fclose(f);
         throw;
     }
+}
+
+static void DecompressVerge3(void* dest, int outSize, FILE* f)
+{
+    int uncompressedSize = fgetq(f);
+    int compressedSize = fgetq(f);
+
+    if (uncompressedSize != outSize)
+        throw std::runtime_error(va("Compression block sizes do not match. "
+            "(%i vs %i)", compressedSize, outSize));
+
+    uLong zsize = outSize;
+    ScopedArray<u8> cdata = new u8[compressedSize];
+
+    fread(cdata.get(), 1, compressedSize, f);
+    int result = uncompress(reinterpret_cast<Bytef*>(dest), &zsize, cdata.get(), compressedSize);
+    if (result != Z_OK)
+        throw std::runtime_error(va("ImportVerge3Map returned: zlib error %i", result));
+}
+
+Map* ImportVerge3Map(const std::string& fileName)
+{
+    FILE* f = fopen(fileName.c_str(), "rb");
+    if (!f)
+        return 0;
+
+    try
+    {
+        Map* map = new Map;
+
+        const char* mapsig = "V3MAP";
+        const int MAP_VERSION = 2;
+
+        char buffer[256];
+
+        fread(buffer, 1, 6, f);
+        if (std::string(buffer) != mapsig)
+            throw std::runtime_error("Bogus map signature");
+
+        int version = fgetq(f);
+        if (version != MAP_VERSION)
+            throw std::runtime_error(va("Invalid map version %i (looking for %i)", version, MAP_VERSION));
+
+        fseek(f, 4, SEEK_CUR); // skip vc offset
+
+        fread(buffer, 1, 256, f);   map->title = buffer;
+        fread(buffer, 1, 256, f);   map->tileSetName = buffer;
+        fread(buffer, 1, 256, f);   map->metaData["music"] = buffer;
+        fread(buffer, 1, 256, f);   map->metaData["rstring"] = buffer;
+        fread(buffer, 1, 256, f);   map->metaData["startupscript"] = buffer;
+
+        map->metaData["startx"] = ToString(fgetw(f));
+        map->metaData["starty"] = ToString(fgetw(f));
+
+        int numLayers = fgetq(f);
+        for (int i = 0; i < numLayers; i++)
+        {
+            Map::Layer* lay = new Map::Layer;
+            fread(buffer, 1, 256, f);   lay->label = buffer;
+            assert(sizeof(double) == 8);
+            // TODO: convert to a fraction somehow. #_#
+            double parallaxX;   fread(&parallaxX, 1, 8, f);
+            double parallaxY;   fread(&parallaxY, 1, 8, f);
+            int width = fgetw(f);
+            int height = fgetw(f);
+            int lucent = fgetc(f);
+
+            ScopedArray<u16> data = new u16[width * height];
+            DecompressVerge3(data.get(), width * height * 2, f);
+
+            ScopedArray<u32> data32 = new u32[width * height];
+            std::copy(data.get(), data.get() + width * height, data32.get());
+
+            lay->tiles = Matrix<u32>(width, height, data32.get());
+            map->AddLayer(lay);
+        }
+
+        int width = map->GetLayer(0)->Width();
+        int height = map->GetLayer(0)->Height();
+        map->width = width * 16;
+        map->height = height * 16;
+
+        ScopedArray<u8> obsData = new u8[width * height];
+        DecompressVerge3(obsData.get(), width * height, f);
+        map->GetLayer(0)->obstructions = Matrix<u8>(width, height, obsData.get());
+
+        ScopedArray<u16> zoneData = new u16[width * height];
+        DecompressVerge3(zoneData.get(), width * height * 2, f);
+
+        fclose(f);
+
+        // Postprocessing -- figure out where the entities and obstructions belong.
+
+        return map;
+    }
+    catch (...)
+    {
+        fclose(f);
+        throw;
+    }
+}
+
+VSP* ImportVerge3TileSet(const std::string& fileName)
+{
+    const char* VSP_SIGNATURE = "VSP";
+    const int VSP_VERSION = 6;
+    enum
+    {
+        BPP24 = 1,
+        BPP32 = 2
+    };
+
+    enum
+    {
+        NO_COMPRESSION = 0,
+        ZLIB_COMPRESSION = 1,
+    };
+
+    enum
+    {
+        ANIM_FORWARD = 0,
+        ANIM_BACKWARD = 1,
+        ANIM_RANDOM = 2,
+        ANIM_PINGPONG = 3
+    };
+
+    FILE* f = fopen(fileName.c_str(), "rb");
+    if (!f)
+        throw std::runtime_error(va("Unable to load %s", fileName.c_str()));
+
+    VSP* vsp = new VSP;
+
+    char buffer[256];
+    std::fill(buffer, buffer + 256, 0);
+
+    fread(buffer, 1, 4, f);
+    if (std::string(buffer) != VSP_SIGNATURE)
+        throw std::runtime_error("VSP signature ain't there.  This isn't no map.");
+
+    int version = fgetq(f);
+    if (version != VSP_VERSION)
+        throw std::runtime_error(va("Version should have been %i.  It was %i.  This not good.", VSP_VERSION, version));
+
+    int tileWidth = fgetq(f);
+    int tileHeight = tileWidth;
+    vsp->SetSize(tileWidth, tileHeight);
+
+    int format = fgetq(f);
+    int numTiles = fgetq(f);
+    int compression = fgetq(f);
+
+    if (compression != ZLIB_COMPRESSION)
+        throw std::runtime_error("I was unaware than Verge3 VSPs had any compression other than zlib.");
+
+    ScopedArray<RGBA> pixels = new RGBA[numTiles * tileWidth * tileHeight];
+
+    if (format == BPP24)
+    {
+        ScopedArray<u8> rgb = new u8[numTiles * tileWidth * tileHeight * 3];
+        DecompressVerge3(rgb.get(), numTiles * tileWidth * tileHeight * 3, f);
+        u8* p = rgb.get();
+        for (int i = 0; i < numTiles * tileWidth * tileHeight; i++)
+        {
+            u8 r = *p++;
+            u8 g = *p++;
+            u8 b = *p++;
+            u8 a = (r == 255 && g == 0 && b == 255) ? 0 : 255;
+            pixels[i] = RGBA(r, g, b, a);
+        }
+    }
+    else if (format == BPP32)
+    {
+        DecompressVerge3(pixels.get(), 
+            numTiles * tileWidth * tileHeight * sizeof(u32), f);
+    }
+    else
+        assert(false);
+
+    RGBA* p = pixels.get();
+    for (int i = 0; i < numTiles; i++)
+    {
+        Canvas c(p, tileWidth, tileHeight);
+        
+        vsp->AppendTile();
+        vsp->PasteTile(c, vsp->NumTiles() - 1);
+
+        p += tileWidth * tileHeight;
+    }
+
+    int numAnimStrands = fgetq(f);
+    for (int i = 0; i < numAnimStrands; i++)
+    {
+        VSP::AnimState ikaAnim;
+
+        fread(buffer, 1, 256, f); // discard strand name
+        ikaAnim.start = fgetq(f);
+        ikaAnim.finish = fgetq(f);
+        ikaAnim.delay = fgetq(f);
+        ikaAnim.mode = fgetq(f);
+
+        vsp->vspAnim.push_back(ikaAnim);
+    }
+
+    int numObsTiles = fgetq(f);
+    ScopedArray<u8> obsPix = new u8[numObsTiles * tileWidth * tileHeight];
+    DecompressVerge3(obsPix.get(), numObsTiles * tileWidth * tileHeight, f);
+
+    // TODO: use this. :)
+
+    fclose(f);
+    return vsp;
 }

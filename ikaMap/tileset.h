@@ -17,6 +17,7 @@ private:
 public:
 
     TileSet();
+    TileSet(VSP* vsp);
     ~TileSet();
 
     bool Load(const std::string& fileName);

@@ -79,8 +79,7 @@ public:
     void PasteTile(const Canvas& tb, uint pos); // pastes the tile from a buffer
     void TPasteTile(Canvas& tb, uint pos);      // transparently pastes the tile from a buffer
     
-    void SetPixel(int x, int y, uint tileidx, int c);
-    int  GetPixel(int x, int y, uint tileidx);
+    void SetSize(int w, int h);
     
     std::vector<AnimState>& vspAnim;            // I see no reason to hide this, really.
 

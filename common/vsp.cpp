@@ -1,4 +1,5 @@
 // VSP.cpp
+#include <cassert>
 #include <stdio.h>
 #include "vsp.h"
 #include "types.h"
@@ -13,7 +14,7 @@ VSP::VSP()
     , vspAnim(_vspanim)
 {
     _vspanim.resize(100);
-    New();
+    //New();
 }
 
 VSP::VSP(const std::string& fname)
@@ -331,6 +332,14 @@ void VSP::TPasteTile(Canvas& tb, uint pos)
 {
     CBlitter < Alpha>::Blit(tb, tiles[pos], 0, 0);
     // NYI
+}
+
+void VSP::SetSize(int w, int h)
+{
+    // temp:
+    assert(tiles.empty());
+    _width = w;
+    _height = h;
 }
 
 Canvas& VSP::GetTile(uint tileidx)

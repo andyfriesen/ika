@@ -130,6 +130,7 @@ struct Map
 
     uint width, height;
     std::string tileSetName;
+    //std::vector<std::string> tileSetNames;
 
     typedef std::map<std::string, Zone> ZoneMap;
     typedef std::map<std::string, WayPoint> WayPointMap;
