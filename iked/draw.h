@@ -8,9 +8,9 @@
 #include "vsp.h"
 
 namespace gfx
-{	
-    void Blit(wxImage& dest,int x,int y,int w,int h,RGBA* src,bool trans);					// backend for all wxImage blits
-    void BlitTile(wxImage& dest,int x,int y,int tileidx,class VSP& src,bool trans=true);	// draws tiles :P
+{   
+    void Blit(wxImage& dest,int x,int y,int w,int h,RGBA* src,bool trans);                  // backend for all wxImage blits
+    void BlitTile(wxImage& dest,int x,int y,int tileidx,class VSP& src,bool trans=true);    // draws tiles :P
     
     void Stipple(wxImage& dest,int x,int y,int w,int h,RGBA colour);
     
