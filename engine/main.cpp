@@ -795,9 +795,14 @@ void Engine::LoadMap(const std::string& filename)
             iter++)
         {
             Entity* ent = iter->second;
-            iter->second->moveScript = script.GetObjectFromMapScript(iter->first->moveScript);
-            iter->second->activateScript = script.GetObjectFromMapScript(iter->first->activateScript);
-            iter->second->adjActivateScript = script.GetObjectFromMapScript(iter->first->adjActivateScript);
+
+            // if they're already nonzero, they changed in the init code, so we shouldn't change them.
+            if (!iter->second->moveScript)
+                iter->second->moveScript = script.GetObjectFromMapScript(iter->first->moveScript);
+            if (!iter->second->activateScript)
+                iter->second->activateScript = script.GetObjectFromMapScript(iter->first->activateScript);
+            if (!iter->second->adjActivateScript)
+                iter->second->adjActivateScript = script.GetObjectFromMapScript(iter->first->adjActivateScript);
         }
 
         SyncTime();
