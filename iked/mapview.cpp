@@ -246,10 +246,8 @@ namespace MapEditState
                 This->_editState = new CopyState(This, x, y);
             else if (e.RightDown())
                 This->_editState = new PasteState(This, x, y);
-            return;
         }
-
-        if (e.ShiftDown())
+        else if (e.ShiftDown())
         {
             This->pTileset->SetCurTile(This->_map->GetTile(x, y, This->_curLayer));
             CTileSetView* tsv = (CTileSetView*)This->pParent->FindWindow(This->pTileset);
@@ -258,7 +256,21 @@ namespace MapEditState
         }
         else
         {
-            This->_map->SetTile(x, y, This->_curLayer, This->pTileset->CurTile());
+            switch (This->_curLayer)
+            {
+            case lay_obstruction:   
+                {
+                    bool set = e.LeftIsDown() && !e.RightIsDown();      // Boolean logic is so neat.
+                    This->_map->SetObs(x, y, set);
+                    break;
+                }
+            case lay_entity:    
+            case lay_render:
+            case lay_zone:  // NYI
+                break;
+            default:
+                This->_map->SetTile(x, y, This->_curLayer, This->pTileset->CurTile());
+            }
             This->Render();
             This->pGraph->ShowPage();
         }
@@ -282,7 +294,7 @@ namespace MapEditState
 
     void TileSetState::OnMouseMove(wxMouseEvent& e)
     {
-        if (e.LeftIsDown())
+        if (e.LeftIsDown() || e.RightIsDown())
             LayerEdit(e);
     }
 
