@@ -77,7 +77,11 @@ public:
         else
         {
             T* pData=new T;
-            LoadFromFile(pData,name);
+            if (!LoadFromFile(pData,name))
+            {
+                delete pData;
+                return 0;
+            }
 
             rsrc.push_back(Resource(name,pData));
 

@@ -58,8 +58,8 @@ BEGIN_EVENT_TABLE(CMainWnd, wxMDIParentFrame)
     EVT_MENU(CMainWnd::id_filenewmap, CMainWnd::NewMap)
     EVT_MENU(CMainWnd::id_filenewscript, CMainWnd::NewScript)
     EVT_MENU(CMainWnd::id_fileopen, CMainWnd::OnOpen)
-
-    EVT_CLOSE(CMainWnd::OnQuit)
+    EVT_MENU(CMainWnd::id_filesaveproject, CMainWnd::OnSaveProject)
+    EVT_MENU(CMainWnd::id_filesaveprojectas, CMainWnd::OnSaveProjectAs)
 
     // Add more toolbar buttons as iked becomes more functional
     //   -- khross
@@ -67,11 +67,15 @@ BEGIN_EVENT_TABLE(CMainWnd, wxMDIParentFrame)
     EVT_TOOL(CMainWnd::id_toolopen, CMainWnd::OnToolBarOpen)
     EVT_TOOL(CMainWnd::id_toolnewscript, CMainWnd::OnToolBarNewScript)
     EVT_TOOL(CMainWnd::id_toolnewmap, CMainWnd::OnToolBarNewMap)
+
+    EVT_SIZE(CMainWnd::OnSize)
+    EVT_CLOSE(CMainWnd::OnQuit)
 END_EVENT_TABLE()
 
 CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
                    const wxPoint& position, const wxSize& size, const long style)
                    : wxMDIParentFrame(parent, id, title, position, size, style)
+                   , _project(new ProjectView(this))
 {
     wxToolBar* toolbar = CreateBasicToolBar();
     SetToolBar(toolbar);
@@ -79,6 +83,7 @@ CMainWnd::CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
 
     wxMenuBar* menu=CreateBasicMenu();
     SetMenuBar(menu);
+
 
     CreateStatusBar();
 
@@ -99,61 +104,14 @@ CMainWnd::~CMainWnd()
 
 // creates the base menu items that apply to all app windows.
 // This is here because wxWindows won't let me just tack on an extra menu depending on the active MDI child. ;P
-wxMenuBar* CMainWnd::CreateBasicMenu()
-{
-    wxMenuBar* menu=new wxMenuBar;
-    
-    wxMenu* filemenu=new wxMenu;
-
-    wxMenu* filenew=new wxMenu;
-    filenew->Append(id_filenewproject, "&Project", "Create an empty project workspace.");
-    filenew->AppendSeparator();
-    filenew->Append(id_filenewmap, "&Map", "Create an empty map.");
-    filenew->Append(id_filenewscript, "New &Script", "Create an empty Python script.");
-
-    filemenu->Append(id_filenewmap, "&New", filenew, "Create a new document.");  
-    filemenu->Append(id_fileopen, "&Open", "Open an existing document.");
-    filemenu->AppendSeparator();
-    filemenu->Append(id_filequit, "&Quit", "Close the application.");
-    
-    menu->Append(filemenu, "&File");
-
-    return menu;
-}
-
-vector<wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
-{
-    vector<wxAcceleratorEntry> accel;
-    accel.resize(2);
-    accel[0].Set(wxACCEL_CTRL, (int)'O', id_fileopen);
-    accel[1].Set(wxACCEL_CTRL, (int)'Q', id_filequit);
-
-    return accel;
-}
-
 void CMainWnd::FileQuit(wxCommandEvent& event)
 {
     Close(TRUE);
 }
 
-void CMainWnd::OnQuit(wxCloseEvent& event)
-{
-    for (std::set<IDocView*>::iterator i=pDocuments.begin(); i!=pDocuments.end(); i++)
-    {
-        IDocView* pDoc=*i;
-        pDoc->Close();
-    }
-
-    pDocuments.empty();
-
-    // continue with the default behaviour
-    event.Skip();        
-}
-
 void CMainWnd::NewProject(wxCommandEvent& event)
 {
-    CProjectView* projectwnd=new CProjectView(this, "");
-    projectwnd->SetFocus();
+    _project->New();
 }
 
 void CMainWnd::NewMap(wxCommandEvent& event)
@@ -196,7 +154,7 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
         "",
         "",
         "All known|*.ikaprj;*.py;*.map;*.vsp;*.chr;*.fnt;*.txt;*.dat|"
-        "Iked Projects (*.ikaprj)|*.ikaprj|"
+        "iked Projects (*.ikaprj)|*.ikaprj|"
         "Python Scripts (*.py)|*.py|"
         "Maps (*.map)|*.map|"
         "VSP Tilesets (*.vsp)|*.vsp|"
@@ -219,6 +177,29 @@ void CMainWnd::OnOpen(wxCommandEvent& event)
         Open(std::string( filenames[i].c_str() ));
 }
 
+void CMainWnd::OnSize(wxSizeEvent& event)
+{
+    int w, h;
+    GetClientSize(&w, &h);
+
+    _project->SetSize(0, 0, 200, h);
+    GetClientWindow()->SetSize(200, 0, w - 200, h);
+}
+
+void CMainWnd::OnQuit(wxCloseEvent& event)
+{
+    for (std::set<IDocView*>::iterator i=pDocuments.begin(); i!=pDocuments.end(); i++)
+    {
+        IDocView* pDoc=*i;
+        pDoc->Close();
+    }
+
+    pDocuments.empty();
+
+    // continue with the default behaviour
+    event.Skip();        
+}
+
 void CMainWnd::Open(const std::string& fname)
 {
     // First, see if the document is already open
@@ -239,14 +220,14 @@ void CMainWnd::Open(const std::string& fname)
 
     switch (type)
     {
-    case t_project:     pWnd=new CProjectView(this, fname);      break;
-    case t_script:      pWnd=new CCodeView(this, fname);         break;
-    case t_map:         pWnd=new CMapView(this, fname.c_str());  break;
-    case t_vsp:         pWnd=new CTileSetView(this, fname.c_str());  break;
-    case t_font:        pWnd=new CFontView(this, fname.c_str()); break;
+    case t_project:     _project->Load(fname);                      return;
+    case t_script:      pWnd=new CCodeView(this, fname);            break;
+    case t_map:         pWnd=new CMapView(this, fname.c_str());     break;
+    case t_vsp:         pWnd=new CTileSetView(this, fname.c_str()); break;
+    case t_font:        pWnd=new CFontView(this, fname.c_str());    break;
     case t_unknown:
     case t_text:
-    case t_dat:         pWnd=new CTextView(this, fname.c_str()); break;
+    case t_dat:         pWnd=new CTextView(this, fname.c_str());    break;
     case t_chr:         pWnd=new CSpriteSetView(this, fname.c_str()); break;
 
     case t_config:
@@ -278,33 +259,117 @@ void CMainWnd::OpenDocument(IDocView* newwnd)
     newwnd->Activate();
 }
 
-FileType CMainWnd::GetFileType(const std::string& fname)
+IDocView* CMainWnd::FindWindow(const void* rsrc) const
 {
-    char* ext[] =
+    for (std::set<IDocView*>::const_iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+        if ((*i)->GetResource() == rsrc)
+            return *i;
+
+    return 0;
+}
+
+void CMainWnd::OnToolBarOpen(wxCommandEvent& event)
+{
+    wxToolBar* pToolbar = GetToolBar();
+    if (!pToolbar) return;
+    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
+    OnOpen(event);
+}
+
+void CMainWnd::OnToolBarNewScript(wxCommandEvent& event)
+{
+    wxToolBar* pToolbar = GetToolBar();
+    if (!pToolbar) return;
+    pToolbar->EnableTool(id_toolnewscript, !pToolbar->GetToolState(id_toolnewscript));
+    NewScript(event);
+}
+
+void CMainWnd::OnToolBarNewMap(wxCommandEvent& event)
+{
+    wxToolBar* pToolbar = GetToolBar();
+    if (!pToolbar) return;
+    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
+    NewMap(event);
+}
+
+
+void CMainWnd::OnToolLeftClick(wxCommandEvent& event)
+// this handles the left click mouse event.
+{
+    switch (event.GetId())
     {
+    case id_toolnewscript:  OnToolBarNewScript(event);  break;
+    case id_toolopen:       OnToolBarOpen(event);       break;
+    case id_toolnewmap:     OnToolBarNewMap(event);     break;
+    }
+
+    // etc.
+}
+
+void CMainWnd::OnSaveProject(wxCommandEvent& event)
+{
+    if (!_project->GetFileName().empty())
+        _project->Save();
+    else
+        OnSaveProjectAs(event);
+}
+
+void CMainWnd::OnSaveProjectAs(wxCommandEvent& event)
+{
+    wxFileDialog dlg(
+        this,
+        "Save Project As",
         "",
         "",
-        "ikaprj",
-        "py",
-        "vsp",
-        "chr",
-        "fnt",
-        "map",
-        "cfg",
-        "txt",
-        "dat"
-    };
+        "iked Projects (*.ikaprj)|*.ikaprj|"
+        "All files (*.*)|*.*",
+        wxSAVE | wxOVERWRITE_PROMPT | wxCHANGE_DIR
+        );
 
-    const int nExt=sizeof(ext);
+    int result = dlg.ShowModal();
 
-    std::string sExt=Path::Extension(fname);
+    if (result != wxCANCEL)
+        _project->Save(dlg.GetPath().c_str());
+}
+
+void CMainWnd::OnChildClose(IDocView* child)
+{
+    pDocuments.erase(child);
+}
+
+
+wxMenuBar* CMainWnd::CreateBasicMenu()
+{
+    wxMenuBar* menu=new wxMenuBar;
     
-    strlwr((char*)sExt.c_str());
+    wxMenu* filemenu=new wxMenu;
 
-    for (int i=2; i<nExt; i++)      // magic number.  Suck.
-        if (sExt==ext[i])
-            return (FileType)i;
-    return t_unknown;
+    wxMenu* filenew=new wxMenu;
+    filenew->Append(id_filenewproject, "&Project", "Create an empty project workspace.");
+    filenew->AppendSeparator();
+    filenew->Append(id_filenewmap, "&Map", "Create an empty map.");
+    filenew->Append(id_filenewscript, "New &Script", "Create an empty Python script.");
+
+    filemenu->Append(id_filenewmap, "&New", filenew, "Create a new document.");  
+    filemenu->Append(id_fileopen, "&Open", "Open an existing document.");
+    filemenu->AppendSeparator();
+    filemenu->Append(id_filesaveproject, "Save &Project");
+    filemenu->Append(id_filesaveprojectas, "Save P&roject As...");
+    filemenu->Append(id_filequit, "&Quit", "Close the application.");
+    
+    menu->Append(filemenu, "&File");
+
+    return menu;
+}
+
+vector<wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
+{
+    vector<wxAcceleratorEntry> accel;
+    accel.resize(2);
+    accel[0].Set(wxACCEL_CTRL, (int)'O', id_fileopen);
+    accel[1].Set(wxACCEL_CTRL, (int)'Q', id_filequit);
+
+    return accel;
 }
 
 wxToolBar* CMainWnd::CreateBasicToolBar()
@@ -357,54 +422,31 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
     return pToolbar;
 }
 
-void CMainWnd::OnToolBarNewScript(wxCommandEvent& event)
+FileType CMainWnd::GetFileType(const std::string& fname)
 {
-    wxToolBar* pToolbar = GetToolBar();
-    if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolnewscript, !pToolbar->GetToolState(id_toolnewscript));
-    NewScript(event);
-}
-
-void CMainWnd::OnToolBarOpen(wxCommandEvent& event)
-{
-    wxToolBar* pToolbar = GetToolBar();
-    if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
-    OnOpen(event);
-}
-
-void CMainWnd::OnToolBarNewMap(wxCommandEvent& event)
-{
-    wxToolBar* pToolbar = GetToolBar();
-    if (!pToolbar) return;
-    pToolbar->EnableTool(id_toolopen, !pToolbar->GetToolState(id_toolopen));
-    NewMap(event);
-}
-
-
-void CMainWnd::OnToolLeftClick(wxCommandEvent& event)
-// this handles the left click mouse event.
-{
-    switch (event.GetId())
+    char* ext[] =
     {
-    case id_toolnewscript:  OnToolBarNewScript(event);  break;
-    case id_toolopen:       OnToolBarOpen(event);       break;
-    case id_toolnewmap:     OnToolBarNewMap(event);     break;
-    }
+        "",
+        "",
+        "ikaprj",
+        "py",
+        "vsp",
+        "chr",
+        "fnt",
+        "map",
+        "cfg",
+        "txt",
+        "dat"
+    };
 
-    // etc.
-}
+    const int nExt=sizeof(ext);
 
-void CMainWnd::OnChildClose(IDocView* child)
-{
-    pDocuments.erase(child);
-}
+    std::string sExt=Path::Extension(fname);
+    
+    strlwr((char*)sExt.c_str());
 
-IDocView* CMainWnd::FindWindow(const void* rsrc) const
-{
-    for (std::set<IDocView*>::const_iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
-        if ((*i)->GetResource() == rsrc)
-            return *i;
-
-    return 0;
+    for (int i=2; i<nExt; i++)      // magic number.  Suck.
+        if (sExt==ext[i])
+            return (FileType)i;
+    return t_unknown;
 }

@@ -165,7 +165,7 @@
 				RelativePath=".\layervisibilitycontrol.cpp">
 			</File>
 			<File
-				RelativePath=".\main.cpp">
+				RelativePath="main.cpp">
 			</File>
 			<File
 				RelativePath=".\mapview.cpp">

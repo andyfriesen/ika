@@ -9,36 +9,61 @@
 
 class CMainWnd; // in main.cpp/h
 
-class CProjectView : public IDocView
+class ProjectView : public wxTreeCtrl
 {
-    class CProjectTree* pTreectrl;
-    wxImageList* pImagelist;
+private:
+    wxMenu*      _fileMenu;
+    wxMenu*      _folderMenu;
+    wxMenu*      _rootMenu;
 
-    wxMenu* filemenu;
-    wxMenu* foldermenu;
+    CMainWnd*    _parent;
+
+    wxImageList* _imageList;
+    struct Leaf* _selected;  // The context menus use this. 
+
+    bool         _changed;
+    std::string  _fileName;
 
 public:
 
     enum
     {
         id_filler=100,
+        id_treectrl,
 
-        id_filesave,
-        id_filesaveas
+        id_open,
+        id_delete,
+        id_rename,
+        id_add,
+        id_createsubfolder,
     };
 
-    CProjectView(CMainWnd* parent,const string& title);
-    ~CProjectView();
+    ProjectView(CMainWnd* parent, const wxPoint& pos = wxDefaultPosition, const wxSize& size = wxDefaultSize);
+    ~ProjectView();
 
-    // events
-    virtual void OnSave(wxCommandEvent& event);
-    void OnSaveAs(wxCommandEvent& event);
-    virtual void OnClose(wxCommandEvent& event);
-    virtual const void* GetResource() const;
+    void OnDoubleClick(wxMouseEvent& event);
+    void OnRightClick(wxMouseEvent& event);
+    void OnEndEdit(wxTreeEvent& event);
+    void OnBeginDrag(wxTreeEvent& event);
+    void OnEndDrag(wxTreeEvent& event);
+    void OnOpen(wxCommandEvent& event);
+    void OnDelete(wxCommandEvent& event);
+    void OnRename(wxCommandEvent& event);
+    void OnAdd(wxCommandEvent& event);
+    void OnCreateSubfolder(wxCommandEvent& event);
 
-    // bleh
-    void Load(const char* fname);           // load a project file into the window
-    void Save(const char* fname);           // save to a project file
+    // ------------------ Tree management ------------------
+
+    void MoveItem(const wxTreeItemId& id, const wxTreeItemId& newparent);
+    wxTreeItemId AddFolder(const wxTreeItemId& parentid, const char* name);
+    wxTreeItemId AddItem(const wxTreeItemId& parentid, const string& name, const string& fname);
+
+    // I/O
+    void Save(const std::string& fname = "");
+    void Load(const std::string& fname);
+    void New();
+
+    const std::string& GetFileName() const { return _fileName; }
 
     DECLARE_EVENT_TABLE()
 };

@@ -284,6 +284,12 @@ void CMapView::Init()
 
     string sTilesetname = Path::Directory(name) + pMap->GetVSPName();   // get the absolute path to the map, and add it to the tileset filename
     pTileset = pParentwnd->vsp.Load(sTilesetname);                      // load the VSP
+    if (!pTileset)
+    {
+        wxMessageBox(va("Unable to load tileset %s", sTilesetname.c_str()), "Error", wxOK | wxCENTER, this);
+        Close();
+        return;
+    }
 
     // Load CHRs
 
@@ -399,7 +405,7 @@ void CMapView::OnSaveAs(wxCommandEvent& event)
     if (result == wxID_CANCEL)
         return;
 
-    name = dlg.GetFilename().c_str();
+    name = dlg.GetPath().c_str();
     SetTitle(name.c_str());
 
     OnSave(event);

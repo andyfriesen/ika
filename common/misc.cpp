@@ -93,7 +93,7 @@ string ToString(int i)
 string Path::Directory(const string& s,const string& relativeto)
 {
     int p=s.rfind(Path::cDelimiter);
-    if (p==string::npos) return s;
+    if (p==string::npos) return "";
 
     string sPath=s.substr(0,p+1);
 
