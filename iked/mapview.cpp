@@ -2,11 +2,13 @@
 #include "main.h"
 #include "graph.h"
 #include "tileset.h"
+#include "spriteset.h"
 #include "log.h"
 #include "layervisibilitycontrol.h"
 #include "entityeditor.h"
 #include <gl\glu.h>
 
+#include <list>
 #include <wx\laywin.h>
 #include <wx\sashwin.h>
 #include <wx\checklst.h>
@@ -112,6 +114,8 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_MENU(CMapView::id_zoomout2x,CMapView::OnZoomOut2x)
     EVT_MENU(CMapView::id_zoomout4x,CMapView::OnZoomOut4x)
 
+    EVT_MENU(CMapView::id_mapentities,CMapView::OnShowEntityEditor)
+
     EVT_MENU(CMapView::id_filesave,CMapView::OnSave)
     EVT_MENU(CMapView::id_filesaveas,CMapView::OnSaveAs)
     EVT_MENU(CMapView::id_fileclose,CMapView::OnClose)
@@ -155,6 +159,15 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     string sTilesetname = Path::Directory(name) + pMap->GetVSPName();   // get the absolute path to the map, and add it to the tileset filename
     pTileset=pParentwnd->vsp.Load(sTilesetname);                        // load the VSP
 
+    // Load CHRs
+
+    for (int i=0; i<pMap->NumEnts(); i++)
+    {
+        pSprite.push_back(pParentwnd->spriteset.Load(pMap->GetEntity(i).sCHRname.c_str()));
+    }
+
+    // --
+
     pRightbar->SetScrollbar(wxVERTICAL,0,w,pMap->Height()*pTileset->Height());
     pRightbar->SetScrollbar(wxHORIZONTAL,0,h,pMap->Width()*pTileset->Width());
     xwin=ywin=0;
@@ -167,7 +180,6 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
     csrmode=mode_normal;
 
     pEntityeditor=new CEntityEditor(this,pMap);
-    pEntityeditor->Show(true);
 
     Show();
 }
@@ -227,6 +239,8 @@ void CMapView::InitMenu()
     filemenu->Insert(4,new wxMenuItem(filemenu,id_fileclose,"&Close","Close the map view."));
     menubar->Append(filemenu,"&File");
 
+    //--
+
     wxMenu* viewmenu=new wxMenu;
     
     viewmenu->Append(id_zoomnormal,"Zoom %&100","");
@@ -242,6 +256,16 @@ void CMapView::InitMenu()
     viewmenu->Append(id_zoomout4x,"Zoom Out 4x","");
 
     menubar->Append(viewmenu,"&View");
+
+    //--
+
+    wxMenu* mapmenu=new wxMenu;
+
+    mapmenu->Append(id_mapentities,"&Entities...");
+
+    menubar->Append(mapmenu,"&Map");
+
+    //--
 
     SetMenuBar(menubar);
 }
@@ -287,6 +311,9 @@ void CMapView::OnClose()
 {
     pParentwnd->map.Release(pMap);
     pParentwnd->vsp.Release(pTileset);
+
+    for (std::vector<CSpriteSet*>::iterator i=pSprite.begin(); i!=pSprite.end(); i++)
+        pParentwnd->spriteset.Release(*i);
     
     pMap=0;
     pTileset=0;
@@ -345,6 +372,11 @@ void CMapView::OnZoomIn4x(wxCommandEvent& event)  { Zoom(4);  }
 void CMapView::OnZoomOut4x(wxCommandEvent& event) { Zoom(-4); }
 
 void CMapView::OnZoomNormal(wxCommandEvent& event){ Zoom(16-nZoom); }  // >:D
+
+void CMapView::OnShowEntityEditor(wxCommandEvent& event)
+{
+    pEntityeditor->Show(true);
+}
 
 //------------------------------------------------------------
 
@@ -465,12 +497,55 @@ void CMapView::Render()
             if (l>=0 && l<pMap->NumLayers() && nLayertoggle[l]!=hidden)
                 RenderLayer(l);
         }
+        else if (r[i]=='E')
+            RenderEntities();
     }
 
     if (nLayertoggle[lay_obstruction])
         RenderInfoLayer(lay_obstruction);
     if (nLayertoggle[lay_zone])
         RenderInfoLayer(lay_zone);
+}
+
+typedef std::pair<SMapEntity*,CSpriteSet*> EntSpritePair;
+typedef std::list<EntSpritePair> EntRenderList;
+
+void CMapView::RenderEntities()
+{
+    if (nLayertoggle[lay_entity]==hidden)
+        return;
+
+    EntRenderList entstodraw;
+    int x2,y2;
+    pGraph->GetClientSize(&x2,&y2);
+    x2+=xwin;
+    y2+=ywin;
+
+    // 1) figure out which entities to draw
+    for (int i=0; i<pMap->NumEnts(); i++)
+    {
+        SMapEntity& e=pMap->GetEntity(i);
+
+        if (e.x<xwin || e.y<ywin)   continue;
+        if (e.x>x2   || e.y>y2)     continue;
+
+        entstodraw.push_back(EntSpritePair(&e,pSprite[i]) );
+    }
+
+    // 2) y sort
+
+
+    // 3) render!
+    for (EntRenderList::iterator j=entstodraw.begin(); j!=entstodraw.end(); j++)
+    {
+        SMapEntity* pEnt=j->first;
+        CSpriteSet* pSpriteset=j->second;
+
+        if (pSpriteset)                                                                             // spritesets that couldn't be loaded are null pointers
+            pGraph->Blit(pSpriteset->GetImage(0), pEnt->x - xwin, pEnt->y - ywin, true);
+        else
+            pGraph->RectFill(pEnt->x,pEnt->y,pTileset->Width(),pTileset->Height(),RGBA(0,0,0,128)); // no spriteset found, draw a gray square
+    }
 }
 
 // AGH I HATE THIS TODO: figure out a nice way to consolidate all this into a single function. (templates seem like a good idea)

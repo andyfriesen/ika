@@ -236,7 +236,7 @@ u32 Map::GetTile(int x,int y,int layer)
 
 void Map::SetTile(int x,int y,int layer,u32 tile)
 {
-    if (layer>nLayers) return;
+    if (layer<0 || layer>nLayers) return;
     if (x<0 || y<0) return;
     if (x>=nWidth) return;
     if (y>=nHeight) return;

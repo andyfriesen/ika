@@ -184,6 +184,10 @@ SOURCE=.\graph.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\imagebank.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\layervisibilitycontrol.cpp
 # End Source File
 # Begin Source File
@@ -197,6 +201,10 @@ SOURCE=.\mapview.cpp
 # Begin Source File
 
 SOURCE=.\projectview.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\spriteset.cpp
 # End Source File
 # Begin Source File
 
@@ -244,6 +252,10 @@ SOURCE=.\graph.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\imagebank.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\layervisibilitycontrol.h
 # End Source File
 # Begin Source File
@@ -257,6 +269,10 @@ SOURCE=.\mapview.h
 # Begin Source File
 
 SOURCE=.\projectview.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\spriteset.h
 # End Source File
 # Begin Source File
 

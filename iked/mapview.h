@@ -24,6 +24,7 @@ class Map;
 class CMainWnd;
 class CGraphFrame;
 class CTileSet;
+class CSpriteSet;
 class CLayerVisibilityControl;
 class CEntityEditor;
 
@@ -33,6 +34,8 @@ class wxScrolledWindow;
 
 class CMapView : public IDocView
 {
+    friend class CEntityEditor;     // -_-;
+
     enum
     {
         id_zoomin=100,
@@ -46,6 +49,8 @@ class CMapView : public IDocView
         id_filesave,
         id_filesaveas,
         id_fileclose,
+
+        id_mapentities,
     };
 
     enum
@@ -68,6 +73,7 @@ class CMapView : public IDocView
         // copy/paste/etc...
     };
 
+private:
     CMainWnd*           pParentwnd;
 
     wxSashLayoutWindow* pLeftbar;
@@ -77,12 +83,16 @@ class CMapView : public IDocView
     CLayerVisibilityControl*
                         pLayerlist;
 
+protected:
     CEntityEditor*      pEntityeditor;
+private:
 
     Map*                pMap;
     CTileSet*           pTileset;
 
-    int  nZoom;                                                 // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
+    std::vector<CSpriteSet*>   pSprite;                             // entity spritesets needed for this map.  The indeces of this vector coincide with the entities which use them.
+
+    int  nZoom;                                                     // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
 
 public:
     CMapView(CMainWnd* parent,const string& fname);
@@ -106,6 +116,8 @@ public:
     void OnZoomOut2x(wxCommandEvent& event);
     void OnZoomOut4x(wxCommandEvent& event);
     void OnZoomNormal(wxCommandEvent& event);
+
+    void OnShowEntityEditor(wxCommandEvent& event);
 
     void OnClose();
 
@@ -136,6 +148,7 @@ private:
     void UpdateScrollbars();
 
     void Render();
+    void RenderEntities();
     void RenderInfoLayer(int lay);
     void RenderLayer(int lay);
     void Zoom(const int& nZoomscale);

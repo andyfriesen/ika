@@ -22,14 +22,6 @@ CPixelMatrix& CCHRfile::GetFrame(int nFrame) const
     return (CPixelMatrix&)frame[nFrame];
 }
 
-void CCHRfile::UpdateFrame(const CPixelMatrix& newdata,int nFrame)
-{
-    if (nFrame<0 || nFrame>=frame.size())
-        return;
-    
-    frame[nFrame]=newdata;
-}
-
 void CCHRfile::AppendFrame()
 {
     frame.push_back(CPixelMatrix(nWidth,nHeight));

@@ -56,6 +56,7 @@ public:
     DECLARE_EVENT_TABLE()
 
     void OnSelectEntity(wxCommandEvent& event);
+    void OnClose(wxCommandEvent& event);
 };
 
 #endif

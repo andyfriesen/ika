@@ -36,7 +36,7 @@ public:
 
     // Don't use this unless you're doing something that has nothing to do with the tile images.
     // Use the CTileSet interface instead, as it will keep things synch'd.
-    VSP& GetVSP() { return *pVsp; }
+    inline VSP& GetVSP() const { return *pVsp; }
 
     inline int CurTile() const { return nCurtile; }
     void SetCurTile(int t);

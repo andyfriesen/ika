@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "mapview.h"
 #include "entityeditor.h"
 #include "map.h"
 
@@ -7,6 +8,7 @@
 
 BEGIN_EVENT_TABLE(CEntityEditor,wxDialog)
     EVT_LISTBOX(id_entlist,CEntityEditor::OnSelectEntity)
+    EVT_CLOSE(CEntityEditor::OnClose)
 END_EVENT_TABLE()
 
 CEntityEditor::CEntityEditor(CMapView* parent,Map* m)
@@ -172,4 +174,10 @@ void CEntityEditor::OnSelectEntity(wxCommandEvent& event)
     UpdateData();
     nCurentidx=event.GetInt();
     UpdateDlg();
+}
+
+void CEntityEditor::OnClose(wxCommandEvent& event)
+{
+    UpdateData();
+    Show(false);
 }

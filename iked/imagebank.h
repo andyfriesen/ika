@@ -1,4 +1,7 @@
 
+#ifndef IMAGEBANK_H
+#define IMAGEBANK_H
+
 #include "types.h"
 #include <set>
 
@@ -22,9 +25,11 @@ public:
     void FreeBitmaps();
 
     virtual const CPixelMatrix& Get(int idx)=0;
-    virtual void Set(CPixelMatrix& img,int idx);
+    void Set(CPixelMatrix& img,int idx);
 
     virtual int Count() const=0;
 
     CImage& GetImage(int idx);
 };
+
+#endif

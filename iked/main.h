@@ -14,6 +14,7 @@
 // Resource objects
 #include "map.h"
 #include "tileset.h"
+#include "spriteset.h"
 #include "controller.h"
 #include "fontview.h"
 
@@ -107,6 +108,7 @@ public:
 
     CController<Map> map;
     CController<CTileSet> vsp;
+    CController<CSpriteSet> spriteset;
     // TODO: fonts, sprites, scripts, anything else that comes to mind
 
 public:

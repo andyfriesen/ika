@@ -26,7 +26,7 @@ public:
     CCHRfile();
 
     CPixelMatrix& GetFrame(int frame) const;
-    void UpdateFrame(const CPixelMatrix& newdata,int nFrame);
+//    void UpdateFrame(const CPixelMatrix& newdata,int nFrame);
     inline int Width(int nFrame=0)  const   {   return frame[nFrame].Width();   }
     inline int Height(int nFrame=0) const   {   return frame[nFrame].Height();  }
     inline int NumFrames()          const   {   return frame.size();            }
