@@ -4,7 +4,7 @@
 #include "video.h"
 
 TileSet::TileSet()
-: pVsp(0), nCurtile(0)
+    : pVsp(0)
 {
 }
 
@@ -101,10 +101,4 @@ void TileSet::DeleteTile(uint pos)
 {
     pVsp->DeleteTile(pos);
     SyncAll();
-}
-
-void TileSet::SetCurTile(uint t)
-{
-    if (t < 0 || t >= pVsp->NumTiles()) return;
-    nCurtile = t;
 }
