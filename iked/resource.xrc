@@ -148,6 +148,14 @@
             <object class="sizeritem">
               <object class="wxRadioBox" name="radio_movepattern">
                 <label>Movement Pattern</label>
+                <content>
+                  <item>&amp;Stopped</item>
+                  <item>&amp;Wander</item>
+                  <item>Wander &amp;Rect</item>
+                  <item>Wander &amp;Zone</item>
+                  <item>&amp;Chasing</item>
+                  <item>&amp;Scripted</item>
+                </content>
               </object>
             </object>
             <object class="sizeritem">
@@ -190,7 +198,7 @@
                   </object>
                 </object>
                 <object class="sizeritem">
-                  <object class="wxTextCtrl" name="edit_zone"/>
+                  <object class="wxTextCtrl" name="edit_name"/>
                 </object>
                 <object class="sizeritem">
                   <object class="wxStaticText">
@@ -271,6 +279,32 @@
       <object class="wxBoxSizer">
         <orient>wxVERTICAL</orient>
         <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <orient>wxHORIZONTAL</orient>
+          </object>
+        </object>
+        <object class="sizeritem">
+          <object class="wxGridSizer">
+            <cols>2</cols>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>&amp;Width</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_width"/>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText">
+                <label>&amp;Height</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxTextCtrl" name="edit_height"/>
+            </object>
+          </object>
+        </object>
+        <object class="sizeritem">
           <object class="wxFlexGridSizer">
             <cols>2</cols>
             <object class="sizeritem">
@@ -291,7 +325,7 @@
                       </object>
                     </object>
                     <object class="sizeritem">
-                      <object class="wxTextCtrl" name="edit_width"/>
+                      <object class="wxTextCtrl" name="edit_tilesetwidth"/>
                     </object>
                     <object class="sizeritem">
                       <object class="wxStaticText">
@@ -299,7 +333,7 @@
                       </object>
                     </object>
                     <object class="sizeritem">
-                      <object class="wxTextCtrl" name="edit_height"/>
+                      <object class="wxTextCtrl" name="edit_tilesetheight"/>
                     </object>
                     <growablecols>0,1</growablecols>
                   </object>

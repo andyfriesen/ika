@@ -3,7 +3,7 @@
 #include "importvspdlg.h"
 #include "resource.h"
 #include "fileio.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 #include "log.h"
 
 void CImportVSPDlg::Execute(HINSTANCE hinst,HWND hwndparent,VSP* vsp)
@@ -91,7 +91,7 @@ void CImportVSPDlg::ImportImage(int tilex,int tiley,bool pad,bool append,const c
         return;
     }
 
-    CPixelMatrix bigimage((RGBA*)img->getPixels(),img->getWidth(),img->getHeight());
+    Canvas bigimage((RGBA*)img->getPixels(),img->getWidth(),img->getHeight());
 
     delete img;
 
@@ -115,7 +115,7 @@ void CImportVSPDlg::ImportImage(int tilex,int tiley,bool pad,bool append,const c
     }
 
 
-    CPixelMatrix lilimage;
+    Canvas lilimage;
     lilimage.Resize(tilex,tiley);
 
     for (int y=0; y<nTileheight; y++)

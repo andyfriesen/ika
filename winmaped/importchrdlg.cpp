@@ -3,7 +3,7 @@
 #include "importchrdlg.h"
 #include "resource.h"
 #include "fileio.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 
 void CImportCHRDlg::Execute(HINSTANCE hinst,HWND hwndparent,CCHRfile* chr)
 {
@@ -79,7 +79,7 @@ void CImportCHRDlg::ImportImage(int nFrames,int nFramex,int nFramey,int nFramesp
         return;
     }
 
-    CPixelMatrix bigimage((RGBA*)image->getPixels(),image->getWidth(),image->getHeight());
+    Canvas bigimage((RGBA*)image->getPixels(),image->getWidth(),image->getHeight());
 
     delete image;
     
@@ -98,7 +98,7 @@ void CImportCHRDlg::ImportImage(int nFrames,int nFramex,int nFramey,int nFramesp
     if (nFramesperrow>bigimage.Width()/tx)
         nFramesperrow=bigimage.Width()/tx;
     
-    CPixelMatrix lilimage;
+    Canvas lilimage;
     lilimage.Resize(nFramex,nFramey);
     
     int curx=pad?1:0;

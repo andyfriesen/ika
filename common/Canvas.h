@@ -27,15 +27,15 @@ public:
     Canvas(RGBA* pData,int nWidth,int nHeight);
     Canvas(const Canvas& src);
     Canvas(const char* fname);
-    virtual ~Canvas(); // why did I make this virtual? O_o
+    virtual ~Canvas();  // winmaped needs this to be virtual.  TODO: annihilate dependancy on winmaped, then annihilate the virtual constructor.
 
     void Save(const char* fname);
     
     // The basics
     void CopyPixelData(u8* data,int width,int height,u8* pal);  ///< Copies raw, palettized pixel data into the image
     void CopyPixelData(RGBA* data,int width,int height);        ///< Copies raw RGBA pixel data into the image
-    Canvas& operator = (const Canvas& rhs);         ///< Copies one image into another.
-    bool operator == (const Canvas& rhs);                 ///< Returns true if the images have the same dimensions, and contain the same data. (SLOW!)
+    Canvas& operator = (const Canvas& rhs);                     ///< Copies one image into another.
+    bool operator == (const Canvas& rhs);                       ///< Returns true if the images have the same dimensions, and contain the same data. (SLOW!)
     
     // Accessors
     inline const int& Width()   const { return _width;  }

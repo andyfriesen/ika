@@ -34,7 +34,6 @@ private:
     void OnNewZone(wxCommandEvent& event);
     void OnDelZone(wxCommandEvent& event);
 
-    void InitControls();
 public:
     ZoneEditor(CMapView* parent, Map* m);
 };

@@ -345,12 +345,12 @@ void CMapView::Mouse_NextTile()
     switch (nCurlayer)
     {
     case lay_zone:
-        if (nCurzone<=pMap->NumZones())
+        if (nCurzone<=pMap->Zones().size())
             nCurzone++;
         break;
     default:
         nLefttile++;
-        nLefttile=nLefttile%pVsp->NumTiles();    // clippin' yo
+        nLefttile=nLefttile % pVsp->NumTiles();    // clippin' yo
         return;
     }
 }

@@ -10,8 +10,8 @@ int CZoneEdDlg::Execute(HINSTANCE hInst,HWND hWnd,int zone, Map* m)
 
 void CZoneEdDlg::UpdateDialog(HWND hWnd)
 {
-	pMap->GetZoneInfo(curdat,nCurzone);
-	SetDlgItemText(hWnd,IDC_EDNAME,curdat.sName.c_str());
+	curdat = pMap->Zones()[nCurzone];
+	SetDlgItemText(hWnd,IDC_EDNAME,curdat.name.c_str());
 	SetDlgItemText(hWnd,IDC_EDDESC,curdat.sDescription.c_str());
 	SetDlgItemText(hWnd,IDC_EDSCRIPT,curdat.sActscript.c_str());
 	SetDlgItemText(hWnd,IDC_EDENTSCRIPT,curdat.sEntactscript.c_str());
@@ -30,7 +30,7 @@ void CZoneEdDlg::UpdateDialog(HWND hWnd)
 void CZoneEdDlg::UpdateData(HWND hWnd)
 { 
 	char c[255];
-	GetDlgItemText(hWnd,IDC_EDNAME,c,255);			curdat.sName=c;
+	GetDlgItemText(hWnd,IDC_EDNAME,c,255);			curdat.name=c;
 	GetDlgItemText(hWnd,IDC_EDDESC,c,255);			curdat.sDescription=c;
 	GetDlgItemText(hWnd,IDC_EDSCRIPT,c,255);		curdat.sActscript=c;
 	GetDlgItemText(hWnd,IDC_EDENTSCRIPT,c,255);		curdat.sEntactscript=c;
@@ -40,7 +40,7 @@ void CZoneEdDlg::UpdateData(HWND hWnd)
 	
 	curdat.bAdjacentactivation=IsDlgButtonChecked(hWnd,IDC_AAA)==BST_CHECKED?1:0;
 	
-	pMap->SetZoneInfo(curdat,nCurzone);
+	pMap->Zones()[nCurzone] = curdat;
 }
 
 bool CZoneEdDlg::InitProc(HWND hWnd)
@@ -71,25 +71,25 @@ int CZoneEdDlg::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 			break;
 		case ID_NEXT:
 			UpdateData(hWnd);
-			if (nCurzone<pMap->NumZones())
+			if (nCurzone<pMap->Zones().size())
 				nCurzone++;
 			else
 				nCurzone=0;
 
-			pMap->GetZoneInfo(curdat,nCurzone);
+			curdat = pMap->Zones()[nCurzone];
 			UpdateDialog(hWnd);
 			break;
 		case ID_PREV:
 			UpdateData(hWnd);
-			if (nCurzone>0 && pMap->NumZones())
+			if (nCurzone>0 && pMap->Zones().size())
 				nCurzone--;
 			else
-				if (pMap->NumZones()>0)
-					nCurzone=pMap->NumZones()-1;
+				if (pMap->Zones().size()>0)
+					nCurzone=pMap->Zones().size()-1;
 				else
 					nCurzone=0;
 
-			pMap->GetZoneInfo(curdat,nCurzone);
+			curdat = pMap->Zones()[nCurzone];
 			UpdateDialog(hWnd);
 			break;
 		case ID_AAA:

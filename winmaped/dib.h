@@ -10,9 +10,9 @@ I get the feeling that I've got a million different abstractions for images. -_-
 
 #include <windows.h>
 #include "types.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 
-class CDIB : public CPixelMatrix
+class CDIB : public Canvas
 {
 private:
     HBITMAP hBitmap;														// Object handle, not used for much, but still important
@@ -26,7 +26,7 @@ private:
 public:
     CDIB(int width,int height);
     CDIB(const CDIB& s);
-    CDIB(const CPixelMatrix& s);
+    CDIB(const Canvas& s);
     ~CDIB();
     
     inline HDC GetDC() const { return hDC; }
@@ -34,7 +34,7 @@ public:
     inline int	Width() const { return nWidth; }
     inline int	Height() const { return nHeight;	}
     
-    CDIB& operator = (const CPixelMatrix& s);										// more efficient than using the constructor implicitly
+    CDIB& operator = (const Canvas& s);										// more efficient than using the constructor implicitly
     
     void SetPixel(int x,int y,RGBA colour);
     

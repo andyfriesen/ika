@@ -432,11 +432,11 @@ void Engine::UpdateStatbar(int cursorx,int cursory)
 	{
 	    SMapZone tempz;
 	    
-	    map.GetZoneInfo(tempz,map.GetZone(cursorx,cursory));                  
-	    SetStatbarText(1, va("Zone under cursor #%i: %s",map.GetZone(cursorx,cursory),tempz.sName.c_str()) );
+	    tempz = map.Zones()[map.GetZone(cursorx,cursory)];
+	    SetStatbarText(1, va("Zone under cursor #%i: %s",map.GetZone(cursorx,cursory),tempz.name.c_str()) );
 	    
-	    map.GetZoneInfo(tempz,pMapview->nCurzone);
-	    SetStatbarText(2, va("#%i: %s",pMapview->nCurzone,tempz.sName.c_str()) );
+	    tempz = map.Zones()[pMapview->nCurzone];
+	    SetStatbarText(2, va("#%i: %s",pMapview->nCurzone,tempz.name.c_str()) );
     	break;
 	}
 	
@@ -446,7 +446,7 @@ void Engine::UpdateStatbar(int cursorx,int cursory)
 	    if (i!=-1)
 	    {
 		const SMapEntity& tempe=map.GetEntity(i);
-		SetStatbarText(1, va("Entity #%i: %s",i,tempe.sName.c_str()) );
+		SetStatbarText(1, va("Entity #%i: %s",i,tempe.name.c_str()) );
 		SetStatbarText(2, tempe.sDescription.c_str() );
 	    }
 	    else

@@ -70,7 +70,7 @@ inline void CGraphView::DoClipping(int& x,int& y,int& xstart,int& xlen,int& ysta
         ylen=nDIBsize-y;
 }
 
-void CGraphView::Blit(const CPixelMatrix& src,int x,int y,bool trans)
+void CGraphView::Blit(const Canvas& src,int x,int y,bool trans)
 {
     if (trans)
     {
@@ -94,8 +94,8 @@ void CGraphView::Blit(const CPixelMatrix& src,int x,int y,bool trans)
 
     if (xlen<1 || ylen<1)   return; // offscreen
     
-    u32* pDest=(u32*)(pDib->GetPixelData())+(y*nDestwidth+x);
-    u32* pSrc =(u32*)src.GetPixelData() +(ystart*src.Width()+xstart);
+    u32* pDest=(u32*)(pDib->GetPixels())+(y*nDestwidth+x);
+    u32* pSrc =(u32*)src.GetPixels() +(ystart*src.Width()+xstart);
     
     while (ylen)
     {
@@ -134,7 +134,7 @@ void CGraphView::Blit(const CPixelMatrix& src,int x,int y,bool trans)
     }
 }   
 
-void CGraphView::AlphaBlit(const CPixelMatrix& src,int x,int y)
+void CGraphView::AlphaBlit(const Canvas& src,int x,int y)
 {
     const int bpp=4;
     
@@ -152,8 +152,8 @@ void CGraphView::AlphaBlit(const CPixelMatrix& src,int x,int y)
     
     if (xlen<1 || ylen<1)   return; // offscreen
     
-    u32* pDest=(u32*)(pDib->GetPixelData())+(y*nDestwidth+x);
-    u32* pSrc =(u32*)src.GetPixelData() +(ystart*src.Width()+xstart);
+    u32* pDest=(u32*)(pDib->GetPixels())+(y*nDestwidth+x);
+    u32* pSrc =(u32*)src.GetPixels() +(ystart*src.Width()+xstart);
     
     while (ylen)
     {
@@ -208,7 +208,7 @@ void CGraphView::HLine(int x1,int x2,int y,u32 colour)
     if (x1>=nDIBsize)       return;
     if (x2>=nDIBsize)       x2=nDIBsize-1;
     
-    u32* p=(u32*)pDib->GetPixelData()+(y*pDib->Width())+x1;
+    u32* p=(u32*)pDib->GetPixels()+(y*pDib->Width())+x1;
     int xlen=x2-x1+1;
     
     while (xlen--)
@@ -226,7 +226,7 @@ void CGraphView::VLine(int x,int y1,int y2,u32 colour)
     if (y1>=nDIBsize)       return;
     if (y2>=nDIBsize)       y2=nDIBsize-1;
 
-    u32* p=(u32*)pDib->GetPixelData()+(y1*pDib->Width())+x;
+    u32* p=(u32*)pDib->GetPixels()+(y1*pDib->Width())+x;
     int ylen=y2-y1+1;
     while (ylen--)
     {
@@ -255,12 +255,12 @@ void CGraphView::Stipple(int sx,int sy,int w,int h,u32 colour)
     for (int y=0; y<h; y++)
         for (int x=0; x<w; x++)
             if ((x+y)&1)
-                ((u32*)pDib->GetPixelData())[ (y+sy)*pDib->Width() + sx + x ]=colour;
+                ((u32*)pDib->GetPixels())[ (y+sy)*pDib->Width() + sx + x ]=colour;
 }
 
 void CGraphView::Clear()
 {
-    ZeroMemory(pDib->GetPixelData(),pDib->Width()*pDib->Height()*sizeof(u32));
+    ZeroMemory(pDib->GetPixels(),pDib->Width()*pDib->Height()*sizeof(u32));
 }
 
 void CGraphView::ShowPage()

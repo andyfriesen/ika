@@ -169,56 +169,6 @@ Map::~Map()
     Free();
 }
 
-// Private member stuff
-
-int Map::CountMoveScripts()
-{
-/*    int i;
-
-  i=99;
-  while (i)
-  {
-        if (strlen(movescript[i].t)) break;
-                i--;
-                }
-    return i+1;*/
-    return 0;
-}
-
-int Map::CountCHRs()
-{
-/*    int i;
-
-  i=99;
-  while (i)
-  {
-        if (strlen(chrlist[i].t)) break;
-                i--;
-                }
-    return i+1;*/
-    return 0;
-}
-
-int Map::CountUsedZones()
-// basicly, it starts at the top, and stops as soon as it finds an unempty zone entry.
-{
-/*    int i;
-
-  i=255;
-  while (i)
-  {
-        if (zoneinfo[i].script)       break;
-                if (zoneinfo[i].percent)      break;
-                if (zoneinfo[i].delay)        break;
-                if (zoneinfo[i].aaa)          break;
-                if (zoneinfo[i].entityscript) break;
-                if (strlen(zoneinfo[i].name)) break;
-                i--;
-                }
-    return i+1;*/
-    return 0;
-}
-
 // Interface
 
 u32 Map::GetTile(int x,int y,int layer)
@@ -903,36 +853,6 @@ const string& Map::GetVSPName()
 void Map::SetVSPName(const string& s)
 { sVSPname=s; }
 
-const char* Map::GetCHREntry(int idx)
-{
-/*    if (idx>=0 && idx<100)
-return chrlist[idx].t;
-    else*/
-    return NULL;
-}
-
-void Map::SetCHREntry(const char* newchr,int idx)
-{
-    //    if (idx>=0 && idx<100)
-    //        strcpy(chrlist[idx].t,newchr);
-    return;
-}
-
-const char* Map::GetMScript(int idx)
-{
-/*    if (idx>=0 && idx<100)
-return movescript[idx].t;
-    else*/
-    return NULL;
-}
-
-void Map::SetMScript(const char* newscript,int idx)
-{
-    //    if (idx>=0 && idx<100)
-    //        strcpy(movescript[idx].t,newscript);
-    return;
-}
-
 void Map::SetObs(int x,int y,bool mode)
 {
     if (x<0 || x>=nWidth)  return;
@@ -980,18 +900,6 @@ int Map::EntityAt(int x,int y)
     return -1;
 }
 
-/*void Map::GetEntInfo(SMapEntity& info,int entidx)
-{
-    if (entidx>=0 && entidx<entity.size())
-        info=entity[entidx];
-}
-
-void Map::SetEntInfo(const SMapEntity& info,int entidx)
-{
-    if (entidx>=0 && entidx<entity.size())
-        entity[entidx]=info;
-}*/
-
 SMapEntity& Map::GetEntity(int idx) const
 {
     static SMapEntity dummy;
@@ -1032,15 +940,3 @@ int Map::NumEnts() const
 {
     return entity.size();
 }
-
-/*void Map::SetWin(int xw,int yw)
-{
-xwin=xw; ywin=yw;
-//ywin++;
-}
-
-  void Map::SetWinRel(int x,int y)
-  {
-  SetWin(xwin+x,ywin+y);
-  }
-*/

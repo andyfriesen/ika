@@ -12,7 +12,7 @@
 #include "winmaped.h"
 #include "dialog.h"
 #include "graph.h"
-#include "pixel_matrix.h"
+#include "Canvas.h"
 
 class CEdit : public CDialog
 {
@@ -20,9 +20,9 @@ protected:
     HINSTANCE hInstance;
     HWND hWnd;
     
-    CPixelMatrix curimage;
-    std::list<CPixelMatrix> UndoList;
-    std::list<CPixelMatrix> RedoList;
+    Canvas curimage;
+    std::list<Canvas> UndoList;
+    std::list<Canvas> RedoList;
     int         nMaxUndos;
     bool        bAltered;
 
@@ -81,7 +81,7 @@ protected:
     virtual void Resize(int newwidth,int newheight) {}                  // called when the image is resized. (everything ika uses is resizeable anyway)
     virtual int  HandleCommand(HWND hWnd,int wParam) { return 0; }	// handles any menu commands that the base class is unaware of
     
-    void StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src);
+    void StartEdit(HINSTANCE hInst,HWND hWndParent,Canvas& src);
     
 public:
     

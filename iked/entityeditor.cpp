@@ -62,24 +62,25 @@ void CEntityEditor::UpdateData()
         pEntlist->Delete(nCurentidx+1);
     }
 
-    e.name             =get<wxTextCtrl>("edit_name")->GetValue().c_str();
-    e.x                 =atoi(get<wxTextCtrl>("edit_x")->GetValue().c_str());
-    e.y                 =atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
-    e.sCHRname          =get<wxTextCtrl>("edit_sprite")->GetValue().c_str();
-    e.nSpeed            =atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
-    e.sActscript        =get<wxTextCtrl>("edit_script")->GetValue().c_str();
-    e.sMovescript       =get<wxTextCtrl>("edit_movescript")->GetValue().c_str();
-    e.nWandersteps      =atoi(get<wxTextCtrl>("edit_steps")->GetValue().c_str());
-    e.nWanderdelay      =atoi(get<wxTextCtrl>("edit_delay")->GetValue().c_str());
-    e.wanderrect.left   =atoi(get<wxTextCtrl>("edit_x1")->GetValue().c_str());
-    e.wanderrect.top    =atoi(get<wxTextCtrl>("edit_y1")->GetValue().c_str());
-    e.wanderrect.right  =atoi(get<wxTextCtrl>("edit_x2")->GetValue().c_str());
-    e.wanderrect.bottom =atoi(get<wxTextCtrl>("edit_y2")->GetValue().c_str());
-    e.sZone             =get<wxTextCtrl>("edit_zone")->GetValue().c_str();
-    e.sChasetarget      =get<wxTextCtrl>("edit_chasetarget")->GetValue().c_str();
-    e.bIsobs            =get<wxCheckBox>("check_isobs")->GetValue();
-    e.bMapobs           =get<wxCheckBox>("check_mapobs")->GetValue();
-    e.bEntobs           =get<wxCheckBox>("check_entobs")->GetValue();
+    e.name              = get<wxTextCtrl>("edit_name")->GetValue().c_str();
+    e.x                 = atoi(get<wxTextCtrl>("edit_x")->GetValue().c_str());
+    e.y                 = atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
+    e.sCHRname          = get<wxTextCtrl>("edit_sprite")->GetValue().c_str();
+    e.nSpeed            = atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
+    e.sActscript        = get<wxTextCtrl>("edit_script")->GetValue().c_str();
+    e.sMovescript       = get<wxTextCtrl>("edit_movescript")->GetValue().c_str();
+    e.nWandersteps      = atoi(get<wxTextCtrl>("edit_steps")->GetValue().c_str());
+    e.nWanderdelay      = atoi(get<wxTextCtrl>("edit_delay")->GetValue().c_str());
+    e.wanderrect.left   = atoi(get<wxTextCtrl>("edit_x1")->GetValue().c_str());
+    e.wanderrect.top    = atoi(get<wxTextCtrl>("edit_y1")->GetValue().c_str());
+    e.wanderrect.right  = atoi(get<wxTextCtrl>("edit_x2")->GetValue().c_str());
+    e.wanderrect.bottom = atoi(get<wxTextCtrl>("edit_y2")->GetValue().c_str());
+    e.sZone             = get<wxTextCtrl>("edit_zone")->GetValue().c_str();
+    e.sChasetarget      = get<wxTextCtrl>("edit_chasetarget")->GetValue().c_str();
+    e.bIsobs            = get<wxCheckBox>("check_isobs")->GetValue();
+    e.bMapobs           = get<wxCheckBox>("check_mapobs")->GetValue();
+    e.bEntobs           = get<wxCheckBox>("check_entobs")->GetValue();
+    e.state             = (MoveCode)get<wxRadioBox>("radio_movepattern")->GetSelection();
 }
 
 void CEntityEditor::UpdateDlg()
@@ -104,6 +105,7 @@ void CEntityEditor::UpdateDlg()
     get<wxCheckBox>("check_isobs")->SetValue(e.bIsobs);
     get<wxCheckBox>("check_mapobs")->SetValue(e.bMapobs);
     get<wxCheckBox>("check_entobs")->SetValue(e.bEntobs);
+    get<wxRadioBox>("radio_movepattern")->SetSelection((int)e.state);
 }
 
 void CEntityEditor::OnSelectEntity(wxCommandEvent& event)

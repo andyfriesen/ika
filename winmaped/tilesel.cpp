@@ -6,8 +6,6 @@ Tile selector
     TODO: add flip/rotate functions
 */
 
-#include "corona.h"
-
 #include "tilesel.h"
 #include "log.h"
 #include "resource.h"
@@ -210,7 +208,7 @@ bool CTileSel::ExportPNG(const char* fname)
     int nPixwidth = nTilewidth * pVsp->Width();
     int nPixheight= nTileheight* pVsp->Height();
     
-    CPixelMatrix bigImage;
+    Canvas bigImage;
     bigImage.Resize(nPixwidth,nPixheight);
     bigImage.Clear(RGBA(0,255,0,255));
     
@@ -230,23 +228,16 @@ bool CTileSel::ExportPNG(const char* fname)
         }
     }
 
-    corona::Image* image = corona::CreateImage(bigImage.Width(),bigImage.Height(),corona::PF_R8G8B8A8);
-    std::copy(bigImage.GetPixelData()
-        ,bigImage.GetPixelData() + bigImage.Width() * bigImage.Height()
-        ,(RGBA*)image->getPixels());
-
-    bool result = corona::SaveImage(fname,corona::FF_PNG,image);
-
-    delete image;
+    bigImage.Save(fname);
     
-    return result;
+    return true;
 }
 
 BOOL CTileSel::MainProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
     int t;
     static int x,y;
-    static CPixelMatrix copybuffer;
+    static Canvas copybuffer;
     
     switch(msg)
     {

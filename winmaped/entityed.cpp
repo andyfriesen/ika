@@ -6,30 +6,30 @@ void CEntityDlg::Execute(HINSTANCE hinst,HWND hWnd,Map* m,int e)
     pMap=m;
     nCurent=e;
     hInst=hinst;
-    StartDlg(hinst,hWnd,"EntDlg");
+    StartDlg(hinst,hWnd, "EntDlg");
 }
 
 void CEntityDlg::UpdateData(HWND hWnd)
 {
     char c[255];
     
-    GetDlgItemText(hWnd,ID_EDNAME,c,255);
-    curdata.sName=c;
+    GetDlgItemText(hWnd,ID_EDNAME, c,255);
+    curdata.name=c;
     
     curdata.x				= GetDlgItemInt(hWnd,ID_EDX,NULL,false);
     curdata.y				= GetDlgItemInt(hWnd,ID_EDY,NULL,false);
-    GetDlgItemText(hWnd,ID_EDCHR,c,255);			curdata.sCHRname		= c;
+    GetDlgItemText(hWnd,ID_EDCHR, c,255);			curdata.sCHRname		= c;
     curdata.nSpeed			= GetDlgItemInt(hWnd,ID_EDSPEED,NULL,false);
-    GetDlgItemText(hWnd,ID_EDMSCRIPT,c,255);		curdata.sMovescript		= c;
-    GetDlgItemText(hWnd,ID_EDSCRIPT,c,255);			curdata.sActscript		= c;
+    GetDlgItemText(hWnd,ID_EDMSCRIPT, c,255);		curdata.sMovescript		= c;
+    GetDlgItemText(hWnd,ID_EDSCRIPT, c,255);			curdata.sActscript		= c;
     curdata.nWandersteps	= GetDlgItemInt(hWnd,ID_EDSTEPS,NULL,false);
     curdata.nWanderdelay	= GetDlgItemInt(hWnd,ID_EDDELAY,NULL,false);
     curdata.wanderrect.left	= GetDlgItemInt(hWnd,ID_EDX1,NULL,false);
     curdata.wanderrect.top	= GetDlgItemInt(hWnd,ID_EDY1,NULL,false);
     curdata.wanderrect.right	= GetDlgItemInt(hWnd,ID_EDX2,NULL,false);
     curdata.wanderrect.bottom	= GetDlgItemInt(hWnd,ID_EDY2,NULL,false);
-    GetDlgItemText(hWnd,IDC_EDMZONE,c,255);			curdata.sZone			= c;
-    GetDlgItemText(hWnd,IDC_EDCHASETARGET,c,255);	curdata.sChasetarget	= c;
+    GetDlgItemText(hWnd,IDC_EDMZONE, c,255);			curdata.sZone			= c;
+    GetDlgItemText(hWnd,IDC_EDCHASETARGET, c,255);	curdata.sChasetarget	= c;
     curdata.nChasedist		= GetDlgItemInt(hWnd,IDC_EDCHASEDIST,NULL,false);
     
     curdata.bAdjacentactivation = IsDlgButtonChecked(hWnd,IDC_AUTOACTIVATE)?true:false;
@@ -41,7 +41,7 @@ void CEntityDlg::UpdateData(HWND hWnd)
 
 void CEntityDlg::UpdateDialog(HWND hWnd)
 {
-    SetDlgItemText(hWnd,ID_EDNAME,curdata.sName.c_str());
+    SetDlgItemText(hWnd,ID_EDNAME,curdata.name.c_str());
     
     SetDlgItemInt(hWnd,ID_EDX,curdata.x,false);
     SetDlgItemInt(hWnd,ID_EDY,curdata.y,false);
@@ -81,42 +81,42 @@ void CEntityDlg::UpdateDialog(HWND hWnd)
             CheckDlgButton(hWnd,ID_MSTOPPED,BST_CHECKED);
         
         SendDlgItemMessage(hWnd,ID_EDX1,WM_SHOWWINDOW,SW_HIDE,SW_HIDE);
-        SetDlgItemText(hWnd,ID_LSTEPS,"");
-        SetDlgItemText(hWnd,ID_LDELAY,"");
-        SetDlgItemText(hWnd,ID_LX1,"");
-        SetDlgItemText(hWnd,ID_LY1,"");
-        SetDlgItemText(hWnd,ID_LX2,"");
-        SetDlgItemText(hWnd,ID_LY2,"");
+        SetDlgItemText(hWnd,ID_LSTEPS, "");
+        SetDlgItemText(hWnd,ID_LDELAY, "");
+        SetDlgItemText(hWnd,ID_LX1, "");
+        SetDlgItemText(hWnd,ID_LY1, "");
+        SetDlgItemText(hWnd,ID_LX2, "");
+        SetDlgItemText(hWnd,ID_LY2, "");
         break;
     case mc_wander:
         CheckDlgButton(hWnd,ID_MWANDER,BST_CHECKED);
-        SetDlgItemText(hWnd,ID_LSTEPS,"Steps");
-        SetDlgItemText(hWnd,ID_LDELAY,"Delay");
-        SetDlgItemText(hWnd,ID_LX1,"");
-        SetDlgItemText(hWnd,ID_LY1,"");
-        SetDlgItemText(hWnd,ID_LX2,"");
-        SetDlgItemText(hWnd,ID_LY2,"");
+        SetDlgItemText(hWnd,ID_LSTEPS, "Steps");
+        SetDlgItemText(hWnd,ID_LDELAY, "Delay");
+        SetDlgItemText(hWnd,ID_LX1, "");
+        SetDlgItemText(hWnd,ID_LY1, "");
+        SetDlgItemText(hWnd,ID_LX2, "");
+        SetDlgItemText(hWnd,ID_LY2, "");
         break;
     case mc_wanderzone:
         CheckDlgButton(hWnd,ID_MWANDERZONE,BST_CHECKED);
-        SetDlgItemText(hWnd,ID_LSTEPS,"Steps");
-        SetDlgItemText(hWnd,ID_LDELAY,"Delay");
-        SetDlgItemText(hWnd,ID_LX1,"Zone");
-        SetDlgItemText(hWnd,ID_LY1,"");
-        SetDlgItemText(hWnd,ID_LX2,"");
-        SetDlgItemText(hWnd,ID_LY2,"");
+        SetDlgItemText(hWnd,ID_LSTEPS, "Steps");
+        SetDlgItemText(hWnd,ID_LDELAY, "Delay");
+        SetDlgItemText(hWnd,ID_LX1, "Zone");
+        SetDlgItemText(hWnd,ID_LY1, "");
+        SetDlgItemText(hWnd,ID_LX2, "");
+        SetDlgItemText(hWnd,ID_LY2, "");
         break;
     case mc_wanderrect:
         CheckDlgButton(hWnd,ID_MWANDERRECT,BST_CHECKED);
-        SetDlgItemText(hWnd,ID_LSTEPS,"Steps");
-        SetDlgItemText(hWnd,ID_LDELAY,"Delay");
-        SetDlgItemText(hWnd,ID_LX1,"x1");
-        SetDlgItemText(hWnd,ID_LY1,"y1");
-        SetDlgItemText(hWnd,ID_LX2,"x2");
-        SetDlgItemText(hWnd,ID_LY2,"y2");
+        SetDlgItemText(hWnd,ID_LSTEPS, "Steps");
+        SetDlgItemText(hWnd,ID_LDELAY, "Delay");
+        SetDlgItemText(hWnd,ID_LX1, "x1");
+        SetDlgItemText(hWnd,ID_LY1, "y1");
+        SetDlgItemText(hWnd,ID_LX2, "x2");
+        SetDlgItemText(hWnd,ID_LY2, "y2");
         break;
     default:
-        SetDlgItemText(hWnd,ID_LSTEPS,"WHAT THE BLOODY FUCK?!");
+        SetDlgItemText(hWnd,ID_LSTEPS, "WHAT THE BLOODY FUCK?!");
     }
 }
 
@@ -155,7 +155,7 @@ BOOL CEntityDlg::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
             UpdateDialog(hWnd);
             return true;
         case ID_DELETE:
-            if (MessageBox(NULL,"You are about to completely destroy this entity.\r\nAre you sure you want to proceed?","You sure?",MB_YESNO + MB_DEFBUTTON2 + MB_ICONEXCLAMATION)
+            if (MessageBox(NULL, "You are about to completely destroy this entity.\r\nAre you sure you want to proceed?", "You sure?",MB_YESNO + MB_DEFBUTTON2 + MB_ICONEXCLAMATION)
                 !=IDYES)
                 return true;
             pMap->DestroyEntity(nCurent);

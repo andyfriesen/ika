@@ -22,9 +22,8 @@ void CScriptEngine::Init(CEngine* p)
         "\n"
         "Contains functions and crap for manipulating the ika game engine at runtime.\n"
         );
-    PyObject* dict  =PyModule_GetDict(module);
     
-    engine=p;   // I cannot express the sheer gayness behind this.
+    engine = p;   // I cannot express the sheer gayness behind this.
     
     // Initialize objects
     Script::Image::Init();
@@ -40,17 +39,15 @@ void CScriptEngine::Init(CEngine* p)
     Script::Error::Init();
     
     // Create singletons
-    PyObject* input = Script::Input::New(engine->input);
-    PyDict_SetItemString(dict, "Input", input);
-    Py_DECREF(input);
-    
+    PyObject* input = Script::Input::New(engine->input);    
     PyObject* map = Script::Map::New();
-    PyDict_SetItemString(dict, "Map", map);
-    Py_DECREF(map);
-
     PyObject* video = Script::Video::New(engine->video);
-    PyDict_SetItemString(dict, "Video", video);
-    Py_DECREF(video);
+
+    // We don't need to decref here because we should be increffing as we add the objects.  So
+    // we're basically "moving" the reference
+    PyModule_AddObject(module, "Input", input);
+    PyModule_AddObject(module, "Map",   map);
+    PyModule_AddObject(module, "Video", video);
 
     PyModule_AddIntConstant(module, "Opaque", 0);
     PyModule_AddIntConstant(module, "Matte", 1);

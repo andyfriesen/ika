@@ -51,14 +51,14 @@ CDIB::CDIB(const CDIB& s)
     memcpy(pPixels,s.pPixels,nWidth*nHeight*bpp);
 }
 
-CDIB::CDIB(const CPixelMatrix& s)
+CDIB::CDIB(const Canvas& s)
 {
     hDC=0;
     hBitmap=0;
     
     CreateDIB(s.Width(),s.Height());
   
-    CopyPixelData(s.GetPixelData(),s.Width(),s.Height());
+    CopyPixelData(s.GetPixels(),s.Width(),s.Height());
 }
 
 CDIB::~CDIB()
@@ -67,11 +67,11 @@ CDIB::~CDIB()
     if (hBitmap)	DeleteObject(hBitmap);
 }
 
-CDIB& CDIB::operator = (const CPixelMatrix& s)
+CDIB& CDIB::operator = (const Canvas& s)
 {
     CreateDIB(s.Width(),s.Height());
 
-    RGBA* pSrc=s.GetPixelData();
+    RGBA* pSrc=s.GetPixels();
     
     for (int i=0; i<nWidth*nHeight; i++)
         pPixels[i]=*pSrc++;

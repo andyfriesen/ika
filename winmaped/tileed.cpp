@@ -5,7 +5,7 @@ void CTileEd::Execute(HINSTANCE hInst,HWND hWnd,VSP* vsp,int tileidx)
     pVsp=vsp;
     nCurtile=tileidx;
     
-    CPixelMatrix src=pVsp->GetTile(tileidx);
+    Canvas src=pVsp->GetTile(tileidx);
     
     StartEdit(hInst,hWnd,src);
 }

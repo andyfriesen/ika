@@ -5,7 +5,7 @@
 static const int nMaxundos=10;
 static const int nSwatchsize=128;
 
-void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src)
+void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,Canvas& src)
 {
     hInstance=hInst;
     // Init state variables
@@ -66,7 +66,7 @@ void CEdit::AddToUndo()
 {
     if (UndoList.size())
     {        
-        CPixelMatrix tmp = UndoList.front();
+        Canvas tmp = UndoList.front();
         if (curimage==tmp)
             return;
     }
@@ -78,7 +78,7 @@ void CEdit::AddToRedo()
 {
     if (RedoList.size())
     {
-        CPixelMatrix tmp = RedoList.front();
+        Canvas tmp = RedoList.front();
         if (curimage==tmp)
             return;
     }

@@ -11,11 +11,11 @@ BEGIN_EVENT_TABLE(CMovescriptEditor,wxDialog)
 END_EVENT_TABLE()
 
 
-CMovescriptEditor::CMovescriptEditor(CSpriteSetView* parent,CSpriteSet* sprite,int idx):
-wxDialog((wxWindow*)parent,-1,"CHR Properties",wxDefaultPosition,wxSize(400,225)),
-pParent(parent),
-pSprite(sprite),
-nCurframe(idx)
+CMovescriptEditor::CMovescriptEditor(CSpriteSetView* parent,CSpriteSet* sprite,int idx)
+    : wxDialog((wxWindow*)parent,-1,"CHR Properties",wxDefaultPosition,wxSize(400,225))
+    , pParent(parent)
+    , pSprite(sprite)
+    , nCurframe(idx)
 {
 
     InitControls();

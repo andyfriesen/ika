@@ -230,13 +230,13 @@ public:
     
     // CHR list
     int      CountCHRs(void);
-    const char* GetCHREntry(int idx);                       // returns what's in the specified slot
+    /*const char* GetCHREntry(int idx);                       // returns what's in the specified slot
     void  SetCHREntry(const char* newchr,int idx);          // sets the specified slot
     
     // move scripts
     int   CountMoveScripts(void);
     const char* GetMScript(int idx);                        // returns the movement script in the specified slot
-    void  SetMScript(const char* newscript,int idx);        // sets a movement script
+    void  SetMScript(const char* newscript,int idx);        // sets a movement script*/
     
     void SetObs(int x,int y,bool mode);                     // either sets or unsets the obstruction value at the given tile coords
     bool IsObs(int x,int y);                                // returns true if the tile is obstructed

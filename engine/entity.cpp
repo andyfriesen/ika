@@ -64,7 +64,7 @@ CEntity::CEntity(CEngine* njin,const SMapEntity& e)
     , bMapobs             (e.bMapobs)
     , bEntobs             (e.bEntobs)
 
-    , sName               (e.sName)
+    , sName               (e.name)
     , sActscript          (e.sActscript)
 
     , pChasetarget        (0)

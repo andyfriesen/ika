@@ -5,7 +5,7 @@
 
 	32bpp ONLY, but since DIBs are device independant, it should display properly on all displays.
 
-        TODO: See if we can generalize CDIB, CPixelMatrix, and this, so that everything uses the same blitting code.
+        TODO: See if we can generalize CDIB, Canvas, and this, so that everything uses the same blitting code.
 */
 
 #ifndef GRAPH_H
@@ -13,7 +13,7 @@
 
 #include <windows.h>
 #include <set>
-#include "pixel_matrix.h"
+#include "Canvas.h"
 #include "dib.h"
 #include "types.h"
 
@@ -46,7 +46,7 @@ private:
 		
     std::set<point> dirtyrects;                                                                 // a list of blocks that have been altered
 	void AddBlock(int x,int y);                                                                 // just in case we want to get fancy and avoid redundantly setting a block later on
-	void AlphaBlit(const CPixelMatrix& src,int x,int y);                                        // just so that we don't have both opaque and transparent crap being blitted in one long, ugly function :)
+	void AlphaBlit(const Canvas& src,int x,int y);                                        // just so that we don't have both opaque and transparent crap being blitted in one long, ugly function :)
 	void CGraphView::DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen);
 
 public:
@@ -54,7 +54,7 @@ public:
 	~CGraphView();
 
 	// drawing functions
-	void Blit(const CPixelMatrix& src,int x,int y,bool trans);
+	void Blit(const Canvas& src,int x,int y,bool trans);
 	// void scaleblit?
 	void HLine(int x1,int x2,int y,u32 colour);
 	void VLine(int x,int y1,int y2,u32 colour);

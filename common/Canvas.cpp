@@ -2,7 +2,7 @@
 
 #include "corona.h"
 
-#include "canvas.h"
+#include "Canvas.h"
 #include "misc.h"
 
 static inline void DoClipping(int& x, int& y, int& xstart, int& xlen, int& ystart, int& ylen, const Rect& rClip)

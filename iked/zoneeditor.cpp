@@ -2,19 +2,14 @@
 #include "map.h"
 #include "main.h"
 
-enum
-{
-    id_zonelist = 100,
-    id_newzone,
-    id_delzone
-};
+#include <wx/xrc/xmlres.h>
 
 BEGIN_EVENT_TABLE(ZoneEditor, wxDialog)
-    EVT_LISTBOX(id_zonelist, ZoneEditor::OnSelectZone)
+    EVT_LISTBOX(XRCID("list_zones"), ZoneEditor::OnSelectZone)
     EVT_CLOSE(ZoneEditor::OnClose)
 
-    EVT_BUTTON(id_newzone, ZoneEditor::OnNewZone)
-    EVT_BUTTON(id_delzone, ZoneEditor::OnDelZone)
+    EVT_BUTTON(XRCID("button_newzone"), ZoneEditor::OnNewZone)
+    EVT_BUTTON(XRCID("button_delzone"), ZoneEditor::OnDelZone)
 END_EVENT_TABLE()
 
 void ZoneEditor::UpdateList()
@@ -25,9 +20,7 @@ void ZoneEditor::UpdateList()
     _zonelist->Clear();
 
     for (uint i = 0; i < _map->Zones().size(); i++)
-    {
         _zonelist->Append(_map->Zones()[i].name.c_str());
-    }
 
     _zonelist->SetSelection(pos);
     UpdateDlg();
@@ -37,7 +30,7 @@ void ZoneEditor::UpdateData()
 {
     SMapZone& zone = _map->Zones()[_curzone];
 
-    //if (zone.name != _nameedit->GetValue().c_str())
+    if (zone.name != _nameedit->GetValue().c_str())
         _zonelist->SetString(_curzone, _nameedit->GetValue().c_str());
 
     zone.name                  = _nameedit->GetValue().c_str();
@@ -61,49 +54,24 @@ void ZoneEditor::UpdateDlg()
     _adjacentactivate->SetValue(zone.bAdjacentactivation);
 }
 
-void ZoneEditor::InitControls()
-{
-    const int column[] =
-    {
-        150, 220, 275, 290
-    };
-
-    const int line[] =
-    {
-        5, 25, 45, 65, 85, 105, 125, 145, 165, 185, 205, 225,
-    };
-
-    const wxSize editsize(50, 20);
-    const wxSize bigedit(120, 20);
-    const wxSize labelsize(70, 20);
-    const wxSize smalllabel(14, 20);
-
-    _zonelist = new wxListBox(this, id_zonelist, wxPoint(0, 0), wxSize(140, 145));
-    _nameedit = new wxTextCtrl(this, -1, "",    wxPoint(column[1], line[0]), bigedit);
-    _descedit = new wxTextCtrl(this, -1, "",    wxPoint(column[1], line[1]), bigedit);
-    _scriptedit = new wxTextCtrl(this, -1, "",  wxPoint(column[1], line[2]), bigedit);
-    _chanceedit = new wxTextCtrl(this, -1, "",  wxPoint(column[1], line[3]), bigedit);
-    _delayedit = new wxTextCtrl(this, -1, "",   wxPoint(column[1], line[4]), bigedit);
-    _adjacentactivate = new wxCheckBox(this, -1, "&Adjacent activation", wxPoint(column[0], line[5]), bigedit);
-
-    new wxStaticText(this, -1, "Name",          wxPoint(column[0], line[0]), labelsize, wxALIGN_RIGHT);
-    new wxStaticText(this, -1, "Description",   wxPoint(column[0], line[1]), labelsize, wxALIGN_RIGHT);
-    new wxStaticText(this, -1, "Script",        wxPoint(column[0], line[2]), labelsize, wxALIGN_RIGHT);
-    //new wxStaticText(this, -1, "Entity Script", wxPoint(column[0], line[3]), labelsize, wxALIGN_RIGHT);
-    new wxStaticText(this, -1, "Chance (%)",    wxPoint(column[0], line[3]), labelsize, wxALIGN_RIGHT);
-    new wxStaticText(this, -1, "Delay",         wxPoint(column[0], line[4]), labelsize, wxALIGN_RIGHT);
-
-    new wxButton(this, id_newzone, "&New Zone", wxPoint(column[0], line[6]), labelsize);
-    new wxButton(this, id_delzone, "&Delete",   wxPoint(column[1], line[6]), labelsize);
-}
-
 ZoneEditor::ZoneEditor(CMapView* parent, Map* m)
-    : wxDialog((wxWindow*)parent, -1, "Zones", wxDefaultPosition, wxSize(350, 180))
-    , _parent(parent)
+    : _parent(parent)
     , _map(m)
     , _curzone(0)
 {
-    InitControls();
+    wxXmlResource::Get()->LoadDialog(this, (wxWindow*)parent, "dialog_zone");
+    _zonelist = XRCCTRL(*this, "list_zones", wxListBox);
+    _nameedit = XRCCTRL(*this, "edit_name", wxTextCtrl);
+    _descedit = XRCCTRL(*this, "edit_description", wxTextCtrl);
+    _scriptedit = XRCCTRL(*this, "edit_script", wxTextCtrl);
+    _chanceedit = XRCCTRL(*this, "edit_chance", wxTextCtrl);
+    _delayedit = XRCCTRL(*this, "edit_delay", wxTextCtrl);
+    _adjacentactivate = XRCCTRL(*this, "check_adjactivate", wxCheckBox);
+
+    wxSizer* sizer = XRCCTRL(*this, "panel_main", wxPanel)->GetSizer();
+    _zonelist->SetSize(wxSize(_zonelist->GetSize().GetWidth(), sizer->GetSize().GetHeight()));
+    sizer->Fit(this);
+    
     UpdateList();
 }
 
