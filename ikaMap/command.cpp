@@ -58,6 +58,40 @@ void SetTileCommand::Undo(MainWindow* m)
 
 //-----------------------------------------------------------------------------
 
+PasteTilesCommand::PasteTilesCommand(int x, int y, uint layerIndex, const Matrix<uint>& tiles)
+    : _x(x)
+    , _y(y)
+    , _layerIndex(layerIndex)
+    , _tiles(tiles)
+{}
+
+void PasteTilesCommand::Do(MainWindow* m)
+{
+    Matrix<uint>& dest = m->GetMap()->GetLayer(m->GetMapView()->GetCurLayer()).tiles;
+
+    for (uint y = 0; y < _tiles.Height(); y++)
+    {
+        const uint destY = y + _y;
+        uint destX = _x;
+
+        for (uint x = 0; x < _tiles.Width(); x++)
+        {
+            swap(_tiles(x, y), dest(destX, destY));
+            destX++;
+        }
+    }
+
+    m->GetMapView()->Refresh();
+}
+
+void PasteTilesCommand::Undo(MainWindow* m)
+{
+    // teehee.  Swapping is neat.
+    Do(m);
+}
+
+//-----------------------------------------------------------------------------
+
 SetObstructionCommand::SetObstructionCommand(uint x, uint y, uint layerIndex, u8 set)
     : _x(x)
     , _y(y)

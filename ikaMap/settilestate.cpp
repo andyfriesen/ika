@@ -23,7 +23,7 @@ void TileSetState::OnMouseDown(wxMouseEvent& event)
         int y = event.m_y;
         GetMapView()->ScreenToTile(x, y);
 
-        SetCurTile(GetMap()->GetLayer(GetMapView()->GetCurLayer()).tiles(x, y));
+        SetCurTile(GetCurLayer()->tiles(x, y));
         GetTileSetView()->Render();
         GetTileSetView()->ShowPage();
     }
@@ -65,13 +65,13 @@ void TileSetState::SetTile(int x, int y)
 
     if (x == _oldX && y == _oldY)   return;
     if (x < 0 || y < 0)             return;
-    if ((uint)x >= GetCurrentLayer()->Width() ||
-        (uint)y >= GetCurrentLayer()->Height())
+    if ((uint)x >= GetCurLayer()->Width() ||
+        (uint)y >= GetCurLayer()->Height())
         return;
 
     _oldX = x; _oldY = y;
 
-    HandleCommand(new SetTileCommand(x, y, GetMapView()->GetCurLayer(), GetCurTile()));
+    HandleCommand(new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile()));
 }
 
 uint TileSetState::GetCurTile() const

@@ -1,5 +1,6 @@
 
 #include "copypastestate.h"
+#include "command.h"
 #include "mapview.h"
 #include "map.h"
 #include "tileset.h"
@@ -18,7 +19,7 @@ CopyPasteState::CopyPasteState(MainWindow* mw)
 void CopyPasteState::OnMouseDown(wxMouseEvent& event)
 {
     const TileSet* ts = GetTileSet();
-    const Map::Layer* curLayer = GetCurrentLayer();
+    const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 
     if (event.LeftDown())
@@ -92,7 +93,7 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event)
     }
     else if (_dragging)
     {
-        Map::Layer* layer = GetCurrentLayer();
+        Map::Layer* layer = GetCurLayer();
 
         _dragging = false;
 
@@ -110,11 +111,12 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event)
                 for (uint x = 0; x < _tiles.Width(); x++)
                 {
                     _tiles(x, y) = layer->tiles(sourceX, sourceY);
-                    layer->tiles(sourceX, sourceY) = 0;
-
                     sourceX++;
                 }
             }
+
+            Matrix<uint> tempMat(_tiles.Width(), _tiles.Height());
+            HandleCommand(new PasteTilesCommand(_selX, _selY, GetCurLayerIndex(), tempMat));
 
             _clipboard = _tiles;    // save this for duplication goodness
         }
@@ -163,7 +165,7 @@ void CopyPasteState::OnMouseMove(wxMouseEvent& event)
 void CopyPasteState::OnRenderCurrentLayer()
 {
     const TileSet* ts = GetTileSet();
-    const Map::Layer* curLayer = GetCurrentLayer();
+    const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 
     if (!_tiles.Empty())
@@ -185,12 +187,13 @@ void CopyPasteState::OnRenderCurrentLayer()
     else if (_dragging)
     {
         // Draw the current selection rectangle
-        int x = _selection.left * ts->Width() - mv->GetXWin();
-        int y = _selection.top * ts->Height() - mv->GetYWin();
+        int x = _selection.left * ts->Width() - mv->GetXWin() + curLayer->x;
+        int y = _selection.top * ts->Height() - mv->GetYWin() + curLayer->y;
         int w = _selection.Width() * ts->Width();
         int h = _selection.Height() * ts->Height();
 
         mv->GetVideo()->RectFill(x, y, w, h, RGBA(255, 255, 255, 128));
+        mv->GetVideo()->Rect    (x, y, w, h, RGBA(0, 255, 255));
     }
 }
 
@@ -203,20 +206,6 @@ void CopyPasteState::Paste()
 {
     if (_tiles.Empty()) return; // :P
 
-    Map::Layer* lay = GetCurrentLayer();
-
-    for (uint y = 0; y < _tiles.Height(); y++)
-    {
-        const uint sourceY = y + _selY;
-        int sourceX = _selX;
-
-        for (uint x = 0; x < _tiles.Width(); x++)
-        {
-            lay->tiles(sourceX, sourceY) = _tiles(x, y);
-
-            sourceX++;
-        }
-    }
-
+    HandleCommand(new PasteTilesCommand(_selX, _selY, GetCurLayerIndex(), _tiles));
     _tiles.Resize(0, 0);
 }

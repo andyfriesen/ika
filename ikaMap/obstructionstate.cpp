@@ -30,7 +30,7 @@ void ObstructionState::OnMouseDown(wxMouseEvent& event)
      * Both == unset.
      * Neither == execution will never get here.
      */
-    HandleCommand(new SetObstructionCommand(x, y, GetMapView()->GetCurLayer(),
+    HandleCommand(new SetObstructionCommand(x, y, GetCurLayerIndex(),
         event.LeftIsDown() && !event.RightIsDown()));
 }
 
@@ -51,9 +51,9 @@ void ObstructionState::OnMouseWheel(wxMouseEvent& event)
 
 void ObstructionState::OnRenderCurrentLayer()
 {
-    Map::Layer* l = GetCurrentLayer();
+    Map::Layer* l = GetCurLayer();
     MapView* mv = GetMapView();
 
     if (l)
-        mv->RenderObstructions(GetCurrentLayer(), mv->GetXWin() - l->x, mv->GetYWin() - l->y);
+        mv->RenderObstructions(GetCurLayer(), mv->GetXWin() - l->x, mv->GetYWin() - l->y);
 }

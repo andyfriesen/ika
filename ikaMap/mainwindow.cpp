@@ -427,7 +427,7 @@ void MainWindow::OnSaveMapAs(wxCommandEvent&)
     {
         _map->Save(name);
         _curMapName = name;
-        SetTitle(va("ikaMap version %0.2f - [ %s ]", _version, _curMapName.c_str()));
+        UpdateTitle();
     }
     catch (std::runtime_error err)
     {
@@ -847,6 +847,8 @@ void MainWindow::LoadMap(const std::string& fileName)
     _tileSetView->UpdateScrollBars();
     _mapView->Refresh();
     _tileSetView->Refresh();
+
+    UpdateTitle();
 }
 
 SpriteSet* MainWindow::GetSprite(const std::string& fileName)

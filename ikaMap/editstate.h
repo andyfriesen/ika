@@ -47,7 +47,8 @@ protected:
     MapView*        GetMapView() const;
     TileSetView*    GetTileSetView() const;
     Map*            GetMap() const;
-    Map::Layer*     GetCurrentLayer() const;
+    Map::Layer*     GetCurLayer() const;
+    uint            GetCurLayerIndex() const;
     TileSet*        GetTileSet() const;
     void            HandleCommand(::Command* cmd);
 };

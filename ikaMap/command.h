@@ -60,6 +60,20 @@ public:
     virtual void Undo(MainWindow* m);
 };
 
+class PasteTilesCommand : public Command
+{
+private:
+    int _x, _y;
+    uint _layerIndex;
+    Matrix<uint> _tiles;    // we swap this with the old tiles when undoing.
+
+public:
+    PasteTilesCommand(int x, int y, uint layerIndex, const Matrix<uint>& tiles);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
 class SetObstructionCommand : public Command
 {
 private:

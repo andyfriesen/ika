@@ -19,12 +19,12 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
     int y = event.GetY();
     GetMapView()->ScreenToMap(x, y);
 
-    Map::Layer* lay = GetCurrentLayer();
-    uint entIndex = GetMapView()->EntityAt(x, y, GetMapView()->GetCurLayer());
+    Map::Layer* lay = GetCurLayer();
+    uint entIndex = GetMapView()->EntityAt(x, y, GetCurLayerIndex());
 
     if (entIndex != -1)
     {
-        _entLayerIndex = GetMapView()->GetCurLayer();
+        _entLayerIndex = GetCurLayerIndex();
         _entIndex = entIndex;
 
         GetMapView()->Refresh();
@@ -44,7 +44,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
     {
         if (wxMessageBox("Create a new entity here?", "", wxYES_NO, GetMainWindow()) == wxYES)
         {
-            HandleCommand(new CreateEntityCommand(GetMapView()->GetCurLayer(), x, y));
+            HandleCommand(new CreateEntityCommand(GetCurLayerIndex(), x, y));
         }
     } // create a new entity etc
 }
@@ -63,7 +63,7 @@ void EntityState::OnMouseWheel(wxMouseEvent& event)
 
 void EntityState::OnRenderCurrentLayer()
 {
-    Map::Layer* layer = GetCurrentLayer();
+    Map::Layer* layer = GetCurLayer();
     uint xwin = GetMapView()->GetXWin();
     uint ywin = GetMapView()->GetYWin();
 
