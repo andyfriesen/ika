@@ -19,7 +19,7 @@ public:
     bool Load(const char* fname);
     bool Save(const char* fname);
 
-    virtual const CPixelMatrix& Get(int idx);
+    virtual CPixelMatrix& Get(int idx);
     virtual int Count() const;   
     int Width() const;
     int Height() const;

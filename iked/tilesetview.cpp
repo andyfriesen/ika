@@ -77,7 +77,6 @@ void CTileSetView::OnSize(wxSizeEvent& event)
     pGraph->SetSize(GetClientSize());
 
     UpdateScrollbar();
-    //Render();                                                         // We don't have to draw here.  OnPaint will be called to do that. --andy
 }
 
 void CTileSetView::OnScroll(wxScrollWinEvent& event)
@@ -116,13 +115,17 @@ void CTileSetView::OnLeftClick(wxMouseEvent& event)
 void CTileSetView::OnRightClick(wxMouseEvent& event)
 {
     PopupMenu(pContextmenu,event.GetPosition());
+    nTile=TileAt(event.GetX(),event.GetY());
 }
 
 //---------------------------
 
 void CTileSetView::OnEditTile(wxCommandEvent& event)
 {
+//    pParent->
+    CImageView view(&pTileset->Get(nTile));
 
+    view.ShowModal();
 }
 
 //---------------------------

@@ -20,6 +20,8 @@ class CTileSetView : public IDocView
 
     int ywin;                                       // scrollbar position
     bool bPad;                                      // pixel padding on/off
+
+    int nTile;                                      // used for the context menu; the tile index of the tile that was right-clicked
 public:
     CTileSetView(CMainWnd* parentwnd,const string& fname);
     ~CTileSetView();

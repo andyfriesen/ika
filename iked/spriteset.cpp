@@ -25,7 +25,7 @@ void CSpriteSet::SetImage(const CPixelMatrix& img,int idx)
     pCHR->GetFrame(idx)=img;
 }
 
-const CPixelMatrix& CSpriteSet::Get(int idx)
+CPixelMatrix& CSpriteSet::Get(int idx)
 {
     return pCHR->GetFrame(idx);
 }

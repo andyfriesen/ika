@@ -12,16 +12,20 @@
 class CMainWnd;
 class CGraphFrame;
 class CImage;
+class CPixelMatrix;
 
-class CImageView : IDocView
+class CImageView : public wxDialog
 {
+    CMainWnd*       pParent;
     CGraphFrame*    pGraph;     // the main editing grid
 
-    CImage*         pImage;     // the image we're editing
+    CPixelMatrix*   pData;      // the image we're editing (real pixel data)
+    CImage*         pImage;     // hardware dependant copy of the image
 
 public:
 
-    CImageView(CMainWnd* parent,CImage* img);
+    CImageView(CPixelMatrix* img);
+    ~CImageView();
 
     // events
     void OnPaint();

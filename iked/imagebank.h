@@ -24,7 +24,7 @@ public:
     void SyncAll();
     void FreeBitmaps();
 
-    virtual const CPixelMatrix& Get(int idx)=0;
+    virtual CPixelMatrix& Get(int idx)=0;
     void Set(CPixelMatrix& img,int idx);
 
     virtual int Count() const=0;

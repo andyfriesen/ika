@@ -32,7 +32,7 @@ bool CTileSet::Save(const char* fname)
     return true;
 }
 
-const CPixelMatrix& CTileSet::Get(int tileidx)
+CPixelMatrix& CTileSet::Get(int tileidx)
 {
     return pVsp->GetTile(tileidx);
 }
