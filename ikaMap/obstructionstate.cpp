@@ -3,6 +3,7 @@
 
 #include "wxinc.h"
 #include "mapview.h"
+#include "command.h"
 
 ObstructionState::ObstructionState(MainWindow* mw)
     : EditState(mw)
@@ -29,11 +30,8 @@ void ObstructionState::OnMouseDown(wxMouseEvent& event)
      * Both == unset.
      * Neither == execution will never get here.
      */
-    GetCurrentLayer()->obstructions(x, y) =
-        event.LeftIsDown() && !event.RightIsDown();
-
-    GetMapView()->Render();
-    GetMapView()->ShowPage();
+    HandleCommand(new SetObstructionCommand(x, y, GetMapView()->GetCurLayer(),
+        event.LeftIsDown() && !event.RightIsDown()));
 }
 
 void ObstructionState::OnMouseUp(wxMouseEvent& event)

@@ -31,6 +31,30 @@ void SetTileCommand::Undo(MainWindow* m)
 
 //-----------------------------------------------------------------------------
 
+SetObstructionCommand::SetObstructionCommand(uint x, uint y, uint layerIndex, u8 set)
+    : _x(x)
+    , _y(y)
+    , _layerIndex(layerIndex)
+    , _set(set)
+{}
+
+void SetObstructionCommand::Do(MainWindow* m)
+{
+    Matrix<u8>& obs = m->GetMap()->GetLayer(_layerIndex).obstructions;
+
+    _oldValue = obs(_x, _y);
+    obs(_x, _y) = _set;
+    m->GetMapView()->Refresh();
+}
+
+void SetObstructionCommand::Undo(MainWindow* m)
+{
+    m->GetMap()->GetLayer(_layerIndex).obstructions(_x, _y) = _oldValue;
+    m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
 void CreateLayerCommand::Do(MainWindow* m)
 {
     Map* map = m->GetMap();

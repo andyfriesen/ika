@@ -42,6 +42,21 @@ public:
     virtual void Undo(MainWindow* m);
 };
 
+class SetObstructionCommand : public Command
+{
+private:
+    uint _x, _y;
+    uint _layerIndex;
+    u8  _set;
+    u8  _oldValue;
+
+public:
+    SetObstructionCommand(uint x, uint y, uint layerIndex, u8 set);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
 class CreateLayerCommand : public Command
 {
 private:
