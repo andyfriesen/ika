@@ -61,7 +61,7 @@ void EntityState::OnMouseWheel(wxMouseEvent& event)
 {
 }
 
-void EntityState::OnRender()
+void EntityState::OnRenderCurrentLayer()
 {
     Map::Layer* layer = GetCurrentLayer();
     uint xwin = GetMapView()->GetXWin();

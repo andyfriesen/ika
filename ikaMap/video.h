@@ -42,6 +42,8 @@ public:
 
     void Clear();
 
+    void SetClearColour(RGBA colour = RGBA(0, 0, 0));
+
     void ShowPage();
 
     void OnErase(wxEraseEvent&) {}

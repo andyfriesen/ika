@@ -99,6 +99,7 @@ public:
 
     uint Width() const  { return _width; }
     uint Height() const { return _height; }
+    bool Empty() const { return _data == 0; }
 
     void Resize(uint newx, uint newy)
     {

@@ -27,6 +27,7 @@ MapView::MapView(MainWindow* mw, wxWindow* parent)
     : wxPanel(parent)
     , _mainWnd(mw)
     , _tileSetState(mw)
+    , _copyPasteState(mw)
     , _obstructionState(mw)
     , _entityState(mw)
     , _editState(&_tileSetState)
@@ -36,6 +37,7 @@ MapView::MapView(MainWindow* mw, wxWindow* parent)
     , _curLayer(0)
 {
     _video = new VideoFrame(this);
+    _video->SetClearColour(RGBA(128, 128, 128));
 }
 
 MapView::~MapView()
@@ -152,6 +154,8 @@ void MapView::Render()
             // TODO: Parallax, and possibly wrapping.
             RenderLayer(&lay, _xwin - lay.x, _ywin - lay.y);
             RenderEntities(&lay, _xwin - lay.x, _ywin - lay.y);
+
+            if (i == _curLayer) _editState->OnRenderCurrentLayer();
         }
     }
 
@@ -163,9 +167,66 @@ void MapView::ShowPage()
     _video->ShowPage();
 }
 
-void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
+void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
 {
     TileSet* ts = _mainWnd->GetTileSet();
+    if (!ts->Count())
+        return;
+
+    int width  = _video->LogicalWidth();
+    int height = _video->LogicalHeight();
+
+    int tileX = ts->Width();
+    int tileY = ts->Height();
+
+    int firstX = xoffset / tileX;
+    int firstY = yoffset / tileY;
+    
+    int lenX = width  / tileX + 2;
+    int lenY = height / tileY + 2;
+
+    int adjustX = xoffset % tileX;
+    int adjustY = yoffset % tileY;
+
+    if (firstX + lenX > tiles.Width())  lenX = tiles.Width()  - firstX;
+    if (firstY + lenY > tiles.Height()) lenY = tiles.Height() - firstY;
+
+    if (firstX < 0)  
+    {
+        lenX -= -firstX;
+        adjustX += firstX * tileX;
+        firstX = 0;
+    }
+    if (firstY < 0)
+    {
+        lenY -= -firstY;
+        adjustY += firstY * tileY;
+        firstY = 0;
+    }
+
+    for (int y = 0; y < lenY; y++)
+    {
+        for (int x = 0; x < lenX; x++)
+        {
+            int t = tiles(x + firstX, y + firstY);
+
+            _video->Blit(
+                ts->GetImage(t),
+                x * tileX - adjustX, y * tileY - adjustY,
+                true);
+        }
+    }
+}
+
+void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
+{
+    // TODO: wrapping
+    xoffset = xoffset * lay->parallax.mulx / lay->parallax.divx;
+    yoffset = yoffset * lay->parallax.muly / lay->parallax.divy;
+
+    RenderLayer(lay->tiles, xoffset, yoffset);
+
+    /*TileSet* ts = _mainWnd->GetTileSet();
     if (!ts->Count())
         return;
 
@@ -211,7 +272,7 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
                 x * tileX - adjustX, y * tileY - adjustY,
                 true);
         }
-    }
+    }*/
 }
 
 void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
@@ -327,12 +388,12 @@ void MapView::IncZoom(int amt)
     _video->IncZoom(amt);
 }
 
-void MapView::ScreenToMap(int& x, int& y)
+void MapView::ScreenToMap(int& x, int& y) const
 {
     ScreenToMap(x, y, _curLayer);
 }
 
-void MapView::ScreenToMap(int& x, int& y, uint layer)
+void MapView::ScreenToMap(int& x, int& y, uint layer) const
 {
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
@@ -342,12 +403,12 @@ void MapView::ScreenToMap(int& x, int& y, uint layer)
     y = y + _ywin - lay->y;
 }
 
-void MapView::ScreenToTile(int& x, int& y)
+void MapView::ScreenToTile(int& x, int& y) const
 {
     ScreenToTile(x, y, _curLayer);
 }
 
-void MapView::ScreenToTile(int& x, int& y, uint layer)
+void MapView::ScreenToTile(int& x, int& y, uint layer) const
 {
     wxASSERT(_mainWnd->GetMap() != 0);
     wxASSERT(_mainWnd->GetTileSet() != 0);
@@ -359,12 +420,12 @@ void MapView::ScreenToTile(int& x, int& y, uint layer)
     y /= _mainWnd->GetTileSet()->Height();
 }
 
-void MapView::TileToScreen(int& x, int& y)
+void MapView::TileToScreen(int& x, int& y) const
 {
     TileToScreen(x, y, _curLayer);
 }
 
-void MapView::TileToScreen(int& x, int& y, uint layer)
+void MapView::TileToScreen(int& x, int& y, uint layer) const
 {
     wxASSERT(_mainWnd->GetMap());
     wxASSERT(_mainWnd->GetTileSet());
@@ -380,7 +441,11 @@ void MapView::SetCurLayer(uint i)
 {
     wxASSERT(i < _mainWnd->GetMap()->NumLayers());
 
+    uint old = _curLayer;
     _curLayer = i;
+
+    _editState->OnSwitchLayers(old, _curLayer);
+
 }
 
 uint MapView::EntityAt(int x, int y, uint layer)
@@ -423,20 +488,39 @@ VideoFrame* MapView::GetVideo() const
 
 void MapView::Cock()
 {
+    _editState->OnEndState();
     _editState = &_tileSetState;
+    _editState->OnBeginState();
+
+    Render();
+    ShowPage();
+}
+
+void MapView::SetCopyPasteState()
+{
+    _editState->OnEndState();
+    _editState = &_copyPasteState;
+    _editState->OnBeginState();
+
     Render();
     ShowPage();
 }
 
 void MapView::SetObstructionState()
 {
+    _editState->OnEndState();
     _editState = &_obstructionState;
+    _editState->OnBeginState();
+
     Render();
     ShowPage();
 }
 void MapView::SetEntityState()
 {
+    _editState->OnEndState();
     _editState = &_entityState;
+    _editState->OnBeginState();
+
     Render();
     ShowPage();
 }

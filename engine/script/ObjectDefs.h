@@ -257,6 +257,9 @@ namespace Script
         METHOD(Map_SetObs, PyObject);
         METHOD(Map_GetZone, PyObject);
         METHOD(Map_SetZone, PyObject);
+        METHOD(Map_GetLayerName, PyObject);
+        METHOD(Map_SetLayerName, PyObject);
+        METHOD(Map_FindLayerByName, PyObject);
         METHOD(Map_GetParallax, PyObject);
         METHOD(Map_SetParallax, PyObject);
         METHOD(Map_GetWaypoints, PyObject);

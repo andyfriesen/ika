@@ -31,11 +31,18 @@ public:
     virtual void OnMouseDown(wxMouseEvent&) = 0;
     virtual void OnMouseUp(wxMouseEvent&) = 0;
     virtual void OnMouseMove(wxMouseEvent&) = 0;
+
+    // Optional things.  Override whichever are useful.
+    virtual void OnBeginState() {}
+    virtual void OnEndState() {}
+
     virtual void OnMouseWheel(wxMouseEvent&) {}
     virtual void OnRender() {}
+    virtual void OnRenderCurrentLayer() {}
+    virtual void OnSwitchLayers(uint oldLayer, uint newLayer) {}
 
 protected:
-    // Accessors for ease and whatnot.
+    // Convenience accessors.
     MainWindow*     GetMainWindow() const;
     MapView*        GetMapView() const;
     TileSetView*    GetTileSetView() const;

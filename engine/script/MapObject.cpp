@@ -64,6 +64,23 @@ namespace Script
                 "Sets the zone id number at (x, y)."
             },*/
 
+            {   "GetLayerName", (PyCFunction)Map_GetLayerName,  METH_VARARGS,
+                "Map.GetLayerName(layerIndex) -> string\n\n"
+                "Returns the name of the layer with the given index."
+            },
+
+            {   "SetLayerName", (PyCFunction)Map_SetLayerName,  METH_VARARGS,
+                "Map.SetLayerName(layerIndex, newName)\n\n"
+                "Sets the layer's name to newName.  Subsequent GetLayerName and FindLayerByName will\n"
+                "use this as the layer's name, as if it were set in the editor."
+            },
+
+            {   "FindLayerByName", (PyCFunction)Map_FindLayerByName,    METH_VARARGS,
+                "Map.FindLayerByName(name) -> integer\n\n"
+                "Returns the index of the first layer with the given name, or None if no such layer\n"
+                "exists."
+            },
+
             {   "GetParallax",  (PyCFunction)Map_GetParallax,   METH_VARARGS,
                 "Map.GetParallax(layer) -> (int, int, int, int)\n\n"
                 "Returns a 4-tuple containing parallax settings for the layer specified.\n"
@@ -337,6 +354,59 @@ namespace Script
             Py_INCREF(Py_None);
             return Py_None;
         }*/
+
+        METHOD(Map_GetLayerName)
+        {
+            uint index;
+
+            if (!PyArg_ParseTuple(args, "i:Map.GetLayerName", &index))
+                return 0;
+
+            if (index >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("The map has no layer number %i", index));
+                return 0;
+            }
+
+            return PyString_FromString(engine->map.GetLayer(index).label.c_str());
+        }
+
+        METHOD(Map_SetLayerName)
+        {
+            uint index;
+            char* newName;
+
+            if (!PyArg_ParseTuple(args, "is:Map.SetLayerName", &index, &newName))
+                return 0;
+
+            if (index >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("The map has no layer number %i", index));
+                return 0;
+            }
+
+            engine->map.GetLayer(index).label = newName;
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Map_FindLayerByName)
+        {
+            char* name;
+
+            if (!PyArg_ParseTuple(args, "s:Map.FindLayerByName", &name))
+                return 0;
+
+            for (uint i = 0; i < engine->map.NumLayers(); i++)
+            {
+                if (engine->map.GetLayer(i).label == name)
+                    return PyInt_FromLong(i);
+            }
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
 
         METHOD(Map_GetParallax)
         {

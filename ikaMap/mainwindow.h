@@ -91,6 +91,7 @@ public:
 
     void OnToggleLayer(wxCommandEvent& event);
     void OnSetTilePaintState(wxCommandEvent&);
+    void OnSetCopyPasteState(wxCommandEvent&);
     void OnSetObstructionState(wxCommandEvent&);
     void OnSetEntityState(wxCommandEvent&);
 

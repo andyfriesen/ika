@@ -7,6 +7,7 @@
 #include "map.h"
 #include "editstate.h"
 #include "settilestate.h"
+#include "copypastestate.h"
 #include "obstructionstate.h"
 #include "entitystate.h"
 
@@ -38,6 +39,7 @@ private:
 
     // Instances of the various edit states.  We only ever create one of each.
     TileSetState _tileSetState;
+    CopyPasteState _copyPasteState;
     ObstructionState _obstructionState;
     EntityState _entityState;
     //-
@@ -59,6 +61,7 @@ public:
     void Render();
     void ShowPage();
 
+    void RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset);
     void RenderLayer(Map::Layer* lay, int xoffset, int yoffset);
     void RenderEntities(Map::Layer* lay, int xoffset, int yoffset);
     void RenderObstructions(Map::Layer* lay, int xoffset, int yoffset);
@@ -69,14 +72,14 @@ public:
     void SetZoom(uint z);
     void IncZoom(int amt);
 
-    void ScreenToMap(int& x, int& y);
-    void ScreenToMap(int& x, int& y, uint layer);
+    void ScreenToMap(int& x, int& y) const;
+    void ScreenToMap(int& x, int& y, uint layer) const;
 
-    void ScreenToTile(int& x, int& y);
-    void ScreenToTile(int& x, int& y, uint layer);
+    void ScreenToTile(int& x, int& y) const;
+    void ScreenToTile(int& x, int& y, uint layer) const;
 
-    void TileToScreen(int& x, int& y);
-    void TileToScreen(int& x, int& y, uint layer);
+    void TileToScreen(int& x, int& y) const;
+    void TileToScreen(int& x, int& y, uint layer) const;
 
     uint GetCurLayer() const { return _curLayer; }
     void SetCurLayer(uint i);
@@ -106,6 +109,7 @@ public:
     andys evil clone: hah.
     */
     void Cock();    // Sets the default tile-setting state.  Thanks aegis!
+    void SetCopyPasteState();
     void SetObstructionState();
     void SetEntityState();
 

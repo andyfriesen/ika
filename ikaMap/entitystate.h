@@ -19,7 +19,7 @@ public:
     virtual void OnMouseMove(wxMouseEvent& event);
     virtual void OnMouseWheel(wxMouseEvent& event);
 
-    virtual void OnRender();
+    virtual void OnRenderCurrentLayer();
 };
 
 #endif

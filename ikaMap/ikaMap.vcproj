@@ -111,6 +111,9 @@
 				RelativePath="command.cpp">
 			</File>
 			<File
+				RelativePath="copypastestate.cpp">
+			</File>
+			<File
 				RelativePath="editstate.cpp">
 			</File>
 			<File
@@ -173,6 +176,9 @@
 			</File>
 			<File
 				RelativePath="controller.h">
+			</File>
+			<File
+				RelativePath="copypastestate.h">
 			</File>
 			<File
 				RelativePath="editstate.h">
@@ -255,6 +261,9 @@
 			</File>
 			<File
 				RelativePath="fill.ico">
+			</File>
+			<File
+				RelativePath="ikamap.ico">
 			</File>
 			<File
 				RelativePath="ikamap.rc">

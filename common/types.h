@@ -131,27 +131,6 @@ union RGBA
     operator u32() { return i; }
 };
 
-union BGRA
-{
-    struct
-    {
-        u8 b, g, r, a;
-    };
-
-    uint i;
-
-    BGRA()
-        : i(0)
-    {}
-
-    BGRA(RGBA c)
-        : b(c.b)
-        , g(c.g)
-        , r(c.r)
-        , a(c.a)
-    {}
-};
-
 #pragma pack (pop)
 
 // Modern C++ design is so neat.

@@ -25,7 +25,7 @@
 #define VERTICAL_FUN
 
 //
-const float MainWindow::_version = 0.1f;
+const float MainWindow::_version = 0.11f;
 //
 
 namespace
@@ -60,7 +60,7 @@ namespace
         id_cursorright,
 
         id_tilepaint,
-        id_selecttiles,
+        id_copypaste,
         id_obstructionedit,
         id_zoneedit,
         id_waypointedit,
@@ -110,6 +110,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_cursorright, MainWindow::OnCursorRight)
 
     EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
+    EVT_BUTTON(id_copypaste, MainWindow::OnSetCopyPasteState)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
     EVT_BUTTON(id_entityedit, MainWindow::OnSetEntityState)
 
@@ -138,6 +139,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _map(0)
     , _tileSet(0)
 {
+    SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
+
     _sideBar = new wxSashLayoutWindow(this, id_sidebar);
     _sideBar->SetAlignment(wxLAYOUT_LEFT);
     _sideBar->SetOrientation(wxLAYOUT_VERTICAL);
@@ -156,7 +159,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     } toolButtons[] = 
     {
         {   "brushicon",        id_tilepaint,       "Place individual tiles on the map."                            },
-        {   "selecticon",       id_selecttiles,     "Select a group of tiles, and duplicate them elsewhere."        },
+        {   "selecticon",       id_copypaste,       "Select a group of tiles, and duplicate them elsewhere."        },
         {   "obstructionicon",  id_obstructionedit, "Edit obstructed areas."                                        },
         {   "zoneicon",         id_zoneedit,        "Edit zones."                                                   },
         {   "waypointicon",     id_waypointedit,    "Edit waypoints."                                               },
@@ -656,6 +659,11 @@ void MainWindow::OnToggleLayer(wxCommandEvent& event)
 void MainWindow::OnSetTilePaintState(wxCommandEvent&)
 {
     _mapView->Cock();
+}
+
+void MainWindow::OnSetCopyPasteState(wxCommandEvent&)
+{
+    _mapView->SetCopyPasteState();
 }
 
 void MainWindow::OnSetObstructionState(wxCommandEvent&)

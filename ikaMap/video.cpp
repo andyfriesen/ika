@@ -1,6 +1,5 @@
 
 #include "video.h"
-#include "log.h"
 
 static const int nZoomscale = 16;
 
@@ -70,7 +69,6 @@ void VideoFrame::OnSize(wxSizeEvent& event)
     glMatrixMode(GL_PROJECTION);
     glLoadIdentity();
     glOrtho(0.0f, w, h, 0.0f, -1.0f, 1.0f);
-    Log::Write("%i, %i\tglerror - %i", w, h, glGetError());
     glViewport(0, 0, w, h);
 
     glScissor(0, 0, w, h);
@@ -174,7 +172,12 @@ void VideoFrame::ScaleBlit(Image& src, int x, int y, int w, int h, bool trans)
 void VideoFrame::Clear()
 {
     glClear(GL_COLOR_BUFFER_BIT);
-    int i = glGetError();
+}
+
+void VideoFrame::SetClearColour(RGBA colour)
+{
+    SetCurrent();
+    glClearColor(colour.r / 255.0, colour.g / 255.0, colour.b / 255.0, colour.a / 255.0);
 }
 
 void VideoFrame::ShowPage()
