@@ -281,6 +281,7 @@ END_EVENT_TABLE()
 BEGIN_EVENT_TABLE(CProjectWnd,wxMDIChildFrame)
     EVT_CLOSE(CProjectWnd::OnClose)
     EVT_MENU(CProjectWnd::id_filesave,CProjectWnd::OnSave)
+    EVT_MENU(CProjectWnd::id_filesaveas,CProjectWnd::OnSaveAs)
 END_EVENT_TABLE()
 
 CProjectWnd::CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& position,const wxSize& size,const long style,const char* fname)
@@ -289,7 +290,11 @@ CProjectWnd::CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& p
     pTreectrl=new CProjectTree(parent,this,CProjectTree::id_treectrl,wxDefaultPosition,wxDefaultSize,wxTR_EDIT_LABELS | wxTR_HAS_BUTTONS);
 
     if (fname)
+    {
         Load(fname);
+        sFilename=fname;
+    }
+
     else
     {
         wxTreeItemId root=pTreectrl->AddRoot("Project",-1,-1,new CLeaf("Project",t_folder));
@@ -317,6 +322,7 @@ CProjectWnd::CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& p
     wxMenuBar* menu=parent->CreateBasicMenu();
     wxMenu* filemenu=menu->Remove(0);
     filemenu->Insert(2,new wxMenuItem(filemenu,id_filesave,"&Save Project","Save the project."));
+    filemenu->Insert(3,new wxMenuItem(filemenu,id_filesaveas,"Save Project &As...","Save the project with a new name."));
     menu->Append(filemenu,"&File");
     SetMenuBar(menu);
 
@@ -331,9 +337,20 @@ CProjectWnd::~CProjectWnd()
 
 void CProjectWnd::OnSave(wxCommandEvent& event)
 {
-    if (!sFilename.length())
+    if (sFilename.length()==0)
     {
-        wxFileDialog dlg(
+        OnSaveAs(event);
+        return;
+    }
+
+    Save(sFilename.c_str());
+    SetTitle(sFilename.c_str());
+}
+
+void CProjectWnd::OnSaveAs(wxCommandEvent& event)
+{
+    wxFileDialog dlg
+    (
         this,
         "Save Project",
         "",
@@ -341,22 +358,16 @@ void CProjectWnd::OnSave(wxCommandEvent& event)
         "Project files (*.ikaprj)|*.ikaprj|"
         "All files (*.*)|*.*",
         wxSAVE
-        );
+    );
 
-        int result=dlg.ShowModal();
-        if (result!=wxID_CANCEL)
-        {
-            sFilename=dlg.GetPath().c_str();
-            Save(sFilename.c_str());
-        }
-    }
-
-    else
+    int result=dlg.ShowModal();
+    if (result!=wxID_CANCEL)
     {
+        sFilename=dlg.GetPath().c_str();
         Save(sFilename.c_str());
+        SetTitle(sFilename.c_str());
     }
-
-    SetTitle(sFilename.c_str());
+    
 }
 
 void CProjectWnd::Load(const char* fname)

@@ -26,6 +26,7 @@ public:
         id_filler=100,
 
         id_filesave,
+        id_filesaveas
     };
 
     CProjectWnd(CMainWnd* parent,const wxString& title,const wxPoint& position,const wxSize& size,const long style,const char* fname=0);
@@ -33,6 +34,7 @@ public:
 
     // events
     void OnSave(wxCommandEvent& event);
+    void OnSaveAs(wxCommandEvent& event);
     void OnClose(wxCommandEvent& event);
 
     // bleh
