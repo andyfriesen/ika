@@ -1,3 +1,15 @@
+/*
+    OpenGL stuff isn't as fast as I had hoped it'd be.
+
+    Since all the OpenGL stuff is windowed, we can take advantage of the fact
+    that all page flipping is done via block copying, and thus we can safely
+    assume that the framebuffer is not erased when "flipping", by implementing
+    dirty rectangle based rendering.
+    
+    Winmaped used this technique to fantastic effect; it was still immediately
+    responsive when maximized at 1600x1200x32 when setting tiles on a map, and
+    that was done with software rendering.
+*/
 
 #ifndef MAPVIEW_H
 #define MAPVIEW_H
@@ -6,8 +18,6 @@
 #include <map>
 #include <wx\wx.h>
 #include "docview.h"
-
-using std::map;
 
 class Map;
 
@@ -87,7 +97,7 @@ private:
     // old mouse coords
     int oldx,oldy;
     CursorMode          csrmode;
-    map<int,int> nLayertoggle;
+    std::map<int,int> nLayertoggle;
 
     void ScreenToMap(int& x,int& y);
     void HandleLayerEdit(wxMouseEvent& event);

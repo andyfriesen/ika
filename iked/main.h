@@ -6,14 +6,14 @@
 #include <wx/wx.h>
 #include <wx/toolbar.h>
 #include <wx/bitmap.h>
+#include <set>
 
 // Resource objects
-#include "docview.h"
 #include "map.h"
 #include "tileset.h"
-#include "graph.h"
-
 #include "controller.h"
+
+class IDocView;
 
 //////////////////////////////////////////
 

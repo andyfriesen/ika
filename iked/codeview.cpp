@@ -176,11 +176,6 @@ CCodeView::CCodeView(CMainWnd* parent,
     pTextctrl->SetFocus();
 }
 
-CCodeView::~CCodeView()
-{
-    delete pTextctrl;
-}
-
 void CCodeView::SetSyntax(int nWhich, wxCommandEvent& event)
 {
     // set script font/color/style

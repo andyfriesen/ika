@@ -2,7 +2,7 @@
 #include "blits.h"
 #include "log.h"
 
-#define USE_ASM
+//#define USE_ASM
 
 void SetBlitAsNull(handle img)
 {

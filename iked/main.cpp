@@ -4,7 +4,9 @@
 #include "log.h"
 
 // Document windows
+#include "docview.h"
 #include "mapview.h"
+#include "tilesetview.h"
 #include "projectview.h"
 #include "codeview.h"
 #include "configdlg.h"
@@ -180,6 +182,7 @@ void CMainWnd::Open(const std::string& fname)
     case t_project:     pWnd=new CProjectView(this,fname);      break;
     case t_script:      pWnd=new CCodeView(this,fname);         break;
     case t_map:         pWnd=new CMapView(this,fname.c_str());  break;
+    case t_vsp:         pWnd=new CTileSetView(this,fname.c_str());  break;
 
     case t_config:
         {

@@ -43,8 +43,8 @@ class CController
 
 public:
 
-    Resource* Load(const string& name)
-    {
+    T* Load(const string& name)
+    {        
         Resource* pRsrc=resources[name];
 
         if (pRsrc)

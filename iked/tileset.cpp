@@ -66,7 +66,8 @@ bool CTileSet::Load(const char* fname)
 
 bool CTileSet::Save(const char* fname)
 {
-    return false;
+    pVsp->Save(fname);
+    return true;
 }
 
 void CTileSet::DrawTile(int x,int y,int tileidx,CGraphFrame& dest)

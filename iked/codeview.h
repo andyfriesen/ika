@@ -42,7 +42,6 @@ public:
     };
 
     CCodeView(CMainWnd* parent,const string& name);
-    ~CCodeView();
 
     void OnStyleNeeded(wxStyledTextEvent& event);
     void OnCharAdded(wxStyledTextEvent& event);

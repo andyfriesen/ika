@@ -196,7 +196,6 @@ void CMapView::OnSize(wxSizeEvent& event)
     int w,h;
     pRightbar->GetClientSize(&w,&h);
 
-    pRightbar->SetScrollbar(wxVERTICAL,xwin,w,pMap->Height()*pTileset->Height());
     pRightbar->SetScrollbar(wxHORIZONTAL,ywin,h,pMap->Width()*pTileset->Width());  
 }
 
