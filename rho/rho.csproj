@@ -380,7 +380,7 @@
                 />
                 <File
                     RelPath = "SpriteEditor\SpriteEditor.cs"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

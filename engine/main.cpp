@@ -409,17 +409,17 @@ void Engine::RenderLayer(uint layerIndex) {
     video->SetTint(layer->tintColour);
     video->SetBlendMode(Video::Normal);
 
-    for (int y = 0; y < lenY; y++) {
-        for (int x = 0; x < lenX; x++) {
-            video->BlitImage(tiles->GetTile(*t), curx, cury);
+	for (int y = 0; y < lenY; y++) {
+		for (int x = 0; x < lenX; x++) {
+			video->BlitImage(tiles->GetTile(*t), curx, cury);
 
-            curx += tiles->Width();
-            t++;
-        }
-        cury += tiles->Height();
-        curx = -adjustX;
-        t += xinc;
-    }
+			curx += tiles->Width();
+			t++;
+		}
+		cury += tiles->Height();
+		curx = -adjustX;
+		t += xinc;
+	}
 
     video->SetTint(oldTint);
 }
