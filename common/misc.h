@@ -36,7 +36,7 @@ inline T& max(T a, T b)
 template <typename T>
 inline T clamp(T val, T lower, T upper)
 {
-    return max(min(lower, val), upper);
+    return min(max(lower, val), upper);
 }
 
 bool IsPowerOf2(int i);

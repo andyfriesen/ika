@@ -48,6 +48,8 @@ public:
         // event thingies.  Python objects go here.
         void* onPress;
         void* onUnpress;
+
+        operator bool() { return Position() != 0; }
     };
 
 private:

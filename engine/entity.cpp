@@ -364,26 +364,26 @@ Direction CEntity::GetMoveScriptCommand()
 
 Direction CEntity::HandlePlayer()
 {
-/*    engine.TestActivate(*this);
+    engine.TestActivate(*this);
     
     Input& input=engine.input;
     //input.Update();
 
-    if (input.up)
+    if (input.Up())
     {
-        if (input.left)		return face_upleft;
-        if (input.right)	return face_upright;
+        if (input.Left())	return face_upleft;
+        if (input.Right())	return face_upright;
         return face_up;
     }
-    if (input.down)
+    if (input.Down())
     {
-        if (input.left)		return face_downleft;
-        if (input.right)	return face_downright;
+        if (input.Left())	return face_downleft;
+        if (input.Right())	return face_downright;
         return face_down;
     }
-    if (input.left) return face_left;					// by this point, the diagonal possibilities are already taken care of
-    if (input.right)return face_right;
-*/
+    if (input.Left())       return face_left;					// by this point, the diagonal possibilities are already taken care of
+    if (input.Right())      return face_right;
+
     return face_nothing;
 }
 

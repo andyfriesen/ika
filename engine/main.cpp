@@ -54,13 +54,14 @@ void CEngine::CheckMessages()
         switch (event.type)
         {
         case SDL_KEYDOWN:
-        case SDL_KEYUP:
             input.KeyDown(event.key.keysym.sym);
-
             // bottom line screenshot if F11 is pressed
 //            if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
 //                ScreenShot();
+            break;
 
+        case SDL_KEYUP:
+            input.KeyUp(event.key.keysym.sym);
             break;
            
         case SDL_QUIT:
