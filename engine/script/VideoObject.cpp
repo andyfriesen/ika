@@ -57,15 +57,17 @@ namespace Script
             },
 
             {   "DrawEllipse",  (PyCFunction)Video_DrawEllipse, METH_VARARGS,
-                "Video.DrawEllipse(cx, cy, rx, ry, colour[, filled])
+                "Video.DrawEllipse(cx, cy, rx, ry, colour[, filled])"
                 "Draws an ellipse, centred at (cx, cy), of radius rx and ry on the X and\n"
                 "Y axis, respectively.  If filled is omitted or nonzero, the ellipse is filled in\n"
                 "else it is drawn as an outline."
             },
             
-            {   "DrawTriangle", (PyCFunction)Video_DrawTriangle,1   },
+            {   "DrawTriangle", (PyCFunction)Video_DrawTriangle,METH_VARARGS,
                 "Video.DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))\n"
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
+            },
+
             {   0   }
         };
 
