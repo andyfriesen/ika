@@ -95,14 +95,14 @@
                     HintPath = "..\..\..\..\src\scintilla\ScintillaNET\Release\ScintillaNET.dll"
                 />
                 <Reference
-                    Name = "WeifenLuo.WinFormsUI"
-                    AssemblyName = "WeifenLuo.WinFormsUI"
-                    HintPath = "..\..\..\..\src\DockManager\WinFormsUI\bin\Release\WeifenLuo.WinFormsUI.dll"
-                />
-                <Reference
                     Name = "ICSharpCode.SharpZipLib"
                     AssemblyName = "ICSharpCode.SharpZipLib"
                     HintPath = "..\..\..\..\src\ICSharpCode.SharpZipLib.dll"
+                />
+                <Reference
+                    Name = "WeifenLuo.WinFormsUI"
+                    AssemblyName = "WeifenLuo.WinFormsUI"
+                    HintPath = "..\..\..\..\src\DockPanel\WeifenLuo.WinFormsUI.dll"
                 />
             </References>
         </Build>
@@ -235,6 +235,16 @@
                 <File
                     RelPath = "Import\vergepal.cs"
                     SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\FrameEventArgs.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "SpriteEditor\FramePanel.cs"
+                    SubType = "Component"
                     BuildAction = "Compile"
                 />
                 <File

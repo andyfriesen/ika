@@ -34,7 +34,7 @@ namespace rho {
         static readonly string fileFilter = CreateFilter(knownExtensions);
 
         //public TileSetController tilesets=new TileSetController();
-        DockManager dockManager;
+        readonly DockPanel dockManager = new DockPanel();
 
         #region Stupid convenience functions that make me REALLY wish Python was faster and ran on .NET better
         static string CreateFilter(FileType[] types) {
@@ -76,16 +76,15 @@ namespace rho {
         public MainForm() {
             Text = "rho alpha 1";
 		
-            dockManager = new DockManager();
             dockManager.Parent = this;
             dockManager.Dock = DockStyle.Fill;
 
             MenuItem file = 
                 menu("&File",
-                menu("&New",
-                menu("&Script", new EventHandler(NewScript))
+                    menu("&New",
+                        menu("&Script", new EventHandler(NewScript))
                 ),
-                menu("&Open", new EventHandler(OpenFile)),
+                menu("&Open", new EventHandler(OpenFile), Shortcut.CtrlO),
                 separator(),
                 menu("E&xit", new EventHandler(Exit))
                 );
@@ -99,15 +98,15 @@ namespace rho {
             window.MergeOrder=3;
 		
             Menu=new MainMenu(new MenuItem[] {
-                                                 file,
-                                                 window,                              
-            }
-                );
+                    file,
+                    window,                              
+                }
+            );
         }
 
         void CreateDocumentWindow(string filename) {
             string extension=Path.GetExtension(filename).ToLower();
-            Content doc;
+            DockContent doc;
 
             switch (extension) {
                 case ".py":  

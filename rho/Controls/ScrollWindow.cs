@@ -1,7 +1,7 @@
 /*
  * I wanted a simple control with a pair of scrollbars on it.  It seems that winforms lacks such a simple
  * facility. :x
- * 
+ *
  * So I had to write my own.  Joy.  This is kinda gay in that it goes right to the core;
  * it directly tweaks the control through raw win32.
  */
@@ -11,14 +11,11 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Runtime.InteropServices;
 
-namespace rho.Controls
-{
+namespace rho.Controls {
 
-    public class ScrollWindow : Control
-    {
+    public class ScrollWindow : Control {
         [Flags]
-        enum SetScrollFlags
-        {
+        enum SetScrollFlags {
             Range           = 0x0001,
             Page            = 0x0002,
             Pos             = 0x0004,
@@ -28,8 +25,7 @@ namespace rho.Controls
         }
 
         [StructLayout(LayoutKind.Sequential)]
-        class ScrollInfo
-        {
+        class ScrollInfo {
             public uint size;
             public SetScrollFlags flags;
             public int min;
@@ -37,17 +33,18 @@ namespace rho.Controls
             public uint page;
             public int pos;
             public int trackpos;
-            
-            public ScrollInfo()
-            {
+
+            public ScrollInfo() {
                 size = page = 0;
                 min = max = pos = trackpos = 0;
                 flags = 0;
             }
         }
 
-        [DllImport("user32")]  static extern int GetScrollInfo(IntPtr hwnd, int bar, [MarshalAs(UnmanagedType.LPStruct)]ScrollInfo si);
-        [DllImport("user32")]  static extern int SetScrollInfo(IntPtr hwnd, int bar, [MarshalAs(UnmanagedType.LPStruct)]ScrollInfo si, bool redraw);
+        [DllImport("user32")]
+        static extern int GetScrollInfo(IntPtr hwnd, int bar, [MarshalAs(UnmanagedType.LPStruct)] ScrollInfo si);
+        [DllImport("user32")]
+        static extern int SetScrollInfo(IntPtr hwnd, int bar, [MarshalAs(UnmanagedType.LPStruct)] ScrollInfo si, bool redraw);
 
         // win32 constants.
         const int WS_VSCROLL      =0x00200000;
@@ -76,75 +73,84 @@ namespace rho.Controls
         Size scrollsize;
         Size pagesize;
 
-        public ScrollWindow() : base()
-        {
+        public ScrollWindow() : base() {
             ScrollSize = new Size(100, 100); // default size to init the scrollsize member
             PageSize = new Size(10, 10);
         }
 
-        protected override CreateParams CreateParams
-        {
-            get
-            {
+        protected override CreateParams CreateParams {
+            get {
                 CreateParams cp = base.CreateParams;
                 cp.Style |= WS_HSCROLL | WS_VSCROLL;
                 return cp;
             }
         }
 
-        protected override void WndProc(ref Message msg)
-        {
-            
+        protected override void WndProc(ref Message msg) {
             // Intercept and override the scroll messages.
-            if (msg.Msg==WM_VSCROLL)
-            {
-                int position=(msg.WParam.ToInt32()>>16);
+            if (msg.Msg == WM_VSCROLL) {
+                int position = (msg.WParam.ToInt32() >> 16);
                 ScrollEventArgs sea=new ScrollEventArgs(GetEventType(msg.WParam), position);
-			
-                DoVScroll(ref position, sea);			
-                sea.NewValue=position;
-			
+
+                DoVScroll(ref position, sea);
+                sea.NewValue = position;
+
                 OnVScroll(this, sea);
                 return;
             }
-            else if (msg.Msg==WM_HSCROLL)
-            {
-                int position=(msg.WParam.ToInt32()>>16);
-                ScrollEventArgs sea=new ScrollEventArgs(GetEventType(msg.WParam), position);
-			
+            else if (msg.Msg == WM_HSCROLL) {
+                int position = (msg.WParam.ToInt32() >> 16);
+                ScrollEventArgs sea = new ScrollEventArgs(GetEventType(msg.WParam), position);
+
                 DoHScroll(ref position, sea);
-                sea.NewValue=position;
-			
+                sea.NewValue = position;
+
                 OnHScroll(this, new ScrollEventArgs(GetEventType(msg.WParam), position));
                 return;
             }
-		
+
             // process all other messages as if nothing had happened
             base.WndProc(ref msg);
         }
-	
+
         // most basic action; update the scrollbar position
-        void DoScroll(ScrollEventArgs e, ref int curpos, int largeincsize, int max)
-        {
-            switch (e.Type)
-            {
-                case ScrollEventType.EndScroll:	return;
-			
+        void DoScroll(ScrollEventArgs e, ref int curpos, int largeincsize, int max) {
+            switch (e.Type) {
+                case ScrollEventType.EndScroll:
+                    break;
+
                 case ScrollEventType.ThumbPosition:
                     goto case ScrollEventType.ThumbTrack;
-			
-                case ScrollEventType.ThumbTrack:		curpos=e.NewValue;		break;
-                case ScrollEventType.SmallDecrement:	curpos--;				break;			
-                case ScrollEventType.SmallIncrement:	curpos++;				break;
-                case ScrollEventType.LargeDecrement:	curpos-=largeincsize;	break;
-                case ScrollEventType.LargeIncrement:	curpos+=largeincsize;	break;
-                case ScrollEventType.First:				curpos=0;				break;
-                case ScrollEventType.Last:				curpos=max-largeincsize;break;
+
+                case ScrollEventType.ThumbTrack:
+                    curpos = e.NewValue;
+                    break;
+                case ScrollEventType.SmallDecrement:
+                    curpos--;
+                    break;
+                case ScrollEventType.SmallIncrement:
+                    curpos++;
+                    break;
+                case ScrollEventType.LargeDecrement:
+                    curpos -= largeincsize;
+                    break;
+                case ScrollEventType.LargeIncrement:
+                    curpos += largeincsize;
+                    break;
+                case ScrollEventType.First:
+                    curpos = 0;
+                    break;
+                case ScrollEventType.Last:
+                    curpos = max - largeincsize;
+                    break;
+
+                default:
+                    System.Diagnostics.Debug.Assert(false, string.Format("Unknown scroll event type {0}", e.Type));
+                    break;
             }
         }
-	
-        void DoHScroll(ref int x, ScrollEventArgs e)
-        {
+
+        void DoHScroll(ref int x, ScrollEventArgs e) {
             GetScrollInfo(Handle, SB_HORIZ, si);
 
             DoScroll(e, ref si.pos, ClientSize.Width, si.max);
@@ -152,9 +158,8 @@ namespace rho.Controls
             si.flags = SetScrollFlags.Pos;
             SetScrollInfo(Handle, SB_HORIZ, si, true);
         }
-	
-        void DoVScroll(ref int y, ScrollEventArgs e)
-        {
+
+        void DoVScroll(ref int y, ScrollEventArgs e) {
             GetScrollInfo(Handle, SB_VERT, si);
 
             DoScroll(e, ref si.pos, ClientSize.Height, si.max);
@@ -163,11 +168,9 @@ namespace rho.Controls
             SetScrollInfo(Handle, SB_VERT, si, true);
         }
 
-        public Size ScrollSize
-        {
+        public Size ScrollSize {
             get {   return scrollsize;  }
-            set
-            {
+            set {
                 scrollsize = value;
                 si.flags = SetScrollFlags.Range;
 
@@ -179,11 +182,9 @@ namespace rho.Controls
             }
         }
 
-        public Size PageSize
-        {
+        public Size PageSize {
             get {   return pagesize;    }
-            set
-            {
+            set {
                 pagesize = value;
                 si.flags = SetScrollFlags.Page;
 
@@ -194,12 +195,11 @@ namespace rho.Controls
                 SetScrollInfo(Handle, SB_VERT, si, true);
             }
         }
-	
+
         public event ScrollEventHandler OnHScroll;
         public event ScrollEventHandler OnVScroll;
-	
-        public void ScrollTo(int x, int y)
-        {
+
+        public void ScrollTo(int x, int y) {
             si.flags = SetScrollFlags.Pos;
             si.pos = x;
             SetScrollInfo(Handle, SB_HORIZ, si, true);
@@ -207,13 +207,11 @@ namespace rho.Controls
             si.pos = y;
             SetScrollInfo(Handle, SB_VERT, si, true);
         }
-	
-        static ScrollEventType GetEventType(IntPtr wparam)
-        {
+
+        static ScrollEventType GetEventType(IntPtr wparam) {
             int i=wparam.ToInt32()&0xFFFF;
-		
-            switch (i)
-            {
+
+            switch (i) {
                 case SB_BOTTOM:			return ScrollEventType.Last;
                 case SB_ENDSCROLL: 		return ScrollEventType.EndScroll;
                 case SB_LINEDOWN: 		return ScrollEventType.SmallIncrement;
