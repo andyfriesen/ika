@@ -58,8 +58,12 @@ private:
     Control* _cancel;
 
 protected:
-    std::map<std::string, Control*> _controls;  // nonkeyboard stuff is accessed by name.
-    std::map<int, KeyControl*> _keys;           // keyboard things go here.  They can be handled efficiently if we can get them efficiently through their keysym.
+    std::map<std::string, Control*> _controls;  // Name : control pairs.
+    
+    // keyboard things go here.  They can be handled efficiently if we can get them efficiently through their keysym.
+    // Something to point out is that this is considered strictly aggregate.  _controls holds *all* input controls.
+    // This essentially boils down to a speed hack. (it also simplifies the KeyUp and KeyDown methods considerably.
+    std::map<int, KeyControl*> _keys;
 
 public: 
     Input();
@@ -80,6 +84,10 @@ public:
 
     void* GetNextControlEvent();    // returns 0 if the event queue is empty
     void  ClearEventQueue();
+
+    typedef std::map<std::string, Control*>::iterator iterator;
+    iterator begin() { return _controls.begin(); }
+    iterator end()   { return _controls.end();   }
 };
 
 #endif

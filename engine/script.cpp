@@ -78,6 +78,13 @@ void CScriptEngine::Shutdown()
     for (i=engine->pHooktimer.begin(); i!=engine->pHooktimer.end(); i++)
         Py_XDECREF((PyObject*)*i);
     engine->pHooktimer.Clear();
+
+    // Clear key bindings
+    for (::Input::iterator i = engine->input.begin(); i != engine->input.end(); i++)
+    {
+        Py_XDECREF((PyObject*)i->second->onPress);
+        Py_XDECREF((PyObject*)i->second->onUnpress);
+    }
     
     Py_XDECREF(entitydict);
     Py_XDECREF(cameratarget);

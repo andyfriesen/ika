@@ -18,20 +18,52 @@ namespace Script
 #define GET(x) PyObject* get ## x(ControlObject* self)
 #define SET(x) PyObject* set ## x(ControlObject* self, PyObject* value)
 
-        GET(OnPress)    {   return self->control->OnPress;  }
-        GET(OnUnpress)  {   return self->control->OnUnpress; }
+        GET(OnPress)
+        {
+            PyObject* o;
+            if (self->control->onPress)
+                o = (PyObject*)self->control->onPress;
+            else
+                o = Py_None;
+        
+            Py_INCREF(o);
+            return o;
+        }
+
+        GET(OnUnpress)
+        {
+            PyObject* o;
+            if (self->control->onUnpress)
+                o = (PyObject*)self->control->onUnpress;
+            else
+                o = Py_None;
+        
+            Py_INCREF(o);
+            return o;
+        }
+
         SET(OnPress)
         {
-            Py_XDECREF(self->control->OnPress);
-            Py_INCREF(value);
-            self->control->OnPress = value;
+            Py_XDECREF((PyObject*)self->control->onPress);
+            if (value != Py_None)
+            {
+                Py_INCREF(value);
+                self->control->onPress = value;
+            }
+            else
+                self->control->onPress = 0;
             return 0;
         }
         SET(OnUnpress)
         {
-            Py_XDECREF(self->control->OnUnpress);
-            Py_INCREF(value);
-            self->control->OnUnpress = value;
+            Py_XDECREF((PyObject*)self->control->onUnpress);
+            if (value != Py_None)
+            {
+                Py_INCREF(value);
+                self->control->onUnpress = value;
+            }
+            else
+                self->control->onUnpress = 0;
             return 0;
         }
 #undef GET
