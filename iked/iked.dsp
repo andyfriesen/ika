@@ -204,11 +204,19 @@ SOURCE=.\mapview.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\movescripteditor.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\projectview.cpp
 # End Source File
 # Begin Source File
 
 SOURCE=.\spriteset.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=.\spritesetview.cpp
 # End Source File
 # Begin Source File
 
@@ -280,11 +288,19 @@ SOURCE=.\mapview.h
 # End Source File
 # Begin Source File
 
+SOURCE=.\movescripteditor.h
+# End Source File
+# Begin Source File
+
 SOURCE=.\projectview.h
 # End Source File
 # Begin Source File
 
 SOURCE=.\spriteset.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\spritesetview.h
 # End Source File
 # Begin Source File
 

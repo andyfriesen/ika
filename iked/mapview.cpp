@@ -511,6 +511,7 @@ void CMapView::Render()
         RenderInfoLayer(lay_obstruction);
     if (nLayertoggle[lay_zone])
         RenderInfoLayer(lay_zone);
+
 }
 
 typedef std::pair<SMapEntity*,CSpriteSet*> EntSpritePair;

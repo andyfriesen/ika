@@ -12,6 +12,7 @@
 #include "configdlg.h"
 #include "textview.h"
 #include "imageview.h"
+#include "spritesetview.h"
 
 #include <wx\resource.h>
 #include "controller.h"
@@ -205,6 +206,7 @@ void CMainWnd::Open(const std::string& fname)
     case t_unknown:
     case t_text:
     case t_dat:         pWnd=new CTextView(this,fname.c_str()); break;
+    case t_chr:         pWnd=new CSpriteSetView(this,fname.c_str()); break;
 
     case t_config:
         {
