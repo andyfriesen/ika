@@ -20,6 +20,7 @@ def Alert(msg):
 
 include('.', '..')
 if sys.platform == 'win32':
+    # Win32 specific configuration
     include('../3rdparty/include')
     libs('mingw32', 'opengl32', 'SDLmain')
     libpath('../3rdparty/lib')
@@ -29,7 +30,9 @@ if sys.platform == 'win32':
     elif 'mingw' in env['TOOLS']:
         env.Append(LINKFLAGS = ' -mwindows')
 else:
-    libs('GL', 'GLU')
+    # *nix specific configuration
+    libpath('/usr/X11R6/lib')
+    libs('GL', 'GLU', 'util')
 
 libs(Split('''
     SDL
@@ -37,9 +40,6 @@ libs(Split('''
     corona
     z
 '''))
-
-if sys.platform != 'win32': # ???
-    libs('util')
 
 # SDL linking info
 env.ParseConfig('sdl-config --cflags')
