@@ -19,7 +19,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../common,../3rdparty/include,$(WXWIN)/include,$(WXWIN)/contrib/include"
+				AdditionalIncludeDirectories="../common,../3rdparty/include,../3rdparty/include/python,$(WXWIN)/include,$(WXWIN)/contrib/include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_WINDOWS"
 				MinimalRebuild="TRUE"
 				BasicRuntimeChecks="3"
@@ -66,7 +66,7 @@
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				OmitFramePointers="TRUE"
-				AdditionalIncludeDirectories="../common,../3rdparty/include,$(WXWIN)/include,$(WXWIN)/contrib/include"
+				AdditionalIncludeDirectories="../common,../3rdparty/include,../3rdparty/include/python,$(WXWIN)/include,$(WXWIN)/contrib/include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS"
 				StringPooling="TRUE"
 				RuntimeLibrary="2"
@@ -153,6 +153,18 @@
 				RelativePath="resource.cpp">
 			</File>
 			<File
+				RelativePath="script.cpp">
+			</File>
+			<File
+				RelativePath="scriptdlg.cpp">
+			</File>
+			<File
+				RelativePath="scriptengine.cpp">
+			</File>
+			<File
+				RelativePath="scriptstate.cpp">
+			</File>
+			<File
 				RelativePath="settilestate.cpp">
 			</File>
 			<File
@@ -221,6 +233,18 @@
 			</File>
 			<File
 				RelativePath="resource.h">
+			</File>
+			<File
+				RelativePath="script.h">
+			</File>
+			<File
+				RelativePath="scriptdlg.h">
+			</File>
+			<File
+				RelativePath="scriptengine.h">
+			</File>
+			<File
+				RelativePath="scriptstate.h">
 			</File>
 			<File
 				RelativePath="settilestate.h">
@@ -300,6 +324,9 @@
 			</File>
 			<File
 				RelativePath="obstruction_selected.ico">
+			</File>
+			<File
+				RelativePath="py.ico">
 			</File>
 			<File
 				RelativePath="select.ico">
@@ -418,6 +445,25 @@
 			</File>
 			<File
 				RelativePath="..\common\vsp.h">
+			</File>
+		</Filter>
+		<Filter
+			Name="Script"
+			Filter="">
+			<File
+				RelativePath="script\EditorObject.cpp">
+			</File>
+			<File
+				RelativePath="script\ErrorObject.cpp">
+			</File>
+			<File
+				RelativePath="script\MapObject.cpp">
+			</File>
+			<File
+				RelativePath="script\ModuleFuncs.cpp">
+			</File>
+			<File
+				RelativePath="script\ObjectDefs.h">
 			</File>
 		</Filter>
 	</Files>

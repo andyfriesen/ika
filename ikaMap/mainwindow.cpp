@@ -16,16 +16,21 @@
 #include "mapdlg.h"
 #include "layerdlg.h"
 #include "importtilesdlg.h"
+#include "scriptdlg.h"
 
 // Other stuff
 #include "canvas.h"
 #include "tileset.h"
 #include "command.h"
 
+// Scripting!
+#include "scriptengine.h"
+#include "script.h"
+
 #define VERTICAL_FUN
 
 //
-const float MainWindow::_version = 0.11f;
+const float MainWindow::_version = 0.20f;
 //
 
 namespace
@@ -54,6 +59,8 @@ namespace
         id_zoomtilesetout,
         id_zoomtilesetnormal,
 
+        id_configurescripts,
+
         id_cursorup,
         id_cursordown,
         id_cursorleft,
@@ -65,6 +72,7 @@ namespace
         id_zoneedit,
         id_waypointedit,
         id_entityedit,
+        id_scripttool,
 
         id_newlayer,
         id_destroylayer,
@@ -104,6 +112,8 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_zoomtilesetout, MainWindow::OnZoomTileSetOut)
     EVT_MENU(id_zoomtilesetnormal, MainWindow::OnZoomTileSetNormal)
 
+    EVT_MENU(id_configurescripts, MainWindow::OnConfigureScripts)
+
     EVT_MENU(id_cursorup, MainWindow::OnCursorUp)
     EVT_MENU(id_cursordown, MainWindow::OnCursorDown)
     EVT_MENU(id_cursorleft, MainWindow::OnCursorLeft)
@@ -114,6 +124,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
     EVT_BUTTON(id_zoneedit, MainWindow::OnSetZoneState)
     EVT_BUTTON(id_entityedit, MainWindow::OnSetEntityState)
+    EVT_BUTTON(id_scripttool, MainWindow::OnSetScriptTool)
 
     EVT_BUTTON(id_newlayer, MainWindow::OnNewLayer)
     EVT_BUTTON(id_destroylayer, MainWindow::OnDestroyLayer)
@@ -139,8 +150,14 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     : wxFrame(0, -1, va("ikaMap version %0.2f", _version), position, size, style)
     , _map(0)
     , _tileSet(0)
+    , _curScript(0)
 {
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32));
+
+    const int widths[] = { 100, -1, 100 };
+    CreateStatusBar(lengthof(widths));
+    _statusBar = GetStatusBar();
+    _statusBar->SetStatusWidths(lengthof(widths), widths);
 
     _sideBar = new wxSashLayoutWindow(this, id_sidebar);
     _sideBar->SetAlignment(wxLAYOUT_LEFT);
@@ -155,21 +172,21 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     struct ToolButton
     {
         const char* iconName;
-        bool pushable;
         uint id;
         const char* toolTip;
     } toolButtons[] = 
     {
-        {   "brushicon",        true,   id_tilepaint,       "Place individual tiles on the map."                            },
-        {   "selecticon",       true,   id_copypaste,       "Select a group of tiles, and duplicate them elsewhere."        },
-        {   "obstructionicon",  true,   id_obstructionedit, "Edit obstructed areas."                                        },
-        {   "zoneicon",         true,   id_zoneedit,        "Edit zones."                                                   },
-        {   "waypointicon",     true,   id_waypointedit,    "Edit waypoints."                                               },
-        {   "entityicon",       true,   id_entityedit,      "Edit entities."                                                },
-        {   "newicon",          false,  id_newlayer,        "Create a brand new layer."                                     },
-        {   "trashicon",        false,  id_destroylayer,    "Destroy the currently selected layer."                         },
-        {   "uparrowicon",      false,  id_movelayerup,     "Move the current layer upwards. (beneath the previous layer)"  },
-        {   "downarrowicon",    false,  id_movelayerdown,   "Move the current layer downwards. (above the next layer)"      },
+        {   "brushicon",        id_tilepaint,       "Place individual tiles on the map."                            },
+        {   "selecticon",       id_copypaste,       "Select a group of tiles, and duplicate them elsewhere."        },
+        {   "obstructionicon",  id_obstructionedit, "Edit obstructed areas."                                        },
+        {   "zoneicon",         id_zoneedit,        "Edit zones."                                                   },
+        {   "waypointicon",     id_waypointedit,    "Edit waypoints."                                               },
+        {   "entityicon",       id_entityedit,      "Edit entities."                                                },
+        {   "newicon",          id_newlayer,        "Create a brand new layer."                                     },
+        {   "trashicon",        id_destroylayer,    "Destroy the currently selected layer."                         },
+        {   "uparrowicon",      id_movelayerup,     "Move the current layer upwards. (beneath the previous layer)"  },
+        {   "downarrowicon",    id_movelayerdown,   "Move the current layer downwards. (above the next layer)"      },
+        {   "scripticon",       id_scripttool,      "Use a script tool."                                            },
     };
     // blah blah blah can't use templates with local structs gay gay gay blah gay. (I cry myself to sleep ;_;)
     const int numToolButtons = sizeof toolButtons / sizeof toolButtons[0];
@@ -256,10 +273,14 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     viewMenu->Append(id_zoomtilesetout, "Zoom Tileset Out\tNumpad 2");
     viewMenu->Append(id_zoomtilesetnormal, "Zoom Tileset to 100%\tNumpad 5", "Stop zooming on the tileset.");
 
+    wxMenu* toolMenu = new wxMenu;
+    toolMenu->Append(id_configurescripts, "Configure Plugin &Scripts...", "Load and unload Python scripts");
+
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(fileMenu, "&File");
     menuBar->Append(editMenu, "&Edit");
     menuBar->Append(viewMenu, "&View");
+    menuBar->Append(toolMenu, "&Tools");
     SetMenuBar(menuBar);
 
     // Set up hotkey stuff.
@@ -286,6 +307,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
     UpdateLayerList();
     UpdateTitle();
+
+    ScriptEngine::Init(this);
 }
 
 MainWindow::~MainWindow()
@@ -299,6 +322,12 @@ MainWindow::~MainWindow()
 
     ClearList(_undoList);
     ClearList(_redoList);
+
+    for (uint i = 0; i < _scripts.size(); i++)
+        delete _scripts[i];
+    _scripts.clear();
+
+    ScriptEngine::ShutDown();
 }
 
 void MainWindow::OnClose(wxCloseEvent&)
@@ -628,6 +657,14 @@ void MainWindow::OnZoomTileSetIn(wxCommandEvent&)       {   _tileSetView->IncZoo
 void MainWindow::OnZoomTileSetOut(wxCommandEvent&)      {   _tileSetView->IncZoom(+1);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTileSetNormal(wxCommandEvent&)   {   _tileSetView->SetZoom(16);  _tileSetView->Refresh();    _tileSetView->UpdateScrollBars();   } // 16:16 == 100%
 
+void MainWindow::OnConfigureScripts(wxCommandEvent&)
+{
+    ScriptDlg dlg(this);
+
+    dlg.ShowModal();
+    // easy. :D
+}
+
 void MainWindow::OnCursorUp(wxCommandEvent&)
 {
     wxScrollWinEvent evt(wxEVT_SCROLLWIN_PAGEUP, 0, wxVERTICAL);
@@ -686,6 +723,15 @@ void MainWindow::OnSetEntityState(wxCommandEvent&)
 {
     HighlightToolButton(id_entityedit);
     _mapView->SetEntityState();
+}
+
+void MainWindow::OnSetScriptTool(wxCommandEvent&)
+{
+    if (!_scripts.empty())
+    {
+        HighlightToolButton(id_scripttool);
+        _mapView->SetScriptTool(_scripts[0]);
+    }
 }
 
 void MainWindow::OnNewLayer(wxCommandEvent&)
@@ -782,7 +828,8 @@ void MainWindow::HighlightToolButton(uint buttonId)
         id_obstructionedit,
         id_zoneedit,
         id_waypointedit,
-        id_entityedit
+        id_entityedit,
+        id_scripttool
     };
     
     for (uint i = 0; i < lengthof(ids); i++)
@@ -898,4 +945,9 @@ SpriteSet* MainWindow::GetSprite(const std::string& fileName)
         _sprites[fileName] = ss;
         return ss;
     }
+}
+
+std::vector<Script*>& MainWindow::GetScripts()
+{
+    return _scripts;
 }

@@ -32,6 +32,7 @@ MapView::MapView(MainWindow* mw, wxWindow* parent)
     , _obstructionState(mw)
     , _entityState(mw)
     , _zoneEditState(mw)
+    , _scriptState(mw)
 
     , _editState(&_tileSetState)
 
@@ -393,17 +394,25 @@ void MapView::IncZoom(int amt)
 
 void MapView::ScreenToMap(int& x, int& y) const
 {
-    ScreenToMap(x, y, _curLayer);
+    x += _xwin;
+    y += _ywin;
 }
 
-void MapView::ScreenToMap(int& x, int& y, uint layer) const
+void MapView::ScreenToLayer(int& x, int& y) const
+{
+    ScreenToLayer(x, y, _curLayer);
+}
+
+void MapView::ScreenToLayer(int& x, int& y, uint layer) const
 {
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
+    ScreenToMap(x, y);
+
     Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
 
-    x = x + _xwin - lay->x;
-    y = y + _ywin - lay->y;
+    x -= lay->x;
+    y -= lay->y;
 }
 
 void MapView::ScreenToTile(int& x, int& y) const
@@ -417,7 +426,7 @@ void MapView::ScreenToTile(int& x, int& y, uint layer) const
     wxASSERT(_mainWnd->GetTileSet() != 0);
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    ScreenToMap(x, y, layer);
+    ScreenToLayer(x, y, layer);
 
     x /= _mainWnd->GetTileSet()->Width();
     y /= _mainWnd->GetTileSet()->Height();
@@ -438,6 +447,42 @@ void MapView::TileToScreen(int& x, int& y, uint layer) const
 
     x = (x * _mainWnd->GetTileSet()->Width()) + lay->x - _xwin;
     y = (y * _mainWnd->GetTileSet()->Height()) + lay->y - _ywin;
+}
+
+void MapView::MapToTile(int& x, int& y) const
+{
+    MapToTile(x, y, _curLayer);
+}
+
+void MapView::MapToTile(int& x, int& y, uint layer) const
+{
+    wxASSERT(_mainWnd->GetMap());
+    wxASSERT(_mainWnd->GetTileSet());
+    wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
+
+    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+
+    x = (x + lay->x) * lay->parallax.mulx / lay->parallax.divx;
+    y = (y + lay->y) * lay->parallax.muly / lay->parallax.divy;
+    x /= _mainWnd->GetTileSet()->Width();
+    y /= _mainWnd->GetTileSet()->Height();
+}
+
+void MapView::TileToMap(int& x, int& y) const
+{
+    TileToMap(x, y, _curLayer);
+}
+
+void MapView::TileToMap(int& x, int& y, uint layer) const
+{
+    wxASSERT(_mainWnd->GetMap());
+    wxASSERT(_mainWnd->GetTileSet());
+    wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
+
+    Map::Layer* lay = &_mainWnd->GetMap()->GetLayer(layer);
+
+    x = (x * lay->parallax.divx / lay->parallax.mulx) - lay->x;
+    y = (y * lay->parallax.divy / lay->parallax.muly) - lay->y;
 }
 
 void MapView::SetCurLayer(uint i)
@@ -540,4 +585,10 @@ void MapView::SetEntityState()
 void MapView::SetZoneState()
 {
     SetEditState(&_zoneEditState);
+}
+void MapView::SetScriptTool(Script* script)
+{
+    _scriptState.SetScript(script);
+
+    SetEditState(&_scriptState);
 }

@@ -162,10 +162,10 @@ class ChangeLayerPropertiesCommand : public Command
     struct LayerProperties
     {
         std::string label;
-        bool wrapx;
-        bool wrapy;
         int x;
         int y;
+        bool wrapx;
+        bool wrapy;
 
         LayerProperties(const std::string& l = "", bool wx = false, bool wy = false, int X = 0, int Y = 0)
             : label(l)

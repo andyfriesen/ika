@@ -1,12 +1,13 @@
 // Microsoft Visual C++ generated resource script.
 //
-#include "resource.h"
+#include "resrc1.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //
 // Generated from the TEXTINCLUDE 2 resource.
 //
+#include "resource.h"
 #include "afxres.h"
 
 /////////////////////////////////////////////////////////////////////////////
@@ -43,6 +44,7 @@ OBSTRUCTIONICON         ICON                    "obstruction.ico"
 NEWICON                 ICON                    "new.ico"
 ZOOMICON                ICON                    "zoom.ico"
 FILLICON                ICON                    "fill.ico"
+SCRIPTICON              ICON                    "py.ico"
 
 /////////////////////////////////////////////////////////////////////////////
 //

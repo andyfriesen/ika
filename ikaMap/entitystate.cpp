@@ -17,7 +17,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
 {
     int x = event.GetX();
     int y = event.GetY();
-    GetMapView()->ScreenToMap(x, y);
+    GetMapView()->ScreenToLayer(x, y);
 
     Map::Layer* lay = GetCurLayer();
     uint entIndex = GetMapView()->EntityAt(x, y, GetCurLayerIndex());

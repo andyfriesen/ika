@@ -11,10 +11,11 @@
 #include "obstructionstate.h"
 #include "entitystate.h"
 #include "zoneeditstate.h"
-
-class SpriteSet;
+#include "scriptstate.h"
 
 class MainWindow;
+class SpriteSet;
+class Script;
 
 /**
  * This is the panel that holds the actual map image.  It processes events and the like pertaining to
@@ -44,6 +45,7 @@ private:
     ObstructionState _obstructionState;
     EntityState _entityState;
     ZoneEditState _zoneEditState;
+    ScriptState _scriptState;
     //-
 
 public:
@@ -74,14 +76,26 @@ public:
     void SetZoom(uint z);
     void IncZoom(int amt);
 
+    // Gah.  Pain in the ass.
+    // Screen coordinates are pixels relative to the upperleft corner of the map viewport.
+    // Layer coordinates are pixels relative to the upperleft corner of the layer.
+    // Tile coordinates are tiles relative to the upperleft corner of the layer.
     void ScreenToMap(int& x, int& y) const;
-    void ScreenToMap(int& x, int& y, uint layer) const;
+
+    void ScreenToLayer(int& x, int& y) const;
+    void ScreenToLayer(int& x, int& y, uint layer) const;
 
     void ScreenToTile(int& x, int& y) const;
     void ScreenToTile(int& x, int& y, uint layer) const;
 
     void TileToScreen(int& x, int& y) const;
     void TileToScreen(int& x, int& y, uint layer) const;
+
+    void MapToTile(int& x, int& y) const;
+    void MapToTile(int& x, int& y, uint layer) const;
+
+    void TileToMap(int& x, int& y) const;
+    void TileToMap(int& x, int& y, uint layer) const;
 
     uint GetCurLayer() const { return _curLayer; }
     void SetCurLayer(uint i);
@@ -117,6 +131,7 @@ public:
     void SetObstructionState();
     void SetEntityState();
     void SetZoneState();
+    void SetScriptTool(Script* script);
 
     DECLARE_EVENT_TABLE()
 };

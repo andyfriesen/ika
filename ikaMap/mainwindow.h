@@ -17,6 +17,7 @@ class MapView;
 class TileSetView;
 struct Map;
 class TileSet;
+class Script;
 
 /**
  * The main application frame.
@@ -27,8 +28,10 @@ class TileSet;
 class MainWindow : public wxFrame
 {
     friend class ChangeTileSetCommand;
+    friend class ScriptDlg;
 
 private:
+    wxStatusBar*        _statusBar;
     wxSashLayoutWindow* _topBar;
     wxSashLayoutWindow* _bottomBar;
     wxSashLayoutWindow* _sideBar;
@@ -38,6 +41,9 @@ private:
     
     typedef std::map<std::string, SpriteSet*> SpriteMap;
     SpriteMap _sprites;
+
+    std::vector<Script*> _scripts;
+    uint _curScript;    // the currently active tool script
     
     std::stack<::Command*> _undoList;
     std::stack<::Command*> _redoList;
@@ -85,6 +91,9 @@ public:
     void OnZoomTileSetIn(wxCommandEvent&);
     void OnZoomTileSetOut(wxCommandEvent&);
     void OnZoomTileSetNormal(wxCommandEvent&);
+
+    void OnConfigureScripts(wxCommandEvent&);
+
     void OnCursorDown(wxCommandEvent&);
     void OnCursorUp(wxCommandEvent&);
     void OnCursorLeft(wxCommandEvent&);
@@ -96,6 +105,7 @@ public:
     void OnSetObstructionState(wxCommandEvent&);
     void OnSetZoneState(wxCommandEvent&);
     void OnSetEntityState(wxCommandEvent&);
+    void OnSetScriptTool(wxCommandEvent&);
 
     void OnNewLayer(wxCommandEvent&);
     void OnDestroyLayer(wxCommandEvent&);
@@ -123,6 +133,9 @@ public:
     void LoadMap(const std::string& fileName);
 
     SpriteSet* GetSprite(const std::string& fileName);
+
+protected:
+    std::vector<Script*>& GetScripts();
 
     DECLARE_EVENT_TABLE()
 };

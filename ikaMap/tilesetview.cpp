@@ -155,6 +155,7 @@ uint TileSetView::GetCurTile() const
 void TileSetView::SetCurTile(uint t)
 {
     _curTile = clamp<uint>(t, 0, _mainWnd->GetTileSet()->Count() - 1);
+    _mainWnd->GetStatusBar()->SetStatusText(va("Tile: %i", _curTile), 2);
     Render();
     ShowPage();
 }
