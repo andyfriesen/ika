@@ -84,11 +84,36 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd, const string& fname)
     , ywin(0)
     , zoom(16)
 {
-    pGraph = new CTileSetFrame(this);
-    pGraph->SetSize(GetClientSize());
+    Init();
 
     pTileset = pParent->vsp.Load(fname);
+}
 
+CTileSetView::CTileSetView(CMainWnd* parentwnd, int width, int height)
+    : IDocView(parentwnd, "")
+    , pParent(parentwnd)
+    , ywin(0)
+    , zoom(16)
+{
+    Init();
+
+    pTileset = new CTileSet();
+    pTileset->New(width, height);
+}
+
+CTileSetView::~CTileSetView()
+{
+    delete pContextmenu;
+
+    pParent->vsp.Release(pTileset);
+    pTileset = 0;
+}
+
+
+void CTileSetView::Init()
+{
+    pGraph = new CTileSetFrame(this);
+    pGraph->SetSize(GetClientSize());
     wxMenuBar* menubar = pParent->CreateBasicMenu();
 
     wxMenu* filemenu = menubar->Remove(0);
@@ -121,14 +146,6 @@ CTileSetView::CTileSetView(CMainWnd* parentwnd, const string& fname)
     pContextmenu->Append(id_insertandpaste, "Insert and paste");
     pContextmenu->AppendSeparator();
     pContextmenu->Append(id_edittile, "Edit");
-}
-
-CTileSetView::~CTileSetView()
-{
-    delete pContextmenu;
-
-    pParent->vsp.Release(pTileset);
-    pTileset = 0;
 }
 
 // --------------------------------- events ---------------------------------

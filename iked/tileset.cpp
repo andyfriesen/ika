@@ -32,6 +32,12 @@ bool CTileSet::Save(const char* fname)
     return true;
 }
 
+void CTileSet::New(int width, int height)
+{
+    pVsp->New(width, height, 0);
+    SyncAll();
+}
+
 Canvas& CTileSet::Get(int tileidx)
 {
     return pVsp->GetTile(tileidx);

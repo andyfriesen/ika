@@ -28,6 +28,7 @@ public:
 
     bool Load(const char* fname);
     bool Save(const char* fname);
+    void New(int width, int height);
 
     virtual Canvas&   Get(int idx);                 // returns the pixel data for the tile
     virtual int   Count() const;

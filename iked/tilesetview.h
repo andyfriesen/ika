@@ -26,7 +26,10 @@ class CTileSetView : public IDocView
 
 public:
     CTileSetView(CMainWnd* parentwnd, const string& fname);
+    CTileSetView(CMainWnd* parentwnd, int width, int height);
     ~CTileSetView();
+
+    void Init();
 
     virtual void OnSave(wxCommandEvent& event);
     void OnSaveAs(wxCommandEvent& event);

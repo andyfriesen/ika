@@ -52,19 +52,7 @@ class CMainWnd : public wxMDIParentFrame
     std::set < IDocView*> pDocuments;
     ProjectView* _project;
 
-public:
-    enum
-    {
-        id_filequit = 1,
-        id_filenewproject,
-        id_filenewmap,
-        id_filenewscript,
-        id_filenewsprite,
-        id_fileopen,
-        id_filesaveproject,
-        id_filesaveprojectas,
-    };
-    
+public:    
     CMainWnd(wxWindow* parent, const wxWindowID id, const wxString& title,
         const wxPoint& position, const wxSize& size, const long style);
     ~CMainWnd();
@@ -74,6 +62,7 @@ public:
     void NewMap(wxCommandEvent& event);
     void NewScript(wxCommandEvent& event);
     void NewSprite(wxCommandEvent& event);
+    void NewTileSet(wxCommandEvent& event);
     void OnOpen(wxCommandEvent& event);
     void OnSize(wxSizeEvent& event);
     void OnQuit(wxCloseEvent& event);

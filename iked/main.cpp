@@ -54,15 +54,32 @@ bool CApp::OnInit()
     return TRUE;
 }
 
+namespace
+{
+    enum
+    {
+        id_filequit = 1,
+        id_filenewproject,
+        id_filenewmap,
+        id_filenewscript,
+        id_filenewsprite,
+        id_filenewtileset,
+        id_fileopen,
+        id_filesaveproject,
+        id_filesaveprojectas,
+    };
+}
+
 BEGIN_EVENT_TABLE(CMainWnd, wxMDIParentFrame)
-    EVT_MENU(CMainWnd::id_filequit, CMainWnd::FileQuit)
-    EVT_MENU(CMainWnd::id_filenewproject, CMainWnd::NewProject)
-    EVT_MENU(CMainWnd::id_filenewmap, CMainWnd::NewMap)
-    EVT_MENU(CMainWnd::id_filenewscript, CMainWnd::NewScript)
-    EVT_MENU(CMainWnd::id_filenewsprite, CMainWnd::NewSprite)
-    EVT_MENU(CMainWnd::id_fileopen, CMainWnd::OnOpen)
-    EVT_MENU(CMainWnd::id_filesaveproject, CMainWnd::OnSaveProject)
-    EVT_MENU(CMainWnd::id_filesaveprojectas, CMainWnd::OnSaveProjectAs)
+    EVT_MENU(id_filequit, CMainWnd::FileQuit)
+    EVT_MENU(id_filenewproject, CMainWnd::NewProject)
+    EVT_MENU(id_filenewmap, CMainWnd::NewMap)
+    EVT_MENU(id_filenewscript, CMainWnd::NewScript)
+    EVT_MENU(id_filenewsprite, CMainWnd::NewSprite)
+    EVT_MENU(id_filenewtileset, CMainWnd::NewTileSet)
+    EVT_MENU(id_fileopen, CMainWnd::OnOpen)
+    EVT_MENU(id_filesaveproject, CMainWnd::OnSaveProject)
+    EVT_MENU(id_filesaveprojectas, CMainWnd::OnSaveProjectAs)
 
     EVT_SIZE(CMainWnd::OnSize)
     EVT_CLOSE(CMainWnd::OnQuit)
@@ -131,6 +148,11 @@ void CMainWnd::NewSprite(wxCommandEvent& event)
     NewSpriteDlg dlg(this);
     if (dlg.ShowModal() == wxID_OK)
         OpenDocument(new CSpriteSetView(this, dlg.width, dlg.height));
+}
+
+void CMainWnd::NewTileSet(wxCommandEvent& event)
+{
+
 }
 
 void CMainWnd::OnOpen(wxCommandEvent& event)
@@ -299,6 +321,7 @@ wxMenuBar* CMainWnd::CreateBasicMenu()
     filenew->Append(id_filenewmap, "&Map", "Create an empty map.");
     filenew->Append(id_filenewscript, "&Script", "Create an empty Python script.");
     filenew->Append(id_filenewsprite, "S&prite", "Create a new sprite.");
+    filenew->Append(id_filenewtileset, "&Tileset", "Create a new tileset.");
 
     filemenu->Append(id_filenewmap, "&New", filenew, "Create a new document.");  
     filemenu->Append(id_fileopen, "&Open", "Open an existing document.");
@@ -324,6 +347,24 @@ vector < wxAcceleratorEntry> CMainWnd::CreateBasicAcceleratorTable()
 
 wxToolBar* CMainWnd::CreateBasicToolBar()
 {
+    const int SEPARATOR = -1337;
+    struct
+    {
+        int id;
+        const char* icon;
+        const char* tooltip;
+        const char* desc;
+    } tools[] =
+    {
+        {   id_fileopen,        "foldericon",   "Open",             "Open a file."  },
+        {   SEPARATOR   },
+        {   id_filenewmap,      "mapicon",      "Create a map",     "Create a new map." },
+        {   id_filenewscript,   "scripticon",   "Create script",    "Create a new Python script."   },
+        {   id_filenewsprite,   "spriteicon",   "Create sprite",    "Create a new sprite."  },
+        {   id_filenewtileset,  "vspicon",      "Create tileset",   "Create a new tileset." },
+    };
+    const int numtools = sizeof tools / sizeof tools[0];
+
     wxToolBar* pToolbar = new wxToolBar
         (
             this,
@@ -333,51 +374,20 @@ wxToolBar* CMainWnd::CreateBasicToolBar()
             wxTB_HORIZONTAL | wxNO_BORDER,
             "iked toolbar"
          );
-    
 
-    pToolbar->AddTool(
-        id_fileopen,
-        wxIcon("foldericon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
-        wxNullBitmap,
-        false,
-        -1, -1,
-        NULL,
-        "Open",
-        "Open a file.");
-
-    pToolbar->AddSeparator();
-
-    pToolbar->AddTool(
-        id_filenewmap,
-        wxIcon("mapicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
-        wxNullBitmap,
-        false,
-        -1, -1,
-        NULL,
-        "Create map",
-        "Create a new map.");
-
-    pToolbar->AddTool(
-        id_filenewscript,
-        wxIcon("scripticon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
-        wxNullBitmap,
-        false,
-        -1, -1,
-        NULL,
-        "Create source",
-        "Create a new source document.");
-
-    pToolbar->AddTool(
-        id_filenewsprite,
-        wxIcon("spriteicon", wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
-        wxNullBitmap,
-        false,
-        -1, -1,
-        0,
-        "Create sprite",
-        "Create a new sprite.");
-
-    //pToolbar->Realize();
+    for (int i = 0; i < numtools; i++)
+    {
+        if (tools[i].id == SEPARATOR)
+            pToolbar->AddSeparator();
+        else
+            pToolbar->AddTool(
+                tools[i].id, 
+                wxIcon(tools[i].icon, wxBITMAP_TYPE_ICO_RESOURCE, 16, 16), 
+                wxNullBitmap, 
+                false, -1, -1, 0, 
+                tools[i].tooltip, 
+                tools[i].desc);
+    }
     return pToolbar;
 }
 
