@@ -1,11 +1,29 @@
-Indentations are 4 spaces in size.  No hard tabs, since everybody sets their tab size to something different, and the code will look funky in any tabsize other than the one that was used when the code was written. ;)
+Indentations are 4 spaces in size.  No hard tabs, since everybody sets their
+tab size to something different, and the code will look funky in any tabsize
+other than the one that was used when the code was written. ;)
 
-Variables follow a simplified Hungarian syntax.  One prefix letter only.  bBool, nNumber, hHandle, pPointer, fFloat, sString. (STL, strk, or just char*, they all use the s prefix)  Passed parameters, temporary loop counters and the like, and co-ordinates are exempt from this. (nX and nY look silly)  Classes are also exempt, but try to name them such that their type is obvious.  Vectors should be prefixed as their type, and singular. (a vector of ints should be std::vector<int> nThingy)
+Variables follow a simplified Hungarian syntax.  One prefix letter only.
+bBool, nNumber, hHandle, pPointer, fFloat, sString. (STL, strk, or just char*,
+they all use the s prefix)  Passed parameters, temporary loop counters and the
+like, and co-ordinates are exempt from this. (nX and nY look silly)  Classes
+are also exempt, but try to name them such that their type is obvious.
+Vectors should be prefixed as their type, and singular. (a vector of ints
+should be std::vector<int> nThingy)
 
-Function names are to be lowercased, with each word capitalized.  All function names must be verbs, with the sole exception of accessor functions, which may be nouns.
+Function names are to be lowercased, with each word capitalized.  All function
+names must be verbs, with the sole exception of accessor functions, which may
+be nouns.
 
-Preprocessor constants should be in all uppercase, with underscores dilineating words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever possbile. (they should follow the usual variable convention)
+Preprocessor constants should be in all uppercase, with underscores dilineating
+words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever possbile. (they
+should follow the usual variable convention)
 
-NO GLOBALS.  Period.  They're evil, and not "just because the books say so."  The engine already has some globals, I'll admit.  They must be dealt with.  Do not make it worse.
+NO GLOBALS.  Period.  They're evil, and not "just because the books say so."
+The engine already has some globals, I'll admit.  They must be dealt with.
+Do not make it worse.
 
-Every line of code is *not* to be commented.  A single line/paragraph describing the general jist of a section may be needed if the code becomes complex, but if more than that is needed, then you need to simplify it anyway.   The idea is to make the code will comment itself, not to double the code size with an english translation of the entire engine. ;)
+Every line of code is *not* to be commented.  A single line/paragraph
+describing the general jist of a section may be needed if the code becomes
+complex, but if more than that is needed, then you need to simplify it anyway.
+The idea is to make the code will comment itself, not to double the code size
+with an english translation of the entire engine. ;)
