@@ -39,31 +39,19 @@ void Mouse::Motion(float x, float y) {
 }
 
 void Mouse::Clicked(uint button, bool isPressed) {
-    // EVIL
-
     if (isPressed) {
-        switch (button) {
-            case 0: _left->KeyDown(); break;
-            case 1: _right->KeyDown(); break;
-            case 2: _middle->KeyDown(); break;
-            default: assert(false);
-        }
+        GetButton(button)->KeyDown();
     } else {
-        switch (button) {
-            case 0: _left->KeyUp(); break;
-            case 1: _right->KeyUp(); break;
-            case 2: _middle->KeyUp(); break;
-            default: assert(false);
-        }
+        GetButton(button)->KeyUp();
     }
 }
 
 MouseAxisControl* Mouse::GetAxis(MouseAxis axis) {
     switch (axis) {
-    case X: return _xAxis.get();
-    case Y: return _yAxis.get();
-    case WHEEL: return _wheel.get();
-    default:    return 0;
+        case X: return _xAxis.get();
+        case Y: return _yAxis.get();
+        case WHEEL: return _wheel.get();
+        default:    return 0;
     }
 }
 
@@ -72,7 +60,9 @@ MouseButtonControl* Mouse::GetButton(uint button) {
         case 1: return _left.get();
         case 2: return _right.get();
         case 3: return _middle.get();
-        default: return 0;
+        default: {
+            throw std::runtime_error(va("Asked for invalid mouse button %i", button));
+        }
     }
 }
 

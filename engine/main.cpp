@@ -92,12 +92,12 @@ void Engine::CheckMessages() {
             }
 
             case SDL_MOUSEBUTTONDOWN: {
-                the<Input>()->MouseButtonChange(event.button.which, true);
+                the<Input>()->MouseButtonChange(event.button.button, true);
                 break;
             }
 
             case SDL_MOUSEBUTTONUP: {
-                the<Input>()->MouseButtonChange(event.button.which, false);
+                the<Input>()->MouseButtonChange(event.button.button, false);
                 break;
             }
 
