@@ -102,3 +102,8 @@ void TileSet::DeleteTile(uint pos)
     pVsp->DeleteTile(pos);
     SyncAll();
 }
+
+std::vector<VSP::AnimState>& TileSet::GetAnim()
+{
+    return pVsp->vspAnim;
+}

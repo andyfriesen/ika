@@ -5,10 +5,7 @@
 #include "types.h"
 #include <set>
 #include "imagebank.h"
-//#include <wx\wx.h>
-
-
-class VSP;
+#include "vsp.h"
 
 class TileSet : public ImageBank
 {
@@ -36,6 +33,8 @@ public:
     void InsertTile(uint pos);
     void InsertTile(uint pos, Canvas& c);
     void DeleteTile(uint pos);
+
+    std::vector<VSP::AnimState>& GetAnim();
 
     inline const VSP& GetVSP() const { return *pVsp; }
 };

@@ -7,13 +7,17 @@
 #include "log.h"
 #include "zlib.h"
 
-VSP::VSP() : _width(0), _height(0)
+VSP::VSP()
+    : _width(0)
+    , _height(0)
+    , vspAnim(_vspanim)
 {
-    vspanim.resize(100);
+    _vspanim.resize(100);
     New();
 }
 
 VSP::VSP(const std::string& fname)
+    : vspAnim(_vspanim)
 {
     Load(fname);
 }
@@ -183,10 +187,10 @@ bool VSP::Load(const std::string& fname)
 
     for (int j = 0; j < 100; j++)
     {
-        f.Read(&vspanim[j].nStart, 2);
-        f.Read(&vspanim[j].nFinish, 2);
-        f.Read(&vspanim[j].nDelay, 2);
-        f.Read(&vspanim[j].mode, 2);
+        f.Read(&_vspanim[j].start, 2);
+        f.Read(&_vspanim[j].finish, 2);
+        f.Read(&_vspanim[j].delay, 2);
+        f.Read(&_vspanim[j].mode, 2);
     }
 
     f.Close();
@@ -251,10 +255,10 @@ int VSP::Save(const std::string& fname)
 
     for (int k = 0; k < 100; k++)
     {
-        f.Write(&vspanim[k].nStart, 2);
-        f.Write(&vspanim[k].nFinish, 2);
-        f.Write(&vspanim[k].nDelay, 2);
-        f.Write(&vspanim[k].mode, 2);
+        f.Write(&_vspanim[k].start, 2);
+        f.Write(&_vspanim[k].finish, 2);
+        f.Write(&_vspanim[k].delay, 2);
+        f.Write(&_vspanim[k].mode, 2);
     }
 
     f.Close();
@@ -270,8 +274,8 @@ void VSP::Free()
 void VSP::New(int xsize, int ysize, int numtiles)     // creates a blank 32 bit VSP, of the specified size and number of tiles
 {
     Free();
-    _width = xsize > 0?xsize:1;
-    _height = ysize > 0?ysize:1;
+    _width = xsize > 0 ? xsize : 1;
+    _height = ysize > 0 ? ysize : 1;
 
     tiles.resize(numtiles);
 
@@ -329,14 +333,14 @@ void VSP::TPasteTile(Canvas& tb, uint pos)
     // NYI
 }
 
-VSP::AnimState& VSP::Anim(uint strand)
+/*VSP::AnimState& VSP::Anim(uint strand)
 {
     static AnimState dummy;
 
     if (strand < 0 || strand > 99) return dummy;
 
-    return vspanim[strand];
-}
+    return _vspanim[strand];
+}*/
 
 Canvas& VSP::GetTile(uint tileidx)
 {

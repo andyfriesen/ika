@@ -187,10 +187,16 @@
 				RelativePath="spriteset.cpp">
 			</File>
 			<File
+				RelativePath=".\tileanimdlg.cpp">
+			</File>
+			<File
 				RelativePath="tileset.cpp">
 			</File>
 			<File
 				RelativePath="tilesetview.cpp">
+			</File>
+			<File
+				RelativePath=".\updatetileanimstrandcommand.cpp">
 			</File>
 			<File
 				RelativePath="video.cpp">
@@ -269,10 +275,16 @@
 				RelativePath="spriteset.h">
 			</File>
 			<File
+				RelativePath=".\tileanimdlg.h">
+			</File>
+			<File
 				RelativePath="tileset.h">
 			</File>
 			<File
 				RelativePath="tilesetview.h">
+			</File>
+			<File
+				RelativePath=".\updatetileanimstrandcommand.h">
 			</File>
 			<File
 				RelativePath="video.h">

@@ -85,6 +85,7 @@ public:
     void OnRedo(wxCommandEvent&);
     void OnEditMapProperties(wxCommandEvent&);
     void OnImportTiles(wxCommandEvent&);
+    void OnEditTileAnim(wxCommandEvent&);
     void OnCloneLayer(wxCommandEvent&);
 
     void OnChangeCurrentLayer(wxCommandEvent& event);

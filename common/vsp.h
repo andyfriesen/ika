@@ -28,23 +28,26 @@ public:
     enum    // VSP animation modes
     {
         linear,
-            reverse,
-            random,
-            flip
+        reverse,
+        random,
+        flip
     };
     
     struct AnimState
     {
-        int nStart;
-        int nFinish;
-        int nDelay;
+        int start;
+        int finish;
+        int delay;
         int mode;
         
-        int nCount;
+        int count;
         
         AnimState() 
-            : nStart(0), nFinish(0), nDelay(0), mode(linear),
-            nCount(0)
+            : start(0)
+            , finish(0)
+            , delay(0)
+            , mode(linear)
+            , count(0)
         {}
     };
     
@@ -54,7 +57,7 @@ private:
     std::string desc;
     std::string name;           // the VSPs filename
     
-    std::vector<AnimState>  vspanim;
+    std::vector<AnimState>  _vspanim;
     
     int _width, _height;
     
@@ -71,7 +74,7 @@ public:
     void InsertTile(uint pos);
     void DeleteTile(uint pos);
     inline void AppendTile() { AppendTiles(1); }
-    void AppendTiles(uint count = 1);
+    void AppendTiles(uint count);
     void CopyTile(Canvas& tb, uint pos);        // Copies the tile into a buffer.
     void PasteTile(const Canvas& tb, uint pos); // pastes the tile from a buffer
     void TPasteTile(Canvas& tb, uint pos);      // transparently pastes the tile from a buffer
@@ -79,7 +82,7 @@ public:
     void SetPixel(int x, int y, uint tileidx, int c);
     int  GetPixel(int x, int y, uint tileidx);
     
-    AnimState& Anim(uint strand);
+    std::vector<AnimState>& vspAnim;            // I see no reason to hide this, really.
 
     Canvas& GetTile(uint tileidx);
 

@@ -18,6 +18,7 @@
 #include "layerdlg.h"
 #include "importtilesdlg.h"
 #include "scriptdlg.h"
+#include "tileanimdlg.h"
 
 // Other stuff
 #include "canvas.h"
@@ -48,6 +49,7 @@ namespace
         id_editredo,
         id_editmapproperties,
         id_importtiles,
+        id_edittileanim,
         id_clonelayer,
 
         id_zoommapin,
@@ -108,6 +110,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
     EVT_MENU(id_importtiles, MainWindow::OnImportTiles)
     EVT_MENU(id_clonelayer, MainWindow::OnCloneLayer)
+    EVT_MENU(id_edittileanim, MainWindow::OnEditTileAnim)
 
     EVT_MENU(id_zoommapin, MainWindow::OnZoomMapIn)
     EVT_MENU(id_zoommapout, MainWindow::OnZoomMapOut)
@@ -266,6 +269,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     editMenu->AppendSeparator();
     editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
     editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
+    editMenu->Append(id_edittileanim, "Edit Tile &Animations...", "");
     editMenu->AppendSeparator();
     editMenu->Append(id_clonelayer, "Clone Layer", "Create a copy of the current layer.");
 
@@ -628,6 +632,16 @@ void MainWindow::OnImportTiles(wxCommandEvent&)
         else
             HandleCommand(new InsertTilesCommand(_tileSet->Count(), _importTilesDlg->tiles));
     }
+}
+
+void MainWindow::OnEditTileAnim(wxCommandEvent&)
+{
+    TileAnimDlg dlg(this);
+
+    ::Command* cmd = dlg.Execute(_tileSet->GetAnim());
+
+    if (cmd)
+        HandleCommand(cmd);
 }
 
 void MainWindow::OnCloneLayer(wxCommandEvent&)

@@ -18,14 +18,14 @@ struct TileSetException{};
 class CTileSet
 {
     Video::Driver* video;
-    std::vector<Video::Image*> hFrame;                       ///< Array of image handles.
+    std::vector<Video::Image*> hFrame;                  ///< Array of image handles.
     int nFrames;                                        ///< Number of tiles in the tileset.
-    int nFramex, nFramey;                                ///< Tile dimensions
+    int nFramex, nFramey;                               ///< Tile dimensions
 
-    std::vector<int>    nTileidx;                            ///< Translation table for actual tiles <--> the tile that should be drawn. (animating tiles)
-    std::vector<bool>   bFlip;                               ///< For tiles in the "flip" mode. (back and forth)
+    std::vector<int>    nTileidx;                       ///< Translation table for actual tiles <--> the tile that should be drawn. (animating tiles)
+    std::vector<bool>   bFlip;                          ///< For tiles in the "flip" mode. (back and forth)
     
-    std::vector<VSP::AnimState>    animstate;                ///< Animation states for each tile
+    std::vector<VSP::AnimState>    animstate;           ///< Animation states for each tile
 
     int nAnimtimer;                                     ///< used by updateanimation
 
@@ -36,7 +36,7 @@ public:
     ~CTileSet();
 
     Video::Image* GetTile(int index);
-    Video::Image* operator[](int index) { return GetTile(index); }
+    inline Video::Image* operator[](int index) { return GetTile(index); }
 
     inline int NumTiles() const { return nFrames; }     ///< Returns the number of tiles in the tileset. ;)
 
