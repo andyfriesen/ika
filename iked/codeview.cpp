@@ -1,6 +1,7 @@
     
 // TODO: way too many magic numbers
 
+
 #include "types.h"
 
 #include "main.h"
@@ -59,7 +60,7 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
 
     wxMenu* optionsmenu = new wxMenu;
     menubar->Append(optionsmenu,"&Options");
-    optionsmenu->Append(id_optionsfont,"&Syntax Highlighting...","");
+    optionsmenu->Append(id_optionsfont,"Co&lors...","");
 
     SetMenuBar(menubar);
 
@@ -141,6 +142,44 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
 {
     // Sets the chosen font/color/style
     //  -- khross
+
+    if (nWhich==0) // whitespace
+    {
+        wxColour nColor;
+        nColor=GetBackgroundColour();
+        
+        wxColourData hData;
+        hData.SetColour(nColor);
+        hData.SetChooseFull(true);
+
+        for (int i=0; i<16; i++)
+        {
+            wxColour nCustom(i*16, i*16, i*16);
+            hData.SetCustomColour(i,nCustom);
+        }
+
+        wxColourDialog cdialog(this, &hData);
+        cdialog.SetTitle("Choose the background color");
+        if (cdialog.ShowModal() == wxID_OK)
+        {
+            wxColourData retData = cdialog.GetColourData();
+            nColor               = retData.GetColour();           
+
+            pTextctrl->StyleSetBackground(nWhich,nColor);
+            pTextctrl->StyleSetForeground(nWhich,nColor);
+            
+
+            for(int j=1; j<11; j++)
+                pTextctrl->StyleSetBackground(j,nColor);
+
+            pTextctrl->Show(true);
+            pTextctrl->SetFocus();
+            
+        }
+        return;
+    }
+
+
     wxFontData f;
     wxFontDialog fontd(this,&f);
 
