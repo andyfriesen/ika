@@ -163,7 +163,7 @@ void CCHRfile::Load(const std::string& fname)
 
         std::ifstream file;
         file.open(fname.c_str());
-        if (file.bad())
+        if (!file.is_open())
             throw std::runtime_error(va("LoadCHR: %s does not exist.", fname.c_str()));
 
         DataNode* document;
@@ -266,7 +266,7 @@ void CCHRfile::Load(const std::string& fname)
     {
         Log::Write("LoadCHR(\"%s\"): %s", fname.c_str(), err.what());
         throw err;
-    }
+     }
 }
 
 void CCHRfile::Save(const std::string& fname)

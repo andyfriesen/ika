@@ -12,6 +12,7 @@
 #include "entity.h"
 
 #include <set>
+#include <cassert>
 
 namespace Script
 {
@@ -292,12 +293,18 @@ namespace Script
                 return 0;
             }
 
-            Sprite* sprite = engine->sprite.Load(spritename, engine->video);
-            if (!sprite)
+            Sprite* sprite;
+            try
             {
-                PyErr_SetString(PyExc_OSError, va("Couldn't load sprite file %s", spritename));
+                sprite = engine->sprite.Load(spritename, engine->video);
+            }
+            catch (std::runtime_error error)
+            {
+                PyErr_SetString(PyExc_OSError, va("sprite.Load(\"%s\") failed: %s", spritename, error.what()));
                 return 0;
             }
+
+            assert(sprite != 0);
 
             ::Entity* e = engine->SpawnEntity();
             e->x = x;
