@@ -24,7 +24,7 @@ Entity::Entity(Engine* njin)
     , obstructsEntities   (true)
     , obstructedByMap     (true)
     , obstructedByEntities(true)
-    
+
     , curFrame            (0)
     , specFrame           (-1)
 
@@ -50,10 +50,10 @@ Entity::Entity(Engine* njin, const Map::Entity& e, uint _layerIndex)
     , direction           ((Direction)e.direction)
     , isMoving            (false)
     , isVisible           (true)
-    
+
     , curFrame            (0)
     , specFrame           (-1)
-    
+
     , obstructsEntities   (e.obstructsEntities)
     , obstructedByMap     (e.obstructedByMap)
     , obstructedByEntities(e.obstructedByEntities)
@@ -65,7 +65,7 @@ Entity::Entity(Engine* njin, const Map::Entity& e, uint _layerIndex)
 {}
 
 static uint get_int(const std::string& s, uint& offset)
-// Grabs the next howevermany numerical characters from s, starting at offset.  On exit, offset is equal 
+// Grabs the next howevermany numerical characters from s, starting at offset.  On exit, offset is equal
 // to the next non-numeric character in the string.
 {
     int start = offset;
@@ -128,7 +128,7 @@ Direction Entity::MoveDiagonally(Direction d)
     case face_upright:      d1=face_up;   d2=face_right;    break;
     case face_downleft:     d1=face_down; d2=face_left;     break;
     case face_downright:    d1=face_down; d2=face_right;    break;
-    default:        
+    default:
         return d;
     }
 
@@ -187,10 +187,10 @@ void Entity::Move(Direction d)
     {
     case face_up:           newy--; break;
     case face_down:         newy++; break;
-    case face_left:         newx--; break;  
+    case face_left:         newx--; break;
     case face_right:        newx++; break;
     case face_nothing:      return;
-       
+
     case face_upleft:       newy--; newx--; break;
     case face_upright:      newy--; newx++; break;
     case face_downleft:     newy++; newx--; break;
@@ -207,8 +207,8 @@ void Entity::Move(Direction d)
         {
             if (this == engine.player && pEnt->adjActivateScript)  // Adjacent activation
                 engine.script.ExecObject(pEnt->adjActivateScript);
-        
-            Stop(); 
+
+            Stop();
             return;
         }
     }
@@ -227,7 +227,7 @@ void Entity::GetMoveScriptCommand()
 Direction Entity::HandlePlayer()
 {
     engine.TestActivate(this);
-    
+
     Input* const input = the<Input>();
 
     if (*input->up)
@@ -314,7 +314,7 @@ void Entity::Update()
             int targetY = (int)((x - startX) * m) + startY;
             // deltaY is simply how many pixels up or down the entity must move this tick. (quantity, not direction, as we take the absolute value)
             int deltaY = abs(y - targetY);
-            
+
             // If deltaY is exactly one pixel (+/-), then we go diagonally.
             // If deltaY is zero, then we go left/right, then recalculate. (if it stays zero, then we just go left/right)
             // If deltaY is greater than one pixel, we go up/down
