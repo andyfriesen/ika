@@ -40,7 +40,7 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere.lib opengl32.lib glu32.lib"
+				AdditionalDependencies="sdl.lib sdlmain.lib zlib.lib corona.lib audiere-static.lib opengl32.lib glu32.lib"
 				OutputFile=".\Release/ika.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
@@ -80,7 +80,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".,..,..\3rdparty\include,\src\python-2.3a2\include"
+				AdditionalIncludeDirectories=".,..,\src\audiere\src,..\3rdparty\include,\src\python-2.3a2\include"
 				PreprocessorDefinitions="_DEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

@@ -1,6 +1,7 @@
 #include <stdexcept>
 
 #include "sound.h"
+#include "audiere.h"
 
 using namespace audiere;
 
@@ -19,7 +20,7 @@ namespace Sound
 
         if (!nullAudio)
         {
-#if 0 //defined(WIN32) || defined(_WIN32)
+#if 0 && (defined(WIN32) || defined(_WIN32))
             _device = OpenDevice("winmm", "");
             if (!_device)
 #endif

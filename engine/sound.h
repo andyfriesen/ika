@@ -2,7 +2,8 @@
 #ifndef SOUND_H
 #define SOUND_H
 
-#include "audiere.h"
+//#include "audiere.h"
+namespace audiere { class OutputStream; }
 
 namespace Sound
 {

@@ -67,7 +67,7 @@ void ScriptEngine::Init(CEngine* p)
     Py_INCREF(&Script::Canvas::type);   PyModule_AddObject(module, "Canvas", (PyObject*)&Script::Canvas::type);
     
     // Create entity dictionary
-    entityDict=PyDict_New();
+    entityDict = PyDict_New();
     assert(entityDict != 0);
 }
 

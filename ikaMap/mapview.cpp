@@ -188,9 +188,6 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
     int adjustX = xoffset % tileX;
     int adjustY = yoffset % tileY;
 
-    if (firstX + lenX > tiles.Width())  lenX = tiles.Width()  - firstX;
-    if (firstY + lenY > tiles.Height()) lenY = tiles.Height() - firstY;
-
     if (firstX < 0)  
     {
         lenX -= -firstX;
@@ -203,6 +200,9 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset)
         adjustY += firstY * tileY;
         firstY = 0;
     }
+
+    if ((uint)(firstX + lenX) > tiles.Width())  lenX = tiles.Width()  - firstX;
+    if ((uint)(firstY + lenY) > tiles.Height()) lenY = tiles.Height() - firstY;
 
     for (int y = 0; y < lenY; y++)
     {
@@ -339,9 +339,6 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
     int adjustX = (xoffset % tileX);
     int adjustY = (yoffset % tileY);
 
-    if (firstX + lenX > lay->Width())  lenX = lay->Width()  - firstX;
-    if (firstY + lenY > lay->Height()) lenY = lay->Height() - firstY;
-
     if (firstX < 0)  
     {
         lenX -= -firstX;
@@ -354,6 +351,9 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset)
         adjustY += firstY * tileY;
         firstY = 0;
     }
+
+    if ((uint)(firstX + lenX > lay->Width()))  lenX = lay->Width()  - firstX;
+    if ((uint)(firstY + lenY > lay->Height())) lenY = lay->Height() - firstY;
 
     for (int y = 0; y < lenY; y++)
     {

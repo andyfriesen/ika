@@ -105,7 +105,9 @@ public:
 
     bool IsLayerVisible(uint index) const;
     void ShowLayer(uint index, bool show = true);
-    void HideLayer(uint index) { ShowLayer(index, false); }
+    void HideLayer(uint index);
+
+    void HighlightToolButton(uint buttonId);
 
     Map* GetMap() const;
     TileSet* GetTileSet() const;

@@ -12,6 +12,18 @@ Things that just don't fit anywhere else, but are handy to have around.
 #undef min  // GAAAAAAAAAY
 #undef max
 
+#if !defined(_MSC_VER) || _MSC_VER >= 1300
+    // This totally rocks.
+    template<typename T, size_t N>
+    size_t lengthof(T (&)[N])
+    {
+        return N;
+    }
+#else
+    // VC6 is homo.
+#   define lengthof(x) sizeof x / sizeof x[0];
+#endif
+
 template <typename T>
 inline void swap(T& a, T& b)
 {

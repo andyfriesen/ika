@@ -154,21 +154,23 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     struct ToolButton
     {
         const char* iconName;
+        bool pushable;
         uint id;
         const char* toolTip;
     } toolButtons[] = 
     {
-        {   "brushicon",        id_tilepaint,       "Place individual tiles on the map."                            },
-        {   "selecticon",       id_copypaste,       "Select a group of tiles, and duplicate them elsewhere."        },
-        {   "obstructionicon",  id_obstructionedit, "Edit obstructed areas."                                        },
-        {   "zoneicon",         id_zoneedit,        "Edit zones."                                                   },
-        {   "waypointicon",     id_waypointedit,    "Edit waypoints."                                               },
-        {   "entityicon",       id_entityedit,      "Edit entities."                                                },
-        {   "newicon",          id_newlayer,        "Create a brand new layer."                                     },
-        {   "trashicon",        id_destroylayer,    "Destroy the currently selected layer."                         },
-        {   "uparrowicon",      id_movelayerup,     "Move the current layer upwards. (beneath the previous layer)"  },
-        {   "downarrowicon",    id_movelayerdown,   "Move the current layer downwards. (above the next layer)"      },
+        {   "brushicon",        true,   id_tilepaint,       "Place individual tiles on the map."                            },
+        {   "selecticon",       true,   id_copypaste,       "Select a group of tiles, and duplicate them elsewhere."        },
+        {   "obstructionicon",  true,   id_obstructionedit, "Edit obstructed areas."                                        },
+        {   "zoneicon",         true,   id_zoneedit,        "Edit zones."                                                   },
+        {   "waypointicon",     true,   id_waypointedit,    "Edit waypoints."                                               },
+        {   "entityicon",       true,   id_entityedit,      "Edit entities."                                                },
+        {   "newicon",          false,  id_newlayer,        "Create a brand new layer."                                     },
+        {   "trashicon",        false,  id_destroylayer,    "Destroy the currently selected layer."                         },
+        {   "uparrowicon",      false,  id_movelayerup,     "Move the current layer upwards. (beneath the previous layer)"  },
+        {   "downarrowicon",    false,  id_movelayerdown,   "Move the current layer downwards. (above the next layer)"      },
     };
+    // blah blah blah can't use templates with local structs gay gay gay blah gay. (I cry myself to sleep ;_;)
     const int numToolButtons = sizeof toolButtons / sizeof toolButtons[0];
 
     {
@@ -176,7 +178,6 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
         for (uint i = 0; i < numToolButtons; i++)
         {
-            //*
             wxBitmapButton* b = new wxBitmapButton(
                 sidePanel, 
                 toolButtons[i].id, 
@@ -658,21 +659,25 @@ void MainWindow::OnToggleLayer(wxCommandEvent& event)
 
 void MainWindow::OnSetTilePaintState(wxCommandEvent&)
 {
+    HighlightToolButton(id_tilepaint);
     _mapView->Cock();
 }
 
 void MainWindow::OnSetCopyPasteState(wxCommandEvent&)
 {
+    HighlightToolButton(id_copypaste);
     _mapView->SetCopyPasteState();
 }
 
 void MainWindow::OnSetObstructionState(wxCommandEvent&)
 {
+    HighlightToolButton(id_obstructionedit);
     _mapView->SetObstructionState();
 }
 
 void MainWindow::OnSetEntityState(wxCommandEvent&)
 {
+    HighlightToolButton(id_entityedit);
     _mapView->SetEntityState();
 }
 
@@ -754,6 +759,34 @@ void MainWindow::ShowLayer(uint index, bool show)
     _layerList->Check(index, show);
     _mapView->Render();
     _mapView->ShowPage();
+}
+
+void MainWindow::HideLayer(uint index)
+{
+    ShowLayer(index, false);
+}
+
+void MainWindow::HighlightToolButton(uint buttonId)
+{
+    static const uint ids[] =
+    {
+        id_tilepaint,
+        id_copypaste,
+        id_obstructionedit,
+        id_zoneedit,
+        id_waypointedit,
+        id_entityedit
+    };
+    
+    for (uint i = 0; i < lengthof(ids); i++)
+    {
+        uint id = ids[i];
+        wxButton* button = wxStaticCast(FindWindowById(id, this), wxButton);
+        if (button)
+        {
+            button->Enable(id != buttonId); // the current button is disabled, since I have no mechanism to keep it pressed at present. (suck)
+        }
+    }
 }
 
 Map* MainWindow::GetMap() const { return _map; }
