@@ -1,5 +1,5 @@
 /*
-	look at misc.h :P
+look at misc.h :P
 */
 
 #include <stdarg.h>
@@ -9,66 +9,57 @@
 
 int sgn(int x)
 {
-	if (x<0) return -1;
-	if (x>0) return  1;
-	return 0;
+    if (x<0) return -1;
+    if (x>0) return  1;
+    return 0;
 }
-
-/*template <typename T>
-void swap(T& a,T& b)
-{
-	T c;
-	c=a;
-	a=b;
-	b=c;
-}*/
 
 char* va(char* format, ...)
 {
-        va_list argptr;
-        static char string[1024];
-
-        va_start(argptr, format);
-        vsprintf(string, format, argptr);
-        va_end(argptr);
-
-        return string;
+    va_list argptr;
+    static char string[1024];
+    
+    va_start(argptr, format);
+    vsprintf(string, format, argptr);
+    va_end(argptr);
+    
+    return string;
 }
 
 int Random(int min,int max)
 {
-	int i;
-
-	if (max<min)
-		swap(max,min);
-
-	i=(rand()%(max-min))+min;
-
-	return i;
+    int i;
+    
+    if (max<min)
+        swap(max,min);
+    
+    i=(rand()%(max-min))+min;
+    
+    return i;
 }
 
 #include <direct.h>
 
 void ChangeDirectory(const char* s)
 {
-	_chdir(s);
+    _chdir(s);
 }
 
 char* GetCurrentDirectory()
 {
-	static char s[255];
-	_getcwd(s,255);
-	return s;
+    static char s[255];
+    _getcwd(s,255);
+    return s;
 }
 
 #include <windows.h>
 
 RECT MakeRect(int x1,int y1,int x2,int y2)
 {
-	RECT r;
-	r.left=x1;
-	r.top=y1;
-	r.right=x2;
-	r.bottom=y2;
-	return r;
+    RECT r;
+    r.left=x1;
+    r.top=y1;
+    r.right=x2;
+    r.bottom=y2;
+    return r;
 }

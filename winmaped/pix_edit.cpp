@@ -1,4 +1,5 @@
 #include "pix_edit.h"
+#include "pixel_matrix_blitter.h"       // hack, so we can use the alpha blending stuff here
 
 //#define ALPHA_BLIT
 
@@ -24,11 +25,10 @@ void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src)
     
     curimage    =src;
 
-    iCurrent    =new CDIB(src);//.Width(),src.Height());
+    iCurrent    =new CDIB(src);
     iSwatch     =new CDIB(nSwatchsize,nSwatchsize);
     iBackbuffer =new CDIB(410,410);                       // gah, magic numbers
 
-//    iCurrent->CopyPixelData(curimage.GetPixelData(),curimage.Width(),curimage.Height());
     // TODO: make this depend on the size of the client, then everything will scale all superhappy and stuff when the client window is resized
     rBigimage=Rect(20,20,430,430);
     rSmallimage=Rect(500-(curimage.Width()/2), 400-(curimage.Height()/2), 500+(curimage.Width()/2), 400+(curimage.Height()/2));
@@ -36,8 +36,8 @@ void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src)
     
     MakeSwatchImage();
 
-    HBITMAP hBmp=LoadBitmap(hInst,MAKEINTRESOURCE(IDB_BACKGROUND));
-    hBrush=CreatePatternBrush(hBmp);
+//    HBITMAP hBmp=LoadBitmap(hInst,MAKEINTRESOURCE(IDB_BACKGROUND));
+//    hBrush=CreatePatternBrush(hBmp);
 //    DeleteObject(hBmp);
 
     StartDlg(hInst,hWndParent,"PixEdDlg");
@@ -66,7 +66,7 @@ void CEdit::ClipUndoList()
 void CEdit::AddToUndo()
 {
     if (UndoList.size())
-    {	
+    {        
         CPixelMatrix tmp = UndoList.front();
         if (curimage==tmp)
             return;
@@ -143,10 +143,10 @@ void CEdit::DrawSwatch()
 // with the Hard Way. :(
 void CEdit::DrawBlownUpImage()
 {
-    SelectObject(iBackbuffer->GetDC(),hBrush);
-
-    Rectangle(iBackbuffer->GetDC(),0,0,rBigimage.right-rBigimage.left,rBigimage.bottom-rBigimage.top);
 #ifdef ALPHA_BLIT
+
+    SelectObject(iBackbuffer->GetDC(),hBrush);
+    Rectangle(iBackbuffer->GetDC(),0,0,rBigimage.right-rBigimage.left,rBigimage.bottom-rBigimage.top);
 
     const BLENDFUNCTION blendfunc =
     {
@@ -182,7 +182,6 @@ void CEdit::DrawBlownUpImage()
 #endif
 }
 
-// ugh
 void CEdit::Redraw()
 {   
     DrawSwatch();
@@ -229,31 +228,6 @@ RGBA  CEdit::CalcColour(int nLumina,RGBA chroma)
     return RGBA(r,g,b,chroma.a);
 }
 
-RGBA CEdit::MergeColors(RGBA color1,RGBA color2)
-{
-    if(color1.a == 255)
-        return color1;
-    else if(color1.a == 0)
-        return color2;
-    
-    int i, r, g, b, a;
-    int alpha1 = color1.a;
-    int alpha2 = 255-color1.a;
-    
-    r = ((color1.r * alpha1)+(color2.r * alpha2)) / 256;
-    g = ((color1.g * alpha1)+(color2.g * alpha2)) / 256;
-    b = ((color1.b * alpha1)+(color2.b * alpha2)) / 256;
-    
-    if(alpha2 == 255)
-        a = 255;
-    else
-        a =((alpha2 + alpha1)>255)?(255):(alpha2 + alpha1);
-    
-    i = (a<<24)+(b<<16)+(g<<8)+r;
-    
-    return i;
-}
-
 void CEdit::UpdateLumina(HWND hBar)
 {
     SCROLLINFO si;
@@ -296,13 +270,11 @@ void CEdit::UpdateAlpha(HWND hBar)
     sprintf(c,"%i",nAlpha);
     SetDlgItemText(hWnd,IDC_ALPHAINDICATOR,c);
     
-    //nCurcolour[0]=SetAlpha(nAlpha,nCurcolour[0]);
-    
     MakeSwatchImage();
 }
 
 void CEdit::MakeSwatchImage()
-{	
+{        
     RGBA* pData=(RGBA*)iSwatch->GetPixelData();
     for (int y=0; y<nSwatchsize; y++)
         for (int x=0; x<nSwatchsize; x++)
@@ -311,7 +283,7 @@ void CEdit::MakeSwatchImage()
             int tx=x*256/nSwatchsize;
             RGBA colour=RGBA(tx,ty,255-tx,nAlpha);
             
-            pData[y*nSwatchsize+x] = CalcColour(nLumina,colour);
+            pData[ y*nSwatchsize + x] = CalcColour(nLumina,colour);
         }
 }
 
@@ -330,7 +302,7 @@ void CEdit::DoLeftDownOnBigTile(int x,int y,int b,RGBA& curcolour)
     y=(y*curimage.Height())/(rBigimage.bottom-rBigimage.top);
     
     
-    if (b&MK_SHIFT)	// colour grabber
+    if (b&MK_SHIFT)        // colour grabber
     {
         curcolour=curimage.GetPixel(x,y);
         return;
@@ -346,9 +318,6 @@ void CEdit::DoLeftDownOnBigTile(int x,int y,int b,RGBA& curcolour)
     iCurrent->SetPixel(x, y, curcolour);                                // synch the DIB image
     bAltered=true;
     Redraw();
-    
-    //	curimage.CopyToImage(iCurrent);
-    //	iCurrent.CopyPixelData(curimage.GetPixelData(),curimage.Pal(),curimage.Width(),curimage.Height());*/
 }
 
 void CEdit::DoLeftUpOnBigTile(int x,int y,int b)
@@ -376,15 +345,15 @@ void CEdit::HandleMouse(int x,int y,int b)
     static bool bOldleft=false;
     static bool bOldright=false;
     
-    if(!(b&MK_LBUTTON))		lbutton = false;
-    else					lbutton = true;
+    if(!(b&MK_LBUTTON))                lbutton = false;
+    else                                        lbutton = true;
     
-    if(!(b&MK_RBUTTON))		rbutton = false;
-    else					rbutton = true;
+    if(!(b&MK_RBUTTON))                rbutton = false;
+    else                                        rbutton = true;
     
     
-    if (lbutton && !bOldleft)		AddToUndo();							// if the mouse button was *just* pressed now
-    if (rbutton && !bOldright)		AddToUndo();
+    if (lbutton && !bOldleft)                AddToUndo();                                                        // if the mouse button was *just* pressed now
+    if (rbutton && !bOldright)                AddToUndo();
     
     bOldleft=lbutton;
     bOldright=rbutton;
@@ -446,7 +415,7 @@ int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
         break;
     case WM_LBUTTONUP:
         lbutton=false;
-        HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);	
+        HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);        
         PostMessage(hWnd,WM_PAINT,0,0);
         break;
     case WM_LBUTTONDOWN:
@@ -488,11 +457,11 @@ int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 break;
             case SB_PAGEUP:
                 nLumina-=10;
-                if (nLumina<0)		nLumina=0;
+                if (nLumina<0)                nLumina=0;
                 break;
             case SB_PAGEDOWN:
                 nLumina+=10;
-                if (nLumina>255)	nLumina=255;
+                if (nLumina>255)        nLumina=255;
                 break;
             case SB_THUMBPOSITION:
             case SB_THUMBTRACK:
@@ -521,11 +490,11 @@ int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 break;
             case SB_PAGEUP:
                 nAlpha-=10;
-                if (nAlpha<0)		nAlpha=0;
+                if (nAlpha<0)                nAlpha=0;
                 break;
             case SB_PAGEDOWN:
                 nAlpha+=10;
-                if (nAlpha>255)	nAlpha=255;
+                if (nAlpha>255)        nAlpha=255;
                 break;
             case SB_THUMBPOSITION:
             case SB_THUMBTRACK:
@@ -540,33 +509,26 @@ int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
     case WM_COMMAND:
         switch(LOWORD(wParam))
         {
-        case ID_TILEED_NEXT: 
-            GoNext();
-            break;
-            
-        case ID_TILEED_PREV: 
-            GoPrev();
-            break;
+        case ID_TILEED_NEXT: GoNext(); break;
+        case ID_TILEED_PREV: GoPrev(); break;
             
         case ID_TILEED_UNDO:  Undo(); break;
         case ID_TILEED_REDO:  Redo(); break;
             
-        case ID_TILEED_CLEAR:	curimage.Clear(nCurcolour[1]);	break;
-        case ID_TILEED_ROTATE:	curimage.Rotate();				break;
-        case ID_TILEED_FLIP:	curimage.Flip();				break;
-        case ID_TILEED_MIRROR:	curimage.Mirror();				break;
+        case ID_TILEED_CLEAR:        curimage.Clear(nCurcolour[1]);        break;
+        case ID_TILEED_ROTATE:        curimage.Rotate();                                break;
+        case ID_TILEED_FLIP:        curimage.Flip();                                break;
+        case ID_TILEED_MIRROR:        curimage.Mirror();                                break;
         case ID_TILEED_EXIT: PostMessage(hWnd, WM_CLOSE, 0, 0); break;
         default:
-            return HandleCommand(hWnd,wParam);										// unknown message?  Pass it down to the derived class
+            return HandleCommand(hWnd,wParam);                                                                                // unknown message?  Pass it down to the derived class
         }
         
-        //				curimage.CopyToImage(iCurrent);
-        //		iCurrent.CopyPixelData(curimage.GetPixelData(),curimage.Pal(),curimage.Width(),curimage.Height());
         PostMessage(hWnd,WM_PAINT,0,0);
         break;
-        case WM_CLOSE:
-            EndDialog(hWnd,0);
-            break;
-        }
-        return 0;
+    case WM_CLOSE:
+        EndDialog(hWnd,0);
+        break;
+    }
+    return 0;
 }

@@ -1,10 +1,10 @@
-    /*
+/*
   Entity stuff.
 
-  AI has to be processed in the main module.  So!  This will have lots of handy-dandy methods for getting
-  info about the entity, so that the amount of processing done by the engine is kept to a minimum.
+  AI is done here.  Every entity has a pointer to the engine from which it was spawned, so it has
+  access to the engine's state.
 
-  This setup sucks, it's too messy.  Revamp it later.
+  Not sure if I like this, but it's better than it was before.
 */
 
 #ifndef ENTITY_H

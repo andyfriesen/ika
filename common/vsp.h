@@ -67,7 +67,6 @@ public:
     
     bool Load(const char* fname);
     int  Save(const char* fname);
-//    int  SaveOld(const char* fname);
     void Free();
     void New(int xsize=16,int ysize=16);
     

@@ -1,8 +1,8 @@
 /*
-	Things that just don't fit anywhere else, but are handy to have around.
+Things that just don't fit anywhere else, but are handy to have around.
 
-	Some things are simple abstractions over common functions, to make everything
-	all happy and portable. (kudos to aegis for the advice)
+  Some things are simple abstractions over common functions, to make everything
+  all happy and portable. (kudos to aegis for the advice)
 */
 #ifndef MISC_H
 #define MISC_H
@@ -13,9 +13,11 @@ int sgn(int x);
 
 template <typename T>
 void swap(T& a,T& b)
-{	T c;
-	c=a;
-	a=b;	b=c;
+{
+    T c;
+    c=a;
+    a=b;
+    b=c;
 }
 
 int Random(int min,int max);

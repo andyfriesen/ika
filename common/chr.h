@@ -28,7 +28,6 @@ public:
     string_k    sDescription;                       // authoring information?  I dunno, but it's here.
     
     CCHRfile();
-//    ~CCHRfile();
 
     CPixelMatrix& GetFrame(int frame) const;
     void UpdateFrame(const CPixelMatrix& newdata,int nFrame);

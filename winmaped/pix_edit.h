@@ -26,7 +26,7 @@ protected:
     int         nMaxUndos;
     bool        bAltered;
 
-    HBRUSH      hBrush;
+//    HBRUSH      hBrush;
     
     CDIB*       iCurrent;               // the image of the graphic we're editing
     CDIB*       iSwatch;                // The colour field
@@ -58,12 +58,11 @@ protected:
     void Redraw();
     
     RGBA CalcColour(int nLumina,RGBA chroma);
-    RGBA MergeColors(RGBA color1, RGBA color2);
     void UpdateLumina(HWND hBar);
     void UpdateAlpha(HWND hBar);
     void MakeSwatchImage();
     
-    RGBA    chroma;            // hue of the current color
+    RGBA    chroma;             // hue of the current color
     int     nLumina;            // light
     int     nAlpha;             // translucency
     RGBA    nCurcolour[2];      // Current colour index
@@ -82,7 +81,7 @@ protected:
     virtual void Resize(int newwidth,int newheight) {}                  // called when the image is resized. (everything ika uses is resizeable anyway)
     virtual int  HandleCommand(HWND hWnd,int wParam) { return 0; }	// handles any menu commands that the base class is unaware of
     
-    void StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src);//,VSP* v,int t);
+    void StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src);
     
 public:
     

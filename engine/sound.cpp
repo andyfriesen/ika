@@ -25,71 +25,71 @@ static void SetupNullSoundDriver();
 template<typename T>
 static void Assign(T& dest,void* src)
 {
-	if (!src) throw 0;					// This saves so much typing.
-	dest=(T&)src;
+    if (!src) throw 0;					// This saves so much typing.
+    dest=(T&)src;
 }
 
 HINSTANCE hSoundlib=0;
 
 bool SetupSound(const char* dllname)
 {
-	if (!strlen(dllname))
-	{
-		SetupNullSoundDriver();
-		return true;
-	}
-
-	hSoundlib=LoadLibrary(dllname);
-	if (!hSoundlib)
-	{
-		SetupNullSoundDriver();
-		return false;
-	}
-
-	try
-	{
-		Assign(sfxInit,GetProcAddress(hSoundlib,"sfxInit"));
-		Assign(sfxShutdown,GetProcAddress(hSoundlib,"sfxShutdown"));
-
-		Assign(sfxLoadMusic,GetProcAddress(hSoundlib,"sfxLoadMusic"));
-		Assign(sfxFreeMusic,GetProcAddress(hSoundlib,"sfxFreeMusic"));
-		Assign(sfxPlayMusic,GetProcAddress(hSoundlib,"sfxPlayMusic"));
-		Assign(sfxStopMusic,GetProcAddress(hSoundlib,"sfxStopMusic"));
-		Assign(sfxGetMusicPos,GetProcAddress(hSoundlib,"sfxGetMusicPos"));
-		Assign(sfxSetMusicPos,GetProcAddress(hSoundlib,"sfxSetMusicPos"));
-		Assign(sfxGetMusicVolume,GetProcAddress(hSoundlib,"sfxGetMusicVolume"));
-		Assign(sfxSetMusicVolume,GetProcAddress(hSoundlib,"sfxSetMusicVolume"));
-
-		Assign(sfxLoadEffect,GetProcAddress(hSoundlib,"sfxLoadEffect"));
-		Assign(sfxFreeEffect,GetProcAddress(hSoundlib,"sfxFreeEffect"));
-		Assign(sfxPlayEffect,GetProcAddress(hSoundlib,"sfxPlayEffect"));
-
-		Assign(sfxUpdate,GetProcAddress(hSoundlib,"sfxUpdate"));
-
-		if (!sfxInit())
-			throw 0;
-	}
-	catch (int)
-	{
-		FreeLibrary(hSoundlib);
-		hSoundlib=0;
-
-		SetupNullSoundDriver();
-
-		return false;
-	}
-
-	return true;
+    if (!strlen(dllname))
+    {
+        SetupNullSoundDriver();
+        return true;
+    }
+    
+    hSoundlib=LoadLibrary(dllname);
+    if (!hSoundlib)
+    {
+        SetupNullSoundDriver();
+        return false;
+    }
+    
+    try
+    {
+        Assign(sfxInit,GetProcAddress(hSoundlib,"sfxInit"));
+        Assign(sfxShutdown,GetProcAddress(hSoundlib,"sfxShutdown"));
+        
+        Assign(sfxLoadMusic,GetProcAddress(hSoundlib,"sfxLoadMusic"));
+        Assign(sfxFreeMusic,GetProcAddress(hSoundlib,"sfxFreeMusic"));
+        Assign(sfxPlayMusic,GetProcAddress(hSoundlib,"sfxPlayMusic"));
+        Assign(sfxStopMusic,GetProcAddress(hSoundlib,"sfxStopMusic"));
+        Assign(sfxGetMusicPos,GetProcAddress(hSoundlib,"sfxGetMusicPos"));
+        Assign(sfxSetMusicPos,GetProcAddress(hSoundlib,"sfxSetMusicPos"));
+        Assign(sfxGetMusicVolume,GetProcAddress(hSoundlib,"sfxGetMusicVolume"));
+        Assign(sfxSetMusicVolume,GetProcAddress(hSoundlib,"sfxSetMusicVolume"));
+        
+        Assign(sfxLoadEffect,GetProcAddress(hSoundlib,"sfxLoadEffect"));
+        Assign(sfxFreeEffect,GetProcAddress(hSoundlib,"sfxFreeEffect"));
+        Assign(sfxPlayEffect,GetProcAddress(hSoundlib,"sfxPlayEffect"));
+        
+        Assign(sfxUpdate,GetProcAddress(hSoundlib,"sfxUpdate"));
+        
+        if (!sfxInit())
+            throw 0;
+    }
+    catch (int)
+    {
+        FreeLibrary(hSoundlib);
+        hSoundlib=0;
+        
+        SetupNullSoundDriver();
+        
+        return false;
+    }
+    
+    return true;
 }
 
 void ShutdownSound()
 {
-	if (hSoundlib)
-	{
-		sfxShutdown();
-		FreeLibrary(hSoundlib);
-	}
-	hSoundlib=0;
+    if (hSoundlib)
+    {
+        sfxShutdown();
+        FreeLibrary(hSoundlib);
+    }
+    hSoundlib=0;
 }
 
 // This is the not-a-sound-driver driver.  It does nothing, but pretends that it works
@@ -116,21 +116,21 @@ static void nullsfxUpdate(){}
 
 static void SetupNullSoundDriver()
 {
-	Assign(sfxInit,&nullsfxInit);
-	Assign(sfxShutdown,&nullsfxShutdown);
-
-	Assign(sfxLoadMusic,&nullsfxLoadMusic);
-	Assign(sfxFreeMusic,&nullsfxFreeMusic);
-	Assign(sfxPlayMusic,&nullsfxPlayMusic);
-	Assign(sfxStopMusic,&nullsfxStopMusic);
-	Assign(sfxGetMusicPos,&nullsfxGetMusicPos);
-	Assign(sfxSetMusicPos,&nullsfxSetMusicPos);
-	Assign(sfxGetMusicVolume,&nullsfxGetMusicVolume);
-	Assign(sfxSetMusicVolume,&nullsfxSetMusicVolume);
-
-	Assign(sfxLoadEffect,&nullsfxLoadEffect);
-	Assign(sfxFreeEffect,&nullsfxFreeEffect);
-	Assign(sfxPlayEffect,&nullsfxPlayEffect);
-
-	Assign(sfxUpdate,&nullsfxUpdate);
+    Assign(sfxInit,&nullsfxInit);
+    Assign(sfxShutdown,&nullsfxShutdown);
+    
+    Assign(sfxLoadMusic,&nullsfxLoadMusic);
+    Assign(sfxFreeMusic,&nullsfxFreeMusic);
+    Assign(sfxPlayMusic,&nullsfxPlayMusic);
+    Assign(sfxStopMusic,&nullsfxStopMusic);
+    Assign(sfxGetMusicPos,&nullsfxGetMusicPos);
+    Assign(sfxSetMusicPos,&nullsfxSetMusicPos);
+    Assign(sfxGetMusicVolume,&nullsfxGetMusicVolume);
+    Assign(sfxSetMusicVolume,&nullsfxSetMusicVolume);
+    
+    Assign(sfxLoadEffect,&nullsfxLoadEffect);
+    Assign(sfxFreeEffect,&nullsfxFreeEffect);
+    Assign(sfxPlayEffect,&nullsfxPlayEffect);
+    
+    Assign(sfxUpdate,&nullsfxUpdate);
 }

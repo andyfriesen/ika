@@ -104,7 +104,7 @@ bool VSP::Load(const char *fname)
     case 5:
         {
             u32 bufsize;
-
+            
             nTilex=16; nTiley=16;
             f.Read(&nTiles,2);
             f.Read(&bufsize,4);
@@ -196,69 +196,6 @@ bool VSP::Load(const char *fname)
     return true;
 }
 
-/*// This saves old-style VSPs if the tiles are exactly 16x16 in size, so that winmaped is still useful for editing v2 maps.
-int VSP::SaveOld(const char *fname)
-{
-    File f;
-    int i;
-    int bufsize;
-    u8 *cb;
-    u16 *buf,*buf2;
-    
-    if (!f.OpenWrite(fname))
-    {
-        log("Error writing to %s",fname);
-        return 0;
-    }
-    
-    if (bpp==1) // maybe I should split this up into two separate functions... nah!
-    {
-        if (nTilex!=16 || nTiley!=16)	return 0;
-        // this file format can only save 16x16x8bpp tiles
-        
-        i=3;
-        f.Write(&i,2);
-        f.Write(&pal,768);
-        f.Write(&nTiles,2);
-        cb=new u8[nTiles*nTilex*nTiley];
-        WriteCompressedLayer1(cb,nTiles*nTilex*nTiley,bufsize,data);
-        f.Write(&bufsize,4);
-        f.Write(cb,bufsize);
-        delete[] cb;
-        f.Write(&vspanim,sizeof vspanim);
-        f.Close();
-        return 1;
-    }
-    else
-    {
-        if (nTilex!=16 || nTiley!=16) return 0;
-        // this file format can only save 16x16x16bpp tiles
-        
-        i=5;
-        f.Write(&i,2);
-        f.Write(&nTiles,2);
-        buf=new u16[nTiles*nTilex*nTiley];
-        // compress the 32bit data into 16 bit 565
-        for (i=0; i<nTiles*nTilex*nTiley; i++)
-        {
-            buf[i] = data[i*bpp+2]>>3;                // Blue
-            buf[i]|=(data[i*bpp+1]>>2)<<5;            // Green
-            buf[i]|=(data[i*bpp  ]>>3)<<11;           // red
-        }
-        buf2=new u16[nTiles*nTilex*nTiley];
-        WriteCompressedLayer2(buf2,nTiles*nTilex*nTiley,bufsize,buf);
-        
-        f.Write(&bufsize,4);
-        f.Write(buf2,bufsize);
-        
-        delete[] buf;
-        delete[] buf2;
-        f.Write(&vspanim,sizeof vspanim);
-        f.Close();
-        return 1;
-    }
-}*/
-
 int VSP::Save(const char* fname)
 {
     File f;
@@ -270,13 +207,13 @@ int VSP::Save(const char* fname)
         log("Error writing to %s",fname);
         return 0;
     }
-
+    
     RGBA* pTemp=new RGBA[nTilex*nTiley*tiles.size()];
-
+    
     // copy all the tile data into one big long buffer that we can write to disk
     for (int j=0; j<tiles.size(); j++)
         memcpy(pTemp+(j*nTilex*nTiley),tiles[j].GetPixelData(),nTilex*nTiley*sizeof(RGBA));
-
+    
     const char bpp=4;
     
     i=6;
@@ -287,7 +224,7 @@ int VSP::Save(const char* fname)
     f.Write((int)tiles.size());
     
     f.Write(sDesc,64);			// description. (authoring info, whatever)
-       
+    
     z_stream stream;
     int nDatasize=tiles.size()*nTilex*nTiley*bpp;
     
@@ -314,7 +251,7 @@ int VSP::Save(const char* fname)
     
     f.Write(&vspanim,sizeof vspanim);
     f.Close();
-
+    
     return true;
 }
 
@@ -328,9 +265,9 @@ void VSP::New(int xsize,int ysize)	// creates a blank 100 tile, 32 bit VSP, of t
     Free();
     nTilex=xsize>0?xsize:1;
     nTiley=ysize>0?ysize:1;
-
+    
     tiles.resize(100);
-
+    
     for (int i=0; i<100; i++)
         tiles[i].Resize(nTilex,nTiley);
 }
@@ -341,7 +278,7 @@ void VSP::InsertTile(int pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
-
+    
     tiles.push_back(tiles[tiles.size()-1]); // tack the last tile on the end
     
     for (int i=pos; i<tiles.size()-1; i++)
@@ -352,17 +289,17 @@ void VSP::DeleteTile(int pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
-
+    
     for (int i=pos; i<tiles.size()-1; i++)
         tiles[i]=tiles[i+1];                // shuffle them all down one
-
+    
     tiles.pop_back();
 }
 
 void VSP::AppendTiles(int count)
 {
     CPixelMatrix dummy(nTilex,nTiley);
-
+    
     for (int i=0; i<count; i++)
         tiles.push_back(dummy);
 }
@@ -371,7 +308,7 @@ void VSP::CopyTile(CPixelMatrix& tb,int pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
-
+    
     tb=tiles[pos];
 }
 
@@ -379,7 +316,7 @@ void VSP::PasteTile(const CPixelMatrix& tb,int pos)
 {
     if (pos<0 || pos>=tiles.size())
         return;
-
+    
     tiles[pos]=tb;
 }
 
@@ -391,21 +328,21 @@ void VSP::TPasteTile(const CPixelMatrix& tb,int pos)
 VSP::AnimState& VSP::Anim(int strand)
 {
     static AnimState dummy;
-
+    
     if (strand<0 || strand>99) return dummy;
-
+    
     return vspanim[strand];
 }
 
 CPixelMatrix& VSP::GetTile(int tileidx)
 {
     static CPixelMatrix dummy;
-
+    
     if (tileidx<0 || tileidx>tiles.size())
     {
         return dummy;
     }
-
+    
     return tiles[tileidx];
 }
 
@@ -413,9 +350,9 @@ void VSP::CreateTilesFromBuffer(u8* data,u8* pal,int numtiles,int tilex,int tile
 {
     nTilex=tilex;
     nTiley=tiley;
-
+    
     tiles.resize(numtiles);
-
+    
     for (int i=0; i<numtiles; i++)
     {
         tiles[i].Resize(nTilex,nTiley);       
@@ -428,25 +365,25 @@ void VSP::CreateTilesFromBuffer(u16* data,int numtiles,int tilex,int tiley)
 {
     nTilex=tilex;
     nTiley=tiley;
-
+    
     tiles.resize(numtiles);
-
+    
     RGBA* pBuffer=new RGBA[nTilex*nTiley];
     u16* pSrc=data;
-
+    
     for (int i=0; i<numtiles; i++)
     {
         tiles[i].Resize(nTilex,nTiley);
-
+        
         for (int y=0; y<nTiley; y++)
             for (int x=0; x<nTilex; x++)
                 pBuffer[y*nTilex+x]=RGBA(pSrc[y*nTilex+x]);
-
-        pSrc+=nTilex*nTiley;
-
-        tiles[i].CopyPixelData(pBuffer,nTilex,nTiley);
+            
+            pSrc+=nTilex*nTiley;
+            
+            tiles[i].CopyPixelData(pBuffer,nTilex,nTiley);
     }
-
+    
     delete[] pBuffer;
 }
 
@@ -454,9 +391,9 @@ void VSP::CreateTilesFromBuffer(RGBA* data,int numtiles,int tilex,int tiley)
 {
     nTilex=tilex;
     nTiley=tiley;
-
+    
     tiles.resize(numtiles);
-
+    
     for (int i=0; i<numtiles; i++)
     {
         tiles[i].Resize(nTilex,nTiley);

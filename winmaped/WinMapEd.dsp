@@ -326,6 +326,10 @@ SOURCE=..\common\pixel_matrix.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\pixel_matrix_blitter.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\common\rle.cpp
 # End Source File
 # Begin Source File

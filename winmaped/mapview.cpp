@@ -10,16 +10,16 @@ CMapView::CMapView(HWND hWndparent,HINSTANCE hinst,Engine* pengine,Map* pmap,VSP
     pMap=pmap;
     pVsp=pvsp;
     
-    nLefttile=0;	nRighttile=0;
-    nCurzone=0;		nCurlayer=0;
+    nLefttile=0;    nRighttile=0;
+    nCurzone=0;        nCurlayer=0;
     cursormode=mode_normal;
     xwin=ywin=0;
     
-    hWnd=CreateWnd(hWndparent);						// create the window
+    hWnd=CreateWnd(hWndparent);                        // create the window
     
     pGraph=new CGraphView(hWnd,RenderCallback,(void*)this);
     
-    bLayertoggle.resize(10);						// TEMP HACK
+    bLayertoggle.resize(10);                        // TEMP HACK
 }
 
 CMapView::~CMapView()
@@ -89,41 +89,41 @@ void CMapView::HandleMouse(int x,int y,int b)
     
     SMapLayerInfo l;
     l.pdivx=l.pdivy=1;
-    l.pmulx=l.pmuly=1;							// if map::getlayerinfo is out of bounds, we end up with 1:1 parallax
+    l.pmulx=l.pmuly=1;                            // if map::getlayerinfo is out of bounds, we end up with 1:1 parallax
     
     pMap->GetLayerInfo(l,nCurlayer);
     
     pEngine->UpdateStatbar(x,y);
     
-    if (bMouseleft)		DoMouseLeftDown	(x,y,b);
-    else				DoMouseLeftUp	(x,y,b);
+    if (bMouseleft)        DoMouseLeftDown    (x,y,b);
+    else                DoMouseLeftUp    (x,y,b);
     
-    if (bMouseright)	DoMouseRightDown(x,y,b);
-    else				DoMouseRightUp	(x,y,b);
+    if (bMouseright)    DoMouseRightDown(x,y,b);
+    else                DoMouseRightUp    (x,y,b);
 }
 
-void CMapView::DoMouseLeftDown(int x,int y,int b)		// b is the key state
+void CMapView::DoMouseLeftDown(int x,int y,int b)        // b is the key state
 {
-    int e;	
-    RECT r= { x,y,x+pVsp->Width(),y+pVsp->Height() };	// In a lot of the cases below, we'll be re-rendering
+    int e;    
+    RECT r= { x,y,x+pVsp->Width(),y+pVsp->Height() };    // In a lot of the cases below, we'll be re-rendering
     // a specific tile.  We're calculating that rect here, for brevity.
     switch (nCurlayer)
     {
     case lay_obs:
         GetTileCoords(x,y);
-        pMap->SetObs(x,y,true);							// set an obstruction
+        pMap->SetObs(x,y,true);                            // set an obstruction
         pGraph->ShowPage(r);
         break;
         
     case lay_zone:
         GetTileCoords(x,y);
-        pMap->SetZone(x,y,nCurzone);					// set a zone
+        pMap->SetZone(x,y,nCurzone);                    // set a zone
         pGraph->ShowPage(r);
         break;
         
     case lay_ent:
-        x+=xwin;		y+=ywin;
-        e=pMap->EntityAt(x,y);							// Either create an entity, or edit an existing entity
+        x+=xwin;        y+=ywin;
+        e=pMap->EntityAt(x,y);                            // Either create an entity, or edit an existing entity
         bMouseleft=0;
         if (e==-1)
         {
@@ -133,7 +133,7 @@ void CMapView::DoMouseLeftDown(int x,int y,int b)		// b is the key state
         }
         
         {
-            CEntityDlg entitydlg;						// This looks a bit kooky, I just wanted to destroy the dialog object right away.
+            CEntityDlg entitydlg;                        // This looks a bit kooky, I just wanted to destroy the dialog object right away.
             entitydlg.Execute(hInst,hWnd,pMap,e);
         }
         
@@ -144,8 +144,8 @@ void CMapView::DoMouseLeftDown(int x,int y,int b)		// b is the key state
         GetTileCoords(x,y,nCurlayer);
         switch (cursormode)
         {
-        case mode_normal:			
-            if (b&MK_SHIFT)				// shift click (tile grabber)
+        case mode_normal:            
+            if (b&MK_SHIFT)                // shift click (tile grabber)
             {
                 nLefttile=pMap->GetTile(x,y,nCurlayer);
                 return;
@@ -171,7 +171,7 @@ void CMapView::DoMouseLeftDown(int x,int y,int b)		// b is the key state
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
                 curselection.bottom*pVsp->Height()-ywin+1
-                ));																// erase whatever was under the selection rect (including the rect itself)
+                ));                                                                // erase whatever was under the selection rect (including the rect itself)
             
             curselection.right=x+1;
             curselection.bottom=y+1;
@@ -181,7 +181,7 @@ void CMapView::DoMouseLeftDown(int x,int y,int b)		// b is the key state
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
                 curselection.bottom*pVsp->Height()-ywin+1
-                ));																// redraw the new rect
+                ));                                                                // redraw the new rect
             
             pGraph->ShowPage();
             break;
@@ -208,8 +208,8 @@ void CMapView::DoMouseLeftUp(int x,int y,int b)
                 curselection.right=curselection.left;
                 curselection.left=i;
                 
-                curselection.right++;	// makes it act a little more intuitively
-                curselection.left--;												
+                curselection.right++;    // makes it act a little more intuitively
+                curselection.left--;                                                
             }
             if (curselection.bottom<curselection.top)
             {
@@ -249,7 +249,7 @@ void CMapView::DoMouseRightDown(int x,int y,int b)
         break;
         
     case lay_ent:
-        break;	// nuthin yet.  Consider allowing the user to drag entities around with this one. :)
+        break;    // nuthin yet.  Consider allowing the user to drag entities around with this one. :)
         
     default:
         GetTileCoords(x,y,nCurlayer);
@@ -257,40 +257,40 @@ void CMapView::DoMouseRightDown(int x,int y,int b)
         {
         case mode_normal:
             if (!bMouseright) return;
-            if (b&MK_CONTROL)													// Select region
+            if (b&MK_CONTROL)                                                    // Select region
             {
-                curselection.left=x;											// here's one corner.
+                curselection.left=x;                                            // here's one corner.
                 curselection.top=y;
                 
-                cursormode=mode_copyall;										// and remember that we aren't in normal tile-editing mode now.
+                cursormode=mode_copyall;                                        // and remember that we aren't in normal tile-editing mode now.
                 return;
             }
             
-            pMap->Paste(clipboard,x,y,nCurlayer);								// temp code -- TODO: Make pasting tile sections more intuitive than this
+            pMap->Paste(clipboard,x,y,nCurlayer);                                // temp code -- TODO: Make pasting tile sections more intuitive than this
             r.right=r.left+(clipboard.Width()*pVsp->Width());
             r.bottom=r.top+(clipboard.Height()*pVsp->Height());
             pGraph->ShowPage(r);
             break;
             
-        case mode_copyall:														// at this point, the user is still dragging their selection rectangle
+        case mode_copyall:                                                        // at this point, the user is still dragging their selection rectangle
             pGraph->ShowPage(MakeRect(
                 curselection.left*pVsp->Width()-xwin-1,
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
                 curselection.bottom*pVsp->Height()-ywin+1
-                ));																// erase the old rect
+                ));                                                                // erase the old rect
             
             curselection.right=x+1;
-            curselection.bottom=y+1;											// calculate the new rect
+            curselection.bottom=y+1;                                            // calculate the new rect
             
             pGraph->ShowPage(MakeRect(
                 curselection.left*pVsp->Width()-xwin-1,
                 curselection.top*pVsp->Height()-ywin-1,
                 curselection.right*pVsp->Width()-xwin+1,
                 curselection.bottom*pVsp->Height()-ywin+1
-                ));																// redraw the new rect
+                ));                                                                // redraw the new rect
             break;
-        }			
+        }            
     }
 }
 
@@ -301,19 +301,19 @@ void CMapView::DoMouseRightUp(int x,int y,int b)
     case lay_obs:
     case lay_zone:
     case lay_ent:
-        break;	// bla
+        break;    // bla
     default:
-        if (cursormode==mode_copyall)									// Done selecting a region?  Great, copy some tiles to the clipboard
+        if (cursormode==mode_copyall)                                    // Done selecting a region?  Great, copy some tiles to the clipboard
         {
             int i;
-            if (curselection.right<curselection.left)					// Adjust the selection rect so that it behaves more intuitively.
+            if (curselection.right<curselection.left)                    // Adjust the selection rect so that it behaves more intuitively.
             {
                 i=curselection.right;
                 curselection.right=curselection.left;
                 curselection.left=i;
                 
-                curselection.right++;									// This causes the tile that the user initially started dragging on part
-                curselection.left--;									// of the selected region, regardless as to which direction they dragged in
+                curselection.right++;                                    // This causes the tile that the user initially started dragging on part
+                curselection.left--;                                    // of the selected region, regardless as to which direction they dragged in
             }
             if (curselection.bottom<curselection.top)
             {
@@ -325,9 +325,9 @@ void CMapView::DoMouseRightUp(int x,int y,int b)
                 curselection.top--;
             }
             
-            pMap->Copy(clipboard,curselection);							// done selecting.  Grab the chunk and store it away
-            cursormode=mode_normal;										// reset the cursor mode
-            PostMessage(hWnd,WM_PAINT,0,0);								// redraw the window
+            pMap->Copy(clipboard,curselection);                            // done selecting.  Grab the chunk and store it away
+            cursormode=mode_normal;                                        // reset the cursor mode
+            PostMessage(hWnd,WM_PAINT,0,0);                                // redraw the window
             return;
         }
     }
@@ -343,7 +343,7 @@ void CMapView::Mouse_NextTile()
         break;
     default:
         nLefttile++;
-        nLefttile=nLefttile%pVsp->NumTiles();	// clippin' yo
+        nLefttile=nLefttile%pVsp->NumTiles();    // clippin' yo
         return;
     }
 }
@@ -371,9 +371,9 @@ void CMapView::SetActiveLayer(int i)
     
     switch (i)
     {
-    case lay_obs:	bObstoggle=true;		break;
-    case lay_zone:	bZonetoggle=true;		break;
-    case lay_ent:	bEnttoggle=true;		break;
+    case lay_obs:    bObstoggle=true;        break;
+    case lay_zone:    bZonetoggle=true;        break;
+    case lay_ent:    bEnttoggle=true;        break;
     default:
         if (i<0 || i>=pMap->NumLayers())
         {
@@ -394,9 +394,9 @@ void CMapView::FlipLayer(int i)
 {
     switch (i)
     {
-    case lay_obs:		bObstoggle^=true;	break;
-    case lay_zone:		bZonetoggle^=true;	break;
-    case lay_ent:		bEnttoggle^=true;	break;
+    case lay_obs:        bObstoggle^=true;    break;
+    case lay_zone:        bZonetoggle^=true;    break;
+    case lay_ent:        bEnttoggle^=true;    break;
     default:
         if (i<0 || i>=pMap->NumLayers())
         {
@@ -418,7 +418,7 @@ void CMapView::Redraw()
     pGraph->ForceShowPage();
 }
 
-/*void CMapView::UpdateVSP(int tileidx)																	// Updates the tileimages vector
+/*void CMapView::UpdateVSP(int tileidx)                                                                    // Updates the tileimages vector
 {
     if (tileidx<0 || tileidx>=pVsp->NumTiles())
     {
@@ -473,14 +473,14 @@ void CMapView::ScrollWin(int x,int y)
 void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
 {
     SMapLayerInfo linf;
-    int xw  ,yw;				// x/ywin after being adjusted for parallax
-    int xl  ,yl;				// the last tile on each axis to be drawn
-    int xofs,yofs;				// sub-tile adjustment
-    int xs  ,ys;				// First tile on each axis
+    int xw  ,yw;                // x/ywin after being adjusted for parallax
+    int xl  ,yl;                // the last tile on each axis to be drawn
+    int xofs,yofs;                // sub-tile adjustment
+    int xs  ,ys;                // First tile on each axis
     int tilex,tiley;
     u32 t;
     
-    //	if (!pMap->IsLayerVisible(lay) || lay>=pMap->NumLayers())	return;
+    //    if (!pMap->IsLayerVisible(lay) || lay>=pMap->NumLayers())    return;
     if (lay>=pMap->NumLayers() || !bLayertoggle[lay])
         return;
     
@@ -491,9 +491,9 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
     xw=(xwin*linf.pmulx)/linf.pdivx;
     yw=(ywin*linf.pmuly)/linf.pdivy;
     
-    xw+=r.left;			yw+=r.top;
-    xofs=-(xw%tilex);	yofs=-(yw%tiley);
-    xs=xw/tilex;		ys=yw/tiley;
+    xw+=r.left;            yw+=r.top;
+    xofs=-(xw%tilex);    yofs=-(yw%tiley);
+    xs=xw/tilex;        ys=yw/tiley;
     
     yl=((r.bottom-r.top)/tiley)+2; xl=((r.right-r.left)/tilex)+2;
     
@@ -509,7 +509,7 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
         for (x=0; x<xl; x++)
         {
             t=*layptr++;
-            if (t<0 || t>pVsp->NumTiles())				
+            if (t<0 || t>pVsp->NumTiles())                
             {
                 log("tile out of bounds! :o");
                 continue;
@@ -525,19 +525,19 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
 // Draws the obstruction grid.
 void CMapView::DrawObstructions(const RECT& r)
 {
-    int		xt,yt,xofs,yofs;
-    int		x,y;
-    int		xe,ye;
+    int        xt,yt,xofs,yofs;
+    int        x,y;
+    int        xe,ye;
     
-    //	if (!pMap->IsLayerVisible(lay_obs)) return;
-    if (!bObstoggle)	return;
+    //    if (!pMap->IsLayerVisible(lay_obs)) return;
+    if (!bObstoggle)    return;
     
     xe=(r.right-r.left)/pVsp->Width()+2;  ye=(r.bottom-r.top)/pVsp->Height()+2;
     
     if (xe>=pMap->Width()) { xe=pMap->Width(); }
     if (ye>=pMap->Height()) { ye=pMap->Height(); }
     
-    int xw=xwin+r.left;	int yw=ywin+r.top;
+    int xw=xwin+r.left;    int yw=ywin+r.top;
     xt=xw/pVsp->Width(); yt=yw/pVsp->Height();
     xofs=-(xw%pVsp->Width()); yofs=-(yw%pVsp->Height());
     
@@ -546,15 +546,15 @@ void CMapView::DrawObstructions(const RECT& r)
         {
             if (pMap->IsObs(x+xt,y+yt))
                 pGraph->Stipple(x*pVsp->Width()+xofs,y*pVsp->Height()+yofs,pVsp->Width(),pVsp->Height(),0);
-            //				stipple.Blit(tilewidth*x+xofs,tileheight*y+yofs);
+            //                stipple.Blit(tilewidth*x+xofs,tileheight*y+yofs);
         }
 }
 
 // Draws zone information
 void CMapView::DrawZones(const RECT& r)
 {
-    //	if (!pMap->IsLayerVisible(lay_zone)) return;
-    if (!bZonetoggle)	return;
+    //    if (!pMap->IsLayerVisible(lay_zone)) return;
+    if (!bZonetoggle)    return;
     
     int xt,yt,xofs,yofs;
     int x,y;
@@ -567,7 +567,7 @@ void CMapView::DrawZones(const RECT& r)
     if (xe>=pMap->Width()) { xe=pMap->Width(); }
     if (ye>=pMap->Height()) { ye=pMap->Height(); }
     
-    int xw=xwin+r.left;		int yw=ywin+r.top;
+    int xw=xwin+r.left;        int yw=ywin+r.top;
     xt=xw/pVsp->Width(); yt=yw/pVsp->Height();
     xofs=-(xw%pVsp->Width()); yofs=-(yw%pVsp->Height());
     
@@ -576,7 +576,7 @@ void CMapView::DrawZones(const RECT& r)
         {
             if (pMap->GetZone(x+xt,y+yt))//pMap->zone[(y+yt)*pMap->info[0].sizex+x+xt])
                 pGraph->Stipple(x*pVsp->Width()+xofs,y*pVsp->Height()+yofs,pVsp->Width(),pVsp->Height(),0);
-            //	stipple.Blit((x*pVsp->Width())+xofs,(y*pVsp->Height())+yofs);
+            //    stipple.Blit((x*pVsp->Width())+xofs,(y*pVsp->Height())+yofs);
         }
 }
 
@@ -584,11 +584,11 @@ void CMapView::DrawZones(const RECT& r)
 void CMapView::DrawEntities(const RECT& r)
 // TODO: Make this blit actual CHRs, not just stipples.
 {
-    const int hotx=16;		// todo: change this
+    const int hotx=16;        // todo: change this
     const int hoty=16;
     
-    //	if (!pMap->IsLayerVisible(lay_ent)) return;
-    if (!bEnttoggle)	return;
+    //    if (!pMap->IsLayerVisible(lay_ent)) return;
+    if (!bEnttoggle)    return;
     
     int idx;
     int x,y;
@@ -600,8 +600,8 @@ void CMapView::DrawEntities(const RECT& r)
         x=e.x - xwin;
         y=e.y - ywin;
         
-        if (x<r.right		&& y<r.bottom &&
-            x>r.left-hotx	&& y>r.top-hoty) // if the entity is on-screen, draw it.
+        if (x<r.right        && y<r.bottom &&
+            x>r.left-hotx    && y>r.top-hoty) // if the entity is on-screen, draw it.
             pGraph->Stipple(x-r.left,y-r.top,hotx,hoty,0);
     }
 }
@@ -611,7 +611,7 @@ void CMapView::DrawSelection(const RECT& r)
 {
     const int white=(255<<24)|(255<<16)|(255<<8)|(255);
     
-    if (cursormode==mode_normal)	return;		// No visible selection.  Bye!
+    if (cursormode==mode_normal)    return;        // No visible selection.  Bye!
     
     int x1,y1,
         x2,y2;
@@ -625,13 +625,13 @@ void CMapView::DrawSelection(const RECT& r)
     {
         i=x1; x1=x2; x2=i;
         
-        //		x2++;  x1--;
+        //        x2++;  x1--;
     }
     if (y2<y1)
     {
         i=y1; y1=y2; y2=i;
         
-        //		y2++; y1--;
+        //        y2++; y1--;
     }
     
     
@@ -683,7 +683,7 @@ void CMapView::Render(const RECT& r)
     DrawEntities(r);
     DrawSelection(r);
     
-    //	gfxShowPage();
+    //    gfxShowPage();
 }
 
 //-----------------Callbacks---------------------
@@ -691,55 +691,54 @@ LRESULT CMapView::MsgProc(UINT msg,WPARAM wParam,LPARAM lParam)
 {
     switch(msg)
     {
-    case WM_LBUTTONDOWN:	bMouseleft =true;	HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);	return 0;
-    case WM_LBUTTONUP:		bMouseleft =false;	HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);	return 0;
-    case WM_RBUTTONDOWN:	bMouseright=true;	HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);	return 0;
-    case WM_RBUTTONUP:		bMouseright=false;	HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);	return 0;
-    case WM_MBUTTONDOWN:	bMousemid  =true;	HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);	return 0;
-    case WM_MBUTTONUP:		bMousemid  =false;	HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);	return 0;
-    case WM_MOUSEMOVE:					HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
+    case WM_LBUTTONDOWN:    bMouseleft =true;   HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
+    case WM_LBUTTONUP:      bMouseleft =false;  HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
+    case WM_RBUTTONDOWN:    bMouseright=true;   HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
+    case WM_RBUTTONUP:      bMouseright=false;  HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
+    case WM_MBUTTONDOWN:    bMousemid  =true;   HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
+    case WM_MBUTTONUP:      bMousemid  =false;  HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
+    case WM_MOUSEMOVE:                          HandleMouse(LOWORD(lParam),HIWORD(lParam),wParam);  return 0;
     case WM_VSCROLL: 
         switch (LOWORD(wParam))
         {
-        case SB_BOTTOM:        ScrollWin(xwin,pMap->Height()*pVsp->Height());		return 0;
-        case SB_TOP:           ScrollWin(xwin,0);					return 0;                      
-        case SB_LINEDOWN:      ScrollWin(xwin,ywin+1);					return 0;
-        case SB_LINEUP:        ScrollWin(xwin,ywin-1);					return 0;
-        case SB_PAGEDOWN:      ScrollWin(xwin,ywin+clientrect.bottom);	                return 0;
-        case SB_PAGEUP:        ScrollWin(xwin,ywin-clientrect.bottom);	                return 0;
+        case SB_BOTTOM:        ScrollWin(xwin,pMap->Height()*pVsp->Height());                       return 0;
+        case SB_TOP:           ScrollWin(xwin,0);                                                   return 0;                      
+        case SB_LINEDOWN:      ScrollWin(xwin,ywin+1);                                              return 0;
+        case SB_LINEUP:        ScrollWin(xwin,ywin-1);                                              return 0;
+        case SB_PAGEDOWN:      ScrollWin(xwin,ywin+clientrect.bottom);                              return 0;
+        case SB_PAGEUP:        ScrollWin(xwin,ywin-clientrect.bottom);                              return 0;
         case SB_THUMBTRACK:
-        case SB_THUMBPOSITION: ScrollWin(xwin,HIWORD(wParam));				return 0;                    
+        case SB_THUMBPOSITION: ScrollWin(xwin,HIWORD(wParam));                                      return 0;                    
         }
         break;
         
     case WM_HSCROLL: 
         switch (LOWORD(wParam))
         {
-        case SB_BOTTOM:        ScrollWin(pMap->Width()*pVsp->Width(),ywin);		return 0;
-        case SB_TOP:           ScrollWin(0,ywin);					return 0;                      
-        case SB_LINEDOWN:      ScrollWin(xwin+1,ywin);				return 0;
-        case SB_LINEUP:        ScrollWin(xwin-1,ywin);				return 0;
-        case SB_PAGEDOWN:      ScrollWin(xwin+clientrect.right,ywin);	        return 0;
-        case SB_PAGEUP:        ScrollWin(xwin-clientrect.right,ywin);	        return 0;
+        case SB_BOTTOM:        ScrollWin(pMap->Width()*pVsp->Width(),ywin);                         return 0;
+        case SB_TOP:           ScrollWin(0,ywin);                                                   return 0;
+        case SB_LINEDOWN:      ScrollWin(xwin+1,ywin);                                              return 0;
+        case SB_LINEUP:        ScrollWin(xwin-1,ywin);                                              return 0;
+        case SB_PAGEDOWN:      ScrollWin(xwin+clientrect.right,ywin);                               return 0;
+        case SB_PAGEUP:        ScrollWin(xwin-clientrect.right,ywin);                               return 0;
         case SB_THUMBTRACK:
-        case SB_THUMBPOSITION: ScrollWin(HIWORD(wParam),ywin);			return 0;                    
+        case SB_THUMBPOSITION: ScrollWin(HIWORD(wParam),ywin);                                      return 0;
         }
         break;
         
-    case WM_MOUSEWHEEL:  
     case WM_PAINT:
         {
             PAINTSTRUCT ps;
             BeginPaint(hWnd,&ps);
             pGraph->ForceShowPage();
             EndPaint(hWnd,&ps);
+            return 0;
         }
 
-    case WM_CLOSE:
-        return 0;
-    case WM_DESTROY:
-        return 0;
+    case WM_CLOSE:   return 0;
+    case WM_DESTROY: return 0;
     }
+
     return DefWindowProc(hWnd,msg,wParam,lParam);
 }
 void CMapView::RenderCallback(void* pThis,const RECT& r)
@@ -761,5 +760,5 @@ LRESULT CALLBACK CMapView::WndProc(HWND hwnd,UINT msg,WPARAM wParam,LPARAM lPara
     e=(CMapView*)GetWindowLong(hwnd,GWL_USERDATA);
     if (!e) return DefWindowProc(hwnd,msg,wParam,lParam);
     
-    return e->MsgProc(msg,wParam,lParam);								// so we aren't dragged down by this whole 'static member function' stuff :/
+    return e->MsgProc(msg,wParam,lParam);                                // so we aren't dragged down by this whole 'static member function' stuff :/
 }

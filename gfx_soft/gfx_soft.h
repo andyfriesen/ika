@@ -1,5 +1,5 @@
 /*
-	Interface, foo!  This is our spiffy universal interface poo.
+Interface, foo!  This is our spiffy universal interface poo.
 
 --------------- VERSION 1 ------------------------
 
@@ -12,47 +12,47 @@ Also, handles have arbitrary meaning, and they're 4 bytes in size.  Make them ac
 as you clean up. (and have guts)
 
 TODO: add gfxSwitchToFullScreen and gfxSwitchToWindowed, also, more blit functions and methods to alter images.
-
-Maybe add routines for switching bitdepths.
-*/
-
-///////////////////////////////////////////////////////////////////////
-
+      
+      Maybe add routines for switching bitdepths.
+      */
+      
+      ///////////////////////////////////////////////////////////////////////
+      
 #ifndef GFX_SOFT_H
 #define GFX_SOFT_H
-
+      
 #include "types.h"
-
+      
 #include <ddraw.h>
-
-typedef class SImage* handle;
+      
+      typedef class SImage* handle;
 
 class SImage	// A struct with a constructor
 {
 public:
-	int		nWidth,nHeight;
-	int		nPitch;				// pitch is in pixels
-	u32*	pData;
-	RECT	rClip;
-
-	bool (*Blit)(handle img,int x,int y);
-	bool (*ScaleBlit)(handle img,int x,int y,int width,int height);
-	bool (*RotScaleBlit)(handle img,int cx,int cy,float angle,int scale);
-
-	SImage()
-	{	
-		pData=0;
-		nWidth=nHeight=nPitch=0;
-		Blit=0;
-		ScaleBlit=0;
-		RotScaleBlit=0;
-	}
+    int		nWidth,nHeight;
+    int		nPitch;				// pitch is in pixels
+    u32*	pData;
+    RECT	rClip;
+    
+    bool (*Blit)(handle img,int x,int y);
+    bool (*ScaleBlit)(handle img,int x,int y,int width,int height);
+    bool (*RotScaleBlit)(handle img,int cx,int cy,float angle,int scale);
+    
+    SImage()
+    {	
+        pData=0;
+        nWidth=nHeight=nPitch=0;
+        Blit=0;
+        ScaleBlit=0;
+        RotScaleBlit=0;
+    }
 };
 
 extern handle hRenderdest;									// handle to the image that we blit to
 
 int gfxGetVersion();																					// returns the version # of the driver
-	  
+
 bool gfxInit(HWND hWnd,int xres,int yres,int bpp,bool fullscreen);										// sets up the graphics mode at the specified resolution (a driver may or may not pay attention to bpp and/or fullscreen)
 void gfxShutdown();																						// cleans up, IT IS THE APP'S RESPONSIBILITY TO FREE IMAGES, the DLL doesn't have to babysit.
 
@@ -101,22 +101,22 @@ void ClipWnd(int x1,int y1,int x2,int y2);
 
 inline void DoClipping(int& x,int& y,int& xstart,int& xlen,int& ystart,int& ylen,const RECT& rClip)
 {
-	if (x<rClip.left)
-	{
-		xlen-=(rClip.left-x);
-		xstart+=(rClip.left-x);
-		x=rClip.left;
-	}
-	if (y<rClip.top)
-	{
-		ylen-=(rClip.top-y);
-		ystart+=(rClip.top-y);
-		y=rClip.top;
-	}
-	if (x+xlen>rClip.right)
-		xlen=rClip.right-x;
-	if (y+ylen>rClip.bottom)
-		ylen=rClip.bottom-y;
+    if (x<rClip.left)
+    {
+        xlen-=(rClip.left-x);
+        xstart+=(rClip.left-x);
+        x=rClip.left;
+    }
+    if (y<rClip.top)
+    {
+        ylen-=(rClip.top-y);
+        ystart+=(rClip.top-y);
+        y=rClip.top;
+    }
+    if (x+xlen>rClip.right)
+        xlen=rClip.right-x;
+    if (y+ylen>rClip.bottom)
+        ylen=rClip.bottom-y;
 }
 
 #endif

@@ -32,21 +32,21 @@ extern void ShutdownSound();
 class CMusic
 {
 public:
-	SMusic	m;
-	void Init() { m=NULL; }
-	void Free() { if (m) sfxFreeMusic(m); m=NULL; }
-
-	inline operator SMusic() const { return m; }
+    SMusic	m;
+    void Init() { m=NULL; }
+    void Free() { if (m) sfxFreeMusic(m); m=NULL; }
+    
+    inline operator SMusic() const { return m; }
 };
 
 class Csfx
 {
 public:
-	Ssfx	s;
-	void Init()	{ s=NULL; }
-	void Free() { if (s) sfxFreeEffect(s); s=NULL; }
-
-	operator Ssfx() const { return s; }
+    Ssfx	s;
+    void Init()	{ s=NULL; }
+    void Free() { if (s) sfxFreeEffect(s); s=NULL; }
+    
+    operator Ssfx() const { return s; }
 };
 
 #endif

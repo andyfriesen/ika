@@ -1,4 +1,5 @@
-/* Some Run-Length Encoding Crap (tm)
+/* 
+   Some Run-Length Encoding Crap (tm)
    Originally coded by vecna (c) 1999, I think.
    Severely cut, pasted, butchered, and almost rewritten by the Speed Bump
    (c) 2000
