@@ -552,9 +552,8 @@ namespace OpenGL
 
         return CreateImage(*c);
 #else
-        // It'd be real nice if I could get this to work.  It'd be a lot faster, since it doesn't involve
-        // copying pixels from the display to system memory.  Pixels go straight from the screen to the texture.
-        // Okay what the fuck.  It works now.  Awesomely. :D:D:D:D:D
+        // Way fast, since there are no pixels going from the video card to system memory.
+        // They just get copied from the screen to a texture (which also video memory)
 
         //y1 = _yres - y1;
         //y2 = _yres - y2;
@@ -573,7 +572,7 @@ namespace OpenGL
         uint handle;
         glGenTextures(1, &handle);
         SwitchTexture(handle);
-        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, 0, texwidth, texheight, 0);
+        glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, x1, _yres - y2, texwidth, texheight, 0);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 
