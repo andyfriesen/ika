@@ -3,6 +3,7 @@
 #include "graph.h"
 #include "tileset.h"
 #include "log.h"
+#include "layervisibilitycontrol.h"
 #include <gl\glu.h>
 
 #include <wx\laywin.h>
@@ -114,7 +115,7 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     pLeftbar->SetDefaultSize(wxSize(100,100));
     pLeftbar->SetSashVisible(wxSASH_RIGHT,true);
 
-    pLayerlist=new wxCheckListBox(pLeftbar,-1);    
+    pLayerlist=new CLayerVisibilityControl(pLeftbar,-1,this);
 
     // Right side -- Map view
     pRightbar=new CMapSash(this,-1);
@@ -149,16 +150,17 @@ void CMapView::InitLayerVisibilityControl()
 
             SMapLayerInfo lay;
             pMap->GetLayerInfo(lay,c);
-            pLayerlist->Append(va("Layer %i",c));
+            pLayerlist->AppendItem(va("Layer %i",c),c);
             pLayerlist->Check(pLayerlist->Number()-1);
         }
-        else
-            switch (c)
-            {
-            case 'E':   pLayerlist->Append("Entities");     break;
-            case 'R':   pLayerlist->Append("HookRetrace");  break;                
-            }
+        else if (c=='E')
+            pLayerlist->AppendItem("Entities",lay_entity);
+//        else if (c=='R')
+//            pLayerlist->AppendItem("HookRetrace",-1);  // we don't do anything when the hookretrace "layer" is selected.
     }
+
+    pLayerlist->AppendItem("Zones",lay_zone);
+    pLayerlist->AppendItem("Obstructions",lay_obstruction);
 }
 
 void CMapView::OnPaint()
@@ -206,7 +208,25 @@ void CMapView::OnClose()
     Destroy();
 }
 
-// ------------------------------ Core logic -------------------------
+void CMapView::OnLayerChange(int lay)
+{
+    nCurlayer=lay;
+    if (nLayertoggle[lay]==hidden)
+    {
+        nLayertoggle[lay]=visible;
+        Render();
+        pGraph->ShowPage();
+    }
+}
+
+void CMapView::OnLayerToggleVisibility(int lay,int newstate)
+{
+    nLayertoggle[lay]=newstate;
+    Render();
+    pGraph->ShowPage();
+}
+
+// ------------------------------ Rendering -------------------------
 
 void CMapView::Render()
 {
@@ -222,7 +242,7 @@ void CMapView::Render()
             int l=r[i]-'1';
             if (r[i]=='0') l=10;
             
-            if (l>=0 && l<pMap->NumLayers())
+            if (l>=0 && l<pMap->NumLayers() && nLayertoggle[l]!=hidden)
                 RenderLayer(l);
         }
     }

@@ -3,13 +3,17 @@
 #define MAPVIEW_H
 
 #include "types.h"
+#include <map>
 #include <wx\wx.h>
+
+using std::map;
 
 class Map;
 
 class CMainWnd;
 class CGraphFrame;
 class CTileSet;
+class CLayerVisibilityControl;
 
 class wxSashLayoutWindow;
 class wxCheckListBox;
@@ -17,13 +21,28 @@ class wxScrolledWindow;
 
 class CMapView : public wxMDIChildFrame
 {
+    enum
+    {
+        lay_entity=-10,
+        lay_zone,
+        lay_obstruction
+    };
+
+    enum
+    {
+        hidden=0,
+        visible,
+        darkened,
+    };
+
     CMainWnd*    pParentwnd;
 
     wxSashLayoutWindow* pLeftbar;
     wxSashLayoutWindow* pRightbar;
     wxScrolledWindow*   pScrollwin;
     CGraphFrame*        pGraph;
-    wxCheckListBox*     pLayerlist;
+    CLayerVisibilityControl*
+                        pLayerlist;
 
     Map*         pMap;
 
@@ -43,10 +62,17 @@ public:
 
     DECLARE_EVENT_TABLE()
 
+public:
+    // CLayerVisibilityControl calls these functions
+    void OnLayerChange(int lay);
+    void OnLayerToggleVisibility(int lay,int newstate);
+
     // Stuff that's not directly related to the UI
 
 private:
     int xwin,ywin;
+    int nCurlayer;
+    map<int,int> nLayertoggle;
 
     void Render();
     void RenderLayer(int lay);
