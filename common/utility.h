@@ -179,6 +179,20 @@ public:
     }
 };
 
+/*
+ * Helper class for creating types that cannot be derived.
+ * Source: http://www.codeguru.com/Cpp/Cpp/cpp_mfc/stl/article.php/c4143/
+ * Usage:
+ *
+ * struct MyFinalClass : virtual FinalClass<MyFinalClass> { ... };
+ */
+template <typename T>
+struct FinalClass {
+private:
+    ~FinalClass() { }
+    friend class T;
+};
+
 namespace Path {
     // ifdef and blah blah for platform independance
 #ifdef _WIN32

@@ -349,10 +349,11 @@ void CTileSetView::OnInsertAndPaste(wxCommandEvent&)
             return;
 
         Canvas d(pTileset->Width(), pTileset->Height());
-        if (choice == "Crop")
-            CBlitter<Opaque>::Blit(c, d, 0, 0);
-        else if (choice == "Scale")
-            CBlitter<Opaque>::ScaleBlit(c, d, 0, 0, d.Width(), d.Height());
+        if (choice == "Crop") {
+            Blitter::Blit(c, d, 0, 0, Blitter::OpaqueBlend());
+        } else if (choice == "Scale") {
+            Blitter::ScaleBlit(c, d, 0, 0, d.Width(), d.Height(), Blitter::OpaqueBlend());
+        }
 
         c = d;
     }

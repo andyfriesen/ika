@@ -14,16 +14,17 @@
 #include <set>
 #include <cassert>
 
-namespace Script
-{
-    namespace Entity
-    {
-        std::map< ::Entity*, Script::Entity::EntityObject*> instances;   // all entity instances
+namespace Script {
+    namespace Entity {
+        typedef std::map< ::Entity*, Script::Entity::EntityObject*> EntityMap;
+        typedef std::pair< ::Entity*, Script::Entity::EntityObject*> EntityPair;
+
+        // Maps all existing Entity objects to their Python counterparts.
+        EntityMap instances;   
 
         PyTypeObject type; 
         
-        PyMethodDef methods [] =
-        {
+        PyMethodDef methods [] = {
             {   "MoveTo",           (PyCFunction)Entity_MoveTo,            METH_VARARGS,
                 "Entity.MoveTo(x, y)\n\n"
                 "Directs the entity to move towards the position specified."
@@ -89,10 +90,9 @@ namespace Script
             GET(SpecFrame)          { return PyInt_FromLong(self->ent->specFrame); }
             GET(SpecAnim)           
             { 
-                if (self->ent->useSpecAnim)
+                if (self->ent->useSpecAnim) {
                     return PyString_FromString(self->ent->specAnim.toString().c_str()); 
-                else
-                {
+                } else {
                     Py_INCREF(Py_None);
                     return Py_None;
                 }
@@ -100,26 +100,30 @@ namespace Script
 
             GET(Visible)            { return PyInt_FromLong(self->ent->isVisible ? 1 : 0); }
             GET(Name)               { return PyString_FromString(self->ent->name.c_str()); }
-            GET(MoveScript)
-            {
+
+            GET(MoveScript) {
                 PyObject* o = (PyObject*)self->ent->moveScript.get();
-                if (!o) o = Py_None;
+                if (!o) {
+                    o = Py_None;
+                }
                 Py_INCREF(o);
                 return o;
             }
 
-            GET(ActScript)
-            { 
+            GET(ActScript) { 
                 PyObject* o = (PyObject*)self->ent->activateScript.get();
-                if (!o) o = Py_None;
+                if (!o) {
+                    o = Py_None;
+                }
                 Py_INCREF(o);
                 return o;
             }
 
-            GET(AdjacentActivate)   
-            {
+            GET(AdjacentActivate) {
                 PyObject* o = (PyObject*)self->ent->adjActivateScript.get();
-                if (!o) o = Py_None;
+                if (!o) {
+                    o = Py_None;
+                }
                 Py_INCREF(o);
                 return o;
             }
@@ -128,7 +132,7 @@ namespace Script
             GET(IsObs)              { return PyInt_FromLong(self->ent->obstructsEntities?1:0); }
             GET(MapObs)             { return PyInt_FromLong(self->ent->obstructedByMap?1:0); }
             GET(EntObs)             { return PyInt_FromLong(self->ent->obstructedByEntities?1:0); }
-            GET(Sprite)             { return PyString_FromString(self->ent->sprite->_fileName.c_str()); }
+            GET(SpriteName)         { return PyString_FromString(self->ent->sprite->_fileName.c_str()); }
             GET(HotX)               { return PyInt_FromLong(self->ent->sprite->nHotx); }
             GET(HotY)               { return PyInt_FromLong(self->ent->sprite->nHoty); }
             GET(HotWidth)           { return PyInt_FromLong(self->ent->sprite->nHotw); }
@@ -136,38 +140,41 @@ namespace Script
 
             SET(X)                  { self->ent->x = PyInt_AsLong(value); return 0; }
             SET(Y)                  { self->ent->y = PyInt_AsLong(value); return 0; }
-            SET(Layer)              
-            {
+
+            SET(Layer) {
                 uint i = (uint)PyInt_AsLong(value);
-                if (i >= engine->map.NumLayers())
-                    PyErr_SetString(PyExc_RuntimeError, va("Cannot put entity on layer %i.  The map only has %i layers.", i, engine->map.NumLayers()));
-                else
+                if (i >= engine->map.NumLayers()) {
+                    PyErr_SetString(PyExc_RuntimeError, 
+                        va("Cannot put entity on layer %i.  The map only has %i layers.", i, engine->map.NumLayers())
+                    );
+                } else {
                     self->ent->layerIndex = i;
+                }
                 return 0;
             }
 
             SET(Speed)              { self->ent->speed = PyInt_AsLong(value); return 0; }
-            SET(Direction)
-            {
+
+            SET(Direction) {
                 self->ent->direction = (Direction)PyInt_AsLong(value);
 
                 Direction dir = self->ent->direction;
-                if (!self->ent->isMoving)
+                if (!self->ent->isMoving) {
                     self->ent->SetAnimScript(self->ent->sprite->GetWalkScript(dir));
-                else
+                } else {
                     self->ent->SetAnimScript(self->ent->sprite->GetIdleScript(dir));
+                }
 
                 self->ent->UpdateAnimation();
                 return 0;
             }
 
             SET(SpecFrame)          { self->ent->specFrame = PyInt_AsLong(value); return 0; }
-            SET(SpecAnim)           
-            { 
-                if (value == Py_None)
+
+            SET(SpecAnim) { 
+                if (value == Py_None) {
                     self->ent->useSpecAnim = false;
-                else
-                {
+                } else {
                     self->ent->useSpecAnim = true;
                     self->ent->specAnim = AnimScript(PyString_AsString(value)); 
                 }
@@ -176,20 +183,17 @@ namespace Script
 
             SET(Visible)            { self->ent->isVisible = PyInt_AsLong(value)!=0 ; return 0; }
             SET(Name)               { self->ent->name = PyString_AsString(value); return 0; }
-            SET(MoveScript)
-            {
+            SET(MoveScript) {
                 self->ent->moveScript.set(value);
                 return 0;
             }
 
-            SET(ActScript)
-            {
+            SET(ActScript) {
                 self->ent->activateScript.set(value);
                 return 0;
             }
 
-            SET(AdjacentActivate)
-            {
+            SET(AdjacentActivate) {
                 self->ent->adjActivateScript.set(value);
                 return 0;
             }
@@ -198,8 +202,8 @@ namespace Script
             SET(IsObs)              { self->ent->obstructsEntities = (PyInt_AsLong(value)!=0) ; return 0; }
             SET(MapObs)             { self->ent->obstructedByMap = (PyInt_AsLong(value)!=0) ; return 0; }
             SET(EntObs)             { self->ent->obstructedByEntities = (PyInt_AsLong(value)!=0) ; return 0; }
-            SET(Sprite)
-            {
+
+            SET(SpriteName) {
                 engine->sprite.Free(self->ent->sprite);
                 self->ent->sprite = engine->sprite.Load(PyString_AsString(value), engine->video);
 
@@ -214,8 +218,7 @@ namespace Script
 #undef SET
 #undef GET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "x",                (getter)getX,                   (setter)setX,               "Gets or sets the entity's X position. (in pixels)" },
             {   "y",                (getter)getY,                   (setter)setY,               "Gets or sets the entity's Y position. (in pixels)" },
             {   "layer",            (getter)getLayer,               (setter)setLayer,           "Gets or sets the index of the layer that the entity exists on."    },
@@ -233,7 +236,7 @@ namespace Script
             {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
             {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
             {   "entobs",           (getter)getEntObs,              (setter)setEntObs,          "If nonzero, the entity is unable to walk through entities whose isobs property is set."    },
-            {   "sprite",           (getter)getSprite,              (setter)setSprite,          "Gets or sets the sprite used to display the entity."   },
+            {   "spritename",       (getter)getSpriteName,          (setter)setSpriteName,      "Gets or sets the filename of the sprite used to display the entity.  Setting this will load a spriteset and make the sprite use it."   },
             {   "hotx",             (getter)getHotX,                0,                          "Gets the X position of the entity's hotspot."  },
             {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
             {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
@@ -241,8 +244,7 @@ namespace Script
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt = 1;
@@ -262,13 +264,13 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New(::Entity* e)
-        {
+        PyObject* New(::Entity* e) {
             EntityObject* ent=PyObject_New(EntityObject, &type);
-            if (!ent)
+            if (!ent) {
                 return 0;
+            }
 
-            ent->ent=e;
+            ent->ent = e;
 
             instances[ent->ent] = ent;
 
@@ -276,30 +278,29 @@ namespace Script
         }
 
         // This is much more complicated than it should be.
-        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
-        {
+        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
             static char* keywords[] = { "x", "y", "layer", "spritename", 0 };
 
             int x, y;
             uint layer;
             char* spritename;
 
-            if (!PyArg_ParseTupleAndKeywords(args, kw, "iiis:Entity", keywords, &x, &y, &layer, &spritename))
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "iiis:Entity", keywords, &x, &y, &layer, &spritename)) {
                 return 0;
+            }
 
-            if (layer >= engine->map.NumLayers())
-            {
-                PyErr_SetString(PyExc_RuntimeError, va("Map only has %i layers.  Cannot put an entity on layer %i", engine->map.NumLayers(), layer));
+            if (layer >= engine->map.NumLayers()) {
+                PyErr_SetString(PyExc_RuntimeError, 
+                    va("Map only has %i layers.  Cannot put an entity on layer %i", engine->map.NumLayers(), layer)
+                );
                 return 0;
             }
 
             Sprite* sprite;
-            try
-            {
+            try {
                 sprite = engine->sprite.Load(spritename, engine->video);
-            }
-            catch (std::runtime_error error)
-            {
+
+            } catch (std::runtime_error error) {
                 PyErr_SetString(PyExc_OSError, va("sprite.Load(\"%s\") failed: %s", spritename, error.what()));
                 return 0;
             }
@@ -315,8 +316,7 @@ namespace Script
             return New(e);
         }
 
-        void Destroy(EntityObject* self)
-        {
+        void Destroy(EntityObject* self) {
             assert(self->ent);
 
             engine->DestroyEntity(self->ent);
@@ -328,12 +328,12 @@ namespace Script
 
 #define METHOD(x) PyObject* x(EntityObject* self, PyObject* args)
 
-        METHOD(Entity_MoveTo)
-        {
+        METHOD(Entity_MoveTo) {
             int x, y;
 
-            if (!PyArg_ParseTuple(args, "ii:Entity.MoveTo", &x, &y))
+            if (!PyArg_ParseTuple(args, "ii:Entity.MoveTo", &x, &y)) {
                 return 0;
+            }
 
             self->ent->MoveTo(x, y);
 
@@ -341,12 +341,12 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Entity_Wait)
-        {
+        METHOD(Entity_Wait) {
             int time;
 
-            if (!PyArg_ParseTuple(args, "i:Entity.Wait", &time))
+            if (!PyArg_ParseTuple(args, "i:Entity.Wait", &time)) {
                 return 0;
+            }
 
             self->ent->Wait(time);
 
@@ -354,10 +354,10 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Entity_Stop)
-        {
-            if (!PyArg_ParseTuple(args, ""))
+        METHOD(Entity_Stop) {
+            if (!PyArg_ParseTuple(args, "")) {
                 return 0;
+            }
 
             self->ent->Stop();
 
@@ -365,30 +365,29 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Entity_IsMoving)
-        {
-            if (!PyArg_ParseTuple(args, ""))
+        METHOD(Entity_IsMoving) {
+            if (!PyArg_ParseTuple(args, "")) {
                 return 0;
+            }
 
             return PyInt_FromLong(self->ent->isMoving ? 1 : 0);
         }
 
-        METHOD(Entity_DetectCollision)
-        {
-            if (!PyArg_ParseTuple(args, ""))
+        METHOD(Entity_DetectCollision) {
+            if (!PyArg_ParseTuple(args, "")) {
                 return 0;
+            }
 
             const ::Entity* e1 = self->ent;
 
-            int x1 = e1->x;
-            int y1 = e1->y;
-            int x2 = x1 + e1->sprite->nHotw;
-            int y2 = y1 + e1->sprite->nHoth;
+            const int x1 = e1->x;
+            const int y1 = e1->y;
+            const int x2 = x1 + e1->sprite->nHotw;
+            const int y2 = y1 + e1->sprite->nHoth;
 
-            for (std::map< ::Entity*, EntityObject*>::iterator iter = instances.begin(); iter != instances.end(); iter++)
-            {
-                EntityObject* entObj = iter->second;
-                const ::Entity* e2 = iter->first;
+            foreach (const EntityPair& iter, instances) {
+                EntityObject* entObj = iter.second;
+                const ::Entity* e2 = iter.first;
                 
                 if ((e1 != e2)                        &&
                     (x1 <= e2->x + e2->sprite->nHotw) &&
@@ -405,12 +404,12 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Entity_Touches)
-        {
+        METHOD(Entity_Touches) {
             EntityObject* e2;
 
-            if (!PyArg_ParseTuple(args, "O!", &type, &e2))
+            if (!PyArg_ParseTuple(args, "O!", &type, &e2)) {
                 return 0;
+            }
 
             ::Entity* e = e2->ent;
             Sprite* s = e->sprite;
@@ -427,57 +426,54 @@ namespace Script
             {
                 Py_INCREF(Py_False);
                 return Py_False;
-            }
-            else
-            {
+            } else {
                 Py_INCREF(Py_True);
                 return Py_True;
             }
         }
 
-        METHOD(Entity_Draw)
-        {
+        METHOD(Entity_Draw) {
             const int MAGIC_DEFAULT_VALUE = 0x0FFFFFFF; // biggest possible 32 bit value
             int x = MAGIC_DEFAULT_VALUE;
             int y = MAGIC_DEFAULT_VALUE;
             const ::Entity* ent = self->ent;
 
-            if (!PyArg_ParseTuple(args, "|ii:Draw", &x, &y))
+            if (!PyArg_ParseTuple(args, "|ii:Draw", &x, &y)) {
                 return 0;
+            }
 
-            if (x == MAGIC_DEFAULT_VALUE || y == MAGIC_DEFAULT_VALUE)
+            if (x == MAGIC_DEFAULT_VALUE && y == MAGIC_DEFAULT_VALUE) {
                 engine->RenderEntity(ent);
-            else
+            } else {
                 engine->RenderEntity(ent, x, y);
+            }
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD(Entity_GetAnimScript)
-        {
+        METHOD(Entity_GetAnimScript) {
             char* scriptName;
 
-            if (!PyArg_ParseTuple(args, "s:GetAnimScript", &scriptName))
+            if (!PyArg_ParseTuple(args, "s:GetAnimScript", &scriptName)) {
                 return 0;
+            }
 
             return PyString_FromString(self->ent->sprite->GetScript(scriptName).c_str());
         }
 
-        METHOD(Entity_GetAllAnimScripts)
-        {
-            if (!PyArg_ParseTuple(args, ":GetAllAnimScripts"))
+        METHOD(Entity_GetAllAnimScripts) {
+            if (!PyArg_ParseTuple(args, ":GetAllAnimScripts")) {
                 return 0;
+            }
 
             PyObject* dict = PyDict_New();
+
             const std::map<std::string, std::string>& scripts = self->ent->sprite->GetAllScripts();
             
-            for (std::map<std::string, std::string>::const_iterator
-                iter = scripts.begin();
-                iter != scripts.end();
-                iter++)
-            {
-                PyDict_SetItemString(dict, iter->first.c_str(), PyString_FromString(iter->second.c_str()));
+            typedef std::pair<std::string, std::string> StringPair;
+            foreach (const StringPair& iter, scripts) {
+                PyDict_SetItemString(dict, iter.first.c_str(), PyString_FromString(iter.second.c_str()));
             }
 
             return dict;

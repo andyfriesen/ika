@@ -24,7 +24,7 @@ namespace Script
                 "Draws a portion of the image defined by the coordinates (ix, iy, iw, ih)\n" "at screen coordinates (x, y).\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.AlphaBlend."
+                "blendMode defaults to ika.AlphaBlend."
             },
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
@@ -511,7 +511,7 @@ namespace Script
             return Py_None;
         }
 
-        /*METHOD(std_palettemorph)
+        /*METHOD(ika_palettemorph)
         {
             int r=255, g=255, b=255;
 

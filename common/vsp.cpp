@@ -308,7 +308,7 @@ void VSP::PasteTile(const Canvas& tb, uint pos) {
 }
 
 void VSP::TPasteTile(Canvas& tb, uint pos) {
-    CBlitter<Alpha> :: Blit(tb, tiles[pos], 0, 0);
+    Blitter::Blit(tb, tiles[pos], 0, 0, Blitter::AlphaBlend());
     // NYI
 }
 

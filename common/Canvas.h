@@ -3,23 +3,16 @@
 #include "common/utility.h"
 #include "common/types.h"
 
-/*!
-    Canvases are purely software representations of images.  Nothing more.
-    Any time one is manipulating graphics for more than just user - feedback (editing image files, and such)
-    these are used.
-
-    TODO: Make all this stuff more robust and optimized, so that gfx_soft uses these directly.
-          Less code doing more work. ^_~
-*/
-class Canvas
-{
-protected:
-    RGBA* _pixels;                                              ///< Pointer to raw pixel data
-    int   _width, _height;                                      ///< Dimensions
-    
-    Rect _cliprect;                                             ///< Operations are restricted to this region of the image.
-    
-public:
+/**
+ *  Canvases are purely software representations of images.  Nothing more.
+ *  Any time one is manipulating graphics for more than just user - feedback (editing image files, and such)
+ *  these are used.
+ *
+ *  Looking back, this is probably some of the greatest code I 
+ *  have ever written.  It's just so damned useful.
+ *   -- andy 17 July 2004
+ */
+struct Canvas : virtual FinalClass<Canvas> {
     // con / destructors
     Canvas();
     Canvas(int width, int height);
@@ -27,7 +20,7 @@ public:
     Canvas(RGBA* pData, int nWidth, int nHeight);
     Canvas(const Canvas& src);
     Canvas(const char* fname);
-    virtual ~Canvas();  // winmaped needs this to be virtual.  TODO: annihilate dependancy on winmaped, then annihilate the virtual constructor.
+    ~Canvas();
 
     void Save(const char* fname);
     
@@ -53,6 +46,12 @@ public:
     
     const Rect& GetClipRect() const { return _cliprect; }
     void SetClipRect(const Rect& r);
+
+private:
+    RGBA* _pixels;                                              ///< Pointer to raw pixel data
+    int   _width, _height;                                      ///< Dimensions
+    
+    Rect _cliprect;                                             ///< Operations are restricted to this region of the image.
 };
 
 #include "CanvasBlitter.h"

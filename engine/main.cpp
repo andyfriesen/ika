@@ -435,8 +435,7 @@ void Engine::RenderLayer(uint layerIndex)
     {
         for (int x = 0; x < lenX; x++)
         {
-            //if (*t)
-                video->BlitImage(tiles->GetTile(*t), curx, cury);
+            video->BlitImage(tiles->GetTile(*t), curx, cury);
 
             curx += tiles->Width();
             t++;
@@ -452,7 +451,6 @@ void Engine::Render()
     Render(renderList);
 }
 
-// redundant.  gah.
 void Engine::Render(const std::vector<uint>& list)
 {
     CDEBUG("render");

@@ -98,11 +98,11 @@ namespace Ika {
 
         switch (blendMode) {
             default:
-            case Video::None:       CBlitter<Opaque>::Blit(glyph, dest, x, y);      break;
-            case Video::Add:        CBlitter<Additive>::Blit(glyph, dest, x, y);    break;
-            case Video::Matte:      CBlitter<Matte>::Blit(glyph, dest, x, y);       break;
-            case Video::Normal:     CBlitter<Alpha>::Blit(glyph, dest, x, y);       break;
-            case Video::Subtract:   CBlitter<Subtractive>::Blit(glyph, dest, x, y); break;
+            case Video::None:       Blitter::Blit(glyph, dest, x, y, Blitter::OpaqueBlend());      break;
+            case Video::Add:        Blitter::Blit(glyph, dest, x, y, Blitter::AddBlend());    break;
+            case Video::Matte:      Blitter::Blit(glyph, dest, x, y, Blitter::MatteBlend());       break;
+            case Video::Normal:     Blitter::Blit(glyph, dest, x, y, Blitter::AlphaBlend());       break;
+            case Video::Subtract:   Blitter::Blit(glyph, dest, x, y, Blitter::SubtractBlend()); break;
         }
 
         x += glyph.Width();
@@ -154,12 +154,45 @@ namespace Ika {
                             i--;
                             break;
                         }
+
                         std::string t(s.substr(i + 1, pos - i - 1));
 
                         if(_video->hasColour(t)) {
                             colour = _video->getColour(t);
+                        } else if (isHexNumber(t)) {
+                            t.reserve(8);
+                            switch (t.length()) {
+                                /*
+                                 * Shorthand rules for hex colours:
+                                 *  8 digits:  RRGGBBAA
+                                 *  6 digits:  RRGGBB   Alpha is always full.
+                                 *  4 digits:  RGBA     Same as if each digit were repeated:  ABCD is shorthand for AABBCCDD
+                                 *  3 digits:  RGB      RGB digits are doubled, alpha is full.
+                                 */
+                                case 3:
+                                    t += 'F'; 
+                                    // fall-through
+                                case 4:
+                                    // #[rgba] becomes #[rrggbbaa]
+                                    t.resize(8);
+                                    t[7] = t[6] = t[3];
+                                    t[5] = t[4] = t[2];
+                                    t[3] = t[2] = t[1];
+                                    t[1] = t[0];
+                                    colour = RGBA(hexToInt(t));
+                                    break;
+                                case 6:
+                                    colour = hexToInt(t); colour.a = 255;
+                                    break;
+                                case 8:
+                                    colour = hexToInt(t);
+                                    break;
+                                default: 
+                                    colour = RGBA(255, 255, 255); // malformed colour string: White.
+                                    break;
+                            }
                         } else {
-                            colour = hexToInt(t);
+                            colour = RGBA(255, 255, 255);
                         }
 
                         i = pos + 1;

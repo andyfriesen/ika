@@ -9,7 +9,7 @@
 
 namespace Video
 {
-    class Driver;
+    struct Driver;
     class Image;
 }
 
@@ -18,8 +18,7 @@ struct SpriteException{};
 /**
  *  A hardware dependant representation of a spriteset file.
  */
-struct Sprite : RefCounted
-{
+struct Sprite : RefCounted {
     std::string _fileName;
 
     int	nHotx, nHoty;		                            ///< hotspot position

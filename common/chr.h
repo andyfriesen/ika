@@ -11,9 +11,7 @@
  *  Note that the data structure allows for each frame to have its own dimensions.
  *  The file format does too, however we won't be actually implementing this yet.
  */
-class CCHRfile
-{
-public:
+struct CCHRfile {
     typedef std::map<std::string, std::string> StringMap;
     StringMap               moveScripts;
     StringMap               metaData;    ///< Authoring information and the like.

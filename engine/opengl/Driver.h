@@ -24,7 +24,7 @@ namespace OpenGL
     // And keep the refcount up to date
     struct Texture
     {
-        friend class Driver;
+        friend struct Driver;
         uint handle;
         uint width;
         uint height;
@@ -46,7 +46,7 @@ namespace OpenGL
 #   define NYI { throw NotYetImplementedException(); }
 
     /// The driver itself.
-    class Driver : public Video::Driver
+    struct Driver : public Video::Driver
     {
     public:
         Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize);

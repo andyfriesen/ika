@@ -220,11 +220,11 @@ namespace Script
 
             switch (mode)
             {
-            case 0: CBlitter<Opaque>::Blit(*self->canvas, *dest->canvas, x, y);  break;
-            case 1: CBlitter<Matte> ::Blit(*self->canvas, *dest->canvas, x, y);  break;
-            case 2: CBlitter<Alpha> ::Blit(*self->canvas, *dest->canvas, x, y);  break;
-            case 3: CBlitter<Additive>::Blit(*self->canvas, *dest->canvas, x, y);  break;
-            case 4: CBlitter<Subtractive>::Blit(*self->canvas, *dest->canvas, x, y);  break;
+            case 0: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::OpaqueBlend());  break;
+            case 1: Blitter ::Blit(*self->canvas, *dest->canvas, x, y, Blitter::MatteBlend());  break;
+            case 2: Blitter ::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AlphaBlend());  break;
+            case 3: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AddBlend());  break;
+            case 4: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::SubtractBlend());  break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
@@ -246,11 +246,11 @@ namespace Script
 
             switch (mode)
             {
-            case 0: CBlitter<Opaque>::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
-            case 1: CBlitter<Matte> ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
-            case 2: CBlitter<Alpha> ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
-            case 3: CBlitter<Additive>::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
-            case 4: CBlitter<Subtractive>::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h);  break;
+            case 0: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::OpaqueBlend());  break;
+            case 1: Blitter ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::MatteBlend());  break;
+            case 2: Blitter ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::AlphaBlend());  break;
+            case 3: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::AddBlend());  break;
+            case 4: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::SubtractBlend());  break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
@@ -274,11 +274,11 @@ namespace Script
 
             switch (mode)
             {
-            case 0: CBlitter<Opaque>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
-            case 1: CBlitter<Matte>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
-            case 2: CBlitter<Alpha>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
-            case 3: CBlitter<Additive>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
-            case 4: CBlitter<Subtractive>::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy);   break;
+            case 0: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::OpaqueBlend());   break;
+            case 1: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::MatteBlend());   break;
+            case 2: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AlphaBlend());   break;
+            case 3: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AddBlend());   break;
+            case 4: Blitter::WrapBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::SubtractBlend());   break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", mode));
                 return 0;

@@ -13,14 +13,12 @@
 #endif
 
 /// The video driver interface lives here.
-namespace Video
-{
+namespace Video {
     /// Thrown when something in the video system screws up. ;)
     class Exception{};
 
     /// Different methods for alpha blending
-    enum BlendMode
-    {
+    enum BlendMode {
         None,
         Matte,
         Normal,
@@ -29,9 +27,7 @@ namespace Video
     };
 
     /// Base interface for all ika video drivers.
-    class Driver : public ColourHandler
-    {
-    public:
+    struct Driver : ColourHandler {
         virtual ~Driver(){}
 
         /// Switches the driver to display fullscreen.

@@ -12,7 +12,7 @@
 class CMainWnd;
 class CGraphFrame;
 class CImage;
-class Canvas;
+struct Canvas;
 
 class CImageView : public IDocView
 {

@@ -6,7 +6,7 @@
 #include <set>
 
 class CImage;
-class Canvas;
+struct Canvas;
 
 // abstract image bank class.
 // Subclassed for VSPs, fonts and such, so they can have hardware - specific copies

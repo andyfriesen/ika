@@ -45,10 +45,10 @@ namespace Script
 
             // replace stdout and stderr with our error object
             PyObject* pSysmodule = PyImport_ImportModule("sys");
-            if (!pSysmodule)    {   Log::Write("Could not get sys module.");    return; }
+            if (pSysmodule == 0)    {   Log::Write("Could not get sys module.");    return; }
 
             PyObject* pSysdict = PyModule_GetDict(pSysmodule);
-            if (!pSysdict)      {   Log::Write("Could not init sys module.");   return; }
+            if (pSysdict == 0)      {   Log::Write("Could not init sys module.");   return; }
 
             PyObject* errorHandler = New();
             PyDict_SetItemString(pSysdict, "stdout", errorHandler);

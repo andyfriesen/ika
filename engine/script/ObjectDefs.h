@@ -1,8 +1,8 @@
 #ifndef SCRIPT_OBJECTDEFS_H
 #define SCRIPT_OBJECTDEFS_H
 
-#define METHOD(x, type) PyObject* x(type* self, PyObject* args)
-#define METHOD1(x, type) PyObject* x(type* self)
+#define METHOD(_Method, _SelfType) PyObject* _Method(_SelfType* self, PyObject* args)
+#define METHOD1(_Method, _SelfType) PyObject* _Method(_SelfType* self)
 
 #include "Python.h"
 #include <sstream>
@@ -14,7 +14,7 @@ namespace Ika {  // X11 fix
 }
 struct Entity;
 struct Engine;
-class Canvas;
+struct Canvas;
 
 class Input;
 class InputDevice;
@@ -26,11 +26,11 @@ class Joystick;
 namespace audiere   {   class OutputStream; }
 namespace Video
 {
-    class Driver;
+    struct Driver;
     class Image;
 }
 
-class ColourHandler;
+struct ColourHandler;
 
 /// Contains implementations of Python binding things.
 namespace Script
@@ -428,34 +428,36 @@ namespace Script
 
     extern std::stringstream  pyOutput;                     // Python's sys.stdout and sys.stderr go here (defined in ModuleFuncs.cpp)
 
-    METHOD(std_log, PyObject);
-    METHOD(std_exit, PyObject);
-    METHOD1(std_getcaption, PyObject);
-    METHOD(std_setcaption, PyObject);
-    METHOD1(std_getframerate, PyObject);
-    METHOD(std_delay, PyObject);
-    METHOD(std_wait, PyObject);
-    METHOD1(std_gettime, PyObject);
-    METHOD(std_random, PyObject);
+    METHOD(ika_log, PyObject);
+    METHOD(ika_exit, PyObject);
+    METHOD1(ika_getcaption, PyObject);
+    METHOD(ika_setcaption, PyObject);
+    METHOD1(ika_getframerate, PyObject);
+    METHOD(ika_delay, PyObject);
+    METHOD(ika_wait, PyObject);
+    METHOD1(ika_gettime, PyObject);
+    METHOD(ika_random, PyObject);
 
-    METHOD(std_showpage, PyObject);
-    METHOD(std_rgb, PyObject);
-    METHOD(std_getrgb, PyObject);
-    METHOD(std_palettemorph, PyObject);
+    METHOD(ika_showpage, PyObject);
+    METHOD(ika_rgb, PyObject);
+    METHOD(ika_getrgb, PyObject);
+    METHOD(ika_palettemorph, PyObject);
 
-    METHOD(std_processentities, PyObject);
-    METHOD(std_setcameraTarget, PyObject);
-    METHOD1(std_getcameraTarget, PyObject);
-    METHOD(std_setplayer, PyObject);
-    METHOD1(std_getplayer, PyObject);
-    METHOD(std_entitiesat, PyObject);
+    METHOD(ika_processentities, PyObject);
+    METHOD(ika_setcameraTarget, PyObject);
+    METHOD1(ika_getcameraTarget, PyObject);
+    METHOD(ika_setplayer, PyObject);
+    METHOD1(ika_getplayer, PyObject);
+    METHOD(ika_entitiesat, PyObject);
 
-    METHOD(std_hookretrace, PyObject);
-    METHOD(std_unhookretrace, PyObject);
-    METHOD(std_hooktimer, PyObject);
-    METHOD(std_unhooktimer, PyObject);
+    METHOD(ika_hookretrace, PyObject);
+    METHOD(ika_unhookretrace, PyObject);
+    METHOD(ika_hooktimer, PyObject);
+    METHOD(ika_unhooktimer, PyObject);
 
-    METHOD(std_setrenderlist, PyObject);
+    METHOD(ika_setrenderlist, PyObject);
+
+    METHOD(ika_render, PyObject);
 
     extern PyMethodDef standard_methods[];
 

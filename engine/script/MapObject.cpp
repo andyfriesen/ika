@@ -28,12 +28,9 @@ namespace Script
 
             {   "Render",       (PyCFunction)Map_Render,        METH_VARARGS,
                 "Render([layerList])\n\n"
-                "Draws the map and entities.  layerList is a sequence of integers;\n"
-                "ika will only draw these layers (in the order given).  If layerList\n"
-                "is omitted, all layers will be drawn, in their predefined order (set\n"
-                "in the editor)\n\n"
-                "If layerList is omitted, the screen is cleared to black before rendering\n"
-                "begins."
+                "Same syntax as ika.Render().\n"
+                "This method will be removed in future versions of ika.\n"
+                "Don't use it!"
             },
 
             {   "GetTile",      (PyCFunction)Map_GetTile,       METH_VARARGS,
@@ -246,44 +243,15 @@ namespace Script
             return dict;
         }
 
-        METHOD(Map_Render)
-        {
+        METHOD(Map_Render) {
+            static bool warnFlag = false;
 
-            if (PyTuple_Size(args) == 0)
-                engine->Render();
-            else
-            {
-                // Compile the arguments into a vector.
-                std::vector<uint> renderList(PyTuple_Size(args));
-                
-                for (uint i = 0; i < renderList.size(); i++)
-                {
-                    PyObject* item = PyTuple_GetItem(args, i);
-                    if (!PyInt_Check(item))
-                    {
-                        PyErr_SetString(PyExc_SyntaxError, "Map.Render needs INTEGERS.");  return 0;
-                    }
-
-                    uint layerIndex = (uint)PyInt_AsLong(item);
-
-                    if (layerIndex >= engine->map.NumLayers())
-                    {   
-                        PyErr_SetString(PyExc_RuntimeError, 
-                            va("Map.Render: asked to render layer %i.  The map only has %i layers!", 
-                                layerIndex, engine->map.NumLayers())
-                            );
-                        return 0;
-                    }
-
-                    renderList[i] = layerIndex;
-                }
-
-                // Pass them on.
-                engine->Render(renderList);
+            if (!warnFlag) {
+                Log::Write("ika.Map.Render is deprecated and will be gone soon!  Use ika.Render() instead.");
+                warnFlag = true;
             }
 
-            Py_INCREF(Py_None);
-            return Py_None;
+            return ::Script::ika_render(0, args);
         }
 
         METHOD(Map_GetTile)

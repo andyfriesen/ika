@@ -6,7 +6,7 @@
 #include "common/utility.h"
 #include "common/chr.h"
 
-//class CCHRfile;
+//struct CCHRfile;
 
 struct SpriteSet : ImageBank
 {

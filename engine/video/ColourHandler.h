@@ -5,15 +5,9 @@
 #include "common/utility.h"
 #include <map>
 
-class ColourHandler
-{
-public:
+struct ColourHandler {
     typedef std::map<const std::string, RGBA> colourMap;
 
-private:
-    colourMap _colours;
-
-public:
     ColourHandler();
 
     // Returns the colour with the given name, or -1 if not found.
@@ -32,6 +26,8 @@ public:
     // Returns the colour map
     const colourMap& getColourMap();
 
+private:
+    colourMap _colours;
 };
 
 #endif

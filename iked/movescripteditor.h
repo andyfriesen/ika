@@ -5,7 +5,7 @@
 #include "wx\wx.h"
 #include "common/utility.h"
 
-class CCHRfile;
+struct CCHRfile;
 class CSpriteSet;
 class CSpriteSetView;
 

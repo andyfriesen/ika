@@ -4,7 +4,7 @@
 
 #include "imagebank.h"
 
-class CCHRfile;
+struct CCHRfile;
 
 class CSpriteSet : public CImageBank
 {

@@ -18,7 +18,7 @@ namespace Soft32
     class Image;
 
     /// The driver itself.
-    class Driver : public Video::Driver
+    struct Driver : public Video::Driver
     {
     public:
         Driver(int xres, int yres, int bpp, bool fullscreen);

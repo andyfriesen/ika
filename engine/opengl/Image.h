@@ -5,7 +5,7 @@
 
 namespace OpenGL
 {
-    class Driver;
+    struct Driver;
     struct Texture;
 
     /// Encapsulates an image by putting it on a texture.

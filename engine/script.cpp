@@ -14,8 +14,7 @@ using namespace Script;
 
 bool ScriptEngine::_inited = false;
 
-void ScriptEngine::Init(Engine* njin)
-{
+void ScriptEngine::Init(Engine* njin) {
     assert(!_inited);
     _inited = true;
 
@@ -77,12 +76,10 @@ void ScriptEngine::Init(Engine* njin)
     assert(entityDict != 0);
 }
 
-void ScriptEngine::Shutdown()
-{
+void ScriptEngine::Shutdown() {
     assert(_inited);
 
-    while (!ScriptObject::_instances.empty())
-    {
+    while (!ScriptObject::_instances.empty()) {
         ScriptObject* o = *ScriptObject::_instances.begin();
         ScriptObject::_instances.erase(o);
         o->release();
@@ -97,13 +94,11 @@ void ScriptEngine::Shutdown()
     Py_Finalize();
 }
 
-bool ScriptEngine::LoadSystemScripts(const std::string& fname)
-{
+bool ScriptEngine::LoadSystemScripts(const std::string& fname) {
     Py_XDECREF(sysModule);                                              // free it if it's already allocated
 
     sysModule = PyImport_ImportModule("system");
-    if (!sysModule)
-    {
+    if (sysModule == 0) {
         PyErr_Print();
         return false;
     }
@@ -111,47 +106,39 @@ bool ScriptEngine::LoadSystemScripts(const std::string& fname)
     return true;
 }
 
-bool ScriptEngine::LoadMapScripts(const std::string& fname)
-{
+bool ScriptEngine::LoadMapScripts(const std::string& fname) {
     Py_XDECREF(mapModule);
 
-    std::string sTemp = fname;
-
-    int nExtension = sTemp.find_last_of(".", sTemp.length());
-    sTemp.erase(nExtension, sTemp.length());                             // nuke the extension
+    // nuke the extension, drop the trailing dot
+    std::string moduleName = Path::replaceExtension(fname, "");
+    assert(moduleName[moduleName.length() - 1] == '.');
+    moduleName.erase(moduleName.length() - 1);
 
     // replace path delimiters with dots, so python will search for a package with the correct path.
-    for (uint i = 0; i < sTemp.length(); i++)
-    {
-        if (sTemp[i] == '/'
-#ifdef WIN32
-            || sTemp[i] == '\\'
-#endif
-            )
-        {
-            sTemp[i] = '.';
+    for (uint i = 0; i < moduleName.length(); i++) {
+        if (Path::delimiters.find(moduleName[i]) != std::string::npos) {
+            moduleName[i] = '.';
         }
     }
 
-    mapModule = PyImport_ImportModule((char*)sTemp.c_str());
+    mapModule = PyImport_ImportModule(const_cast<char*>(moduleName.c_str()));
 
-    if (!mapModule)
-    {
+    if (mapModule == 0) {
         PyErr_Print();
         return false;
     }
 
     // Now to execute an AutoExec function, if one exists
-    PyObject* pDict = PyModule_GetDict(mapModule);
-    PyObject* pFunc = PyDict_GetItemString(pDict, "AutoExec");
+    PyObject* mapDict = PyModule_GetDict(mapModule);
+    PyObject* autoExecFunc = PyDict_GetItemString(mapDict, "AutoExec");
 
-    if (!pFunc)
+    if (autoExecFunc == 0) {
         return true; // No AutoExec?  No problem!
+    }
 
-    PyObject* result = PyEval_CallObject(pFunc, 0);
+    PyObject* result = PyEval_CallObject(autoExecFunc, 0);
 
-    if (!result)
-    {
+    if (result == 0) {
         PyErr_Print();
         engine->Script_Error();
     }
@@ -161,19 +148,16 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname)
     return true;
 }
 
-void ScriptEngine::ExecObject(const ScriptObject& func)
-{
+void ScriptEngine::ExecObject(const ScriptObject& func) {
     CDEBUG("ScriptEngine::ExecObject");
 
-    if (!func.get())
-    {
+    if (func.get() == 0) {
         Log::Write("Attempt to call null object");
         return;
     }
 
     PyObject* result = PyEval_CallObject((PyObject*)func.get(), 0);
-    if (!result)
-    {
+    if (result == 0) {
         PyErr_Print();
         engine->Script_Error();
     }
@@ -181,16 +165,14 @@ void ScriptEngine::ExecObject(const ScriptObject& func)
     Py_DECREF(result);
 }
 
-void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent)
-{
+void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent) {
     CDEBUG("ScriptEngine::ExecObject");
 
     Script::Entity::EntityObject* entObject =
 		Script::Entity::instances[const_cast< ::Entity*>(ent)];
     assert(entObject);
 
-    if (!func.get())
-    {
+    if (func.get() == 0) {
         Log::Write("Attempt to call null object");
         return;
     }
@@ -199,8 +181,7 @@ void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent)
     PyObject* result = PyEval_CallObject((PyObject*)func.get(), args);
     Py_DECREF(args);
 
-    if (!result)
-    {
+    if (result == 0) {
         PyErr_Print();
         engine->Script_Error();
     }
@@ -208,8 +189,7 @@ void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent)
     Py_DECREF(result);
 }
 
-ScriptObject ScriptEngine::GetObjectFromMapScript(const std::string& name)
-{
+ScriptObject ScriptEngine::GetObjectFromMapScript(const std::string& name) {
     assert(mapModule != 0);
 
     PyObject* dict = PyModule_GetDict(mapModule);
@@ -221,16 +201,14 @@ ScriptObject ScriptEngine::GetObjectFromMapScript(const std::string& name)
     return ScriptObject(func);
 }
 
-void ScriptEngine::ClearEntityList()
-{
+void ScriptEngine::ClearEntityList() {
     if (!Script::entityDict)
         return;
 
     PyDict_Clear(Script::entityDict);
 }
 
-void ScriptEngine::AddEntityToList(::Entity* e)
-{
+void ScriptEngine::AddEntityToList(::Entity* e) {
     PyObject* pEnt = Script::Entity::New(e);                // make an object for the entity
 
     PyDict_SetItemString(Script::entityDict, const_cast<char*>(e->name.c_str()), pEnt);
@@ -238,11 +216,10 @@ void ScriptEngine::AddEntityToList(::Entity* e)
     Py_DECREF(pEnt);
 }
 
-void ScriptEngine::CallScript(const std::string& name)
-{
+void ScriptEngine::CallScript(const std::string& name) {
     CDEBUG("ScriptEngine::CallScript");
 
-    if (!mapModule)
+    if (mapModule == 0)
         return;                                                                // no module loaded == no event
 
     the< ::Input>()->Flush();
@@ -250,16 +227,14 @@ void ScriptEngine::CallScript(const std::string& name)
     PyObject* dict = PyModule_GetDict(mapModule);
     PyObject* func = PyDict_GetItemString(dict, const_cast<char*>(name.c_str()));
 
-    if (!func)
-    {
+    if (func == 0) {
         Log::Write("CallScript, no such event \"%s\"", name.c_str());
         return;                                                                // no such event
     }
 
     PyObject* result = PyEval_CallObject(func, 0);
 
-    if (!result)
-    {
+    if (result == 0) {
         PyErr_Print();
         engine->Script_Error();
     }
@@ -267,8 +242,7 @@ void ScriptEngine::CallScript(const std::string& name)
     Py_XDECREF(result);
 }
 
-void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
-{
+void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent) {
     assert(Script::Entity::instances.count(const_cast< ::Entity*>(ent)));
 
     Script::Entity::EntityObject* entObject =
@@ -277,8 +251,7 @@ void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
     PyObject* dict = PyModule_GetDict(mapModule);
     PyObject* func = PyDict_GetItemString(dict, const_cast<char*>(name.c_str()));
 
-    if (!func)
-    {
+    if (func == 0) {
         Log::Write("CallScript:  No event '%s'", name.c_str());
         return;
     }
@@ -287,8 +260,7 @@ void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
     PyObject* result = PyObject_CallObject(func, args);
     Py_DECREF(args);
 
-    if (!result)
-    {
+    if (result == 0) {
         PyErr_Print();
         engine->Script_Error();
     }
@@ -296,7 +268,6 @@ void ScriptEngine::CallScript(const std::string& name, const ::Entity* ent)
         Py_DECREF(result);
 }
 
-std::string ScriptEngine::GetErrorMessage()
-{
+std::string ScriptEngine::GetErrorMessage() {
     return Script::pyOutput.str();
 }

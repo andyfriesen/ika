@@ -5,29 +5,32 @@
 #include "Canvas.h"
 #include "utility.h"
 
-static inline void DoClipping(int& x, int& y, int& xstart, int& xlen, int& ystart, int& ylen, const Rect& rClip)
-{
-    if (x < rClip.left)
-    {
-        xlen-=(rClip.left - x);
-        xstart+=(rClip.left - x);
-        x = rClip.left;
+namespace Blitter {
+    void DoClipping(int& x, int& y, int& xstart, int& xlen, int& ystart, int& ylen, const Rect& rClip) {
+        if (x < rClip.left) {
+            xlen -= (rClip.left - x);
+            xstart += (rClip.left - x);
+            x = rClip.left;
+        }
+        if (y < rClip.top) {
+            ylen -= (rClip.top - y);
+            ystart += (rClip.top - y);
+            y = rClip.top;
+        }
+        if (x + xlen > rClip.right) {
+            xlen = rClip.right - x;
+        }
+        if (y + ylen > rClip.bottom) {
+            ylen = rClip.bottom - y;
+        }
     }
-    if (y < rClip.top)
-    {
-        ylen-=(rClip.top - y);
-        ystart+=(rClip.top - y);
-        y = rClip.top;
-    }
-    if (x + xlen > rClip.right)
-        xlen = rClip.right - x;
-    if (y + ylen > rClip.bottom)
-        ylen = rClip.bottom - y;
 }
+
+using Blitter::DoClipping;
 
 Canvas::Canvas()
 {
-    _width=_height = 16;		// arbitrary
+    _width = _height = 16;		// arbitrary
     _pixels = new RGBA[_width*_height];
     _cliprect = Rect(0, 0, _width, _height);
 }
@@ -58,7 +61,7 @@ Canvas::Canvas(u8* data, int width, int height, u8* pal)
 {
     _pixels = new RGBA[_width*_height];
     for (int i = 0; i < width * height; i++)
-        _pixels[i]=RGBA(data[i], pal);
+        _pixels[i] = RGBA(data[i], pal);
 }
 
 Canvas::Canvas(const Canvas& src)
@@ -104,8 +107,9 @@ void Canvas::Save(const char* fname)
 
 Canvas& Canvas::operator = (const Canvas& rhs)
 {
-    if (this==&rhs)
+    if (this == &rhs) {
         return *this;
+    }
     
     delete[] _pixels;
     
@@ -119,9 +123,9 @@ Canvas& Canvas::operator = (const Canvas& rhs)
 
 bool Canvas::operator == (const Canvas& rhs)
 {
-    if (_width!=rhs._width)
+    if (_width != rhs._width)
         return false;
-    if (_height!=rhs._height)
+    if (_height != rhs._height)
         return false;
     
     return !memcmp(_pixels, rhs._pixels, _width*_height * sizeof(RGBA));
@@ -242,7 +246,7 @@ void Canvas::Resize(int x, int y)
     {
         memcpy(pDest, pSrc, nCopywidth);
         pDest += x;
-        pSrc+=_width;
+        pSrc += _width;
     }
     
     delete[] _pixels;

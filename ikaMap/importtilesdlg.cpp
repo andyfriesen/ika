@@ -160,7 +160,7 @@ void ImportTilesDlg::ImportTiles(int width, int height, int numFrames, int rowSi
         for (int col = 0; col < rowSize && curframe < numFrames; col++)
         {
             Canvas frame(width, height);
-            CBlitter<Opaque>::Blit(image, frame, -xpos, -ypos);
+            Blitter::Blit(image, frame, -xpos, -ypos, Blitter::OpaqueBlend());
             tiles.push_back(frame);
             
             curframe++;

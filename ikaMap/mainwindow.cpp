@@ -632,7 +632,7 @@ void MainWindow::OnExportTileSet(wxCommandEvent&)
         {
             for (uint j = 0; j < rowSize; j++)
             {
-                CBlitter<Opaque>::Blit(_tileSet->Get(i), dest, curX, curY);
+                Blitter::Blit(_tileSet->Get(i), dest, curX, curY, Blitter::OpaqueBlend());
                 curX += _tileSet->Width() + padAdjust;
                 i++;
                 if (i >= _tileSet->Count())

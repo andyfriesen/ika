@@ -129,8 +129,9 @@ void FontView::Render()
 
             nFont++;
 
-            if (nFont >= pFontfile->NumGlyphs()) 
+            if (nFont >= pFontfile->NumGlyphs()) {
                 goto nomoredrawing; // abort the loop
+            }
 
             nFontwidth = nWidth / tx;
             nFontheight = (nHeight / ty) + 1;

@@ -20,20 +20,26 @@ namespace Script
 
     std::stringstream pyOutput;
 
-    METHOD(std_log)
-    {
+    METHOD(ika_log) {
+        static bool warnFlag = false;
         char* message;
 
         if (!PyArg_ParseTuple(args, "s:log", &message))
             return 0;
 
-        Log::Write(message);
+        if (!warnFlag) {
+            warnFlag = true;
+            Log::Write("* ika.Log will not be present in ika 0.61");
+            Log::Write("* Use the print statement instead");
+        }
+
+        Log::Write("%s", message);
 
         Py_INCREF(Py_None);
         return Py_None;                                    // returning void :)
     }
 
-    METHOD(std_exit)
+    METHOD(ika_exit)
     {
         char* message="";
 
@@ -47,7 +53,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(std_getcaption)
+    METHOD1(ika_getcaption)
     {
         char* s;
         SDL_WM_GetCaption(&s, 0);
@@ -55,7 +61,7 @@ namespace Script
         return PyString_FromString(s);
     }
 
-    METHOD(std_setcaption)
+    METHOD(ika_setcaption)
     {
         char* s = "";
 
@@ -68,12 +74,12 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(std_getframerate)
+    METHOD1(ika_getframerate)
     {
         return PyInt_FromLong(engine->video->GetFrameRate());
     }
 
-    METHOD(std_delay)
+    METHOD(ika_delay)
     {
         int ticks;
 
@@ -93,7 +99,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(std_wait)
+    METHOD(ika_wait)
     {
         int ticks;    
         if (!PyArg_ParseTuple(args, "i:wait", &ticks))
@@ -124,12 +130,12 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(std_gettime)
+    METHOD1(ika_gettime)
     {
         return PyInt_FromLong((long)GetTime());
     }
 
-    METHOD(std_random)
+    METHOD(ika_random)
     {
         int min, max;
 
@@ -141,7 +147,7 @@ namespace Script
 
     // video
 
-    METHOD(std_getrgb)
+    METHOD(ika_getrgb)
     {
         RGBA colour;
 
@@ -151,7 +157,7 @@ namespace Script
         return Py_BuildValue("iiii", colour.r, colour.g, colour.b, colour.a);
     }
 
-    METHOD(std_rgb)
+    METHOD(ika_rgb)
     {
         int r, g, b, a=255;
 
@@ -161,7 +167,7 @@ namespace Script
         return PyInt_FromLong(RGBA(r, g, b, a).i);
     }
 
-    METHOD(std_processentities)
+    METHOD(ika_processentities)
     {
         if (!PyArg_ParseTuple(args, ""))
             return 0;
@@ -172,7 +178,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(std_setcameraTarget)
+    METHOD(ika_setcameraTarget)
     {
         Script::Entity::EntityObject* ent;
 
@@ -204,7 +210,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD1(std_getcameraTarget)
+    METHOD1(ika_getcameraTarget)
     {
         PyObject* result = cameraTarget ? cameraTarget : Py_None;
 
@@ -212,7 +218,7 @@ namespace Script
         return result;
     }
 
-    METHOD(std_setplayer)                                            // FIXME?  Is there a more intuitive way to do this?
+    METHOD(ika_setplayer)                                            // FIXME?  Is there a more intuitive way to do this?
     {
         Script::Entity::EntityObject* ent;
 
@@ -240,21 +246,21 @@ namespace Script
             engine->player = ent->ent;
         }
 
-        PyObject* result = std_setcameraTarget(self, args);
+        PyObject* result = ika_setcameraTarget(self, args);
         Py_XDECREF(result);
 
         Py_INCREF(Py_None);
         return Py_None;
     }
 
-    METHOD1(std_getplayer)
+    METHOD1(ika_getplayer)
     {
         PyObject* result = playerent ? playerent : Py_None;
         Py_INCREF(result);
         return result;
     }
 
-    METHOD(std_entitiesat)
+    METHOD(ika_entitiesat)
     {
         int x, y, width, height, layer;
         if (!PyArg_ParseTuple(args, "iiiii|EntitiesAt", &x, &y, &width, &height, &layer))
@@ -292,7 +298,7 @@ namespace Script
         return list;
     }
 
-    METHOD(std_hookretrace)
+    METHOD(ika_hookretrace)
     {
         PyObject*    pFunc;
 
@@ -312,7 +318,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(std_unhookretrace)
+    METHOD(ika_unhookretrace)
     {
         PyObject* pFunc = 0;
 
@@ -341,7 +347,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(std_hooktimer)
+    METHOD(ika_hooktimer)
     {
         PyObject*    pFunc;
 
@@ -363,7 +369,7 @@ namespace Script
 
 
     // GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY
-    METHOD(std_unhooktimer)
+    METHOD(ika_unhooktimer)
     {
         PyObject* pFunc = 0;
 
@@ -395,7 +401,7 @@ namespace Script
         return Py_None;
     }
 
-    METHOD(std_setrenderlist)
+    METHOD(ika_setrenderlist)
     {
         // Compile the arguments into a vector.
         std::vector<uint> renderList(PyTuple_Size(args));
@@ -426,53 +432,88 @@ namespace Script
         return Py_None;
     }
 
+    METHOD(ika_render) {
+        if (PyTuple_Size(args) == 0) {
+            engine->Render();
+        } else {
+            // Compile the arguments into a vector.
+            std::vector<uint> renderList(PyTuple_Size(args));
+            
+            for (uint i = 0; i < renderList.size(); i++)
+            {
+                PyObject* item = PyTuple_GetItem(args, i);
+                if (!PyInt_Check(item)) {
+                    PyErr_SetString(PyExc_SyntaxError, "Map.Render needs INTEGERS.");  return 0;
+                }
+
+                uint layerIndex = (uint)PyInt_AsLong(item);
+
+                if (layerIndex >= engine->map.NumLayers()) {
+                    PyErr_SetString(PyExc_RuntimeError, 
+                        va("Map.Render: asked to render layer %i.  The map only has %i layers! (valid layer indeces are 0-%i)", 
+                            layerIndex, engine->map.NumLayers(), engine->map.NumLayers() - 1)
+                        );
+                    return 0;
+                }
+
+                renderList[i] = layerIndex;
+            }
+
+            // Pass them on.
+            engine->Render(renderList);
+        }
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
     PyMethodDef standard_methods[] =
     {
         //  name  | function
 
         // Misc
-        { "Log",            (PyCFunction)std_log,               METH_VARARGS,
+        { "Log",            (PyCFunction)ika_log,               METH_VARARGS,
             "Log(message)\n\n"
             "Writes a string to ika.log, if logging is enabled."
         },
 
-        { "Exit",           (PyCFunction)std_exit,              METH_VARARGS,
+        { "Exit",           (PyCFunction)ika_exit,              METH_VARARGS,
             "Exit([message])\n\n"
             "Exits ika immediately, displaying the message onscreen, if specified."
         },
 
-        { "GetCaption",     (PyCFunction)std_getcaption,        METH_NOARGS,
+        { "GetCaption",     (PyCFunction)ika_getcaption,        METH_NOARGS,
             "GetCaption() -> string\n\n"
             "Returns the caption on the ika window title bar."
         },
 
-        { "SetCaption",     (PyCFunction)std_setcaption,        METH_VARARGS,
+        { "SetCaption",     (PyCFunction)ika_setcaption,        METH_VARARGS,
             "SetCaption(newcaption)\n\n"
             "Sets the caption on the ika window title bar."
         },
 
-        { "GetFrameRate",   (PyCFunction)std_getframerate,      METH_NOARGS,
+        { "GetFrameRate",   (PyCFunction)ika_getframerate,      METH_NOARGS,
             "GetFrameRate() -> int\n\n"
             "Returns the current engine framerate, in frames per second."
         },
 
-        { "Delay",          (PyCFunction)std_delay,             METH_VARARGS,
+        { "Delay",          (PyCFunction)ika_delay,             METH_VARARGS,
             "Delay(time)\n\n"
             "Freezes the engine for a number of 'ticks'. (one tick is 1/100th of a second)"
         },
 
-        { "Wait",           (PyCFunction)std_wait,              METH_VARARGS,
+        { "Wait",           (PyCFunction)ika_wait,              METH_VARARGS,
             "Wait(time)\n\n"
             "Runs the engine for a number of ticks, disallowing player input.\n"
             "Unlike Delay, Wait causes entities to be processed, the tileset to be animated, and the map drawn."
         },
 
-        { "GetTime",        (PyCFunction)std_gettime,           METH_NOARGS,
+        { "GetTime",        (PyCFunction)ika_gettime,           METH_NOARGS,
             "GetTime() -> int\n\n"
             "Returns the number of ticks since the engine was started."
         },
 
-        { "Random",         (PyCFunction)std_random,            METH_VARARGS,
+        { "Random",         (PyCFunction)ika_random,            METH_VARARGS,
             "Random(min, max) -> int\n\n"
             "Returns a random integer less than or equal to min, and less than max.\n"
             "ie.  min <= value < max"
@@ -480,87 +521,97 @@ namespace Script
 
         // Video
 
-        { "RGB",            (PyCFunction)std_rgb,               METH_VARARGS,
+        { "RGB",            (PyCFunction)ika_rgb,               METH_VARARGS,
             "RGB(r, g, b[, a]) -> int\n\n"
             "Creates a 32bpp colour value from the four colour levels passed.  If alpha is\n"
             "omitted, it is assumed to be 255. (opaque)"
         },
 
-        { "GetRGB",         (PyCFunction)std_getrgb,            METH_VARARGS,
+        { "GetRGB",         (PyCFunction)ika_getrgb,            METH_VARARGS,
             "GetRGB(colour) -> tuple(int, int, int, int)\n\n"
             "Returns a 4-tuple containing the red, blue, green, and alpha values of the colour\n"
             "passed, respectively."
         },
 
-        //{ "PaletteMorph", (PyCFunction)std_palettemorph,      METH_VARARGS },
+        //{ "PaletteMorph", (PyCFunction)ika_palettemorph,      METH_VARARGS },
 
         // Entity
-        { "ProcessEntities", (PyCFunction)std_processentities,  METH_VARARGS,
+        { "ProcessEntities", (PyCFunction)ika_processentities,  METH_VARARGS,
             "ProcessEntities()\n\n"
             "Performs 1/100th of a second of entity AI.  Calling this 100 times a second\n"
             "will cause entities to move around as if the engine was in control."
         },
 
-        { "SetCameraTarget", (PyCFunction)std_setcameraTarget,  METH_VARARGS,
+        { "SetCameraTarget", (PyCFunction)ika_setcameraTarget,  METH_VARARGS,
             "SetCameraTarget(entity)\n\n"
             "Sets the camera target to the entity specified.  If None is passed instead, \n"
             "the camera remains stationary, and can be altered with the Map.xwin and Map.ywin\n"
             "properties."
         },
 
-        { "GetCameraTarget", (PyCFunction)std_getcameraTarget,  METH_NOARGS,
+        { "GetCameraTarget", (PyCFunction)ika_getcameraTarget,  METH_NOARGS,
             "GetCameraTarget() -> Entity\n\n"
             "Returns the entity that the camera is following, or None if it is free."
         },
 
-        { "SetPlayer",      (PyCFunction)std_setplayer,         METH_VARARGS,
+        { "SetPlayer",      (PyCFunction)ika_setplayer,         METH_VARARGS,
             "SetPlayer(entity)\n\n"
             "Sets the player entity to the entity passed.  The player entity is the entity\n"
             "that moves according to user input.  Passing None instead unsets any player entity\n"
             "that may have been previously set."
         },
 
-        { "GetPlayer",      (PyCFunction)std_getplayer,         METH_NOARGS,
+        { "GetPlayer",      (PyCFunction)ika_getplayer,         METH_NOARGS,
             "GetPlayer(entity) -> Entity\n\n"
             "Returns the current player entity, or None if there isn't one."
         },
 
-        { "EntitiesAt",       (PyCFunction)std_entitiesat,          METH_VARARGS,
+        { "EntitiesAt",       (PyCFunction)ika_entitiesat,          METH_VARARGS,
             "EntitiesAt(x, y, width, height, layer) -> list\n\n"
             "Returns a list containing all entities within the given rect,\n"
             "on the given layer.  If there are no entities there, the empty\n"
             "list is returned."
         },
 
-        { "HookRetrace",    (PyCFunction)std_hookretrace,       METH_VARARGS,
+        { "HookRetrace",    (PyCFunction)ika_hookretrace,       METH_VARARGS,
             "HookRetrace(function)\n\n"
             "Adds the function to the retrace queue. (it will be called whenever the map is drawn, \n"
             "whether by Map.Render or by other means)"
         },
 
-        { "UnhookRetrace",  (PyCFunction)std_unhookretrace,     METH_VARARGS,
+        { "UnhookRetrace",  (PyCFunction)ika_unhookretrace,     METH_VARARGS,
             "UnhookRetrace([function])\n\n"
             "Removes the function from the retrace queue if it is present.  If not, the call does\n"
             "nothing.  If the argument is omitted, then the list is cleared in its entirety."
         },
 
-        { "HookTimer",      (PyCFunction)std_hooktimer,         METH_VARARGS,
+        { "HookTimer",      (PyCFunction)ika_hooktimer,         METH_VARARGS,
             "HookTimer(function)\n\n"
             "Adds the function to the timer queue. (the function will be called 100 times per second.\n"
             "This feature should be used sparingly, as it will cause serious problems if the queue\n"
             "cannot be executed in less than 1/100th of a second."
         },
 
-        { "UnhookTimer",    (PyCFunction)std_unhooktimer,       METH_VARARGS,
+        { "UnhookTimer",    (PyCFunction)ika_unhooktimer,       METH_VARARGS,
             "UnhookTimer([function])\n\n"
             "Removes the function from the timer queue if it is present.  If not, the call does\n"
             "nothing.  If the argument is omitted, then the list is cleared in its entirety."
         },
 
-        { "SetRenderList",  (PyCFunction)std_setrenderlist,     METH_VARARGS,
+        { "SetRenderList",  (PyCFunction)ika_setrenderlist,     METH_VARARGS,
             "SetRenderList(index, ...)\n\n"
             "Sets the default rendering order used with Map.Render.  This can be useful for\n"
             "hiding layers, or moving them up and down in the ordering."
+        },
+
+        {   "Render",       (PyCFunction)ika_render,        METH_VARARGS,
+            "Render([layerList])\n\n"
+            "Redraw the scene.  layerList is an optional sequence of integers;\n"
+            "ika will only draw these layers, in the order given, if specified.\n"
+            "If layerList is omitted, all layers will be drawn, in their predefined\n"
+            "order (set in the editor)\n\n"
+            "If layerList is omitted, the screen is cleared to black before rendering\n"
+            "begins."
         },
 
         {    0    }

@@ -6,7 +6,7 @@
 
 namespace Video
 {
-    class Driver;
+    struct Driver;
     class Image;
 }
 

@@ -83,7 +83,7 @@ void ImportFramesDlg::ImportFrames(int width, int height, int numFrames, int row
         for (int col = 0; col < rowSize && curframe < numFrames; col++)
         {
             Canvas frame(width, height);
-            CBlitter<Opaque>::Blit(image, frame, -xpos, -ypos);
+            Blitter::Blit(image, frame, -xpos, -ypos, Blitter::OpaqueBlend());
             frames.push_back(frame);
             
             curframe++;
