@@ -1,3 +1,4 @@
+#if 0
 #include "main.h"
 #include "mapview.h"
 #include "entityeditor.h"
@@ -108,3 +109,4 @@ void EntityEditor::Show(Map::Layer::Entity* ent)
     UpdateDlg();
     wxDialog::Show(true);
 }
+#endif

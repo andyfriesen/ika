@@ -79,9 +79,9 @@ public:
     int  GetXWin() const { return _xwin; }
     int  GetYWin() const { return _ywin; }
 
-    Map::Layer::Entity* EntityAt(int x, int y, uint layer);
+    uint EntityAt(int x, int y, uint layer);
 
-    SpriteSet*  GetEntitySpriteSet(Map::Layer::Entity* ent) const;
+    SpriteSet*  GetEntitySpriteSet(Map::Entity* ent) const;
     VideoFrame* GetVideo() const;
 
     /*

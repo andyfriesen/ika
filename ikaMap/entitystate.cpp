@@ -9,7 +9,8 @@
 
 EntityState::EntityState(MainWindow* mw)
     : EditState(mw)
-    , _curEnt(0)
+    , _entLayerIndex(0)
+    , _entIndex(-1)
 {}
 
 void EntityState::OnMouseDown(wxMouseEvent& event)
@@ -19,35 +20,33 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
     GetMapView()->ScreenToMap(x, y);
 
     Map::Layer* lay = GetCurrentLayer();
-    Map::Layer::Entity* ent = GetMapView()->EntityAt(x, y, GetMapView()->GetCurLayer());
+    uint entIndex = GetMapView()->EntityAt(x, y, GetMapView()->GetCurLayer());
 
-    if (ent)
+    if (entIndex != -1)
     {
-        _curEnt = ent;
+        _entLayerIndex = GetMapView()->GetCurLayer();
+        _entIndex = entIndex;
 
         GetMapView()->Refresh();
         if (event.ButtonDClick())
         {
-            // <GAY>
-            uint idx = 0;
-            while (_curEnt != &lay->entities[idx])
-            {
-                idx++;
-                wxASSERT(idx < lay->entities.size());
-            }
-            // </GAY>
 
-            EntityDlg dlg(GetMainWindow(), GetMapView()->GetCurLayer(), idx);
+            EntityDlg dlg(GetMainWindow(), _entLayerIndex, _entIndex);
             int result = dlg.ShowModal();
 
             if (result == wxID_OK)
             {
-                HandleCommand(new ChangeEntityPropertiesCommand(GetMapView()->GetCurLayer(), idx, dlg.newData, dlg.newBlueprint));
+                HandleCommand(new ChangeEntityPropertiesCommand(_entLayerIndex, _entIndex, dlg.newData));
             }
         }
     }
     else
-    {} // create a new entity etc
+    {
+        if (wxMessageBox("Create a new entity here?", "", wxYES_NO, GetMainWindow()) == wxID_YES)
+        {
+            HandleCommand(new CreateEntityCommand(GetMapView()->GetCurLayer(), x, y));
+        }
+    } // create a new entity etc
 }
 
 void EntityState::OnMouseUp(wxMouseEvent& event)
@@ -70,7 +69,7 @@ void EntityState::OnRender()
 
     // This is more work than I think it should be, largely due to the whole stupid entity "blueprint" bullshit.
     // I should nuke that shit and be done with it.
-    for (std::vector<Map::Layer::Entity>::iterator iter = layer->entities.begin();
+    for (std::vector<Map::Entity>::iterator iter = layer->entities.begin();
         iter != layer->entities.end();
         iter++)
     {
@@ -81,11 +80,7 @@ void EntityState::OnRender()
         int width = 16;
         int height = 16;
 
-        if (GetMap()->entities.count(iter->bluePrint))
-        {
-            Map::Entity* bluePrint = &GetMap()->entities[iter->bluePrint];
-            ss = GetMainWindow()->GetSprite(bluePrint->spriteName);
-        }
+        ss = GetMainWindow()->GetSprite(iter->spriteName);
 
         if (ss != 0)
         {
@@ -95,19 +90,22 @@ void EntityState::OnRender()
             height = ss->Height();
         }
 
+        int x = iter->x - hotx - xwin + layer->x;
+        int y = iter->y - hoty - ywin + layer->y;
+
         // outline them all
         GetMapView()->GetVideo()->Rect(
-            iter->x - hotx - xwin, 
-            iter->y - hoty - ywin, 
+            x,
+            y,
             width, 
             height,
             RGBA(255, 255, 255));
 
         // Draw a white fady rect over the currently selected one
-        if (&*iter == _curEnt)
+        if (&*iter == &layer->entities[_entIndex])
             GetMapView()->GetVideo()->RectFill(
-                iter->x - hotx - xwin, 
-                iter->y - hoty - ywin, 
+                x,
+                y,
                 width, 
                 height,
                 RGBA(255, 255, 255, 128));

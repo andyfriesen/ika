@@ -127,6 +127,9 @@
 				RelativePath="imagebank.cpp">
 			</File>
 			<File
+				RelativePath="importtilesdlg.cpp">
+			</File>
+			<File
 				RelativePath="layerdlg.cpp">
 			</File>
 			<File
@@ -183,6 +186,9 @@
 			</File>
 			<File
 				RelativePath="imagebank.h">
+			</File>
+			<File
+				RelativePath="importtilesdlg.h">
 			</File>
 			<File
 				RelativePath="layerdlg.h">
@@ -293,6 +299,12 @@
 			</File>
 			<File
 				RelativePath="..\common\CanvasBlitter.h">
+			</File>
+			<File
+				RelativePath="..\common\aries.cpp">
+			</File>
+			<File
+				RelativePath="..\common\aries.h">
 			</File>
 			<File
 				RelativePath="..\common\base64.cpp">

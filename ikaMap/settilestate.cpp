@@ -64,9 +64,9 @@ void TileSetState::SetTile(int x, int y)
     GetMapView()->ScreenToTile(x, y);
 
     if (x == _oldX && y == _oldY)   return;
-    if (x < 0 || y < 0 ||
-        x >= GetCurrentLayer()->Width() ||
-        y >= GetCurrentLayer()->Height())
+    if (x < 0 || y < 0)             return;
+    if ((uint)x >= GetCurrentLayer()->Width() ||
+        (uint)y >= GetCurrentLayer()->Height())
         return;
 
     _oldX = x; _oldY = y;

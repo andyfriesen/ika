@@ -1,6 +1,6 @@
 
-#include <cppdom/cppdom.h>
-#include "xmlutil.h"
+//#include <cppdom/cppdom.h>
+//#include "xmlutil.h"
 
 #include "map.h"
 #include "log.h"
@@ -8,7 +8,15 @@
 #include "base64.h"
 #include "misc.h"
 
-using namespace cppdom;
+#include "aries.h"
+#include <fstream>
+
+//using namespace cppdom;
+using aries::newNode;
+using aries::Node;
+using aries::DataNode;
+using aries::StringNode;
+using aries::DataNodeList;
 
 namespace
 {
@@ -45,162 +53,121 @@ Map::~Map()
 
 bool Map::Load(const std::string& filename)
 {
-    XMLContextPtr context(new XMLContext);
-    XMLDocument document;
+    struct Local
+    {
+        static std::string getStringNode(DataNode* parent, const std::string& name)
+        {
+            DataNode* n = parent->getChild(name);
+            if (!n)
+                throw std::runtime_error(std::string() + "Unable to find node " + name);
+
+            return n->getString();
+        }
+
+        static int getIntNode(DataNode* parent, const std::string& name)
+        {
+            return atoi(getStringNode(parent, name).c_str());
+        }
+    };
+
+    std::ifstream file(filename.c_str());
+    DataNode* rootNode;
+    file >> rootNode;
+    file.close();
 
     try
     {
-        document.load(std::ifstream(filename.c_str()), context);
-        XMLNodePtr rootNode = document.getChild("ika-map");
-        if (!rootNode.get())
-            throw "No document root!";
+        DataNode* realRoot = rootNode->getChild("ika-map");
 
-        //<information>
         {
-            XMLNodePtr infoNode = GetNode(rootNode, "information");
+            DataNode* infoNode = realRoot->getChild("information");
 
-            title = Trim(GetCdata(infoNode->getChild("title")));
+            title = Local::getStringNode(infoNode, "title");
 
-            // grab <information> elements
-            XMLNodeList nodes = infoNode->getChildren("meta");
-            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            DataNodeList metaNodes = infoNode->getChildren("meta");
+            for (DataNodeList::iterator iter = metaNodes.begin(); iter != metaNodes.end(); iter++)
             {
-                std::string name = (*iter)->getAttribute("type");
-                std::string value;
+                DataNode* node = *iter;
 
-                XMLNodePtr cnode = (*iter)->getChildren().front();
-                if (cnode.get() != 0 && cnode->getType() == xml_nt_cdata)
-                    value = cnode->getCdata();
+                std::string name = node->getName();
+                std::string value = node->getString();
 
-                if (!name.empty() && !value.empty())
-                    metaData[name] = value;
+                metaData[name] = value;
             }
         }
 
-        //<header>
         {
-            XMLNodePtr headerNode = GetNode(rootNode, "header");
-            
-            //<dimensions>
-            XMLNodePtr dimNode = GetNode(headerNode, "dimensions");
-            width  = atoi(dimNode->getAttribute("width" ).getString().c_str());
-            height = atoi(dimNode->getAttribute("height").getString().c_str());
+            DataNode* headerNode = realRoot->getChild("header");
+            DataNode* dimNode = headerNode->getChild("dimensions");
+            width = Local::getIntNode(dimNode, "width");
+            height = Local::getIntNode(dimNode, "height");
 
-            //<tileset>
-            XMLNodePtr tileSetNode = GetNode(headerNode, "tileset");
-            tileSetName = Trim(GetCdata(tileSetNode));
+            DataNode* tileSetNode = headerNode->getChild("tileset");
+            tileSetName = tileSetNode->getString();
         }
 
-        //<zones>
         {
-            XMLNodePtr zoneNode = GetNode(rootNode, "zones");
+            DataNode* zoneNode = realRoot->getChild("zones");
 
-            XMLNodeList nodes = zoneNode->getChildren("zone");
-            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            DataNodeList nodes = zoneNode->getChildren("zone");
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
             {
                 Zone z;
-                z.label = (*iter)->getAttribute("label").getString();
-                XMLNodePtr scriptNode = GetNode((*iter), "script");
-                z.scriptName = GetCdata(scriptNode);
-
+                z.label = Local::getStringNode(*iter, "label");
+                z.scriptName = Local::getStringNode(*iter, "script");
                 zones[z.label] = z;
             }
         }
 
-        //<entities>
         {
-            XMLNodePtr entNode = GetNode(rootNode, "entities");
+            DataNode* wpNode = realRoot->getChild("waypoints");
 
-            XMLNodeList nodes = entNode->getChildren("entity");
-            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
-            {
-                XMLNodePtr n;
-                Entity e;
-                e.label = (*iter)->getAttribute("label").getString();
-
-                n = GetNode(*iter, "sprite");
-                e.spriteName = GetCdata(n);
-
-                n = GetNode(*iter, "direction");
-                std::string dir = GetCdata(n);
-                for (int i = 0; i < numDirs; i++)
-                    if (dir == dirNames[i])
-                    {   e.direction = (Direction)i;    break;  }
-
-                n = GetNode(*iter, "speed");
-                e.speed = atoi(GetCdata(n).c_str());
-
-                n = GetNode(*iter, "move_script");
-                e.moveScript = GetCdata(n);
-
-                n = GetNode(*iter, "obstructs");
-                e.obstructsEntities = n->getAttribute("entities").getString() == "true";
-
-                n = GetNode(*iter, "obstructed_by");
-                e.obstructedByEntities = n->getAttribute("entities").getString() == "true";
-                e.obstructedByMap      = n->getAttribute("map").getString() == "true";
-
-                n = GetNode(*iter, "script");
-                ((n->getAttribute("event").getString() == "direct") ?
-                    e.activateScript : e.adjActivateScript) =
-                    GetCdata(n);
-
-                entities[e.label] = e;
-            }
-        }
-
-        //<waypoints>
-        {
-            XMLNodePtr wpNode = GetNode(rootNode, "waypoints");
-
-            XMLNodeList nodes = wpNode->getChildren("waypoint");
-            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            DataNodeList nodes = wpNode->getChildren("waypoint");
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
             {
                 WayPoint wp;
-                wp.label = (*iter)->getAttribute("label").getString();
-                wp.x = atoi((*iter)->getAttribute("x").getString().c_str());
-                wp.y = atoi((*iter)->getAttribute("y").getString().c_str());
+                wp.label = Local::getStringNode(*iter, "label");
+                wp.x = Local::getIntNode(*iter, "x");
+                wp.y = Local::getIntNode(*iter, "y");
                 wayPoints[wp.label] = wp;
             }
         }
 
-        //<layers>
         {
-            XMLNodePtr layNode = GetNode(rootNode, "layers");
+            DataNode* layerNode = realRoot->getChild("layers");
 
-            XMLNodeList nodes = layNode->getChildren("layer");
-            for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            DataNodeList nodes = layerNode->getChildren("layer");
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
             {
-                XMLNodePtr n;
                 Layer* lay = new Layer();
+                DataNode* n;
 
-                lay->label = (*iter)->getAttribute("label");
+                lay->label = Local::getStringNode(*iter, "label");
+                
+                n = (*iter)->getChild("dimensions");
+                int width = Local::getIntNode(n, "width");
+                int height = Local::getIntNode(n, "height");
 
-                n = GetNode(*iter, "dimensions");
-                int width = atoi(n->getAttribute("width").getString().c_str());
-                int height = atoi(n->getAttribute("height").getString().c_str());
+                n = (*iter)->getChild("position");
+                lay->x = Local::getIntNode(n, "x");
+                lay->y = Local::getIntNode(n, "y");
 
-                n = GetNode(*iter, "position");
-                lay->x = atoi(n->getAttribute("x").getString().c_str());
-                lay->y = atoi(n->getAttribute("y").getString().c_str());
+                n = (*iter)->getChild("parallax");
+                lay->parallax.mulx = Local::getIntNode(n, "mulx");
+                lay->parallax.muly = Local::getIntNode(n, "muly");
+                lay->parallax.divx = Local::getIntNode(n, "divx");
+                lay->parallax.divy = Local::getIntNode(n, "divy");
 
-                n = GetNode(*iter, "parallax");
-                lay->parallax.mulx = atoi(n->getAttribute("mulx").getString().c_str());
-                lay->parallax.muly = atoi(n->getAttribute("muly").getString().c_str());
-                lay->parallax.divx = atoi(n->getAttribute("divx").getString().c_str());
-                lay->parallax.divy = atoi(n->getAttribute("divy").getString().c_str());
+                n = (*iter)->getChild("wrap");
+                lay->wrapx = Local::getStringNode(n, "x") == "true";
+                lay->wrapy = Local::getStringNode(n, "y") == "true";
 
-                n = GetNode(*iter, "wrap");
-                lay->wrapx = n->getAttribute("x").getString() == "true";
-                lay->wrapy = n->getAttribute("y").getString() == "true";
-
-                //<data>
                 {
-                    n = GetNode(*iter, "data");
-                    if (n->getAttribute("format").getString() != "zlib")
-                        throw "Unrecognized data format";
+                    DataNode* dataNode = (*iter)->getChild("data");
+                    if (Local::getStringNode(dataNode, "format") != "zlib")
+                        throw std::runtime_error("Unrecognized data format.");
 
-                    std::string d64 = GetCdata(n);
+                    std::string d64 = dataNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
                     int compressedSize = base64::decode(d64, compressed.get(), d64.length());
                     ScopedArray<uint> tiles(new uint[width * height]);
@@ -208,13 +175,12 @@ bool Map::Load(const std::string& filename)
                     lay->tiles = Matrix<uint>(width, height, tiles.get());
                 }
 
-                //<obstructions>
                 {
-                    n = GetNode(*iter, "obstructions");
-                    if (n->getAttribute("format").getString() != "tile")
-                        throw "Unrecognized obstruction style.";
+                    DataNode* obsNode = (*iter)->getChild("obstructions");
+                    if (Local::getStringNode(obsNode, "format") != "tile")
+                        throw std::runtime_error("Unrecognized obstruction style.");
 
-                    std::string d64 = GetCdata(n);
+                    std::string d64 = obsNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
                     int compressedSize = base64::decode(d64, compressed.get(), d64.length());
                     ScopedArray<u8> obs(new u8[width * height]);
@@ -222,336 +188,248 @@ bool Map::Load(const std::string& filename)
                     lay->obstructions = Matrix<u8>(width, height, obs.get());
                 }
 
-                //<entities>
                 {
-                    n = GetNode(*iter, "entities");
-                    
-                    XMLNodeList nodes = n->getChildren("entity");
-                    for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+                    DataNode* entNode = (*iter)->getChild("entities");
+
+                    DataNodeList nodes = entNode->getChildren("entity");
+                    for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
                     {
-                        Layer::Entity o;
-                        o.bluePrint = (*iter)->getAttribute("blueprint");
-                        o.label = (*iter)->getAttribute("label").getString();
-                        o.x = atoi((*iter)->getAttribute("x").getString().c_str());
-                        o.y = atoi((*iter)->getAttribute("y").getString().c_str());
-                        lay->entities.push_back(o);
+                        Entity e;
+
+                        e.x = Local::getIntNode(*iter, "x");
+                        e.y = Local::getIntNode(*iter, "y");
+                        e.label = Local::getStringNode(*iter, "label");
+                        e.spriteName = Local::getStringNode(*iter, "sprite");
+
+                        std::string dir = Local::getStringNode(*iter, "direction");
+                        for (uint i = 0; i < numDirs; i++)
+                            if (dir == dirNames[i])
+                            {   e.direction = (Direction)i; break;  }
+
+                        e.speed = Local::getIntNode(*iter, "speed");
+                        e.moveScript = Local::getStringNode(*iter, "move_script");
+                        e.obstructsEntities = Local::getStringNode(*iter, "obstructs_entities") == "true";
+                        e.obstructedByEntities = Local::getStringNode(*iter, "obstructed_by_entities") == "true";
+                        e.obstructedByMap = Local::getStringNode(*iter, "obstructed_by_map") == "true";
+                        e.adjActivateScript = Local::getStringNode(*iter, "adj_activate_script");
+                        e.activateScript = Local::getStringNode(*iter, "activate_script");
+                        
+                        lay->entities.push_back(e);
                     }
                 }
 
-                //<zones>
                 {
-                    n = GetNode(*iter, "zones");
-                    
-                    XMLNodeList nodes = n->getChildren("zone");
-                    for (XMLNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+                    DataNode* zoneNode = (*iter)->getChild("zones");
+
+                    DataNodeList nodes = zoneNode->getChildren("zone");
+                    for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
                     {
-                        Layer::Zone o;
-                        o.label = (*iter)->getAttribute("label").getString();
-                        o.x = atoi((*iter)->getAttribute("x").getString().c_str());
-                        o.x = atoi((*iter)->getAttribute("y").getString().c_str());
-                        o.width = atoi((*iter)->getAttribute("width").getString().c_str());
-                        o.height = atoi((*iter)->getAttribute("height").getString().c_str());
-                        lay->zones.push_back(o);
+                        Layer::Zone z;
+                        z.label = Local::getStringNode(*iter, "label");
+                        z.x = Local::getIntNode(*iter, "x");
+                        z.y = Local::getIntNode(*iter, "y");
+                        z.width = Local::getIntNode(*iter, "width");
+                        z.height = Local::getIntNode(*iter, "height");
+                        lay->zones.push_back(z);
                     }
                 }
 
                 AddLayer(lay);
             }
         }
+
+        delete rootNode;
         return true;
     }
-    catch (const char* msg)
+    catch (std::runtime_error err)
     {
-        throw std::runtime_error(msg);
+        delete rootNode;
+        Log::Write("Map::Load(\"%s\"): %s", filename.c_str(), err.what());
+
+        return false;
     }
 }
 
 void Map::Save(const std::string& filename)
 {
-    struct Local
+    DataNode* rootNode = newNode("ika-map");
+
+    rootNode->addChild(newNode("version")->addChild("1.0"));
+
     {
-        static void AddCdataNode(XMLContextPtr context, XMLNodePtr parent, const std::string& name, const std::string& cdata)
-        {
-            XMLNodePtr m(new XMLNode(context));
-            m->setName(name);
-            m->addChild(CData(context, cdata));
-            parent->addChild(m);
-        }
-    };
+        DataNode* infoNode = newNode("information")
+                ->addChild(
+                    newNode("title")->addChild(title)
+                );
 
-    XMLContextPtr context(new XMLContext);
-    XMLDocument document;
-    XMLNodePtr rootNode(new XMLNode(context));
-    rootNode->setName("ika-map");
-    rootNode->setAttribute("version", "1.0");
-
-    try
-    {
-        //<information>
-        {
-            XMLNodePtr infoNode(new XMLNode(context));
-            infoNode->setName("information");
-
-            XMLNodePtr n(new XMLNode(context));
-            n->setName("title");
-            n->addChild(CData(context, title));
-
-            infoNode->addChild(n);
-
-            for (std::map<std::string, std::string>::iterator iter = metaData.begin(); iter != metaData.end(); iter++)
-                infoNode->addChild(MetaNode(context, iter->first, iter->second));
-
-            rootNode->addChild(infoNode);
-        }
-
-        //<header>
-        {
-            XMLNodePtr headerNode(new XMLNode(context));
-            headerNode->setName("header");
-
-            {
-                XMLNodePtr n(new XMLNode(context));
-                n->setName("dimensions");
-                n->setAttribute("width", va("%i", width));
-                n->setAttribute("height", va("%i", height));
-                headerNode->addChild(n);
-            }
-
-            {
-                XMLNodePtr n(new XMLNode(context));
-                n->setName("tileset");
-                n->addChild(CData(context, tileSetName));
-                headerNode->addChild(n);
-
-                rootNode->addChild(headerNode);
-            }
-        }
-
-        //<zones>
-        {
-            XMLNodePtr zoneNode(new XMLNode(context));
-            zoneNode->setName("zones");
-
-            for (std::map<std::string, Zone>::iterator iter = zones.begin(); iter != zones.end(); iter++)
-            {
-                XMLNodePtr n(new XMLNode(context));
-                n->setName("zone");
-                n->setAttribute("label", iter->second.label);
-                
-                XMLNodePtr m(new XMLNode(context));
-                m->setName("script");
-                m->addChild(CData(context, iter->second.scriptName));
-                n->addChild(m);
-
-                zoneNode->addChild(n);
-            }
-
-            rootNode->addChild(zoneNode);
-        }
-
-        //<entities>
-        {
-            XMLNodePtr entNode(new XMLNode(context));
-            entNode->setName("entities");
-
-            for (std::map<std::string, Entity>::iterator iter = entities.begin(); iter != entities.end(); iter++)
-            {
-                XMLNodePtr n(new XMLNode(context));
-                n->setName("entity");
-                n->setAttribute("label", iter->second.label);
-
-                Local::AddCdataNode(context, n, "sprite", iter->second.spriteName);
-                Local::AddCdataNode(context, n, "direction", dirNames[(int)iter->second.direction]);
-                Local::AddCdataNode(context, n, "speed", va("%i", iter->second.speed));
-                Local::AddCdataNode(context, n, "move_script", iter->second.moveScript);
-                
-                {
-                    XMLNodePtr m(new XMLNode(context));
-                    m->setName("obstructs");
-                    m->setAttribute("entities", iter->second.obstructsEntities ? "true" : "false");
-                    n->addChild(m);
-                }
-
-                {
-                    XMLNodePtr m(new XMLNode(context));
-                    m->setName("obstructed_by");
-                    m->setAttribute("entities", iter->second.obstructedByEntities ? "true" : "false");
-                    m->setAttribute("map", iter->second.obstructedByMap ? "true" : "false");
-                    n->addChild(m);
-                }
-
-                {
-                    XMLNodePtr m(new XMLNode(context));
-                    m->setName("script");
-                    m->setAttribute("event", "direct");
-                    m->addChild(CData(context, iter->second.activateScript));
-                    n->addChild(m);
-                }
-
-                entNode->addChild(n);
-            }
-
-            rootNode->addChild(entNode);
-        }
-
-        //<waypoints>
-        {
-            XMLNodePtr wp(new XMLNode(context));
-            wp->setName("waypoints");
-
-            for (std::map<std::string, WayPoint>::iterator iter = wayPoints.begin(); iter != wayPoints.end(); iter++)
-            {
-                XMLNodePtr n(new XMLNode(context));
-                n->setName("waypoint");
-                n->setAttribute("label", iter->second.label);
-                n->setAttribute("x", va("%i", iter->second.x));
-                n->setAttribute("y", va("%i", iter->second.y));
-                wp->addChild(n);
-            }
-
-            rootNode->addChild(wp);
-        }
-
-        //<layers>
-        {
-            XMLNodePtr layerNode(new XMLNode(context));
-            layerNode->setName("layers");
-
-            for (std::vector<Layer*>::iterator iter = layers.begin(); iter != layers.end(); iter++)
-            {
-                Layer& layer = **iter;
-
-                XMLNodePtr lay(new XMLNode(context));
-                lay->setName("layer");
-                lay->setAttribute("label", layer.label);
-
-                //<dimensions>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("dimensions");
-                    n->setAttribute("width", va("%i", layer.Width()));
-                    n->setAttribute("height", va("%i", layer.Height()));
-                    lay->addChild(n);
-                }
-
-                //<position>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("position");
-                    n->setAttribute("x", va("%i", layer.x));
-                    n->setAttribute("y", va("%i", layer.y));
-                    lay->addChild(n);
-                }
-
-                //<parallax>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("parallax");
-                    n->setAttribute("mulx", va("%i", layer.parallax.mulx));
-                    n->setAttribute("muly", va("%i", layer.parallax.muly));
-                    n->setAttribute("divx", va("%i", layer.parallax.divx));
-                    n->setAttribute("divy", va("%i", layer.parallax.divy));
-                    lay->addChild(n);
-                }
-
-                //<wrap>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("wrap");
-                    n->setAttribute("x", layer.wrapx ? "true" : "false");
-                    n->setAttribute("y", layer.wrapy ? "true" : "false");
-                    lay->addChild(n);
-                }
-
-                //<data>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("data");
-                    n->setAttribute("format", "zlib");
-
-                    const int dataSize = layer.Width() * layer.Height() * sizeof(uint);
-                    ScopedArray<u8> compressed(new u8[dataSize]);
-                    int compressSize = Compression::compress(
-                        reinterpret_cast<const u8*>(layer.tiles.GetPointer(0, 0)), 
-                        dataSize,
-                        compressed.get(), 
-                        dataSize);
-
-                    std::string d64 = base64::encode(reinterpret_cast<u8*>(compressed.get()), compressSize);
-
-                    n->addChild(CData(context, d64));
-                    lay->addChild(n);
-                }
-
-                //<obstructions>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("obstructions");
-                    n->setAttribute("format", "tile");
-
-                    ScopedArray<u8> compressed(new u8[layer.Width() * layer.Height() * sizeof(uint)]);
-                    int compressSize = Compression::compress(layer.obstructions.GetPointer(0, 0), layer.Width() * layer.Height(), compressed.get(), layer.Width() * layer.Height());
-
-                    std::string d64 = base64::encode(compressed.get(), compressSize);
-                    n->addChild(CData(context, d64));
-                    lay->addChild(n);
-                }
-
-                //<entities>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("entities");
-
-                    for (std::vector<Layer::Entity>::iterator i = layer.entities.begin(); i != layer.entities.end(); i++)
-                    {
-                        XMLNodePtr m(new XMLNode(context));
-                        m->setName("entity");
-                        m->setAttribute("blueprint", i->bluePrint);
-                        m->setAttribute("label", i->label);
-                        m->setAttribute("x", va("%i", i->x));
-                        m->setAttribute("y", va("%i", i->y));
-                        n->addChild(m);
-                    }
-
-                    lay->addChild(n);
-                }
-
-                //<zones>
-                {
-                    XMLNodePtr n(new XMLNode(context));
-                    n->setName("zones");
-                    
-                    for (std::vector<Layer::Zone>::iterator i = layer.zones.begin(); i != layer.zones.end(); i++)
-                    {
-                        XMLNodePtr m(new XMLNode(context));
-                        m->setName("entity");
-                        m->setAttribute("label", i->label);
-                        m->setAttribute("x", va("%i", i->x));
-                        m->setAttribute("y", va("%i", i->y));
-                        m->setAttribute("width", va("%i", i->width));
-                        m->setAttribute("height", va("%i", i->height));
-                        n->addChild(m);
-                    }
-
-                    lay->addChild(n);
-                }
-
-                layerNode->addChild(lay);
-            }
-            rootNode->addChild(layerNode);
-        }
-
-        document.addChild(rootNode);
-        document.save(std::ofstream(filename.c_str()));
+        rootNode->addChild(infoNode);
+        
+        DataNode* metaNode = newNode("meta");
+        infoNode->addChild(metaNode);
+        for (std::map<std::string, std::string>::iterator iter = metaData.begin(); iter != metaData.end(); iter++)
+            metaNode->addChild(
+                newNode(iter->first)
+                    ->addChild(iter->second)
+            );
     }
-    catch (XMLError)
+
     {
-        throw std::runtime_error(va("Unable to write %s", filename.c_str()));
+        rootNode->addChild(
+        newNode("header")
+            ->addChild(
+                newNode("dimensions")
+                    ->addChild(newNode("width")->addChild(width))
+                    ->addChild(newNode("height")->addChild(height))
+            )
+            ->addChild(
+                newNode("tileset")->addChild(tileSetName)
+            )
+        );
     }
-    catch (const char* msg)
+
     {
-        throw std::runtime_error(va("Map::Save(%s): %s", filename.c_str(), msg));
+        DataNode* wpNode = newNode("waypoints");
+        rootNode->addChild(wpNode);
+
+        for (WayPointMap::iterator iter = wayPoints.begin(); iter != wayPoints.end(); iter++)
+        {
+            WayPoint& wp = iter->second;
+            wpNode->addChild(
+                newNode("waypoint")
+                    ->addChild(newNode("label")->addChild(wp.label))
+                    ->addChild(newNode("x")->addChild(wp.x))
+                    ->addChild(newNode("y")->addChild(wp.y))
+                );
+        }
     }
+
+    {
+        DataNode* zoneNode = newNode("zones");
+        rootNode->addChild(zoneNode);
+
+        for (ZoneMap::iterator iter = zones.begin(); iter != zones.end(); iter++)
+        {
+            Zone& z = iter->second;
+            zoneNode->addChild(newNode("zone")
+                ->addChild(newNode("label")->addChild(z.label))
+                ->addChild(newNode("script")->addChild(z.scriptName))
+                );
+        }
+    }
+
+    {
+        DataNode* layerNode = newNode("layers");
+        rootNode->addChild(layerNode);
+
+        for (uint i = 0; i < layers.size(); i++)
+        {
+            Layer* lay = layers[i];
+
+            DataNode* layNode = newNode("layer");
+            layerNode->addChild(layNode);
+            layNode
+                ->addChild(newNode("label")->addChild(lay->label))
+                ->addChild(newNode("dimensions")
+                    ->addChild(newNode("width")->addChild(lay->Width()))
+                    ->addChild(newNode("height")->addChild(lay->Height()))
+                    )
+                ->addChild(newNode("position")
+                    ->addChild(newNode("x")->addChild(lay->x))
+                    ->addChild(newNode("y")->addChild(lay->y))
+                    )
+                ->addChild(newNode("parallax")
+                    ->addChild(newNode("mulx")->addChild(lay->parallax.mulx))
+                    ->addChild(newNode("muly")->addChild(lay->parallax.muly))
+                    ->addChild(newNode("divx")->addChild(lay->parallax.divx))
+                    ->addChild(newNode("divy")->addChild(lay->parallax.divy))
+                    )
+                ->addChild(newNode("wrap")
+                    ->addChild(newNode("x")->addChild(lay->wrapx ? "true" : "false"))
+                    ->addChild(newNode("y")->addChild(lay->wrapy ? "true" : "false"))
+                    );
+
+            {
+                const int dataSize = lay->Width() * lay->Height() * sizeof(uint);
+                ScopedArray<u8> compressed(new u8[dataSize]);
+                int compressSize = Compression::compress(
+                    reinterpret_cast<const u8*>(lay->tiles.GetPointer(0, 0)), 
+                    dataSize,
+                    compressed.get(), 
+                    dataSize);
+
+                std::string d64 = base64::encode(reinterpret_cast<u8*>(compressed.get()), compressSize);
+
+                layNode->addChild(newNode("data")
+                    ->addChild(newNode("format")->addChild("zlib"))
+                    ->addChild(d64)
+                    );
+            }
+
+            {
+                ScopedArray<u8> compressed(new u8[lay->Width() * lay->Height() * sizeof(uint)]);
+                int compressSize = Compression::compress(
+                    lay->obstructions.GetPointer(0, 0), 
+                    lay->Width() * lay->Height(), 
+                    compressed.get(), 
+                    lay->Width() * lay->Height());
+
+                std::string d64 = base64::encode(compressed.get(), compressSize);
+
+                layNode->addChild(newNode("obstructions")
+                    ->addChild(newNode("format")->addChild("tile"))
+                    ->addChild(d64)
+                    );
+            }
+
+            {
+                DataNode* entNode = newNode("entities");
+                layNode->addChild(entNode);
+
+                for (std::vector<Entity>::iterator iter = lay->entities.begin();
+                    iter != lay->entities.end();
+                    iter++)
+                {
+                    entNode->addChild(newNode("entity")
+                        ->addChild(newNode("label")->addChild(iter->label))
+                        ->addChild(newNode("x")->addChild(iter->x))
+                        ->addChild(newNode("y")->addChild(iter->y))
+                        ->addChild(newNode("sprite")->addChild(iter->spriteName))
+                        ->addChild(newNode("speed")->addChild(iter->speed))
+                        ->addChild(newNode("direction")->addChild(dirNames[(int)iter->direction]))
+                        ->addChild(newNode("move_script")->addChild(iter->moveScript))
+                        ->addChild(newNode("obstructs_entities")->addChild(iter->obstructsEntities ? "true" : "false"))
+                        ->addChild(newNode("obstructed_by_entities")->addChild(iter->obstructedByEntities ? "true" : "false"))
+                        ->addChild(newNode("obstructed_by_map")->addChild(iter->obstructedByMap ? "true" : "false"))
+                        ->addChild(newNode("adj_activate_script")->addChild(iter->adjActivateScript))
+                        ->addChild(newNode("activate_script")->addChild(iter->activateScript))
+                        );
+                }
+            }
+
+            {
+                DataNode* zoneNode = newNode("zones");
+                layNode->addChild(zoneNode);
+
+                for (std::vector<Layer::Zone>::iterator iter = lay->zones.begin();
+                    iter != lay->zones.end();
+                    iter++)
+                {
+                    zoneNode->addChild(newNode("zone")
+                        ->addChild(newNode("label")->addChild(iter->label))
+                        ->addChild(newNode("x")->addChild(iter->x))
+                        ->addChild(newNode("y")->addChild(iter->y))
+                        ->addChild(newNode("width")->addChild(iter->width))
+                        ->addChild(newNode("height")->addChild(iter->height))
+                        );
+                }
+            }
+        }
+    }
+
+    std::ofstream file(filename.c_str());
+    file << rootNode;
+    file.close();
+    delete rootNode;
 }
 
 Map::Layer& Map::GetLayer(uint index)

@@ -28,6 +28,12 @@ NewMapDlg::NewMapDlg(wxWindow* parent)
 {
     wxXmlResource::Get()->LoadDialog(this, parent, "dialog_newmap");
     Ctrl<wxPanel>("panel_main")->GetSizer()->Fit(this);
+
+    // defaults
+    Ctrl<wxTextCtrl>("edit_width")->SetValue("500");
+    Ctrl<wxTextCtrl>("edit_height")->SetValue("500");
+    Ctrl<wxTextCtrl>("edit_tilewidth")->SetValue("16");
+    Ctrl<wxTextCtrl>("edit_tileheight")->SetValue("16");
 }
 
 void NewMapDlg::OnOK(wxCommandEvent& event)
@@ -39,14 +45,23 @@ void NewMapDlg::OnOK(wxCommandEvent& event)
     tileWidth     = atoi(Ctrl<wxTextCtrl>("edit_tilewidth")->GetValue().c_str());
     tileHeight    = atoi(Ctrl<wxTextCtrl>("edit_tileheight")->GetValue().c_str());
 
-    if (width < 0 || height < 0)
-        wxMessageBox("Width and height must be at least one pixel.", "Error", wxOK | wxCENTER, this);
-    else if (!File::Exists(tileSetName))
-        wxMessageBox(va("%s does not exist!", tileSetName.c_str()), "Error", wxOK | wxCENTER, this);
-    else if (newTileSet && (tileWidth < 0 || tileHeight < 0))
-        wxMessageBox("Tile width and height must each be at least one pixel.", "Error", wxOK | wxCENTER, this);
-    else
-        wxDialog::OnOK(event);
+    try
+    {
+        if (width < 0 || height < 0)                            throw "Width and height must be at least one pixel.";
+        if (!newTileSet && !File::Exists(tileSetName))          throw va("%s does not exist!", tileSetName.c_str());
+        if (newTileSet && File::Exists(tileSetName))
+        {
+            if (wxMessageBox(va("A tileset named %s already exists.\nOverwrite?", tileSetName.c_str()), "", wxYES_NO, this) == wxID_NO)
+                return;
+        }
+        if (newTileSet && (tileWidth < 0 || tileHeight < 0))    throw "The tileset to be created must be at least 1 pixel wide and high.";
+        else
+            wxDialog::OnOK(event);
+    }
+    catch (const char* s)
+    {
+        wxMessageBox(s, "Error", wxOK | wxCENTER, this);
+    }
 }
 
 void NewMapDlg::OnBrowse(wxCommandEvent& event)

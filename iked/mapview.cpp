@@ -1,3 +1,4 @@
+#if 0
 #include <list>
 #include <wx/wx.h>
 #include <wx/laywin.h>
@@ -1690,3 +1691,4 @@ void MapView::RenderSelectionRect(Rect r, RGBA colour)
 
     _graph->Rect(r.left - xwin, r.top - ywin, r.Width(), r.Height(), colour);
 }
+#endif

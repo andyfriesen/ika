@@ -1,6 +1,7 @@
 
 #include "wxinc.h"
 
+#include <vector>
 #include <sstream>
 
 #include "mainwindow.h"
@@ -14,6 +15,7 @@
 #include "newmapdlg.h"
 #include "mapdlg.h"
 #include "layerdlg.h"
+#include "importtilesdlg.h"
 
 // Other stuff
 #include "tileset.h"
@@ -30,12 +32,15 @@ namespace
         id_filenew,
         id_fileopen,
         id_filesave,
-        id_filesaveas,
+        id_filesavemapas,
+        id_fileloadtileset,
+        id_filesavetilesetas,
         id_fileexit,
 
         id_editundo,
         id_editredo,
         id_editmapproperties,
+        id_importtiles,
 
         id_tilepaint,
         id_selecttiles,
@@ -65,11 +70,14 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_filenew, MainWindow::OnNewMap)
     EVT_MENU(id_fileopen, MainWindow::OnOpenMap)
     EVT_MENU(id_filesave, MainWindow::OnSaveMap)
-    EVT_MENU(id_filesaveas, MainWindow::OnSaveMapAs)
+    EVT_MENU(id_filesavemapas, MainWindow::OnSaveMapAs)
+    EVT_MENU(id_fileloadtileset, MainWindow::OnLoadTileSet)
+    EVT_MENU(id_filesavetilesetas, MainWindow::OnSaveTileSetAs)
     EVT_MENU(id_fileexit, MainWindow::OnExit)
     EVT_MENU(id_editundo, MainWindow::OnUndo)
     EVT_MENU(id_editredo, MainWindow::OnRedo)
     EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
+    EVT_MENU(id_importtiles, MainWindow::OnImportTiles)
 
     EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
@@ -157,14 +165,14 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     sidePanel->SetSizer(sizer);
 
     _topBar = new wxSashLayoutWindow(this, id_topbar);
-    _topBar->SetAlignment(wxLAYOUT_TOP);
-    _topBar->SetOrientation(wxLAYOUT_HORIZONTAL);
+    _topBar->SetAlignment(wxLAYOUT_RIGHT);
+    _topBar->SetOrientation(wxLAYOUT_VERTICAL);
 
     _bottomBar = new wxSashLayoutWindow(this, id_bottombar);
-    _bottomBar->SetDefaultSize(wxSize(1000, 100));
-    _bottomBar->SetAlignment(wxLAYOUT_BOTTOM);
-    _bottomBar->SetOrientation(wxLAYOUT_HORIZONTAL);
-    _bottomBar->SetSashVisible(wxSASH_TOP, true);
+    _bottomBar->SetDefaultSize(wxSize(330, 100));
+    _bottomBar->SetAlignment(wxLAYOUT_LEFT);
+    _bottomBar->SetOrientation(wxLAYOUT_VERTICAL);
+    _bottomBar->SetSashVisible(wxSASH_RIGHT, true);
 
     _mapView = new MapView(this, _topBar);
     _tileSetView = new TileSetView(this, _bottomBar);
@@ -176,8 +184,11 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     wxMenu* fileMenu = new wxMenu;
     fileMenu->Append(id_filenew, "&New Map\tCtrl-N", "Open a fresh, blank map.");
     fileMenu->Append(id_fileopen, "&Open Map\tCtrl-O", "Open an existing map.");
-    fileMenu->Append(id_filesave, "&Save Map\tCtrl-S", "Save the current map to disk.");
-    fileMenu->Append(id_filesaveas, "Save Map &As...", "Save the current map under a new filename.");
+    fileMenu->Append(id_filesave, "&Save\tCtrl-S", "Save the current map and tileset to disk.");
+    fileMenu->Append(id_filesavemapas, "Save Map &As...", "Save the current map under a new filename.");
+    fileMenu->AppendSeparator();
+    fileMenu->Append(id_fileloadtileset, "&Load Tileset...", "Replace the map's tileset with a different, pre-existing tileset.");
+    fileMenu->Append(id_filesavetilesetas, "Save &Tileset As...", "Save the current tileset under a new name.");
     fileMenu->AppendSeparator();
     fileMenu->Append(id_fileexit, "E&xit\tCtrl-Alt-Del", "Quit ikaMap");
 
@@ -186,6 +197,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     editMenu->Append(id_editredo, "&Redo\tCtrl-Y", "Redo the last undone action.");
     editMenu->AppendSeparator();
     editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
+    editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
 
     wxMenuBar* menuBar = new wxMenuBar;
     menuBar->Append(fileMenu, "&File");
@@ -234,8 +246,8 @@ void MainWindow::OnDragSash(wxSashEvent& event)
 {
     switch (event.GetId())
     {
-        case id_bottombar:  _bottomBar->SetDefaultSize(wxSize(1000, event.GetDragRect().height));   break;
-        case id_sidebar:    _sideBar->SetDefaultSize(wxSize(event.GetDragRect().width, 1000));      break;
+        case id_bottombar:  _bottomBar->SetDefaultSize(event.GetDragRect().GetSize());  break;
+        case id_sidebar:    _sideBar->SetDefaultSize(event.GetDragRect().GetSize());    break;
         default:
             wxASSERT(false);
     }
@@ -316,6 +328,7 @@ void MainWindow::OnSaveMap(wxCommandEvent& event)
         try
         {
             _map->Save(_curMapName);
+            _tileSet->Save(_map->tileSetName);
         }
         catch (std::runtime_error err)
         {
@@ -330,7 +343,7 @@ void MainWindow::OnSaveMapAs(wxCommandEvent&)
 {
     wxFileDialog dlg(
         this,
-        "Open File",
+        "Save Map As",
         "",
         "",
         "ika maps (*.ika-map)|*.ika-map|"
@@ -354,6 +367,59 @@ void MainWindow::OnSaveMapAs(wxCommandEvent&)
     {
         wxMessageBox(va("Unable to write %s:\n%s", name.c_str(), err.what()), "Error", wxOK | wxCENTER, this);
     }
+}
+
+void MainWindow::OnLoadTileSet(wxCommandEvent&)
+{
+    wxFileDialog dlg(
+        this,
+        "Load tileset",
+        "",
+        "",
+        "VSP tilesets (*.vsp)|*.vsp|"
+        "All files (*.*)|*.*",
+        wxOPEN | wxFILE_MUST_EXIST
+        );
+
+    if (dlg.ShowModal() == wxID_OK)
+    {
+        TileSet* ts = new TileSet();
+        try
+        {
+            bool result = ts->Load(dlg.GetPath().c_str());
+            if (!result)    throw std::runtime_error(va("%s does not appear to be a valid tileset", dlg.GetFilename().c_str()));;
+
+            // FIXME: paths aren't taken into consideration here.
+            // Need to make sure that the tileset name is always relative to the map's position.  Sprites should be the same.
+
+            HandleCommand(new ChangeTileSetCommand(ts, dlg.GetPath().c_str()));
+        }
+        catch (std::runtime_error err)
+        {
+            delete ts;
+            wxMessageBox(va("Unable to load tileset %s:\n%s", dlg.GetPath().c_str(), err.what()), "ERROR", wxOK | wxCENTER, this);
+        }
+    }
+}
+
+void MainWindow::OnSaveTileSetAs(wxCommandEvent&)
+{
+    wxFileDialog dlg(
+        this,
+        "Save Tileset As",
+        "",
+        "",
+        "VSP Tilesets (*.vsp)|*.vsp|"
+        "All files (*.*)|*.*",
+        wxSAVE | wxOVERWRITE_PROMPT
+        );
+
+    int result = dlg.ShowModal();
+    if (result != wxID_OK)
+        return;
+
+    _map->tileSetName = dlg.GetFilename().c_str();
+    _tileSet->Save(dlg.GetPath().c_str());
 }
 
 void MainWindow::OnExit(wxCommandEvent&)
@@ -380,6 +446,29 @@ void MainWindow::OnEditMapProperties(wxCommandEvent&)
     if (result == wxID_OK)
     {
         HandleCommand(new ChangeMapPropertiesCommand(dlg.title, dlg.width, dlg.height));
+    }
+}
+
+void MainWindow::OnImportTiles(wxCommandEvent&)
+{
+    ImportTilesDlg dlg(this);
+
+    if (dlg.ShowModal(_tileSet->Width(), _tileSet->Height()) == wxID_OK)
+    {
+        if (!dlg.append)
+        {
+            // This might start to get a bit RAM intensive.
+
+            std::vector<::Command*> commands; // commands to be sent
+
+            if (_tileSet->Count())  // if there are tiles to delete, delete them
+                commands.push_back(new DeleteTilesCommand(0, _tileSet->Count() - 1));   // One copy
+            commands.push_back(new ResizeTileSetCommand(dlg.width, dlg.height));        // Not much to store here, since there are no tiles to resize. (thus nothing to back up)
+            commands.push_back(new InsertTilesCommand(0, dlg.tiles));                   // copy of each tile to be inserted.
+            HandleCommand(new CompositeCommand(commands));
+        }
+        else
+            HandleCommand(new InsertTilesCommand(_tileSet->Count(), dlg.tiles));
     }
 }
 
@@ -610,7 +699,13 @@ SpriteSet* MainWindow::GetSprite(const std::string& fileName)
     else
     {
         SpriteSet* ss = new SpriteSet();
-        ss->Load(fileName);
+        bool result = ss->Load(fileName);
+
+        if (!result)
+        {
+            delete ss;
+            ss = 0; // put this away in the cache, so that we know that we tried to load it.
+        }
         _sprites[fileName] = ss;
         return ss;
     }

@@ -30,9 +30,9 @@ public:
     void UpdateDlg();
 
     void OnOK(wxCommandEvent& event);
+    void OnDelete(wxCommandEvent& event);
 
-    Map::Entity newBlueprint;
-    Map::Layer::Entity newData;
+    Map::Entity newData;
     
     DECLARE_EVENT_TABLE()
 };

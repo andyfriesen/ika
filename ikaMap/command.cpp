@@ -1,8 +1,35 @@
 
 #include "command.h"
 #include "mainwindow.h"
-#include "map.h"
 #include "mapview.h"
+#include "tilesetview.h"
+
+#include "map.h"
+#include "tileset.h"
+
+CompositeCommand::CompositeCommand(std::vector<Command*>& commands)
+    : _commands(commands)
+{}
+
+CompositeCommand::~CompositeCommand()
+{
+    for (uint i = 0; i < _commands.size(); i++)
+        delete _commands[i];
+}
+
+void CompositeCommand::Do(MainWindow* m)
+{
+    for (uint i = 0; i < _commands.size(); i++)
+        _commands[i]->Do(m);
+}
+
+void CompositeCommand::Undo(MainWindow* m)
+{
+    for (uint i = _commands.size() - 1; i >= 0; i++)
+        _commands[i]->Undo(m);
+}
+
+//-----------------------------------------------------------------------------
 
 SetTileCommand::SetTileCommand(uint tx, uint ty, uint li, uint ti)
     : _tileX(tx)
@@ -246,11 +273,10 @@ void ChangeMapPropertiesCommand::Undo(MainWindow* m)
 //-----------------------------------------------------------------------------
 
 ChangeEntityPropertiesCommand::ChangeEntityPropertiesCommand(
-    uint layerIndex, uint entityIndex, Map::Layer::Entity newData, Map::Entity newBlueprint)
+    uint layerIndex, uint entityIndex, Map::Entity newData)
     : _layerIndex(layerIndex)
     , _entityIndex(entityIndex)
     , _newData(newData)
-    , _newBlueprint(newBlueprint)
 {}
 
 void ChangeEntityPropertiesCommand::Do(MainWindow* m)
@@ -259,10 +285,8 @@ void ChangeEntityPropertiesCommand::Do(MainWindow* m)
     Map::Layer* lay = &map->GetLayer(_layerIndex);
 
     _oldData = lay->entities[_entityIndex];
-    _oldBlueprint = map->entities[_oldData.bluePrint];
 
     lay->entities[_entityIndex] = _newData;
-    map->entities[_newData.bluePrint] = _newBlueprint;
 
     m->GetMapView()->Refresh();
 }
@@ -273,7 +297,196 @@ void ChangeEntityPropertiesCommand::Undo(MainWindow* m)
     Map::Layer* lay = &map->GetLayer(_layerIndex);
 
     lay->entities[_entityIndex] = _oldData;
-    map->entities[_oldData.bluePrint] = _oldBlueprint;
 
     m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
+CreateEntityCommand::CreateEntityCommand(uint layerIndex, int x, int y)
+    : _layerIndex(layerIndex)
+    , _x(x)
+    , _y(y)
+{}
+
+void CreateEntityCommand::Do(MainWindow* m)
+{
+    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    _entityIndex = lay->entities.size();
+    lay->entities.push_back(Map::Entity());
+    lay->entities[_entityIndex].x = _x;
+    lay->entities[_entityIndex].y = _y;
+
+    m->GetMapView()->Refresh();
+}
+
+void CreateEntityCommand::Undo(MainWindow* m)
+{
+    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    lay->entities.erase(lay->entities.begin() + _entityIndex);
+
+    m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
+DestroyEntityCommand::DestroyEntityCommand(uint layerIndex, uint entityIndex)
+    : _layerIndex(layerIndex)
+    , _entityIndex(entityIndex)
+{}
+
+void DestroyEntityCommand::Do(MainWindow* m)
+{
+    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    
+    _oldData = lay->entities[_entityIndex];
+    
+    lay->entities.erase(lay->entities.begin() + _entityIndex);
+
+    m->GetMapView()->Refresh();
+}
+
+void DestroyEntityCommand::Undo(MainWindow* m)
+{
+    Map::Layer* lay = &m->GetMap()->GetLayer(_layerIndex);
+    lay->entities.insert(lay->entities.begin() + _entityIndex, _oldData);
+
+    m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
+ChangeTileSetCommand::ChangeTileSetCommand(TileSet* tileSet, const std::string& fileName)
+    : _tileSet(tileSet)
+    , _fileName(fileName)
+{}
+
+ChangeTileSetCommand::~ChangeTileSetCommand()
+{
+    delete _tileSet;
+}
+
+void ChangeTileSetCommand::Do(MainWindow* m)
+{
+    std::string s = _fileName;
+    TileSet* t    = _tileSet;
+
+    _tileSet  = m->_tileSet;
+    _fileName = m->GetMap()->tileSetName;
+
+    m->_tileSet              = t;
+    m->GetMap()->tileSetName = s;
+
+    m->GetMapView()->Refresh();
+    m->GetTileSetView()->Refresh();
+}
+
+void ChangeTileSetCommand::Undo(MainWindow* m)
+{
+    Do(m);  // a swap undoes a swap
+}
+
+//-----------------------------------------------------------------------------
+
+InsertTilesCommand::InsertTilesCommand(uint pos, std::vector<Canvas >& tiles)
+    : _startPos(pos)
+{
+    _tiles.reserve(tiles.size());
+    for (uint i = 0; i < tiles.size(); i++)
+        _tiles.push_back(tiles[i]);
+}
+
+void InsertTilesCommand::Do(MainWindow* m)
+{
+    TileSet* ts = m->GetTileSet();
+
+    for (uint i = 0; i < _tiles.size(); i++)
+        ts->InsertTile(_startPos + i, _tiles[i]);
+
+    m->GetTileSetView()->Refresh();
+    m->GetMapView()->Refresh();
+}
+
+void InsertTilesCommand::Undo(MainWindow* m)
+{
+    TileSet* ts = m->GetTileSet();
+
+    for (uint i = 0; i < _tiles.size(); i++)
+        ts->DeleteTile(ts->Count() - 1);
+
+    m->GetTileSetView()->Refresh();
+    m->GetMapView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
+DeleteTilesCommand::DeleteTilesCommand(uint firstTile, uint lastTile)
+    : _firstTile(firstTile)
+    , _lastTile(lastTile)
+{
+    assert(firstTile <= lastTile);
+}
+
+void DeleteTilesCommand::Do(MainWindow* m)
+{
+    TileSet* ts = m->GetTileSet();
+
+    _savedTiles.reserve(_lastTile - _firstTile + 1);
+
+    for (uint i = _firstTile; i <= _lastTile; i++)
+    {
+        _savedTiles.push_back(ts->Get(_firstTile));     // save the tile
+        ts->DeleteTile(_firstTile);                     // then nuke it
+    }
+
+    m->GetMapView()->Refresh();
+    m->GetTileSetView()->Refresh();
+}
+
+void DeleteTilesCommand::Undo(MainWindow* m)
+{
+    TileSet* ts = m->GetTileSet();
+
+    for (uint i = _firstTile; i <= _lastTile; i++)
+    {
+        ts->InsertTile(i, _savedTiles[i]);
+    }
+
+    m->GetMapView()->Refresh();
+    m->GetTileSetView()->Refresh();
+}
+
+//-----------------------------------------------------------------------------
+
+ResizeTileSetCommand::ResizeTileSetCommand(uint newWidth, uint newHeight)
+    : _newWidth(newWidth)
+    , _newHeight(newHeight)
+{}
+
+void ResizeTileSetCommand::Do(MainWindow* m)
+{
+    TileSet* ts = m->GetTileSet();
+
+    _oldWidth = ts->Width();
+    _oldHeight = ts->Height();
+
+    _savedTiles.clear();
+    _savedTiles.reserve(ts->Count());
+    for (uint i = 0; i < ts->Count(); i++)
+    {
+        _savedTiles.push_back(ts->Get(i));
+    }
+
+    ts->New(_newWidth, _newHeight);
+}
+
+void ResizeTileSetCommand::Undo(MainWindow* m)
+{
+    TileSet* ts = m->GetTileSet();
+
+    ts->New(_oldWidth, _oldHeight);
+    for (uint i = 0; i < _savedTiles.size(); i++)
+        ts->AppendTile(_savedTiles[i]);
+
+    _savedTiles.clear();    // free up all that memory.  We don't need it anymore anyway.
 }

@@ -1,11 +1,13 @@
 #include "entitydlg.h"
 #include "mainwindow.h"
 #include "misc.h"
+#include "command.h"
 
 #include <wx/xrc/xmlres.h>
 
 BEGIN_EVENT_TABLE(EntityDlg, wxDialog)
     EVT_BUTTON(wxID_OK, EntityDlg::OnOK)
+    EVT_BUTTON(XRCID("button_delete"), EntityDlg::OnDelete)
 END_EVENT_TABLE()
 
 EntityDlg::EntityDlg(MainWindow* mw, uint layer, uint index)
@@ -22,21 +24,20 @@ EntityDlg::EntityDlg(MainWindow* mw, uint layer, uint index)
     Map* map = mw->GetMap();
 
     newData = map->GetLayer(layer).entities[index];
-    newBlueprint = map->entities[newData.bluePrint];
 
     UpdateDlg();
 }
 
 void EntityDlg::UpdateData()
 {
-    newData.label      = get<wxTextCtrl>("edit_label")->GetValue().c_str();
-    newBlueprint.spriteName      = get<wxTextCtrl>("edit_sprite")->GetValue().c_str();
-    newBlueprint.speed           = atoi(get<wxTextCtrl>("edit_speed")->GetValue().c_str());
-    newBlueprint.moveScript      = get<wxTextCtrl>("edit_movescript")->GetValue().c_str();
-    newBlueprint.activateScript  = get<wxTextCtrl>("edit_script")->GetValue().c_str();
-    newBlueprint.obstructsEntities = get<wxCheckBox>("check_obstructs")->GetValue();
-    newBlueprint.obstructedByEntities = get<wxCheckBox>("check_obstructedbyentities")->GetValue();
-    newBlueprint.obstructedByMap = get<wxCheckBox>("check_obstructedbymap")->GetValue();
+    newData.label           = get<wxTextCtrl>("edit_label")->GetValue().c_str();
+    newData.spriteName      = get<wxTextCtrl>("edit_sprite")->GetValue().c_str();
+    newData.speed           = atoi(get<wxTextCtrl>("edit_speed")->GetValue().c_str());
+    newData.moveScript      = get<wxTextCtrl>("edit_movescript")->GetValue().c_str();
+    newData.activateScript  = get<wxTextCtrl>("edit_script")->GetValue().c_str();
+    newData.obstructsEntities = get<wxCheckBox>("check_obstructs")->GetValue();
+    newData.obstructedByEntities = get<wxCheckBox>("check_obstructedbyentities")->GetValue();
+    newData.obstructedByMap = get<wxCheckBox>("check_obstructedbymap")->GetValue();
     
     newData.x                 = atoi(get<wxTextCtrl>("edit_x")->GetValue().c_str());
     newData.y                 = atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
@@ -45,13 +46,13 @@ void EntityDlg::UpdateData()
 void EntityDlg::UpdateDlg()
 {
     get<wxTextCtrl>("edit_label")->SetValue(                newData.label.c_str());
-    get<wxTextCtrl>("edit_sprite")->SetValue(               newBlueprint.spriteName.c_str());
-    get<wxTextCtrl>("edit_speed")->SetValue(                ToString(newBlueprint.speed).c_str());
-    get<wxTextCtrl>("edit_movescript")->SetValue(           newBlueprint.moveScript.c_str());
-    get<wxTextCtrl>("edit_script")->SetValue(               newBlueprint.activateScript.c_str());
-    get<wxCheckBox>("check_obstructs")->SetValue(           newBlueprint.obstructsEntities);
-    get<wxCheckBox>("check_obstructedbyentities")->SetValue(newBlueprint.obstructedByMap);
-    get<wxCheckBox>("check_obstructedbymap")->SetValue(     newBlueprint.obstructedByEntities);
+    get<wxTextCtrl>("edit_sprite")->SetValue(               newData.spriteName.c_str());
+    get<wxTextCtrl>("edit_speed")->SetValue(                ToString(newData.speed).c_str());
+    get<wxTextCtrl>("edit_movescript")->SetValue(           newData.moveScript.c_str());
+    get<wxTextCtrl>("edit_script")->SetValue(               newData.activateScript.c_str());
+    get<wxCheckBox>("check_obstructs")->SetValue(           newData.obstructsEntities);
+    get<wxCheckBox>("check_obstructedbyentities")->SetValue(newData.obstructedByMap);
+    get<wxCheckBox>("check_obstructedbymap")->SetValue(     newData.obstructedByEntities);
 
     get<wxTextCtrl>("edit_x")->SetValue(                    ToString(newData.x).c_str());
     get<wxTextCtrl>("edit_y")->SetValue(                    ToString(newData.y).c_str());
@@ -61,4 +62,13 @@ void EntityDlg::OnOK(wxCommandEvent& event)
 {
     UpdateData();
     wxDialog::OnOK(event);
+}
+
+void EntityDlg::OnDelete(wxCommandEvent& event)
+{
+    if (wxMessageBox("Are you sure you want to destroy this entity?", "DESTRUCTOMATIC CONFIRMATION CODE REQUIRED", wxYES_NO, this))
+    {
+        _mainWnd->HandleCommand(new DestroyEntityCommand(_layer, _index));
+        EndModal(wxID_CANCEL);
+    }
 }

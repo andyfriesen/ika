@@ -34,6 +34,8 @@ struct Map
 
     struct Entity
     {
+        int x, y;
+
         std::string label;
         std::string spriteName;
         Direction direction;
@@ -65,17 +67,6 @@ struct Map
 
     struct Layer
     {
-        struct Entity
-        {
-            int x, y;
-            std::string bluePrint;
-            std::string label;
-            Entity()
-                : x(0)
-                , y(0)
-            {}
-        };
-
         struct Zone
         {
             int x, y;
@@ -137,11 +128,9 @@ struct Map
     std::string tileSetName;
 
     typedef std::map<std::string, Zone> ZoneMap;
-    typedef std::map<std::string, Entity> EntityMap;
     typedef std::map<std::string, WayPoint> WayPointMap;
     
     ZoneMap             zones;
-    EntityMap           entities;
     WayPointMap         wayPoints;
 private:
     std::vector<Layer*> layers;

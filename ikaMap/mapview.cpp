@@ -166,6 +166,8 @@ void MapView::ShowPage()
 void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
 {
     TileSet* ts = _mainWnd->GetTileSet();
+    if (!ts->Count())
+        return;
 
     int width  = _video->LogicalWidth();
     int height = _video->LogicalHeight();
@@ -214,7 +216,7 @@ void MapView::RenderLayer(Map::Layer* lay, int xoffset, int yoffset)
 
 void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
 {
-    for (std::vector<Map::Layer::Entity>::iterator iter = lay->entities.begin(); iter != lay->entities.end(); iter++)
+    for (std::vector<Map::Entity>::iterator iter = lay->entities.begin(); iter != lay->entities.end(); iter++)
     {
         // default position/size if the sprite cannot be found
         int hotx = 0;
@@ -235,21 +237,24 @@ void MapView::RenderEntities(Map::Layer* lay, int xoffset, int yoffset)
             height = ss->Height();
         }
 
+        int x = iter->x - hotx - _xwin + lay->x;
+        int y = iter->y - hoty - _ywin + lay->y;
+
         // Too far down or to the right.  Don't need to draw
-        if (iter->x + hotx - width  - _xwin > _video->LogicalWidth() ||
-            iter->y + hoty - height - _ywin > _video->LogicalHeight())
+        if (x > _video->LogicalWidth() ||
+            y > _video->LogicalHeight())
             continue;
 
         // too far to the left or top.  Don't need to draw.
-        if (iter->x + hotx - _xwin < 0 ||
-            iter->y + hoty - _ywin < 0)
+        if (x < -width ||
+            y < -height)
             continue;
 
         // Finally draw the goddamned thing.
         if (ss)
-            _video->Blit(ss->GetImage(0), iter->x - hotx - _xwin, iter->y - hoty - _ywin);
+            _video->Blit(ss->GetImage(0), x , y);
         else
-            _video->RectFill(iter->x - _xwin, iter->y - _ywin, 16, 16, RGBA(255, 255, 255, 128));
+            _video->RectFill(x, y, width, height, RGBA(255, 255, 255, 128));
     }
 }
 
@@ -363,15 +368,15 @@ void MapView::SetCurLayer(uint i)
     _curLayer = i;
 }
 
-Map::Layer::Entity* MapView::EntityAt(int x, int y, uint layer)
+uint MapView::EntityAt(int x, int y, uint layer)
 {
     wxASSERT(layer < _mainWnd->GetMap()->NumLayers());
 
-    std::vector<Map::Layer::Entity>& ents = _mainWnd->GetMap()->GetLayer(layer).entities;
+    std::vector<Map::Entity>& ents = _mainWnd->GetMap()->GetLayer(layer).entities;
 
     for (uint i = 0; i < ents.size(); i++)
     {
-        Map::Layer::Entity& ent = ents[i];
+        Map::Entity& ent = ents[i];
 
         if (ent.x > x)  continue;
         if (ent.y > y)  continue;
@@ -380,21 +385,15 @@ Map::Layer::Entity* MapView::EntityAt(int x, int y, uint layer)
         if (ent.x + (ss ? ss->Width() : 16)  < x) continue;
         if (ent.y + (ss ? ss->Height() : 16) < y) continue;
 
-        return &ent;
+        return i;
     }
 
-    return 0;
+    return -1;
 }
 
-SpriteSet* MapView::GetEntitySpriteSet(Map::Layer::Entity* ent) const
+SpriteSet* MapView::GetEntitySpriteSet(Map::Entity* ent) const
 {
-    if (_mainWnd->GetMap()->entities.count(ent->bluePrint))
-    {
-        Map::Entity* bluePrint = &_mainWnd->GetMap()->entities[ent->bluePrint];
-        return _mainWnd->GetSprite(bluePrint->spriteName);
-    }
-    else
-        return 0;
+    return _mainWnd->GetSprite(ent->spriteName);
 }
 
 VideoFrame* MapView::GetVideo() const

@@ -6,7 +6,7 @@
 
 // Document windows
 #include "docview.h"
-#include "mapview.h"
+//#include "mapview.h"
 #include "tilesetview.h"
 #include "projectview.h"
 #include "codeview.h"
@@ -144,9 +144,9 @@ void CMainWnd::NewProject(wxCommandEvent& event)
 
 void CMainWnd::NewMap(wxCommandEvent& event)
 {
-    NewMapDlg dlg(this);
+    /*NewMapDlg dlg(this);
     if (dlg.ShowModal() == wxID_OK)
-        OpenDocument(new MapView(this, dlg.width, dlg.height, dlg.tilesetname));
+        OpenDocument(new MapView(this, dlg.width, dlg.height, dlg.tilesetname));*/
 }
 
 void CMainWnd::NewScript(wxCommandEvent& event)
@@ -255,7 +255,7 @@ void CMainWnd::Open(const std::string& fname)
     switch (type)
     {
     case t_script:      wnd = new CCodeView     (this, fname);          break;
-    case t_map:         wnd = new MapView      (this, fname.c_str());  break;
+    //case t_map:         wnd = new MapView      (this, fname.c_str());  break;
     case t_vsp:         wnd = new CTileSetView  (this, fname.c_str());  break;
     case t_font:        wnd = new CFontView     (this, fname.c_str());  break;
     case t_text:

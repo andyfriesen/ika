@@ -11,9 +11,15 @@
 #include "base64.h"
 #include "xmlutil.h"
 #include <cppdom/cppdom.h>
+#include "aries.h"
 #include <fstream>
+#include <stdexcept>
 
 using namespace cppdom;
+using aries::NodeList;
+using aries::DataNodeList;
+using aries::DataNode;
+using aries::newNode;
 
 CCHRfile::CCHRfile(int width, int height)
 {
@@ -134,6 +140,107 @@ void CCHRfile::Load(const std::string& fname)
         return;
     }
 
+#if 1
+
+    try
+    {
+        if (!fname.length())
+            throw std::runtime_error("LoadCHR: No filename given.");
+
+        std::ifstream file;
+        file.open(fname.c_str());
+        if (file.bad())
+            throw std::runtime_error(va("LoadCHR: %s does not exist.", fname.c_str()));
+
+        DataNode* document;
+        file >> document;
+        file.close();
+
+        DataNode* rootNode = document->getChild("ika-sprite");
+
+        {
+            DataNode* infoNode = rootNode->getChild("information");
+
+            {
+                DataNode* metaNode = infoNode->getChild("meta");
+
+                NodeList nodes = metaNode->getChildren();
+                for (NodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+                {
+                    if ((*iter)->isString())
+                        continue;
+
+                    DataNode* n = (DataNode*)*iter;
+
+                    if (n->getString().empty())
+                        metaData[n->getName()] = n->getString();
+                }
+            }
+        }
+
+        {
+            // Header stuff?  All there is now is depth, which is always 32 anyway.
+            //DataNode* headerNode = rootNode->getChild("header");
+        }
+
+        {
+            DataNode* scriptNode = rootNode->getChild("scripts");
+
+            DataNodeList nodes = scriptNode->getChildren("script");
+            for (DataNodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++)
+            {
+                std::string name = (*iter)->getChild("label")->getString();
+                std::string script = (*iter)->getString();
+
+                // FIXME: script name not actually used!
+                moveScripts.push_back(script);
+            }
+        }
+
+        {
+            DataNode* frameNode = rootNode->getChild("frames");
+
+            int frameCount = atoi(frameNode->getChild("count")->getString().c_str());
+
+            DataNode* dimNode = frameNode->getChild("dimensions");
+            nWidth = atoi(dimNode->getChild("width")->getString().c_str());
+            nHeight = atoi(dimNode->getChild("height")->getString().c_str());
+            
+            DataNode* hsNode = frameNode->getChild("hotspot");
+            nHotx = atoi(hsNode->getChild("x")->getString().c_str());
+            nHoty = atoi(hsNode->getChild("y")->getString().c_str());
+            nHotw = atoi(hsNode->getChild("width")->getString().c_str());
+            nHoth = atoi(hsNode->getChild("height")->getString().c_str());
+
+            DataNode* dataNode = frameNode->getChild("data");
+            if (dataNode->getChild("format")->getString() != "zlib")
+                throw std::runtime_error("Unsupported data format");
+
+            std::string cdata = dataNode->getString();
+            ScopedArray<u8> compressed(new u8[cdata.length()]); // way more than enough.
+            int compressedSize = base64::decode(cdata, compressed.get(), cdata.length());
+            ScopedArray<u8> pixels(new u8[nWidth * nHeight * frameCount * sizeof(RGBA)]);
+            Compression::decompress(compressed.get(), compressedSize, pixels.get(), nWidth * nHeight * frameCount * sizeof(RGBA));
+
+            frame.clear();
+            frame.reserve(frameCount);
+            RGBA* ptr = (RGBA*)pixels.get();
+            for (uint i = 0; i < frameCount; i++)
+            {
+                frame.push_back(Canvas(ptr, nWidth, nHeight));
+                ptr += nWidth * nHeight;
+            }
+        }
+
+        delete rootNode;
+    }
+    catch (std::runtime_error err)
+    {
+        //Log::Write("LoadCHR(\"%s\"): %s", fname.c_str(), err.what());
+        throw err;
+    }
+
+#else
     // Now the XML fun.  Woot.
     XMLContextPtr context(new XMLContext);
     XMLDocument document;
@@ -264,6 +371,7 @@ void CCHRfile::Load(const std::string& fname)
     {
         throw std::runtime_error(va("CHRFile::Load(%s): %s", fname.c_str(), s));
     }
+#endif
 }
 
 void CCHRfile::Save(const std::string& fname)
@@ -275,6 +383,91 @@ void CCHRfile::Save(const std::string& fname)
     }
 
 
+#if 1
+    DataNode* rootNode = newNode("ika-sprite");
+    rootNode->addChild(newNode("version")->addChild("1.0"));
+
+    DataNode* infoNode = newNode("information");
+    rootNode->addChild(infoNode);
+    infoNode->addChild(newNode("title")->addChild("Untitled")); // FIXME
+    {
+        DataNode* metaNode = newNode("meta");
+        infoNode->addChild(metaNode);
+
+        for (std::map<std::string, std::string>::iterator iter = metaData.begin();
+            iter != metaData.end(); iter++)
+        {
+            metaNode->addChild(newNode(iter->first)->addChild(iter->second));
+        }
+    }
+
+    rootNode->addChild(newNode("header")
+        ->addChild(newNode("depth")->addChild("32"))
+        );
+
+    {
+        DataNode* scriptNode = newNode("scripts");
+        rootNode->addChild(scriptNode);
+
+        for (uint i = 0; i < moveScripts.size(); i++)
+        {
+            scriptNode->addChild(
+                newNode(va("script%i", i))->addChild(moveScripts[i])
+                );
+        }
+    }
+
+    {
+        DataNode* frameNode = newNode("frames");
+        rootNode->addChild(frameNode);
+
+        frameNode
+            ->addChild(newNode("count")->addChild(frame.size()))
+            ->addChild(newNode("dimensions")
+                ->addChild(newNode("width")->addChild(nWidth))
+                ->addChild(newNode("height")->addChild(nHeight))
+                )
+            ->addChild(newNode("hotspot")
+                ->addChild(newNode("x")->addChild(nHotx))
+                ->addChild(newNode("y")->addChild(nHoty))
+                ->addChild(newNode("width")->addChild(nHotw))
+                ->addChild(newNode("height")->addChild(nHoth))
+                );
+
+        const int uncompressedBlockSize = nWidth * nHeight * frame.size() * sizeof(RGBA);
+        const int compressedBlockSize = uncompressedBlockSize * 4 / 3; // more than is needed.  Way more
+
+        ScopedArray<u8> uncompressed(new u8[uncompressedBlockSize]);
+        ScopedArray<u8> compressed(new u8[compressedBlockSize]);
+
+        // pack the uncompressed data into one big block
+        RGBA* dest = reinterpret_cast<RGBA*>(uncompressed.get());
+        for (uint i = 0; i < frame.size(); i++)
+        {
+            RGBA* src = frame[i].GetPixels();
+            memcpy(dest, src, nWidth * nHeight * sizeof(RGBA));
+            
+            dest += nWidth * nHeight;
+        }
+
+        // compress
+        int compressSize = Compression::compress(
+            uncompressed.get(), uncompressedBlockSize, 
+            compressed.get(), compressedBlockSize);
+
+        // base64
+        std::string d64 = base64::encode(compressed.get(), compressSize);
+
+        frameNode->addChild(newNode("data")
+            ->addChild(newNode("format")->addChild("zlib"))
+            ->addChild(d64));            
+    }
+
+    std::ofstream file(fname.c_str());
+    file << rootNode;
+    delete rootNode;
+
+#else
     XMLContextPtr context(new XMLContext);
     XMLDocument document;
     XMLNodePtr rootNode(new XMLNode(context));
@@ -413,6 +606,7 @@ void CCHRfile::Save(const std::string& fname)
     {
         throw std::runtime_error(va("CHRFile::Save(%s): %s", fname.c_str(), s));
     }
+#endif
 }
 
 void CCHRfile::LoadCHR(const std::string& fileName)

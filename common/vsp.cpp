@@ -283,10 +283,12 @@ void VSP::New(int xsize, int ysize, int numtiles)     // creates a blank 32 bit 
 
 void VSP::InsertTile(uint pos)
 {
-    if (pos < 0 || pos >= tiles.size())
+    if (pos < 0 || pos > tiles.size())
         return;
-
-    tiles.insert(tiles.begin() + pos, Canvas(_width, _height));
+    else if (pos == tiles.size())
+        AppendTile();
+    else
+        tiles.insert(tiles.begin() + pos, Canvas(_width, _height));
 }
 
 void VSP::DeleteTile(uint pos)

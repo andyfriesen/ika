@@ -26,6 +26,8 @@ class TileSet;
  */
 class MainWindow : public wxFrame
 {
+    friend class ChangeTileSetCommand;
+
 private:
     wxSashLayoutWindow* _topBar;
     wxSashLayoutWindow* _bottomBar;
@@ -33,9 +35,7 @@ private:
     wxCheckListBox*     _layerList;
     MapView* _mapView;
     TileSetView* _tileSetView;
-
-    Map* _map;
-    TileSet* _tileSet;
+    
     std::map<std::string, SpriteSet*> _sprites;
     
     std::stack<::Command*> _undoList;
@@ -46,6 +46,10 @@ private:
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
     static void ClearList(std::stack<::Command*>& list);
+
+protected:
+    Map* _map;
+    TileSet* _tileSet;
 
 public:
     MainWindow(
@@ -62,10 +66,13 @@ public:
     void OnOpenMap(wxCommandEvent&);
     void OnSaveMap(wxCommandEvent&);
     void OnSaveMapAs(wxCommandEvent&);
+    void OnLoadTileSet(wxCommandEvent&);
+    void OnSaveTileSetAs(wxCommandEvent&);
     void OnExit(wxCommandEvent&);
     void OnUndo(wxCommandEvent&);
     void OnRedo(wxCommandEvent&);
     void OnEditMapProperties(wxCommandEvent&);
+    void OnImportTiles(wxCommandEvent&);
     void OnChangeCurrentLayer(wxCommandEvent& event);
     void OnShowLayerProperties(wxCommandEvent& event);
     void OnToggleLayer(wxCommandEvent& event);

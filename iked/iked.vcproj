@@ -373,6 +373,12 @@
 				RelativePath="..\common\misc.h">
 			</File>
 			<File
+				RelativePath="..\common\ply.cpp">
+			</File>
+			<File
+				RelativePath="..\common\ply.h">
+			</File>
+			<File
 				RelativePath="..\common\rle.cpp">
 			</File>
 			<File

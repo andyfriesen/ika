@@ -8,7 +8,8 @@
 class EntityState : public EditState
 {
 private:
-    Map::Layer::Entity* _curEnt;
+    uint _entLayerIndex;    // the layer that the current entity lives on
+    uint _entIndex;         // the index of the current entity
 
 public:
     EntityState(MainWindow* mw);

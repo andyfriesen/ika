@@ -1,4 +1,4 @@
-
+#if 0
 #include <wx/wx.h>
 #include <wx/listctrl.h>
 #include <cassert>
@@ -70,3 +70,5 @@ void CLayerVisibilityControl::OnItemChecked(wxCommandEvent& event)
 
     pMapview->OnLayerToggleVisibility(lay, IsChecked( event.GetInt() ));
 }
+
+#endif

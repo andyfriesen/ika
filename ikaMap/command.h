@@ -3,6 +3,7 @@
 
 #include "types.h"
 #include "map.h"
+#include "canvas.h"
 
 class MainWindow; // bleh. ;P
 
@@ -22,6 +23,23 @@ public:
     virtual void Undo(MainWindow* m) = 0;
 
     virtual ~Command(){}
+};
+
+/**
+ * A group of commands.  Used to pack more than one command into a single
+ * undo step.
+ */
+class CompositeCommand : public Command
+{
+private:
+    std::vector<Command*> _commands;
+
+public:
+    CompositeCommand(std::vector<Command*>& commands);
+    ~CompositeCommand();
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
 };
 
 /**
@@ -164,14 +182,99 @@ class ChangeEntityPropertiesCommand : public Command
 {
     uint _layerIndex;
     uint _entityIndex;
-    Map::Layer::Entity _newData;
-    Map::Entity _newBlueprint;
+    Map::Entity _newData;
 
-    Map::Layer::Entity _oldData;
-    Map::Entity _oldBlueprint;
+    Map::Entity _oldData;
 
 public:
-    ChangeEntityPropertiesCommand(uint layerIndex, uint entityIndex, Map::Layer::Entity newData, Map::Entity newBlueprint);
+    ChangeEntityPropertiesCommand(uint layerIndex, uint entityIndex, Map::Entity newData);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class CreateEntityCommand : public Command
+{
+    uint _layerIndex;
+    uint _entityIndex;
+    int  _x, _y;
+
+public:
+    CreateEntityCommand(uint layerIndex, int x, int y);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class DestroyEntityCommand : public Command
+{
+    uint _layerIndex;
+    uint _entityIndex;
+
+    Map::Entity _oldData;
+
+public:
+    DestroyEntityCommand(uint layerIndex, uint entityIndex);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class ChangeTileSetCommand : public Command
+{
+private:
+    class TileSet* _tileSet;
+    std::string _fileName;
+
+public:
+    ChangeTileSetCommand(class TileSet* tileSet, const std::string& fileName);
+    virtual ~ChangeTileSetCommand();
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+// should change this to InsertTilesCommand
+class InsertTilesCommand : public Command
+{
+private:
+    std::vector<Canvas> _tiles;
+    uint _startPos;
+
+public:
+    // FIXME?  All this canvas copying may get a bit slow.
+    // Start throwing pointers around instead?
+    InsertTilesCommand(uint startPos, std::vector<Canvas >& tiles);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class DeleteTilesCommand : public Command
+{
+private:
+    std::vector<Canvas> _savedTiles;
+    uint _firstTile;    // first tile to nuke.
+    uint _lastTile;     // last tile to nuke. (inclusive)
+
+public:
+    DeleteTilesCommand(uint firstTile, uint lastTile);
+
+    virtual void Do(MainWindow* m);
+    virtual void Undo(MainWindow* m);
+};
+
+class ResizeTileSetCommand : public Command
+{
+private:
+    std::vector<Canvas> _savedTiles;
+    uint _oldWidth;
+    uint _oldHeight;
+    uint _newWidth;
+    uint _newHeight;
+
+public:
+    ResizeTileSetCommand(uint newWidth, uint newHeight);
 
     virtual void Do(MainWindow* m);
     virtual void Undo(MainWindow* m);
