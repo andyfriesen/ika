@@ -141,12 +141,59 @@ void CEntity::Stop()
     SetAnimScript(pSprite->Script((int)direction+8));
 }
 
-void CEntity::MoveDiagonally(Direction d)
+// Handles all the nasty stuff required to make entities "slide" along a surface if they walk diagonally into it.
+Direction CEntity::MoveDiagonally(Direction d)
 {
+    Direction d1,d2;
+
+    switch(d)
+    {
+    case face_upleft:       d1=face_up;   d2=face_left;     break;
+    case face_upright:      d1=face_up;   d2=face_right;    break;
+    case face_downleft:     d1=face_down; d2=face_left;     break;
+    case face_downright:    d1=face_down; d2=face_right;    break;
+    default:        
+        return d;
+    }
+
+    int newx=x + (d2==face_left ? -1 : 1);
+    int newy=y + (d1==face_up   ? -1 : 1);
+
+    if (bMapobs && engine.DetectMapCollision(x,newy,pSprite->nHotw,pSprite->nHoth))
+         d1=face_nothing;
+    else if (bEntobs && engine.DetectEntityCollision(this,x,newy,pSprite->nHotw,pSprite->nHoth))
+         d1=face_nothing;
+
+    if (bMapobs && engine.DetectMapCollision(newx,y,pSprite->nHotw,pSprite->nHoth))
+         d2=face_nothing;
+    else if (bEntobs && engine.DetectEntityCollision(this,newx,y,pSprite->nHotw,pSprite->nHoth))
+         d2=face_nothing;
+
+    if (d1==face_nothing)
+        return d2;
+    if (d2==face_nothing)
+        return d1;
+
+    if (d1==face_up)
+    {
+        if (d2==face_left)
+            return face_upleft;
+        else
+            return face_upright;
+    }
+    else
+    {
+        if (d2==face_left)
+            return face_downleft;
+        else
+            return face_downright;
+    }
 }
 
 void CEntity::Move(Direction d)
 {
+    d=MoveDiagonally(d);    // bleh.  TODO: make this more elegant.
+
     int newx=x,newy=y;
 
     switch (d)
@@ -155,6 +202,7 @@ void CEntity::Move(Direction d)
     case face_down:         newy++; break;
     case face_left:         newx--; break;
     case face_right:        newx++; break;
+    case face_nothing:      return;
        
     case face_upleft:       newy--; newx--; break;
     case face_upright:      newy--; newx++; break;

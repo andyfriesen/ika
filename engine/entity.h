@@ -73,7 +73,7 @@ public:
     void        SetFace(Direction d);                               // Makes the entity face the specified direction. (if it's currently moving, then it'll start moving in that direction instead)
 
     void        Stop();                                             // the entity stops moving, and stands still
-    void        MoveDiagonally(Direction d);
+    Direction   MoveDiagonally(Direction d);
     void        Move(Direction d);                                  // Cause the entity to try to move one pixel in a given direction
 
 //----------------------------------------- AI -----------------------------------------------------
