@@ -143,17 +143,12 @@ namespace Script
 
     METHOD(std_getrgb)
     {
-        int colour;
+        RGBA colour;
 
-        if (!PyArg_ParseTuple(args, "i:GetRGB", &colour))
+        if (!PyArg_ParseTuple(args, "i:GetRGB", &colour.i))
             return 0;
 
-        int b=colour&255;
-        int g=(colour>>8)&255;
-        int r=(colour>>16)&255;
-        int a=(colour>>24)&255;
-
-        return Py_BuildValue("iiii", r, g, b, a);
+        return Py_BuildValue("iiii", colour.r, colour.g, colour.b, colour.a);
     }
 
     METHOD(std_rgb)
