@@ -718,8 +718,17 @@ namespace OpenGL {
     }
 
     Canvas* Driver::GrabCanvas(int x1, int y1, int x2, int y2) {
+        /*
+         * Have to convert from the raster-coordinates that ika uses to
+         * Cartesian coords, which is what OpenGL favours.
+         */
         y1 = _yres - y1;
         y2 = _yres - y2;
+
+        if (_doubleSize) { 
+            y1 += _yres; 
+            y2 += _yres; 
+        }
 
         // clip
         if (x1 > x2) swap(x1, x2);
@@ -729,10 +738,6 @@ namespace OpenGL {
         int h = y2 - y1;
         if (w < 0 || h < 0) {
             return 0;
-        }
-
-        if (_doubleSize) {
-            y2 -= _yres;
         }
 
         Canvas* c = new Canvas(w, h);

@@ -668,15 +668,15 @@ void Engine::TestActivate(const Entity* player) {
     tx = player->x; ty = player->y;
     // entity activation
     switch(player->direction) {
-    case face_up:        ty -= sprite->nHoth;    break;
-    case face_down:      ty += sprite->nHoth;    break;
-    case face_left:      tx -= sprite->nHotw;    break;
-    case face_right:     tx += sprite->nHotw;    break;
+        case face_up:        ty -= sprite->nHoth;    break;
+        case face_down:      ty += sprite->nHoth;    break;
+        case face_left:      tx -= sprite->nHotw;    break;
+        case face_right:     tx += sprite->nHotw;    break;
 
-    case face_upleft:    tx -= sprite->nHotw;    ty -= sprite->nHoth;    break;
-    case face_upright:   tx += sprite->nHotw;    ty -= sprite->nHoth;    break;
-    case face_downleft:  tx -= sprite->nHotw;    ty += sprite->nHoth;    break;
-    case face_downright: tx += sprite->nHotw;    ty += sprite->nHoth;    break;
+        case face_upleft:    tx -= sprite->nHotw;    ty -= sprite->nHoth;    break;
+        case face_upright:   tx += sprite->nHotw;    ty -= sprite->nHoth;    break;
+        case face_downleft:  tx -= sprite->nHotw;    ty += sprite->nHoth;    break;
+        case face_downright: tx += sprite->nHotw;    ty += sprite->nHoth;    break;
     }
 
     Entity* ent = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);
