@@ -115,6 +115,11 @@ AxisControl::AxisControl(_SDL_Joystick* j, uint index)
     assert(_joystick);
 }
 
+bool AxisControl::Pressed()
+{
+    return (abs(Delta()) > 0.0f) && (Position() > 0);
+}
+
 float AxisControl::Position()
 {
     int i = SDL_JoystickGetAxis(_joystick, _index);
@@ -130,6 +135,11 @@ float AxisControl::Position()
 ReverseAxisControl::ReverseAxisControl(_SDL_Joystick* j, uint index)
     : AxisControl(j, index)
 {}
+
+bool ReverseAxisControl::Pressed()
+{
+    return (abs(Delta()) > 0.0f) && (Position() > 0);
+}
 
 float ReverseAxisControl::Position()
 {
