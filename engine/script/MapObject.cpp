@@ -114,6 +114,12 @@ namespace Script
                 "Sets the layer's position to the (x,y) coordinates specified."
             },
 
+            {   "GetZones",     (PyCFunction)Map_GetZones,      METH_VARARGS,
+                "GetZones(layerIndex) -> list\n\n"
+                "Returns a list of tuples containing information about every zone on the layer\n"
+                "specified.  The tuples are in the format (x, y, width, height, script)"
+            },
+
             {   "GetWaypoints", (PyCFunction)Map_GetWaypoints,  METH_NOARGS,
                 "GetWaypoints() -> list\n\n"
                 "Returns a list of three-tuples in the format of (name, x, y), one for\n"
@@ -528,6 +534,40 @@ namespace Script
 
             Py_INCREF(Py_None);
             return Py_None;
+        }
+
+        METHOD(Map_GetZones)
+        {
+            uint layerIndex;
+
+            if (!PyArg_ParseTuple(args, "i:GetZones", &layerIndex))
+                return 0;
+
+            if (layerIndex >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Can't get zones from layer %i.  Map only has %i layers.", layerIndex, engine->map.NumLayers()));
+                return 0;
+            }
+
+            ::Map::Layer const* layer = engine->map.GetLayer(layerIndex);
+            PyObject* list = PyList_New(layer->zones.size());
+
+            for (uint i = 0; i < layer->zones.size(); i++)
+            {
+                const ::Map::Layer::Zone& zone = layer->zones[i];
+                const ::Map::Zone& bp = engine->map.zones[zone.label];
+
+                PyObject* o = PyTuple_New(5);
+                PyTuple_SET_ITEM(o, 0, PyInt_FromLong(zone.position.left));
+                PyTuple_SET_ITEM(o, 1, PyInt_FromLong(zone.position.top));
+                PyTuple_SET_ITEM(o, 2, PyInt_FromLong(zone.position.Width()));
+                PyTuple_SET_ITEM(o, 3, PyInt_FromLong(zone.position.Height()));
+                PyTuple_SET_ITEM(o, 4, PyString_FromString(bp.scriptName.c_str()));
+
+                PyList_SET_ITEM(list, i, o);
+            }
+
+            return list;
         }
 
         METHOD(Map_GetWaypoints)

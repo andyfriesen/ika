@@ -50,6 +50,11 @@ namespace Script
                 "None is returned if there is no entity touching it."
             },
 
+            {   "Touches",          (PyCFunction)Entity_Touches,            METH_VARARGS,
+                "Touches(ent) -> boolean\n\n"
+                "Returns true if the entity is touching entity ent, else False."
+            },
+
             {   "Draw", (PyCFunction)Entity_Draw,                           METH_VARARGS,
                 "Entity.Draw([x[, y]])\n\n"
                 "Draws the entity at the position specified.  x and y default to\n"
@@ -355,6 +360,36 @@ namespace Script
 
             Py_INCREF(Py_None);
             return Py_None;
+        }
+
+        METHOD(Entity_Touches)
+        {
+            EntityObject* e2;
+
+            if (!PyArg_ParseTuple(args, "O!", &type, &e2))
+                return 0;
+
+            ::Entity* e = e2->ent;
+            Sprite* s = e->sprite;
+
+            int x1 = self->ent->x;
+            int y1 = self->ent->y;
+            int w = self->ent->sprite->nHotw;
+            int h = self->ent->sprite->nHoth;
+
+            if (x1     > e->x+s->nHotw ||
+                y1     > e->y+s->nHoth ||
+                x1 + w < e->x ||
+                y1 + h < e->y)
+            {
+                Py_INCREF(Py_False);
+                return Py_False;
+            }
+            else
+            {
+                Py_INCREF(Py_True);
+                return Py_True;
+            }
         }
 
         METHOD(Entity_Draw)

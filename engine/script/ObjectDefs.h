@@ -185,6 +185,7 @@ namespace Script
         METHOD(Entity_Stop, EntityObject);
         METHOD(Entity_IsMoving, EntityObject);
         METHOD(Entity_DetectCollision, EntityObject);
+        METHOD(Entity_Touches, EntityObject);
         METHOD(Entity_Draw, EntityObject);
 
         void Init();
@@ -350,6 +351,7 @@ namespace Script
         METHOD(Map_GetLayerProperties, PyObject);
         METHOD(Map_GetLayerPosition, PyObject);
         METHOD(Map_SetLayerPosition, PyObject);
+        METHOD(Map_GetZones, PyObject);
         METHOD(Map_GetWaypoints, PyObject);
         METHOD(Map_GetAllEntities, PyObject);
 
