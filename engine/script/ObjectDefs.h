@@ -265,6 +265,9 @@ namespace Script
         METHOD(Map_FindLayerByName, PyObject);
         METHOD(Map_GetParallax, PyObject);
         METHOD(Map_SetParallax, PyObject);
+        METHOD(Map_GetLayerProperties, PyObject);
+        METHOD(Map_GetLayerPosition, PyObject);
+        METHOD(Map_SetLayerPosition, PyObject);
         METHOD(Map_GetWaypoints, PyObject);
         METHOD(Map_GetAllEntities, PyObject);
 

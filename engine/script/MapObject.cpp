@@ -98,6 +98,21 @@ namespace Script
                 "will be used for that axis."
             },
 
+            {   "GetLayerProperties",   (PyCFunction)Map_GetLayerProperties,    METH_VARARGS,
+                "Map.GetLayerProperties(layerIndex) -> (label, width, height, wrapx, wrapy)\n\n"
+                "Returns a 5-tuple containing information about the map layer specified."
+            },
+
+            {   "GetLayerPosition",     (PyCFunction)Map_GetLayerPosition,  METH_VARARGS,
+                "Map.GetLayerPosition(layerIndex) -> (x, y)\n\n"
+                "Returns a tuple containing the layer's position on the map. (in pixels)"
+            },
+
+            {   "SetLayerPosition",     (PyCFunction)Map_SetLayerPosition,  METH_VARARGS,
+                "Map.SetLayerPosition(layerIndex, x, y)\n\n"
+                "Sets the layer's position to the (x,y) coordinates specified."
+            },
+
             {   "GetWaypoints", (PyCFunction)Map_GetWaypoints,  METH_NOARGS,
                 "Map.GetWaypoints() -> list\n\n"
                 "Returns a list of three-tuples in the format of (name, x, y), one for\n"
@@ -125,8 +140,8 @@ namespace Script
         GET(NumTiles)   { return PyInt_FromLong(engine->tiles->NumTiles()); }
         GET(TileWidth)  { return PyInt_FromLong(engine->tiles->Width()); }
         GET(TileHeight) { return PyInt_FromLong(engine->tiles->Height()); }
-        //GET(Width)      { return PyInt_FromLong(engine->map.Width()); }
-        //GET(Height)     { return PyInt_FromLong(engine->map.Height()); }
+        GET(Width)      { return PyInt_FromLong(engine->map.width); }
+        GET(Height)     { return PyInt_FromLong(engine->map.height); }
         //GET(RString)    { return PyString_FromString(engine->map.GetRString().c_str()); }
         //SET(RString)    { engine->map.SetRString(PyString_AsString(value));     return 0;   }
         GET(TileSetName)    { return PyString_FromString(engine->map.tileSetName.c_str()); }
@@ -147,11 +162,9 @@ namespace Script
             {   "numtiles",     (getter)getNumTiles,        0,                  "Gets the number of tiles in the current tileset"   },
             {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset"             },
             {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset"            },
-            //{   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in tiles"     },
-            //{   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in tiles"    },
-            //{   "rstring",      (getter)getRString,         (setter)setRString, "Gets or sets the current render string of the map" },
-            {   "tilesetname",      (getter)getTileSetName,         (setter)setTileSetName, "Gets or sets the name of the current tileset"  },
-            //{   "defaultmusic", (getter)getMusic,           (setter)setMusic,   "Gets or sets the default music of the current map" },
+            {   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in pixels"      },
+            {   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in pixels"     },
+            {   "tilesetname",  (getter)getTileSetName,         (setter)setTileSetName, "Gets or sets the name of the current tileset"  },
             {   "entities",     (getter)getEntities,        0,                  "Gets a dictionary of entities currently tied to the map"   },
             {   0   }
         };
@@ -455,6 +468,65 @@ namespace Script
             layer->parallax.divx = pdivx;
             layer->parallax.muly = pmulx;
             layer->parallax.divy = pdivy;
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Map_GetLayerProperties)
+        {
+            uint lay;
+
+            if (!PyArg_ParseTuple(args, "i:Map.GetLayerProperties", &lay))
+                return 0;
+
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot get properties of layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            const ::Map::Layer* layer = engine->map.GetLayer(lay);
+
+            return Py_BuildValue("(siiii)", layer->label.c_str(), layer->x, layer->y, layer->wrapx ? 1 : 0, layer->wrapy ? 1 : 0);
+        }
+
+        METHOD(Map_GetLayerPosition)
+        {
+            uint lay;
+
+            if (!PyArg_ParseTuple(args, "i:Map.GetLayerPosition", &lay))
+                return 0;
+
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot get position of layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            const ::Map::Layer* layer = engine->map.GetLayer(lay);
+
+            return Py_BuildValue("(ii)", layer->x, layer->y);
+        }
+
+        METHOD(Map_SetLayerPosition)
+        {
+            uint lay;
+            int x, y;
+
+            if (!PyArg_ParseTuple(args, "iii:Map.GetLayerPosition", &lay, &x, &y))
+                return 0;
+
+            if (lay >= engine->map.NumLayers())
+            {
+                PyErr_SetString(PyExc_RuntimeError, va("Cannot set position of layer %i.  The map only has %i layers.", lay, engine->map.NumLayers()));
+                return 0;
+            }
+
+            ::Map::Layer* layer = engine->map.GetLayer(lay);
+
+            layer->x = x;
+            layer->y = y;
 
             Py_INCREF(Py_None);
             return Py_None;
