@@ -1,6 +1,8 @@
 Microsoft Visual Studio Solution File, Format Version 7.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "rho", "rho.csproj", "{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ikaImport", "..\ikaImport\ikaImport.vcproj", "{E522652F-513B-4694-9518-8760F2F17F4C}"
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		ConfigName.0 = Debug
@@ -13,6 +15,10 @@ Global
 		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug.Build.0 = Debug|.NET
 		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.ActiveCfg = Release|.NET
 		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.Build.0 = Release|.NET
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.ActiveCfg = Debug|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.Build.0 = Debug|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.ActiveCfg = Release|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection
