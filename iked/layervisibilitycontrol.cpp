@@ -42,6 +42,18 @@ void CLayerVisibilityControl::CheckItem(int idx)
     }
 }
 
+void CLayerVisibilityControl::SelectItem(int idx)
+{
+    for (uint i = 0; i < layidx.size(); i++)
+    {
+        if (layidx[i] == idx)
+        {
+            SetSelection(i);
+            return;
+        }
+    }
+}
+
 void CLayerVisibilityControl::OnItemSelected(wxCommandEvent& event)
 {
     pMapview->OnLayerChange( layidx[event.GetInt()] );

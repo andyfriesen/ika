@@ -19,8 +19,8 @@ void ZoneEditor::UpdateList()
 
     _zonelist->Clear();
 
-    for (uint i = 0; i < _map->Zones().size(); i++)
-        _zonelist->Append(_map->Zones()[i].name.c_str());
+    for (uint i = 0; i < _map->NumZones(); i++)
+        _zonelist->Append(_map->GetZoneInfo(i).name.c_str());
 
     _zonelist->SetSelection(pos);
     UpdateDlg();
@@ -28,7 +28,7 @@ void ZoneEditor::UpdateList()
 
 void ZoneEditor::UpdateData()
 {
-    SMapZone& zone = _map->Zones()[_curzone];
+    SMapZone& zone = _map->GetZoneInfo(_curzone);
 
     if (zone.name != _nameedit->GetValue().c_str())
         _zonelist->SetString(_curzone, _nameedit->GetValue().c_str());
@@ -44,7 +44,7 @@ void ZoneEditor::UpdateData()
 
 void ZoneEditor::UpdateDlg()
 {
-    SMapZone& zone = _map->Zones()[_curzone];
+    SMapZone& zone = _map->GetZoneInfo(_curzone);
 
     _nameedit->SetValue(zone.name.c_str());
     _descedit->SetValue(zone.sDescription.c_str());
@@ -90,13 +90,12 @@ void ZoneEditor::OnClose(wxCommandEvent& event)
 
 void ZoneEditor::OnNewZone(wxCommandEvent& event)
 {
-    SMapZone zone;
+    SMapZone zone = _map->AddZone();
     zone.name = "New Zone";
-    _map->Zones().push_back(zone);
     
     UpdateData();
     UpdateList();
-    _curzone = _map->Zones().size() - 1;
+    _curzone = _map->NumZones() - 1;
     _zonelist->SetSelection(_curzone);
     UpdateDlg();
 }
@@ -109,8 +108,8 @@ void ZoneEditor::OnDelZone(wxCommandEvent& event)
 
     if (_curzone != 0)
     {
-        _map->Zones().erase(_map->Zones().begin() + _curzone);
-        if (_curzone >= _map->Zones().size())
+        _map->DeleteZone(_curzone);
+        if (_curzone >= _map->NumZones())
         {
             _curzone = 0;
             UpdateDlg();
@@ -123,7 +122,7 @@ void ZoneEditor::OnDelZone(wxCommandEvent& event)
     else
     {
         // Not allowed to delete the first zone.  Re - initialize it instead.
-        SMapZone& zone = _map->Zones()[0];
+        SMapZone& zone = _map->GetZoneInfo(0);
         zone.name = "Default zone";
         zone.sDescription = "";
         zone.sActscript = "";

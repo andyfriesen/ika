@@ -219,6 +219,10 @@ void Map::New()
     sMusicname="";
     sVSPname="untitled.vsp";
     SetRString("1ER");
+
+    SMapZone z;
+    z.name = "Default Zone";
+    zoneinfo.push_back(z);
 }
 
 void Map::Free()
@@ -884,6 +888,34 @@ int  Map::GetZone(int x, int y)
     if (y < 0 || y >= nHeight) return false; // bounds checking
     
     return pZone[y * nWidth + x];
+}
+
+SMapZone& Map::GetZoneInfo(int zonenum)
+{
+    if (zonenum >= 0 && zonenum < zoneinfo.size())
+        return zoneinfo[zonenum];
+    else
+    {
+        static SMapZone dummy;
+        return dummy;
+    }
+}
+
+const SMapZone& Map::GetZoneInfo(int zonenum) const
+{
+    return const_cast<Map*>(this)->GetZoneInfo(zonenum);
+}
+
+SMapZone& Map::AddZone()
+{
+    zoneinfo.push_back(SMapZone());
+    return zoneinfo.front();
+}
+
+void Map::DeleteZone(int index)
+{
+    if (index >= 0 && index < zoneinfo.size())
+        zoneinfo.erase(zoneinfo.begin() + index);
 }
 
 int Map::EntityAt(int x, int y)

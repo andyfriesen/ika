@@ -602,7 +602,7 @@ void CEngine::TestActivate(const CEntity& player)
     if ((tx != nOldtx || ty != nOldty) && n)                        // the player is not on the same zone it was before, check for activation
     {
         nOldtx = tx; nOldty = ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
-        const SMapZone& zone = map.Zones()[map.GetZone(tx, ty)];
+        const SMapZone& zone = map.GetZoneInfo(map.GetZone(tx, ty));
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
             script.CallEvent(zone.sActscript.c_str());
     }
@@ -643,10 +643,10 @@ void CEngine::TestActivate(const CEntity& player)
     // Activating a zone?
     int z = map.GetZone(tx / tiles->Width(), ty / tiles->Height());
     
-    if (z >= map.Zones().size())
+    if (z >= map.NumZones())
         return; // invalid zone
 
-    const SMapZone& zone = map.Zones()[z];
+    const SMapZone& zone = map.GetZoneInfo(z);
     
     if (zone.bAdjacentactivation)
     {

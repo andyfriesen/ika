@@ -432,10 +432,10 @@ void Engine::UpdateStatbar(int cursorx,int cursory)
 	{
 	    SMapZone tempz;
 	    
-	    tempz = map.Zones()[map.GetZone(cursorx,cursory)];
+	    tempz = map.GetZoneInfo(map.GetZone(cursorx,cursory));
 	    SetStatbarText(1, va("Zone under cursor #%i: %s",map.GetZone(cursorx,cursory),tempz.name.c_str()) );
 	    
-	    tempz = map.Zones()[pMapview->nCurzone];
+	    tempz = map.GetZoneInfo(pMapview->nCurzone);
 	    SetStatbarText(2, va("#%i: %s",pMapview->nCurzone,tempz.name.c_str()) );
     	break;
 	}

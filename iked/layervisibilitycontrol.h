@@ -21,6 +21,7 @@ public:
     void Clear();
     void AppendItem(const std::string& name, int idx);
     void CheckItem(int idx);
+    void SelectItem(int idx);
 
     void OnItemSelected(wxCommandEvent& event);
     void OnKeyDown(wxListEvent& event);

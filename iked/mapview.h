@@ -39,13 +39,6 @@ class CMapView : public IDocView
 
     enum
     {
-        lay_entity=-10,
-        lay_zone,
-        lay_obstruction
-    };
-
-    enum
-    {
         hidden = 0,
         visible,
         darkened,

@@ -344,7 +344,7 @@ void CMapView::Mouse_NextTile()
     switch (nCurlayer)
     {
     case lay_zone:
-        if (nCurzone<=pMap->Zones().size())
+        if (nCurzone<=pMap->NumZones())
             nCurzone++;
         break;
     default:

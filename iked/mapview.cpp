@@ -66,6 +66,14 @@ namespace
         id_newlayer,
     };
 
+    enum
+    {
+        lay_entity=-10,
+        lay_zone,
+        lay_obstruction,
+        lay_render // stub.  You can't do anything with this except move it around through the rendering order
+    };
+
     // wxSashLayoutWindow tweak that passes scroll and command events to its parent.
     class CMapSash : public wxSashLayoutWindow
     {
@@ -256,7 +264,6 @@ CMapView::CMapView(CMainWnd* parent, int width, int height, const string& tilese
     pMap = new Map;
     pMap->Resize(width, height);
     pMap->SetVSPName(tilesetname);
-    pMap->Zones().push_back(SMapZone());
     Init();
 }
 
@@ -589,10 +596,27 @@ void CMapView::OnShowScript(wxCommandEvent&)
     pParent->Open(Path::ReplaceExtension(name, "py"));
 }
 
+static char LayerNumberToRenderChar(int i)
+{
+    switch (i)
+    {
+    case lay_entity: return 'E';
+    case lay_render: return 'R';
+    default:
+        if (i > 0)
+            return "1234567890"[i];
+        else
+            return 0;
+    }
+}
+
 void CMapView::OnMoveLayerUp(wxCommandEvent&)
 {
+    char c = LayerNumberToRenderChar(nCurlayer);
+    if (!c) return;
+
     std::string s = pMap->GetRString();
-    char c = "1234567890"[nCurlayer];
+
     int pos = s.find(c);
     if (pos != std::string::npos && pos > 0)
     {
@@ -605,8 +629,11 @@ void CMapView::OnMoveLayerUp(wxCommandEvent&)
 
 void CMapView::OnMoveLayerDown(wxCommandEvent&)
 {
+    char c = LayerNumberToRenderChar(nCurlayer);
+    if (!c) return;
+
     std::string s = pMap->GetRString();
-    char c = "1234567890"[nCurlayer];
+    
     int pos = s.find(c);
     if (pos != std::string::npos && pos < s.length() - 1)
     {
@@ -880,18 +907,22 @@ void CMapView::UpdateLayerList()
 
             nLayertoggle[c]= visible;
         }
-        else if (c =='E')
+        else if (c == 'E')
         {
             pLayerlist->AppendItem("Entities", lay_entity);
             pLayerlist->Check(pLayerlist->Number() - 1);
             nLayertoggle[lay_entity] = visible;
         }
+        else if (c == 'R')
+            pLayerlist->AppendItem("Render Hook", lay_render);
 //        else if (c =='R')
 //            pLayerlist->AppendItem("HookRetrace", -1);  // we don't do anything when the hookretrace "layer" is selected.
     }
 
     pLayerlist->AppendItem("Zones", lay_zone);
     pLayerlist->AppendItem("Obstructions", lay_obstruction);
+
+    pLayerlist->SelectItem(nCurlayer);
 }
 
 // ------------------------------ Rendering -------------------------
