@@ -107,6 +107,8 @@ void CPixelMatrix::CopyPixelData(RGBA* data,int width,int height)
     
     pData=new RGBA[width*height];
     memcpy(pData,data,width*height*sizeof(RGBA));
+
+    cliprect=Rect(0,0,width,height);
 }
 
 void CPixelMatrix::CopyPixelData(u8* data,int width,int height,byte* pal)
