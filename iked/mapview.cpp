@@ -1,6 +1,7 @@
 #include "mapview.h"
 #include "main.h"
 #include "graph.h"
+#include "tileset.h"
 #include <gl\glu.h>
 
 BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
@@ -9,19 +10,29 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_SIZE(CMapView::OnSize)
 END_EVENT_TABLE()
 
-CMapView::CMapView(CMainWnd* parent,const wxString& title,const wxPoint& position,const wxSize& size,const long style,const char* fname)
-: wxMDIChildFrame(parent,-1,title,position,size,style)
+CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,const wxSize& size,const long style)
+: wxMDIChildFrame(parent,-1,fname.c_str(),position,size,style)
 {
+    pParentwnd=parent;
+
     int w,h;
     GetSize(&w,&h);
 
     pGraph=new CGraphFrame(this);
     pGraph->SetSize(w,h);
     Show();
+
+    // Get resources
+    pMap=pParentwnd->map.Load(fname);
+    pVsp=pParentwnd->vsp.Load(pMap->GetVSPName());
+    pTileset=new CTileSet(pParentwnd->graphfactory,*pVsp);
 }
 
 CMapView::~CMapView()
 {
+    pParentwnd->map.Release(pMap);
+    pParentwnd->vsp.Release(pVsp);
+    delete pTileset;
 }
 
 void CMapView::OnPaint()

@@ -289,7 +289,7 @@ void CCodeWnd::DoFind(wxFindDialogEvent& event)
     // Handles find/replace stuff.
     // TODO: break this up, maybe.
     //   --  khross
-
+/*
     wxEventType type;
 
     type=event.GetEventType();
@@ -336,7 +336,7 @@ void CCodeWnd::DoFind(wxFindDialogEvent& event)
 
     wxFindReplaceDialog *pDlg = event.GetDialog();
     pDlg->Destroy();
-
+*/
 }
 
 

@@ -7,6 +7,13 @@
 #include <wx/toolbar.h>
 #include <wx/bitmap.h>
 
+// Resource objects
+#include "map.h"
+#include "vsp.h"
+#include "graph.h"
+
+#include "controller.h"
+
 //////////////////////////////////////////
 
 // TODO: make this user configurable?
@@ -69,18 +76,19 @@ public:
 private:
     wxToolBar* CreateBasicToolBar();
     
-
-
-    DECLARE_EVENT_TABLE()
+    DECLARE_EVENT_TABLE()      
         
-        
-private:
+public:
+    // public because I'm a lazy bitch and I don't feel like figuring out what classes should be friends with what other classes. ;P
     // This window owns all the maps, VSPs, CHrs, etc... that get loaded.  It doles them out to child windows when they ask,
     // and nukes things that no longer need to be in memory
-    /*
-    CResourceController<Map> mapcontroller;
-    CResourceController<VSP> vspcontroller;*/
+
+    CGraphFactory graphfactory; // image/frame factory class
+
+    CController<Map> map;
+    CController<VSP> vsp;
     // TODO: fonts, sprites, scripts, anything else that comes to mind
+
 public:
     // "Helper" functions.
     FileType GetFileType(const std::string& fname);

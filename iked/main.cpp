@@ -3,6 +3,7 @@
 #include "resource.h"
 #include "log.h"
 
+// Document windows
 #include "mapview.h"
 #include "projectview.h"
 #include "codeview.h"
@@ -10,7 +11,6 @@
 
 #include <wx\resource.h>
 #include "controller.h"
-
 
 #include "dlg.wxr"
 
@@ -204,6 +204,8 @@ void CMainWnd::Open(const std::string& fname)
         }
     case t_map:
         {
+            //Map* m=map.Load(fname);
+
             new CMapView(this,fname.c_str());
             return;
         }

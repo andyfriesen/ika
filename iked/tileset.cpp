@@ -1,9 +1,12 @@
-/*#include "tileset.h"
+#include "tileset.h"
 #include "vsp.h"
 #include "pixel_matrix.h"
+#include "graph.h"
 
-CTileSet::CTileSet()
+CTileSet::CTileSet(CGraphFactory& f,VSP& v)
+: graphfactory(f)
 {
+    pVsp=&v;
 }
 
 CTileSet::~CTileSet()
@@ -45,7 +48,7 @@ bool CTileSet::Load(const char* fname)
 
     for (int i=0; i<pVsp->NumTiles(); i++)
     {
-//        bitmaps[i]=new wxBitmap(
+        bitmaps[i]=graphfactory.CreateImage(pVsp->GetTile(i));
     }
 
     return true;
@@ -54,4 +57,4 @@ bool CTileSet::Load(const char* fname)
 bool CTileSet::Save(const char* fname)
 {
     return false;
-}*/
+}

@@ -190,6 +190,14 @@ SOURCE=..\..\ika\common\log.h
 # End Source File
 # Begin Source File
 
+SOURCE=..\common\map.cpp
+# End Source File
+# Begin Source File
+
+SOURCE=..\common\map.h
+# End Source File
+# Begin Source File
+
 SOURCE=..\..\ika\common\misc.cpp
 # End Source File
 # Begin Source File
