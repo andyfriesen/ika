@@ -329,13 +329,17 @@ namespace OpenGL
             float endX = float(_xres) / texW;
             float endY = float(_yres) / texH;
 
+            // Doubling xres and yres for a moment because I'm lazy
+            // and because creating temporaries would require extra
+            // typing. (pay no attention to the fact that it would
+            // require less typing than this comment did)
             _xres <<= 1;    _yres <<= 1;
 
             glBegin(GL_QUADS);
-            glTexCoord2f(0, endY); glVertex2i(0, 0);
-            glTexCoord2f(endX, endY); glVertex2i(_xres, 0);
-            glTexCoord2f(endX, 0); glVertex2i(_xres, _yres);
-            glTexCoord2f(0, 0); glVertex2i(0, _yres);
+            glTexCoord2f(0,    endY); glVertex2i(0,         0);
+            glTexCoord2f(endX, endY); glVertex2i(_xres,     0);
+            glTexCoord2f(endX,    0); glVertex2i(_xres, _yres);
+            glTexCoord2f(0,       0); glVertex2i(0,     _yres);
             glEnd();
 
             _xres >>= 1;    _yres >>= 1;

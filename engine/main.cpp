@@ -180,6 +180,13 @@ void Engine::Startup()
 
         atexit(SDL_Quit);
 
+
+#if (!defined _DEBUG)
+        SDL_WM_SetCaption(va("ika %s", IKA_VERSION), 0);
+#else
+        SDL_WM_SetCaption(va("ika %s (debug)", IKA_VERSION), 0);
+#endif
+
         Log::Write("Initializing Video");
         std::string driver = Lower(cfg["videodriver"]);
 
@@ -204,12 +211,6 @@ void Engine::Startup()
                 cfg.Int("fullscreen") != 0,
                 cfg.Int("doublesize") != 0);
         }
-
-#if (!defined _DEBUG)
-        SDL_WM_SetCaption(va("ika %s", IKA_VERSION), 0);
-#else
-        SDL_WM_SetCaption(va("ika %s (debug)", IKA_VERSION), 0);
-#endif
 
 #ifdef WIN32
         {
