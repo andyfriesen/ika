@@ -53,6 +53,7 @@ public:
     
 private:
     int                             xwin, ywin;                                     ///< world coordinates of the viewport
+    int                             _oldTime;                                       ///< used for framerate regulation
 
 public:
     Entity*                         player;                                         ///< Points to the current player entity
@@ -105,6 +106,8 @@ public:
 
     Point     GetCamera();                                                          ///< Returns the position of the camera. (the point returned is the upper left corner)
     void      SetCamera(Point p);                                                   ///< Moves the camera to the position specified.  Any necessary clipping is performed.
+
+    void      SyncTime();                                                           ///< Resets the internal timer used to regulate framerates.
 
     Engine();
 };

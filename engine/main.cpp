@@ -118,7 +118,7 @@ void Engine::MainLoop()
     }
 
     int now = GetTime();
-    int lasttick = now;
+    SyncTime();
 
     while (true)
     {
@@ -126,12 +126,16 @@ void Engine::MainLoop()
 
         int skipcount = 0;
 
-        for (int i = 0; (i < now - lasttick) && (++skipcount <= _frameSkip); i++)
+        while (
+            (_oldTime < now) && 
+            (skipcount <= _frameSkip))
         {
             GameTick();
+            _oldTime++;
+            skipcount++;
         }
 
-        lasttick = now;
+        _oldTime = now;
         now = GetTime();
 
         Render();
@@ -155,7 +159,7 @@ void Engine::Startup()
 
     // init a few values
     _showFramerate  = cfg.Int("showfps") != 0;
-    _frameSkip      = cfg.Int("frameskip");
+    _frameSkip      = min(1, cfg.Int("frameskip"));
 
     // Now the tricky stuff.
     try
@@ -522,6 +526,7 @@ void Engine::DoHook(HookList& hooklist)
     for (HookList::List::iterator i = hooklist.begin(); i != hooklist.end(); i++)
     {
         script.ExecObject(*i);
+        SyncTime();
     }
 }
 
@@ -548,6 +553,7 @@ void Engine::CheckKeyBindings()
         the<Input>()->Unpress();
         script.ExecObject(*func);
         the<Input>()->Flush();
+        SyncTime();
     }
 }
 
@@ -674,7 +680,10 @@ void Engine::TestActivate(const Entity* player)
             {
                 Map::Zone& bluePrint = map.zones[zone->label];
                 if (!bluePrint.scriptName.empty())
+                {
                     script.CallScript(bluePrint.scriptName);
+                    SyncTime();
+                }
             }
             else
             {
@@ -710,6 +719,7 @@ void Engine::TestActivate(const Entity* player)
             the<Input>()->Unpress();
             script.ExecObject(ent->activateScript);
             the<Input>()->Flush();
+            SyncTime();
             return;
         }
     }
@@ -832,6 +842,11 @@ void Engine::SetCamera(Point p)
     Point res = video->GetResolution();
     xwin = max<int>(0, min<int>(p.x, map.width - res.x - 1));
     ywin = max<int>(0, min<int>(p.y, map.height - res.y - 1));
+}
+
+void Engine::SyncTime()
+{
+    _oldTime = GetTime();
 }
 
 Engine::Engine()
