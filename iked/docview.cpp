@@ -8,7 +8,7 @@ namespace iked {
         EVT_CLOSE(DocumentPanel::onClose)
     END_EVENT_TABLE()
 
-    DocumentPanel::DocumentPanel(MainWindow* parentWindow, Document* doc, const std::string& fname)
+    DocumentPanel::DocumentPanel(MainWindow* parentWindow, Document* doc, const std::string& fname, int style)
         : wxMDIChildFrame(parentWindow, -1, fname.c_str(), wxDefaultPosition, wxDefaultSize)
         , parent(parentWindow)
         , document(doc)

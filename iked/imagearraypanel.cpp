@@ -33,7 +33,7 @@ namespace iked {
 
         int index = y * cols + x;
 
-        if (0 < index && index <= document->getCount()) {
+        if (0 <= index && index <= document->getCount()) {
             return index;
         } else {
             return -1;
@@ -81,46 +81,35 @@ namespace iked {
     }
 
     void ImageArrayPanel::onLeftClick(wxMouseEvent& event) {
-        int x;
-        int y;
-        event.GetPosition(&x, &y);
+        wxPoint p = event.GetPosition();
 
-        int index = getImageAtPos(x, y);
+        int index = getImageAtPos(p.x, p.y);
         if (index != -1 && index != selectedImage) {
-            wxCommandEvent event(EVT_IMAGE_SELECT, GetId());
-            event.SetInt(index);
-            ProcessEvent(event);
             selectedImage = index;
+            leftClickImage.fire(index);
             Refresh();
         }
     }
 
     void ImageArrayPanel::onRightClick(wxMouseEvent& event) {
-        int x;
-        int y;
-        event.GetPosition(&x, &y);
+        wxPoint p = event.GetPosition();
 
-        int index = getImageAtPos(x, y);
+        int index = getImageAtPos(p.x, p.y);
         if (index != -1) {
-            wxCommandEvent evt(EVT_IMAGE_RIGHT_CLICK, GetId());
-            evt.SetInt(EVT_IMAGE_RIGHT_CLICK);
-            evt.SetEventObject(this);
-            AddPendingEvent(evt);
-            selectedImage = index; // is this the Right Thing?
+            selectedImage = index;
+            Refresh();
+            rightClickImage.fire(index);
         }
     }
 
     void ImageArrayPanel::onDoubleClick(wxMouseEvent& event) {
-        int x;
-        int y;
-        event.GetPosition(&x, &y);
+        wxPoint p = event.GetPosition();
 
-        int index = getImageAtPos(x, y);
+        int index = getImageAtPos(p.x, p.y);
         if (index != -1) {
-            wxCommandEvent evt(EVT_IMAGE_DOUBLE_CLICK, GetId());
-            evt.SetInt(index);
-            AddPendingEvent(evt);
             selectedImage = index;
+            Refresh();
+            doubleClickImage.fire(index);
         }
     }
     

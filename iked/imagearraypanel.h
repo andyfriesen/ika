@@ -3,6 +3,7 @@
 
 #include "graph.h"
 #include "wx_events.h"
+#include "common/listener.h"
 
 namespace iked {
 
@@ -15,12 +16,6 @@ namespace iked {
     struct ImageArrayPanel : GraphicsFrame {
         ImageArrayPanel(wxWindow* parent, ImageArrayDocument* resource);
         
-#if 0
-        virtual void onSelectImage(int index) = 0;
-        virtual void onRightClickImage(int index) = 0;
-        virtual void onDoubleClickImage(int index) = 0;
-#endif
-
         /**
          * @return Returns the image under x,y.  -1 if no image is there.
          */
@@ -32,6 +27,10 @@ namespace iked {
         void getImagePos(int index, int* x, int* y);
 
         ImageArrayDocument* getDocument() { return document; }
+
+        Listener<int> leftClickImage;
+        Listener<int> rightClickImage;
+        Listener<int> doubleClickImage;
 
         DECLARE_EVENT_TABLE();
     private:

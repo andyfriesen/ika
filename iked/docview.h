@@ -18,7 +18,7 @@ namespace iked {
      * TODO: extend wxPanel, not MDIChildFrame
      */
     struct DocumentPanel : public wxMDIChildFrame {
-        DocumentPanel(MainWindow* parentWindow, Document* doc, const std::string& fname);
+        DocumentPanel(MainWindow* parentWindow, Document* doc, const std::string& fname, int style=0);
         virtual ~DocumentPanel();
 
         void setName(const std::string& newName);

@@ -1,6 +1,5 @@
 
 #include <wx/event.h>
-#include <wx/xrc/xmlres.h>
 
 #include "document.h"
 #include "imageview.h"
@@ -55,9 +54,6 @@ namespace iked {
         
         EVT_COMMAND(EVT_IMAGE_RIGHT_CLICK, -1, SpriteSetView::onRightClickFrame)
 
-        //EVT_PAINT(SpriteSetView::onPaint)
-        EVT_ERASE_BACKGROUND(SpriteSetView::OnEraseBackground)
-
     END_EVENT_TABLE()
 
     SpriteSetView::SpriteSetView(MainWindow* parentwnd, Document* doc, const std::string& fileName)
@@ -65,11 +61,13 @@ namespace iked {
     {
         wxASSERT(doc && doc->asSpriteSet() != 0);
         Freeze();
-        mainPanel = wxXmlResource::Get()->LoadPanel(this, "panel_spriteset");
 
         init();
         Thaw();
         Refresh();
+
+        // Connect imagePanel event(s)
+        imagePanel->rightClickImage.add(bind(this, &SpriteSetView::onRightClickFrame));
     }
 
     SpriteSetView::~SpriteSetView() {
@@ -99,13 +97,9 @@ namespace iked {
         }
     }
 
-    void SpriteSetView::onRightClickFrame(wxCommandEvent& event) {
-        int frameIndex = event.GetInt();
-        int x, y;
-
-        imagePanel->getImagePos(frameIndex, &x, &y);
-
-        PopupMenu(contextMenu, wxPoint(x, y));
+    void SpriteSetView::onRightClickFrame(int frameIndex) {
+        wxPoint pos = ScreenToClient(::wxGetMousePosition());
+        PopupMenu(contextMenu, pos);
     }
 
     void SpriteSetView::onEditFrame(wxCommandEvent& event) {
@@ -116,10 +110,6 @@ namespace iked {
     void SpriteSetView::onZoomIn(wxCommandEvent& event)    { imagePanel->Zoom(1);  }
     void SpriteSetView::onZoomOut(wxCommandEvent& event)   { imagePanel->Zoom(-1); }
     void SpriteSetView::onZoomNormal(wxCommandEvent& event){ imagePanel->Zoom(16 - imagePanel->Zoom()); } 
-    void SpriteSetView::onPaint(wxPaintEvent& event) {
-        wxPaintDC paintDc(this);
-        imagePanel->Refresh();
-    }
 
     void SpriteSetView::onShowMovescriptEditor(wxCommandEvent& event) {
 #if 1
@@ -168,40 +158,43 @@ namespace iked {
     }
 
     void SpriteSetView::init() {
-        animScriptGrid = new wxGrid(mainPanel, -1);
-        animScriptGrid->SetRowLabelSize(0);
-        animScriptGrid->SetColLabelSize(0);
-        animScriptGrid->CreateGrid(8, 2);
-        animScriptGrid->EnableGridLines(false);
+        hotXEdit = new wxTextCtrl(this, -1);
+        hotYEdit = new wxTextCtrl(this, -1);
+        hotWidthEdit = new wxTextCtrl(this, -1);
+        hotHeightEdit = new wxTextCtrl(this, -1);
 
-        metaDataGrid = new wxGrid(mainPanel, -1);
-        metaDataGrid->SetRowLabelSize(0);
-        metaDataGrid->SetColLabelSize(0);
-        metaDataGrid->CreateGrid(8, 2);
-        metaDataGrid->EnableGridLines(false);
+        animScriptGrid = new wxListBox(this, -1);
+        metaDataGrid = new wxListBox(this, -1);
 
-        imagePanel = new ImageArrayPanel(mainPanel, getSprite());
-        imagePanel->SetSize(500, 500);
+        imagePanel = new ImageArrayPanel(this, getSprite());
 
-        wxXmlResource::Get()->AttachUnknownControl("unknown_animscript", animScriptGrid);
-        wxXmlResource::Get()->AttachUnknownControl("unknown_metadata", metaDataGrid);
-        wxXmlResource::Get()->AttachUnknownControl("unknown_frames", imagePanel);
+        wxSizer* topSizer = new wxBoxSizer(wxHORIZONTAL);
+        wxSizer* leftSide = new wxBoxSizer(wxVERTICAL);
+        wxSizer* s1 = new wxGridSizer(2, 4);
 
-        mainPanel->GetSizer()->FitInside(this);
+        s1->Add(new wxStaticText(this, -1, "Hotspot X"));
+        s1->Add(hotXEdit);
+        s1->Add(new wxStaticText(this, -1, "Hotspot Y"));
+        s1->Add(hotYEdit);
+        s1->Add(new wxStaticText(this, -1, "Hotspot Width"));
+        s1->Add(hotWidthEdit);
+        s1->Add(new wxStaticText(this, -1, "Hotspot Height"));
+        s1->Add(hotHeightEdit);
+
+        leftSide->Add(s1);
+        leftSide->Add(new wxStaticText(this, -1, "Animation Scripts"));
+        leftSide->Add(animScriptGrid, 1, wxEXPAND);
+        leftSide->Add(new wxStaticText(this, -1, "Metadata"));
+        leftSide->Add(metaDataGrid, 1, wxEXPAND);
+
+        topSizer->Add(leftSide, 0, wxEXPAND);
+        topSizer->Add(imagePanel, 1, wxEXPAND);
+        
+        SetSizer(topSizer);
+        topSizer->FitInside(this);
 
         initMenu();
         initAccelerators();
-
-#if 0
-        wxSizer* sizer = new wxBoxSizer(wxVERTICAL);
-        sizer->Add(imagePanel, 1, wxEXPAND);
-        SetSizer(sizer);
-        sizer->Fit(this);
-
-        moveScriptEditor = new MoveScriptEditor(this, _sprite);
-
-        SetFocus();
-#endif
     }
 
     void SpriteSetView::initMenu() {

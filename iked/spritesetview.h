@@ -22,16 +22,13 @@ namespace iked {
 
         void onSave(wxCommandEvent& event);
         void onSaveAs(wxCommandEvent& event);
-        void onRightClickFrame(wxCommandEvent& event);
+        void onRightClickFrame(int frameIndex);
         //void onDoubleClickFrame(wxCommandEvent& event);
         void onEditFrame(wxCommandEvent& event);
 
         void onZoomIn(wxCommandEvent& event);
         void onZoomOut(wxCommandEvent& event);
         void onZoomNormal(wxCommandEvent& event);
-
-        void onPaint(wxPaintEvent& event);
-        void onEraseBackground(wxEraseEvent&){}
 
         void onShowMovescriptEditor(wxCommandEvent& event);
         void onImportFrames(wxCommandEvent& event);
@@ -44,9 +41,12 @@ namespace iked {
 
         SpriteSet*          getSprite();
 
-        wxPanel*            mainPanel;
-        wxGrid*             animScriptGrid;
-        wxGrid*             metaDataGrid;
+        wxTextCtrl*         hotXEdit;
+        wxTextCtrl*         hotYEdit;
+        wxTextCtrl*         hotWidthEdit;
+        wxTextCtrl*         hotHeightEdit;
+        wxListBox*          animScriptGrid;
+        wxListBox*          metaDataGrid;
         ImageArrayPanel*    imagePanel;
         
         wxMenu*             contextMenu;
