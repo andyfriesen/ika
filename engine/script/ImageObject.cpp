@@ -136,7 +136,7 @@ namespace Script
             if (!PyArg_ParseTuple(args,"ii|i:Image.Blit",&x,&y, &trans))
                 return NULL;
 
-            engine->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            engine->video->SetBlendMode((::Video::BlendMode)trans);
             engine->video->BlitImage(self->img, x, y);
             
             Py_INCREF(Py_None);

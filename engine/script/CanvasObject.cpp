@@ -190,7 +190,9 @@ namespace Script
             case 0: CBlitter<Opaque>::Blit(*self->canvas,*dest->canvas, x, y);  break;
             case 1: CBlitter<Matte> ::Blit(*self->canvas,*dest->canvas, x, y);  break;
             case 2: CBlitter<Alpha> ::Blit(*self->canvas,*dest->canvas, x, y);  break;
-            case 3:
+            case 3: CBlitter<Additive>::Blit(*self->canvas,*dest->canvas, x, y);  break;
+            case 4: CBlitter<Subtractive>::Blit(*self->canvas,*dest->canvas, x, y);  break;
+            default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
             }
@@ -214,7 +216,9 @@ namespace Script
             case 0: CBlitter<Opaque>::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
             case 1: CBlitter<Matte> ::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
             case 2: CBlitter<Alpha> ::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
-            case 3:
+            case 3: CBlitter<Additive>::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
+            case 4: CBlitter<Subtractive>::ScaleBlit(*self->canvas,*dest->canvas, x, y, w, h);  break;
+            default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
             }

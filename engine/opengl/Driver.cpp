@@ -99,12 +99,18 @@ namespace OpenGL
 
     Video::BlendMode Driver::SetBlendMode(Video::BlendMode bm)
     {
+        if (bm == _blendMode)
+            return bm;
+
         Video::BlendMode m = _blendMode;
         
         switch (bm)
         {
             case Video::None:    glDisable(GL_BLEND);    break;
-            case Video::Normal:  glEnable(GL_BLEND);     break;
+            case Video::Matte:  // TODO: see if we can get GL to do matte?
+            case Video::Normal:  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); glEnable(GL_BLEND); break;
+            case Video::Add:     glBlendFunc(GL_ONE, GL_ONE);                       glEnable(GL_BLEND); break;
+            case Video::Subtract:glBlendFunc(GL_ONE_MINUS_SRC_COLOR, GL_ONE);       glEnable(GL_BLEND); break;
             default:
                 return _blendMode;
         }

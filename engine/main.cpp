@@ -9,17 +9,17 @@
 #include "opengl/Driver.h"
 #include "soft32/Driver.h"
 
-#if 0 && (defined WIN32)
-// SDL_GetWMInfo doesn't seem to want to cooperate. :(
+#if (defined WIN32)
 void CEngine::Sys_Error(const char* errmsg)
 {
     CDEBUG("sys_error");
     
     SDL_SysWMinfo info;
-	SDL_GetWMInfo(&info);
+    SDL_VERSION(&info.version);
+    HWND hWnd = SDL_GetWMInfo(&info) ? info.window : HWND_DESKTOP;
 
     if (strlen(errmsg))
-        MessageBox(info.window, errmsg, "", 0);
+        MessageBox(hWnd, errmsg, "Error", 0);
 
     Shutdown();
     exit(-1);
@@ -30,7 +30,8 @@ void CEngine::Script_Error()
     CDEBUG("script_error");
 
     SDL_SysWMinfo info;
-	int i = SDL_GetWMInfo(&info);
+    SDL_VERSION(&info.version);
+    HWND hWnd = SDL_GetWMInfo(&info) ? info.window : HWND_DESKTOP;
 
     File f;
     if (f.OpenRead("pyout.log"))
@@ -44,7 +45,7 @@ void CEngine::Script_Error()
         delete[] c;
     }
     else
-        MessageBox(info.window, "Unknown error!", "Script error", 0);
+        MessageBox(hWnd, "Unknown error!", "Script error", 0);
     
     Shutdown();
     
@@ -179,6 +180,9 @@ void CEngine::Startup()
     
     CConfigFile cfg("user.cfg");
 
+    if (!cfg.Good())
+        Sys_Error("No user.cfg found.");
+
     // init a few values
     bShowfps        = cfg.Int("showfps") != 0 ;
     nFrameskip      = cfg.Int("frameskip");
@@ -223,6 +227,7 @@ void CEngine::Startup()
     }
     catch (Video::Exception)
     {
+        video = 0;
         Sys_Error("Unable to set the video mode.\nAre you sure your hardware can handle the chosen settings?");
     }
     catch (Sound::Exception)
@@ -745,6 +750,13 @@ void CEngine::SetCamera(Point p)
     xwin = clamp(p.x, 0, map.Width()  * tiles->Width()  - res.x - 1);   // (tile width * number of tiles) - resolution - 1
     ywin = clamp(p.y, 0, map.Height() * tiles->Height() - res.y - 1);
 }
+
+CEngine::CEngine()
+    : tiles(0)
+    , video(0)
+    , pPlayer(0)
+    , pCameratarget(0)
+{}
 
 int main(int argc, char* args[])
 {

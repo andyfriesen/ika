@@ -2,7 +2,12 @@
 #include "configfile.h"
 #include "fileio.h"
 
+CConfigFile::CConfigFile()
+    : _good(false)
+{}
+
 CConfigFile::CConfigFile(const char* fname)
+    : _good(false)
 {
     Load(fname);
 }
@@ -35,7 +40,11 @@ void CConfigFile::Load(const char* fname)
     File f;
 
     bool result = f.OpenRead(fname);
-    if (!result)    return;
+    if (!result)    
+    {
+        _good = false;
+        return;
+    }
 
     char key[1024], value[1024];
     while (!f.eof())
@@ -51,6 +60,7 @@ void CConfigFile::Load(const char* fname)
     }
 
     f.Close();
+    _good = true;
 }
 
 void CConfigFile::Save(const char* fname)

@@ -16,9 +16,10 @@ namespace Video
     enum BlendMode
     {
         None,
+        Matte,
         Normal,
-        // Add,
-        // Subtract
+        Add,
+        Subtract
     };
 
     /// Base interface for all ika video drivers.

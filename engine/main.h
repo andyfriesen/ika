@@ -106,7 +106,7 @@ public:
     Point     GetCamera();                                                          ///< Returns the position of the camera. (the point returned is the upper left corner)
     void      SetCamera(Point p);                                                   ///< Moves the camera to the position specified.  Any necessary clipping is performed.
 
-    CEngine(){}
+    CEngine();
 };
 
 #endif

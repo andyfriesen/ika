@@ -12,31 +12,36 @@ namespace Script
         PyMethodDef methods[] =
         {
             {   "Blit",         (PyCFunction)Video_Blit,        METH_VARARGS,
-                "Video.Blit(image, x, y[, transparent])\n\n"
+                "Video.Blit(image, x, y[, blendmode])\n\n"
                 "Draws the image at (x,y) at its original size.\n"
-                "If transparent is sepcified and zero, alpha blending is disabled,\n"
-                "else it is enabled."
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
             },
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
-                "Video.ScaleBlit(image, x, y, width, height[, transparent])\n\n"
+                "Video.ScaleBlit(image, x, y, width, height[, blendmode])\n\n"
                 "Draws the image at (x,y), stretching it out to the size given.\n"
-                "If transparent is sepcified and zero, alpha blending is disabled,\n"
-                "else it is enabled."
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
             },
             
             {   "DistortBlit",  (PyCFunction)Video_DistortBlit, METH_VARARGS,
-                "Video.DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[,transparent])\n\n"
+                "Video.DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[, blendmode])\n\n"
                 "Draws the image onscreen, stretched to the four points specified.\n"
-                "If transparent is sepcified and zero, alpha blending is disabled,\n"
-                "else it is enabled."
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
             },
 
             {   "TileBlit",     (PyCFunction)Video_TileBlit,    METH_VARARGS,
-                "Video.TileBlit(image, x, y, width, height[, scalex[, scaley[, transparent]]])\n\n"
+                "Video.TileBlit(image, x, y, width, height[, scalex[, scaley[, blendmode]]])\n\n"
                 "Draws the image onscreen, \"tiling\" it as necessary to fit the rectangle specified.\n"
                 "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
-                "If transparent is specified and zero, then alpha blending is disabled, else it is enabled."
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
             },
 
             // TODO: more blits.  I want a wrapblit, tintblit, and others
@@ -132,7 +137,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "Oii|i:Video.Blit", &image, &x, &y, &trans))
                 return 0;
 
-            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->BlitImage(image->img, x, y);
             
             Py_INCREF(Py_None);
@@ -149,7 +154,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "Oiiii|i:Video.ScaleBlit", &image, &x, &y, &w, &h, &trans))
                 return 0;
 
-            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->ScaleBlitImage(image->img, x, y, w, h);
             
             Py_INCREF(Py_None);
@@ -165,7 +170,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "O(ii)(ii)(ii)(ii)|i:Video.DistortBlit", &image, x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &trans))
                 return 0;
 
-            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->DistortBlitImage(image->img, x, y);
             
             Py_INCREF(Py_None);
@@ -183,7 +188,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "Oiiii|ffi:Video.TileBlit", &image, &x, &y, &w, &h, &scalex, &scaley, &trans))
                 return 0;
 
-            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->TileBlitImage(image->img, x, y, w, h, scalex, scaley);
             
             Py_INCREF(Py_None);

@@ -125,6 +125,30 @@ namespace
 #endif
         }
     };
+
+    struct Additive
+    {
+        static inline RGBA Blend(RGBA src, RGBA dest)
+        {
+            dest.r = min(dest.r + src.r, 255);
+            dest.g = min(dest.g + src.g, 255);
+            dest.b = min(dest.b + src.b, 255);
+            dest.a = min(dest.a + src.a, 255);
+            return dest;
+        }
+    };
+
+    struct Subtractive
+    {
+        static inline RGBA Blend(RGBA src, RGBA dest)
+        {
+            dest.r = max(dest.r - src.r, 0);
+            dest.g = max(dest.g - src.g, 0);
+            dest.b = max(dest.b - src.b, 0);
+            dest.a = max(dest.a - src.a, 0);
+            return dest;
+        }
+    };
 };
 
 /*!

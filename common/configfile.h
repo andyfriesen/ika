@@ -26,9 +26,10 @@ class CConfigFile
     typedef std::map < string, string> ConfigMap;
     
     ConfigMap keys;
+    bool _good;
 
 public:
-    CConfigFile() {}
+    CConfigFile();
     CConfigFile(const char* fname);
 
     void        Add(const string& key, const string& value);
@@ -37,6 +38,8 @@ public:
 
     void        Load(const char* fname);
     void        Save(const char* fname);
+
+    bool Good() const { return _good; }
 };
 
 #endif

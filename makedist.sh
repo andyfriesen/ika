@@ -18,12 +18,15 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         cd ..
         rm -rf tempdist
         echo Done.
-        
+
         echo Assembling the main dist zip...
         mkdir tempdist
         mkdir tempdist/xi
+        mkdir tempdist/cursor
         cp dist/* tempdist
         cp xi/* tempdist/xi
+        cp 3rdparty/dlls/*.dll tempdist
+        cp dist/cursor/* tempdist/cursor
         cp engine/Release/ika.exe tempdist
         cp iked/Release/iked.exe tempdist
         cp winmaped/Release/winmaped.exe tempdist

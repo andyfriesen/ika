@@ -52,6 +52,8 @@ void CScriptEngine::Init(CEngine* p)
     PyModule_AddIntConstant(module, "Opaque", 0);
     PyModule_AddIntConstant(module, "Matte", 1);
     PyModule_AddIntConstant(module, "AlphaBlend", 2);
+    PyModule_AddIntConstant(module, "AddBlend", 3);
+    PyModule_AddIntConstant(module, "SubtractBlend", 4);
 
     PyModule_AddIntConstant(module, "nothing", mc_nothing);
     PyModule_AddIntConstant(module, "wander", mc_wander);
