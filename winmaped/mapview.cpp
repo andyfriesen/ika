@@ -75,8 +75,8 @@ void CMapView::GetTileCoords(int& x,int& y,int layer)
     else
         pMap->GetLayerInfo(l,layer);
     
-    x=(x+(xwin*l.pmulx/l.pdivx))/pVsp->TileX();
-    y=(y+(ywin*l.pmuly/l.pdivy))/pVsp->TileY();
+    x=(x+(xwin*l.pmulx/l.pdivx))/pVsp->Width();
+    y=(y+(ywin*l.pmuly/l.pdivy))/pVsp->Height();
 }
 
 void CMapView::HandleMouse(int x,int y,int b)
@@ -103,7 +103,7 @@ void CMapView::HandleMouse(int x,int y,int b)
 void CMapView::DoMouseLeftDown(int x,int y,int b)		// b is the key state
 {
     int e;	
-    RECT r= { x,y,x+pVsp->TileX(),y+pVsp->TileY() };	// In a lot of the cases below, we'll be re-rendering
+    RECT r= { x,y,x+pVsp->Width(),y+pVsp->Height() };	// In a lot of the cases below, we'll be re-rendering
     // a specific tile.  We're calculating that rect here, for brevity.
     switch (nCurlayer)
     {
@@ -165,20 +165,20 @@ void CMapView::DoMouseLeftDown(int x,int y,int b)		// b is the key state
             pGraph->ShowPage();
             
             pGraph->DirtyRect(MakeRect(
-                curselection.left*pVsp->TileX()-xwin-1,
-                curselection.top*pVsp->TileY()-ywin-1,
-                curselection.right*pVsp->TileX()-xwin+1,
-                curselection.bottom*pVsp->TileY()-ywin+1
+                curselection.left*pVsp->Width()-xwin-1,
+                curselection.top*pVsp->Height()-ywin-1,
+                curselection.right*pVsp->Width()-xwin+1,
+                curselection.bottom*pVsp->Height()-ywin+1
                 ));																// erase whatever was under the selection rect (including the rect itself)
             
             curselection.right=x+1;
             curselection.bottom=y+1;
             
             pGraph->DirtyRect(MakeRect(
-                curselection.left*pVsp->TileX()-xwin-1,
-                curselection.top*pVsp->TileY()-ywin-1,
-                curselection.right*pVsp->TileX()-xwin+1,
-                curselection.bottom*pVsp->TileY()-ywin+1
+                curselection.left*pVsp->Width()-xwin-1,
+                curselection.top*pVsp->Height()-ywin-1,
+                curselection.right*pVsp->Width()-xwin+1,
+                curselection.bottom*pVsp->Height()-ywin+1
                 ));																// redraw the new rect
             
             pGraph->ShowPage();
@@ -230,7 +230,7 @@ void CMapView::DoMouseLeftUp(int x,int y,int b)
 
 void CMapView::DoMouseRightDown(int x,int y,int b)
 {
-    RECT r= { x,y,x+pVsp->TileX(),y+pVsp->TileY() };
+    RECT r= { x,y,x+pVsp->Width(),y+pVsp->Height() };
     
     switch(nCurlayer)
     {
@@ -265,27 +265,27 @@ void CMapView::DoMouseRightDown(int x,int y,int b)
             }
             
             pMap->Paste(clipboard,x,y,nCurlayer);								// temp code -- TODO: Make pasting tile sections more intuitive than this
-            r.right=r.left+(clipboard.Width()*pVsp->TileX());
-            r.bottom=r.top+(clipboard.Height()*pVsp->TileY());
+            r.right=r.left+(clipboard.Width()*pVsp->Width());
+            r.bottom=r.top+(clipboard.Height()*pVsp->Height());
             pGraph->ShowPage(r);
             break;
             
         case mode_copyall:														// at this point, the user is still dragging their selection rectangle
             pGraph->ShowPage(MakeRect(
-                curselection.left*pVsp->TileX()-xwin-1,
-                curselection.top*pVsp->TileY()-ywin-1,
-                curselection.right*pVsp->TileX()-xwin+1,
-                curselection.bottom*pVsp->TileY()-ywin+1
+                curselection.left*pVsp->Width()-xwin-1,
+                curselection.top*pVsp->Height()-ywin-1,
+                curselection.right*pVsp->Width()-xwin+1,
+                curselection.bottom*pVsp->Height()-ywin+1
                 ));																// erase the old rect
             
             curselection.right=x+1;
             curselection.bottom=y+1;											// calculate the new rect
             
             pGraph->ShowPage(MakeRect(
-                curselection.left*pVsp->TileX()-xwin-1,
-                curselection.top*pVsp->TileY()-ywin-1,
-                curselection.right*pVsp->TileX()-xwin+1,
-                curselection.bottom*pVsp->TileY()-ywin+1
+                curselection.left*pVsp->Width()-xwin-1,
+                curselection.top*pVsp->Height()-ywin-1,
+                curselection.right*pVsp->Width()-xwin+1,
+                curselection.bottom*pVsp->Height()-ywin+1
                 ));																// redraw the new rect
             break;
         }			
@@ -416,7 +416,7 @@ void CMapView::Redraw()
     pGraph->ForceShowPage();
 }
 
-void CMapView::UpdateVSP(int tileidx)																	// Updates the tileimages vector
+/*void CMapView::UpdateVSP(int tileidx)																	// Updates the tileimages vector
 {
     if (tileidx<0 || tileidx>=pVsp->NumTiles())
     {
@@ -424,22 +424,22 @@ void CMapView::UpdateVSP(int tileidx)																	// Updates the tileimages 
         
         for (int i=0; i<pVsp->NumTiles(); i++)
         {
-            tileimages[i].CopyPixelData((RGBA*)pVsp->GetPixelData(i),pVsp->TileX(),pVsp->TileY());
+            tileimages[i].CopyPixelData((RGBA*)pVsp->GetPixelData(i),pVsp->Width(),pVsp->Height());
         }
     }
     else
     {
-        tileimages[tileidx].CopyPixelData((RGBA*)pVsp->GetPixelData(tileidx),pVsp->TileX(),pVsp->TileY());
+        tileimages[tileidx].CopyPixelData((RGBA*)pVsp->GetPixelData(tileidx),pVsp->Width(),pVsp->Height());
     }
-}
+}*/
 
 // Scrolls the viewport to (x,y)
 void CMapView::ScrollWin(int x,int y)
 {
     SCROLLINFO si;
     int maxx,maxy;
-    maxx=pMap->Width()*pVsp->TileX();// - xres/Zoom();
-    maxy=pMap->Height()*pVsp->TileY();// - yres/Zoom();
+    maxx=pMap->Width()*pVsp->Width();// - xres/Zoom();
+    maxy=pMap->Height()*pVsp->Height();// - yres/Zoom();
     
     if (x<0) x=0; 
     if (y<0) y=0;
@@ -483,8 +483,8 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
         return;
     
     pMap->GetLayerInfo(linf,lay);
-    tilex=pVsp->TileX();
-    tiley=pVsp->TileY();
+    tilex=pVsp->Width();
+    tiley=pVsp->Height();
     
     xw=(xwin*linf.pmulx)/linf.pdivx;
     yw=(ywin*linf.pmuly)/linf.pdivy;
@@ -514,7 +514,7 @@ void CMapView::RenderLayer(int lay,bool transparent,const RECT& r)
             }
             
             if (!(transparent && !t))
-                pGraph->Blit(tileimages[t],x*tilex+xofs,y*tiley+yofs,transparent);
+                pGraph->Blit(pVsp->GetTile(t),x*tilex+xofs,y*tiley+yofs,transparent);
         }
         layptr+=xinc;
     }
@@ -530,20 +530,20 @@ void CMapView::DrawObstructions(const RECT& r)
     //	if (!pMap->IsLayerVisible(lay_obs)) return;
     if (!bObstoggle)	return;
     
-    xe=(r.right-r.left)/pVsp->TileX()+2;  ye=(r.bottom-r.top)/pVsp->TileY()+2;
+    xe=(r.right-r.left)/pVsp->Width()+2;  ye=(r.bottom-r.top)/pVsp->Height()+2;
     
     if (xe>=pMap->Width()) { xe=pMap->Width(); }
     if (ye>=pMap->Height()) { ye=pMap->Height(); }
     
     int xw=xwin+r.left;	int yw=ywin+r.top;
-    xt=xw/pVsp->TileX(); yt=yw/pVsp->TileY();
-    xofs=-(xw%pVsp->TileX()); yofs=-(yw%pVsp->TileY());
+    xt=xw/pVsp->Width(); yt=yw/pVsp->Height();
+    xofs=-(xw%pVsp->Width()); yofs=-(yw%pVsp->Height());
     
     for (y=0; y<ye; y++)
         for (x=0; x<xe; x++)
         {
             if (pMap->IsObs(x+xt,y+yt))
-                pGraph->Stipple(x*pVsp->TileX()+xofs,y*pVsp->TileY()+yofs,pVsp->TileX(),pVsp->TileY(),0);
+                pGraph->Stipple(x*pVsp->Width()+xofs,y*pVsp->Height()+yofs,pVsp->Width(),pVsp->Height(),0);
             //				stipple.Blit(tilewidth*x+xofs,tileheight*y+yofs);
         }
 }
@@ -561,20 +561,20 @@ void CMapView::DrawZones(const RECT& r)
     
     pMap->GetLayerInfo(linf,0);
     
-    xe=(r.right-r.left)/pVsp->TileX()+2;  ye=(r.bottom-r.top)/pVsp->TileY()+2;
+    xe=(r.right-r.left)/pVsp->Width()+2;  ye=(r.bottom-r.top)/pVsp->Height()+2;
     if (xe>=pMap->Width()) { xe=pMap->Width(); }
     if (ye>=pMap->Height()) { ye=pMap->Height(); }
     
     int xw=xwin+r.left;		int yw=ywin+r.top;
-    xt=xw/pVsp->TileX(); yt=yw/pVsp->TileY();
-    xofs=-(xw%pVsp->TileX()); yofs=-(yw%pVsp->TileY());
+    xt=xw/pVsp->Width(); yt=yw/pVsp->Height();
+    xofs=-(xw%pVsp->Width()); yofs=-(yw%pVsp->Height());
     
     for (y=0; y<ye; y++)
         for (x=0; x<xe; x++)
         {
             if (pMap->GetZone(x+xt,y+yt))//pMap->zone[(y+yt)*pMap->info[0].sizex+x+xt])
-                pGraph->Stipple(x*pVsp->TileX()+xofs,y*pVsp->TileY()+yofs,pVsp->TileX(),pVsp->TileY(),0);
-            //	stipple.Blit((x*pVsp->TileX())+xofs,(y*pVsp->TileY())+yofs);
+                pGraph->Stipple(x*pVsp->Width()+xofs,y*pVsp->Height()+yofs,pVsp->Width(),pVsp->Height(),0);
+            //	stipple.Blit((x*pVsp->Width())+xofs,(y*pVsp->Height())+yofs);
         }
 }
 
@@ -633,10 +633,10 @@ void CMapView::DrawSelection(const RECT& r)
     }
     
     
-    x1=x1*pVsp->TileX()-xwin-r.left;
-    y1=y1*pVsp->TileY()-ywin-r.top;
-    x2=x2*pVsp->TileX()-xwin-r.left;
-    y2=y2*pVsp->TileY()-ywin-r.top;
+    x1=x1*pVsp->Width()-xwin-r.left;
+    y1=y1*pVsp->Height()-ywin-r.top;
+    x2=x2*pVsp->Width()-xwin-r.left;
+    y2=y2*pVsp->Height()-ywin-r.top;
     
     pGraph->Rect(x1,y1,x2,y2,white);
 }
@@ -647,8 +647,8 @@ void CMapView::Render(const RECT& r)
     char renderstring[50];
     int  laycount=0;
     
-    if (tileimages.size()!=pVsp->NumTiles())
-        UpdateVSP();
+//    if (tileimages.size()!=pVsp->NumTiles())
+//        UpdateVSP();
     
     strcpy(renderstring,pMap->GetRString().c_str());
     
@@ -699,7 +699,7 @@ LRESULT CMapView::MsgProc(UINT msg,WPARAM wParam,LPARAM lParam)
     case WM_VSCROLL: 
         switch (LOWORD(wParam))
         {
-        case SB_BOTTOM:        ScrollWin(xwin,pMap->Height()*pVsp->TileY());		return 0;
+        case SB_BOTTOM:        ScrollWin(xwin,pMap->Height()*pVsp->Height());		return 0;
         case SB_TOP:           ScrollWin(xwin,0);					return 0;                      
         case SB_LINEDOWN:      ScrollWin(xwin,ywin+1);					return 0;
         case SB_LINEUP:        ScrollWin(xwin,ywin-1);					return 0;
@@ -713,7 +713,7 @@ LRESULT CMapView::MsgProc(UINT msg,WPARAM wParam,LPARAM lParam)
         case WM_HSCROLL: 
             switch (LOWORD(wParam))
             {
-            case SB_BOTTOM:        ScrollWin(pMap->Width()*pVsp->TileX(),ywin);		return 0;
+            case SB_BOTTOM:        ScrollWin(pMap->Width()*pVsp->Width(),ywin);		return 0;
             case SB_TOP:           ScrollWin(0,ywin);					return 0;                      
             case SB_LINEDOWN:      ScrollWin(xwin+1,ywin);				return 0;
             case SB_LINEUP:        ScrollWin(xwin-1,ywin);				return 0;

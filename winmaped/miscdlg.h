@@ -50,9 +50,9 @@ private:
 	virtual int MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	virtual bool InitProc(HWND hWnd);
 
-	VSP*		pVsp;
-	vspanim_r	curdata;
-	int			nCurstrand;
+	VSP*            pVsp;
+        VSP::AnimState  curdata;
+	int             nCurstrand;
 
 	void UpdateDialog(HWND hWnd);
 	void UpdateData(HWND hWnd);

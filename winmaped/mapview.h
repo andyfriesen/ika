@@ -40,17 +40,17 @@ private:
 
 	MapClip			clipboard;	// copy/pasting buffer
 
-	std::vector<CPixelMatrix>	tileimages;	// Image buffer for the VSP
+//	std::vector<CPixelMatrix>	tileimages;	// Image buffer for the VSP
 
 public:
 	// The engine class likes to mangle these
-	int		xwin,ywin;
-	float	nZoom;				// current zoom level
-	int		nCurlayer;			// the currently active layer.  Mouse clicks will interact on this layer.
-	csrMode	cursormode;			// what's the cursor doing now?  copying?  pasting?
-	int		nLefttile,nRighttile;	// currently active tiles
-	int		nCurzone;			// currently active zone
-	bool	bMouseleft,bMouseright,bMousemid;
+	int     xwin,ywin;
+	float   nZoom;                          // current zoom level
+	int     nCurlayer;                      // the currently active layer.  Mouse clicks will interact on this layer.
+	csrMode cursormode;                     // what's the cursor doing now?  copying?  pasting?
+	int     nLefttile,nRighttile;           // currently active tiles
+	int     nCurzone;                       // currently active zone
+	bool    bMouseleft,bMouseright,bMousemid;
 								// mouse button flags	
 
 	std::vector<bool> bLayertoggle;
@@ -86,7 +86,7 @@ public:
 
 	//---------------------Rendering----------------------
 	void Redraw();
-	void UpdateVSP(int tileidx=-1);															// re-updates the specified tile, or all of them, if the parameter is omitted
+//	void UpdateVSP(int tileidx=-1);															// re-updates the specified tile, or all of them, if the parameter is omitted
 	void RenderLayer(int lay,bool transparent,const RECT& r);
 	void DrawObstructions(const RECT& r);
 	void DrawZones(const RECT& r);

@@ -209,7 +209,7 @@ void CEngine::Shutdown()
     map.Free();
     timer.Shutdown();
     tiles.Free();
-    characters.Free();
+//    sprite.Free();
     script.Shutdown();
     
     UnloadGraphics();
@@ -224,10 +224,9 @@ void CEngine::Shutdown()
 void CEngine::RenderEntities()
 {
     CDEBUG("renderentities");
-    int				nMaxentities=entities.Count();
-    std::vector<int>	nEnt;
-    CEntity*		e;	// temp pointer
-    int				i;		// loop counter
+    const int           nMaxentities=entities.Count();
+    std::vector<int>    nEnt;
+    int                 i;		// loop counter
     
     nEnt.clear();
     // first, get a list of entities onscreen
@@ -235,30 +234,33 @@ void CEngine::RenderEntities()
     for (i=0; i<nMaxentities; i++)
     {
 	if (!entities.IsValid(i))	continue;
-	e=&entities[i];
-	width =characters[e->hSprite].Width();
-	height=characters[e->hSprite].Height();
 	
-	int x=e->x-characters[e->hSprite].hotx;
-	int y=e->y-characters[e->hSprite].hoty;
+        CEntity& e=entities[i];        
+        CSprite& sprite=*(e.pSprite);
+
+	width =sprite.Width();
+	height=sprite.Height();
 	
-	if (x+width-xwin>0				&& y+height-ywin>0 &&
-	    x-xwin<gfxImageWidth(hRenderdest)	&& y-ywin<gfxImageHeight(hRenderdest) &&
-	    e->bVisible)
-	    nEnt.push_back(i);												// the entity is onscreen, tag it.
+	int x=e.x-sprite.nHotx;
+	int y=e.y-sprite.nHoty;
+	
+	if (x+width-xwin>0                      && y+height-ywin>0 &&
+	    x-xwin<gfxImageWidth(hRenderdest)   && y-ywin<gfxImageHeight(hRenderdest) &&
+	    e.bVisible)
+	    nEnt.push_back(i);                                                              // the entity is onscreen, tag it.
     }
     
     if (!nEnt.size())
-	return;																// nobody onscreen?  Easy out!
+	return;                                                                             // nobody onscreen?  Easy out!
     
     int nEntsonscreen=nEnt.size();
     bool blarg;
-    do																		// quick n' dirty bubble sort
+    do                                                                                      // quick n' dirty bubble sort
     {
 	blarg=false;
 	for (i=0; i<nEntsonscreen; i++)
 	    for (int j=i+1; j<nEntsonscreen; j++)
-		if (entities[nEnt[i]].y>entities[nEnt[j]].y)				// FIXME:  is this a gigantic bottleneck?
+		if (entities[nEnt[i]].y>entities[nEnt[j]].y)                                // FIXME:  is this a gigantic bottleneck?
 		{
 		    swap(nEnt[i],nEnt[j]);
 		    blarg=true;
@@ -269,14 +271,15 @@ void CEngine::RenderEntities()
     for (i=0; i<nEntsonscreen; i++)
     {
 	int hx,hy;
-	e=&entities[nEnt[i]];
+	CEntity& e=entities[nEnt[i]];
+        CSprite& s=*e.pSprite;;
 	
-	hx=characters[e->hSprite].hotx;
-	hy=characters[e->hSprite].hoty;
+	hx=s.nHotx;
+	hy=s.nHoty;
 	
-	int frame=e->nSpecframe?e->nSpecframe:e->nCurframe;
+	int frame=e.nSpecframe?e.nSpecframe:e.nCurframe;
 	
-	characters[e->hSprite].TBlitFrame(e->x-xwin-hx,e->y-ywin-hy,frame);
+	s.BlitFrame(e.x-xwin-s.nHotx, e.y-ywin-s.nHoty, frame);
     }
 }
 
@@ -486,18 +489,18 @@ int  CEngine::EntityAt(int x,int y,int w,int h)
 {
     CDEBUG("entityat");
     CEntity* e;
-    CCharacter* s;
+    CSprite* s;
     
     for (int i=0; i<entities.Count(); i++)
 	if (entities.IsValid(i))	
 	{
 	    e=&entities[i];
-	    s=&characters[e->hSprite];
+	    s=e->pSprite;
 	    
-	    if (e->x		>=x+w)	continue;
-	    if (e->y		>=y+h)	continue;
-	    if (e->x+s->hotw<=x)	continue;
-	    if (e->y+s->hoth<=y)	continue;
+	    if (e->x         >=x+w)     continue;
+	    if (e->y         >=y+h)     continue;
+	    if (e->x+s->nHotw<=x)       continue;
+	    if (e->y+s->nHoth<=y)       continue;
 	    return i;
 	}
 	return -1;
@@ -550,7 +553,7 @@ int CEngine::DetectEntityCollision(int x1,int y1,int w,int h,int entidx)
 {
     CDEBUG("detectentitycollision");
     CEntity* e;
-    CCharacter* c;
+    CSprite* s;
     
     int nEnts=entities.Count();
     for (int i=0; i<nEnts; i++)
@@ -558,14 +561,14 @@ int CEngine::DetectEntityCollision(int x1,int y1,int w,int h,int entidx)
 	{
 	    e=&entities[i];
 	    
-	    if (!e->bIsobs)				continue;
+	    if (!e->bEntobs)            continue;
 	    
-	    c=&characters[e->hSprite];
+	    s=e->pSprite;
 	    
-	    if (x1   > e->x+c->hotw)	continue;	// nope
-	    if (y1   > e->y+c->hoth)	continue;
-	    if (x1+w < e->x)			continue;
-	    if (y1+h < e->y)			continue;
+	    if (x1   > e->x+s->nHotw)   continue;	// nope
+	    if (y1   > e->y+s->nHoth)   continue;
+	    if (x1+w < e->x)            continue;
+	    if (y1+h < e->y)            continue;
 	    return i;
 	}
 	
@@ -576,14 +579,14 @@ void CEngine::ProcessEntity(int entidx)
 // I am unhappy with this.  Rewrite later.
 {
     CDEBUG("processentity");
-    CEntity*	e;											// points to the entity in question. (to reduce indirection)
-    CCharacter*	c;											// points to the spriteset
-    Direction	d;											// holds the direction that the entity would like to go (face_nothing if it wants to stay put)
-    Direction	olddir;										// the direction the entity was moving in before	
-    int newx,newy;											// the position that the entity wants to be at
+    CEntity*    e;										// points to the entity in question. (to reduce indirection)
+    CSprite*    s;										// points to the spriteset
+    Direction   d;										// holds the direction that the entity would like to go (face_nothing if it wants to stay put)
+    Direction   olddir;										// the direction the entity was moving in before	
+    int newx,newy;										// the position that the entity wants to be at
     
     e=&entities[entidx];									// set up our temp pointers
-    c=&characters[e->hSprite];
+    s=e->pSprite;
     
     olddir=e->facing;
     
@@ -613,29 +616,29 @@ void CEngine::ProcessEntity(int entidx)
     // entity is moving. (instead of checking the entire bounding box, which would be simpler, but gay)
     switch(d)
     {
-    case face_up:		if (!DetectMapCollision(e,newx,newy-1,characters[e->hSprite].hotw,0))								newy--;	break;
-    case face_down:		if (!DetectMapCollision(e,newx,newy+characters[e->hSprite].hoth,characters[e->hSprite].hotw,0))		newy++;	break;
-    case face_left:		if (!DetectMapCollision(e,newx-1,newy,0,characters[e->hSprite].hoth))								newx--;	break;
-    case face_right:	if (!DetectMapCollision(e,newx+characters[e->hSprite].hotw,newy,0,characters[e->hSprite].hoth))		newx++;	break;
+    case face_up:           if (!DetectMapCollision(e,newx,newy-1,s->nHotw,0))          newy--; break;
+    case face_down:         if (!DetectMapCollision(e,newx,newy+s->nHoth,s->nHoth,0))   newy++; break;
+    case face_left:         if (!DetectMapCollision(e,newx-1,newy,0,s->nHoth))          newx--; break;
+    case face_right:	    if (!DetectMapCollision(e,newx+s->nHotw,newy,0,s->nHoth))   newx++; break;
 	
     case face_upleft:
-	if (!DetectMapCollision(e,newx,newy-1,characters[e->hSprite].hotw,0))								newy--;
-	if (!DetectMapCollision(e,newx-1,newy,0,characters[e->hSprite].hoth))								newx--;	break;
+	if (!DetectMapCollision(e,newx,newy-1,s->nHotw,0))                      newy--;
+	if (!DetectMapCollision(e,newx-1,newy,0,s->nHoth))                      newx--; break;
     case face_upright:
-	if (!DetectMapCollision(e,newx,newy-1,characters[e->hSprite].hotw,0))								newy--;
-	if (!DetectMapCollision(e,newx+characters[e->hSprite].hotw,newy,0,characters[e->hSprite].hoth))		newx++;	break;
+	if (!DetectMapCollision(e,newx,newy-1,s->nHotw,0))                      newy--;
+	if (!DetectMapCollision(e,newx+s->nHotw,newy,0,s->nHoth))               newx++; break;
     case face_downleft:
-	if (!DetectMapCollision(e,newx,newy+characters[e->hSprite].hoth,characters[e->hSprite].hotw,0))		newy++;
-	if (!DetectMapCollision(e,newx-1,newy,0,characters[e->hSprite].hoth))								newx--;	break;
+	if (!DetectMapCollision(e,newx,newy+s->nHoth,s->nHotw,0))               newy++;
+	if (!DetectMapCollision(e,newx-1,newy,0,s->nHoth))                      newx--; break;
     case face_downright:
-	if (!DetectMapCollision(e,newx,newy+characters[e->hSprite].hoth,characters[e->hSprite].hotw,0))		newy++;
-	if (!DetectMapCollision(e,newx+characters[e->hSprite].hotw,newy,0,characters[e->hSprite].hoth))		newx++;	break;
+	if (!DetectMapCollision(e,newx,newy+s->nHoth,s->nHotw,0))               newy++;
+	if (!DetectMapCollision(e,newx+s->nHotw,newy,0,s->nHoth))               newx++; break;
 	
     case face_nothing:
 	if (e->bMoving)
 	{
 	    e->bMoving=false;
-	    e->SetAnimScript(c->sScript[e->facing+8],e->facing+8);
+	    e->SetAnimScript(s->Script(e->facing+8),e->facing+8);
 	}
 	return;
     default:
@@ -643,20 +646,20 @@ void CEngine::ProcessEntity(int entidx)
 	return;
     }
     
-    if ((e->bEntobs && DetectEntityCollision(newx,newy,characters[e->hSprite].hotw,characters[e->hSprite].hoth,entidx)!=-1) ||
-	(newx==e->x && newy==e->y))			// Is there something in the way?
+    if ((e->bEntobs && DetectEntityCollision(newx,newy,s->nHotw,s->nHoth,entidx)!=-1) ||
+	(newx==e->x && newy==e->y))                     // Is there something in the way?
     {
 	e->facing=d;
-	e->SetAnimScript(c->sScript[d+8],d+8);	// move scripts are from 8-15 (that's what the +8 is)
+	e->SetAnimScript(s->Script(d+8),d+8);          // move scripts are from 8-15 (that's what the +8 is)
 	e->bMoving=false;
 	return;
     }
     
     // finally!  Actually move and animate!!
-    if (!e->bMoving || d!=olddir)			// do we need to change the animation strand?
+    if (!e->bMoving || d!=olddir)                       // do we need to change the animation strand?
     {
 	e->bMoving=true;
-	e->SetAnimScript(c->sScript[d],d);			// yes, do so
+	e->SetAnimScript(s->Script(d),d);              // yes, do so
     }
     e->facing=d;
     e->x=newx;
@@ -779,6 +782,8 @@ void CEngine::TestActivate()
 // 2) the player steps on a zone
 // 1) the player talks to an entity
 // 3) the player activates a zone whose aaa (has nothing to do with AA) property is set.
+
+// This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
 {
     CDEBUG("testactivate");
     static int	nOldtx=-1;
@@ -786,10 +791,10 @@ void CEngine::TestActivate()
     static int	nOldzone=-1;
     SMapZone zone;
     CEntity& e=entities[player];
-    CCharacter& s=characters[e.hSprite];
+    CSprite& s=*e.pSprite;
     
-    int tx=(e.x+s.hotw/2)/tiles.Width();
-    int ty=(e.y+s.hoth/2)/tiles.Height();
+    int tx=(e.x+s.nHotw/2)/tiles.Width();
+    int ty=(e.y+s.nHoth/2)/tiles.Height();
     
     int n=map.GetZone(tx,ty);
     // stepping on a zone?
@@ -816,18 +821,18 @@ void CEngine::TestActivate()
     // entity activation
     switch(entities[player].facing)
     {
-    case face_up:		ty-=s.hoth;	break;
-    case face_down:		ty+=s.hoth;	break;
-    case face_left:		tx-=s.hotw;	break;
-    case face_right:	tx+=s.hotw;	break;
+    case face_up:		ty-=s.nHoth;	break;
+    case face_down:		ty+=s.nHoth;	break;
+    case face_left:		tx-=s.nHotw;	break;
+    case face_right:	tx+=s.nHotw;	break;
 	
-    case face_upleft:	tx-=s.hotw;	ty-=s.hoth;	break;
-    case face_upright:	tx+=s.hotw;	ty-=s.hoth;	break;
-    case face_downleft:	tx-=s.hotw;	ty+=s.hoth;	break;
-    case face_downright:tx+=s.hotw;	ty+=s.hoth;	break;
+    case face_upleft:	tx-=s.nHotw;	ty-=s.nHoth;	break;
+    case face_upright:	tx+=s.nHotw;	ty-=s.nHoth;	break;
+    case face_downleft:	tx-=s.nHotw;	ty+=s.nHoth;	break;
+    case face_downright:tx+=s.nHotw;	ty+=s.nHoth;	break;
     }
     
-    int i=EntityAt(tx,ty,s.hotw,s.hoth);
+    int i=EntityAt(tx,ty,s.nHotw,s.nHoth);
     if (i>=0)
     {
 	CEntity* e=&entities[i];
@@ -887,8 +892,8 @@ Golly, my first exception handling thingie. *sniffle*  They grow up so fast!
 	    strcpy(temp,ent.sCHRname.c_str());
 	    extension=temp+strlen(temp)-3;								// get the extension
 	    	    
-	    entities[nEnt].hSprite=characters.Load(temp);						// wee
-	    if (entities[nEnt].hSprite==-1)								// didn't load?
+	    entities[nEnt].pSprite=sprite.Load(temp);						        // wee
+	    if (entities[nEnt].pSprite==0)								// didn't load?
 		Sys_Error(va("Unable to load CHR file %s",temp));					// wah
 	    
 	    script.AddEntityToList(nEnt);

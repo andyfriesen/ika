@@ -343,9 +343,9 @@ int Engine::WMEProc(UINT msg,WPARAM wParam,LPARAM lParam)
 		
 	    case WMU_SETLTILE:	pMapview->nLefttile=wParam;		break;
 	    case WMU_SETRTILE:	pMapview->nRighttile=wParam;	break;
-	    case WMU_REBUILDVSP:
-		pMapview->UpdateVSP(wParam);
-		break;
+//	    case WMU_REBUILDVSP:
+//		pMapview->UpdateVSP(wParam);
+//		break;
 		
 	    default:
 		return DefWindowProc(hWnd,msg,wParam,lParam);
@@ -532,7 +532,7 @@ bool Engine::LoadMap()
     SetWindowText(hWnd,va("%s - [%s]",wintitle,filename));
     tilesel.Close();
     pMapview->SetActiveLayer(0);
-    pMapview->UpdateVSP();
+//    pMapview->UpdateVSP();
     pMapview->Redraw();
     return true;
 }
@@ -559,7 +559,7 @@ bool Engine::LoadVSP()
 	int result=vsp.Load(filename);
 	
 	pMapview->SetActiveLayer(0);
-	pMapview->UpdateVSP();
+//	pMapview->UpdateVSP();
 	pMapview->Redraw();
 	pMapview->ScrollWin(pMapview->xwin,pMapview->ywin);
 	
@@ -580,9 +580,9 @@ bool Engine::SaveMap()
 	return SaveMapAs();								// no filename chosen?  Well!  Choose one now!
     
     map.Save(sLastopenedmap.c_str());
-    if (config.bSavev2vsps && vsp.TileX()==16 && vsp.TileY()==16)			// if we can, and the user wishes to...
-	vsp.SaveOld(map.GetVSPName().c_str());						// save a v2-style VSP instead of an ika VSP.
-    else
+//    if (config.bSavev2vsps && vsp.Width()==16 && vsp.Width()==16)			// if we can, and the user wishes to...
+//	vsp.SaveOld(map.GetVSPName().c_str());						// save a v2-style VSP instead of an ika VSP.
+  //  else
 	vsp.Save(map.GetVSPName().c_str());
     return true;
 }

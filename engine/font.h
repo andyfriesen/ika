@@ -2,7 +2,7 @@
 #define FONT_H
 
 #include <vector>
-#include "graphlib.h"
+#include "tileset.h"
 
 class File;
 

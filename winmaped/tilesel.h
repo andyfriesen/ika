@@ -20,7 +20,6 @@ private:
 
 	CGraphView* pGraph;				// graphics handler for the window
 	VSP* pVsp;						// pointer to the VSP we're working on.
-	std::vector<CPixelMatrix>	tileimages;	// images that look a lot like the tileset itself
 	
 	int nYoffset;					// y position of the window (within the VSP list)
 	int nZoomfactor;				// how much is this zoomed?
@@ -28,8 +27,6 @@ private:
 	BOOL MainProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
 	
 	static BOOL CALLBACK WndProc(HWND hWnd, UINT msg, WPARAM wParam, LPARAM lParam);
-
-	void UpdateVSP(int tileidx=-1);	// updates the tileimages vector (or a specific tile, if one is specified)
 
 	int  TileUnderCursor(int x,int y);
 	void ScrollRel(int newoffset); 

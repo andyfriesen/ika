@@ -38,12 +38,6 @@ int CImportVSPDlg::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 	    bPad=IsDlgButtonChecked(hWnd,IDC_PIXELPADDING)==BST_CHECKED;
 	    bAppend=IsDlgButtonChecked(hWnd,IDC_APPEND)==BST_CHECKED;
 	    
-	    if (pVsp->ColourDepth()!=4)
-	    {
-		MessageBox(hWnd,"tSB is an idjit and can't code the importer to work with\n8 bit images yet.","Off with his head!",0);
-		EndDialog(hWnd,IDOK);
-		return 0;
-	    }
 	    if (!File::Exists(sFilename))
 	    {
 		MessageBox(hWnd,"The file you specified could not be found.","gah",0);
@@ -86,15 +80,15 @@ int CImportVSPDlg::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 void CImportVSPDlg::ImportImage(int tilex,int tiley,bool pad,bool append,const char* fname)
 {
     int nCurtile=0;
-    int bpp=pVsp->ColourDepth();
+    const int bpp=4;
     
     CPixelMatrix bigimage;
     bigimage.LoadFromPNG(fname);
     
     if (append)
     {
-	tilex=pVsp->TileX();
-	tiley=pVsp->TileY();
+	tilex=pVsp->Width();
+	tiley=pVsp->Height();
 	nCurtile=pVsp->NumTiles();
     }
     else
@@ -117,7 +111,8 @@ void CImportVSPDlg::ImportImage(int tilex,int tiley,bool pad,bool append,const c
 	{
 	    // nasty hack to make it work like I want it to.
 	    bigimage.Blit(lilimage, (pad?-1:0) - (x*tx) , (pad?-1:0) - (y*ty) );
-	    memcpy(pVsp->GetPixelData(nCurtile-1),lilimage.GetPixelData(),tilex*tiley*bpp);
+	    pVsp->GetTile(nCurtile)=lilimage;
+//            memcpy(pVsp->GetPixelData(nCurtile-1),lilimage.GetPixelData(),tilex*tiley*bpp);
 	    nCurtile++;
 	}
     }
