@@ -7,6 +7,7 @@ BEGIN_EVENT_TABLE(CTileSetView,IDocView)
     EVT_SIZE(CTileSetView::OnSize)
     EVT_PAINT(CTileSetView::OnPaint)
     EVT_CLOSE(CTileSetView::OnClose)
+    EVT_ERASE_BACKGROUND(CTileSetView::OnEraseBackground)
 
     EVT_LEFT_DOWN(CTileSetView::OnLeftClick)
     EVT_RIGHT_DOWN(CTileSetView::OnRightClick)

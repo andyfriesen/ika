@@ -67,7 +67,7 @@ namespace
 
         void ScrollPageUp(wxScrollWinEvent& event)      {   ScrollRel(event,-GetScrollThumb(event.GetOrientation()));   }
         void ScrollPageDown(wxScrollWinEvent& event)    {   ScrollRel(event,+GetScrollThumb(event.GetOrientation()));   }
-
+    
         void OnScroll(wxScrollWinEvent& event)
         {
             ((CMapView*)GetParent())->OnScroll(event);
@@ -94,6 +94,8 @@ namespace
         EVT_SCROLLWIN_THUMBTRACK(CMapSash::OnScroll)
         EVT_SCROLLWIN_THUMBRELEASE(CMapSash::OnScroll)
     END_EVENT_TABLE()
+
+    const int nZoomscale=16;
 };
 
 //-------------------------------------------------------------------------------------
@@ -109,10 +111,11 @@ BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
 END_EVENT_TABLE()
 
 CMapView::CMapView(CMainWnd* parent,const string& name)
-:   IDocView(parent,name)
-{
-    pParentwnd=parent;
+:   IDocView(parent,name),
 
+    pParentwnd(parent),
+    nZoom(32)
+{
     int w,h;
     GetClientSize(&w,&h);
 
@@ -133,10 +136,8 @@ CMapView::CMapView(CMainWnd* parent,const string& name)
 
     // Get resources
     pMap=pParentwnd->map.Load(name);                                    // load the map
-    
-    // get the absolute path to the map, and add it to the tileset filename
-    string sTilesetname = Path::Directory(name) + pMap->GetVSPName();
-    
+        
+    string sTilesetname = Path::Directory(name) + pMap->GetVSPName();   // get the absolute path to the map, and add it to the tileset filename
     pTileset=pParentwnd->vsp.Load(sTilesetname);                        // load the VSP
 
     pRightbar->SetScrollbar(wxVERTICAL,0,w,pMap->Height()*pTileset->Height());
@@ -187,7 +188,6 @@ void CMapView::OnPaint()
 
     Render();
 
-    glFlush();
     pGraph->ShowPage();
 }
 
@@ -198,9 +198,10 @@ void CMapView::OnSize(wxSizeEvent& event)
 
     // FIXME: w is coming out too big; you can scroll right past the end of the map.
     int w,h;
-    pRightbar->GetClientSize(&w,&h);
+    pGraph->GetClientSize(&w,&h);
 
-    pRightbar->SetScrollbar(wxHORIZONTAL,ywin,h,pMap->Width()*pTileset->Width());  
+    pRightbar->SetScrollbar(wxHORIZONTAL,xwin,w, ( pMap->Width()*pTileset->Width() ) * nZoom/nZoomscale );
+    pRightbar->SetScrollbar(wxVERTICAL,ywin,h, ( pMap->Height()*pTileset->Height() ) * nZoom/nZoomscale );
 }
 
 void CMapView::OnScroll(wxScrollWinEvent& event)
@@ -231,6 +232,9 @@ void CMapView::ScreenToMap(int& x,int& y)
 {
     SMapLayerInfo l;
     pMap->GetLayerInfo(l,nCurlayer);
+
+    x=x*nZoomscale/nZoom;
+    y=y*nZoomscale/nZoom;
 
     x+=(xwin*l.pmulx/l.pdivx);
     y+=(ywin*l.pmuly/l.pdivy);
@@ -327,14 +331,17 @@ void CMapView::RenderLayer(int lay)
 
     pGraph->GetClientSize(&nWidth,&nHeight);
 
+    nWidth=nWidth*nZoomscale/nZoom;
+    nHeight=nHeight*nZoomscale/nZoom;
+
     SMapLayerInfo l;
     pMap->GetLayerInfo(l,lay);
 
     const int xw=xwin*l.pmulx/l.pdivx;
     const int yw=ywin*l.pmuly/l.pdivy;
 
-    const int tx=pTileset->Width();
-    const int ty=pTileset->Height();
+    int tx=pTileset->Width();//*nZoom/nZoomscale;
+    int ty=pTileset->Height();//*nZoom/nZoomscale;
 
     const int nFirstx=xw/tx;
     const int nFirsty=yw/ty;
@@ -342,8 +349,11 @@ void CMapView::RenderLayer(int lay)
     const int nLenx=nWidth/tx+2;
     const int nLeny=nHeight/ty+2;
 
-    const int nAdjx=xw%tx;
-    const int nAdjy=yw%ty;
+    const int nAdjx=(xw%tx)*nZoom/nZoomscale;
+    const int nAdjy=(yw%ty)*nZoom/nZoomscale;
+
+    tx=tx*nZoom/nZoomscale;
+    ty=ty*nZoom/nZoomscale;
 
     for (int y=0; y<nLeny; y++)
     {
@@ -352,7 +362,12 @@ void CMapView::RenderLayer(int lay)
             int t=pMap->GetTile(x+nFirstx, y+nFirsty, lay);
             
             if (lay==0 || t!=0)
-                pTileset->DrawTile(x*tx-nAdjx, y*ty-nAdjy, t, *pGraph);
+                pGraph->ScaleBlit(
+                    pTileset->GetImage(t),
+                    x*tx-nAdjx, y*ty-nAdjy,
+                    tx,ty,
+                    true);
+                //pTileset->DrawTile(x*tx-nAdjx, y*ty-nAdjy, t, *pGraph);
         }
     }
 }

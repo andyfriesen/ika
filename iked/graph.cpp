@@ -105,20 +105,21 @@ void CGraphFrame::RectFill(int x,int y,int w,int h,RGBA colour)
 
 void CGraphFrame::Blit(CImage& src,int x,int y,bool trans)
 {
+    ScaleBlit(src,x,y,src.nWidth,src.nHeight,trans);
+}
+
+void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
+{
     glBindTexture(GL_TEXTURE_2D,src.hTex);
 
     glBegin(GL_QUADS);
 
     glTexCoord2f(0,0);      glVertex2i(x,y);
-    glTexCoord2f(1,0);      glVertex2i(x+src.nWidth,y);
-    glTexCoord2f(1,1);      glVertex2i(x+src.nWidth,y+src.nHeight);
-    glTexCoord2f(0,1);      glVertex2i(x,y+src.nHeight);
+    glTexCoord2f(1,0);      glVertex2i(x+w,y);
+    glTexCoord2f(1,1);      glVertex2i(x+w,y+h);
+    glTexCoord2f(0,1);      glVertex2i(x,y+h);
 
     glEnd();
-}
-
-void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
-{
 }
 
 void CGraphFrame::Clear()

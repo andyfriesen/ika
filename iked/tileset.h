@@ -50,6 +50,8 @@ public:
 
     void DrawTile(int x,int y,int tileidx,CGraphFrame& dest);   // draws the tile on the frame, updating the copy as needed
 
+    CImage& GetImage(int tileidx) const;
+
     // Don't use this unless you're doing something that has nothing to do with the tile images.
     // Use the CTileSet interface instead, as it will keep things synch'd.
     VSP& GetVSP() { return *pVsp; }

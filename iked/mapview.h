@@ -64,6 +64,8 @@ class CMapView : public IDocView
     Map*                pMap;
     CTileSet*           pTileset;
 
+    int  nZoom;                                                 // in 16ths (ie 16 is 1:1, while a value of 1 means 1:16)
+
 public:
     CMapView(CMainWnd* parent,const string& fname);
 
@@ -94,7 +96,7 @@ public:
 private:
     int xwin,ywin;
     int nCurlayer;
-    // old mouse coords
+    // old mouse coords.  To prevent redundant processing.
     int oldx,oldy;
     CursorMode          csrmode;
     std::map<int,int> nLayertoggle;

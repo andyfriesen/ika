@@ -9,6 +9,7 @@
 
 VSP::VSP() : nTilex(0), nTiley(0)
 {
+    vspanim.resize(100);
     New();
 }
 
@@ -177,8 +178,6 @@ bool VSP::Load(const char *fname)
         return false;
     }
     
-    vspanim.clear();
-    vspanim.resize(100);    // ugh
     for (int j=0; j<100; j++)
     {
         f.Read(&vspanim[j].nStart,2);
@@ -263,15 +262,15 @@ void VSP::Free()
     tiles.clear();
 }
 
-void VSP::New(int xsize,int ysize)	// creates a blank 100 tile, 32 bit VSP, of the specified size
+void VSP::New(int xsize,int ysize,int numtiles)     // creates a blank 32 bit VSP, of the specified size and number of tiles
 {
     Free();
     nTilex=xsize>0?xsize:1;
     nTiley=ysize>0?ysize:1;
     
-    tiles.resize(100);
+    tiles.resize(numtiles);
     
-    for (int i=0; i<100; i++)
+    for (int i=0; i<numtiles; i++)
         tiles[i].Resize(nTilex,nTiley);
 }
 

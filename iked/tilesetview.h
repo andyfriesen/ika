@@ -31,6 +31,8 @@ public:
     void OnLeftClick(wxMouseEvent& event);
     void OnRightClick(wxMouseEvent& event);
 
+    void OnEraseBackground(wxEraseEvent&) {}
+
     DECLARE_EVENT_TABLE()
 
     //-----------------------------------

@@ -66,7 +66,7 @@ public:
     bool Load(const char* fname);
     int  Save(const char* fname);
     void Free();
-    void New(int xsize=16,int ysize=16);
+    void New(int xsize=16,int ysize=16,int numtiles=100);
     
     void InsertTile(int pos);
     void DeleteTile(int pos);

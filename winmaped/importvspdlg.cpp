@@ -103,10 +103,7 @@ void CImportVSPDlg::ImportImage(int tilex,int tiley,bool pad,bool append,const c
     }
     else
     {
-	pVsp->New(tilex,tiley);
-
-        if (nTiles>100)
-            pVsp->AppendTiles(nTiles-100);
+	pVsp->New(tilex,tiley,nTiles);
     }
     
     

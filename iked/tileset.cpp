@@ -78,6 +78,14 @@ void CTileSet::DrawTile(int x,int y,int tileidx,CGraphFrame& dest)
     dest.Blit(*bitmaps[tileidx].pImg,x,y,true);
 }
 
+CImage& CTileSet::GetImage(int tileidx) const
+{
+    if (tileidx<0 || tileidx>=bitmaps.size())
+        return *bitmaps[0].pImg;
+
+    return *bitmaps[tileidx].pImg;
+}
+
 int CTileSet::NumTiles() const
 {
     return pVsp?pVsp->NumTiles() : 0;
