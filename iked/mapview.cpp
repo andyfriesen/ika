@@ -2,6 +2,7 @@
 #include "main.h"
 #include "graph.h"
 #include "tileset.h"
+#include "log.h"
 #include <gl\glu.h>
 
 #include <wx\laywin.h>
@@ -18,6 +19,37 @@
     CGraphFrame         Layer visibility stuff, not finalized
 
 */
+
+// itty bitty sashlayoutwin class derivative, that passes size events down
+namespace
+{
+    class CMapSash : public wxSashLayoutWindow
+    {
+    public:
+        CMapSash(wxWindow* parent, int id)
+            : wxSashLayoutWindow(parent,id)
+        {}
+
+        void OnScroll(wxScrollWinEvent& event)
+        {
+            ((CMapView*)GetParent())->OnScroll(event);
+        }
+
+        DECLARE_EVENT_TABLE()
+    };
+
+    BEGIN_EVENT_TABLE(CMapSash,wxSashLayoutWindow)
+        EVT_SCROLLWIN(CMapSash::OnScroll)
+        EVT_SCROLLWIN_TOP(CMapSash::OnScroll)
+        EVT_SCROLLWIN_BOTTOM(CMapSash::OnScroll)
+        EVT_SCROLLWIN_LINEUP(CMapSash::OnScroll)
+        EVT_SCROLLWIN_LINEDOWN(CMapSash::OnScroll)
+        EVT_SCROLLWIN_PAGEUP(CMapSash::OnScroll)
+        EVT_SCROLLWIN_PAGEDOWN(CMapSash::OnScroll)
+        EVT_SCROLLWIN_THUMBTRACK(CMapSash::OnScroll)
+        EVT_SCROLLWIN_THUMBRELEASE(CMapSash::OnScroll)
+    END_EVENT_TABLE()
+};
 
 BEGIN_EVENT_TABLE(CMapView,wxMDIChildFrame)
     EVT_PAINT(CMapView::OnPaint)
@@ -40,13 +72,10 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     pLeftbar->SetAlignment(wxLAYOUT_LEFT);
     pLeftbar->SetOrientation(wxLAYOUT_VERTICAL);
     pLeftbar->SetDefaultSize(wxSize(100,100));
-    pLeftbar->SetSashVisible(wxSASH_RIGHT,true);
+    //pLeftbar->SetSashVisible(wxSASH_RIGHT,true);
 
-    pRightbar=new wxSashLayoutWindow(this,-1);
+    pRightbar=new CMapSash(this,-1);//wxSashLayoutWindow(this,-1);
     pRightbar->SetAlignment(wxLAYOUT_RIGHT);
-
-    pRightbar->SetScrollbar(wxVERTICAL,0,10,10000);
-    pRightbar->SetScrollbar(wxHORIZONTAL,0,10,10000);
 
     pGraph=new CGraphFrame(pRightbar);
     Show();
@@ -54,6 +83,9 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
     // Get resources
     pMap=pParentwnd->map.Load(fname);
     pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());
+
+    pRightbar->SetScrollbar(wxVERTICAL,10,10,pMap->Height()*pTileset->Height());
+    pRightbar->SetScrollbar(wxHORIZONTAL,10,10,pMap->Width()*pTileset->Width());
 }
 
 void CMapView::OnPaint()
@@ -75,8 +107,8 @@ void CMapView::OnSize(wxSizeEvent& event)
 {
     wxLayoutAlgorithm layout;
     layout.LayoutWindow(this,pRightbar);
+    
     int w,h;
-//    pScrollwin->GetClientSize(&w,&h);
     pRightbar->GetClientSize(&w,&h);
     pGraph->SetSize(w,h);
 }
@@ -88,6 +120,12 @@ void CMapView::OnScroll(wxScrollWinEvent& event)
     case wxHORIZONTAL:  xwin=event.GetPosition();   break;
     case wxVERTICAL:    ywin=event.GetPosition();   break;
     }
+
+    pRightbar->SetScrollPos(wxHORIZONTAL,xwin);
+    pRightbar->SetScrollPos(wxVERTICAL,ywin);
+
+    RenderLayer(0);
+    pGraph->ShowPage();
 }
 
 void CMapView::OnClose()
@@ -123,7 +161,7 @@ void CMapView::RenderLayer(int lay)
         {
             int t=pMap->GetTile(x+nFirstx, y+nFirsty, lay);
 
-            pTileset->DrawTile(x*tx+nAdjx, y*ty+nAdjy, t, *pGraph);
+            pTileset->DrawTile(x*tx-nAdjx, y*ty-nAdjy, t, *pGraph);
         }
     }
 }
