@@ -3,6 +3,7 @@ using System;
 using System.Windows.Forms;
 
 using Import.ika;
+using MapView=rho.MapEditor.MapView;
 
 namespace rho
 {

@@ -121,11 +121,6 @@
                     BuildAction = "EmbeddedResource"
                 />
                 <File
-                    RelPath = "MapView.cs"
-                    SubType = "Form"
-                    BuildAction = "Compile"
-                />
-                <File
                     RelPath = "ResourceController.cs"
                     SubType = "Code"
                     BuildAction = "Compile"
@@ -149,6 +144,21 @@
                     RelPath = "Controls\ScrollWindow.resx"
                     DependentUpon = "ScrollWindow.cs"
                     BuildAction = "EmbeddedResource"
+                />
+                <File
+                    RelPath = "MapEditor\IState.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MapEditor\MapView.cs"
+                    SubType = "Form"
+                    BuildAction = "Compile"
+                />
+                <File
+                    RelPath = "MapEditor\TileSetState.cs"
+                    SubType = "Code"
+                    BuildAction = "Compile"
                 />
             </Include>
         </Files>

@@ -7,7 +7,7 @@ using Import.ika;
 
 using rho.Controls;
 
-namespace rho
+namespace rho.MapEditor
 {
 
     class MapView : Form
@@ -202,7 +202,7 @@ namespace rho
             base.OnClosed(e);
         }
 
-        int XWin
+        public int XWin
         {
             get {   return xwin;    }
             set
@@ -214,7 +214,7 @@ namespace rho
             }
         }
 
-        int YWin
+        public int YWin
         {
             get {   return ywin;    }
             set
@@ -223,6 +223,32 @@ namespace rho
                 if (ywin<0) ywin=0;
                 if (ywin>map.Width*tiles.Width-graphview.ClientSize.Width)
                     ywin=map.Width*tiles.Width-graphview.ClientSize.Width;        }
+        }
+
+        public Map Map
+        {
+            get {   return map; }
+        }
+
+        public void GetTileCoords(ref int x,ref int y,int layer)
+        {
+            // Possible performance issue: we create a new LayerInstance info every time we call this.
+            // Deal with it later.
+            LayerInfo li=map.get_LayerInfo(layer);
+            x-=(XWin*li.pmulx/li.pdivx);
+            y-=(YWin*li.pmuly/li.pdivy);
+
+            x/=tiles.Width;
+            y/=tiles.Height;
+        }
+
+        public void GetTileCoords(ref int x,ref int y)
+        {
+            x-=XWin;
+            y-=YWin;
+
+            x/=tiles.Width;
+            y/=tiles.Height;
         }
     }
 
