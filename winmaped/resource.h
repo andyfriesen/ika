@@ -92,6 +92,7 @@
 #define IDC_EDFRAMESPERROW              1087
 #define IDC_PAD                         1089
 #define IDC_LIST1                       1091
+#define IDC_LIST2                       1092
 #define ID_FILE_NEWMAP                  40001
 #define ID_FILE_OPENMAP                 40002
 #define ID_FILE_SAVEMAP                 40003
@@ -249,7 +250,7 @@
 #define _APS_NO_MFC                     1
 #define _APS_NEXT_RESOURCE_VALUE        126
 #define _APS_NEXT_COMMAND_VALUE         40071
-#define _APS_NEXT_CONTROL_VALUE         1092
+#define _APS_NEXT_CONTROL_VALUE         1093
 #define _APS_NEXT_SYMED_VALUE           101
 #endif
 #endif
