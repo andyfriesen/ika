@@ -7,21 +7,21 @@
 CFG=iked - Win32 Debug wx232
 !MESSAGE This is not a valid makefile. To build this project using NMAKE,
 !MESSAGE use the Export Makefile command and run
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "iked.mak".
-!MESSAGE 
+!MESSAGE
 !MESSAGE You can specify a configuration when running NMAKE
 !MESSAGE by defining the macro CFG on the command line. For example:
-!MESSAGE 
+!MESSAGE
 !MESSAGE NMAKE /f "iked.mak" CFG="iked - Win32 Debug wx232"
-!MESSAGE 
+!MESSAGE
 !MESSAGE Possible choices for configuration are:
-!MESSAGE 
+!MESSAGE
 !MESSAGE "iked - Win32 Release" (based on "Win32 (x86) Application")
 !MESSAGE "iked - Win32 Debug" (based on "Win32 (x86) Application")
 !MESSAGE "iked - Win32 Debug wx232" (based on "Win32 (x86) Application")
 !MESSAGE "iked - Win32 Release wx232" (based on "Win32 (x86) Application")
-!MESSAGE 
+!MESSAGE
 
 # Begin Project
 # PROP AllowPerConfigDependencies 0
@@ -76,17 +76,18 @@ LINK32=link.exe
 # PROP Target_Dir ""
 # ADD BASE CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "\ika\common" /I "\ika\3rdparty" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D DEBUG=1 /D "__WXDEBUG__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /FD /c
 # SUBTRACT BASE CPP /YX /Yc /Yu
-# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "C:\src\ika\common" /I "C:\src\ika\3rdparty" /D "WIN32" /D "_DEBUG" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D DEBUG=1 /D "__WXDEBUG__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /D "MSVC" /FD /c
-# SUBTRACT CPP /YX /Yc /Yu
+# ADD CPP /nologo /MDd /W3 /Gm /GX /ZI /Od /I "..\common" /I "..\3rdparty" /I "$(WXWIN)\include" /I "$(WXWIN)\contrib\include" /D "_DEBUG" /D DEBUG=1 /D "__WXDEBUG__" /D "MSVC" /D "WIN32" /D "_WINDOWS" /D "__WINDOWS__" /D "__WXMSW__" /D "__WIN95__" /D "__WIN32__" /D WINVER=0x0400 /D "STRICT" /FD /c
+# SUBTRACT CPP /Fr /YX /Yc /Yu
+# ADD BASE MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD MTL /nologo /D "_DEBUG" /mktyplib203 /o "NUL" /win32
 # ADD BASE RSC /l 0x809 /d "_DEBUG"
-# ADD RSC /l 0x809 /i "C:\wx2\include\msw\wx.rc" /i "C:\wx232\include\msw" /d "_DEBUG"
+# ADD RSC /l 0x809 /i "\wx2\include\msw\wx.rc" /d "_DEBUG"
 BSC32=bscmake.exe
 # ADD BASE BSC32 /nologo
 # ADD BSC32 /nologo
 LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmswd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib stcd.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcd.lib" /nodefaultlib:"libcid.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"../../lib" /libpath:"../../contrib/lib" /libpath:"\ika\common" /libpath:"\ika\3rdparty"
-# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxd.lib xpmd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib stcd.lib opengl32.lib glu32.lib ogld.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcd.lib" /nodefaultlib:"libcid.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"..\common" /libpath:"..\3rdparty" /libpath:"C:\wx2\lib" /libpath:"C:\wx2\contrib\lib"
+# ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxd.lib xpmd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib stcd.lib opengl32.lib glu32.lib /nologo /subsystem:windows /debug /machine:I386 /nodefaultlib:"libcd.lib" /nodefaultlib:"libcid.lib" /nodefaultlib:"msvcrt.lib" /pdbtype:sept /libpath:"..\common" /libpath:"..\3rdparty" /libpath:"$(WXWIN)\lib" /libpath:"$(WXWIN)\contrib\lib"
 
 !ELSEIF  "$(CFG)" == "iked - Win32 Debug wx232"
 
@@ -146,7 +147,7 @@ LINK32=link.exe
 # ADD BASE LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"../common" /libpath:"../3rdparty"
 # ADD LINK32 kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib stc.lib opengl32.lib glu32.lib /nologo /subsystem:windows /machine:I386 /nodefaultlib:"libc.lib" /nodefaultlib:"libci.lib" /nodefaultlib:"msvcrtd.lib" /libpath:"..\common" /libpath:"..\3rdparty" /libpath:"\wx232\lib" /libpath:"\wx232\contrib\lib"
 
-!ENDIF 
+!ENDIF
 
 # Begin Target
 
@@ -168,10 +169,6 @@ SOURCE=.\configdlg.cpp
 # Begin Source File
 
 SOURCE=.\docview.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\fontview.cpp
 # End Source File
 # Begin Source File
 
@@ -223,10 +220,6 @@ SOURCE=.\docview.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\fontview.h
-# End Source File
-# Begin Source File
-
 SOURCE=.\graph.h
 # End Source File
 # Begin Source File
@@ -272,14 +265,6 @@ SOURCE=..\common\fileio.cpp
 # Begin Source File
 
 SOURCE=..\common\fileio.h
-# End Source File
-# Begin Source File
-
-SOURCE=.\fontfile.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\fontfile.h
 # End Source File
 # Begin Source File
 
@@ -331,14 +316,6 @@ SOURCE=..\common\types.h
 # End Source File
 # Begin Source File
 
-SOURCE=.\vergepal.cpp
-# End Source File
-# Begin Source File
-
-SOURCE=.\vergepal.h
-# End Source File
-# Begin Source File
-
 SOURCE=..\common\vsp.cpp
 # End Source File
 # Begin Source File
@@ -371,6 +348,7 @@ SOURCE=.\iked.rc
 
 # ADD BASE RSC /l 0x1009
 # ADD RSC /l 0x1009
+# SUBTRACT RSC /i "\wx2\include\msw\wx.rc"
 
 !ELSEIF  "$(CFG)" == "iked - Win32 Debug wx232"
 
@@ -381,7 +359,7 @@ SOURCE=.\iked.rc
 
 !ELSEIF  "$(CFG)" == "iked - Win32 Release wx232"
 
-!ENDIF 
+!ENDIF
 
 # End Source File
 # Begin Source File
@@ -403,3 +381,5 @@ SOURCE=.\vsp.ico
 # End Group
 # End Target
 # End Project
+
+
