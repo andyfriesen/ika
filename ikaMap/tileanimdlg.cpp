@@ -12,8 +12,12 @@ BEGIN_EVENT_TABLE(TileAnimDlg, wxDialog)
 END_EVENT_TABLE()
 
 TileAnimDlg::TileAnimDlg(MainWindow* mainWnd)
+    : _curStrand(-1)
 {
     wxXmlResource::Get()->LoadDialog(this, mainWnd, wxT("dialog_tileanim"));
+
+    wxSizer* sizer = XRCCTRL(*this, "panel_main", wxPanel)->GetSizer();
+    sizer->Fit(this);
 
     _strandList = XRCCTRL(*this, "list_animstrands", wxListBox);
     assert(_strandList);
@@ -53,6 +57,8 @@ Command* TileAnimDlg::Execute(const std::vector<VSP::AnimState>& animData)
         }
     }
 
+    Log::Write("3");
+
     if (commands.size())
         return new CompositeCommand(commands);
     else
@@ -61,6 +67,9 @@ Command* TileAnimDlg::Execute(const std::vector<VSP::AnimState>& animData)
 
 void TileAnimDlg::UpdateData()
 {
+    if (_curStrand < 0)
+        return;
+
     VSP::AnimState strand;
     strand.start   = atoi(XRCCTRL(*this, "edit_starttile", wxTextCtrl)->GetValue().c_str());
     strand.finish  = atoi(XRCCTRL(*this, "edit_endtile", wxTextCtrl)->GetValue().c_str());

@@ -646,6 +646,9 @@ void MainWindow::OnEditTileAnim(wxCommandEvent&)
 
 void MainWindow::OnCloneLayer(wxCommandEvent&)
 {
+    if (!_map->NumLayers())
+        return;
+
     uint curLayer = _mapView->GetCurLayer();
     wxASSERT(curLayer < _map->NumLayers());
 
