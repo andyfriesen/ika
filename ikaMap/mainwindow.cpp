@@ -816,11 +816,14 @@ void MainWindow::OnNewLayer(wxCommandEvent&)
 
 void MainWindow::OnDestroyLayer(wxCommandEvent&)
 {
-    if (GetCurrentLayer() < _map->NumLayers())
-        HandleCommand(new DestroyLayerCommand(GetCurrentLayer()));
+    if (_map->NumLayers() > 1)
+    {
+        if (GetCurrentLayer() < _map->NumLayers())
+            HandleCommand(new DestroyLayerCommand(GetCurrentLayer()));
 
-    if (GetCurrentLayer() >= _map->NumLayers())
-        SetCurrentLayer(_map->NumLayers() - 1);
+        if (GetCurrentLayer() >= _map->NumLayers())
+            SetCurrentLayer(_map->NumLayers() - 1);
+    }
 }
 
 void MainWindow::OnMoveLayerUp(wxCommandEvent&)

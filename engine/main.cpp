@@ -572,17 +572,24 @@ bool Engine::DetectMapCollision(int x, int y, int w, int h, uint layerIndex)
 // Also TODO: think up a better obstruction system
 {
     CDEBUG("detectmapcollision");
-    int tx = tiles->Width();
-    int ty = tiles->Height();
+    const int tx = tiles->Width();
+    const int ty = tiles->Height();
     Map::Layer* layer = map.GetLayer(layerIndex);
 
-    int y2 = (y + h - 1) / ty;
-    int x2 = (x + w - 1) / tx;
-    x /= tiles->Width();
-    y /= tiles->Height();
+    const int y2 = (y + h - 1) / ty;
+    const int x2 = (x + w - 1) / tx;
+    x /= tx;
+    y /= ty;
+
+    // off the layer is always obstructed
+    if (x < 0 || 
+        y < 0 || 
+        x2 >= layer->Width() ||
+        y2 >= layer->Height())
+        return true;
 
     for (int cy = y; cy <= y2; cy++)
-        for(int cx = x; cx <= x2; cx++)
+        for (int cx = x; cx <= x2; cx++)
             if (layer->obstructions(cx, cy))
                 return true;
 

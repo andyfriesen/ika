@@ -5,6 +5,7 @@
 #include <iostream>
 #include <sstream>
 #include <stdexcept>
+#include <algorithm>
 // #include <memory>
 
 int main(int c, char **args) {
@@ -83,7 +84,7 @@ int main(int c, char **args) {
     memset(stdSubset, 0, 256 * sizeof(u16));
     for(int i = 0; i < 96; i++)
         stdSubset[i + 32] = i;
-    numSubsets = numGlyphs / 96;
+    numSubsets = std::min(1, numGlyphs / 96);
     for(int j = 0; j < numSubsets; j++) {
         // subsets could be a whole lot more configurable than this.
         u16 *newSubset = new u16[256];
@@ -97,6 +98,7 @@ int main(int c, char **args) {
     f.Write("FONT27");
     f.Write(numSubsets);
     f.Write(numGlyphs);
+
     for(std::vector<u16*>::iterator s = subsets.begin(); s != subsets.end(); s++)
         f.Write(*s, 256 * sizeof(u16));
     for(int i=0; i < numGlyphs; i++) {
@@ -105,9 +107,7 @@ int main(int c, char **args) {
     }
     RGBA* pBuffer = new RGBA[glyphData.size()];
     int i = 0;
-    /*for(std::vector<RGBA>::iterator p = glyphData.begin();
-      p != glyphData.end(); p++, i++)
-        pBuffer[i] = *p;*/
+
     std::copy(glyphData.begin(), glyphData.end(),
         std::raw_storage_iterator<RGBA*, int>(pBuffer));
     f.WriteCompressed(pBuffer, glyphData.size() * sizeof(RGBA));
