@@ -96,15 +96,35 @@ void CCodeView::InitTextControl()
     pTextctrl->SetMarginType        (linecountmargin,wxSTC_MARGIN_NUMBER);
     pTextctrl->SetMarginSensitive   (linecountmargin,false);
 
-    pTextctrl->SetMarginWidth       (foldmargin,10);
+    pTextctrl->SetMarginWidth       (foldmargin,15);
     pTextctrl->SetMarginType        (foldmargin,wxSTC_MARGIN_SYMBOL);
     pTextctrl->SetMarginSensitive   (foldmargin,true);
     pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
     pTextctrl->SetModEventMask      (wxSTC_MOD_CHANGEFOLD);
 
     // fold marker thingies
-    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN, wxSTC_MARK_MINUS);
-    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDER, wxSTC_MARK_PLUS);
+    const int stylesize = 7;
+    const int styles[3][stylesize] = 
+    {
+        { wxSTC_MARK_MINUS, wxSTC_MARK_PLUS, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY },
+        { wxSTC_MARK_CIRCLEMINUS, wxSTC_MARK_CIRCLEPLUS, wxSTC_MARK_VLINE, wxSTC_MARK_LCORNERCURVE, wxSTC_MARK_CIRCLEPLUSCONNECTED, wxSTC_MARK_CIRCLEMINUSCONNECTED, wxSTC_MARK_TCORNERCURVE },
+        { wxSTC_MARK_BOXMINUS, wxSTC_MARK_BOXPLUS, wxSTC_MARK_VLINE, wxSTC_MARK_LCORNER, wxSTC_MARK_BOXPLUSCONNECTED, wxSTC_MARK_BOXMINUSCONNECTED, wxSTC_MARK_TCORNER }
+    };
+
+    const int marknum[] =
+    {
+        wxSTC_MARKNUM_FOLDEROPEN, 
+        wxSTC_MARKNUM_FOLDER, 
+        wxSTC_MARKNUM_FOLDERSUB, 
+        wxSTC_MARKNUM_FOLDERTAIL, 
+        wxSTC_MARKNUM_FOLDEREND, 
+        wxSTC_MARKNUM_FOLDEROPENMID, 
+        wxSTC_MARKNUM_FOLDERMIDTAIL 
+    };
+
+    for (int i = 0; i < 7; i++)
+        pTextctrl->MarkerDefine(marknum[i], styles[0][i]);
+   
 
     bChanged=false;
 }
