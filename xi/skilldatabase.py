@@ -67,8 +67,19 @@ class SkillDatabase(StatelessProxy):
                 elif t == 'basic':          i.basic = True
                 elif t == 'minlevel':       i.minlevel = int(f.Next())
                 elif t == 'mp':             i.mp = int(f.Next())
-                elif t == 'fieldeffect':    i.fieldeffect  = fieldeffects.__dict__[f.Next()]
-                elif t == 'battleeffect':   i.battleeffect = battleeffects.__dict__[f.Next()]
+                elif t == 'fieldeffect':
+                    try:
+                        effectName = f.Next()
+                        i.fieldeffect  = fieldeffects.__dict__[effectName]
+                    except KeyError:
+                        raise XiException('Unable to find field effect %s for skill %s' % (`effectName`, `i.name`))
+                    
+                elif t == 'battleeffect':
+                    try:
+                        effectName = f.Next()
+                        i.battleeffect = battleeffects.__dict__[effectName]
+                    except KeyError:
+                        raise XiException('Unable to find battle effect %s for skill %s' % (`effectName`, `i.name`))
 
                 elif t == 'end':
                     break

@@ -233,7 +233,7 @@ class TextLabel(Widget):
         _.height = len(_.text) * _.font.height
         
         if _.ymax != 0:
-            maxy = _.ymax * _.font.height
+            maxy = (_.ymax - 1) * _.font.height
         else:
             maxy = ika.Video.yres - _.y
 
@@ -260,15 +260,20 @@ class ColumnedTextLabel(Widget):
 
     #-------------------
     class Row(object):
+        __slots__ = [
+            'text',    # the text control that owns this row
+            'row'      # ordinal index of the row within the text control
+            ]
+        
         def __init__(_, text, row):
-            _.__text = text
-            _.__row = row
+            _.text = text
+            _.row = row
 
         def __getitem__(_, idx):
-            return _.__text.column[idx].Text[row]
+            return _.text.column[idx].Text[row]
 
         def __setitem__(_, idx, value):
-            _.__text.column[idx].Text[row] = value
+            _.text.column[idx].Text[row] = value
     #-------------------
 
     def __init__(_, x = 0, y = 0, columns = 1, font = defaultfont, columngap = 10):
@@ -282,6 +287,10 @@ class ColumnedTextLabel(Widget):
             _.columns.append(TextLabel(font))
 
     Length = property(lambda _: _.columns[0].Length)
+
+    # Fakes a 2D array.  mytextcontrol[row][column]
+    def __getitem__(_, index):
+        return Row(_, index)
 
     def LeftJustify(_):
         for c in _.columns:
@@ -334,7 +343,7 @@ class ColumnedTextLabel(Widget):
         _.AutoSize()            
 
     YPage = property(lambda _: _.columns[0].YPage, set_YPage)
-    YMax = property(lambda _: _.columns[0].maxy, set_YMax)
+    YMax = property(lambda _: _.columns[0].ymax, set_YMax)
 
 '''class ColumnedTextLabel(Widget):
     'A text label that holds one or more columns of text.  Columns stay lined up.'

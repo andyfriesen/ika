@@ -8,6 +8,7 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
+import ika
 import widget
 import menu
 import party
@@ -16,7 +17,8 @@ import item
 class StatusBar(widget.TextFrame):
     'Displays HP/MP counts for the party in a vertical status bar thing.'
 
-    __slots__ = widget.TextFrame.__slots__ # no extra data members    
+    def __init__(self):
+        widget.TextFrame.__init__(self)
 
     def Refresh(self):
         self.Clear()
@@ -145,6 +147,8 @@ class SkillWindow(menu.Menu):
                 c + s.name,
                 c + s.type.capitalize(),
                 c + str(s.mp))
+
+        self.YMax = (ika.Video.yres - self.y) / self.Font.height
         self.AutoSize()
         
         self.CursorPos = min(self.CursorPos, self.menuitems.Length - 1)
@@ -168,7 +172,10 @@ class InventoryWindow(menu.Menu):
                 col.text[i] = c + col.text[i][2:]
 
     def Refresh(self, condition = lambda i: True):
+        print self.CursorPos, self.menuitems.Length
+        p = self.CursorPos
         self.text.Clear()
+
         for i in party.inv:
             c = (condition(i.item) and '~0' or '~2')
             self.text.AddText(
@@ -177,6 +184,9 @@ class InventoryWindow(menu.Menu):
                 c + str(i.qty)
                 )
 
+
+        # Make sure it fits onscreen where it is.
+        self.YMax = (ika.Video.yres - self.y) / self.Font.height
         self.AutoSize()
 
-        self.CursorPos = min(self.CursorPos, self.menuitems.Length - 1)
+        self.CursorPos = min(p, self.menuitems.Length - 1)

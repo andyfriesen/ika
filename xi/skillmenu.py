@@ -114,7 +114,7 @@ class SkillMenu(object):
                 break
             if result is None:
                 continue
-            elif result == -1:
+            elif result == menu.Cancel:
                 break
             else:
                 skill = _.CurChar.skills[result]

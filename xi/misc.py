@@ -11,32 +11,34 @@
 # wraps the text to the given
 # returns a list of strings
 # wrapwidth is in chars
-def WrapText(s,wrapwidth):
-	result=[]										# our list of strings
+def WrapText(s, wrapwidth):
+	result = []										# our list of strings
 
-	while len(s)>0:
-		n=s[:wrapwidth].find('\n')
-		if n!=-1:									# newline?
+	while len(s) > 0:
+		n = s[:wrapwidth].find('\n')
+		if n != -1:									# newline?
 			result.append(s[:n])
-			s=s[n+1:]
+			s = s[n + 1:]
 			continue
 
-		if len(s)<wrapwidth:						# enough room for the rest of the string?
+		if len(s) < wrapwidth:						# enough room for the rest of the string?
 			result.append(s)
-			s=''
+			s = ''
 			break
 
-		n=s[:wrapwidth].rfind(' ')					# find a space, then
-		if n!=-1:
+		n = s[:wrapwidth].rfind(' ')					# find a space, then
+		if n != -1:
 			result.append(s[:n])
-			s=s[n+1:]
+			s = s[n + 1:]
 			continue
 
-		result.append(s[:wrapwidth+1])				# no suitable place to chop?
-		s=s[wrapwidth+1:]							# just hack it anywhere then
+		result.append(s[:wrapwidth + 1])				# no suitable place to chop?
+		s = s[wrapwidth + 1:]							# just hack it anywhere then
 	return result
 
 #--------------------------------------------------------------
+
+# TODO: write a word-wrapper that works with proportional fonts.
 
 def clamp(value, lower, upper):
     return max(min(value, upper), lower)

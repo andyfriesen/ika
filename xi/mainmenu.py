@@ -11,6 +11,8 @@
 import ika
 import party
 import widget
+import menu
+from fps import FPSManager
 from menu import Menu
 from statelessproxy import StatelessProxy
 
@@ -87,26 +89,29 @@ class MainMenu(StatelessProxy):
         return result
 
     def Execute(self):
-        self.Show()
-        #ika.Input.cancel.Pressed() # flush
-        
-        self.statbar.Refresh()
-        
-        done = 0
-        while not done:
+        def draw():
             ika.Map.Render()
             self.Draw()
             ika.Video.ShowPage()
             
+        self.Show()
+        #ika.Input.cancel.Pressed() # flush
+        
+        self.statbar.Refresh()
+        fps = FPSManager()
+        
+        while True:
             result = self.Update()
 
-            if result == -1:
-                done = 1
+            if result == menu.Cancel:
+                break
             
             elif result != None:
                 result = self.RunMenu(self.submenu[result])
                 if not result:
                     break
+            
+            fps.Render(draw)
 
         self.Hide()
 

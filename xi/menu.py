@@ -8,6 +8,8 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
+from __future__ import generators
+
 import ika
 import widget
 import cursor
@@ -17,6 +19,12 @@ from misc import *
 #------------------------------------------------------------------------------
 
 defaultcursor = cursor.Cursor(widget.defaultfont)
+
+# Unique object returned when a menu was cancelled.
+Cancel = object()
+# Key repeat delay
+DELAY = 50
+MOVE_DELAY = 10
 
 def SetDefaultCursor(csr):
     global defaultcursor
@@ -34,7 +42,9 @@ class Menu(widget.Frame):
         'width',        # The width of the cursor?
         'pagesize',     # The number of menu items that fit on a single page.
         'ypos',         # Current Y position of the cursor relative to the window.
-        'active'        # If true, the cursor is drawn.
+        'active',       # If true, the cursor is drawn.
+        'cursorcount',  # lil count variable for cursor repeating.
+        #'Update',       # Update coroutine
         ]
     
     def __init__(_, x = 0 , y = 0, cursor = None, textcontrol = None):
@@ -51,12 +61,14 @@ class Menu(widget.Frame):
         _.Position = (x, y)
         _.Size = _.menuitems.Size
         _.width += _.cursorwidth
-        
+        _.cursorcount = DELAY
 
         _.pagesize = _.height / _.menuitems.font.height    # The number of menu items that fit in the window at one time
 
         _.ypos = 0                                         # The position of the cursor, on the menu
         _.active = True
+
+        #_.Update = _.__Update().next
 
     def set_YPage(_, value):
         _.menuitems.YPage = value
@@ -66,7 +78,7 @@ class Menu(widget.Frame):
 
     def set_CursorPos(_, value):
         if value - _.YPage < _.pagesize:
-            _.ypos = value
+            _.ypos = value - _.YPage
         else:
             _.YPage = value
             _.ypos = 0
@@ -96,36 +108,61 @@ class Menu(widget.Frame):
         _.pagesize = _.height / _.menuitems.font.height
 
     def Update(_):
-        ika.Input.Update()
-        if up():
-            if _.ypos > 0:
-                _.ypos -= 1
-            elif _.YPage > 0:
-                _.YPage -= 1
-            
-        if down():
+        def MoveUp():
+            if _.ypos > 0:      _.ypos -= 1
+            elif _.YPage > 0:   _.YPage -= 1
+
+        def MoveDown():
             if _.ypos < _.pagesize - 1:
                 _.ypos += 1
             elif _.YPage < _.menuitems.Length - _.pagesize:
                 _.YPage += 1
 
-        if enter():
+        #--
+                
+        ika.Input.Update()
+
+        if ika.Input.up.Position():
+            if _.cursorcount == 0 or _.cursorcount == DELAY:
+                MoveUp()
+
+        elif ika.Input.down.Position():
+            if _.cursorcount == 0 or _.cursorcount == DELAY:
+                MoveDown()
+
+        elif enter():
             return _.CursorPos
 
-        if cancel():
-            return -1
+        elif cancel():
+            return Cancel
 
-        return None
+        else:
+            _.cursorcount = DELAY
+            return None
+
+        # if not ika.Input.up.Position() and not ika.Input.down.Position():
+        # not needed because the else clause returns.
+        _.cursorcount -= 1
+        if _.cursorcount < 0:
+            _.cursorcount = MOVE_DELAY
+
+        return None            
 
     def Execute(_):
         _.ypos = _.YPage = 0
+        t = ika.GetTime()
 
         while 1:
-            map.Render()
+            time = ika.GetTime()
+            delta = time - t
+            t = time
 
-            result = _.Update()
-            if result != None:
-                return result
+            while delta > 0:            
+                result = _.Update()
+                if result is not None:
+                    return result
+
+            map.Render()
                 
             _.Draw()
             ika.Video.ShowPage()

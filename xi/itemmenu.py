@@ -61,27 +61,34 @@ class ItemMenu(object):
 
     #--------------------------------------------
 
+    def Update(_):
+        result = _.menu.Update()
+        if result == menu.Cancel:
+            return menu.Cancel
+        
+        if result is not None:
+            item = party.inv[_.menu.CursorPos].item
+
+            if item.fieldeffect is not None:
+                result = item.fieldeffect()
+                if result is None and item.consumable:
+                    party.inv.Take(item.name)
+                _.Refresh()
+
+    #--------------------------------------------
+
     def Execute(_):
         
         while True:
-            _.description.Text[0] = party.inv[_.menu.CursorPos].Description
-
+            if _.Update() is not None:
+                break
+            
             ika.Map.Render()
+            _.description.Text[0] = party.inv[_.menu.CursorPos].Description
             for x in (_.menu, _.statbar, _.description):
                 x.Draw()
             ika.Video.ShowPage()
 
-            result = _.menu.Update()
-            if result == -1:
-                break
-            
-            if result is not None:
-                item = party.inv[_.menu.CursorPos].item
-                if item.fieldeffect is not None:
-                    result = item.fieldeffect()
-                    if result is None and item.consumable:
-                        party.inv.Take(item.name)
-                    _.Refresh()
 
         return True
 

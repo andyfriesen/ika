@@ -71,7 +71,11 @@ class Inventory(object):
     #--------------------------------------------
 
     def __getitem__(self,val):
-        return self.items[val]
+        try:
+            return self.items[val]
+        except IndexError, ie:
+            print val, len(self.items)
+            raise ie
 
     #--------------------------------------------
 

@@ -16,6 +16,7 @@ import itemmenu
 import statusmenu
 import widget
 import item
+from fps import FPSManager
 
 from menu import Menu
 from transition import *
@@ -64,8 +65,6 @@ class EquipMenu(object):
         for x in (_.equipwindow, _.portraitwindow, _.statwindow):
             x.Refresh(char)
 
-        _.itemlist.Refresh(lambda i: char.CanEquip(i.name) and i.equiptype == _.CurEquipType())
-
         # Layout
         _.portraitwindow.DockTop().DockLeft()
         
@@ -78,6 +77,9 @@ class EquipMenu(object):
         _.itemlist.DockTop(_.equipwindow).DockLeft(_.statwindow)
         _.statbar.Refresh()
         _.equipwindow.Right = _.statbar.x - _.statbar.border * 2
+
+        #_.itemlist.YMax = (ika.Video.yres - _.itemlist.y) / _.itemlist.Font.height - 1
+        _.itemlist.Refresh(lambda i: char.CanEquip(i.name) and i.equiptype == _.CurEquipType())
         _.itemlist.width = _.equipwindow.width
 
     def UpdateEquipWindow(_):
@@ -101,7 +103,7 @@ class EquipMenu(object):
         i = char.equip[_.equipwindow.CursorPos].item
         _.description.Text[0] = i and i.desc or ''
 
-        if result == -1 or result == None:
+        if result is menu.Cancel or result is None:
             return result
 
         _.slotidx = result
@@ -118,7 +120,7 @@ class EquipMenu(object):
 
         if result == None:
             return None
-        elif result == -1:
+        elif result == menu.Cancel:
             _.state = _.UpdateEquipWindow
             _.equipwindow.active = True
             _.itemlist.active = False
@@ -136,24 +138,25 @@ class EquipMenu(object):
         
         return None
 
+    def Draw(_):
+        ika.Input.Update()
+        ika.Map.Render()
+        for x in (_.equipwindow, _.portraitwindow, _.statwindow, _.itemlist, _.statbar, _.description):
+            x.Draw()
+        ika.Video.ShowPage()
+
     def Execute(_):
         _.state = _.UpdateEquipWindow
+        time = ika.GetTime()
+        fps = FPSManager()
 
         while True:
-            ika.Input.Update()
-            
-            ika.Map.Render()
-
-            for x in (_.equipwindow, _.portraitwindow, _.statwindow, _.itemlist, _.statbar, _.description):
-                x.Draw()
-
-            ika.Video.ShowPage()
-
             result = _.state()
-
             if cancel():
                 break
             if result is not None:
                 break
+
+            fps.Render(_.Draw)            
 
         return True

@@ -24,17 +24,21 @@ import ika
 import char
 from item import *
 from skill import *
+from exception import *
 from itemdatabase import ItemDatabase
 from skilldatabase import SkillDatabase
 
 def Init(itemdat = 'items.dat', fielditemeffects = None, battleitemeffects = None, skilldat = 'skills.dat', fieldskilleffects = None, battleskilleffects = None):
     global itemdb, skilldb, inv
-    
+
+    #try:    
     itemdb = ItemDatabase()
     itemdb.Init(itemdat, fielditemeffects, battleitemeffects)
     skilldb = SkillDatabase()
     skilldb.Init(skilldat, fieldskilleffects, battleskilleffects)
     inv = Inventory()
+    #except XiException, xe:
+    #    ika.Exit('Xi error: ' + xe.__str__())
 
 #------------------------------------------------------------------------------
 
@@ -45,7 +49,7 @@ def AddCharacter(name,datname=''):
 
     if name not in chars:
         if datname == '':
-            datname=name + '.dat'
+            datname = name + '.dat'
 
         chars[name] = char.Character(datname)
 
@@ -77,7 +81,7 @@ def RemoveChar(name):
     if len(party) > 0:
         del party[0].ent        		        # kill off the entity
         if party[0] == chars[name]:   		    # are we killing off the leader?
-            party[1].Spawn(player.x,player.y) 	# create the new leader
+            party[1].Spawn(player.x, player.y) 	# create the new leader
             player = party[1].ent
 
         party.remove(chars[name])
@@ -122,4 +126,4 @@ def PartyMove(movescript):
 def FixFollowChain():
     'Sets each party member to follow the one ahead.'
     for i in range(1, len(party)):
-        party[i].ent.Chase(party[i-1].ent, followdist)
+        party[i].ent.Chase(party[i - 1].ent, followdist)

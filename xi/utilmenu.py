@@ -49,7 +49,7 @@ def ChooseCharacter():
     trans.AddWindow(charselect, (charselect.x, -charselect.height), remove = True)
     trans.Execute()
     
-    if result == -1:
+    if result == Cancel:
         return None
     else:
         return party[result]

@@ -67,11 +67,21 @@ class ItemDatabase(StatelessProxy):
                        
                 elif t == 'consumable':     i.consumable = True
                 elif t == 'cost':           i.cost = int(f.Next())
-                elif t == 'fieldeffect':    i.fieldeffect  = fieldeffects.__dict__[f.Next()]
-                elif t == 'battleeffect':   i.battleeffect = battleeffects.__dict__[f.Next()]
+                elif t == 'fieldeffect':
+                    try:
+                        effectName = f.Next()
+                        i.fieldeffect  = fieldeffects.__dict__[effectName]
+                    except KeyError:
+                        raise XiException('Unable to find field effect %s for item %s' % (`effectName`, `i.name`))
+                elif t == 'battleeffect':
+                    try:
+                        effectName = f.Next()
+                        i.battleeeffect  = battleeffects.__dict__[effectName]
+                    except KeyError:
+                        raise XiException('Unable to find battle effect %s for item %s' % (`effectName`, `i.name`))
 
-                elif t == 'hp':             stats.hp = stats.maxhp = int(f.Next())
-                elif t == 'mp':             stats.mp = stats.maxmp = int(f.Next())
+                elif t == 'hp':             stats.maxhp = int(f.Next()) # HP and MP stay 0 because equipping doesn't change them.  It changes the maximums.
+                elif t == 'mp':             stats.maxmp = int(f.Next())
                 elif t == 'atk':            stats.atk = int(f.Next())
                 elif t == 'grd':            stats.grd = int(f.Next())
                 elif t == 'hit':            stats.hit = int(f.Next())
@@ -86,6 +96,7 @@ class ItemDatabase(StatelessProxy):
                 elif t == 'end':
                     break
                 else:
+                    print f.Next()
                     raise XiException('Unknown items.dat directive ' + `t`)
                             
             return i
