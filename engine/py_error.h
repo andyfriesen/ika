@@ -19,7 +19,7 @@ PyTypeObject CScriptEngine::errortype;
 
 void CScriptEngine::Init_Error()
 {
-    ZeroMemory(&errortype,sizeof errortype);
+    memset(&errortype, 0, sizeof errortype);
     
     errortype.ob_refcnt=1;
     errortype.ob_type=&PyType_Type;

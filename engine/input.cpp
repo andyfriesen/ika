@@ -1,329 +1,188 @@
-/* 
-    Keyboard/mouse handling stuff.
-    This was originally used in v2.6, but I thought "what the hell", and copied it. ^_~
+#include <cassert>
+#include <SDL/SDL.h>
 
-    This was originally meant to mimic aen's keyboard handler, but has since
-    been reversed. While aen's handler "feeds" keys to processes, this one
-    simply puts them in a queue for the process to grab on it's own.
-  
-    ChangeLog
-    + <tSB> 11.05.00 - Initial writing
-    + <tSB> 11.07.00 - DirectInput won't compile right.  Re-started, using Win32's messaging system to handle keypresses.
-    + <tSB> 11.07.00 - This doesn't work either :P Different DirectX libs work now. ^_^
-    + <tSB> 11.09.00 - woo, another overhaul.  Based on vecna's Winv1/Blackstar code.
-    + <tSB> 11.16.00 - Mouse code added
-    + <tSB> 12.05.00 - Mouse code rehashed, using DInput again.
-    + <tSB> 06.23.01 - Six months already? O_O  Lots and lots of tweakage.
-    
-*/
+#include "input.h"
 
-#include "input.h" // woo!  no dependencies! :D
-#include "log.h"
+std::map<const char*, int> Input::_keymap;
+bool Input::_keymapinitted = false;
 
-static byte key_ascii_tbl[128] =
+namespace
 {
-    0,   0, '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '-', '=',   8,   9,
-  'q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', '[', ']',  13,   0, 'a', 's',
-  'd', 'f', 'g', 'h', 'j', 'k', 'l', ';',  39, '`',   0,  92, 'z', 'x', 'c', 'v',
-  'b', 'n', 'm', ',', '.', '/',   0, '*',   0, ' ',   0,   3,   3,   3,   3,   3,
-    3,   3,   3,   3,   3,   0,   0,   0,   0,   0, '-',   0,   0,   0, '+',   0,
-    0,   0,   0, 127,   0,   0,  92,   3,   3,   0,   0,   0,   0,   0,   0,   0,
-   13,   0, '/',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 127,
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '/',   0,   0,   0,   0,   0
-};
-
-static byte key_shift_tbl[128] =
-{
-    0,   0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',   8,   9,
-  'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}',  13,   0, 'A', 'S',
-  'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', '~',   0, '|', 'Z', 'X', 'C', 'V',
-  'B', 'N', 'M', '<', '>', '?',   0, '*',   0,   1,   0,   1,   1,   1,   1,   1,
-    1,   1,   1,   1,   1,   0,   0,   0,   0,   0, '-',   0,   0,   0, '+',   0,
-    0,   0,   1, 127,   0,   0,   0,   1,   1,   0,   0,   0,   0,   0,   0,   0,
-   13,   0, '/',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 127,
-    0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '/',   0,   0,   0,   0,   0
-};
-
-static const char* errname(HRESULT err)
-{
-    switch (err)
+    struct
     {
-        case DI_OK: return "DI_OK";
-        case DIERR_INPUTLOST: return "DIERR_INPUTLOST";
-        case DIERR_INVALIDPARAM: return "DIERR_INVALIDPARAM";
-        case DIERR_NOTACQUIRED: return "DIERR_NOTACQUIRED";
-        case DIERR_NOTBUFFERED: return "DIERR_NOTBUFFERED";
-        case DIERR_NOTINITIALIZED: return "DIERR_NOTINITIALIZED";
+        const char* name;
+        SDLKey code;
+    } keys[] =
+    {
+        { "A", SDLK_a },
+        { "Enter", SDLK_RETURN },
     };
-    return "Beats me. :o";
+}
+
+class KeyControl : public Input::Control
+{
+    bool _pressed;  // true if the key was pressed lately
+    bool _down;     // true if the key is down right now
+    int _code;
+
+public:
+    KeyControl(Input* p, int code)
+        : Control(p)
+        , _pressed(false)
+        , _down(false)
+        , _code(code)
+    {}
+
+    ~KeyControl()
+    {
+        UnregisterControl(_code);
+    }
+
+    void Press()
+    {
+        _pressed = true;
+        _down = true;
+    }
+
+    void Unpress()
+    {
+        _down = false;
+    }
+
+    virtual bool Pressed()
+    {
+        bool a = _pressed;
+        _pressed = false;
+        return _pressed;
+    }
+
+    virtual float Position()    {   return _down ? 1.0f : 0.0f; }
+    virtual float Delta()       {   return _down ? 1.0f : 0.0f; }
+};
+
+/*class CompositeControl : public Control
+{
+    // NYI
+};*/
+
+void Input::Control::AddRef()
+{
+    _refcount++;
+}
+
+void Input::Control::Release()
+{
+    _refcount--;
+    if (_refcount == 0)
+        delete this;
+}
+
+void Input::Control::UnregisterControl(const std::string& name)
+{
+    _parent->Unregister(name);
+}
+
+void Input::Control::UnregisterControl(int k)
+{
+    _parent->Unregister(k);
 }
 
 Input::Input()
-: up(control[0]),    down(control[1]),    left(control[2]),    right(control[3]),    enter(control[4]),    cancel(control[5])
 {
-    lpdi=NULL;
-    keybd=NULL;
-    
-    for (int i=0; i<nControls; i++)
-        control[i]=false;
-    
-    ZeroMemory(&keys, sizeof keys);
-    
-    BindKey(0, DIK_UP);
-    BindKey(1, DIK_DOWN);
-    BindKey(2, DIK_LEFT);
-    BindKey(3, DIK_RIGHT);
-    
-    BindKey(4, DIK_RETURN);
-    BindKey(5, DIK_ESCAPE);
+    if (!_keymapinitted)
+    {
+        const int len = sizeof(keys) / sizeof(keys[0]);
+        for (int i = 0; i < len; i++)
+            _keymap[keys[i].name] = keys[i].code;
+
+        _keymapinitted = true;
+    }
+
+    // hurk.  Gay.
+    _up     = (*this)["UpKey"];     _up->AddRef();
+    _down   = (*this)["DownKey"];   _down->AddRef();
+    _left   = (*this)["LeftKey"];   _left->AddRef();
+    _right  = (*this)["RightKey"];  _right->AddRef();
+    _enter  = (*this)["EnterKey"];  _enter->AddRef();
+    _cancel = (*this)["Escape"];    _cancel->AddRef();
 }
 
 Input::~Input()
 {
-    if (lpdi!=NULL)
-        ShutDown();
+    _up->Release();
+    _down->Release();
+    _left->Release();
+    _right->Release();
+    _enter->Release();
+    _cancel->Release();
+    assert(_controls.size() == 0);
 }
 
-inline bool Input::Test(HRESULT result, char* errmsg)
-// Just to keep the error checking code from taking up so much space in the init routine.
+void Input::Unregister(int keycode)
 {
-    if (result!=DI_OK)
+    assert(_keys.count(keycode));
+
+    _keys.erase(keycode);
+}
+
+void Input::Unregister(const std::string& name)
+{
+    assert(_controls.count(name));
+
+    _controls.erase(name);
+}
+
+void Input::KeyDown(int key)
+{
+    KeyControl* c = _keys[key];
+    if (c)
     {
-        Log::Write( errmsg);
-        ShutDown();
+        c->Press();
+
+        if (c->onPress)
+            _hookqueue.push(c->onPress);
+    }
+}
+
+void Input::KeyUp(int key)
+{
+    KeyControl* c = _keys[key];
+    if (c)
+    {
+        c->Unpress();
+
+        if (c->onUnpress)
+            _hookqueue.push(c->onUnpress);
+    }
+}
+
+Input::Control* Input::GetControl(const std::string& name)
+{
+    int i = _keymap[name.c_str()];
+    if (i)
+    {
+        KeyControl* c = new KeyControl(this, i);
+        _keys[i] = c;
+        c->AddRef();
+        return c;
+    }
+
+    return 0;
+}
+
+void* Input::GetNextControlEvent()
+{
+    if (_hookqueue.empty())
         return 0;
-    }
-    return 1;
+
+    void* p = _hookqueue.front();
+    _hookqueue.pop();
+
+    return p;
 }
 
-int Input::Init(HINSTANCE hinst, HWND hwnd)
+void Input::ClearEventQueue()
 {
-    HRESULT result;
-    DIPROPDWORD dipdw;
-    
-    hInst=hinst;
-    hWnd=hwnd;
-    
-    try
-    {
-        result=DirectInputCreate(hinst, DIRECTINPUT_VERSION, &lpdi, NULL);
-        if (FAILED(result)) throw "DI:DInputCreate";
-        
-        // -------------keyboard initizlization------------
-        result=lpdi->CreateDevice(GUID_SysKeyboard, &keybd, NULL);
-        if (FAILED(result)) throw "DI:CreateDevice";
-        
-        result=keybd->SetDataFormat(&c_dfDIKeyboard);
-        if (FAILED(result)) throw "DI:SetDataFormat";
-        
-        result=keybd->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
-        if (FAILED(result)) throw "DI:SetCooplevel";
-        
-        dipdw.diph.dwSize = sizeof(DIPROPDWORD);
-        dipdw.diph.dwHeaderSize = sizeof(DIPROPHEADER);
-        dipdw.diph.dwObj = 0;
-        dipdw.diph.dwHow = DIPH_DEVICE;
-        dipdw.dwData = 128;
-        result=keybd->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph);
-        if (FAILED(result)) throw "DI:SetProperty";
-        
-        keybd->Acquire();
-        kb_start=kb_end=0;
-    }
-    catch (const char* s)
-    {
-        Log::Write( "Input init failed: %s", s);
-        ShutDown();
-        return 0;
-    }
-    
-    mclip.top=mclip.left=0;
-    mclip.right=320;
-    mclip.bottom=200;
-    
-    return 1;
-}
-
-void Input::ShutDown()
-{
-    if (lpdi==NULL) return;
-    if (keybd!=NULL)
-    {
-        keybd->Unacquire();
-        keybd->Release();
-        keybd=NULL;
-    }
-    // etc... for joystick/etc...
-    lpdi->Release();
-    lpdi=NULL;
-}
-
-void Input::Poll() // updates the key[] array.  This is called in winproc in response to WM_KEYDOWN and WM_KEYUP
-{
-//    return;
-
-    HRESULT result;
-    DIDEVICEOBJECTDATA didata[128];
-    DWORD numentries;
-    
-    numentries=128;
-    if (!keybd) 
-    {
-        Log::Write( "input::poll: No keyboard object!");
-        return;
-    }
-    
-    // read from the keyboard
-    result = keybd->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), didata, &numentries, 0);
-
-    if (!numentries || result==DIERR_OTHERAPPHASPRIO) return; // TODO: joystick?
-
-    if (result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED)
-    {
-        keybd->Acquire();                                                                   // re-acquire it
-        result=keybd->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), didata, &numentries, 0);    // and try again!
-        if (FAILED(result)) return;                                                         // If it still won't work, give up.
-    }
-
-    for (uint i=0; i<numentries; i++)
-    {
-        int k=didata[i].dwOfs;
-        bool kdown=didata[i].dwData&0x80?true:false;
-        
-        // First off, DX has separate codes for the control keys, and alt keys, etc...
-        // We don't want that.  Convert 'em.
-        if (k==DIK_RCONTROL) k=DIK_LCONTROL;
-        if (k==DIK_RMENU)    k=DIK_LMENU;
-        
-        keys[k].bPressed=kdown;
-        last_pressed=k;                                 // this is kinda handy
-        
-        if (kdown && kb_end!=kb_start+1)                // if the key's down and the buffer has room
-            key_buffer[kb_end++]=k;                     // add it to the queue
-        // TODO: key repeating?
-        
-        if (keys[k].bIsbound)
-        {
-            control[keys[k].nControl]=kdown;            // update the virtual control, if there is one.
-            
-            if (kdown)
-                controlbuffer.push(keys[k].nControl);
-        }       
-    }
-}
-
-void Input::Update() // updates the direction variables and the virtual buttons (b1, b2, etc..)
-{
-    Poll();
-    
-    UpdateMouse();
-}
-
-void Input::BindKey(int nButtonidx, int nKeycode)
-{
-    Log::Write( "BindKey %i to %i", nButtonidx, nKeycode);
-    if (nKeycode<0 || nKeycode>255)
-        return;
-    if (nButtonidx<0 || nButtonidx>nControls)
-        return;
-    keys[nKeycode].nControl=nButtonidx;
-    keys[nKeycode].bIsbound=true;
-}
-
-void Input::UnbindKey(int nKeycode)
-{
-    if (nKeycode<0 || nKeycode>255)
-        return;
-    keys[nKeycode].bIsbound=false;
-}
-
-int Input::GetKey()                 // gets the next key from the buffer, or 0 if there isn't one
-{
-    if (kb_start==kb_end) return 0; // nope!  nuthin here
-    
-    return key_buffer[kb_start++];
-}
-
-void Input::StuffKey(int key)
-{
-    if (kb_end==kb_start+1)
-        return;
-    
-    key_buffer[kb_end++]=key;
-}
-
-void Input::ClearKeys()             // clears the keyboard buffer (duh!)
-{
-    kb_end=kb_start=0;
-}
-
-int Input::NextControl()
-{
-    if (controlbuffer.empty())
-        return -1;
-    else
-    {
-        int i=controlbuffer.front();
-        controlbuffer.pop();
-        
-        return i;
-    }
-}
-
-void Input::ClearControls()
-{
-    while (!controlbuffer.empty())
-        controlbuffer.pop();
-}
-
-char Input::Scan2ASCII(int scancode)
-{
-    if (!scancode)
-        return 0;
-    
-    if (keys[DIK_LSHIFT].bPressed || keys[DIK_RSHIFT].bPressed)
-        return key_shift_tbl[scancode];
-    else
-        return key_ascii_tbl[scancode];
-}
-
-void Input::MoveMouse(int x, int y)
-{
-    mousex=x; mousey=y;
-
-    SetCursorPos(x, y);
-}
-
-void Input::UpdateMouse()
-{
-    POINT p;
-
-    GetCursorPos(&p);
-    ScreenToClient(hWnd, &p);
-
-    mousex=p.x;
-    mousey=p.y;
-
-    if (mousex<mclip.left) mousex=mclip.left;
-    if (mousex>mclip.right) mousex=mclip.right;
-    if (mousey<mclip.top) mousey=mclip.top;
-    if (mousey>mclip.bottom) mousey=mclip.bottom;
-}
-
-void Input::ClipMouse(int x1, int y1, int x2, int y2)
-{
-    mclip.left=x1;
-    mclip.right=x2;
-    mclip.top=y1;
-    mclip.bottom=y2;
-}
-
-void Input::HideMouse()
-{
-    ShowCursor(false);
-}
-
-void Input::ShowMouse()
-{
-    ShowCursor(true);
+    while (_hookqueue.size())
+        _hookqueue.pop();
 }

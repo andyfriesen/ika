@@ -27,7 +27,7 @@ PyTypeObject CScriptEngine::maptype;
 
 void CScriptEngine::Init_Map()
 {
-    ZeroMemory(&maptype,sizeof maptype);
+    memset(&maptype, 0, sizeof maptype);
     
     maptype.ob_refcnt=1;
     maptype.ob_type=&PyType_Type;

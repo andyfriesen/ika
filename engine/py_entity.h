@@ -33,7 +33,7 @@ PyTypeObject CScriptEngine::entitytype;
 
 void CScriptEngine::Init_Entity()
 {
-    ZeroMemory(&entitytype,sizeof entitytype);
+    memset(&entitytype, 0, sizeof entitytype);
     
     entitytype.ob_refcnt=1;
     entitytype.ob_type=&PyType_Type;

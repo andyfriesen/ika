@@ -26,7 +26,7 @@ PyTypeObject CScriptEngine::soundtype;
 
 void CScriptEngine::Init_Sound()
 {
-    ZeroMemory(&soundtype,sizeof soundtype);
+    memset(&soundtype, 0, sizeof soundtype);
     
     soundtype.ob_refcnt=1;
     soundtype.ob_type=&PyType_Type;

@@ -11,23 +11,13 @@ You know the drill. --tSB
 
 static const char subsetmarker='~';
 
-void CFont::Free()
-{
-    int nSetsize = set.size();
-    for (int nSet = 0; nSet < nSetsize; nSet++)
-        for (int nGlyph = 0; nGlyph < 96; nGlyph++)
-            gfxFreeImage(set[nSet].glyph[nGlyph]);
-        
-        set.clear();
-}
-
-bool CFont::LoadFNT(const char* filename)
+CFont::CFont(const char* filename, Video::Driver* video)
 {
     CDEBUG("cfont::loadfnt");
     
     CFontFile f;
     if (!f.Load(filename))
-        return false;
+        throw FontException();
     
     set.resize(f.NumSubSets());
     
@@ -43,36 +33,39 @@ bool CFont::LoadFNT(const char* filename)
             
             int nGlyphidx = s.nGlyphtbl[nGlyph + 32];
             
-            set[nSet].glyph[nGlyph] = gfxCreateImage(1, 1);
-            
             CPixelMatrix& glyph = f.GetGlyph(nGlyphidx);
-            
-            gfxCopyPixelData(
-                set[nSet].glyph[nGlyph],
-                (u32*) glyph.GetPixelData(),
-                glyph.Width(),
-                glyph.Height()
-                );
-            
+
+            set[nSet].glyph[nGlyph] = video->CreateImage(glyph);
             
             if (nWidth < glyph.Width())     nWidth = glyph.Width();
             if (nHeight < glyph.Height())   nHeight = glyph.Height();
         }
     }
-    
-    return true;
 }
 
-void CFont::PrintChar(int& x, int y, int cursubset, char c)
+CFont::~CFont()
+{
+    int nSetsize = set.size();
+    for (int nSet = 0; nSet < nSetsize; nSet++)
+    {
+        for (int nGlyph = 0; nGlyph < 96; nGlyph++)
+            delete set[nSet].glyph[nGlyph];
+    }
+        
+    set.clear();
+}
+
+
+void CFont::PrintChar(int& x, int y, int subset, char c)
 {
     c -= 32;
     
     if (c < 0 || c > 96)
         return;
     
-    handle h = set[cursubset].glyph[c];
-    gfxBlitImage(h, x, y, true);
-    x += gfxImageWidth(h);
+    Video::Image* img = set[subset].glyph[c];
+    video->DrawImage(img, x, y);
+    x += img->getWidth();
 }
 
 void CFont::PrintString(int startx, int starty, const char* s)
@@ -134,7 +127,7 @@ int CFont::StringWidth(const char* s) const
         case subsetmarker:
             i++;
             if (s[i] == subsetmarker)
-                nWidth += gfxImageWidth(set[nCursubset].glyph[subsetmarker - 32]);
+                nWidth += set[nCursubset].glyph[subsetmarker - 32]->getWidth();
             else if (s[i] >= '0' && s[i] <= '0' + set.size())                       // valid subset number?
                 nCursubset = s[i] - '0';
             break;
@@ -142,7 +135,7 @@ int CFont::StringWidth(const char* s) const
         default:
             if (c < 32 || c > 32 + 96)
                 continue;                                                           // invalid char, skip it.
-            nWidth += gfxImageWidth(set[nCursubset].glyph[c - 32]);
+            nWidth += set[nCursubset].glyph[c - 32]->getWidth();
         }
     }
     return nWidth;

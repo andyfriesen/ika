@@ -8,7 +8,7 @@ Image object stuff. ;D
 struct v_ImageObject
 {
     PyObject_HEAD
-        handle data;
+    Video::Image* data;
 };
 
 PyMethodDef CScriptEngine::image_methods[] =
@@ -33,7 +33,7 @@ PyTypeObject CScriptEngine::imagetype;
 
 void CScriptEngine::Init_Image()
 {
-    ZeroMemory(&imagetype,sizeof imagetype);
+    memset(&imagetype, 0, sizeof imagetype);
     
     imagetype.ob_refcnt=1;
     imagetype.ob_type=&PyType_Type;
@@ -42,20 +42,11 @@ void CScriptEngine::Init_Image()
     imagetype.tp_dealloc=(destructor)Image_Destroy;
     imagetype.tp_getattr=(getattrfunc)Image_GetAttribute;
     imagetype.tp_doc="A hardware-dependant image.";
-    
-    // Create the Python screen image
-    pScreenobject=(PyObject*)PyObject_New(v_ImageObject,&imagetype);
-    ((v_ImageObject*)pScreenobject)->data=gfxGetScreenImage();
-    
-    // Init the render dest
-    Py_INCREF(pScreenobject);
-    pRenderdest=pScreenobject;
-    gfxSetRenderDest(((v_ImageObject*)pRenderdest)->data);
 }
 
 PyObject* CScriptEngine::Image_New(PyObject* self,PyObject* args)
 {
-    int width=10,height=10;
+    /*int width=10,height=10;
     
     if (!PyArg_ParseTuple(args,"|ii:newimage",&width,&height))
         return NULL;
@@ -64,23 +55,24 @@ PyObject* CScriptEngine::Image_New(PyObject* self,PyObject* args)
     if (!image)
         return NULL;
     
-    image->data=gfxCreateImage(width,height);
+    image->data = pEngine->video->CreateImage(width, height);
     
-    return (PyObject*)image;
+    return (PyObject*)image;*/
+    return 0;
 }
 
 void CScriptEngine::Image_Destroy(PyObject* self)
 {
-    gfxFreeImage(((v_ImageObject*)self)->data);
+    delete ((v_ImageObject*)self)->data;
     PyObject_Del(self);
 }
 
 PyObject* CScriptEngine::Image_GetAttribute(PyObject* self,char* name)
 {
     if (!strcmp(name,"width"))
-        return Py_BuildValue("i",gfxImageWidth(((v_ImageObject*)self)->data));          // @_@;
+        return Py_BuildValue("i",((v_ImageObject*)self)->data->getWidth());          // @_@;
     if (!strcmp(name,"height"))
-        return Py_BuildValue("i",gfxImageHeight(((v_ImageObject*)self)->data));         // yipes
+        return Py_BuildValue("i",((v_ImageObject*)self)->data->getHeight());         // yipes
     
     return Py_FindMethod(image_methods,self,name);
 }
@@ -99,15 +91,17 @@ METHOD(image_load)
         if (!File::Exists(filename))
             throw va("%s does not exist",filename);
         
-        bool bResult=gfxLoadImage(((v_ImageObject*)self)->data,filename);
-        
-        if (!bResult)
-            throw va("Failed to load %s",filename);
+        ((v_ImageObject*)self)->data = pEngine->video->CreateImage(filename);
+    }
+    catch (Video::Exception)
+    {
+        PyErr_SetString(PyExc_OSError, va("Unable to load %s", filename));
+        return 0;
     }
     catch (const char* s)
     {
         PyErr_SetString(PyExc_OSError,s);
-        return NULL;
+        return 0;
     }
     
     Py_INCREF(Py_None);
@@ -116,9 +110,9 @@ METHOD(image_load)
 
 METHOD(image_copy)
 {
-    if (!PyArg_ParseTuple(args,""))
+    //if (!PyArg_ParseTuple(args,""))
         return NULL;
-    
+    /*
     handle srcimage=((v_ImageObject*)self)->data;
     
     v_ImageObject* image=PyObject_New(v_ImageObject,&imagetype);
@@ -127,20 +121,19 @@ METHOD(image_copy)
     
     image->data=gfxCopyImage(srcimage);
     
-    return (PyObject*)image;
+    return (PyObject*)image;*/
 }
 
 METHOD(image_blit)
 {
     int x,y;
-    int trans=1;
     
-    if (!PyArg_ParseTuple(args,"ii|i:Image.Blit",&x,&y,&trans))
+    if (!PyArg_ParseTuple(args,"ii:Image.Blit",&x,&y))
         return NULL;
     
-    gfxBlitImage(
+    pEngine->video->DrawImage(
         ((v_ImageObject*)self)->data,
-        x,y,trans?true:false);
+        x,y);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -148,7 +141,7 @@ METHOD(image_blit)
 
 METHOD(image_scaleblit)
 {
-    int x,y,width,height;
+/*    int x,y,width,height;
     int trans=1;
     
     if (!PyArg_ParseTuple(args,"iiii|i:Image.ScaleBlit",&x,&y,&width,&height,&trans))
@@ -157,22 +150,22 @@ METHOD(image_scaleblit)
     gfxScaleBlitImage(
         ((v_ImageObject*)self)->data,
         x,y,width,height,trans?true:false);
-    
+  */  
     Py_INCREF(Py_None);
     return Py_None;
 }
 
 METHOD(image_distortblit)
 {
-    int x[4],y[4];
-    int trans=1;
+    //int x[4],y[4];
+    //int trans=1;
 
-    if (!PyArg_ParseTuple(args,"(iiii)(iiii)|i:Image.DistortBlit",&x[0],&x[1],&x[2],&x[3],&y[0],&y[1],&y[2],&y[3],&trans))
-        return NULL;
+    //if (!PyArg_ParseTuple(args,"(iiii)(iiii)|i:Image.DistortBlit",&x[0],&x[1],&x[2],&x[3],&y[0],&y[1],&y[2],&y[3],&trans))
+    //    return NULL;
 
-    gfxDistortBlitImage(
-        ((v_ImageObject*)self)->data,
-        x,y,trans!=0);
+    //gfxDistortBlitImage(
+    //    ((v_ImageObject*)self)->data,
+    //    x,y,trans!=0);
 
     Py_INCREF(Py_None);
     return Py_None;
@@ -180,13 +173,13 @@ METHOD(image_distortblit)
 
 METHOD(image_copychannel)
 {
-    v_ImageObject* pDest;
-    int nSrcchan,nDestchan;
-    
-    if (!PyArg_ParseTuple(args,"O!ii",&imagetype,&pDest,&nSrcchan,&nDestchan))
-        return NULL;
-    
-    gfxCopyChan(((v_ImageObject*)self)->data,nSrcchan,pDest->data,nDestchan);
+    //v_ImageObject* pDest;
+    //int nSrcchan,nDestchan;
+    //
+    //if (!PyArg_ParseTuple(args,"O!ii",&imagetype,&pDest,&nSrcchan,&nDestchan))
+    //    return NULL;
+    //
+    //gfxCopyChan(((v_ImageObject*)self)->data,nSrcchan,pDest->data,nDestchan);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -194,29 +187,29 @@ METHOD(image_copychannel)
 
 METHOD(image_clip)
 {
-    int x1=-1,y1=-1,x2=-1,y2=-1;
-    
-    if (!PyArg_ParseTuple(args,"|iiii:Image.Clip",&x1,&y1,&x2,&y2))
-        return NULL;
-    
-    if (x1==-1 || y1==-1 || x2==-1 || y2==-1)
-    {
-        Rect r
-        (
-            0,
-                0, gfxImageWidth(((v_ImageObject*)self)->data),
-                gfxImageHeight(((v_ImageObject*)self)->data) 
-        );
-        
-        gfxClipImage(((v_ImageObject*)self)->data,r);
-    }
-    else
-    {
-        Rect r( x1,y1,x2,y2 );
-        gfxClipImage(
-            ((v_ImageObject*)self)->data,
-            r);
-    }
+    //int x1=-1,y1=-1,x2=-1,y2=-1;
+    //
+    //if (!PyArg_ParseTuple(args,"|iiii:Image.Clip",&x1,&y1,&x2,&y2))
+    //    return NULL;
+    //
+    //if (x1==-1 || y1==-1 || x2==-1 || y2==-1)
+    //{
+    //    Rect r
+    //    (
+    //        0,
+    //            0, gfxImageWidth(((v_ImageObject*)self)->data),
+    //            gfxImageHeight(((v_ImageObject*)self)->data) 
+    //    );
+    //    
+    //    gfxClipImage(((v_ImageObject*)self)->data,r);
+    //}
+    //else
+    //{
+    //    Rect r( x1,y1,x2,y2 );
+    //    gfxClipImage(
+    //        ((v_ImageObject*)self)->data,
+    //        r);
+    //}
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -224,12 +217,12 @@ METHOD(image_clip)
 
 METHOD(image_line)
 {
-    int x1,y1,x2,y2,colour;
-    
-    if (!PyArg_ParseTuple(args,"iiiii:Image.Line",&x1,&y1,&x2,&y2,&colour))
-        return NULL;
-    
-    gfxLine(((v_ImageObject*)self)->data,x1,y1,x2,y2,colour);
+    //int x1,y1,x2,y2,colour;
+    //
+    //if (!PyArg_ParseTuple(args,"iiiii:Image.Line",&x1,&y1,&x2,&y2,&colour))
+    //    return NULL;
+    //
+    //gfxLine(((v_ImageObject*)self)->data,x1,y1,x2,y2,colour);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -237,12 +230,12 @@ METHOD(image_line)
 
 METHOD(image_rect)
 {
-    int x1,y1,x2,y2,colour,filled=0;
-    
-    if (!PyArg_ParseTuple(args,"iiiii|i:Image.Rect",&x1,&y1,&x2,&y2,&colour,&filled))
-        return NULL;
-    
-    gfxRect(((v_ImageObject*)self)->data,x1,y1,x2,y2,colour,filled!=0);
+    //int x1,y1,x2,y2,colour,filled=0;
+    //
+    //if (!PyArg_ParseTuple(args,"iiiii|i:Image.Rect",&x1,&y1,&x2,&y2,&colour,&filled))
+    //    return NULL;
+    //
+    //gfxRect(((v_ImageObject*)self)->data,x1,y1,x2,y2,colour,filled!=0);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -250,12 +243,12 @@ METHOD(image_rect)
 
 METHOD(image_ellipse)
 {
-    int cx,cy,rx,ry,colour,filled=0;
-    
-    if (!PyArg_ParseTuple(args,"iiiii|i:Image.Ellipse",&cx,&cy,&rx,&ry,&colour,&filled))
-        return NULL;
-    
-    gfxEllipse(((v_ImageObject*)self)->data,cx,cy,rx,ry,colour,filled?true:false);
+    //int cx,cy,rx,ry,colour,filled=0;
+    //
+    //if (!PyArg_ParseTuple(args,"iiiii|i:Image.Ellipse",&cx,&cy,&rx,&ry,&colour,&filled))
+    //    return NULL;
+    //
+    //gfxEllipse(((v_ImageObject*)self)->data,cx,cy,rx,ry,colour,filled?true:false);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -263,13 +256,13 @@ METHOD(image_ellipse)
 
 METHOD(image_setpixel)
 {
-    int x,y,colour;
-//    int trans=1;
-    
-    if (!PyArg_ParseTuple(args,"iii:Image.SetPixel",&x,&y,&colour))
-        return NULL;
-    
-    gfxSetPixel(((v_ImageObject*)self)->data,x,y,colour);
+//    int x,y,colour;
+////    int trans=1;
+//    
+//    if (!PyArg_ParseTuple(args,"iii:Image.SetPixel",&x,&y,&colour))
+//        return NULL;
+//    
+//    gfxSetPixel(((v_ImageObject*)self)->data,x,y,colour);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -277,26 +270,26 @@ METHOD(image_setpixel)
 
 METHOD(image_getpixel)
 {
-    int x,y;
-    
-    if (!PyArg_ParseTuple(args,"ii:Image.GetPixel",&x,&y))
-        return NULL;
-    
-    u32 c=gfxGetPixel(((v_ImageObject*)self)->data,x,y);
+    //int x,y;
+    //
+    //if (!PyArg_ParseTuple(args,"ii:Image.GetPixel",&x,&y))
+    //    return NULL;
+    //
+    //u32 c=gfxGetPixel(((v_ImageObject*)self)->data,x,y);
     
     return PyInt_FromLong(c);
 }
 
 METHOD(image_flatpoly)
 {
-    int x[3];
-    int y[3];
-    int c[3];
-    
-    if (!PyArg_ParseTuple(args,"iiiiiiiii:Image.FlatPoly",&(x[0]),&(y[0]),&(c[0]),&(x[1]),&(y[1]),&(c[1]),&(x[2]),&(y[2]),&(c[2])))
-        return NULL;
-    
-    gfxFlatPoly(((v_ImageObject*)self)->data,x,y,c);
+    //int x[3];
+    //int y[3];
+    //int c[3];
+    //
+    //if (!PyArg_ParseTuple(args,"iiiiiiiii:Image.FlatPoly",&(x[0]),&(y[0]),&(c[0]),&(x[1]),&(y[1]),&(c[1]),&(x[2]),&(y[2]),&(c[2])))
+    //    return NULL;
+    //
+    //gfxFlatPoly(((v_ImageObject*)self)->data,x,y,c);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -306,13 +299,14 @@ METHOD(image_flatpoly)
 
 METHOD(std_loadimage)
 {
-    PyObject* image=Image_New(NULL,Py_BuildValue("()"));
-    
-    PyObject* result=image_load(image,args);
-    
-    Py_XDECREF(result);
-    
-    return image;
+    return 0;
+    //PyObject* image=Image_New(NULL,Py_BuildValue("()"));
+    //
+    //PyObject* result=image_load(image,args);
+    //
+    //Py_XDECREF(result);
+    //
+    //return image;
 }
 
 METHOD(std_setrenderdest)

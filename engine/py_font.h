@@ -23,7 +23,7 @@ PyTypeObject CScriptEngine::fonttype;
 
 void CScriptEngine::Init_Font()
 {
-    ZeroMemory(&fonttype,sizeof fonttype);
+    memset(&fonttype, 0, sizeof fonttype);
     
     fonttype.ob_refcnt=1;
     fonttype.ob_type=&PyType_Type;
@@ -45,10 +45,12 @@ PyObject* CScriptEngine::Font_New(PyObject* self,PyObject* args)
     v_FontObject* font=PyObject_New(v_FontObject,&fonttype);
     if (!font)
         return NULL;
-    
-    font->pFont=new CFont();
-    bool bResult=font->pFont->LoadFNT(sFilename);
-    if (!bResult)
+
+    try
+    {
+        font->pFont=new CFont(sFilename, pEngine->video);
+    }
+    catch (FontException)
     {
         PyErr_SetString(PyExc_OSError,va("Failed to load %s",sFilename));
         return NULL;
@@ -59,7 +61,6 @@ PyObject* CScriptEngine::Font_New(PyObject* self,PyObject* args)
 
 void CScriptEngine::Font_Destroy(PyObject* self)
 {
-    ((v_FontObject*)self)->pFont->Free();
     delete ((v_FontObject*)self)->pFont;
     
     PyObject_Del(self);

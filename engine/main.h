@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "ika 0.21"
+#define VERSION "ika 0.22"
 
 // low level components/containers/etc..
 #include <list>
@@ -31,74 +31,68 @@
 
 class CEngine
 {
-    // friends suck.  Kill them all. -_-;
-    friend LRESULT CALLBACK WindowProcedure(HWND hwnd, UINT message, WPARAM wParam, LPARAM lParam);
+    // This sucks.
     friend class CScriptEngine;
 
     typedef std::list<CEntity*>     EntityList;
     typedef EntityList::iterator    EntityIterator;
     
 public:                                                                             // Too many components need access to this class.  Kinda sucks. :/
-    HWND hWnd;                                                                      //!< win32 window handle
-    HINSTANCE hInst;                                                                //!< win32 instance handle
     
-    Map                             map;                                            //!< tile placement and stuff
-    CTileSet                        tiles;                                          //!< Images.  Of Tiles.
-    CScriptEngine                   script;                                         //!< c0de
+    Map                             map;                                            ///< tile placement and stuff
+    CTileSet*                       tiles;                                          ///< Images.  Of Tiles.
+    CScriptEngine                   script;                                         ///< c0de
     
-    CSpriteController               sprite;                                         //!< CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
-    EntityList                      entities;                                       //!< entities ;P
+    CSpriteController               sprite;                                         ///< CHR files (TODO: templatize the controller class, so that it can be used with other resources as well)
+    EntityList                      entities;                                       ///< entities ;P
     
-    Input                           input;                                          //!< keyboard/mouse (todo: joystick)
+    Input                           input;                                          ///< keyboard/mouse (todo: joystick)
+    Video::Driver*                  video;                                          ///< video. ;)
 
-    bool                            bShowfps;                                       //!< Shows the current framerate in the window title if set.
+    bool                            bShowfps;                                       ///< Shows the current framerate in the window title if set.
     
-    bool                            bKillFlag;                                      //!< set to true if a certain something hits the fan
-    bool                            bActive;                                        //!< set to false if we're supposed to sleep
-    bool                            bMaploaded;                                     //!< true if a map is... loaded. -_-
+    bool                            bKillFlag;                                      ///< set to true if a certain something hits the fan
+    bool                            bActive;                                        ///< set to false if we're supposed to sleep
+    bool                            bMaploaded;                                     ///< true if a map is... loaded. -_-
     
-    int                             xwin,ywin;                                      //!< world coordinates of the viewport
-    CEntity*                        pPlayer;                                        //!< Points to the current player entity
-    CEntity*                        pCameratarget;                                  //!< Points to the current camera target
+    int                             xwin,ywin;                                      ///< world coordinates of the viewport
+    CEntity*                        pPlayer;                                        ///< Points to the current player entity
+    CEntity*                        pCameratarget;                                  ///< Points to the current camera target
     
     // Odds and ends
-    handle                          hRenderdest;                                    //!< the current rendering destination.  It's only needed here so the renderer knows how many tiles to draw. ;P
-    void*                           pBindings[nControls];                           //!< key bindings (TODO: remove the arbitrary size)
     HookList                        pHookretrace;
     HookList                        pHooktimer;
-    int                             nFrameskip;                                     //!< the map engine will skip no more than this amount of ticks per retrace
+    int                             nFrameskip;                                     ///< the map engine will skip no more than this amount of ticks per retrace
     
     // interface
-    void      Sys_Error(const char* errmsg);                                        //!< bitches, and quits
-    void      Script_Error();                                                       //!< also bitchy and quitty
-    const char* GetCaption();
-    void      SetCaption(const char* caption);
-    int       CheckMessages();                                                      //!< Play nice with Mr. Gates
+    void      Sys_Error(const char* errmsg);                                        ///< bitches, and quits
+    void      Script_Error();                                                       ///< also bitchy and quitty
+    void      CheckMessages();                                                      ///< Play nice with Mr. Gates
     
-    void      GameTick();                                                           //!< 1/100th of a second's worth of AI
-    void      CheckKeyBindings();                                                   //!< checks to see if any bound keys are pressed
+    void      GameTick();                                                           ///< 1/100th of a second's worth of AI
+    void      CheckKeyBindings();                                                   ///< checks to see if any bound keys are pressed
     
     // Entity handling
-    bool      DetectMapCollision(int x1,int y1,int w,int h);                        //!< returns true if there is a map obstruction within the passed rect
-    CEntity*  DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h,bool wantobstructable=false);  //!< if an entity is within the rect, return it, else return NULL.  If wantobstructable is true, then entities whose bIsobs attribute is unset will be ignored.
-    void      ProcessEntities();                                                    //!< one tick of AI for each entity
+    bool      DetectMapCollision(int x1,int y1,int w,int h);                        ///< returns true if there is a map obstruction within the passed rect
+    CEntity*  DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h,bool wantobstructable=false);  ///< if an entity is within the rect, return it, else return NULL.  If wantobstructable is true, then entities whose bIsobs attribute is unset will be ignored.
+    void      ProcessEntities();                                                    ///< one tick of AI for each entity
   
-    void      TestActivate(const CEntity& player);                                  //!< checks to see if the player has talked to an entity, stepped on a zone, etc...
+    void      TestActivate(const CEntity& player);                                  ///< checks to see if the player has talked to an entity, stepped on a zone, etc...
 
-    CEntity*  SpawnEntity();                                                        //!< Creates an entity, and returns it
-    void      DestroyEntity(CEntity* e);                                            //!< Annihilates the entity
+    CEntity*  SpawnEntity();                                                        ///< Creates an entity, and returns it
+    void      DestroyEntity(CEntity* e);                                            ///< Annihilates the entity
 
-    void      RenderEntities();                                                     //!< Draws entities
-    void      RenderLayer(int lay,bool transparent);                                //!< renders a single layer
-    void      Render(const char* sTemprstring=NULL);                                //!< renders everything
+    void      RenderEntities();                                                     ///< Draws entities
+    void      RenderLayer(int lay,bool transparent);                                ///< renders a single layer
+    void      Render(const char* sTemprstring=NULL);                                ///< renders everything
     
-    void      LoadMap(const char* filename);                                        //!< switches maps
+    void      LoadMap(const char* filename);                                        ///< switches maps
     
-    void      DoHook(HookList& hooklist);                                           //!< Calls every function in the list, then flushes any pending adds/removals from said list
+    void      DoHook(HookList& hooklist);                                           ///< Calls every function in the list, then flushes any pending adds/removals from said list
 
-    void      Startup(HWND hwnd, HINSTANCE hinst);                                  //!< Inits the engine
-    void      Shutdown();                                                           //!< deinits the engine
-    void      MainLoop();                                                           //!< runs the engine
+    void      Startup();                                                            ///< Inits the engine
+    void      Shutdown();                                                           ///< deinits the engine
+    void      MainLoop();                                                           ///< runs the engine
 };
 
 #endif

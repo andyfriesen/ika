@@ -28,7 +28,7 @@ PyTypeObject CScriptEngine::inputtype;
 
 void CScriptEngine::Init_Input()
 {
-    ZeroMemory(&inputtype,sizeof inputtype);
+    memset(&inputtype, 0, sizeof inputtype);
     
     inputtype.ob_refcnt=1;
     inputtype.ob_type=&PyType_Type;
@@ -57,7 +57,7 @@ void CScriptEngine::Input_Destroy(PyObject* self)
 
 PyObject* CScriptEngine::Input_GetAttribute(PyObject* self,char* name)
 {
-    if (!strcmp(name,"up"))
+/*    if (!strcmp(name,"up"))
         return PyInt_FromLong(pEngine->input.up);
     if (!strcmp(name,"down"))
         return PyInt_FromLong(pEngine->input.down);
@@ -68,14 +68,14 @@ PyObject* CScriptEngine::Input_GetAttribute(PyObject* self,char* name)
     if (!strcmp(name,"enter"))
         return PyInt_FromLong(pEngine->input.enter);
     if (!strcmp(name,"cancel"))
-        return PyInt_FromLong(pEngine->input.cancel);
+        return PyInt_FromLong(pEngine->input.cancel);*/
     
     return Py_FindMethod(input_methods,self,name);
 }
 
 int CScriptEngine::Input_SetAttribute(PyObject* self,char* name,PyObject* value)
 {
-    if (!strcmp(name,"up"))
+    /*if (!strcmp(name,"up"))
         pEngine->input.up=PyInt_AsLong(value)!=0;
     if (!strcmp(name,"down"))
         pEngine->input.down=PyInt_AsLong(value)!=0;
@@ -86,7 +86,7 @@ int CScriptEngine::Input_SetAttribute(PyObject* self,char* name,PyObject* value)
     if (!strcmp(name,"enter"))
         pEngine->input.enter=PyInt_AsLong(value)!=0;
     if (!strcmp(name,"cancel"))
-        pEngine->input.cancel=PyInt_AsLong(value)!=0;
+        pEngine->input.cancel=PyInt_AsLong(value)!=0;*/
     
     return 0;
 }
@@ -98,8 +98,8 @@ METHOD(input_update)
     if (!PyArg_ParseTuple(args,""))
         return NULL;
     
-    pEngine->input.Update();
-    pEngine->input.ClearControls();
+    /*pEngine->input.Update();
+    pEngine->input.ClearControls();*/
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -112,7 +112,7 @@ METHOD(input_button)
     if (!PyArg_ParseTuple(args,"i:Input.Button",&nButton))
         return NULL;
     
-    return PyInt_FromLong(pEngine->input.control[nButton]);
+    return NULL;//PyInt_FromLong(pEngine->input.control[nButton]);
 }
 
 METHOD(input_setbutton)
@@ -122,7 +122,7 @@ METHOD(input_setbutton)
     if (!PyArg_ParseTuple(args,"ii:Input.SetButton",&nButton,&nState))
         return NULL;
     
-    pEngine->input.control[nButton]=nState?1:0;
+    //pEngine->input.control[nButton]=nState?1:0;
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -130,9 +130,9 @@ METHOD(input_setbutton)
 
 METHOD(input_nextpressed)
 {
-    if (!PyArg_ParseTuple(args,""))
+    //if (!PyArg_ParseTuple(args,""))
         return NULL;
-    
+    /*
     char s[255];
     char c=pEngine->input.GetKey();
     
@@ -143,7 +143,7 @@ METHOD(input_nextpressed)
     else
         strcpy(s,"");
     
-    return PyString_FromString(s);
+    return PyString_FromString(s);*/
 }
 
 METHOD(input_setnextpressed)
@@ -153,7 +153,7 @@ METHOD(input_setnextpressed)
     if (!PyArg_ParseTuple(args,"i:Input.SetNextPressed",&nKey))
         return NULL;
     
-    pEngine->input.StuffKey(nKey);
+//    pEngine->input.StuffKey(nKey);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -164,7 +164,7 @@ METHOD(input_mousestate)
     if (!PyArg_ParseTuple(args,""))
         return NULL;
     
-    int mx,my,b1,b2,b3;
+/*    int mx,my,b1,b2,b3;
     
     mx=pEngine->input.mousex;
     my=pEngine->input.mousey;
@@ -174,7 +174,7 @@ METHOD(input_mousestate)
     
     PyObject* rvalue=Py_BuildValue("iiiii",mx,my,b1,b2,b3);
     
-    return rvalue;
+    return rvalue;*/return 0;
 }
 
 METHOD(input_setmousestate)
@@ -188,9 +188,9 @@ METHOD(input_setmousestate)
     b2=b2?2:0;
     b3=b3?4:0;
     
-    pEngine->input.mousex=mx;
+/*    pEngine->input.mousex=mx;
     pEngine->input.mousey=my;
-    pEngine->input.mouseb=b1 | b2 | b3;
+    pEngine->input.mouseb=b1 | b2 | b3;*/
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -203,7 +203,7 @@ METHOD(input_clipmouse)
     if (!PyArg_ParseTuple(args,"iiii:Input.ClipMouse",&x1,&y1,&x2,&y2))
         return NULL;
     
-    pEngine->input.ClipMouse(x1,y1,x2,y2);
+//    pEngine->input.ClipMouse(x1,y1,x2,y2);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -216,7 +216,7 @@ METHOD(input_bindkey)
     if (!PyArg_ParseTuple(args,"ii:Input.BindKey",&nKey,&nControl))
         return NULL;
     
-    pEngine->input.BindKey(nControl,nKey);
+//    pEngine->input.BindKey(nControl,nKey);
     
     Py_INCREF(Py_None);
     return Py_None;
@@ -229,7 +229,7 @@ METHOD(input_unbindkey)
     if (!PyArg_ParseTuple(args,"i:Input.UnbindKey",&nKey))
         return NULL;
     
-    pEngine->input.UnbindKey(nKey);
+//    pEngine->input.UnbindKey(nKey);
     
     Py_INCREF(Py_None);
     return Py_None;

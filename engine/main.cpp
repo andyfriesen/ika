@@ -1,18 +1,19 @@
 #include <algorithm>
+#include <SDL/SDL.h>
 
 #include "main.h"
 #include "timer.h"
 
 void CEngine::Sys_Error(const char* errmsg)
 {
-    CDEBUG("sys_error");
+/*    CDEBUG("sys_error");
     Shutdown();
     if (strlen(errmsg))
         MessageBox(hWnd, errmsg, "", 0);
     PostQuitMessage(0);
-    bKillFlag = true;
-    exit(-1);                                            // SITE OF POTENTIAL EVILNESS!  Is this allowed in Win32?  Am I causing a horrible memory leak?
-    return;
+    bKillFlag = true;*/
+    printf("%s", errmsg);
+    exit(-1);
 }
 
 void CEngine::Script_Error()
@@ -24,57 +25,47 @@ void CEngine::Script_Error()
     if (f.OpenRead("pyout.log"))
     {
         int nSize = f.Size();
-        char* c = new char[nSize+1];
-        ZeroMemory(c, nSize+1);
+        char* c = new char[nSize + 1];
+        memset(c, 0, nSize + 1);
         f.Read(c, nSize);
         f.Close();
-        MessageBox(hWnd, c, "Script error", 0);
+        //MessageBox(hWnd, c, "Script error", 0);
+        printf("%s", c);
         delete[] c;
     }
     else
-        MessageBox(hWnd, "Unknown error!", "Script error", 0);
+        printf("%s", "oh no. :(");
+        //MessageBox(hWnd, "Unknown error!", "Script error", 0);
     
     exit(-1);
     return;
 }
 
-const char* CEngine::GetCaption()
-{
-    static char caption[255];
-    GetWindowText(hWnd, caption, 254);
-    return caption;
-}
-
-void CEngine::SetCaption(const char* caption)
-{
-    SetWindowText(hWnd, caption);
-}
-
-int CEngine::CheckMessages()
+void CEngine::CheckMessages()
 {
     CDEBUG("checkmessages");
-    MSG msg;
-    
-    if (bKillFlag) return 1;
-    
-    do
-    {
-        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))        // process things until the message queue is empty
-        {         
-            if (msg.message == WM_QUIT || msg.message == WM_CLOSE || (msg.message == WM_SYSCOMMAND && msg.wParam == SC_CLOSE))
-            {
-                bKillFlag = true;                             // so that everybody knows to stop what they're doing and quit
-                Shutdown();
-                exit(-1);                                   // probably a bad idea, but maybe not, I'm not sure
-                return 1;
-            }
-            TranslateMessage(&msg);
-            DispatchMessage(&msg);
-        }
 
-    } while (!bActive);
-    
-    return 0;
+    SDL_Event event;
+
+    while (SDL_PollEvent(&event))
+    {
+        switch (event.type)
+        {
+        case SDL_KEYDOWN:
+        case SDL_KEYUP:
+            input.KeyDown(event.key.keysym.sym);
+
+            // bottom line screenshot if F11 is pressed
+//            if (event.key.keysym.sym==SDLK_F11 && event.key.state==SDL_PRESSED)
+//                ScreenShot();
+
+            break;
+           
+        case SDL_QUIT:
+            bKillFlag = true;
+            break;
+        }
+    }
 }
 
 void CEngine::MainLoop()
@@ -82,15 +73,21 @@ void CEngine::MainLoop()
     CDEBUG("mainloop");
     static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
     
-    CFont font;
-    bool result = font.LoadFNT("system.fnt");
-    if (!result)
+    CFont* font;
+    try
+    {
+        font = new CFont("system.fnt", video);
+    }
+    catch (FontException)
+    {
+        font = 0;
         bShowfps = false;
+    }
 
     int now = GetTime();
     int lasttick = now;
 
-    while(1)
+    while (true)
     {
         CheckMessages();
         
@@ -111,85 +108,72 @@ void CEngine::MainLoop()
 
         if (bShowfps)
         {
-            font.PrintString(0, 0, va("FPS: %i", gfxGetFrameRate()));
+            //font->PrintString(0, 0, va("FPS: %i", gfxGetFrameRate()));
         }
 
-        gfxShowPage();
+        video->ShowPage();
     }
+
+    delete font;
 }
 
-void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
+void CEngine::Startup()
 // TODO: Make a nice happy GUI thingie for making a user.cfg
 // This is ugly. :(
 {
     CDEBUG("Startup");
     
-    hWnd = hwnd;        hInst = hinst;
-    
     CConfigFile cfg("user.cfg");
 
-    bShowfps= cfg.Int("showfps") != 0 ;
+    // init a few values
+    bShowfps        = cfg.Int("showfps") != 0 ;
+    nFrameskip      = cfg.Int("frameskip");
+    tiles           = 0;
+    pPlayer         = 0;
+    pCameratarget   = 0;
+    bMaploaded      = false;
+    bKillFlag       = false;
 
-    nFrameskip = cfg.Int("frameskip");
+    // Now the tricky stuff.
+    try
+    {
+        if (cfg.Int("log"))
+            Log::Init("ika.log");
+        
+        Log::Write(VERSION " startup");
+        Log::Write("Built on " __DATE__);
+        Log::Write("--------------------------");
 
-    if (cfg.Int("log"))
-        Log::Init("ika.log");
-    
-    Log::Write("%s startup", VERSION);
-    Log::Write("Built on %s", __DATE__);
-    Log::Write("--------------------------");
-    
-    bKillFlag = false;
-      
-    if (!SetUpGraphics(cfg["graphdriver"]))
-    {
-        Sys_Error("Unable to load graphics driver.");
-        return;
+        Log::Write("Initializing SDL");
+        SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER
+#ifndef _DEBUG
+            | SDL_INIT_NOPARACHUTE
+#endif
+            );
+          
+        Log::Write("Initializing Video");
+        video = new Video::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+
+        if (!cfg.Int("nosound"))
+        {
+            Log::Write("Initializing sound");
+            Sound::Init();
+        }
     }
-    
-    Log::Writen("Initing graphics");
-    bool a = gfxInit(
-        hWnd,
-        cfg.Int("xres"),
-        cfg.Int("yres"),
-        cfg.Int("bitdepth"),
-        cfg.Int("fullscreen") != 0
-        );
-    if (!a)
+    catch (Video::Exception)
     {
-        Sys_Error("gfxInit failed.\nThis could mean that you're trying to set a video mode that your hardware cannot handle.");
-        return;
+        Sys_Error("Unable to set the video mode.\nAre you sure your hardware can handle the chosen settings?");
     }
-    Log::Write("... OK");
-    
-    if (!cfg.Int("nosound"))
+    catch (Sound::Exception)
     {
-        Log::Writen("Initing sound");
-        if (!Sound::Init())
-            Log::Write("\nSound initialization failed.  Disabling audio.");
-        Log::Write("... OK");
+        Log::Write("Sound initialization failed.  Disabling audio.");
     }
-    
-    Log::Writen("Initing input");
-    if (!input.Init(hinst, hwnd))
+    catch (...)
     {
-        Sys_Error("input.Init failed");
-        return;
+        Sys_Error("An unknown error occurred during initialization.");
     }
-    input.ClipMouse(0, 0, cfg.Int("xres"), cfg.Int("yres"));
-    if (cfg.Int("fullscreen"))
-        input.HideMouse();
-    
-    memset(pBindings, 0, nControls*sizeof(void*));            // Clear key bindings
-    Log::Write("... OK");
-    
-    pPlayer = 0;
-    pCameratarget = 0;
-    
-    bMaploaded = false;
-    hRenderdest = gfxGetScreenImage();
-    
-    srand(timeGetTime());                                        // win32 specific x_x
+       
+    srand(GetTime());
     
     Log::Write("Initing Python");
     script.Init(this);
@@ -222,12 +206,10 @@ void CEngine::Shutdown()
     
     Log::Write("---- shutdown ----");
     map.Free();
-    tiles.Free();
     Sound::Shutdown();
     script.Shutdown();
-    
-    UnloadGraphics();
-    input.ShutDown();
+
+    delete video;
 }
 
 // ------------------------------------------------------------------------------------------
@@ -263,8 +245,8 @@ void CEngine::RenderEntities()
         int x = e.x-sprite.nHotx;
         int y = e.y-sprite.nHoty;
         
-        if (x+width-xwin > 0                      && y+height-ywin > 0 &&
-            x-xwin < gfxImageWidth(hRenderdest)   && y-ywin < gfxImageHeight(hRenderdest) &&
+        if (x+width-xwin > 0        && y+height-ywin > 0        &&
+            x-xwin < video->XRes()  && y-ywin < video->YRes()   &&
             e.bVisible)
             drawlist.push_back(&e);                                                         // the entity is onscreen, tag it.
     }
@@ -303,14 +285,14 @@ void CEngine::RenderLayer(int lay, bool transparent)
     xw = (xwin * linf.pmulx) / linf.pdivx;
     yw = (ywin * linf.pmulx) / linf.pdivy;
     
-    xs = xw / tiles.Width();
-    ys = yw / tiles.Height();
+    xs = xw / tiles->Width();
+    ys = yw / tiles->Height();
     
-    xofs =- (xw % tiles.Width());
-    yofs =- (yw % tiles.Height());
+    xofs =- (xw % tiles->Width());
+    yofs =- (yw % tiles->Height());
     
-    xl = gfxImageWidth(hRenderdest) / tiles.Width() + 1;
-    yl = gfxImageHeight(hRenderdest) / tiles.Height() + 2;
+    xl = video->XRes() / tiles->Width() + 1;
+    yl = video->YRes() / tiles->Height() + 2;
     
     if (xs+xl > map.Width()) xl = map.Width() - xs;        // clip yo
     if (ys+yl > map.Height()) yl = map.Height() - ys;
@@ -327,11 +309,12 @@ void CEngine::RenderLayer(int lay, bool transparent)
             for (int x = 0; x < xl; x++)
             {
                 if (*t)
-                    tiles.TBlitFrame(curx, cury, *t);
-                curx += tiles.Width();
+                    video->DrawImage(tiles->GetTile(*t), curx, cury);
+                    //tiles->TBlitFrame(curx, cury, *t);
+                curx += tiles->Width();
                 t++;
             }
-            cury += tiles.Height();
+            cury += tiles->Height();
             curx = xofs;
             t += xinc;
         }
@@ -342,11 +325,12 @@ void CEngine::RenderLayer(int lay, bool transparent)
         {
             for (int x = 0; x < xl; x++)
             {
-                tiles.BlitFrame(curx, cury, *t);
-                curx += tiles.Width();
+                video->DrawImage(tiles->GetTile(*t), curx, cury);
+                //tiles->TBlitFrame(curx, cury, *t);
+                curx += tiles->Width();
                 t++;
             }
-            cury += tiles.Height();
+            cury += tiles->Height();
             curx = xofs;
             t += xinc;
         }
@@ -362,15 +346,15 @@ void CEngine::Render(const char* sTemprstring)
     
     if (!bMaploaded)    return;
     
-    tiles.UpdateAnimation(GetTime());
+    tiles->UpdateAnimation(GetTime());
     
     if (pCameratarget)
     {        
-        xwin = pCameratarget->x - gfxImageWidth(hRenderdest) / 2;               // Move the camera...
-        ywin = pCameratarget->y - gfxImageHeight(hRenderdest) / 2;
+        xwin = pCameratarget->x - video->XRes() / 2;               // Move the camera...
+        ywin = pCameratarget->y - video->YRes() / 2;
         
-        int maxx=(map.Width()  * tiles.Width() ) - gfxImageWidth (hRenderdest);   // and make sure it's still in range
-        int maxy=(map.Height() * tiles.Height()) - gfxImageHeight(hRenderdest);
+        int maxx=(map.Width()  * tiles->Width() ) - video->XRes();   // and make sure it's still in range
+        int maxy=(map.Height() * tiles->Height()) - video->YRes();
         
         if (xwin >= maxx)    xwin = maxx - 1;
         if (ywin >= maxy)    ywin = maxy - 1;
@@ -441,7 +425,17 @@ void CEngine::GameTick()
 
 void CEngine::CheckKeyBindings()
 {
-    int c;
+    // This isn't really optimal, but I dunno if anybody will notice.
+    // Pop whatever's on the top of the queue, and just handle that one.
+    // Flush the rest of the queue.
+    
+    if (void* func = input.GetNextControlEvent())
+    {
+        script.ExecFunction(func);
+        input.ClearEventQueue();
+    }
+
+    /*int c;
     while ((c = input.NextControl()) != -1)    // while keys are in the queue
     {
         if (c < 0 || c > nControls)
@@ -456,7 +450,7 @@ void CEngine::CheckKeyBindings()
             script.ExecFunction(pBindings[c]);
             input.ClearControls();                // Not the perfect end result, but it'll have to do.  Don't want to call a script if one's already running.
         }
-    }
+    }*/
 }
 
 void CEngine::ProcessEntities()
@@ -481,13 +475,13 @@ bool CEngine::DetectMapCollision(int x, int y, int w, int h)
 // Also TODO: think up a better obstruction system
 {
     CDEBUG("detectmapcollision");
-    int tx = tiles.Width();
-    int ty = tiles.Height();
+    int tx = tiles->Width();
+    int ty = tiles->Height();
     
     int y2 = (y + h - 1) / ty;
     int x2 = (x + w - 1) / tx;
-    x /= tiles.Width();
-    y /= tiles.Height();
+    x /= tiles->Width();
+    y /= tiles->Height();
 
     for (int cy = y; cy <= y2; cy++)
         for(int cx = x; cx <= x2; cx++)
@@ -536,8 +530,8 @@ void CEngine::TestActivate(const CEntity& player)
     SMapZone zone;
     CSprite& sprite = *player.pSprite;
     
-    int tx = (player.x + sprite.nHotw / 2) / tiles.Width();
-    int ty = (player.y + sprite.nHoth / 2) / tiles.Height();
+    int tx = (player.x + sprite.nHotw / 2) / tiles->Width();
+    int ty = (player.y + sprite.nHoth / 2) / tiles->Height();
     
     int n = map.GetZone(tx, ty);
     // stepping on a zone?
@@ -548,7 +542,7 @@ void CEngine::TestActivate(const CEntity& player)
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
         {
             script.CallEvent(zone.sActscript.c_str());
-            input.enter = false;
+            //input.enter = false;
         }
     }
     
@@ -558,7 +552,7 @@ void CEngine::TestActivate(const CEntity& player)
     // This probably isn't the best place for that sort of thing.  Maybe in ProcessEntities, in the clause that
     // executes when an entity is obstructed.  That'd be both more efficient, and accurate.
     
-    if (!input.enter) return;                                // From this point on, the only time we'd have to check this crap is if b1 was pressed.
+    //if (!input.enter) return;                                // From this point on, the only time we'd have to check this crap is if b1 was pressed.
     
     tx = player.x; ty = player.y;
     // entity activation
@@ -581,18 +575,18 @@ void CEngine::TestActivate(const CEntity& player)
         if (!pEnt->bAdjacentactivate && pEnt->sActscript.length() != 0)
         {
             script.CallEvent(pEnt->sActscript.c_str());
-            input.enter = false;
+//            input.enter = false;
             return;
         }
     }
     
     // Activating a zone?
-    map.GetZoneInfo(zone, map.GetZone(tx / tiles.Width(), ty / tiles.Height()));
+    map.GetZoneInfo(zone, map.GetZone(tx / tiles->Width(), ty / tiles->Height()));
     
     if (zone.bAdjacentactivation)
     {
         script.CallEvent(zone.sActscript.c_str());
-        input.enter = false;
+//        input.enter = false;
     }
 }
 
@@ -652,8 +646,8 @@ void CEngine::LoadMap(const char* filename)
         
         if (!map.Load(filename)) throw filename;                            // actually load the map
         
-        strcpy(temp, map.GetVSPName().c_str());                              // get the tileset name
-        if (!tiles.LoadVSP(temp)) throw temp;                               // load a VSP
+        delete tiles;                                                       // nuke the old tileset
+        tiles = new CTileSet(map.GetVSPName().c_str(), video);              // load up them tiles
         
         script.ClearEntityList();                                           // DEI
         
@@ -665,7 +659,6 @@ void CEngine::LoadMap(const char* filename)
             entities.push_back(pEnt);
             
             strcpy(temp, ent.sCHRname.c_str());
-//            extension = temp+strlen(temp)-3;                                  // get the extension
             
             pEnt->pSprite = sprite.Load(temp);                                // wee
             if (pEnt->pSprite == 0)                                           // didn't load?
@@ -686,3 +679,12 @@ void CEngine::LoadMap(const char* filename)
     {    Sys_Error(va("Unknown error loading map %s", filename));    }
 }
 
+int main(int argc, char* args[])
+{
+    CEngine engine;
+    engine.Startup();
+    engine.MainLoop();
+    engine.Shutdown();
+    
+    return 0;
+}

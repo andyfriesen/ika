@@ -2,56 +2,16 @@
 #include "log.h"
 #include "misc.h"
 
-void CTileSet::Free()
-{
-    for (int i=0; i<nFrames; i++)
-    {
-        gfxFreeImage(hFrame[i]);
-        hFrame[i]=0;
-    }
-    
-    nFrames=0;
-}
-
-void CTileSet::BlitFrame(int x,int y,int frame)
-{
-    frame=nTileidx[frame];
-
-#ifdef _DEBUG
-    if (frame<0 || frame>nFrames)
-    {
-        Log::Write("CTileSet::BlitFrame : Invalid frame %i specified.",frame);
-        return;
-    }
-#endif
-    
-    gfxBlitImage(hFrame[frame],x,y,false);
-}
-
-void CTileSet::TBlitFrame(int x,int y,int frame)
-{
-    frame=nTileidx[frame];
-
-#ifdef _DEBUG
-    if (frame<0 || frame>nFrames)
-    {
-        Log::Write("CTileSet::TBlitFrame : Invalid frame %i specified.",frame);
-        return;
-    }
-#endif
-
-    gfxBlitImage(hFrame[frame],x,y,true);
-}
-
-bool CTileSet::LoadVSP(const char* fname)
+CTileSet::CTileSet(const char* fname, Video::Driver* v)
+    : video(v)
+    , nAnimtimer(0)
 {
     CDEBUG("ctileset::loadvsp");
     VSP vsp;
     
     if (!vsp.Load(fname))
-        return false;
+        throw TileSetException();
     
-    Free();
     nFrames=vsp.NumTiles();
     nFramex=vsp.Width();
     nFramey=vsp.Height();
@@ -61,38 +21,42 @@ bool CTileSet::LoadVSP(const char* fname)
         hFrame.resize(nFrames);
         for (int i=0; i<nFrames; i++)
         {
-            CPixelMatrix& tile=vsp.GetTile(i);
-
-            hFrame[i]=gfxCreateImage(nFramex,nFramey);
-            gfxCopyPixelData(hFrame[i],(u32*)tile.GetPixelData(),nFramex,nFramey);
+            hFrame[i] = video->CreateImage(vsp.GetTile(i));
         }
     }
     catch(...)
     {	
-        vsp.Free();
-        return false;
+        throw TileSetException();
     }
     
     // Next up, set up the tile animation stuff
-    int i;
-    
     nTileidx.resize(nFrames);                                   // Make the vectors fit
     bFlip.resize(nFrames);
-    for (i=0; i<nFrames; i++)
+    for (int i=0; i<nFrames; i++)
     {
         nTileidx[i]=i;                                          // set initial values for the vectors
         bFlip[i]=false;
     }
 
     animstate.resize(100);                                      // urk.  Magic number.
-    for (i=0; i<100; i++)
+    for (int j=0; j<100; j++)
     {
-        animstate[i]=vsp.Anim(i);                               // copy the animation data
-        animstate[i].nCount=animstate[i].nDelay;                // init the counter
+        animstate[j]=vsp.Anim(j);                               // copy the animation data
+        animstate[j].nCount=animstate[j].nDelay;                // init the counter
     }
-    
-    vsp.Free();
-    return true;
+}
+
+CTileSet::~CTileSet()
+{
+    for (int i=0; i<nFrames; i++)
+        delete hFrame[i];
+}
+
+Video::Image* CTileSet::GetTile(int index)
+{
+    index = nTileidx[index];
+
+    return hFrame[index];
 }
 
 void CTileSet::UpdateAnimation(int time)

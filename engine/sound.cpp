@@ -10,11 +10,12 @@ namespace
 
 namespace Sound
 {
-    bool Init()
+    void Init()
     {
         _device = OpenDevice();
 
-        return _device != 0;
+        if (!_device)
+            throw Exception();
     }
 
     void Shutdown()

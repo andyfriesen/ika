@@ -1,3 +1,4 @@
+#if 0
 #include <windows.h>
 #include <mmsystem.h>
 
@@ -16,7 +17,7 @@ namespace
     int testBlitImageEmpty()
     {
         RGBA* pTemp=new RGBA[16*16];
-        ZeroMemory(pTemp,16*16*sizeof(RGBA));
+        memset(pTemp, 0, 16*16*sizeof(RGBA));
 
         handle img=gfxCreateImage(16,16);
         gfxCopyPixelData(img,(u32*)pTemp,16,16);
@@ -215,3 +216,4 @@ void Benchmark(HWND hwnd)
 
     exit(-1);
 }
+#endif

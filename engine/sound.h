@@ -6,7 +6,9 @@
 
 namespace Sound
 {
-    bool Init();
+    struct Exception{};
+
+    void Init() throw(Exception);
     void Shutdown();
 
     audiere::OutputStream* OpenSound(const char* fname);

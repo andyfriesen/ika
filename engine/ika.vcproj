@@ -22,10 +22,10 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories="..\common,..\3rdparty"
+				AdditionalIncludeDirectories="..\common,..\3rdparty\include;..\3rdparty\include\python"
 				PreprocessorDefinitions="NDEBUG,WIN32,_WINDOWS,MSVC,INLINE_ASM"
 				StringPooling="TRUE"
-				RuntimeLibrary="4"
+				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="TRUE"
 				PrecompiledHeaderFile=".\Release/ika.pch"
 				AssemblerListingLocation=".\Release/"
@@ -39,11 +39,11 @@
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalOptions="/MACHINE:I386"
-				AdditionalDependencies="dinput.lib dxguid.lib winmm.lib zlib.lib corona.lib audiere.lib"
+				AdditionalDependencies="sdl.lib sdlmain.lib winmm.lib zlib.lib corona.lib audiere.lib"
 				OutputFile=".\Release/ika.exe"
 				LinkIncremental="1"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common\,..\3rdparty"
+				AdditionalLibraryDirectories="..\common\,..\3rdparty\lib"
 				ProgramDatabaseFile=".\Release/ika.pdb"
 				SubSystem="2"/>
 			<Tool
@@ -166,9 +166,6 @@
 			</File>
 			<File
 				RelativePath=".\timer.cpp">
-			</File>
-			<File
-				RelativePath=".\win32.cpp">
 			</File>
 		</Filter>
 		<Filter

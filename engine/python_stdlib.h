@@ -209,7 +209,7 @@ METHOD(std_rgb)
 
 METHOD(std_hookbutton)
 {
-    int nButton;
+/*    int nButton;
     PyObject* pFunc;
     
     if (!PyArg_ParseTuple(args,"iO:HookButton",&nButton,&pFunc))
@@ -229,7 +229,7 @@ METHOD(std_hookbutton)
         Py_XDECREF((PyObject*)pEngine->pBindings[nButton]);
         
         pEngine->pBindings[nButton]=pFunc;
-    }
+    }*/
     
     Py_INCREF(Py_None);
     return Py_None;
