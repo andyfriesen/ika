@@ -88,7 +88,11 @@ void ScriptDlg::OnUnloadScript(wxCommandEvent&)
 
 void ScriptDlg::OnActivateScript(wxCommandEvent&)
 {
-    Script* script = reinterpret_cast<Script*>(_scriptList->GetClientData(_scriptList->GetSelection()));
+    int index = _scriptList->GetSelection();
+    if (index < 0 || index > _scriptList->GetCount())   return;
+
+    Script* script = reinterpret_cast<Script*>(_scriptList->GetClientData(index));
+    assert(script);
 
     try
     {

@@ -346,6 +346,7 @@ namespace OpenGL
             glVertex2i(x[i], y[i]);
         }
         glEnd();
+        glColor4ub(255, 255, 255, 255);
     }
 
     void Driver::DrawPixel(int x, int y, u32 colour)

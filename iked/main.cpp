@@ -241,52 +241,59 @@ void CMainWnd::OnQuit(wxCloseEvent& event)
 
 void CMainWnd::Open(const std::string& fname)
 {
-    // First, see if the document is already open
-    for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
+    try
     {
-        if (Path::Compare((*i)->GetFileName(), fname))
+        // First, see if the document is already open
+        for (std::set<IDocView*>::iterator i = pDocuments.begin(); i != pDocuments.end(); i++)
         {
-            (*i)->Activate();
-            return;
+            if (Path::Compare((*i)->GetFileName(), fname))
+            {
+                (*i)->Activate();
+                return;
+            }
         }
+
+        // okay.  It's not open.  Open it.
+        FileType type = GetFileType(fname);
+
+        IDocView* wnd = 0;
+
+        switch (type)
+        {
+        case t_script:      wnd = new CCodeView     (this, fname);          break;
+        //case t_map:         wnd = new MapView      (this, fname.c_str());  break;
+        case t_vsp:         wnd = new CTileSetView  (this, fname.c_str());  break;
+        case t_font:        wnd = new CFontView     (this, fname.c_str());  break;
+        case t_text:
+        case t_dat:         wnd = new CTextView     (this, fname.c_str());  break;
+        case t_chr:         wnd = new CSpriteSetView(this, fname.c_str());  break;
+
+        case t_project:     _project->Load(fname);                          return;
+        case t_config:
+            {
+                CConfigDlg* configdlg = new CConfigDlg(
+                    this,
+                    -1,
+                    fname
+                    );
+
+                configdlg->ShowModal();
+                configdlg->Close(TRUE);
+
+                return;
+            }
+        case t_unknown: wxMessageDialog(this, "Unknown filetype", "", wxOK).ShowModal();        return;
+        default:        wxMessageDialog(this, "Not implemented yet", "NYI", wxOK).ShowModal();  return;
+        };   
+
+        // Control only gets here for the conventional files. (not projects, or config files)
+        wxASSERT(wnd != 0);
+        OpenDocument(wnd);
     }
-
-    // okay.  It's not open.  Open it.
-    FileType type = GetFileType(fname);
-
-    IDocView* wnd = 0;
-
-    switch (type)
+    catch (std::runtime_error err)
     {
-    case t_script:      wnd = new CCodeView     (this, fname);          break;
-    //case t_map:         wnd = new MapView      (this, fname.c_str());  break;
-    case t_vsp:         wnd = new CTileSetView  (this, fname.c_str());  break;
-    case t_font:        wnd = new CFontView     (this, fname.c_str());  break;
-    case t_text:
-    case t_dat:         wnd = new CTextView     (this, fname.c_str());  break;
-    case t_chr:         wnd = new CSpriteSetView(this, fname.c_str());  break;
-
-    case t_project:     _project->Load(fname);                          return;
-    case t_config:
-        {
-            CConfigDlg* configdlg = new CConfigDlg(
-                this,
-                -1,
-                fname
-                );
-
-            configdlg->ShowModal();
-            configdlg->Close(TRUE);
-
-            return;
-        }
-    case t_unknown: wxMessageDialog(this, "Unknown filetype", "", wxOK).ShowModal();        return;
-    default:        wxMessageDialog(this, "Not implemented yet", "NYI", wxOK).ShowModal();  return;
-    };   
-
-    // Control only gets here for the conventional files. (not projects, or config files)
-    wxASSERT(wnd != 0);
-    OpenDocument(wnd);
+        ::wxMessageBox(va("There was an error loading the file\n%s", err.what()), "Error opening file", wxID_OK | wxCENTER, this);
+    }
 }
 
 void CMainWnd::OpenDocument(IDocView* newwnd)
