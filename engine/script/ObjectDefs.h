@@ -416,9 +416,8 @@ namespace Script
     METHOD1(std_getcameraTarget, PyObject);
     METHOD(std_setplayer, PyObject);
     METHOD1(std_getplayer, PyObject);
-    METHOD(std_entityat, PyObject);
+    METHOD(std_entitiesat, PyObject);
 
-    METHOD(std_hookbutton, PyObject);
     METHOD(std_hookretrace, PyObject);
     METHOD(std_unhookretrace, PyObject);
     METHOD(std_hooktimer, PyObject);

@@ -17,7 +17,7 @@ public:
     virtual void OnMouseUp(wxMouseEvent& event);
     virtual void OnMouseMove(wxMouseEvent& event);
 
-    virtual void OnRenderCurrentLayer();
+    virtual void OnRender();
     virtual void OnSwitchLayers(uint oldLayer, uint newLayer);
 };
 

@@ -26,17 +26,14 @@ void ZoneEditState::OnMouseDown(wxMouseEvent& event)
         _dragging = true;
         _selection = Rect(x, y, x, y);
     }
-    else
+    else if (event.LeftDClick() && zoneIndex != -1)
     {
         _curZoneIndex = zoneIndex;
-
-        if (event.LeftDClick())
-        {
-            ZonePropertiesDlg dlg(GetMainWindow(), GetCurLayerIndex(), _curZoneIndex);
-            int result = dlg.ShowModal();
-            // Show the zone properties dialog
-        }
-
+        ZonePropertiesDlg dlg(GetMainWindow(), GetCurLayerIndex(), _curZoneIndex);
+        
+        // Show the zone properties dialog
+        int result = dlg.ShowModal();
+        
         GetMapView()->Refresh();
     }
 }
@@ -70,7 +67,7 @@ void ZoneEditState::OnMouseMove(wxMouseEvent& event)
     }
 }
 
-void ZoneEditState::OnRenderCurrentLayer()
+void ZoneEditState::OnRender()
 {
     Map::Layer* layer = GetCurLayer();
     std::vector<Map::Layer::Zone>& zones = GetCurLayer()->zones;

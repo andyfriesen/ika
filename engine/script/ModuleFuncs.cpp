@@ -254,39 +254,42 @@ namespace Script
         return result;
     }
 
-    METHOD(std_entityat)
+    METHOD(std_entitiesat)
     {
-        int x, y, width, height;
-        if (!PyArg_ParseTuple(args, "iiii|EntityAt", &x, &y, &width, &height))
+        int x, y, width, height, layer;
+        if (!PyArg_ParseTuple(args, "iiiii|EntitiesAt", &x, &y, &width, &height, &layer))
             return 0;
 
         int x2=x+width;
         int y2=y+height;
 
-        int count = 0;
-        PyObject* pKey = 0;
-        PyObject* pValue = 0;
-        while (PyDict_Next(entityDict, &count, &pKey, &pValue))
+        std::vector< ::Script::Entity::EntityObject*> ents;
+
+        for (std::map< ::Entity*, ::Script::Entity::EntityObject*>::iterator 
+            iter = ::Script::Entity::instances.begin(); 
+            iter != ::Script::Entity::instances.end(); 
+            iter++)
         {
-            if (pValue->ob_type != &Script::Entity::type)
-            {
-                Log::Write("Someone's being a goober and putting non-entities in ika.Map.entities! >:(");
-                continue;
-            }
+            ::Entity* ent = iter->first;
 
-            ::Entity* ent=((Script::Entity::EntityObject*)pValue)->ent;
-            
-            if (x>ent->x+ent->sprite->nHotw)    continue;
-            if (y>ent->y+ent->sprite->nHoth)    continue;
-            if (x2<ent->x)    continue;
-            if (y2<ent->y)    continue;
+            if (ent->layerIndex != layer)         continue;
+            if (x > ent->x+ent->sprite->nHotw)    continue;
+            if (y > ent->y+ent->sprite->nHoth)    continue;
+            if (x2 < ent->x)    continue;
+            if (y2 < ent->y)    continue;
 
-            Py_INCREF(pValue);
-            return pValue;
+            ents.push_back(iter->second);
         }
 
-        Py_INCREF(Py_None);
-        return Py_None;
+        PyObject* list = PyList_New(ents.size());
+
+        for (uint i = 0; i < ents.size(); i++)
+        {
+            Py_INCREF(ents[i]);
+            PyList_SET_ITEM(list, i, reinterpret_cast<PyObject*>(ents[i]));
+        }
+
+        return list;
     }
 
     METHOD(std_hookretrace)
@@ -352,7 +355,6 @@ namespace Script
         }
 
         Py_INCREF(pFunc);
-        //    engine->_hookTimer.push_back(pFunc);
         engine->_hookTimer.Add(pFunc);
 
         Py_INCREF(Py_None);
@@ -491,10 +493,12 @@ namespace Script
             "GetPlayer(entity) -> Entity\n\n"
             "Returns the current player entity, or None if there isn't one."
         },
-        { "EntityAt",       (PyCFunction)std_entityat,          METH_VARARGS,
-            "EntityAt(x, y, width, height) -> Entity\n\n"
-            "If there is an entity within the rectangle passed, it is returned.\n"
-            "If not, then None is returned."
+
+        { "EntitiesAt",       (PyCFunction)std_entitiesat,          METH_VARARGS,
+            "EntitiesAt(x, y, width, height, layer) -> list\n\n"
+            "Returns a list containing all entities within the given rect,\n"
+            "on the given layer.  If there are no entities there, the empty\n"
+            "list is returned."
         },
 
         { "HookRetrace",    (PyCFunction)std_hookretrace,       METH_VARARGS,

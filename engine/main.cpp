@@ -312,13 +312,20 @@ namespace
     class CompareEntities
     {
     public:
-        int operator () (const Entity* a, const Entity* b)
+        inline int operator () (const Entity* a, const Entity* b) const
         {
             return a->y < b->y;
         }
     };
 };
 
+/*
+ * This could probably use some optimization.  Every time we draw the map,
+ * we do n filter operations, then n sort operations.  huuurk.
+ * Maybe keep the entity linked list y sorted at all times by reordering
+ * whenever a y value changes.  That's only O(n) as opposed to O(nlogn) or
+ * whatever unholy growth rate this is.
+ */
 void Engine::RenderEntities(uint layerIndex)
 {
     CDEBUG("renderentities");

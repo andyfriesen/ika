@@ -694,6 +694,8 @@ void MainWindow::OnSetCurrentScript(wxCommandEvent& event)
     wxASSERT(id >= 0 && id < _scripts.size());
 
     _curScript = id;
+    HighlightToolButton(id_scripttool);
+    _mapView->SetScriptTool(_scripts[_curScript]);
 }
 
 void MainWindow::OnCursorUp(wxCommandEvent&)

@@ -55,7 +55,7 @@ void ObstructionState::OnMouseWheel(wxMouseEvent& event)
 {
 }
 
-void ObstructionState::OnRenderCurrentLayer()
+void ObstructionState::OnRender()
 {
     Map::Layer* l = GetCurLayer();
     MapView* mv = GetMapView();

@@ -84,8 +84,9 @@ void ZonePropertiesDlg::UpdateData()
 
     newZone.position.left   = atoi(_editX->GetValue().c_str());
     newZone.position.top    = atoi(_editY->GetValue().c_str());
-    newZone.position.right  = zone.position.left + atoi(_editWidth->GetValue().c_str());
-    newZone.position.bottom = zone.position.top  + atoi(_editHeight->GetValue().c_str());
+    newZone.position.right  = newZone.position.left + atoi(_editWidth->GetValue().c_str());
+    newZone.position.bottom = newZone.position.top  + atoi(_editHeight->GetValue().c_str());
+    newZone.position.Normalize();   // just in case
     commands.push_back(new ChangeZoneCommand(_layerIndex, _zoneIndex, newZone));
 
     _mainWnd->HandleCommand(new CompositeCommand(commands));
