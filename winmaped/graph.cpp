@@ -1,3 +1,4 @@
+#include "log.h"
 #include "graph.h"
 
 static const int nDIBsize=128;                          // stupid MSVC won't let me declare this in the class definition. :(
@@ -37,7 +38,7 @@ void CGraphView::DirtyRect(int x1,int y1,int x2,int y2)
 
     int startx=r.left;
     int starty=r.top;
-    int endx=r.right+nDIBsize;
+    int endx=r.right+nDIBsize;  // round up, goddammit
     int endy=r.bottom+nDIBsize;
 
     startx/=nDIBsize;   starty/=nDIBsize;
@@ -208,7 +209,7 @@ void CGraphView::HLine(int x1,int x2,int y,u32 colour)
     if (x2>=nDIBsize)       x2=nDIBsize-1;
     
     u32* p=(u32*)pDib->GetPixelData()+(y*pDib->Width())+x1;
-    int xlen=x2-x1;
+    int xlen=x2-x1+1;
     
     while (xlen--)
         *p++=colour;
@@ -226,7 +227,7 @@ void CGraphView::VLine(int x,int y1,int y2,u32 colour)
     if (y2>=nDIBsize)       y2=nDIBsize-1;
 
     u32* p=(u32*)pDib->GetPixelData()+(y1*pDib->Width())+x;
-    int ylen=y2-y1;
+    int ylen=y2-y1+1;
     while (ylen--)
     {
         *p=colour;
@@ -264,6 +265,7 @@ void CGraphView::Clear()
 
 void CGraphView::ShowPage()
 {
+    HDC dc=GetDC(hWnd);
     for (std::set<point>::iterator iter = dirtyrects.begin(); iter != dirtyrects.end(); iter++)
     {
         RECT r;
@@ -272,11 +274,12 @@ void CGraphView::ShowPage()
         r.right  = r.left  + nDIBsize-1;
         r.bottom = r.top   + nDIBsize-1;
 
+        Log::Write("%i,%i\t%i,%i",r.left,r.top,r.right,r.bottom);
+
         Render(pThis,r);
-        HDC dc=GetDC(hWnd);
         BitBlt(dc,r.left,r.top,nDIBsize,nDIBsize,pDib->GetDC(),0,0,SRCCOPY);
-        ReleaseDC(hWnd,dc);
     }
+    ReleaseDC(hWnd,dc);
 
     dirtyrects.clear();
 }

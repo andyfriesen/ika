@@ -27,7 +27,12 @@ private:
 		point(int initx,int inity) { x=initx; y=inity; }
         bool operator < (const point& p) const
         {
-            return y < p.y;
+            return this < &p;   // ... heh
+        }
+
+        bool operator == (const point& p) const
+        {
+            return x == p.x && y == p.y;
         }
 	};
 	typedef void(*renderfunc)(void* pThis,const RECT& r);
@@ -61,7 +66,7 @@ public:
 	// Rendering stuff
 	void DirtyRect(int x1,int y1,int x2,int y2);                                                // dirties everything in the specified rect, so that the next ShowPage will redraw that section
 	void ShowPage();                                                                            // renders dirty rects
-        void ShowPage(const ::Rect& r);                                                             // renders the specified rect
+    void ShowPage(const ::Rect& r);                                                             // renders the specified rect
 	void ForceShowPage();                                                                       // rerenders the whole window
 };
 

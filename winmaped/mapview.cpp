@@ -177,6 +177,11 @@ void CMapView::DoMouseLeftDown(int x,int y,int b)        // b is the key state
             
             curselection.right=x+1;
             curselection.bottom=y+1;
+
+            if (curselection.right<=curselection.left)
+                curselection.right--;
+            if (curselection.bottom<=curselection.top)
+                curselection.bottom--;
             
             pGraph->DirtyRect(
                 curselection.left*pVsp->Width()-xwin-1,

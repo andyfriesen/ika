@@ -289,17 +289,17 @@ void CEdit::MakeSwatchImage()
 
 bool CEdit::PointIsInRect(int x,int y,Rect r)
 {
-    if (x<r.left)   return false;
-    if (y<r.top)    return false;
-    if (x>=r.right) return false;
-    if (y>=r.bottom)return false;
+    if (x < r.left)   return false;
+    if (y < r.top)    return false;
+    if (x >= r.right) return false;
+    if (y >= r.bottom)return false;
     return true;
 }
 
 void CEdit::DoLeftDownOnBigTile(int x,int y,int b,RGBA& curcolour)
 {
-    x=(x*curimage.Width())/(rBigimage.right-rBigimage.left);
-    y=(y*curimage.Height())/(rBigimage.bottom-rBigimage.top);
+    x=(x * curimage.Width()) / (rBigimage.right - rBigimage.left);
+    y=(y * curimage.Height()) / (rBigimage.bottom - rBigimage.top);
     
     
     if (b&MK_SHIFT)        // colour grabber
@@ -344,20 +344,20 @@ void CEdit::HandleMouse(int x,int y,int b)
 {
     static bool bOldleft=false;
     static bool bOldright=false;
-    
-    if(!(b&MK_LBUTTON))                lbutton = false;
-    else                                        lbutton = true;
-    
-    if(!(b&MK_RBUTTON))                rbutton = false;
-    else                                        rbutton = true;
-    
-    
-    if (lbutton && !bOldleft)                AddToUndo();                                                        // if the mouse button was *just* pressed now
-    if (rbutton && !bOldright)                AddToUndo();
-    
+
+    if(!(b&MK_LBUTTON))         lbutton = false;
+    else                        lbutton = true;
+
+    if(!(b&MK_RBUTTON))         rbutton = false;
+    else                        rbutton = true;
+
+
+    if (lbutton && !bOldleft)   AddToUndo();    // if the mouse button was *just* pressed now
+    if (rbutton && !bOldright)  AddToUndo();
+
     bOldleft=lbutton;
     bOldright=rbutton;
-    
+
     if (PointIsInRect(x,y,rBigimage))
     {
         if (lbutton && !rbutton)
@@ -370,14 +370,14 @@ void CEdit::HandleMouse(int x,int y,int b)
             x-rBigimage.left,
             y-rBigimage.top,
             b);
-        
+
         if (rbutton && !lbutton)
             DoLeftDownOnBigTile(
             x-rBigimage.left,
             y-rBigimage.top,
             b,nCurcolour[1]);
     }
-    
+
     if (PointIsInRect(x,y,rSwatch))
     {
         if (lbutton)
@@ -390,14 +390,14 @@ void CEdit::HandleMouse(int x,int y,int b)
             x-rSwatch.left,
             y-rSwatch.top,
             b);
-        
+
         if (rbutton)
             DoLeftDownOnSwatch(
             x-rSwatch.left,
             y-rSwatch.top,
             b,nCurcolour[1]);
     }
-    }
+}
 
 int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
 {
@@ -457,11 +457,11 @@ int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 break;
             case SB_PAGEUP:
                 nLumina-=10;
-                if (nLumina<0)                nLumina=0;
+                if (nLumina<0)      nLumina=0;
                 break;
             case SB_PAGEDOWN:
                 nLumina+=10;
-                if (nLumina>255)        nLumina=255;
+                if (nLumina>255)    nLumina=255;
                 break;
             case SB_THUMBPOSITION:
             case SB_THUMBTRACK:
@@ -490,11 +490,11 @@ int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
                 break;
             case SB_PAGEUP:
                 nAlpha-=10;
-                if (nAlpha<0)                nAlpha=0;
+                if (nAlpha<0)       nAlpha=0;
                 break;
             case SB_PAGEDOWN:
                 nAlpha+=10;
-                if (nAlpha>255)        nAlpha=255;
+                if (nAlpha>255)     nAlpha=255;
                 break;
             case SB_THUMBPOSITION:
             case SB_THUMBTRACK:
@@ -509,17 +509,17 @@ int CEdit::MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam)
     case WM_COMMAND:
         switch(LOWORD(wParam))
         {
-        case ID_TILEED_NEXT: GoNext(); break;
-        case ID_TILEED_PREV: GoPrev(); break;
+        case ID_TILEED_NEXT:    GoNext();                           break;
+        case ID_TILEED_PREV:    GoPrev();                           break;
             
-        case ID_TILEED_UNDO:  Undo(); break;
-        case ID_TILEED_REDO:  Redo(); break;
+        case ID_TILEED_UNDO:    Undo();                             break;
+        case ID_TILEED_REDO:    Redo();                             break;
             
-        case ID_TILEED_CLEAR:        curimage.Clear(nCurcolour[1]);        break;
-        case ID_TILEED_ROTATE:        curimage.Rotate();                                break;
-        case ID_TILEED_FLIP:        curimage.Flip();                                break;
-        case ID_TILEED_MIRROR:        curimage.Mirror();                                break;
-        case ID_TILEED_EXIT: PostMessage(hWnd, WM_CLOSE, 0, 0); break;
+        case ID_TILEED_CLEAR:   curimage.Clear(nCurcolour[1]);      break;
+        case ID_TILEED_ROTATE:  curimage.Rotate();                  break;
+        case ID_TILEED_FLIP:    curimage.Flip();                    break;
+        case ID_TILEED_MIRROR:  curimage.Mirror();                  break;
+        case ID_TILEED_EXIT:    PostMessage(hWnd, WM_CLOSE, 0, 0);  break;
         default:
             return HandleCommand(hWnd,wParam);                                                                                // unknown message?  Pass it down to the derived class
         }
