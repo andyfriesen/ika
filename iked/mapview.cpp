@@ -61,7 +61,7 @@ void CMapView::RenderLayer(int lay)
 {
     int nWidth,nHeight;
 
-    GetClientSize(&nWidth,&nHeight);
+    pGraph->GetClientSize(&nWidth,&nHeight);
 
     int tx=pTileset->Width();
     int ty=pTileset->Height();

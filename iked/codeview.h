@@ -16,7 +16,8 @@ class CMainWnd;
 class CCodeWnd : public wxMDIChildFrame
 {
     wxStyledTextCtrl*   pTextctrl;
-    string    sFilename;
+    string              sFilename;
+    bool                bChanged;
 public:
 
     enum        // commands specific to this window
@@ -56,9 +57,12 @@ public:
     void OnCut (wxCommandEvent& event);
     void OnPaste(wxCommandEvent& event);
     void OnSelectAll(wxCommandEvent& event);
-
+#ifdef WX232
     void OnFind(wxCommandEvent& event);
     void OnReplace(wxCommandEvent& event);
+#endif
+
+    void OnMarginClick(wxStyledTextEvent& event);
 
     void OnSyntaxHighlighting(wxCommandEvent& event); // syntax highlighting dialog
     void OnViewWhiteSpace(wxCommandEvent& event);

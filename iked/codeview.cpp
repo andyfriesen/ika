@@ -43,6 +43,8 @@ BEGIN_EVENT_TABLE(CCodeWnd,wxMDIChildFrame)
     EVT_FIND_CLOSE(-1,CCodeWnd::DoFind)
 #endif
 
+    EVT_STC_MARGINCLICK(id_ed,CCodeWnd::OnMarginClick)
+
 END_EVENT_TABLE()
 
 CCodeWnd::CCodeWnd(CMainWnd* parent,
@@ -65,16 +67,18 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     menubar->Append(filemenu,"&File");
 
     wxMenu* editmenu=new wxMenu;
-    editmenu->Append(id_editundo, "&Undo\tCtrl+Z","");
-    editmenu->Append(id_editredo, "&Redo","");
+    editmenu->Append(id_editundo,       "&Undo\tCtrl+Z","");
+    editmenu->Append(id_editredo,       "&Redo","");
     editmenu->AppendSeparator();
-    editmenu->Append(id_editcopy, "&Copy\tCtrl+Ins","");
-    editmenu->Append(id_editcut,  "C&ut\tShift+Del","");
-    editmenu->Append(id_editpaste,"&Paste\tShift+Ins","");
-    editmenu->Append(id_editselectall,"Select &All\tCtrl+a","");
+    editmenu->Append(id_editcopy,       "&Copy\tCtrl+Ins","");
+    editmenu->Append(id_editcut,        "C&ut\tShift+Del","");
+    editmenu->Append(id_editpaste,      "&Paste\tShift+Ins","");
+    editmenu->Append(id_editselectall,  "Select &All\tCtrl+a","");
+#ifdef WX232
     editmenu->AppendSeparator();
-    editmenu->Append(id_editfind,"&Find...","");
-    editmenu->Append(id_editreplace,"Replace...","");
+    editmenu->Append(id_editfind,       "&Find...","");
+    editmenu->Append(id_editreplace,    "Replace...","");
+#endif
     menubar->Append(editmenu,"&Edit");
 
 #ifndef WX232
@@ -147,7 +151,13 @@ CCodeWnd::CCodeWnd(CMainWnd* parent,
     pTextctrl->SetMarginSensitive   (foldmargin,true);
     pTextctrl->SetMarginMask        (foldmargin,wxSTC_MASK_FOLDERS);
     pTextctrl->SetModEventMask      (wxSTC_MOD_CHANGEFOLD);
- 
+
+    // fold marker thingies
+    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDEROPEN, wxSTC_MARK_MINUS);
+    pTextctrl->MarkerDefine(wxSTC_MARKNUM_FOLDER, wxSTC_MARK_PLUS);
+
+    bChanged=false;
+
     if (fname)
     {
         File f;
@@ -234,11 +244,22 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
 
         pTextctrl->StyleSetFont(font.GetStyle(),font);
         pTextctrl->StyleSetForeground(nWhich,color);
-        pTextctrl->StyleSetBold(nWhich,(font.GetStyle()==wxBOLD)?true:false);
+        pTextctrl->StyleSetFontAttr(nWhich,         
+#ifndef WX232
+            // Compensate for wx2.2.9's fruity way of messing up the point sizes.
+            font.GetPointSize()-2,
+#else
+            font.GetPointSize(),
+#endif
+            font.GetFaceName(),
+            font.GetStyle()&wxBOLD!=0,
+            font.GetStyle()&wxITALIC!=0,
+            font.GetUnderlined());
+/*        pTextctrl->StyleSetBold(nWhich,(font.GetStyle()==wxBOLD)?true:false);
         pTextctrl->StyleSetItalic(nWhich,(font.GetStyle()==wxITALIC)?true:false);
         pTextctrl->StyleSetUnderline(nWhich,font.GetUnderlined());
         pTextctrl->StyleSetSize(nWhich,font.GetPointSize());
-        pTextctrl->StyleSetFaceName(nWhich,font.GetFaceName());
+        pTextctrl->StyleSetFaceName(nWhich,font.GetFaceName());*/
        
         pTextctrl->Show(true);
         pTextctrl->SetFocus();
@@ -255,8 +276,8 @@ void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
         "\" Style string literals",
         "' Style string literals",
         "Keywords",
-        "'' Style strings",
-        "\"\" Style strings",
+        "''' Style strings",
+        "\"\"\" Style strings",
         "Class declarations",
         "Function declarations",
         "Operators",
@@ -305,10 +326,10 @@ void CCodeWnd::OnViewWhiteSpace(wxCommandEvent& event)
     pTextctrl->SetFocus();
 }
 
+#ifdef WX232
 
 void CCodeWnd::OnFind(wxCommandEvent& event)
 {
-#ifdef WX232
     wxFindReplaceData fdata;
 
     wxFindReplaceDialog* pDialog = new wxFindReplaceDialog
@@ -319,12 +340,10 @@ void CCodeWnd::OnFind(wxCommandEvent& event)
             
         );
     pDialog->Show(true);
-#endif
 }
 
 void CCodeWnd::OnReplace(wxCommandEvent& event)
 {
-#ifdef WX232
     wxFindReplaceData fdata;
 
     wxFindReplaceDialog* pDialog = new wxFindReplaceDialog
@@ -335,10 +354,8 @@ void CCodeWnd::OnReplace(wxCommandEvent& event)
             wxFR_REPLACEDIALOG
         );
     pDialog->Show(true);
-#endif
 }
 
-#ifdef WX232
 void CCodeWnd::DoFind(wxFindDialogEvent& event)
 {
     // Handles find/replace stuff.
@@ -392,6 +409,7 @@ void CCodeWnd::DoFind(wxFindDialogEvent& event)
     wxFindReplaceDialog *pDlg = event.GetDialog();
     pDlg->Destroy();
 }
+
 #endif
 
 void CCodeWnd::OnStyleNeeded(wxStyledTextEvent& event)
@@ -440,6 +458,12 @@ void CCodeWnd::OnCharAdded(wxStyledTextEvent& event)
         if (linebuf[0])
             pTextctrl->ReplaceSelection(linebuf);
     }
+
+    if (!bChanged)
+    {
+        bChanged=true;
+        SetTitle(wxString("* ")+GetTitle());
+    }
 }
 
 void CCodeWnd::OnSave(wxCommandEvent& event)
@@ -460,6 +484,12 @@ void CCodeWnd::OnSave(wxCommandEvent& event)
     f.Write(s.c_str(),nSize);
     
     f.Close();
+
+    if (bChanged)
+    {
+        bChanged=false;
+        SetTitle(sFilename.c_str());   // remove the * from the title
+    }
 }
 
 void CCodeWnd::OnSaveAs(wxCommandEvent& event)
@@ -487,16 +517,13 @@ void CCodeWnd::OnSaveAs(wxCommandEvent& event)
 // Trivial stuff
 void CCodeWnd::OnClose(wxCommandEvent& event)
 {   
-    File f;
-    f.OpenRead(sFilename.c_str(),false);
-
     if (pTextctrl->GetLength()==0)
     {
         Destroy();
         return;
     }
     
-    if (!sFilename.length() || f.Size()!=pTextctrl->GetLength())
+    if (bChanged)
     {
         wxMessageDialog msgdlg
             (
@@ -514,15 +541,19 @@ void CCodeWnd::OnClose(wxCommandEvent& event)
 
             case wxID_YES: OnSave(event); break;
             case wxID_CANCEL: return;
-            //case wxID_NO: 
-
+            //case wxID_NO:
         }
     }
     
     Destroy();
 }
 
+void CCodeWnd::OnMarginClick(wxStyledTextEvent& event)
+{
+    int nLine=pTextctrl->LineFromPosition(event.GetPosition());
 
+    pTextctrl->ToggleFold(nLine);
+}
 
 void CCodeWnd::OnUndo(wxCommandEvent& event)        {   pTextctrl->Undo();      }
 void CCodeWnd::OnRedo(wxCommandEvent& event)        {   pTextctrl->Redo();      }
