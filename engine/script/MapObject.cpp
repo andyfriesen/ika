@@ -488,7 +488,7 @@ namespace Script
 
             const ::Map::Layer* layer = engine->map.GetLayer(lay);
 
-            return Py_BuildValue("(siiii)", layer->label.c_str(), layer->x, layer->y, layer->wrapx ? 1 : 0, layer->wrapy ? 1 : 0);
+            return Py_BuildValue("(siiii)", layer->label.c_str(), layer->tiles.Width(), layer->tiles.Height(), layer->wrapx ? 1 : 0, layer->wrapy ? 1 : 0);
         }
 
         METHOD(Map_GetLayerPosition)

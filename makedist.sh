@@ -37,7 +37,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
         echo Creating NSIS installer.
         cd tempdist
-        /cygdrive/c/Program\ Files/NSIS/makensis.exe ../ika.nis && mv ika-install-$version.exe ..
+        /cygdrive/d/Program\ Files/NSIS/makensis.exe ../ika.nis && mv ika-install-$version.exe ..
         cd ..
         echo Done.
         rm -rf tempdist

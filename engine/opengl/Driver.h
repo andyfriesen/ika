@@ -1,8 +1,10 @@
 #ifndef OPENGL_DRIVER_H
 #define OPENGL_DRIVER_H
 
+#define SHARE_TEXTURES
+
 #ifdef SHARE_TEXTURES
-#include <hash_set>
+#include <set>
 #endif
 
 #include "SDL/SDL.h"
@@ -133,7 +135,8 @@ namespace OpenGL
         Video::BlendMode _blendMode;
 
 #ifdef SHARE_TEXTURES
-        std::hash_set<Texture*> _textures;  // textures allocated.  Only used for 16x16 images at this moment.
+        typedef std::set<Texture*> TextureSet;
+        TextureSet _textures;  // textures allocated.  Only used for 16x16 images at this moment.
 #endif
 
 #ifdef WIN32

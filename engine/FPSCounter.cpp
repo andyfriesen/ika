@@ -17,9 +17,9 @@ void FPSCounter::Update()
 
     frames++;
 
-    if (count > 100)
+    if (count > timeRate)
     {
-        count -= 100;
+        count -= timeRate;
         fps = frames;
         frames = 0;
     }

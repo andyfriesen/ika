@@ -2,7 +2,7 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "0.49"
+#define VERSION "0.50"
 
 // low level components/containers/etc..
 #include <list>
@@ -52,7 +52,6 @@ public:
 
     bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if set.
     
-    bool                            bKillFlag;                                      ///< set to true if a certain something hits the fan
     bool                            bActive;                                        ///< set to false if we're supposed to sleep
     bool                            bMaploaded;                                     ///< true if a map is... loaded. -_-
     

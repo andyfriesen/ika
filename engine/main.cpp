@@ -37,12 +37,6 @@ void CEngine::Script_Error()
 
     std::string err = script.GetErrorMessage();
 
-    /*File f;
-    if (f.OpenRead("pyout.log"))
-        err = f.ReadAll();
-    else
-        err = "Nonspecific script error.  Truly, the Tao is not with us in these dark times.";*/
-
 #if (defined WIN32)
     if (!err.empty())
     {
@@ -89,7 +83,6 @@ void CEngine::CheckMessages()
             break;
 
         case SDL_QUIT:
-            bKillFlag = true;
             Shutdown();
             exit(0);
             break;
@@ -124,9 +117,6 @@ void CEngine::MainLoop()
 
         for (int i = 0; (i < now - lasttick) && (++skipcount <= nFrameskip); i++)
         {
-            if (bKillFlag)
-                return;
-
             GameTick();
         }
 
@@ -143,7 +133,7 @@ void CEngine::MainLoop()
         video->ShowPage();
 
         // if we're on the fast track, give the OS a minute.
-        //if (now == GetTime()) SDL_Delay(10);
+        if (now == GetTime()) SDL_Delay(10);
     }
 
     delete font;
@@ -267,6 +257,7 @@ void CEngine::Shutdown()
     entities.clear();
     Sound::Shutdown();
     script.Shutdown();
+    SDL_Quit();
 
     delete video;
 }
@@ -510,10 +501,10 @@ void CEngine::ProcessEntities()
     {
         Entity* ent = *curEnt;
         ent->speedCount += ent->speed;
-        while (ent->speedCount >= 100)
+        while (ent->speedCount >= timeRate)
         {
             ent->Update();
-            ent->speedCount -= 100;
+            ent->speedCount -= timeRate;
         }
     }
 }
@@ -768,7 +759,6 @@ CEngine::CEngine()
     , pPlayer(0)
     , cameraTarget(0)
     , bMaploaded(false)
-    , bKillFlag(false)
 {}
 
 int main(int argc, char* args[])

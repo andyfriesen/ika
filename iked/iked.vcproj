@@ -41,7 +41,7 @@
 				OutputFile=".\Debug/iked.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="../common,../3rdparty/lib,c:/wx2/lib,c:/wx2/contrib/lib"
+				AdditionalLibraryDirectories="../common,../3rdparty/lib,$(WXWIN)/lib,$(WXWIN)/contrib/lib"
 				IgnoreDefaultLibraryNames="libcd.lib,libcid.lib,msvcrt.lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/iked.pdb"

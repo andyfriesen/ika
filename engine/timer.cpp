@@ -3,5 +3,5 @@
 
 int GetTime()
 {
-    return SDL_GetTicks() / 10;
+    return SDL_GetTicks() * timeRate / 1000;
 }

@@ -1,4 +1,5 @@
 #include <cassert>
+#include <vector>
 #include <math.h>
 
 #include "SDL/SDL_opengl.h"
@@ -32,7 +33,18 @@ namespace OpenGL
         glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
         glEnable(GL_BLEND);
 
+#if 0
         gluOrtho2D(0, _xres, _yres, 0);
+#else
+        glMatrixMode(GL_PROJECTION);
+        glLoadIdentity();
+        glMatrixMode(GL_MODELVIEW);
+        glLoadIdentity();
+        glScalef(2.0f / (float)xres, -2.0f / (float)yres, 1.0f);
+        glTranslatef(-((float)xres / 2.0f), -((float)yres / 2.0f), 0.0f);
+        glViewport(0, 0, xres, yres);
+#endif
+
         glClearColor(0, 0, 0, 0);
 
         glDisable(GL_DEPTH_TEST);
@@ -82,14 +94,20 @@ namespace OpenGL
 
         // disabled for now, due to glitches and things
 #ifdef SHARE_TEXTURES
+        Texture* blah[255];
+        int q = 0;
+        for (TextureSet::iterator iter = _textures.begin(); iter != _textures.end(); iter++)
+            blah[q++] = *iter;
+
         if (src.Width() == 16 && src.Height() == 16)
         {
             Texture* tex = 0;
-            for (std::hash_set<Texture*>::iterator
+            for (TextureSet::iterator
                 iter  = _textures.begin(); 
                 iter != _textures.end(); 
                 iter++)
             {
+                Texture* t = *iter;
                 const Point& p = (*iter)->unused;
                 if (p.x <= 256 - 16 && p.y <= 256 - 16)
                 {
@@ -116,6 +134,8 @@ namespace OpenGL
             tex->unused.x += 16;
             if (tex->unused.x >= 256)
                 tex->unused = Point(0, tex->unused.y + 16);
+
+            SwitchTexture(tex->handle);
 
             src.Flip();
             glTexSubImage2D(GL_TEXTURE_2D, 0, x, y, 16, 16, GL_RGBA, GL_UNSIGNED_BYTE, src.GetPixels());
@@ -189,16 +209,19 @@ namespace OpenGL
         
         // Refcount update/cleanup
         Texture* tex = ((OpenGL::Image*)img)->_texture;
+#ifdef SHARE_TEXTURES
         if (tex->refCount == 1)
         {
-#ifdef SHARE_TEXTURES
             _textures.erase(tex);
-#endif
-			glDeleteTextures(1, &tex->handle);
+            glDeleteTextures(1, &tex->handle);
             delete tex;
         }
         else
             tex->refCount--;
+#else
+        glDeleteTextures(1, &tex->handle);
+        delete tex;
+#endif
 
         delete (OpenGL::Image*)img;
     }
