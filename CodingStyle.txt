@@ -8,25 +8,28 @@ Locals can be whatever you want, really.  Just be reasonable. ;)
 Class names should follow the Java convention.  (eg. ThisIsAClass)  Namespaces
 should do the same.
 
-Function names are to be lowercased, with each word capitalized.  All function
-names must be verbs, with the sole exception of accessor functions, which may
-be nouns.
+Function names should be verbs, with the sole exception of accessor functions, 
+which may be nouns.
 
 Preprocessor constants should be in all uppercase, with underscores dilineating
 words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever possbile. (they
 should follow the usual variable convention)
 
 Braces should be on their own line.  Cheating and putting both on the same line
-is acceptable if it doesn't result in excessive line length. (more than 120
-characters or so)  if (something) { x++; y--; }
-if (blah)
-{
-   ...
-}
-else
-{
-   ...
-}
+is acceptable if it's a trivial operation, and it doesn't result in excessive
+line length. (more than 120 characters or so)
+
+ie.
+    if (something) { x++; y--; }
+
+    if (blah)
+    {
+       ...
+    }
+    else
+    {
+       ...
+    }
 
 Whenever possible, wrap globals in a meaningful namespace.  The simple fact
 is that globals are a pain in the ass, but being overly OOP is retarded too.

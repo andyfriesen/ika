@@ -162,6 +162,8 @@ void CEngine::Startup()
             | SDL_INIT_NOPARACHUTE
 #endif
             );
+
+        atexit(SDL_Quit);
           
         Log::Write("Initializing Video");
 #if 1
