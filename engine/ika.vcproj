@@ -377,6 +377,9 @@
 				RelativePath="script\CanvasObject.cpp">
 			</File>
 			<File
+				RelativePath=".\script\ColoursObject.cpp">
+			</File>
+			<File
 				RelativePath="script\ControlObject.cpp">
 			</File>
 			<File
@@ -425,6 +428,12 @@
 		<Filter
 			Name="Video"
 			Filter="">
+			<File
+				RelativePath=".\video\ColourHandler.cpp">
+			</File>
+			<File
+				RelativePath=".\video\ColourHandler.h">
+			</File>
 			<File
 				RelativePath="video\Driver.h">
 			</File>

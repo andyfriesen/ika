@@ -25,6 +25,16 @@ static u32 fgetq(FILE* f)
     return q;
 }
 
+static void fputw(u16 w, FILE* f)
+{
+    fwrite(&w, 1, sizeof(u16), f);
+}
+
+static void fputq(u32 q, FILE* f)
+{
+    fwrite(&q, 1, sizeof(u32), f);
+}
+
 Map* ImportVerge1Map(const std::string& fileName)
 {
     FILE* f = fopen(fileName.c_str(), "rb");
@@ -381,8 +391,26 @@ static void DecompressVerge3(void* dest, int outSize, FILE* f)
     fread(cdata.get(), 1, compressedSize, f);
     int result = uncompress(reinterpret_cast<Bytef*>(dest), &zsize, cdata.get(), compressedSize);
     if (result != Z_OK)
-        throw std::runtime_error(va("ImportVerge3Map returned: zlib error %i", result));
+        throw std::runtime_error(va("DecompressVerge3 returned zlib error %i", result));
 }
+
+static void CompressVerge3(void* src, int size, FILE* f)
+{
+    uLongf bufferSize = size * 101 / 100 + 12;    // 0.1% larger than source, plus 12 bytes. (we splurge and give it a whole 1%)
+    ScopedArray<u8> buffer = new u8[bufferSize];
+
+    int result = compress((Bytef*)buffer.get(), &bufferSize, (Bytef*)src, size);
+    if (result != Z_OK)
+        throw std::runtime_error(va("CompressVerg3 returned zlib error %i", result));
+
+    fputq(size, f);
+    fputq(bufferSize, f);
+    fwrite(buffer.get(), 1, bufferSize, f);
+}
+
+
+static const char* verge3MapSig = "V3MAP";
+static const int VERGE3_MAP_VERSION = 2;
 
 Map* ImportVerge3Map(const std::string& fileName)
 {
@@ -394,18 +422,15 @@ Map* ImportVerge3Map(const std::string& fileName)
     {
         Map* map = new Map;
 
-        const char* mapsig = "V3MAP";
-        const int MAP_VERSION = 2;
-
         char buffer[256];
 
         fread(buffer, 1, 6, f);
-        if (std::string(buffer) != mapsig)
+        if (std::string(buffer) != verge3MapSig)
             throw std::runtime_error("Bogus map signature");
 
         int version = fgetq(f);
-        if (version != MAP_VERSION)
-            throw std::runtime_error(va("Invalid map version %i (looking for %i)", version, MAP_VERSION));
+        if (version != VERGE3_MAP_VERSION)
+            throw std::runtime_error(va("Invalid map version %i (looking for %i)", version, VERGE3_MAP_VERSION));
 
         fseek(f, 4, SEEK_CUR); // skip vc offset
 
@@ -575,4 +600,69 @@ VSP* ImportVerge3TileSet(const std::string& fileName)
 
     fclose(f);
     return vsp;
+}
+
+void ExportVerge3Map(const std::string& fileName, Map* map)
+{
+    FILE* f = fopen(fileName.c_str(), "wb");
+    if (!f)
+        throw std::runtime_error(va("Unable to open %s for writing", fileName.c_str()));
+
+    fwrite(verge3MapSig, 1, 6, f);
+    fputq(VERGE3_MAP_VERSION, f);
+    fputq(0, f); // vc offset
+
+    std::string buffer;
+    buffer.reserve(256);
+    
+    buffer = map->title;           fwrite(buffer.c_str(), 1, 256, f);
+    buffer = map->tileSetName;     fwrite(buffer.c_str(), 1, 256, f);
+    buffer = map->metaData.count("music") ? map->metaData["music"] : "";     
+    fwrite(buffer.c_str(), 1, 256, f);
+    if (map->metaData.count("rstring")) buffer = map->metaData["rstring"];
+    else
+    {
+        buffer.clear();
+        for (uint i = 0; i < buffer.size(); i++)
+            buffer += '1' + i;
+        buffer += "ER";
+    }
+    fwrite(buffer.c_str(), 1, 256, f);
+    buffer = map->metaData.count("startupscript") ? map->metaData["startupscript"] : "";     
+    fwrite(buffer.c_str(), 1, 256, f);
+
+    fputw(0, f); // startx
+    fputw(0, f); // starty
+
+    fputq(map->NumLayers(), f);
+    for (uint i = 0; i < map->NumLayers(); i++)
+    {
+        Map::Layer* lay = map->GetLayer(i);
+        buffer = lay->label;
+        fwrite(buffer.c_str(), 1, 256, f);
+
+        double parallaxDummy = 1.0;
+        fwrite(&parallaxDummy, 1, 8, f);
+        fwrite(&parallaxDummy, 1, 8, f);
+
+        fputw(lay->Width(), f);
+        fputw(lay->Height(), f);
+        fputc(0, f); // lucent
+
+        ScopedArray<u16> data16 = new u16[lay->Width() * lay->Height()];
+        std::copy(lay->tiles.GetPointer(0, 0), lay->tiles.GetPointer(0, 0) + lay->Width() * lay->Height(), data16.get());
+        CompressVerge3(data16.get(), lay->Width() * lay->Height() * sizeof(u16), f);
+    }
+
+    // for now, don't write any obstruction or zone data
+    int width = map->GetLayer(0)->Width();
+    int height = map->GetLayer(0)->Height();
+    ScopedArray<u8> obsData = new u8[width * height];
+    std::fill(obsData.get(), obsData.get() + width * height, 0);
+    CompressVerge3(obsData.get(), width * height, f);
+
+    // zone data too
+    CompressVerge3(obsData.get(), width * height, f);
+
+    fclose(f);
 }

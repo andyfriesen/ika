@@ -42,7 +42,7 @@ public:
     ~CompositeCommand();
 
     int GetCount() const;
-    Command* GetIndex(int i);
+    Command* GetIndex(uint i);
     void Append(Command* cmd);
 
     virtual void Do(Executor* e);

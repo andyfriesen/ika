@@ -24,7 +24,7 @@ namespace Script
                 "Draws a portion of the image defined by the coordinates (ix, iy, iw, ih)\n" "at screen coordinates (x, y).\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+                "The default is ika.AlphaBlend."
             },
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
@@ -74,7 +74,12 @@ namespace Script
                 "across the image."
             },
 
-            // TODO: more blits.  I want a wrapblit, tintblit, and others
+            {   "TintTileBlit",     (PyCFunction)Video_TintTileBlit, METH_VARARGS,
+                "TintTileBlit(image, x, y, width, height, tintColour, scalex=1, scaley=1, blendmode=Normal)\n\n"
+                "\"tile\"-blits the image, just like Video.TileBlit, except it multiplies each pixel by\n"
+                "tintColour, resulting in a colour tint."
+            },
+
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   METH_VARARGS,
                 "DrawPixel(x, y, colour)\n\n"
                 "Draws a dot at (x, y) with the colour specified."
@@ -310,6 +315,27 @@ namespace Script
             self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->TintDistortBlitImage(image->img, x, y, tint);
 
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        METHOD(Video_TintTileBlit)
+        {
+            Script::Image::ImageObject* image;
+            int x, y;
+            int w, h;
+            u32 colour;
+            float scalex = 1, scaley = 1;
+            int trans = 1;
+
+            if (!PyArg_ParseTuple(args, "O!iiiii|ffi:Video.TintTileBlit", 
+                &Script::Image::type, &image, 
+                &x, &y, &w, &h, &colour, &scalex, &scaley, &trans))
+                return 0;
+
+            self->video->SetBlendMode((::Video::BlendMode)trans);
+            self->video->TintTileBlitImage(image->img, x, y, w, h, scalex, scaley, colour);
+            
             Py_INCREF(Py_None);
             return Py_None;
         }

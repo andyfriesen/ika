@@ -101,6 +101,9 @@ namespace OpenGL
         /// like OpenGL usually does when rendering textured, distorted quads.
         virtual void TintDistortBlitImage(Video::Image* img, int x[4], int y[4], u32 colour[4]);
 
+        /// Combines TintBlit and TileBlit.  'nuff said.
+        virtual void TintTileBlitImage(Video::Image* img, int x, int y, int w, int h, float scalex, float scaley, u32 tint);
+
         /// Draws a single pixel on the screen.
         virtual void DrawPixel(int x, int y, u32 colour);
 

@@ -24,10 +24,10 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         echo Done.
 
         echo Assembling the main dist zip...
-        #mkdir tempdist
-        mkdir tempdist/xi
+        mkdir tempdist
+        #mkdir tempdist/xi
         cp -R dist/* tempdist
-        cp xi/* tempdist/xi
+        #cp xi/* tempdist/xi
 
         cp 3rdparty/dlls/audiere.dll tempdist
         cp 3rdparty/dlls/corona.dll tempdist

@@ -77,7 +77,7 @@ std::string Lower(const std::string& s);
 std::string Upper(const std::string& s);
 
 std::string ToString(int i);
-bool hexToInt(const std::string& s, uint *ret);
+uint hexToInt(const std::string& s);
 
 template <class T>
 class ScopedPtr

@@ -168,8 +168,12 @@ namespace Ika
                         break;
                     }
                     std::string t(s.substr(i + 1, pos - i - 1));
-                    if(!_video->findColour(t, &colour))
-                        _video->hexColour(t, &colour);
+
+                    if(_video->hasColour(t))
+                        colour = _video->getColour(t);
+                    else
+                        colour = hexToInt(t);
+
                     i = pos + 1;
                 }
             };

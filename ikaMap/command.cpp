@@ -25,7 +25,7 @@ int CompositeCommand::GetCount() const
     return _commands.size();
 }
 
-Command* CompositeCommand::GetIndex(int i)
+Command* CompositeCommand::GetIndex(uint i)
 {
     if (i < 0 || i >= _commands.size())
         return 0;

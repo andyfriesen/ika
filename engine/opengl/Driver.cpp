@@ -576,6 +576,14 @@ namespace OpenGL
         glColor4ub(255, 255, 255, 255);
     }
 
+    /// Combines TintBlit and TileBlit.  'nuff said.
+    void Driver::TintTileBlitImage(Video::Image* img, int x, int y, int w, int h, float scalex, float scaley, u32 tint)
+    {
+        glColor4ubv(reinterpret_cast<u8*>(&tint));
+        TileBlitImage(img, x, y, w, h, scalex, scaley);
+        glColor3ub(255, 255, 255);
+    }
+
     void Driver::DrawPixel(int x, int y, u32 colour)
     {
         glDisable(GL_TEXTURE_2D);

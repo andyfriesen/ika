@@ -16,23 +16,21 @@ private:
 public:
     ColourHandler();
 
-    // Looks up a colour in the colour map
-    bool findColour(const std::string &name, RGBA *colour);
-
-    // Convert from hex format to RGBA
-    static bool hexColour(const std::string &h, RGBA *colour);
+    // Returns the colour with the given name, or -1 if not found.
+    // (use hasColour)
+    RGBA getColour(const std::string& name);
 
     // Adds a colour to the colour map
-    void addColour(const std::string &name, RGBA col);
+    void addColour(const std::string& name, RGBA col);
     
     // Checks whether a named colour has been defined
-    bool hasColour(const std::string &name);
+    bool hasColour(const std::string& name);
     
     // Removes a colour from the map
-    void removeColour(const std::string &name);
+    void removeColour(const std::string& name);
     
     // Returns the colour map
-    const colourMap *getColourMap();
+    const colourMap& getColourMap();
 
 };
 

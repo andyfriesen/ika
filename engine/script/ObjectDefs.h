@@ -315,6 +315,7 @@ namespace Script
         METHOD(Video_TileBlit, VideoObject);
         METHOD(Video_TintBlit, VideoObject);
         METHOD(Video_TintDistortBlit, VideoObject);
+        METHOD(Video_TintTileBlit, VideoObject);
         METHOD(Video_DrawPixel, VideoObject);
         METHOD(Video_DrawLine, VideoObject);
         METHOD(Video_DrawRect, VideoObject);
