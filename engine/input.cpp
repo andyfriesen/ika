@@ -1,10 +1,10 @@
 /* 
-Keyboard/mouse handling stuff.
-This was originally used in v2.6, but I thought "what the hell", and copied it. ^_~
+    Keyboard/mouse handling stuff.
+    This was originally used in v2.6, but I thought "what the hell", and copied it. ^_~
 
-  This was originally meant to mimic aen's keyboard handler, but has since
-  been reversed. While aen's handler "feeds" keys to processes, this one
-  simply puts them in a queue for the process to grab on it's own.
+    This was originally meant to mimic aen's keyboard handler, but has since
+    been reversed. While aen's handler "feeds" keys to processes, this one
+    simply puts them in a queue for the process to grab on it's own.
   
     ChangeLog
     + <tSB> 11.05.00 - Initial writing
@@ -36,13 +36,27 @@ static byte key_shift_tbl[128] =
 {
     0,   0, '!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '_', '+',   8,   9,
   'Q', 'W', 'E', 'R', 'T', 'Y', 'U', 'I', 'O', 'P', '{', '}',  13,   0, 'A', 'S',
-  'D', 'F', 'G', 'H', 'J', 'K', 'L', ':','\"', '~',   0, '|', 'Z', 'X', 'C', 'V',
+  'D', 'F', 'G', 'H', 'J', 'K', 'L', ':', '\"', '~',   0, '|', 'Z', 'X', 'C', 'V',
   'B', 'N', 'M', '<', '>', '?',   0, '*',   0,   1,   0,   1,   1,   1,   1,   1,
     1,   1,   1,   1,   1,   0,   0,   0,   0,   0, '-',   0,   0,   0, '+',   0,
     0,   0,   1, 127,   0,   0,   0,   1,   1,   0,   0,   0,   0,   0,   0,   0,
    13,   0, '/',   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0,   0, 127,
     0,   0,   0,   0,   0,   0,   0,   0,   0,   0, '/',   0,   0,   0,   0,   0
 };
+
+static const char* errname(HRESULT err)
+{
+    switch (err)
+    {
+        case DI_OK: return "DI_OK";
+        case DIERR_INPUTLOST: return "DIERR_INPUTLOST";
+        case DIERR_INVALIDPARAM: return "DIERR_INVALIDPARAM";
+        case DIERR_NOTACQUIRED: return "DIERR_NOTACQUIRED";
+        case DIERR_NOTBUFFERED: return "DIERR_NOTBUFFERED";
+        case DIERR_NOTINITIALIZED: return "DIERR_NOTINITIALIZED";
+    };
+    return "Beats me. :o";
+}
 
 Input::Input()
 : up(control[0]),    down(control[1]),    left(control[2]),    right(control[3]),    enter(control[4]),    cancel(control[5])
@@ -53,15 +67,15 @@ Input::Input()
     for (int i=0; i<nControls; i++)
         control[i]=false;
     
-    ZeroMemory(&keys,sizeof keys);
+    ZeroMemory(&keys, sizeof keys);
     
-    BindKey(0,DIK_UP);
-    BindKey(1,DIK_DOWN);
-    BindKey(2,DIK_LEFT);
-    BindKey(3,DIK_RIGHT);
+    BindKey(0, DIK_UP);
+    BindKey(1, DIK_DOWN);
+    BindKey(2, DIK_LEFT);
+    BindKey(3, DIK_RIGHT);
     
-    BindKey(4,DIK_RETURN);
-    BindKey(5,DIK_ESCAPE);
+    BindKey(4, DIK_RETURN);
+    BindKey(5, DIK_ESCAPE);
 }
 
 Input::~Input()
@@ -70,7 +84,7 @@ Input::~Input()
         ShutDown();
 }
 
-inline bool Input::Test(HRESULT result,char* errmsg)
+inline bool Input::Test(HRESULT result, char* errmsg)
 // Just to keep the error checking code from taking up so much space in the init routine.
 {
     if (result!=DI_OK)
@@ -82,7 +96,7 @@ inline bool Input::Test(HRESULT result,char* errmsg)
     return 1;
 }
 
-int Input::Init(HINSTANCE hinst,HWND hwnd)
+int Input::Init(HINSTANCE hinst, HWND hwnd)
 {
     HRESULT result;
     DIPROPDWORD dipdw;
@@ -92,17 +106,17 @@ int Input::Init(HINSTANCE hinst,HWND hwnd)
     
     try
     {
-        result=DirectInputCreate(hinst,DIRECTINPUT_VERSION,&lpdi,NULL);
+        result=DirectInputCreate(hinst, DIRECTINPUT_VERSION, &lpdi, NULL);
         if (FAILED(result)) throw "DI:DInputCreate";
         
         // -------------keyboard initizlization------------
-        result=lpdi->CreateDevice(GUID_SysKeyboard,&keybd,NULL);
+        result=lpdi->CreateDevice(GUID_SysKeyboard, &keybd, NULL);
         if (FAILED(result)) throw "DI:CreateDevice";
         
         result=keybd->SetDataFormat(&c_dfDIKeyboard);
         if (FAILED(result)) throw "DI:SetDataFormat";
         
-        result=keybd->SetCooperativeLevel(hWnd,DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
+        result=keybd->SetCooperativeLevel(hWnd, DISCL_FOREGROUND | DISCL_NONEXCLUSIVE);
         if (FAILED(result)) throw "DI:SetCooplevel";
         
         dipdw.diph.dwSize = sizeof(DIPROPDWORD);
@@ -110,7 +124,7 @@ int Input::Init(HINSTANCE hinst,HWND hwnd)
         dipdw.diph.dwObj = 0;
         dipdw.diph.dwHow = DIPH_DEVICE;
         dipdw.dwData = 128;
-        result=keybd->SetProperty(DIPROP_BUFFERSIZE,&dipdw.diph);
+        result=keybd->SetProperty(DIPROP_BUFFERSIZE, &dipdw.diph);
         if (FAILED(result)) throw "DI:SetProperty";
         
         keybd->Acquire();
@@ -118,7 +132,7 @@ int Input::Init(HINSTANCE hinst,HWND hwnd)
     }
     catch (const char* s)
     {
-        Log::Write( "Input init failed: %s",s);
+        Log::Write( "Input init failed: %s", s);
         ShutDown();
         return 0;
     }
@@ -146,6 +160,8 @@ void Input::ShutDown()
 
 void Input::Poll() // updates the key[] array.  This is called in winproc in response to WM_KEYDOWN and WM_KEYUP
 {
+//    return;
+
     HRESULT result;
     DIDEVICEOBJECTDATA didata[128];
     DWORD numentries;
@@ -158,16 +174,18 @@ void Input::Poll() // updates the key[] array.  This is called in winproc in res
     }
     
     // read from the keyboard
-    result=keybd->GetDeviceData(sizeof(DIDEVICEOBJECTDATA),didata,&numentries,0);
-    if (result!=DI_OK && result!=DI_BUFFEROVERFLOW)                                                    // HEY! D:<
-    {
-        keybd->Acquire();                                                               // re-acquire it
-        result=keybd->GetDeviceData(sizeof(DIDEVICEOBJECTDATA),didata,&numentries,0);   // and try again!
-    }
-    
+    result = keybd->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), didata, &numentries, 0);
+
     if (!numentries || result==DIERR_OTHERAPPHASPRIO) return; // TODO: joystick?
-    
-    for (int i=0; i<numentries; i++)
+
+    if (result == DIERR_INPUTLOST || result == DIERR_NOTACQUIRED)
+    {
+        keybd->Acquire();                                                                   // re-acquire it
+        result=keybd->GetDeviceData(sizeof(DIDEVICEOBJECTDATA), didata, &numentries, 0);    // and try again!
+        if (FAILED(result)) return;                                                         // If it still won't work, give up.
+    }
+
+    for (uint i=0; i<numentries; i++)
     {
         int k=didata[i].dwOfs;
         bool kdown=didata[i].dwData&0x80?true:false;
@@ -178,19 +196,19 @@ void Input::Poll() // updates the key[] array.  This is called in winproc in res
         if (k==DIK_RMENU)    k=DIK_LMENU;
         
         keys[k].bPressed=kdown;
-        last_pressed=k;									// this is kinda handy
+        last_pressed=k;                                 // this is kinda handy
         
-        if (kdown && kb_end!=kb_start+1)				// if the key's down and the buffer has room
-            key_buffer[kb_end++]=k;						// add it to the queue
+        if (kdown && kb_end!=kb_start+1)                // if the key's down and the buffer has room
+            key_buffer[kb_end++]=k;                     // add it to the queue
         // TODO: key repeating?
         
         if (keys[k].bIsbound)
         {
-            control[keys[k].nControl]=kdown;			// update the virtual control, if there is one.
+            control[keys[k].nControl]=kdown;            // update the virtual control, if there is one.
             
             if (kdown)
                 controlbuffer.push(keys[k].nControl);
-        }		
+        }       
     }
 }
 
@@ -201,9 +219,9 @@ void Input::Update() // updates the direction variables and the virtual buttons 
     UpdateMouse();
 }
 
-void Input::BindKey(int nButtonidx,int nKeycode)
+void Input::BindKey(int nButtonidx, int nKeycode)
 {
-    Log::Write( "BindKey %i to %i",nButtonidx,nKeycode);
+    Log::Write( "BindKey %i to %i", nButtonidx, nKeycode);
     if (nKeycode<0 || nKeycode>255)
         return;
     if (nButtonidx<0 || nButtonidx>nControls)
@@ -269,11 +287,11 @@ char Input::Scan2ASCII(int scancode)
         return key_ascii_tbl[scancode];
 }
 
-void Input::MoveMouse(int x,int y)
+void Input::MoveMouse(int x, int y)
 {
     mousex=x; mousey=y;
 
-    SetCursorPos(x,y);
+    SetCursorPos(x, y);
 }
 
 void Input::UpdateMouse()
@@ -281,7 +299,7 @@ void Input::UpdateMouse()
     POINT p;
 
     GetCursorPos(&p);
-    ScreenToClient(hWnd,&p);
+    ScreenToClient(hWnd, &p);
 
     mousex=p.x;
     mousey=p.y;
@@ -292,7 +310,7 @@ void Input::UpdateMouse()
     if (mousey>mclip.bottom) mousey=mclip.bottom;
 }
 
-void Input::ClipMouse(int x1,int y1,int x2,int y2)
+void Input::ClipMouse(int x1, int y1, int x2, int y2)
 {
     mclip.left=x1;
     mclip.right=x2;

@@ -2,6 +2,8 @@
 #ifndef CODEVIEW_H
 #define CODEVIEW_H
 
+#define WX232
+
 #include "types.h"
 #include "wx\wx.h"
 #include "wx\colordlg.h"

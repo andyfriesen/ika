@@ -81,7 +81,7 @@ void CFont::PrintString(int startx, int starty, const char* s)
     int x=startx;
     int y=starty;
     
-    for (uint i=0; i<strlen(s); i++)
+    for (uint i=0; i < strlen(s); i++)
     {
         switch (s[i])
         {

@@ -8,8 +8,6 @@
 #include "codeview.h"
 #include "fileio.h"
 
-
-
 namespace
 {
     enum    {   linecountmargin, foldmargin };
@@ -106,21 +104,13 @@ void CCodeView::InitTextControl()
     const int stylesize = 7;
     const int styles[3][stylesize] = 
     {
-        { wxSTC_MARK_MINUS, wxSTC_MARK_PLUS, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY, wxSTC_MARK_EMPTY },
-        { wxSTC_MARK_CIRCLEMINUS, wxSTC_MARK_CIRCLEPLUS, wxSTC_MARK_VLINE, wxSTC_MARK_LCORNERCURVE, wxSTC_MARK_CIRCLEPLUSCONNECTED, wxSTC_MARK_CIRCLEMINUSCONNECTED, wxSTC_MARK_TCORNERCURVE },
-        { wxSTC_MARK_BOXMINUS, wxSTC_MARK_BOXPLUS, wxSTC_MARK_VLINE, wxSTC_MARK_LCORNER, wxSTC_MARK_BOXPLUSCONNECTED, wxSTC_MARK_BOXMINUSCONNECTED, wxSTC_MARK_TCORNER }
+        { wxSTC_MARK_MINUS,         wxSTC_MARK_PLUS,        wxSTC_MARK_EMPTY,           wxSTC_MARK_EMPTY,         wxSTC_MARK_EMPTY,                 wxSTC_MARK_EMPTY,                   wxSTC_MARK_EMPTY },
+        { wxSTC_MARK_CIRCLEMINUS,   wxSTC_MARK_CIRCLEPLUS,  wxSTC_MARK_VLINE,           wxSTC_MARK_LCORNERCURVE,  wxSTC_MARK_CIRCLEPLUSCONNECTED,   wxSTC_MARK_CIRCLEMINUSCONNECTED,    wxSTC_MARK_TCORNERCURVE },
+        { wxSTC_MARK_BOXMINUS,      wxSTC_MARK_BOXPLUS,     wxSTC_MARK_VLINE,           wxSTC_MARK_LCORNER,       wxSTC_MARK_BOXPLUSCONNECTED,      wxSTC_MARK_BOXMINUSCONNECTED,       wxSTC_MARK_TCORNER }
     };
 
     const int marknum[] =
-    {
-        wxSTC_MARKNUM_FOLDEROPEN, 
-        wxSTC_MARKNUM_FOLDER, 
-        wxSTC_MARKNUM_FOLDERSUB, 
-        wxSTC_MARKNUM_FOLDERTAIL, 
-        wxSTC_MARKNUM_FOLDEREND, 
-        wxSTC_MARKNUM_FOLDEROPENMID, 
-        wxSTC_MARKNUM_FOLDERMIDTAIL 
-    };
+    {   wxSTC_MARKNUM_FOLDEROPEN,   wxSTC_MARKNUM_FOLDER,   wxSTC_MARKNUM_FOLDERSUB,    wxSTC_MARKNUM_FOLDERTAIL, wxSTC_MARKNUM_FOLDEREND,          wxSTC_MARKNUM_FOLDEROPENMID,        wxSTC_MARKNUM_FOLDERMIDTAIL     };
 
     for (int i = 0; i < 7; i++)
         pTextctrl->MarkerDefine(marknum[i], styles[0][i]);
@@ -131,7 +121,7 @@ void CCodeView::InitTextControl()
 
 void CCodeView::InitAccelerators()
 {
-    vector<wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
+    vector < wxAcceleratorEntry> accel(pParent->CreateBasicAcceleratorTable());
 
     int p=accel.size();                 // where we start appending to the table
     accel.resize(accel.size()+2);
@@ -230,7 +220,7 @@ void CCodeView::SetSyntax(int nWhich, wxCommandEvent& event)
         hData.SetColour(nColor);
         hData.SetChooseFull(true);
 
-        for (int i=0; i<16; i++)
+        for (int i=0; i < 16; i++)
         {
             wxColour nCustom(i*16, i*16, i*16);
             hData.SetCustomColour(i,nCustom);
@@ -249,7 +239,7 @@ void CCodeView::SetSyntax(int nWhich, wxCommandEvent& event)
             
             
 
-            for(int j=1; j<11; j++)
+            for(int j=1; j < 11; j++)
                 pTextctrl->StyleSetBackground(j,nColor);
 
             
@@ -401,8 +391,8 @@ void CCodeView::DoFind(wxFindDialogEvent& event)
             pTextctrl->GetCurrentLine(),
             event.GetFlags() & wxFR_DOWN ? pTextctrl->GetLength():-pTextctrl->GetLength(),
             event.GetFindString(),
-            event.GetFlags() & wxFR_MATCHCASE ? true : false,
-            event.GetFlags() & wxFR_WHOLEWORD ? true : false
+            event.GetFlags() & wxFR_MATCHCASE ? true : false
+            //event.GetFlags() & wxFR_WHOLEWORD ? true : false
         );
 
         if (nLine)
@@ -420,8 +410,8 @@ void CCodeView::DoFind(wxFindDialogEvent& event)
             pTextctrl->GetCurrentLine(),
             event.GetFlags() & wxFR_DOWN ? pTextctrl->GetLength():-pTextctrl->GetLength(),
             event.GetFindString(),
-            event.GetFlags() & wxFR_MATCHCASE ? true : false,
-            event.GetFlags() & wxFR_WHOLEWORD ? true : false
+            event.GetFlags() & wxFR_MATCHCASE ? true : false
+            //event.GetFlags() & wxFR_WHOLEWORD ? true : false
         );
 
         if (nLine)
@@ -458,7 +448,7 @@ void CCodeView::OnCharAdded(wxStyledTextEvent& event)
         // go up until we find the last line with something on it, and remember how far it's indented.
         wxString s;
         int nLine=nCurline-1;
-        while (nLine>0)
+        while (nLine > 0)
         {
             s=pTextctrl->GetLine(nLine);
             if (s.Len()==0)
@@ -466,7 +456,7 @@ void CCodeView::OnCharAdded(wxStyledTextEvent& event)
             else
             {
                 // found one.  Now we simply copy all the spaces and tabs until we find a non-whitespace char
-                for (unsigned int i=0; i<s.Len(); i++)
+                for (unsigned int i=0; i < s.Len(); i++)
                 {
                     if (s[i]!=' ' && s[i]!='\t')
                         break;

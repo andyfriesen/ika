@@ -286,6 +286,9 @@ bool EXPORT gfxSwitchResolution(int x,int y)
 
 bool EXPORT gfxShowPage()
 {
+    if (hRC != wglGetCurrentContext())
+        wglMakeCurrent(hDC, hRC);
+
     return SwapBuffers(hDC)!=0;
 }
 

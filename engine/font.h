@@ -17,7 +17,7 @@ private:
         handle glyph[96];
     };
     
-    vector<SubSet>      set;
+    vector < SubSet>      set;
     
     int nWidth,nHeight;                                                         //!< width/height of the widest/highest character in the whole font
     int nTabsize;                                                               //!< tab granularity, in pixels

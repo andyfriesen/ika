@@ -1,16 +1,16 @@
 #include "main.h"
 #include <algorithm>
 
-const int timerate=100;
+const int timerate = 100;
 
 void CEngine::Sys_Error(const char* errmsg)
 {
     CDEBUG("sys_error");
     Shutdown();
     if (strlen(errmsg))
-        MessageBox(hWnd,errmsg,"",0);
+        MessageBox(hWnd, errmsg, "", 0);
     PostQuitMessage(0);
-    bKillFlag=true;
+    bKillFlag = true;
     exit(-1);                                            // SITE OF POTENTIAL EVILNESS!  Is this allowed in Win32?  Am I causing a horrible memory leak?
     return;
 }
@@ -23,16 +23,16 @@ void CEngine::Script_Error()
     File f;
     if (f.OpenRead("pyout.log"))
     {
-        int nSize=f.Size();
-        char* c=new char[nSize+1];
-        ZeroMemory(c,nSize+1);
-        f.Read(c,nSize);
+        int nSize = f.Size();
+        char* c = new char[nSize+1];
+        ZeroMemory(c, nSize+1);
+        f.Read(c, nSize);
         f.Close();
-        MessageBox(hWnd,c,"Script error",0);
+        MessageBox(hWnd, c, "Script error", 0);
         delete[] c;
     }
     else
-        MessageBox(hWnd,"Unknown error!","Script error",0);
+        MessageBox(hWnd, "Unknown error!", "Script error", 0);
     
     exit(-1);
     return;
@@ -47,11 +47,11 @@ int CEngine::CheckMessages()
     
     do
     {
-        while (PeekMessage(&msg,NULL,0,0,PM_REMOVE))        // process things until the message queue is empty
+        while (PeekMessage(&msg, NULL, 0, 0, PM_REMOVE))        // process things until the message queue is empty
         {         
-            if (msg.message==WM_QUIT || msg.message==WM_CLOSE || (msg.message==WM_SYSCOMMAND && msg.wParam==SC_CLOSE))
+            if (msg.message == WM_QUIT || msg.message == WM_CLOSE || (msg.message == WM_SYSCOMMAND && msg.wParam == SC_CLOSE))
             {
-                bKillFlag=true;                             // so that everybody knows to stop what they're doing and quit
+                bKillFlag = true;                             // so that everybody knows to stop what they're doing and quit
                 Shutdown();
                 exit(-1);                                   // probably a bad idea, but maybe not, I'm not sure
                 return 1;
@@ -59,8 +59,9 @@ int CEngine::CheckMessages()
             TranslateMessage(&msg);
             DispatchMessage(&msg);
         }
-        if (!bActive)                                       // Are we ready to rock?
-            WaitMessage();                                  // Nope, wait for something to happen.
+
+        //if (!bActive)                                       // Are we ready to rock?
+        //    WaitMessage();                                  // Nope, wait for something to happen.
         
     } while (!bActive);
     
@@ -70,16 +71,16 @@ int CEngine::CheckMessages()
 void CEngine::MainLoop()
 {
     CDEBUG("mainloop");
-    static int numframes,t,fps=0;                           // frame counter stuff (Why do these need to be static?)
+    static int numframes, t, fps = 0;                           // frame counter stuff (Why do these need to be static?)
    
     while(1)
     {
         CheckMessages();
         
-        int nFramesskipped=0;
-        t+=timer.t;
+        int nFramesskipped = 0;
+        t += timer.t;
         
-        while (timer.t>0 && ++nFramesskipped<=nFrameskip)
+        while (timer.t > 0 && ++nFramesskipped <= nFrameskip)
         {
             timer.t--;
             
@@ -90,21 +91,21 @@ void CEngine::MainLoop()
         }
         
         
-        timer.t=0;
+        timer.t = 0;
         
-        if (t>timerate)                                     // update the frame counter
+        if (t > timerate)                                     // update the frame counter
         {
-            fps=numframes;
-            numframes=0;
-            t-=timerate;
+            fps = numframes;
+            numframes = 0;
+            t -= timerate;
             if (bShowfps)
-                SetWindowText(hWnd,va("ika - %ifps",fps));
+                SetWindowText(hWnd, va("ika - %ifps", fps));
         }
         numframes++;
         
         Render();
         
-        //font.PrintString(0,0,va("Fps: ~3%i",fps));
+        //font.PrintString(0, 0, va("Fps: ~3%i", fps));
         
         gfxShowPage();
     }
@@ -116,22 +117,22 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
 {
     CDEBUG("Startup");
     
-    hWnd=hwnd;        hInst=hinst;
+    hWnd = hwnd;        hInst = hinst;
     
     CConfigFile cfg("user.cfg");
 
-    bShowfps= cfg.Int("showfps")!=0 ;
+    bShowfps= cfg.Int("showfps") != 0 ;
 
-    nFrameskip=cfg.Int("frameskip");
+    nFrameskip = cfg.Int("frameskip");
 
     if (cfg.Int("log"))
         Log::Init("ika.log");
     
-    Log::Write("%s startup",VERSION);
-    Log::Write("Built on %s",__DATE__);
+    Log::Write("%s startup", VERSION);
+    Log::Write("Built on %s", __DATE__);
     Log::Write("--------------------------");
     
-    bKillFlag=false;
+    bKillFlag = false;
       
     if (!SetUpGraphics(cfg["graphdriver"]))
     {
@@ -140,12 +141,12 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     }
     
     Log::Writen("Initing graphics");
-    bool a=gfxInit(
+    bool a = gfxInit(
         hWnd,
         cfg.Int("xres"),
         cfg.Int("yres"),
         cfg.Int("bitdepth"),
-        cfg.Int("fullscreen")!=0
+        cfg.Int("fullscreen") != 0
         );
     if (!a)
     {
@@ -155,22 +156,22 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     Log::Write("... OK");
     
     Log::Writen("Initing sound");
-    a=SetupSound(cfg["sounddriver"].c_str());
+    a = SetupSound(cfg["sounddriver"].c_str());
     if (!a)
         Log::Write("Sound initialization failed.  Disabling audio.");
     Log::Write("... OK");
     
     Log::Writen("Initing input");
-    if (!input.Init(hinst,hwnd))
+    if (!input.Init(hinst, hwnd))
     {
         Sys_Error("input.Init failed");
         return;
     }
-    input.ClipMouse(0,0,cfg.Int("xres"),cfg.Int("yres"));
+    input.ClipMouse(0, 0, cfg.Int("xres"), cfg.Int("yres"));
     if (cfg.Int("fullscreen"))
         input.HideMouse();
     
-    memset(pBindings,0,nControls*sizeof(void*));            // Clear key bindings
+    memset(pBindings, 0, nControls*sizeof(void*));            // Clear key bindings
     Log::Write("... OK");
     
     Log::Writen("Initing timer");
@@ -181,18 +182,18 @@ void CEngine::Startup(HWND hwnd, HINSTANCE hinst)
     }
     Log::Write("... OK");
     
-    pPlayer=0;
-    pCameratarget=0;
+    pPlayer = 0;
+    pCameratarget = 0;
     
-    bMaploaded=false;
-    hRenderdest=gfxGetScreenImage();
+    bMaploaded = false;
+    hRenderdest = gfxGetScreenImage();
     
     srand(timeGetTime());                                        // win32 specific x_x
     
     Log::Write("Initing Python");
     script.Init(this);
     Log::Write("Executing system.py");
-    bool result=script.LoadSystemScripts("system.py");
+    bool result = script.LoadSystemScripts("system.py");
     if (!result)
         Script_Error();
     
@@ -207,7 +208,7 @@ void CEngine::Shutdown()
     CDEBUG("shutdown");
     
 #ifdef _DEBUG
-    static bool blah=false;
+    static bool blah = false;
     
     if (blah)
     {
@@ -215,7 +216,7 @@ void CEngine::Shutdown()
         return;
     }
     
-    blah=true;
+    blah = true;
 #endif
     
     Log::Write("---- shutdown ----");
@@ -236,9 +237,9 @@ namespace
     class CompareEntities
     {
     public:
-        int operator () (const CEntity* a,const CEntity* b)
+        int operator () (const CEntity* a, const CEntity* b)
         {
-            return a->y<b->y;
+            return a->y < b->y;
         }
     };
 };
@@ -246,24 +247,24 @@ namespace
 void CEngine::RenderEntities()
 {
     CDEBUG("renderentities");
-    std::vector<CEntity*>     drawlist;
+    std::vector < CEntity*>     drawlist;
     
     // first, get a list of entities onscreen
-    int width,height;
-    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
+    int width, height;
+    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
     {    
         CEntity& e=**i;
         CSprite& sprite=*e.pSprite;
         
         width =sprite.Width();
-        height=sprite.Height();
+        height = sprite.Height();
         
         // get the coodinates at which the sprite would be drawn
-        int x=e.x-sprite.nHotx;
-        int y=e.y-sprite.nHoty;
+        int x = e.x-sprite.nHotx;
+        int y = e.y-sprite.nHoty;
         
-        if (x+width-xwin>0                      && y+height-ywin>0 &&
-            x-xwin<gfxImageWidth(hRenderdest)   && y-ywin<gfxImageHeight(hRenderdest) &&
+        if (x+width-xwin > 0                      && y+height-ywin > 0 &&
+            x-xwin < gfxImageWidth(hRenderdest)   && y-ywin < gfxImageHeight(hRenderdest) &&
             e.bVisible)
             drawlist.push_back(&e);                                                         // the entity is onscreen, tag it.
     }
@@ -272,82 +273,82 @@ void CEngine::RenderEntities()
         return;                                                                             // nobody onscreen?  Easy out!
 
     // Sort them by y value. (see the CompareEntity functor above)
-    std::sort(drawlist.begin(),drawlist.end(),CompareEntities());
+    std::sort(drawlist.begin(), drawlist.end(), CompareEntities());
 
-    for (std::vector<CEntity*>::iterator j=drawlist.begin(); j!=drawlist.end(); j++)
+    for (std::vector < CEntity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++)
     {
         const CEntity& e=**j;
-        CSprite& s=*e.pSprite;
+        CSprite& s = *e.pSprite;
         
-        int frame=e.nSpecframe?e.nSpecframe:e.nCurframe;
+        int frame = e.nSpecframe ? e.nSpecframe : e.nCurframe;
         
-        s.BlitFrame(e.x-xwin-s.nHotx, e.y-ywin-s.nHoty, frame);
+        s.BlitFrame(e.x - xwin - s.nHotx, e.y - ywin - s.nHoty, frame);
     }
 }
 
-void CEngine::RenderLayer(int lay,bool transparent)
+void CEngine::RenderLayer(int lay, bool transparent)
 {
     CDEBUG("renderlayer");
-    int        xl,yl;        // x/y run length
-    int        xs,ys;        // x/y start
-    int        xofs,yofs;    // sub-tile offset
-    int        xw,yw;
+    int        xl, yl;        // x/y run length
+    int        xs, ys;        // x/y start
+    int        xofs, yofs;    // sub-tile offset
+    int        xw, yw;
     SMapLayerInfo    linf;
     
-    if (lay>map.NumLayers())
+    if (lay > map.NumLayers())
         return;
     
-    map.GetLayerInfo(linf,lay);
+    map.GetLayerInfo(linf, lay);
     
-    xw=(xwin*linf.pmulx)/linf.pdivx;
-    yw=(ywin*linf.pmulx)/linf.pdivy;
+    xw = (xwin * linf.pmulx) / linf.pdivx;
+    yw = (ywin * linf.pmulx) / linf.pdivy;
     
-    xs=xw/tiles.Width();
-    ys=yw/tiles.Height();
+    xs = xw / tiles.Width();
+    ys = yw / tiles.Height();
     
-    xofs=-(xw%tiles.Width());
-    yofs=-(yw%tiles.Height());
+    xofs =- (xw % tiles.Width());
+    yofs =- (yw % tiles.Height());
     
-    xl= gfxImageWidth(hRenderdest)/tiles.Width()+1;
-    yl=gfxImageHeight(hRenderdest)/tiles.Height()+2;
+    xl = gfxImageWidth(hRenderdest) / tiles.Width() + 1;
+    yl = gfxImageHeight(hRenderdest) / tiles.Height() + 2;
     
-    if (xs+xl>map.Width()) xl=map.Width()-xs;        // clip yo
-    if (ys+yl>map.Height()) yl=map.Height()-ys;
+    if (xs+xl > map.Width()) xl = map.Width() - xs;        // clip yo
+    if (ys+yl > map.Height()) yl = map.Height() - ys;
     
-    u32*    t   =map.GetDataPtr(lay)+((ys)*map.Width() + xs);
-    int        xinc=map.Width()-xl;
+    u32*   t = map.GetDataPtr(lay) + (ys * map.Width() + xs);
+    int xinc = map.Width() - xl;
     
-    int curx=xofs;
-    int cury=yofs;
+    int curx = xofs;
+    int cury = yofs;
     if (transparent)
     {
-        for (int y=0; y<yl; y++)
+        for (int y = 0; y < yl; y++)
         {
-            for (int x=0; x<xl; x++)
+            for (int x = 0; x < xl; x++)
             {
                 if (*t)
-                    tiles.TBlitFrame(curx,cury,*t);
-                curx+=tiles.Width();
+                    tiles.TBlitFrame(curx, cury, *t);
+                curx += tiles.Width();
                 t++;
             }
-            cury+=tiles.Height();
-            curx=xofs;
-            t+=xinc;
+            cury += tiles.Height();
+            curx = xofs;
+            t += xinc;
         }
     }
     else
     {
-        for (int y=0; y<yl; y++)
+        for (int y = 0; y < yl; y++)
         {
-            for (int x=0; x<xl; x++)
+            for (int x = 0; x < xl; x++)
             {
-                tiles.BlitFrame(curx,cury,*t);
-                curx+=tiles.Width();
+                tiles.BlitFrame(curx, cury, *t);
+                curx += tiles.Width();
                 t++;
             }
-            cury+=tiles.Height();
-            curx=xofs;
-            t+=xinc;
+            cury += tiles.Height();
+            curx = xofs;
+            t += xinc;
         }
     }
 }
@@ -365,28 +366,28 @@ void CEngine::Render(const char* sTemprstring)
     
     if (pCameratarget)
     {        
-        xwin=pCameratarget->x- gfxImageWidth(hRenderdest)/2;                        // Move the camera...
-        ywin=pCameratarget->y- gfxImageHeight(hRenderdest)/2;
+        xwin = pCameratarget->x - gfxImageWidth(hRenderdest) / 2;               // Move the camera...
+        ywin = pCameratarget->y - gfxImageHeight(hRenderdest) / 2;
         
-        int maxx=(map.Width() *tiles.Width() ) - gfxImageWidth (hRenderdest);                // and make sure it's still in range
-        int maxy=(map.Height()*tiles.Height()) - gfxImageHeight(hRenderdest);
+        int maxx=(map.Width()  * tiles.Width() ) - gfxImageWidth (hRenderdest);   // and make sure it's still in range
+        int maxy=(map.Height() * tiles.Height()) - gfxImageHeight(hRenderdest);
         
-        if (xwin>=maxx)    xwin=maxx-1;
-        if (ywin>=maxy)    ywin=maxy-1;
-        if (xwin<0)        xwin=0;
-        if (ywin<0)        ywin=0;
+        if (xwin >= maxx)    xwin = maxx - 1;
+        if (ywin >= maxy)    ywin = maxy - 1;
+        if (xwin < 0)        xwin = 0;
+        if (ywin < 0)        ywin = 0;
     }
     
     if (!sTemprstring)
-        strcpy(rstring,map.GetRString().c_str());
+        strcpy(rstring, map.GetRString().c_str());
     else
-        strcpy(rstring,sTemprstring);
+        strcpy(rstring, sTemprstring);
 
     if (!strlen(rstring))
         return;
     
-    p=rstring;
-    numlayers=0;
+    p = rstring;
+    numlayers = 0;
     
     while (*p)
     {
@@ -401,11 +402,11 @@ void CEngine::Render(const char* sTemprstring)
         case '7':
         case '8':
         case '9':
-            RenderLayer(*p-'1',numlayers?true:false);
+            RenderLayer(*p - '1', numlayers != 0);
             ++numlayers;
             break;
         case '0':
-            RenderLayer(9,numlayers?true:false);
+            RenderLayer(9, numlayers != 0);
             ++numlayers;
             break;
         case 'E':
@@ -415,7 +416,7 @@ void CEngine::Render(const char* sTemprstring)
             DoHook(pHookretrace);
             break;
         }
-        ++p;
+        p++;
     }
 }
 
@@ -423,25 +424,9 @@ void CEngine::DoHook(HookList& hooklist)
 {
     hooklist.Flush(); // handle any pending insertions/deletions
 
-    for (std::list<void*>::iterator i=hooklist.begin(); i!=hooklist.end(); i++)
+    for (std::list <void*>::iterator i = hooklist.begin(); i != hooklist.end(); i++)
         script.ExecFunction(*i);
 }
-/*
-void CEngine::HookRetrace()
-{
-    if (pHookretrace.empty())
-        return;
-    
-    std::list<void*>::iterator i;
-    for (i=pHookretrace.begin(); i!=pHookretrace.end(); i++)
-    {
-        script.ExecFunction(*i);
-
-        // In case scripts are unhooked from within a hooked script.
-        if (pHookretrace.size()==0)
-            break;
-    }
-}*/
 
 // ----------------------------------------- AI -------------------------------------------------
 
@@ -457,15 +442,15 @@ void CEngine::GameTick()
 void CEngine::CheckKeyBindings()
 {
     int c;
-    while ((c=input.NextControl())!=-1)    // while keys are in the queue
+    while ((c = input.NextControl()) != -1)    // while keys are in the queue
     {
-        if (c<0 || c>nControls)
+        if (c < 0 || c > nControls)
         {
             Log::Write("CEngine::CheckKeyBindings control out of range");
             return;
         }
 
-        if (pBindings[c]!=NULL)
+        if (pBindings[c] != 0)
         {
             input.control[c]=0;
             script.ExecFunction(pBindings[c]);
@@ -476,58 +461,55 @@ void CEngine::CheckKeyBindings()
 
 void CEngine::ProcessEntities()
 {
-    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
+    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
     {
-        //        if (*i==pPlayer)
-        //          continue;
-        
         CEntity& ent=**i;
         
-        ent.nSpeedcount+=ent.nSpeed;
-        while (ent.nSpeedcount>=100)
+        ent.nSpeedcount += ent.nSpeed;
+        while (ent.nSpeedcount >= 100)
         {
             ent.Update();
-            ent.nSpeedcount-=100;
+            ent.nSpeedcount -= 100;
         }
     }
 }
 
 // --------------------------------------- Entity Handling --------------------------------------
 
-bool CEngine::DetectMapCollision(int x,int y,int w,int h)
+bool CEngine::DetectMapCollision(int x, int y, int w, int h)
 // returns true if there is an obstructed map square anywhere along a specified vertical or horizontal line
 // Also TODO: think up a better obstruction system
 {
     CDEBUG("detectmapcollision");
-    int tx=tiles.Width();
-    int ty=tiles.Height();
+    int tx = tiles.Width();
+    int ty = tiles.Height();
     
-    int y2=(y+h-1)/ty;
-    int x2=(x+w-1)/tx;
-    x/=tiles.Width();
-    y/=tiles.Height();
+    int y2 = (y + h - 1) / ty;
+    int x2 = (x + w - 1) / tx;
+    x /= tiles.Width();
+    y /= tiles.Height();
 
-    for (int cy=y; cy<=y2; cy++)
-        for(int cx=x; cx<=x2; cx++)
-            if (map.IsObs(cx,cy))
+    for (int cy = y; cy <= y2; cy++)
+        for(int cx = x; cx <= x2; cx++)
+            if (map.IsObs(cx, cy))
                 return true;
     
     return false;
 }
 
-CEntity* CEngine::DetectEntityCollision(const CEntity* ent,int x1,int y1,int w,int h,bool wantobstructable)
+CEntity* CEngine::DetectEntityCollision(const CEntity* ent, int x1, int y1, int w, int h, bool wantobstructable)
 // returns the entity colliding with the specified entity, or 0 if none.
 // Note that passing 0 for ent is valid, indicating that you simply want to know if there are any entities in a given area
 {
     CDEBUG("detectentitycollision");
     
-    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
+    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
     {
         CEntity& e=**i;
         CSprite& s=*e.pSprite;
 
         if (wantobstructable && !e.bIsobs)   continue;
-        if (&e==ent)                         continue;         // the entity is colling with itself. ;P  That's not overly useful.
+        if (&e == ent)                       continue;         // the entity is colling with itself. ;P  That's not overly useful.
         
         if (x1              >= e.x+s.nHotw)  continue;
         if (y1              >= e.y+s.nHoth)  continue;
@@ -549,28 +531,28 @@ void CEngine::TestActivate(const CEntity& player)
 // This sucks.  It uses static varaibles, so it's not useful at all for any entity other than the player, among other things.
 {
     CDEBUG("testactivate");
-    static int    nOldtx=-1;
-    static int    nOldty=-1;
+    static int    nOldtx = -1;
+    static int    nOldty = -1;
     SMapZone zone;
-    CSprite& sprite=*player.pSprite;
+    CSprite& sprite = *player.pSprite;
     
-    int tx=(player.x+sprite.nHotw/2)/tiles.Width();
-    int ty=(player.y+sprite.nHoth/2)/tiles.Height();
+    int tx = (player.x + sprite.nHotw / 2) / tiles.Width();
+    int ty = (player.y + sprite.nHoth / 2) / tiles.Height();
     
-    int n=map.GetZone(tx,ty);
+    int n = map.GetZone(tx, ty);
     // stepping on a zone?
-    if ((tx!=nOldtx || ty!=nOldty) && n)                        // the player is not on the same zone it was before, check for activation
+    if ((tx != nOldtx || ty != nOldty) && n)                        // the player is not on the same zone it was before, check for activation
     {
-        nOldtx=tx; nOldty=ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
-        map.GetZoneInfo(zone,map.GetZone(tx,ty));
+        nOldtx = tx; nOldty = ty;                            // if we don't do this, the next processentities will cause the zone to be activated again and again and again...
+        map.GetZoneInfo(zone, map.GetZone(tx, ty));
         if (((rand()%100) < zone.nActchance) && zone.sActscript.length())
         {
             script.CallEvent(zone.sActscript.c_str());
-            input.enter=false;
+            input.enter = false;
         }
     }
     
-    nOldtx=tx; nOldty=ty;
+    nOldtx = tx; nOldty = ty;
     
     // TODO: adjacent activation
     // This probably isn't the best place for that sort of thing.  Maybe in ProcessEntities, in the clause that
@@ -578,45 +560,45 @@ void CEngine::TestActivate(const CEntity& player)
     
     if (!input.enter) return;                                // From this point on, the only time we'd have to check this crap is if b1 was pressed.
     
-    tx=player.x; ty=player.y;
+    tx = player.x; ty = player.y;
     // entity activation
     switch(player.direction)
     {
-    case face_up:        ty-=sprite.nHoth;    break;
-    case face_down:      ty+=sprite.nHoth;    break;
-    case face_left:      tx-=sprite.nHotw;    break;
-    case face_right:     tx+=sprite.nHotw;    break;
+    case face_up:        ty -= sprite.nHoth;    break;
+    case face_down:      ty += sprite.nHoth;    break;
+    case face_left:      tx -= sprite.nHotw;    break;
+    case face_right:     tx += sprite.nHotw;    break;
         
-    case face_upleft:    tx-=sprite.nHotw;    ty-=sprite.nHoth;    break;
-    case face_upright:   tx+=sprite.nHotw;    ty-=sprite.nHoth;    break;
-    case face_downleft:  tx-=sprite.nHotw;    ty+=sprite.nHoth;    break;
-    case face_downright: tx+=sprite.nHotw;    ty+=sprite.nHoth;    break;
+    case face_upleft:    tx -= sprite.nHotw;    ty -= sprite.nHoth;    break;
+    case face_upright:   tx += sprite.nHotw;    ty -= sprite.nHoth;    break;
+    case face_downleft:  tx -= sprite.nHotw;    ty += sprite.nHoth;    break;
+    case face_downright: tx += sprite.nHotw;    ty += sprite.nHoth;    break;
     }
     
-    CEntity* pEnt=DetectEntityCollision(0 ,tx,ty,sprite.nHotw,sprite.nHoth);
+    CEntity* pEnt = DetectEntityCollision(0 , tx, ty, sprite.nHotw, sprite.nHoth);
     if (pEnt)
     {
-        if (!pEnt->bAdjacentactivate && pEnt->sActscript.length()!=0)
+        if (!pEnt->bAdjacentactivate && pEnt->sActscript.length() != 0)
         {
             script.CallEvent(pEnt->sActscript.c_str());
-            input.enter=false;
+            input.enter = false;
             return;
         }
     }
     
     // Activating a zone?
-    map.GetZoneInfo(zone,map.GetZone(tx/tiles.Width(),ty/tiles.Height()));
+    map.GetZoneInfo(zone, map.GetZone(tx / tiles.Width(), ty / tiles.Height()));
     
     if (zone.bAdjacentactivation)
     {
         script.CallEvent(zone.sActscript.c_str());
-        input.enter=false;
+        input.enter = false;
     }
 }
 
 CEntity* CEngine::SpawnEntity()
 {
-    CEntity* e=new CEntity(this);
+    CEntity* e = new CEntity(this);
     
     entities.push_back(e);
     
@@ -625,22 +607,22 @@ CEntity* CEngine::SpawnEntity()
 
 void CEngine::DestroyEntity(CEntity* e)
 {
-    for (EntityIterator i=entities.begin(); i!=entities.end(); i++)
-        if (e==(*i))
+    for (EntityIterator i = entities.begin(); i != entities.end(); i++)
+        if (e == (*i))
         {
             sprite.Free(e->pSprite);
             
             // important stuff, yo.  Need to find any existing pointers to this entity, and null them.
-            if (pCameratarget==e)   pCameratarget=0;
-            if (pPlayer==e)         pPlayer=0;
+            if (pCameratarget == e)   pCameratarget = 0;
+            if (pPlayer == e)         pPlayer = 0;
             
             // Sadly, this probably gets pretty slow.
-            for (EntityIterator ii=entities.begin(); ii!=entities.end(); ii++)
+            for (EntityIterator ii = entities.begin(); ii != entities.end(); ii++)
             {
                 CEntity& e=*(*ii);
                 
-                if (e.pChasetarget==(*i))
-                    e.pChasetarget=0, e.movecode=mc_nothing;
+                if (e.pChasetarget == (*i))
+                    e.pChasetarget = 0, e.movecode = mc_nothing;
                 
                 // TODO: add others, if needed
             }
@@ -666,41 +648,41 @@ void CEngine::LoadMap(const char* filename)
     
     try
     {
-        Log::Write("Loading map \"%s\"",filename);
+        Log::Write("Loading map \"%s\"", filename);
         
         if (!map.Load(filename)) throw filename;                            // actually load the map
         
-        strcpy(temp,map.GetVSPName().c_str());                              // get the tileset name
+        strcpy(temp, map.GetVSPName().c_str());                              // get the tileset name
         if (!tiles.LoadVSP(temp)) throw temp;                               // load a VSP
         
         script.ClearEntityList();                                           // DEI
         
-        for (int i=0; i<map.NumEnts(); i++)
+        for (int i = 0; i < map.NumEnts(); i++)
         {
-            const SMapEntity& ent=map.GetEntity(i);
+            const SMapEntity& ent = map.GetEntity(i);
             
-            CEntity* pEnt=new CEntity(this,ent);                            // convert the old entity struct into the new one.
+            CEntity* pEnt = new CEntity(this, ent);                            // convert the old entity struct into the new one.
             entities.push_back(pEnt);
             
-            strcpy(temp,ent.sCHRname.c_str());
-//            extension=temp+strlen(temp)-3;                                  // get the extension
+            strcpy(temp, ent.sCHRname.c_str());
+//            extension = temp+strlen(temp)-3;                                  // get the extension
             
-            pEnt->pSprite=sprite.Load(temp);                                // wee
-            if (pEnt->pSprite==0)                                           // didn't load?
-                Sys_Error(va("Unable to load CHR file \"%s\"",temp));       // wah
+            pEnt->pSprite = sprite.Load(temp);                                // wee
+            if (pEnt->pSprite == 0)                                           // didn't load?
+                Sys_Error(va("Unable to load CHR file \"%s\"", temp));       // wah
             
             script.AddEntityToList(pEnt);
         }
         
-        xwin=ywin=0;                                                        // just in case
-        bMaploaded=true;
+        xwin = ywin = 0;                                                        // just in case
+        bMaploaded = true;
         
         if (!script.LoadMapScripts(filename))
             Script_Error();
     }
     catch (const char* msg)
-    {    Sys_Error(va("Failed to load %s",msg));    }
+    {    Sys_Error(va("Failed to load %s", msg));    }
     catch (...)
-    {    Sys_Error(va("Unknown error loading map %s",filename));    }
+    {    Sys_Error(va("Unknown error loading map %s", filename));    }
 }
 
