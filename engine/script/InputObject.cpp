@@ -24,7 +24,7 @@ namespace Script
                 "its tasks."
             },
             
-            /*{   "Unpress",          (PyCFunction)Input_Unpress,     METH_NOARGS,
+            {   "Unpress",          (PyCFunction)Input_Unpress,     METH_NOARGS,
                 "Unpress()\n\n"
                 "Unsets the Pressed() property of all controls.  Has no effect on\n"
                 "their positions.\n"
@@ -32,7 +32,7 @@ namespace Script
                 "method, discarding the result."
             },
 
-            {   "GetControl",       (PyCFunction)Input_GetControl,  METH_VARARGS,
+            /*{   "GetControl",       (PyCFunction)Input_GetControl,  METH_VARARGS,
                 "GetControl(name -> string)\n\n"
                 "Returns an object that represents the requested control.\n"
                 "Input[name->string] performs the exact same function.\n"
@@ -216,15 +216,15 @@ namespace Script
             return Py_None;
         }
 
-/*        METHOD1(Input_Unpress)
+        METHOD1(Input_Unpress)
         {
-            self->input->Unpress();
+            the< ::Input>()->Unpress();
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD(Input_GetControl)
+        /*METHOD(Input_GetControl)
         {
             PyObject* obj;
             if (!PyArg_ParseTuple(args, "O:Input.GetControl", &obj))

@@ -279,6 +279,7 @@ namespace Script
 
         // Methods
         METHOD1(Input_Update, InputObject);
+        METHOD1(Input_Unpress, InputObject);
 
         void Init();
         PyObject* New();

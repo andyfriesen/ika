@@ -24,6 +24,7 @@ uint NextPowerOf2(uint i)
     i |= (i >> 8);
     i |= (i >> 16);
     i++;
+    return i;
 }
 
 int sgn(int x)
