@@ -23,22 +23,25 @@ void CEdit::StartEdit(HINSTANCE hInst,HWND hWndParent,CPixelMatrix& src)
     PurgeRedo();
     
     curimage    =src;
-    
+
     iCurrent    =new CDIB(src.Width(),src.Height(),4);
     iSwatch     =new CDIB(nSwatchsize,nSwatchsize,4);
-    MakeSwatchImage();
-    
+    iBackbuffer =new CDIB(410,410,4);                       // gah, magic numbers
+
     iCurrent->CopyPixelData(curimage.GetPixelData(),curimage.Width(),curimage.Height(),4,0);
     // TODO: make this depend on the size of the client, then everything will scale all superhappy and stuff when the client window is resized
     rBigimage=MakeRect(20,20,430,430);
     rSmallimage=MakeRect(500-(curimage.Width()/2), 400-(curimage.Height()/2), 500+(curimage.Width()/2), 400+(curimage.Height()/2));
     rSwatch=MakeRect(640-128,148-128,640,148);
     
+    MakeSwatchImage();
+
     StartDlg(hInst,hWndParent,"PixEdDlg");
     
     // Cleanup code
     delete iCurrent;
     delete iSwatch;
+    delete iBackbuffer;
 }
 
 bool CEdit::InitProc(HWND hwnd)
@@ -150,9 +153,11 @@ void CEdit::Redraw()
         1
     };
 
-    AlphaBlend(hDC,
-        rBigimage.left,
-        rBigimage.top,
+
+    AlphaBlend(iBackbuffer->GetDC(),
+/*        rBigimage.left,
+        rBigimage.top,*/
+        0,0,
         rBigimage.right-rBigimage.left,
         rBigimage.bottom-rBigimage.top,
         iCurrent->GetDC(),
@@ -164,9 +169,10 @@ void CEdit::Redraw()
 
 #else
     // nasty
-    StretchBlt(hDC,
-        rBigimage.left,
-        rBigimage.top,
+    StretchBlt(iBackbuffer->GetDC(),
+/*        rBigimage.left,
+        rBigimage.top,*/
+        0,0,
         rBigimage.right-rBigimage.left,
         rBigimage.bottom-rBigimage.top,
         iCurrent->GetDC(),
@@ -176,6 +182,14 @@ void CEdit::Redraw()
         iCurrent->Height(),
         SRCCOPY);
 #endif
+
+    BitBlt(hDC,
+        rBigimage.left,
+        rBigimage.top,
+        iBackbuffer->Width(),
+        iBackbuffer->Height(),
+        iBackbuffer->GetDC(),
+        0,0,SRCCOPY);
     
     BitBlt(hDC,
         rSmallimage.left,

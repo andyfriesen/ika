@@ -63,9 +63,9 @@ struct RGBA
 	// conversion from 8bpp with palette
 	RGBA(u8 c,u8* pPal)
 	{
-		r=pPal[c*3  ];
-		g=pPal[c*3+1];
-		b=pPal[c*3+2];
+		r=pPal[c*3  ]<<2;
+		g=pPal[c*3+1]<<2;
+		b=pPal[c*3+2]<<2;
 		a=c?255:0;
 	}
 

@@ -16,8 +16,8 @@ TileBuffer::~TileBuffer()
 {
     if (data!=NULL)
     {
-	delete[] data;
-	data=NULL;
+        delete[] data;
+        data=NULL;
     }
     width=0; height=0; bpp=0; data=0;
 }
@@ -28,7 +28,7 @@ TileBuffer::TileBuffer(const TileBuffer& tb)
     bpp=tb.bpp;
     
     if(bpp < 0 || bpp > 4)
-	return;
+        return;
     
     data=new unsigned char[width*height*bpp];
     memcpy(data,tb.data,width*height*bpp);
@@ -37,25 +37,25 @@ TileBuffer::TileBuffer(const TileBuffer& tb)
 void TileBuffer::CopyTo(TileBuffer& tb) const
 {
     if(!data || &tb == NULL)
-	return;
+        return;
     
     if(data == tb.data)
-	return;
+        return;
     
     if (tb.data!=NULL) 
-	delete[] tb.data;
+        delete[] tb.data;
     
     tb.width=width; tb.height=height;
     tb.bpp=bpp;
     
     if(bpp < 0 || bpp > 4)
-	return;
+        return;
     
     tb.data=new u8[width*height*bpp];
     memcpy(tb.data,data,width*height*bpp);
     
     if (bpp==1)
-	memcpy(tb.pal,pal,768);
+        memcpy(tb.pal,pal,768);
 }
 
 bool TileBuffer::CompareBuffers(TileBuffer t)
@@ -63,14 +63,14 @@ bool TileBuffer::CompareBuffers(TileBuffer t)
     int c;
     
     if(&t == NULL)
-	return false;
+        return false;
     
     c = memcmp(data, t.data, width*height*bpp);
     
     if(c)
-	return false;
+        return false;
     else if (!c)
-	return true;
+        return true;
     
     return false;
 }
@@ -82,9 +82,9 @@ void TileBuffer::SetDot(int x,int y,u32 colour)
     if (!data) return;
     
     if (bpp==1)
-	data[y*width+x]=(u8)(colour&255);
+        data[y*width+x]=(u8)(colour&255);
     else if (bpp==4)
-	((u32*)data)[y*width+x]=colour;
+        ((u32*)data)[y*width+x]=colour;
 }
 
 u32 TileBuffer::Pixel(int x,int y)
@@ -109,16 +109,16 @@ void TileBuffer::Mirror()
     memcpy(tempdata,data,width*height*bpp);
     
     for (int y=0; y<height; y++)
-	for (int x=0; x<width; x++)
-	{
-	    if (bpp==1)
-		SetDot(width-x-1,y,tempdata[y*width+x]);
-	    else
-		SetDot(width-x-1,y,((u32*)tempdata)[y*width+x]);
-	}
-	
-	
-	delete[] tempdata;
+        for (int x=0; x<width; x++)
+        {
+            if (bpp==1)
+                SetDot(width-x-1,y,tempdata[y*width+x]);
+            else
+                SetDot(width-x-1,y,((u32*)tempdata)[y*width+x]);
+        }
+        
+        
+        delete[] tempdata;
 }
 
 void TileBuffer::Flip()
@@ -129,15 +129,15 @@ void TileBuffer::Flip()
     memcpy(tempdata,data,width*height*bpp);
     
     for (int y=0; y<height; y++)
-	for (int x=0; x<width; x++)
-	{
-	    if (bpp==1)
-		SetDot(x,height-y-1,tempdata[y*width+x]);
-	    else
-		SetDot(x,height-y-1,((u32*)tempdata)[y*width+x]);
-	}
-	
-	delete[] tempdata;
+        for (int x=0; x<width; x++)
+        {
+            if (bpp==1)
+                SetDot(x,height-y-1,tempdata[y*width+x]);
+            else
+                SetDot(x,height-y-1,((u32*)tempdata)[y*width+x]);
+        }
+        
+        delete[] tempdata;
 }
 
 void TileBuffer::Rotate()
@@ -148,15 +148,15 @@ void TileBuffer::Rotate()
     memcpy(tempdata,data,width*height*bpp);
     
     for (int y=0; y<height; y++)
-	for (int x=0; x<width; x++)
-	{
-	    if (bpp==1)
-		SetDot(y,x,tempdata[y*width+x]);
-	    else
-		SetDot(y,x,((u32*)tempdata)[y*width+x]);
-	}
-	
-	delete[] tempdata;
+        for (int x=0; x<width; x++)
+        {
+            if (bpp==1)
+                SetDot(y,x,tempdata[y*width+x]);
+            else
+                SetDot(y,x,((u32*)tempdata)[y*width+x]);
+        }
+        
+        delete[] tempdata;
 }
 
 
@@ -166,10 +166,10 @@ void TileBuffer::FillRect(int t, int l, int b, int r, u32 color)
     
     for(y = t;y < b;y++)
     {
-	for(x = l;x < r;x++)
-	{
-	    SetDot(x, y, color);
-	}
+        for(x = l;x < r;x++)
+        {
+            SetDot(x, y, color);
+        }
     }
 }
 
@@ -202,9 +202,9 @@ VSP::VSP()
 
 VSP::VSP(const char* fname)
 {
-	data=0;
-	numtiles=0;
-	Load(fname);
+    data=0;
+    numtiles=0;
+    Load(fname);
 }
 
 VSP::~VSP()
@@ -228,8 +228,8 @@ int VSP::Load(const char *fname)
     // TO DO: Stick a little dealy in here for loading up a V16, if there is one
     if (!f.OpenRead(fname))
     {
-	log("Error opening %s",fname);
-	return 0;
+        log("Error opening %s",fname);
+        return 0;
     }
     
     strcpy(sName,fname);
@@ -238,148 +238,151 @@ int VSP::Load(const char *fname)
     switch(ver)
     {
     case 2: 
-	bpp=1;
-	nMaskcolour=0;
-	tilex=16; tiley=16;
-	
-	f.Read(&pal,768);
-	f.Read(&numtiles,2);
-	data=new u8[numtiles*256];
-	f.Read(data,numtiles*256);
-	break;
-	
+        bpp=1;
+        nMaskcolour=0;
+        tilex=16; tiley=16;
+        
+        f.Read(&pal,768);
+        f.Read(&numtiles,2);
+        data=new u8[numtiles*256];
+        f.Read(data,numtiles*256);
+        break;
+        
     case 3: 
-	bpp=1;
-	nMaskcolour=0;
-	tilex=16; tiley=16;
-	
-	f.Read(&pal,768);
-	f.Read(&numtiles,2);
-	f.Read(&bufsize,4);
-	
-	cb=new u8[bufsize];
-	data=new u8[numtiles*256];
-	f.Read(cb,bufsize);
-	ReadCompressedLayer1(data,numtiles*256,cb);
-	delete[] cb;
-	break;
-	
+        bpp=1;
+        nMaskcolour=0;
+        tilex=16; tiley=16;
+        
+        f.Read(&pal,768);
+        f.Read(&numtiles,2);
+        f.Read(&bufsize,4);
+        
+        cb=new u8[bufsize];
+        data=new u8[numtiles*256];
+        f.Read(cb,bufsize);
+        ReadCompressedLayer1(data,numtiles*256,cb);
+        delete[] cb;
+        break;
+        
     case 4: 
-	bpp=4;
-	tilex=16; tiley=16;
-	
-	f.Read(&numtiles,2);
-	
-	data=new u8[numtiles*tilex*tiley*bpp];
-	wb=new u16[numtiles*tilex*tiley];
-	
-	f.Read(wb,numtiles*tilex*tiley*2); // the VSP is 2bpp
-	
-	u8* tmp;
-	tmp=data;
-	
-	for (i=0; i<numtiles*tilex*tiley; i++)
-	{
-	    r=(wb[i]>>10)&31;
-	    g=(wb[i]>>5)&31;
-	    b=wb[i]&31;
-	    
-	    data[i*bpp  ]=r<<3;
-	    data[i*bpp+1]=g<<3;
-	    data[i*bpp+2]=b<<3;
-	    data[i*bpp+3]=(r||g||b)?255:0; // alpha
-	}
-	delete[] wb;           
-	break;
-	
+        bpp=4;
+        tilex=16; tiley=16;
+        
+        f.Read(&numtiles,2);
+        
+        data=new u8[numtiles*tilex*tiley*bpp];
+        wb=new u16[numtiles*tilex*tiley];
+        
+        f.Read(wb,numtiles*tilex*tiley*2); // the VSP is 2bpp
+        
+        u8* tmp;
+        tmp=data;
+        
+        for (i=0; i<numtiles*tilex*tiley; i++)
+        {
+            r=(wb[i]>>10)&31;
+            g=(wb[i]>>5)&31;
+            b=wb[i]&31;
+            
+            data[i*bpp  ]=r<<3;
+            data[i*bpp+1]=g<<3;
+            data[i*bpp+2]=b<<3;
+            data[i*bpp+3]=(r||g||b)?255:0; // alpha
+        }
+        delete[] wb;           
+        break;
+        
     case 5: 
-	bpp=4;
-	tilex=16; tiley=16;
-	f.Read(&numtiles,2);
-	f.Read(&bufsize,4);
-	cb=new u8[bufsize];
-	wb=new u16[numtiles*tilex*tiley];
-	
-	f.Read(cb,bufsize);
-	ReadCompressedLayer2(wb,numtiles*tilex*tiley,(u16 *)cb);
-	delete[] cb;
-	
-	data=new u8[numtiles*tilex*tiley*bpp];
-	for (i=0; i<numtiles*tilex*tiley; i++)
-	{
-	    r=(wb[i]>>11)&31;
-	    g=(wb[i]>>5)&63;
-	    b=wb[i]&31;             
-	    data[i*bpp  ]=r<<3;
-	    data[i*bpp+1]=g<<2;
-	    data[i*bpp+2]=b<<3;
-	    data[i*bpp+3]=(r||g||b)?255:0; // alpha
-	}
-	delete[] wb;
-	break;
-	
+        bpp=4;
+        tilex=16; tiley=16;
+        f.Read(&numtiles,2);
+        f.Read(&bufsize,4);
+        cb=new u8[bufsize];
+        wb=new u16[numtiles*tilex*tiley];
+        
+        f.Read(cb,bufsize);
+        ReadCompressedLayer2(wb,numtiles*tilex*tiley,(u16 *)cb);
+        delete[] cb;
+        
+        data=new u8[numtiles*tilex*tiley*bpp];
+        for (i=0; i<numtiles*tilex*tiley; i++)
+        {
+            r=(wb[i]>>11)&31;
+            g=(wb[i]>>5)&63;
+            b=wb[i]&31;             
+            data[i*bpp  ]=r<<3;
+            data[i*bpp+1]=g<<2;
+            data[i*bpp+2]=b<<3;
+            data[i*bpp+3]=(r||g||b)?255:0; // alpha
+        }
+        delete[] wb;
+        break;
+        
     case 6:													// woo, the badass vsp format
-	{
-	    z_stream stream;
-	    u8 nMaskcolour;
-	    
-	    bpp=0;
-	    f.Read(&bpp,1);
-	    
-	    f.Read(&tilex,2);
-	    f.Read(&tiley,2);
-	    f.Read(&numtiles,4);
-	    
-	    f.Read(sDesc,64);
-	    
-	    if (bpp==1)
-	    {
-		f.Read(pal,768);
-		f.Read(&nMaskcolour,1);
-	    }
-	    
-	    int nDatasize=tilex*tiley*numtiles*bpp;
-	    int nCompressedblocksize;
-	    f.Read(&nCompressedblocksize,4);
-	    
-	    char* cb=new char[nCompressedblocksize];
-	    data=new u8[nDatasize];
-	    
-	    f.Read(cb,nCompressedblocksize);
-	    
-	    stream.next_in=(Bytef*)cb;
-	    stream.avail_in=nCompressedblocksize;
-	    stream.next_out=(Bytef*)data;
-	    stream.avail_out=nDatasize;
-	    stream.data_type=Z_BINARY;
-	    
-	    stream.zalloc=NULL;
-	    stream.zfree=NULL;
-	    
-	    inflateInit(&stream);
-	    inflate(&stream,Z_SYNC_FLUSH);
-	    inflateEnd(&stream);
-	    
-	    delete[] cb;
-	}
-	break;
+        {
+            z_stream stream;
+            u8 nMaskcolour;
+            
+            bpp=0;
+            f.Read(&bpp,1);
+            
+            f.Read(&tilex,2);
+            f.Read(&tiley,2);
+            f.Read(&numtiles,4);
+            
+            f.Read(sDesc,64);
+            
+            if (bpp==1)
+            {
+                f.Read(pal,768);
+                f.Read(&nMaskcolour,1);
+            }
+            
+            int nDatasize=tilex*tiley*numtiles*bpp;
+            int nCompressedblocksize;
+            f.Read(&nCompressedblocksize,4);
+            
+            char* cb=new char[nCompressedblocksize];
+            data=new u8[nDatasize];
+            
+            f.Read(cb,nCompressedblocksize);
+            
+            stream.next_in=(Bytef*)cb;
+            stream.avail_in=nCompressedblocksize;
+            stream.next_out=(Bytef*)data;
+            stream.avail_out=nDatasize;
+            stream.data_type=Z_BINARY;
+            
+            stream.zalloc=NULL;
+            stream.zfree=NULL;
+            
+            inflateInit(&stream);
+            inflate(&stream,Z_SYNC_FLUSH);
+            inflateEnd(&stream);
+            
+            delete[] cb;
+        }
+        break;
     default: 
-	log("Fatal error: unknown VSP version (%d)",ver);
-	return 0;
-	}
-	
-	for (int j=0; j<100; j++)
-	{
-	    f.Read(vspanim[j].start);
-	    f.Read(vspanim[j].finish);
-	    f.Read(vspanim[j].delay);
-	    f.Read(vspanim[j].mode);
-	}
-	
-	f.Close();
-	
-	logok();
-	return 1;
+        log("Fatal error: unknown VSP version (%d)",ver);
+        return 0;
+        }
+        
+        for (int j=0; j<100; j++)
+        {
+            f.Read(vspanim[j].start);
+            f.Read(vspanim[j].finish);
+            f.Read(vspanim[j].delay);
+            f.Read(vspanim[j].mode);
+        }
+        
+        f.Close();
+        
+        logok();
+
+        To32bpp();
+                
+        return 1;
 }
 
 // This saves old-style VSPs if the tiles are exactly 16x16 in size, so that winmaped is still useful for editing v2 maps.
@@ -393,55 +396,55 @@ int VSP::SaveOld(const char *fname)
     
     if (!f.OpenWrite(fname))
     {
-	log("Error writing to %s",fname);
-	return 0;
+        log("Error writing to %s",fname);
+        return 0;
     }
     
     if (bpp==1) // maybe I should split this up into two separate functions... nah!
     {
-	if (tilex!=16 || tiley!=16)	return 0;
-	// this file format can only save 16x16x8bpp tiles
-	
-	i=3;
-	f.Write(&i,2);
-	f.Write(&pal,768);
-	f.Write(&numtiles,2);
-	cb=new u8[numtiles*tilex*tiley];
-	WriteCompressedLayer1(cb,numtiles*tilex*tiley,bufsize,data);
-	f.Write(&bufsize,4);
-	f.Write(cb,bufsize);
-	delete[] cb;
-	f.Write(&vspanim,sizeof vspanim);
-	f.Close();
-	return 1;
+        if (tilex!=16 || tiley!=16)	return 0;
+        // this file format can only save 16x16x8bpp tiles
+        
+        i=3;
+        f.Write(&i,2);
+        f.Write(&pal,768);
+        f.Write(&numtiles,2);
+        cb=new u8[numtiles*tilex*tiley];
+        WriteCompressedLayer1(cb,numtiles*tilex*tiley,bufsize,data);
+        f.Write(&bufsize,4);
+        f.Write(cb,bufsize);
+        delete[] cb;
+        f.Write(&vspanim,sizeof vspanim);
+        f.Close();
+        return 1;
     }
     else
     {
-	if (tilex!=16 || tiley!=16) return 0;
-	// this file format can only save 16x16x16bpp tiles
-	
-	i=5;
-	f.Write(&i,2);
-	f.Write(&numtiles,2);
-	buf=new u16[numtiles*tilex*tiley];
-	// compress the 32bit data into 16 bit 565
-	for (i=0; i<numtiles*tilex*tiley; i++)
-	{
-	    buf[i] = data[i*bpp+2]>>3;                // Blue
-	    buf[i]|=(data[i*bpp+1]>>2)<<5;            // Green
-	    buf[i]|=(data[i*bpp  ]>>3)<<11;           // red
-	}
-	buf2=new u16[numtiles*tilex*tiley];
-	WriteCompressedLayer2(buf2,numtiles*tilex*tiley,bufsize,buf);
-	
-	f.Write(&bufsize,4);
-	f.Write(buf2,bufsize);
-	
-	delete[] buf;
-	delete[] buf2;
-	f.Write(&vspanim,sizeof vspanim);
-	f.Close();
-	return 1;
+        if (tilex!=16 || tiley!=16) return 0;
+        // this file format can only save 16x16x16bpp tiles
+        
+        i=5;
+        f.Write(&i,2);
+        f.Write(&numtiles,2);
+        buf=new u16[numtiles*tilex*tiley];
+        // compress the 32bit data into 16 bit 565
+        for (i=0; i<numtiles*tilex*tiley; i++)
+        {
+            buf[i] = data[i*bpp+2]>>3;                // Blue
+            buf[i]|=(data[i*bpp+1]>>2)<<5;            // Green
+            buf[i]|=(data[i*bpp  ]>>3)<<11;           // red
+        }
+        buf2=new u16[numtiles*tilex*tiley];
+        WriteCompressedLayer2(buf2,numtiles*tilex*tiley,bufsize,buf);
+        
+        f.Write(&bufsize,4);
+        f.Write(buf2,bufsize);
+        
+        delete[] buf;
+        delete[] buf2;
+        f.Write(&vspanim,sizeof vspanim);
+        f.Close();
+        return 1;
     }
 }
 
@@ -453,8 +456,8 @@ int VSP::Save(const char* fname)
     
     if (!f.OpenWrite(fname))
     {
-	log("Error writing to %s",fname);
-	return 0;
+        log("Error writing to %s",fname);
+        return 0;
     }
     
     i=6;
@@ -468,9 +471,9 @@ int VSP::Save(const char* fname)
     
     if (bpp==1)
     {
-	f.Write(pal,768);
-	i=0;
-	f.Write(&i,1);
+        f.Write(pal,768);
+        i=0;
+        f.Write(&i,1);
     }
     
     z_stream stream;
@@ -498,6 +501,7 @@ int VSP::Save(const char* fname)
     
     f.Write(&vspanim,sizeof vspanim);
     f.Close();
+    
     return 1;
 }
 
@@ -556,9 +560,9 @@ void VSP::InsertTile(int pos)
     src=data;
     
     if (pos<0)
-	pos=0;
+        pos=0;
     if (pos>=numtiles)
-	pos=numtiles-1;
+        pos=numtiles-1;
     
     // set aside some memory for the expanded VSP
     tmp=new u8[(numtiles+1)*u8spertile];
@@ -567,7 +571,7 @@ void VSP::InsertTile(int pos)
     // copy it, bitch!
     memcpy(tmp,src,pos*u8spertile);															// copy the tiles before the insertion point
     if (pos<numtiles-1)
-	memcpy(tmp+((pos+1)*u8spertile),src+(pos*u8spertile),(numtiles-pos)*u8spertile);	// copy the tiles after the insertion point (if applicable)
+        memcpy(tmp+((pos+1)*u8spertile),src+(pos*u8spertile),(numtiles-pos)*u8spertile);	// copy the tiles after the insertion point (if applicable)
     numtiles++;
     
     // discard the old data
@@ -600,14 +604,14 @@ void VSP::DeleteTile(int pos)
 void VSP::AppendTiles(int count)
 {
     if (count<1)
-	return;
+        return;
     
     u8* temp=new u8[(numtiles+count)*tilex*tiley*bpp];
-
+    
     memcpy(temp,data,numtiles*tilex*tiley*bpp);
     memset(temp+(numtiles*tilex*tiley*bpp),0,count*tilex*tiley*bpp);
     numtiles+=count;
-
+    
     delete[] data;
     data=temp;
 }
@@ -615,7 +619,7 @@ void VSP::AppendTiles(int count)
 void VSP::CopyTile(TileBuffer& tb,int pos)
 {
     if (bpp==1)
-	memcpy(tb.pal,pal,768); // copy the vsp
+        memcpy(tb.pal,pal,768); // copy the vsp
     
     if (tb.data!=NULL) delete[] tb.data;
     
@@ -648,45 +652,45 @@ void VSP::TPasteTile(const TileBuffer& tb,int pos)
     
     if (bpp==1)
     { 
-	for (i=0; i<tilex*tiley; i++)
-	{
-	    c=*src++;
-	    if (c)
-		*dest=c;
-	    dest++;
-	}
+        for (i=0; i<tilex*tiley; i++)
+        {
+            c=*src++;
+            if (c)
+                *dest=c;
+            dest++;
+        }
     }
     else // if (bpp==4)
     {
-	for (i=0; i<tilex*tiley; i++)
-	{
-	    d=*(u32*)src;
-	    src+=bpp;
-	    if (d)
-		*((u32*)dest)=d;
-	    
-	    dest+=bpp;
-	}
+        for (i=0; i<tilex*tiley; i++)
+        {
+            d=*(u32*)src;
+            src+=bpp;
+            if (d)
+                *((u32*)dest)=d;
+            
+            dest+=bpp;
+        }
     }
 }
 
 void VSP::To32bpp()
 {
     if (bpp==4)
-	return;													// :P
+        return;													// :P
     u32* pTemp=new u32[tilex*tiley*numtiles];
     
     for (int i=0; i<tilex*tiley*numtiles; i++)
     {
-	u8 c=data[i];
-	if (!c)
-	    pTemp[i]=0;
-	else
-	    pTemp[i]=
-	    (255       <<24) |
-	    (pal[c*3  ]<<2 ) |
-	    (pal[c*3+1]<<10) |
-	    (pal[c*3+2]<<18);
+        u8 c=data[i];
+        if (!c)
+            pTemp[i]=0;
+        else
+            pTemp[i]=
+                (255       <<24) |
+                (pal[c*3  ]<<2 ) |
+                (pal[c*3+1]<<10) |
+                (pal[c*3+2]<<18);
     }
     
     delete[] data;
@@ -701,9 +705,9 @@ void VSP::SetPixel(int x,int y,int tileidx,int c)
     if (tileidx<0 || tileidx>=numtiles) return;
     
     if (bpp==1)
-	data[tileidx*tilex*tiley + y*tilex + x]=c;
+        data[tileidx*tilex*tiley + y*tilex + x]=c;
     else
-	((u32*)data)[tileidx*tilex*tiley + y*tilex + x]=c; // :o
+        ((u32*)data)[tileidx*tilex*tiley + y*tilex + x]=c; // :o
 }
 
 int  VSP::GetPixel(int x,int y,int tileidx)
@@ -713,9 +717,9 @@ int  VSP::GetPixel(int x,int y,int tileidx)
     if (tileidx<0 || tileidx>=numtiles) return 0;
     
     if (bpp==1)
-	return data[tileidx*tilex*tiley + y*tilex + x]&255;
+        return data[tileidx*tilex*tiley + y*tilex + x]&255;
     else
-	return ((u32*)data)[tileidx*tilex*tiley + y*tilex + x];
+        return ((u32*)data)[tileidx*tilex*tiley + y*tilex + x];
 }
 
 void VSP::GetAnim(vspanim_r& anim,int strand)

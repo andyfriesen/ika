@@ -28,6 +28,7 @@ protected:
     
     CDIB*       iCurrent;               // the image of the graphic we're editing
     CDIB*       iSwatch;                // The colour field
+    CDIB*       iBackbuffer;            // canvas for the blown up tile
     
     virtual int MsgProc(HWND hWnd,UINT msg,WPARAM wParam,LPARAM lParam);
     virtual bool InitProc(HWND hwnd);
