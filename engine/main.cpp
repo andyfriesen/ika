@@ -425,6 +425,10 @@ void CEngine::HookTimer()
     for (i=pHooktimer.begin(); i!=pHooktimer.end(); i++)
     {
         script.ExecFunction(*i);
+
+        // In case scripts are unhooked from within a hooked script.
+        if (pHooktimer.size()==0)
+            break;
     }
 }
 
@@ -437,6 +441,8 @@ void CEngine::HookRetrace()
     for (i=pHookretrace.begin(); i!=pHookretrace.end(); i++)
     {
         script.ExecFunction(*i);
+
+        // In case scripts are unhooked from within a hooked script.
         if (pHookretrace.size()==0)
             break;
     }

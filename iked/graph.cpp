@@ -42,7 +42,7 @@ CGraphFrame::CGraphFrame(wxWindow* parent)
     
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
-    
+
     pInstances.insert(this);
 }
 
@@ -132,14 +132,14 @@ void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
     y=y*nZoomscale/nZoom;
     w=w*nZoomscale/nZoom;
     h=h*nZoomscale/nZoom;
-
-    w++; h++;
+    
+    if (nZoom!=nZoomscale)        w++,h++;
 
     GLfloat nTexendx=1.0f*src.nWidth/src.nTexwidth;
     GLfloat nTexendy=1.0f*src.nHeight/src.nTexheight;
 
     glBindTexture(GL_TEXTURE_2D,src.hTex);
-    glColor4f(1,1,1,1); 
+    glColor4f(1,1,1,1);
 
     glBegin(GL_QUADS);
 
@@ -210,4 +210,6 @@ void CImage::Update(const CPixelMatrix& src)
     glTexImage2D(GL_TEXTURE_2D,0,GL_RGBA8,nTexwidth,nTexheight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)tmp.GetPixelData());
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MIN_FILTER,GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_MAG_FILTER,GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_S,GL_CLAMP);
+    glTexParameteri(GL_TEXTURE_2D,GL_TEXTURE_WRAP_T,GL_CLAMP);
 }

@@ -559,9 +559,6 @@ void CMapView::RenderInfoLayer(int lay)
     int nWidth=pGraph->LogicalWidth();
     int nHeight=pGraph->LogicalHeight();
 
-/*    nWidth=nWidth*nZoomscale/nZoom;
-    nHeight=nHeight*nZoomscale/nZoom;*/
-
     int xw=xwin;
     int yw=ywin;
 
@@ -577,20 +574,15 @@ void CMapView::RenderInfoLayer(int lay)
     if (nFirstx+nLenx>pMap->Width())  nLenx=pMap->Width()-nFirstx;
     if (nFirsty+nLeny>pMap->Height()) nLeny=pMap->Height()-nFirsty;
 
-    int nAdjx=(xw%tx);//*nZoom/nZoomscale;
-    int nAdjy=(yw%ty);//*nZoom/nZoomscale;
-/*
-    tx=tx*nZoom/nZoomscale;
-    ty=ty*nZoom/nZoomscale;
-*/
+    int nAdjx=xw % tx;
+    int nAdjy=yw % ty;
+
     if (lay==lay_obstruction)
     {
         for (int y=0; y<nLeny; y++)
         {
             for (int x=0; x<nLenx; x++)
             {
-                //int t=pMap->GetTile(x+nFirstx, y+nFirsty, lay);
-            
                 if (pMap->IsObs(x+nFirstx,y+nFirsty))
                     pGraph->RectFill(
                         x*tx-nAdjx, y*ty-nAdjy,
@@ -624,9 +616,6 @@ void CMapView::RenderLayer(int lay)
     int nWidth=pGraph->LogicalWidth();
     int nHeight=pGraph->LogicalHeight();
 
-/*    nWidth=nWidth*nZoomscale/nZoom;
-    nHeight=nHeight*nZoomscale/nZoom;*/
-
     SMapLayerInfo l;
     pMap->GetLayerInfo(l,lay);
 
@@ -645,11 +634,8 @@ void CMapView::RenderLayer(int lay)
     if (nFirstx+nLenx>pMap->Width())  nLenx=pMap->Width()-nFirstx;
     if (nFirsty+nLeny>pMap->Height()) nLeny=pMap->Height()-nFirsty;
 
-    int nAdjx=(xw%tx);//*nZoom/nZoomscale;
-    int nAdjy=(yw%ty);//*nZoom/nZoomscale;
-
-/*    tx=tx*nZoom/nZoomscale;
-    ty=ty*nZoom/nZoomscale;*/
+    int nAdjx=(xw%tx);
+    int nAdjy=(yw%ty);
 
     for (int y=0; y<nLeny; y++)
     {
@@ -658,10 +644,10 @@ void CMapView::RenderLayer(int lay)
             int t=pMap->GetTile(x+nFirstx, y+nFirsty, lay);
             
             if (lay==0 || t!=0)
-                pGraph->ScaleBlit(
+                pGraph->Blit(
                     pTileset->GetImage(t),
                     x*tx-nAdjx, y*ty-nAdjy,
-                    tx,ty,
+                    //tx,ty,
                     true);
         }
     }
