@@ -133,15 +133,16 @@ void Entity::SetFace(Direction d)
 
 void Entity::Stop()
 {
+    destLocation.x = x;
+    destLocation.y = y;
+    destVector.x = 0;
+    destVector.y = 0;
+
     if (!isMoving)
         return;
 
     isMoving = false;
     SetAnimScript(sprite->GetIdleScript(direction));
-    destLocation.x = x;
-    destLocation.y = y;
-    destVector.x = 0;
-    destVector.y = 0;
 }
 
 // Handles all the nasty stuff required to make entities "slide" along a surface if they walk diagonally into it.

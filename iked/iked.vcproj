@@ -181,9 +181,6 @@
 				RelativePath="importframesdlg.cpp">
 			</File>
 			<File
-				RelativePath="layerdlg.cpp">
-			</File>
-			<File
 				RelativePath=".\layervisibilitycontrol.cpp">
 			</File>
 			<File

@@ -21,9 +21,10 @@ def Alert(msg):
 include('.', '..')
 if sys.platform == 'win32':
     # Win32 specific configuration
-    include('../3rdparty/include')
+    include('#/3rdparty/include')
+    libpath('#/3rdparty/lib')
     libs('mingw32', 'opengl32', 'SDLmain')
-    libpath('../3rdparty/lib')
+
     if 'msvc' in env['TOOLS']:
         env.Append(CXXFLAGS = '/EHsc /MD')
         env.Append(LINKFLAGS = ' /SUBSYSTEM:CONSOLE')
@@ -38,7 +39,8 @@ libs(Split('''
     SDL
     audiere
     corona
-    z
+    zlib
+    python23
 '''))
 
 # SDL linking info
@@ -60,11 +62,10 @@ PY_INC = sc.get_python_inc()
 PY_LIB = sc.get_config_var('LIBDEST')
 PY_VER = sc.get_config_var('VERSION')
 include(PY_INC)
-libs('m', 'python%s' % PY_VER)
 libpath(PY_LIB + '/config')
 
-include('../common')
-libpath('../common')
+include('#/common')
+libpath('#/common')
 libs('common')
 
 env.Append(LINKFLAGS = '-Wl,--export-dynamic')

@@ -4,6 +4,7 @@ common = env.StaticLibrary('common',
     source = Split('''
         aries.cpp
         base64.cpp
+        oldbase64.cpp
         Canvas.cpp
         chr.cpp
         compression.cpp
