@@ -133,6 +133,7 @@ private:
     void UpdateScrollbars();
 
     void Render();
+    void RenderInfoLayer(int lay);
     void RenderLayer(int lay);
     void Zoom(const int& nZoomscale);
 

@@ -52,12 +52,13 @@ void CLayerVisibilityControl::OnKeyDown(wxListEvent& event) {}
 
 void CLayerVisibilityControl::OnItemChecked(wxCommandEvent& event)
 {
-    int idx=-1;
+/*    int idx=-1;
     for (int i=0; i<layidx.size(); i++)
         if (layidx[i]==event.GetInt())
         {   idx=i;  break;  }
 
-    if (idx==-1) return;
+    if (idx==-1) return;*/
+    int idx=layidx[event.GetInt()];
 
-    pMapview->OnLayerToggleVisibility(event.GetInt(),IsChecked( layidx[event.GetInt()] ));
+    pMapview->OnLayerToggleVisibility(idx,IsChecked( event.GetInt() ));
 }

@@ -117,6 +117,7 @@ void CGraphFrame::ScaleBlit(CImage& src,int x,int y,int w,int h,bool trans)
     GLfloat nTexendy=1.0f*src.nHeight/src.nTexheight;
 
     glBindTexture(GL_TEXTURE_2D,src.hTex);
+    glColor4f(1,1,1,1); 
 
     glBegin(GL_QUADS);
 

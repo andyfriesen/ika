@@ -455,9 +455,82 @@ void CMapView::Render()
         {
             int l=r[i]-'1';
             if (r[i]=='0') l=10;
-            
+
             if (l>=0 && l<pMap->NumLayers() && nLayertoggle[l]!=hidden)
                 RenderLayer(l);
+        }
+    }
+
+    if (nLayertoggle[lay_obstruction])
+        RenderInfoLayer(lay_obstruction);
+    if (nLayertoggle[lay_zone])
+        RenderInfoLayer(lay_zone);
+}
+
+// AGH I HATE THIS TODO: figure out a nice way to consolidate all this into a single function. (templates seem like a good idea)
+
+void CMapView::RenderInfoLayer(int lay)
+{
+    int nWidth,nHeight;
+
+    pGraph->GetClientSize(&nWidth,&nHeight);
+
+    nWidth=nWidth*nZoomscale/nZoom;
+    nHeight=nHeight*nZoomscale/nZoom;
+
+    int xw=xwin;
+    int yw=ywin;
+
+    int tx=pTileset->Width();
+    int ty=pTileset->Height();
+
+    int nFirstx=xw/tx;
+    int nFirsty=yw/ty;
+    
+    int nLenx=nWidth/tx+2;
+    int nLeny=nHeight/ty+2;
+
+    if (nFirstx+nLenx>pMap->Width())  nLenx=pMap->Width()-nFirstx;
+    if (nFirsty+nLeny>pMap->Height()) nLeny=pMap->Height()-nFirsty;
+
+    int nAdjx=(xw%tx)*nZoom/nZoomscale;
+    int nAdjy=(yw%ty)*nZoom/nZoomscale;
+
+    tx=tx*nZoom/nZoomscale;
+    ty=ty*nZoom/nZoomscale;
+
+    if (lay==lay_obstruction)
+    {
+        for (int y=0; y<nLeny; y++)
+        {
+            for (int x=0; x<nLenx; x++)
+            {
+                //int t=pMap->GetTile(x+nFirstx, y+nFirsty, lay);
+            
+                if (pMap->IsObs(x+nFirstx,y+nFirsty))
+                    pGraph->RectFill(
+                        x*tx-nAdjx, y*ty-nAdjy,
+                        tx,ty,
+                        RGBA(0,0,0,128));
+            }
+        }
+    }
+    else
+    {
+        for (int y=0; y<nLeny; y++)
+        {
+            for (int x=0; x<nLenx; x++)
+            {
+                int z=pMap->GetZone(x+nFirstx,y+nFirsty);
+
+                RGBA c(0,0, (z*4)&255, 128);
+            
+                if (lay==0 || z!=0)
+                    pGraph->RectFill(
+                        x*tx-nAdjx, y*ty-nAdjy,
+                        tx,ty,
+                        c);
+            }
         }
     }
 }
