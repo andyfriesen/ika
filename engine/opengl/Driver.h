@@ -46,32 +46,35 @@ namespace OpenGL
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage();
 
+        /// Sets the current blend mode.
+        virtual Video::BlendMode SetBlendMode(Video::BlendMode bm);
+
         /// Blits an image to the screen.
-        virtual void BlitImage(Video::Image* img, int x, int y, bool transparent);
+        virtual void BlitImage(Video::Image* img, int x, int y);
 
         /// Blits a scaled version of the provided image to the screen.
-        virtual void ScaleBlitImage(Video::Image* img, int x, int y, int w, int h, bool transparent);
+        virtual void ScaleBlitImage(Video::Image* img, int x, int y, int w, int h);
 
         /// Blits a distorted version of the image to the screen, given the provided corner points.
-        virtual void DistortBlitImage(Video::Image* img, int x[4], int y[4], bool transparent) NYI
+        virtual void DistortBlitImage(Video::Image* img, int x[4], int y[4]);
 
         /// Draws a single pixel on the screen.
-        virtual void DrawPixel(int x, int y, u32 color) NYI
+        virtual void DrawPixel(int x, int y, u32 colour);
 
-        /// Gets the value of a pixel in an image.
-        virtual u32 GetPixel(Video::Image* img, int x, int y) NYI
+        /// Gets the value of a pixel on the screen.
+        virtual u32 GetPixel(int x, int y) NYI
 
         /// Draws a line on the screen.
-        virtual void DrawLine(int x1, int y1, int x2, int y2, u32 color) NYI
+        virtual void DrawLine(int x1, int y1, int x2, int y2, u32 colour);
 
         /// Draws a rectangle on the screen.
-        virtual void DrawRect(int x1, int y1, int x2, int y2, u32 color, bool filled);
+        virtual void DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled);
 
         /// Draws an ellipse on the screen.
-        virtual void DrawEllipse(int cx, int cy, int rx, int ry, u32 color, bool filled) NYI
+        virtual void DrawEllipse(int cx, int cy, int rx, int ry, u32 colour, bool filled);
 
-        /// Draws a polygon on the screen.
-        virtual void DrawPoly(int x[3], int y[3], u32 color[3]) NYI
+        /// Draws a triangle on the screen.
+        virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]);
 
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const;
@@ -86,6 +89,8 @@ namespace OpenGL
 
         uint _lasttex;
         void SwitchTexture(uint tex);
+
+        Video::BlendMode _blendMode;
     };
 };
 

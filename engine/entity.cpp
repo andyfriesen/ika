@@ -4,62 +4,69 @@
 #include "sprite.h"
 #include "main.h"
 
-CEntity::CEntity(CEngine* njin) :
-    engine              (*njin),
-    animscriptofs       (0),
-    animscriptct        (0),
-    movescriptofs       (0),
-    movescriptct        (0),
-    x                   (0),
-    y                   (0),
-    nSpeed              (entspeed_normal),
-    nSpeedcount         (0),
-    pSprite             (0),
-    direction           (face_down),
-    bMoving             (false),
-    movecode            (mc_nothing),
-    bVisible            (true),
+CEntity::CEntity(CEngine* njin)
+    : engine              (*njin)
+    , animscriptofs       (0)
+    , animscriptct        (0)
+    , movescriptofs       (0)
+    , movescriptct        (0)
+    , x                   (0)
+    , y                   (0)
+    , nSpeed              (entspeed_normal)
+    , nSpeedcount         (0)
+    , pSprite             (0)
+    , direction           (face_down)
+    , bMoving             (false)
+    , movecode            (mc_nothing)
+    , bVisible            (true)
     
-    nCurframe           (0),
-    nSpecframe          (0),
+    , nCurframe           (0)
+    , nSpecframe          (0)
     
-    nWandersteps        (0),
-    nWanderdelay        (0),
-    bAdjacentactivate   (false),
-    bIsobs              (true),
-    bMapobs             (true),
-    bEntobs             (true)
+    , nWandersteps        (0)
+    , nWanderdelay        (0)
+    , bAdjacentactivate   (false)
+    , bIsobs              (true)
+    , bMapobs             (true)
+    , bEntobs             (true)
+
+    , pChasetarget        (0)
+    , nMinchasedist       (0)
 {}
 
-CEntity::CEntity(CEngine* njin,const SMapEntity& e) :
-    engine(*njin),
-    animscriptofs       (0),
-    animscriptct        (0),
-    movescriptofs       (0),
-    movescriptct        (0),
-    x                   (e.x),
-    y                   (e.y),
-    nSpeed              (e.nSpeed),
-    nSpeedcount         (0),
-    pSprite             (0),
-    direction           ((Direction)e.direction),
-    bMoving             (false),
-    movecode            (e.state),
-    bVisible            (true),
+CEntity::CEntity(CEngine* njin,const SMapEntity& e) 
+    : engine(*njin)
+    , animscriptofs       (0)
+    , animscriptct        (0)
+    , movescriptofs       (0)
+    , movescriptct        (0)
+    , x                   (e.x)
+    , y                   (e.y)
+    , nSpeed              (e.nSpeed)
+    , nSpeedcount         (0)
+    , pSprite             (0)
+    , direction           ((Direction)e.direction)
+    , bMoving             (false)
+    , movecode            (e.state)
+    , bVisible            (true)
     
-    nCurframe           (0),
-    nSpecframe          (0),
+    , nCurframe           (0)
+    , nSpecframe          (0)
     
-    nWandersteps        (e.nWandersteps),
-    nWanderdelay        (e.nWanderdelay),
-    wanderrect          (e.wanderrect),
-    bAdjacentactivate   (false),
-    bIsobs              (e.bIsobs),
-    bMapobs             (e.bMapobs),
-    bEntobs             (e.bEntobs),
+    , nWandersteps        (e.nWandersteps)
+    , nWanderdelay        (e.nWanderdelay)
+    , wanderrect          (e.wanderrect)
+    , nWanderzone         (0)
+    , bAdjacentactivate   (false)
+    , bIsobs              (e.bIsobs)
+    , bMapobs             (e.bMapobs)
+    , bEntobs             (e.bEntobs)
 
-    sName               (e.sName),
-    sActscript          (e.sActscript)
+    , sName               (e.sName)
+    , sActscript          (e.sActscript)
+
+    , pChasetarget        (0)
+    , nMinchasedist       (0)
 {}
 
 static int get_int(const string& s,int& offset)

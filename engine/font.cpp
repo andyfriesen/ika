@@ -68,7 +68,7 @@ void CFont::PrintChar(int& x, int y, int subset, char c)
         return;
     
     Video::Image* img = set[subset].glyph[c];
-    video->BlitImage(img, x, y, true);
+    video->BlitImage(img, x, y);
     x += img->Width();
 }
 
@@ -78,6 +78,7 @@ void CFont::PrintString(int startx, int starty, const char* s)
     int x=startx;
     int y=starty;
     
+    video->SetBlendMode(Video::Normal);
     for (uint i=0; i < strlen(s); i++)
     {
         switch (s[i])

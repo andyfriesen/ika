@@ -148,7 +148,7 @@ void CEngine::Startup()
         if (cfg.Int("log"))
             Log::Init("ika.log");
         
-        Log::Write(VERSION " startup");
+        Log::Write("ika " VERSION " startup");
         Log::Write("Built on " __DATE__);
         Log::Write("--------------------------");
 
@@ -161,6 +161,7 @@ void CEngine::Startup()
           
         Log::Write("Initializing Video");
         video = new OpenGL::Driver(cfg.Int("xres"), cfg.Int("yres"), cfg.Int("bpp"), cfg.Int("fullscreen") != 0);
+        SDL_WM_SetCaption("ika "VERSION, 0);
 
         if (!cfg.Int("nosound"))
         {
@@ -266,6 +267,7 @@ void CEngine::RenderEntities()
     // Sort them by y value. (see the CompareEntity functor above)
     std::sort(drawlist.begin(), drawlist.end(), CompareEntities());
 
+    video->SetBlendMode(Video::Normal);
     for (std::vector < CEntity*>::iterator j = drawlist.begin(); j != drawlist.end(); j++)
     {
         const CEntity& e=**j;
@@ -273,7 +275,7 @@ void CEngine::RenderEntities()
         
         int frame = e.nSpecframe ? e.nSpecframe : e.nCurframe;
         
-        video->BlitImage(s.GetFrame(frame), e.x - xwin - s.nHotx, e.y - ywin - s.nHoty, true);
+        video->BlitImage(s.GetFrame(frame), e.x - xwin - s.nHotx, e.y - ywin - s.nHoty);
     }
 }
 
@@ -314,12 +316,13 @@ void CEngine::RenderLayer(int lay, bool transparent)
     int cury = yofs;
     if (transparent)
     {
+        video->SetBlendMode(Video::Normal);
         for (int y = 0; y < yl; y++)
         {
             for (int x = 0; x < xl; x++)
             {
                 if (*t)
-                    video->BlitImage(tiles->GetTile(*t), curx, cury, true);
+                    video->BlitImage(tiles->GetTile(*t), curx, cury);
 
                 curx += tiles->Width();
                 t++;
@@ -331,11 +334,12 @@ void CEngine::RenderLayer(int lay, bool transparent)
     }
     else
     {
+        video->SetBlendMode(Video::None);
         for (int y = 0; y < yl; y++)
         {
             for (int x = 0; x < xl; x++)
             {
-                video->BlitImage(tiles->GetTile(*t), curx, cury, true);
+                video->BlitImage(tiles->GetTile(*t), curx, cury);
 
                 curx += tiles->Width();
                 t++;
@@ -618,7 +622,7 @@ void CEngine::DestroyEntity(CEntity* e)
             if (pCameratarget == e)   pCameratarget = 0;
             if (pPlayer == e)         pPlayer = 0;
             
-            // Sadly, this probably gets pretty slow.
+            // O(n**2) I think.  Gay.
             for (EntityIterator ii = entities.begin(); ii != entities.end(); ii++)
             {
                 CEntity& e=*(*ii);
@@ -630,7 +634,7 @@ void CEngine::DestroyEntity(CEntity* e)
             }
             
             // actually nuke it
-            entities.remove(*i);
+            entities.remove(e);
             delete e;
             return;
         }

@@ -9,9 +9,9 @@ namespace Script
 
         PyMethodDef methods[] =
         {
-            {   "Pressed",  (PyCFunction)Control_Pressed,    METH_NOARGS,   "Returns nonzero if the key has been pressed since the last time Pressed() or Delta() have been called" },
-            {   "Position", (PyCFunction)Control_Position,   METH_NOARGS,   "Returns the position of the control, as a float between 0 and 1. (1 being pressed all the way, 0 being unpressed" },
-            {   "Delta",    (PyCFunction)Control_Delta,      METH_NOARGS,   "Returns the change in position of the control since the last time Pressed() or Delta() were called" },
+            {   "Pressed",  (PyCFunction)Control_Pressed,    METH_NOARGS,   "Control.Pressed()\nReturns nonzero if the key has been pressed since the last time Pressed() or Delta() have been called" },
+            {   "Position", (PyCFunction)Control_Position,   METH_NOARGS,   "Control.Position()\nReturns the position of the control, as a float between 0 and 1. (1 being pressed all the way, 0 being unpressed" },
+            {   "Delta",    (PyCFunction)Control_Delta,      METH_NOARGS,   "Control.Delta()\nReturns the change in position of the control since the last time Pressed() or Delta() were called" },
             {   0, 0    }
         };
 

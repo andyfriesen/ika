@@ -12,7 +12,7 @@ namespace Sound
 {
     void Init()
     {
-        _device = OpenDevice();
+        _device = OpenDevice("winmm", "");
 
         if (!_device)
             throw Exception();

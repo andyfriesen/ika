@@ -12,10 +12,16 @@ namespace Video
     /// Thrown when something in the video system screws up. ;)
     class Exception{};
 
-    /**
-    * This class defines the base interface for all ika
-    * video drivers.
-    */
+    /// Different methods for alpha blending
+    enum BlendMode
+    {
+        None,
+        Normal,
+        // Add,
+        // Subtract
+    };
+
+    /// Base interface for all ika video drivers.
     class Driver
     {
     public:
@@ -45,32 +51,36 @@ namespace Video
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage() = 0;
 
+        /// Sets the blending mode.
+        /// @returns The old blending mode.
+        virtual BlendMode SetBlendMode(BlendMode bm) = 0;
+
         /// Blits an image to the screen.
-        virtual void BlitImage(Image* img, int x, int y, bool transparent) = 0;
+        virtual void BlitImage(Image* img, int x, int y) = 0;
 
         /// Blits a scaled version of the provided image to the screen.
-        virtual void ScaleBlitImage(Image* img, int x, int y, int w, int h, bool transparent) = 0;
+        virtual void ScaleBlitImage(Image* img, int x, int y, int w, int h) = 0;
 
         /// Blits a distorted version of the image to the screen, given the provided corner points.
-        virtual void DistortBlitImage(Image* img, int x[4], int y[4], bool transparent) = 0;
+        virtual void DistortBlitImage(Image* img, int x[4], int y[4]) = 0;
 
         /// Draws a single pixel on the screen.
-        virtual void DrawPixel(int x, int y, u32 color) = 0;
+        virtual void DrawPixel(int x, int y, u32 colour) = 0;
 
-        /// Gets the value of a pixel in an image.
-        virtual u32 GetPixel(Video::Image* img, int x, int y) = 0;
+        /// Gets the value of a pixel from the screen.
+        virtual u32 GetPixel(int x, int y) = 0;
 
         /// Draws a line on the screen.
-        virtual void DrawLine(int x1, int y1, int x2, int y2, u32 color) = 0;
+        virtual void DrawLine(int x1, int y1, int x2, int y2, u32 colour) = 0;
 
         /// Draws a rectangle on the screen.
-        virtual void DrawRect(int x1, int y1, int x2, int y2, u32 color, bool filled) = 0;
+        virtual void DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled) = 0;
 
         /// Draws an ellipse on the screen.
-        virtual void DrawEllipse(int cx, int cy, int rx, int ry, u32 color, bool filled) = 0;
+        virtual void DrawEllipse(int cx, int cy, int rx, int ry, u32 colour, bool filled) = 0;
 
-        /// Draws a polygon on the screen.
-        virtual void DrawPoly(int x[3], int y[3], u32 color[3]) = 0;
+        /// Draws a triangle on the screen.
+        virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]) = 0;
 
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const = 0;

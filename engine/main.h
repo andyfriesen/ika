@@ -2,7 +2,13 @@
 #ifndef MAIN_H
 #define MAIN_H
 
-#define VERSION "ika 0.40alpha"
+#define VER "0.40alpha"
+
+#ifdef _DEBUG
+#   define VERSION VER " (debug)"
+#else
+#   define VERSION VER
+#endif
 
 // low level components/containers/etc..
 #include <list>

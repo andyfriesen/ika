@@ -74,8 +74,9 @@ namespace Script
             if (!PyArg_ParseTuple(args, "Oii|i:Video.Blit", &image, &x, &y, &trans))
                 return 0;
 
-            self->video->BlitImage(image->img, x, y, trans != 0);
-
+            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->BlitImage(image->img, x, y);
+            
             Py_INCREF(Py_None);
             return Py_None;
         }
@@ -90,8 +91,9 @@ namespace Script
             if (!PyArg_ParseTuple(args, "Oiiii|i:Video.ScaleBlit", &image, &x, &y, &w, &h, &trans))
                 return 0;
 
-            self->video->ScaleBlitImage(image->img, x, y, w, h, trans != 0);
-
+            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->ScaleBlitImage(image->img, x, y, w, h);
+            
             Py_INCREF(Py_None);
             return Py_None;
         }
@@ -105,8 +107,9 @@ namespace Script
             if (!PyArg_ParseTuple(args, "O(iiii)(iiii)|i:Video.DistortBlit", &image, x, x + 1, x + 2, x + 3, y, y + 1, y + 2, y + 3, &trans))
                 return 0;
 
-            self->video->DistortBlitImage(image->img, x, y, trans != 0);
-
+            self->video->SetBlendMode(trans ? ::Video::Normal : ::Video::None);
+            self->video->DistortBlitImage(image->img, x, y);
+            
             Py_INCREF(Py_None);
             return Py_None;
         }

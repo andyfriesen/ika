@@ -181,7 +181,7 @@ void CScriptEngine::AddEntityToList(CEntity* e)
 {
     PyObject* pEnt = Script::Entity::New(e);                // make an object for the entity
 
-    PyDict_SetItemString(Script::entitydict, e->sName.c_str(), pEnt);
+    PyDict_SetItemString(Script::entitydict, const_cast<char*>(e->sName.c_str()), pEnt);
     
     Py_DECREF(pEnt);
 }

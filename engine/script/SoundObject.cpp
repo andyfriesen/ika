@@ -57,6 +57,8 @@ namespace Script
             type.tp_methods = methods;
             type.tp_getset = properties;
             type.tp_doc="A hunk of sound data, like a sound effect, or a piece of music.";
+
+            PyType_Ready(&type);
         }
 
         PyObject* New(PyObject* self, PyObject* args)
