@@ -192,8 +192,10 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
     // set script font/color/style
     //  -- khross
 
+    
     if (nWhich==0) // whitespace
     {
+        /*
         wxColour nColor;
         nColor=GetBackgroundColour();
         
@@ -228,6 +230,7 @@ void CCodeWnd::SetSyntax(int nWhich, wxCommandEvent& event)
             pTextctrl->SetFocus();
             
         }
+        */
         return;
     }
 
@@ -270,7 +273,7 @@ void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
 {
     const wxString szChoices[] = 
         {
-        "Whitespace",
+        //"Whitespace",
         "Comments",
         "Numerical constants",
         "\" Style string literals",
@@ -296,7 +299,7 @@ void CCodeWnd::OnSyntaxHighlighting(wxCommandEvent& event)
         );
 
     if (sdialog.ShowModal() == wxID_OK)
-        SetSyntax(sdialog.GetSelection(),event);
+        SetSyntax(sdialog.GetSelection()+1,event);
 
     
 }
