@@ -39,7 +39,7 @@ public:
   
     inline int Width() const { return nFramex; }
     inline int Height() const { return nFramey; }
-    string& Script(uint s);
+    const string& Script(uint s) const;
 };
 
 /**

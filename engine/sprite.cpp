@@ -1,3 +1,5 @@
+#include <cassert>
+
 #include "sprite.h"
 
 #include "common/log.h"
@@ -35,11 +37,11 @@ CSprite::~CSprite()
         delete hFrame[i];
 }
 
-string& CSprite::Script(uint s)
+const string& CSprite::Script(uint s) const
 {
     static string dummy;
 
-    if (s<0 || s>sScript.size())
+    if (s >= sScript.size())
         return dummy;
 
     return sScript[s];
@@ -74,7 +76,7 @@ CSprite* CSpriteController::Load(const char* fname, Video::Driver* video)
     {
         s=new CRefCountedSprite(fname, video);
     }
-    catch (SpriteException)
+    catch (std::runtime_error)
     {
         return 0;
     }
