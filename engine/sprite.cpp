@@ -87,13 +87,14 @@ void CSpriteController::Free(CSprite* s)
     CRefCountedSprite* a=(CRefCountedSprite*)s;
     for (SpriteList::iterator i=sprite.begin(); i!=sprite.end(); i++)
     {
-        CRefCountedSprite* t=*i;
+        CRefCountedSprite* t = *i;
         if (a==t)
         {
-            (*i)->nRefcount--;
+            t->nRefcount--;
 
-            if ((*i)->nRefcount==0)
+            if (t->nRefcount == 0)
             {
+                Log::Write("Deallocating %s", t->sFilename.c_str());
                 sprite.remove(*i);
                 delete s;
             }

@@ -497,6 +497,7 @@ namespace Script
                 iter != Script::Entity::instances.end();
                 iter++)
             {
+                Py_INCREF(iter->second);
                 PyList_SetItem(list, i, reinterpret_cast<PyObject*>(iter->second));
                 i++;
             }

@@ -145,14 +145,6 @@ namespace Script
             {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
             {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
             {   "hotheight",        (getter)getHotHeight,           0,                          "Gets the height of the entity's hotspot."  },
-            /*{   "movepattern",      (getter)getMovePattern,         0,                          "Gets a value representing the entity's current movement pattern:\n\n"
-                                                                                                "   ika.nothing - The entity is standing still.\n"
-                                                                                                "   ika.wander - The entity is wandering.\n"
-                                                                                                "   ika.wanderrect - The entity is wandering within a rect.\n"
-                                                                                                "   ika.wanderzone - The entity is wandering within a zone.\n"
-                                                                                                "   ika.scripted - The entity is following a movement script.\n"
-                                                                                                "   ika.chase - The entity is chasing another entity." },
-            {   "chasetarget",      (getter)getChaseTarget,         0,                          "Gets the entity that this entity is chasing, or None if it is not chasing another entity." },*/
             {   0   }
         };
 
