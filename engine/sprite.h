@@ -45,8 +45,6 @@ class CSpriteController
     struct CRefCountedSprite : public CSprite
     {
         int nRefcount;
-
-        CRefCountedSprite(const char* fname) : CSprite(fname) {}
     };
 
     typedef list<CRefCountedSprite*> SpriteList;

@@ -28,11 +28,11 @@ CDebuggingthing::CDebuggingthing(const char* s)
 
 CDebuggingthing::~CDebuggingthing()
 {
-    callback.erase(len);
-
     FILE* f=fopen("callback.log","a");
     fprintf(f,"\t\t%s\n",callback.c_str());
     fclose(f);
+
+    callback.erase(len);
 }
 
 #endif

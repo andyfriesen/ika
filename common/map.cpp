@@ -979,12 +979,12 @@ void Map::SetZoneInfo(const SMapZone& info,int zonenum)
     if (zonenum>=0 && zonenum<zoneinfo.size())
         zoneinfo[zonenum]=info;
     if (zonenum>=zoneinfo.size() && 
-        (
-        info.sName!="" ||
-        info.sActscript!="" ||
-        info.sDescription!="" ||
-        info.sEntactscript!=""
-        )
+            (
+                info.sName!="" ||
+                info.sActscript!="" ||
+                info.sDescription!="" ||
+                info.sEntactscript!=""
+            )
         )
         zoneinfo.push_back(info);
 }
@@ -1000,19 +1000,19 @@ int Map::EntityAt(int x,int y)
         if (x>=entity[i].x && y>=entity[i].y &&
             x<=entity[i].x+nHotx && y<=entity[i].y+nHoty)
             return i;
-        return -1;
+    return -1;
 }
 
 void Map::GetEntInfo(SMapEntity& info,int entidx)
 {
     if (entidx>=0 && entidx<entity.size())
-        memcpy(&info,&entity[entidx],sizeof info);
+        info=entity[entidx];
 }
 
 void Map::SetEntInfo(const SMapEntity& info,int entidx)
 {
     if (entidx>=0 && entidx<entity.size())
-        memcpy(&entity[entidx],&info,sizeof info);
+        entity[entidx]=info;
 }
 
 int Map::CreateEntity(int x,int y)
@@ -1027,11 +1027,8 @@ int Map::CreateEntity(int x,int y)
 
 void Map::DestroyEntity(int entidx)
 {
-    int i;
-    
-    for (i=entidx; i<entity.size()-1; i++)
+    for (int i=entidx; i<entity.size()-1; i++)
         entity[i]=entity[i+1];
-    //memcpy(&entity[i],&entity[i+1],sizeof entity[i]);
     
     entity.pop_back();
 }

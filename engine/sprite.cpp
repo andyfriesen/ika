@@ -83,7 +83,10 @@ CSprite* CSpriteController::Load(const char* fname)
     }
 
     // Not already loaded, we'll have to do that now.
-    CRefCountedSprite* s=new CRefCountedSprite(fname);
+    CRefCountedSprite* s=new CRefCountedSprite();
+    bool result=s->LoadCHR(fname);
+    if (!result)    {        delete s;        return NULL;    }
+
     s->nRefcount=1;
     s->sFilename=fname;
 
