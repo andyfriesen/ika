@@ -2,17 +2,17 @@
 #include "imageview.h"
 #include "graph.h"
 
-BEGIN_EVENT_TABLE(CImageView,wxDialog)
-    //EVT_PAINT(CImageView::OnPaint)
+BEGIN_EVENT_TABLE(CImageView,IDocView)
+    EVT_PAINT(CImageView::OnPaint)
 END_EVENT_TABLE()
 
-CImageView::CImageView(CPixelMatrix* img)
-    : wxDialog(), pData(img)
+CImageView::CImageView(CMainWnd* parent,CPixelMatrix* img)
+    : IDocView(parent,"image"), pData(img)
 {
-    SetSize(-1,-1,340,340);
+    //SetSize(-1,-1,340,340);
 
     pGraph=new CGraphFrame(this);
-    pGraph->SetSize(10,10,330,330);
+    pGraph->SetSize(GetClientSize());
 
     pImage=new CImage(*img);
 }
@@ -29,4 +29,8 @@ void CImageView::OnPaint()
     pGraph->SetCurrent();
     pGraph->Clear();
     pGraph->ShowPage();
+}
+
+void CImageView::OnSave(wxCommandEvent&)
+{
 }

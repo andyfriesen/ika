@@ -83,6 +83,8 @@ public:
     void OnToolBarNewMap(wxCommandEvent& event);
     void OnToolLeftClick(wxCommandEvent& event);
 
+    void OpenDocument(IDocView* newwnd);
+
     void OnChildClose(IDocView* child);
 
     wxMenuBar*  CreateBasicMenu();

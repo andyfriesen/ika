@@ -14,8 +14,9 @@ class CGraphFrame;
 class CImage;
 class CPixelMatrix;
 
-class CImageView : public wxDialog
+class CImageView : public IDocView
 {
+protected:
     CMainWnd*       pParent;
     CGraphFrame*    pGraph;     // the main editing grid
 
@@ -24,11 +25,13 @@ class CImageView : public wxDialog
 
 public:
 
-    CImageView(CPixelMatrix* img);
-    ~CImageView();
+    CImageView(CMainWnd* parent,CPixelMatrix* img);
+    virtual ~CImageView();
 
     // events
     void OnPaint();
+
+    void OnSave(wxCommandEvent&);
 
     DECLARE_EVENT_TABLE()
 };

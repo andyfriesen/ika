@@ -123,9 +123,7 @@ void CTileSetView::OnRightClick(wxMouseEvent& event)
 void CTileSetView::OnEditTile(wxCommandEvent& event)
 {
 //    pParent->
-    CImageView view(&pTileset->Get(nTile));
-
-    view.ShowModal();
+    pParent->OpenDocument( new CImageView(pParent,&pTileset->Get(nTile)) );
 }
 
 //---------------------------

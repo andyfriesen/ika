@@ -192,7 +192,7 @@ void CMainWnd::Open(const std::string& fname)
 {
     FileType type=GetFileType(fname);
 
-    IDocView* pWnd;
+    IDocView* pWnd=0;
 
     switch (type)
     {
@@ -201,6 +201,7 @@ void CMainWnd::Open(const std::string& fname)
     case t_map:         pWnd=new CMapView(this,fname.c_str());  break;
     case t_vsp:         pWnd=new CTileSetView(this,fname.c_str());  break;
     case t_font:        pWnd=new CFontView(this,fname.c_str()); break;
+    case t_unknown:
     case t_text:
     case t_dat:         pWnd=new CTextView(this,fname.c_str()); break;
 
@@ -223,9 +224,14 @@ void CMainWnd::Open(const std::string& fname)
             return;
         }
     };   
-    
-    pDocuments.insert(pWnd);
-    pWnd->Activate();
+
+    OpenDocument(pWnd);
+}
+
+void CMainWnd::OpenDocument(IDocView* newwnd)
+{
+    pDocuments.insert(newwnd);
+    newwnd->Activate();
 }
 
 FileType CMainWnd::GetFileType(const std::string& fname)

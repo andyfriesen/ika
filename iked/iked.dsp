@@ -216,6 +216,10 @@ SOURCE=.\textview.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\tileedit.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\tileset.cpp
 # End Source File
 # Begin Source File
@@ -285,6 +289,10 @@ SOURCE=.\spriteset.h
 # Begin Source File
 
 SOURCE=.\textview.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\tileedit.h
 # End Source File
 # Begin Source File
 
