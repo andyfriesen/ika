@@ -63,7 +63,10 @@ public:
     ~ScopedPtr()     { delete _data;  }
 
     T* operator ->() { return  _data; }
+    T& operator * () { return *_data; }
     T* get()         { return  _data; }
+
+    operator bool () { return _data != 0; }
   
     ScopedPtr& operator = (T* t)
     {

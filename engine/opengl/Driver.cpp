@@ -8,6 +8,9 @@
 
 #include "common/types.h"
 #include "common/Canvas.h"
+#include "common/log.h"
+
+static void __stdcall glBlendEquationStub(int){}
 
 namespace OpenGL
 {
@@ -37,6 +40,15 @@ namespace OpenGL
 
         if (fullscreen)
             SDL_ShowCursor(SDL_DISABLE);
+
+        //Log::Write("%s", glGetString(GL_EXTENSIONS));
+
+        glBlendEquationEXT = (void (__stdcall *)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
+        if (!glBlendEquationEXT) 
+        {
+            Log::Write("no glBlendEquationext :(");
+            glBlendEquationEXT = &glBlendEquationStub;
+        }
     }
 
     Driver::~Driver()
@@ -102,19 +114,18 @@ namespace OpenGL
         if (bm == _blendMode)
             return bm;
 
-        Video::BlendMode m = _blendMode;
-        
         switch (bm)
         {
-            case Video::None:    glDisable(GL_BLEND);    break;
-            case Video::Matte:  // TODO: see if we can get GL to do matte?
-            case Video::Normal:  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); glEnable(GL_BLEND); break;
-            case Video::Add:     glBlendFunc(GL_ONE, GL_ONE);                       glEnable(GL_BLEND); break;
-            case Video::Subtract:glBlendFunc(GL_ONE_MINUS_SRC_COLOR, GL_ONE);       glEnable(GL_BLEND); break;
-            default:
-                return _blendMode;
+        case Video::None:    glBlendEquationEXT(GL_FUNC_ADD_EXT);       glDisable(GL_BLEND);     break;
+        case Video::Matte:  // TODO: see if we can get GL to do matte?
+        case Video::Normal:  glBlendEquationEXT(GL_FUNC_ADD_EXT);       glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;
+        case Video::Add:     glBlendEquationEXT(GL_FUNC_ADD_EXT);       glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;
+        case Video::Subtract:glBlendEquationEXT(GL_FUNC_REVERSE_SUBTRACT_EXT);  glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;
+        default:
+            return _blendMode;
         }
 
+        Video::BlendMode m = _blendMode;
         _blendMode = bm;
         return m;
     }
@@ -193,7 +204,7 @@ namespace OpenGL
     {
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
-        
+
         glBegin(GL_POINTS);
         glVertex2i(x, y);
         glEnd();
@@ -213,7 +224,7 @@ namespace OpenGL
         glEnable(GL_TEXTURE_2D);
         glColor4ub(255, 255, 255, 255);
     }
-    
+
     void Driver::DrawRect(int x1, int y1, int x2, int y2, u32 colour, bool filled)
     {
         glDisable(GL_TEXTURE_2D);
@@ -238,115 +249,115 @@ namespace OpenGL
     {
         // Kudos to Dante for coding this.
         if(rx==0 || ry==0) return;
-   	
+
         glDisable(GL_TEXTURE_2D);
-	    glColor4ubv((u8*)&colour);
-	    rx=abs(rx);	ry=abs(ry);
-	    if(filled)
-	    {
-		    if(rx>ry)
-		    {
-			    float rx2=rx*rx*1.0f, ry2=ry*ry*1.0f;
-			    float ry2rx2=ry2/rx2*1.0f, rxry=rx/ry*1.0f;
-			    float sfac=rxry*0.2f*1.0f;
-			    float i=0.0f, curr=0.0f;
-			    glBegin(GL_TRIANGLE_STRIP); // left part
-			    glVertex2i(cx-rx, cy);
-			    for(i=-rx+1*1.0f; i<=-1; i+=(rx-fabsf(i))*sfac+1)
-			    {
-				    curr=sqrtf(ry2-i*i*ry2rx2);
-				    glVertex2f(cx+i, cy-curr); glVertex2f(cx+i, cy+curr);
-			    }
-			    glVertex2i(cx, cy-ry); glVertex2i(cx, cy+ry);
-			    glEnd();
-			    glBegin(GL_TRIANGLE_STRIP); // right part
-			    glVertex2i(cx+rx, cy);
-			    for(i=rx-1*1.0f; i>=1; i-=(rx-fabsf(i))*sfac+1)
-			    {
-				    curr=sqrtf(ry2-i*i*ry2rx2);
-				    glVertex2f(cx+i, cy-curr); glVertex2f(cx+i, cy+curr);
-			    }
-			    glVertex2i(cx, cy-ry); glVertex2i(cx, cy+ry);
-			    glEnd();
-		    }
-		    else // ry>rx
-		    {
-			    float rx2=rx*rx*1.0f, ry2=ry*ry*1.0f;
-			    float rx2ry2=rx2/ry2*1.0f, ryrx=ry/rx*1.0f;
-			    float sfac=ryrx*0.2f*1.0f;
-			    float i=0.0f, curr=0.0f;
-			    glBegin(GL_TRIANGLE_STRIP); // upper part
-			    glVertex2i(cx, cy-ry);
-			    for(i=-ry+1*1.0f; i<=-1; i+=(ry-fabsf(i))*sfac+1)
-			    {
-				    curr=sqrtf(rx2-i*i*rx2ry2);
-				    glVertex2f(cx-curr, cy+i); glVertex2f(cx+curr, cy+i);
-			    }
-			    glVertex2i(cx-rx, cy); glVertex2i(cx+rx, cy);
-			    glEnd();
-			    glBegin(GL_TRIANGLE_STRIP);  //lower part
-			    glVertex2i(cx, cy+ry);
-			    for(i=ry-1*1.0f; i>=1; i-=(ry-fabsf(i))*sfac+1)
-			    {
-				    curr=sqrtf(rx2-i*i*rx2ry2);
-				    glVertex2f(cx-curr, cy+i); glVertex2f(cx+curr, cy+i);
-			    }
-			    glVertex2i(cx-rx, cy); glVertex2i(cx+rx, cy);
-			    glEnd();
-		    }
-	    }
-	    else //outlined
-	    {
-		    if(rx>ry)
-		    {
-			    double rx2=rx*rx*1.0, ry2=ry*ry*1.0;
-			    double ry2rx2=ry2/rx2*1.0, rxry=rx/(ry*1.0);
-			    double sfac=rxry*0.2;
-			    double i=rx*1.0, curr=0.0;
-			    double lastcurr=curr, lasti=i;
-			    glBegin(GL_LINES);
-			    for(; i>=0; i-=(rx-i)*sfac+1)
-			    {
-				    curr=sqrt(ry2-i*i*ry2rx2);
-				    glVertex2d(cx+lasti, cy+lastcurr); glVertex2d(cx+i, cy+curr);
-				    glVertex2d(cx+lasti, cy-lastcurr); glVertex2d(cx+i, cy-curr);
-				    glVertex2d(cx-lasti, cy+lastcurr); glVertex2d(cx-i, cy+curr);
-				    glVertex2d(cx-lasti, cy-lastcurr); glVertex2d(cx-i, cy-curr);
-				    lastcurr=curr;
-				    lasti=i;
-			    }
-			    glVertex2d(cx+lasti, cy+lastcurr); glVertex2i(cx, cy+ry);
-			    glVertex2d(cx+lasti, cy-lastcurr); glVertex2i(cx, cy-ry);
-			    glVertex2d(cx-lasti, cy+lastcurr); glVertex2i(cx, cy+ry);
-			    glVertex2d(cx-lasti, cy-lastcurr); glVertex2i(cx, cy-ry);
-			    glEnd();
-		    }
-		    else // ry>rx
-		    {
-			    double rx2=rx*rx*1.0, ry2=ry*ry*1.0;
-			    double rx2ry2=rx2/ry2*1.0, ryrx=ry/(rx*1.0);
-			    double sfac=ryrx*0.2;
-			    double i=ry*1.0, curr=0.0;
-			    double lastcurr=curr, lasti=i;
-			    glBegin(GL_LINES);
-			    for(; i>=0; i-=(ry-i)*sfac+1)
-			    {
-				    curr=sqrt(rx2-i*i*rx2ry2);
-				    glVertex2d(cx+lastcurr, cy+lasti); glVertex2d(cx+curr, cy+i);
-				    glVertex2d(cx-lastcurr, cy+lasti); glVertex2d(cx-curr, cy+i);
-				    glVertex2d(cx+lastcurr, cy-lasti); glVertex2d(cx+curr, cy-i);
-				    glVertex2d(cx-lastcurr, cy-lasti); glVertex2d(cx-curr, cy-i);
-				    lastcurr=curr;
-				    lasti=i;
-			    }
-			    glVertex2d(cx+lastcurr, cy+lasti); glVertex2i(cx+rx, cy);
-			    glVertex2d(cx-lastcurr, cy+lasti); glVertex2i(cx-rx, cy);
-			    glVertex2d(cx+lastcurr, cy-lasti); glVertex2i(cx+rx, cy);
-			    glVertex2d(cx-lastcurr, cy-lasti); glVertex2i(cx-rx, cy);
-			    glEnd();
-		    }
-	    }
-	    glColor4ub(255, 255, 255, 255);
+        glColor4ubv((u8*)&colour);
+        rx=abs(rx);	ry=abs(ry);
+        if(filled)
+        {
+            if(rx>ry)
+            {
+                float rx2=rx*rx*1.0f, ry2=ry*ry*1.0f;
+                float ry2rx2=ry2/rx2*1.0f, rxry=rx/ry*1.0f;
+                float sfac=rxry*0.2f*1.0f;
+                float i=0.0f, curr=0.0f;
+                glBegin(GL_TRIANGLE_STRIP); // left part
+                glVertex2i(cx-rx, cy);
+                for(i=-rx+1*1.0f; i<=-1; i+=(rx-fabsf(i))*sfac+1)
+                {
+                    curr=sqrtf(ry2-i*i*ry2rx2);
+                    glVertex2f(cx+i, cy-curr); glVertex2f(cx+i, cy+curr);
+                }
+                glVertex2i(cx, cy-ry); glVertex2i(cx, cy+ry);
+                glEnd();
+                glBegin(GL_TRIANGLE_STRIP); // right part
+                glVertex2i(cx+rx, cy);
+                for(i=rx-1*1.0f; i>=1; i-=(rx-fabsf(i))*sfac+1)
+                {
+                    curr=sqrtf(ry2-i*i*ry2rx2);
+                    glVertex2f(cx+i, cy-curr); glVertex2f(cx+i, cy+curr);
+                }
+                glVertex2i(cx, cy-ry); glVertex2i(cx, cy+ry);
+                glEnd();
+            }
+            else // ry>rx
+            {
+                float rx2=rx*rx*1.0f, ry2=ry*ry*1.0f;
+                float rx2ry2=rx2/ry2*1.0f, ryrx=ry/rx*1.0f;
+                float sfac=ryrx*0.2f*1.0f;
+                float i=0.0f, curr=0.0f;
+                glBegin(GL_TRIANGLE_STRIP); // upper part
+                glVertex2i(cx, cy-ry);
+                for(i=-ry+1*1.0f; i<=-1; i+=(ry-fabsf(i))*sfac+1)
+                {
+                    curr=sqrtf(rx2-i*i*rx2ry2);
+                    glVertex2f(cx-curr, cy+i); glVertex2f(cx+curr, cy+i);
+                }
+                glVertex2i(cx-rx, cy); glVertex2i(cx+rx, cy);
+                glEnd();
+                glBegin(GL_TRIANGLE_STRIP);  //lower part
+                glVertex2i(cx, cy+ry);
+                for(i=ry-1*1.0f; i>=1; i-=(ry-fabsf(i))*sfac+1)
+                {
+                    curr=sqrtf(rx2-i*i*rx2ry2);
+                    glVertex2f(cx-curr, cy+i); glVertex2f(cx+curr, cy+i);
+                }
+                glVertex2i(cx-rx, cy); glVertex2i(cx+rx, cy);
+                glEnd();
+            }
+        }
+        else //outlined
+        {
+            if(rx>ry)
+            {
+                double rx2=rx*rx*1.0, ry2=ry*ry*1.0;
+                double ry2rx2=ry2/rx2*1.0, rxry=rx/(ry*1.0);
+                double sfac=rxry*0.2;
+                double i=rx*1.0, curr=0.0;
+                double lastcurr=curr, lasti=i;
+                glBegin(GL_LINES);
+                for(; i>=0; i-=(rx-i)*sfac+1)
+                {
+                    curr=sqrt(ry2-i*i*ry2rx2);
+                    glVertex2d(cx+lasti, cy+lastcurr); glVertex2d(cx+i, cy+curr);
+                    glVertex2d(cx+lasti, cy-lastcurr); glVertex2d(cx+i, cy-curr);
+                    glVertex2d(cx-lasti, cy+lastcurr); glVertex2d(cx-i, cy+curr);
+                    glVertex2d(cx-lasti, cy-lastcurr); glVertex2d(cx-i, cy-curr);
+                    lastcurr=curr;
+                    lasti=i;
+                }
+                glVertex2d(cx+lasti, cy+lastcurr); glVertex2i(cx, cy+ry);
+                glVertex2d(cx+lasti, cy-lastcurr); glVertex2i(cx, cy-ry);
+                glVertex2d(cx-lasti, cy+lastcurr); glVertex2i(cx, cy+ry);
+                glVertex2d(cx-lasti, cy-lastcurr); glVertex2i(cx, cy-ry);
+                glEnd();
+            }
+            else // ry>rx
+            {
+                double rx2=rx*rx*1.0, ry2=ry*ry*1.0;
+                double rx2ry2=rx2/ry2*1.0, ryrx=ry/(rx*1.0);
+                double sfac=ryrx*0.2;
+                double i=ry*1.0, curr=0.0;
+                double lastcurr=curr, lasti=i;
+                glBegin(GL_LINES);
+                for(; i>=0; i-=(ry-i)*sfac+1)
+                {
+                    curr=sqrt(rx2-i*i*rx2ry2);
+                    glVertex2d(cx+lastcurr, cy+lasti); glVertex2d(cx+curr, cy+i);
+                    glVertex2d(cx-lastcurr, cy+lasti); glVertex2d(cx-curr, cy+i);
+                    glVertex2d(cx+lastcurr, cy-lasti); glVertex2d(cx+curr, cy-i);
+                    glVertex2d(cx-lastcurr, cy-lasti); glVertex2d(cx-curr, cy-i);
+                    lastcurr=curr;
+                    lasti=i;
+                }
+                glVertex2d(cx+lastcurr, cy+lasti); glVertex2i(cx+rx, cy);
+                glVertex2d(cx-lastcurr, cy+lasti); glVertex2i(cx-rx, cy);
+                glVertex2d(cx+lastcurr, cy-lasti); glVertex2i(cx+rx, cy);
+                glVertex2d(cx-lastcurr, cy-lasti); glVertex2i(cx-rx, cy);
+                glEnd();
+            }
+        }
+        glColor4ub(255, 255, 255, 255);
         glEnable(GL_TEXTURE_2D);
     }
 
@@ -362,6 +373,34 @@ namespace OpenGL
         glEnd();
         glColor4ub(255, 255, 255, 255);
         glEnable(GL_TEXTURE_2D);
+    }
+
+    ::Video::Image* Driver::GrabImage(int x1, int y1, int x2, int y2)
+    {
+        ScopedPtr<Canvas> c(GrabCanvas(x1, y1, x2, y2));
+        if (!c.get()) return 0;
+
+        return CreateImage(*c);
+    }
+
+    Canvas* Driver::GrabCanvas(int x1, int y1, int x2, int y2)
+    {
+        y1 = _yres - y1;
+        y2 = _yres - y2;
+
+        // clip
+        if (x1 > x2) swap(x1, x2);
+        if (y1 > y2) swap(y1, y2);
+        x1 = clamp(x1, 0, _xres);        x2 = clamp(x2, 0, _xres);
+        y1 = clamp(y1, 0, _yres);        y2 = clamp(y2, 0, _yres);
+        int w = x2 - x1;
+        int h = y2 - y1;
+        if (w < 0 || h < 0) return 0;
+
+        Canvas* c = new Canvas(w, h);
+        glReadPixels(x1, y1, w, h, GL_RGBA, GL_UNSIGNED_BYTE, c->GetPixels());
+        c->Flip();
+        return c;
     }
 
     Point Driver::GetResolution() const

@@ -23,11 +23,17 @@ namespace Script
                 "loops should call this occasionally to give the OS time to perform\n"
                 "its tasks."
             },
+            {   "GetControl",       (PyCFunction)Input_GetControl,  METH_VARARGS,
+                "Input.GetControl(name -> string)\n\n"
+                "Returns an object that represents the requested control.\n"
+                "Input[name->string] performs the exact same function.\n"
+                "ie x = ika.Input['UP'] or x = ika.Input.GetControl('UP')"
+            },
             {   0   }
         };
 
         // proto
-        PyObject* Input_GetControl(InputObject* self, PyObject* key);
+        PyObject* Input_Subscript(InputObject* self, PyObject* key);
 
 #define GET(x) PyObject* get ## x(InputObject* self)
         GET(Up)     { return Input_GetControl(self, PyString_FromString("UP"));     }
@@ -54,7 +60,7 @@ namespace Script
             memset(&type, 0, sizeof type);
 
             mappingmethods.mp_length = 0;
-            mappingmethods.mp_subscript = (binaryfunc)&Input_GetControl;
+            mappingmethods.mp_subscript = (binaryfunc)&Input_Subscript;
             mappingmethods.mp_ass_subscript = 0;
 
             type.ob_refcnt = 1;
@@ -88,14 +94,22 @@ namespace Script
 
         PyObject* Input_Update(InputObject* self)
         {
-            //self->input->Update();
             engine->CheckMessages();
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        PyObject* Input_GetControl(InputObject* self, PyObject* key)
+        PyObject* Input_GetControl(InputObject* self, PyObject* args)
+        {
+            PyObject* obj;
+            if (!PyArg_ParseTuple(args, "O:Input.GetControl", &obj))
+                return 0;
+
+            return Input_Subscript(self, obj);
+        }
+
+        PyObject* Input_Subscript(InputObject* self, PyObject* key)
         {
             try
             {

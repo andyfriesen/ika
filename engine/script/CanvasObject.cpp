@@ -108,6 +108,13 @@ namespace Script
     
             PyType_Ready(&type);
         }
+
+        PyObject* New(::Canvas* c)
+        {
+            CanvasObject* canvas = PyObject_New(CanvasObject, &type);
+            canvas->canvas = c;
+            return (PyObject*)canvas;
+        }
         
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {

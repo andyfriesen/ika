@@ -1,5 +1,6 @@
 
 #include "audiere.h"
+#include "common/log.h"
 
 #include "common/fileio.h"
 #include "common/misc.h"

@@ -117,6 +117,7 @@ namespace Script
             {
                 self->ent->direction = (Direction)PyInt_AsLong(value);    return 0;
                 self->ent->SetAnimScript(self->ent->pSprite->Script((int)self->ent->direction + self->ent->bMoving ? 0 : 8));
+                self->ent->UpdateAnimation();
             }
 
             SET(SpecFrame)          { self->ent->nSpecframe = PyInt_AsLong(value); return 0; }

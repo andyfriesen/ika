@@ -73,6 +73,16 @@ namespace Script
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
 
+            {   "GrabImage",    (PyCFunction)Video_GrabImage, METH_VARARGS,
+                "Video.GrabImage(x1, y1, x2, y2) -> image\n\n"
+                "Grabs a rectangle from the screen, copies it to an image, and returns it."
+            },
+
+            {   "GrabCanvas",   (PyCFunction)Video_GrabCanvas, METH_VARARGS,
+                "Video.GrabCanvas(x1, y1, x2, y2) -> canvas\n\n"
+                "Grabs a rectangle from the screen, copies it to a canvas, and returns it."
+            },
+
             {   "ShowPage",     (PyCFunction)Video_ShowPage, METH_NOARGS,
                 "Video.ShowPage()\n\n"
                 "Flips the back and front video buffers.  This must be called after the screen\n"
@@ -132,7 +142,7 @@ namespace Script
         {
             Script::Image::ImageObject* image;
             int x, y;
-            int trans = 1;
+            int trans = ::Video::Normal;
 
             if (!PyArg_ParseTuple(args, "Oii|i:Video.Blit", &image, &x, &y, &trans))
                 return 0;
@@ -203,6 +213,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iii:Video.DrawPixel", &x, &y, &colour))
                 return 0;
 
+            self->video->SetBlendMode(::Video::Normal);
             self->video->DrawPixel(x, y, colour);
 
             Py_INCREF(Py_None);
@@ -217,6 +228,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iiiii:Video.DrawLine", &x1, &y1, &x2, &y2, &colour))
                 return 0;
 
+            self->video->SetBlendMode(::Video::Normal);
             self->video->DrawLine(x1, y1, x2, y2, colour);
 
             Py_INCREF(Py_None);
@@ -232,6 +244,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawRect", &x1, &y1, &x2, &y2, &colour, &filled))
                 return 0;
 
+            self->video->SetBlendMode(::Video::Normal);
             self->video->DrawRect(x1, y1, x2, y2, colour, filled != 0);
 
             Py_INCREF(Py_None);
@@ -248,6 +261,7 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawEllipse", &cx, &cy, &rx, &ry, &colour, &filled))
                 return 0;
 
+            self->video->SetBlendMode(::Video::Normal);
             self->video->DrawEllipse(cx, cy, rx, ry, colour, filled != 0);
 
             Py_INCREF(Py_None);
@@ -263,10 +277,45 @@ namespace Script
             if (!PyArg_ParseTuple(args, "(iii)(iii)(iii):Video.DrawTriangle", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2))
                 return 0;
 
+            self->video->SetBlendMode(::Video::Normal);
             self->video->DrawTriangle(x, y, col);
 
             Py_INCREF(Py_None);
             return Py_None;
+        }
+
+        METHOD(Video_GrabImage)
+        {
+            int x1, y1, x2, y2;
+
+            if (!PyArg_ParseTuple(args, "iiii:Video.GrabImage", &x1, &y1, &x2, &y2))
+                return 0;
+
+            ::Video::Image* i = self->video->GrabImage(x1, y1, x2, y2);
+            if (!i)
+            {
+                PyErr_SetString(PyExc_RuntimeError, "GrabImage failed!");
+                return 0;
+            }
+
+            return ::Script::Image::New(i);
+        }
+
+        METHOD(Video_GrabCanvas)
+        {
+            int x1, y1, x2, y2;
+
+            if (!PyArg_ParseTuple(args, "iiii:Video.GrabCanvas", &x1, &y1, &x2, &y2))
+                return 0;
+
+            ::Canvas* c = self->video->GrabCanvas(x1, y1, x2, y2);
+            if (!c)
+            {
+                PyErr_SetString(PyExc_RuntimeError, "GrabCanvas failed!");
+                return 0;
+            }
+
+            return ::Script::Canvas::New(c);
         }
 
         METHOD1(Video_ShowPage)

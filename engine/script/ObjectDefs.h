@@ -39,6 +39,7 @@ namespace Script
         METHOD(Image_Clip, ImageObject);
 
         void Init();
+        PyObject* New(::Video::Image* image);
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(ImageObject* self);
 
@@ -120,6 +121,7 @@ namespace Script
         METHOD1(Canvas_Mirror, CanvasObject);
 
         void Init();
+        PyObject* New(::Canvas* c);
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);
         void Destroy(CanvasObject* self);
     }
@@ -193,6 +195,7 @@ namespace Script
 
         // Methods
         METHOD1(Input_Update, InputObject);
+        METHOD(Input_GetControl, InputObject);
 
         void Init();
         PyObject* New(::Input& i);
@@ -222,6 +225,8 @@ namespace Script
         METHOD(Video_DrawRect, VideoObject);
         METHOD(Video_DrawEllipse, VideoObject);
         METHOD(Video_DrawTriangle, VideoObject);
+        METHOD(Video_GrabImage, VideoObject);
+        METHOD(Video_GrabCanvas, VideoObject);
         METHOD1(Video_ShowPage, VideoObject);
 
         void Init();

@@ -78,6 +78,13 @@ namespace Script
             PyObject_Del(self);
         }
 
+        PyObject* New(::Video::Image* image)
+        {
+            ImageObject* img = PyObject_New(ImageObject, &type);
+            img->img = image;
+            return (PyObject*)img;
+        }
+
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
         {
             static char* keywords[] = { "src", 0 };

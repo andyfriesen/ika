@@ -14,8 +14,6 @@ namespace OpenGL
     struct NotYetImplementedException{};
 #define NYI { throw NotYetImplementedException(); }
 
-    class Image;
-
     /// The driver itself.
     class Driver : public Video::Driver
     {
@@ -79,6 +77,12 @@ namespace OpenGL
         /// Draws a triangle on the screen.
         virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]);
 
+        /// Grabs a rect from the screen, constructs an image from it, and returns it
+        virtual ::Video::Image* GrabImage(int x1, int y1, int x2, int y2);
+
+        /// Like GrabImage, but stores the contents on a canvas, not an image
+        virtual Canvas* GrabCanvas(int x1, int y1, int x2, int y2);
+
         /// Returns the size of the viewport, in pixels.
         virtual Point GetResolution() const;
 
@@ -94,6 +98,8 @@ namespace OpenGL
         void SwitchTexture(uint tex);
 
         Video::BlendMode _blendMode;
+
+        void (__stdcall *glBlendEquationEXT)(int);
     };
 };
 

@@ -10,6 +10,7 @@ namespace Video
     class Image
     {
     public:
+        virtual ~Image(){}
         virtual int Width() = 0;        ///< Returns the width of the image
         virtual int Height() = 0;       ///< Returns the height of the image
     };
