@@ -35,6 +35,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         cp 3rdparty/dlls/msvcr71.dll tempdist
         cp 3rdparty/dlls/python23.dll tempdist
         cp 3rdparty/dlls/zlib.dll tempdist
+        cp 3rdparty/dlls/sdl.dll tempdist
         #cp engine/Release/ika.exe tempdist
         #cp iked/Release/iked.exe tempdist
         #cp ikamap/Release/ikamap.exe tempdist
@@ -43,6 +44,12 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         zip -r ../ika-win-$version.zip *
         cd ..
         echo Done.
+
+        echo Creating DLL package
+        cd tempdist
+        zip -r ../ika-dlls-$version.zip *.dll
+        cd ..
+        echo Done
 
         echo Creating NSIS installer.
         cd tempdist

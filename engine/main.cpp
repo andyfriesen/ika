@@ -526,7 +526,6 @@ void Engine::DoHook(HookList& hooklist)
     for (HookList::List::iterator i = hooklist.begin(); i != hooklist.end(); i++)
     {
         script.ExecObject(*i);
-        SyncTime();
     }
 }
 
@@ -824,6 +823,8 @@ void Engine::LoadMap(const std::string& filename)
             iter->second->activateScript = script.GetObjectFromMapScript(iter->first->activateScript);
             iter->second->adjActivateScript = script.GetObjectFromMapScript(iter->first->adjActivateScript);
         }
+
+        SyncTime();
     }
     catch (std::runtime_error err)  {   Sys_Error(va("LoadMap(\"%s\"): %s", filename.c_str(), err.what())); }
     catch (TileSetException)        {   Sys_Error(va("Unable to load tileset %s", map.tileSetName.c_str())); }
