@@ -1,4 +1,6 @@
 
+#include <cassert>
+
 #include "docview.h"
 #include "main.h"
 
@@ -15,15 +17,16 @@ namespace iked {
         , name(fname)
         , isChanged(false)
     {
+        assert(document != 0);
+        document->ref();
+
         SetTitle(fname.length()?
                 fname.c_str()   :   "Untitled"
         );
     }
 
     DocumentPanel::~DocumentPanel() {
-        document->unref();
         // ??? :P
-        //parent->OnChildClose(this);
     }
 
     void DocumentPanel::setName(const std::string& newName) {
@@ -72,6 +75,8 @@ namespace iked {
             }
         }
         
+        parent->spriteset.free(document);
+        document = 0;
         parent->OnChildClose(this);
         event.Skip();
     }

@@ -70,7 +70,6 @@ namespace iked {
             foreach (Document* doc, documents ) {
 		Log::Write("Leak detected! %s", doc->getName().c_str());
                 delete doc;
-		//allocator->free(debug_cast<T*>(doc));
 	    }
 	    delete allocator;
 	}
@@ -78,6 +77,7 @@ namespace iked {
 	Document* get(const std::string& name) {
 #ifdef WIN32
 	    std::string fileName = toUpper(name);
+            fileName.replace(
 #else
 	    std::string fileName = name;
 #endif
@@ -116,12 +116,16 @@ namespace iked {
 	    assert(doc != 0);
 	    assert(doc->getRefCount() > 0);
 
+            if (doc->getRefCount() == 1) {
+                documents.erase(doc);
+            }
+
 	    doc->unref();
 	}
 
         // Test to see if we own this document.
         bool owns(Document* doc) {
-            return documents.count(doc);
+            return documents.count(doc) != 0;
         }
 
         void documentDestroyed(Document* doc) {

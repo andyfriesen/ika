@@ -356,9 +356,6 @@
 			Name="UI"
 			Filter="">
 			<File
-				RelativePath=".\codeview.h">
-			</File>
-			<File
 				RelativePath=".\docview.cpp">
 			</File>
 			<File
@@ -477,6 +474,9 @@
 						<Tool
 							Name="VCCLCompilerTool"/>
 					</FileConfiguration>
+				</File>
+				<File
+					RelativePath=".\codeview.h">
 				</File>
 				<File
 					RelativePath=".\textview.cpp">

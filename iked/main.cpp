@@ -222,10 +222,10 @@ namespace iked {
 
     void MainWindow::Open(const std::string& fname) {
         try {
-#if 0
+#if 1
             // First, see if the document is already open
             foreach (DocumentPanel* panel, pDocuments) {
-                if (Path::equals(panel->GetFileName(), fname)) {
+                if (Path::equals(panel->getName(), fname)) {
                     panel->Activate();
                     return;
                 }
@@ -238,31 +238,56 @@ namespace iked {
             DocumentPanel* wnd = 0;
 
             switch (type) {
-            case t_chr:         wnd = new SpriteSetView(this, spriteset.get(fname), fname.c_str());  break;
+                case t_chr: {
+                    wnd = new SpriteSetView(this, spriteset.get(fname), fname.c_str());  
+                    break;
+                }
 
-/*            
-            case t_script:      wnd = new CCodeView     (this, fname);          break;
-            case t_map:         wnd = new MapView      (this, fname.c_str());  break;
-            case t_vsp:         wnd = new CTileSetView  (this, fname.c_str());  break;
-            case t_font:        wnd = new FontView     (this, fname.c_str());  break;
-            case t_text:
-            case t_dat:         wnd = new CTextView     (this, fname.c_str());  break;
+                /*            
+                case t_script: {
+                    wnd = new CCodeView(this, fname);          
+                    break;
+                }
 
-            //case t_project:     _project->Load(fname);                          return;
-            case t_config: {
-                    CConfigDlg* configdlg = new CConfigDlg(
-                        this,
-                        -1,
-                        fname
-                        );
+                case t_map: {
+                    wnd = new MapView(this, fname.c_str());  break;
+                }
+
+                case t_vsp: {
+                    wnd = new CTileSetView(this, fname.c_str());  break;
+                }
+
+                case t_font: {
+                    wnd = new FontView(this, fname.c_str());  break;
+                }
+
+                case t_text: {
+                case t_dat: 
+                    wnd = new CTextView(this, fname.c_str());  break;
+                }
+
+                case t_project: {
+                    _project->Load(fname);                          
+                    return;
+                }
+
+                case t_config: {
+                    CConfigDlg* configdlg = new CConfigDlg(this, -1, fname);
 
                     configdlg->ShowModal();
                     configdlg->Close(TRUE);
 
                     return;
                 }
-            case t_unknown: wxMessageDialog(this, "Unknown filetype", "", wxOK).ShowModal();        return;*/
-            default:        wxMessageDialog(this, "Not implemented yet", "NYI", wxOK).ShowModal();  return;
+
+                case t_unknown: {
+                    wxMessageDialog(this, "Unknown filetype", "", wxOK).ShowModal();        return;
+                }
+                */
+
+                default: {
+                    wxMessageDialog(this, "Not implemented yet", "NYI", wxOK).ShowModal();  return;
+                }
             };   
 
             // Control only gets here for the conventional files. (not projects, or config files)
