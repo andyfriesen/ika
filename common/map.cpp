@@ -25,7 +25,7 @@ MapClip::~MapClip()
 
 void MapClip::Free()
 {
-    for (u32 i=0; i<pData.size(); i++)
+    for (int i=0; i<nLayers; i++)
     {
         if (pData[i])
             delete[] pData[i];
@@ -101,17 +101,14 @@ void Map::Copy(MapClip &mc,Rect r)
     mc.pData.resize(NumLayers());
     mc.bUsed.resize(NumLayers());
     
-    for (int curlayer=0; curlayer<nLayers; curlayer++)
+    for (int curlayer=0; curlayer<NumLayers(); curlayer++)
     {
-        //        if (layertoggle[curlayer])
-        //        {
         mc.bUsed[curlayer]=true;
         mc.pData[curlayer]=new u32[yl*xl];
         
         for (int ay=0; ay<yl; ay++)
             for (int ax=0; ax<xl; ax++)
                 mc.pData[curlayer][ay*xl+ax]=pData[curlayer][(ay+r.top)*nWidth+ax+r.left];    // buah... I'm not concerned with speed.  Not here.
-            //        }
     }
 }
 
@@ -144,7 +141,7 @@ void Map::Paste(MapClip &mc,int x,int y,int destlayer)
         return;
     }
     
-    for (u32 i=0; i<mc.pData.size(); i++)    // else
+    for (int i=0; i<mc.nLayers; i++)    // else
         if (mc.bUsed[i])
             Paste(mc,x,y,i,i,true);        // copy whichever layer to wherever
 }
@@ -156,13 +153,13 @@ static const char sNewmapsig[] = "MAPù6";
 
 // heh, con/destructors
 Map::Map()
-    : pObstruct(0), pZone(0), nLayers(0), nWidth(0), nHeight(0)
+    : pObstruct(0), pZone(0), nWidth(0), nHeight(0)
 {
     New();
 }
 
 Map::Map(const char* fname)
-    : pObstruct(0), pZone(0), nLayers(0), nWidth(0), nHeight(0)
+    : pObstruct(0), pZone(0), nWidth(0), nHeight(0)
 {
     Load(fname);
 }
@@ -226,7 +223,7 @@ int Map::CountUsedZones()
 
 u32 Map::GetTile(int x,int y,int layer)
 {
-    if (layer>nLayers) return 0;
+    if (layer>NumLayers()) return 0;
     if (x<0 || y<0) return 0;
     if (x>=nWidth) return 0;
     if (y>=nHeight) return 0;
@@ -236,7 +233,7 @@ u32 Map::GetTile(int x,int y,int layer)
 
 void Map::SetTile(int x,int y,int layer,u32 tile)
 {
-    if (layer<0 || layer>nLayers) return;
+    if (layer<0 || layer>NumLayers()) return;
     if (x<0 || y<0) return;
     if (x>=nWidth) return;
     if (y>=nHeight) return;
@@ -246,7 +243,7 @@ void Map::SetTile(int x,int y,int layer,u32 tile)
 
 u32* Map::GetDataPtr(int layer)
 {
-    if (layer>nLayers || layer<0) return NULL;
+    if (layer<0 || layer>NumLayers()) return NULL;
     return pData[layer];
 }
 
@@ -258,7 +255,6 @@ void Map::New()
     nWidth=nHeight=100;
     pData.resize(1);
     info.resize(1);
-    nLayers=1;
     pData[0]=new u32[nWidth*nHeight];                   // layer data
     memset(pData[0],0, nWidth*nHeight*sizeof(u32) );    // clear it
     
@@ -277,17 +273,16 @@ void Map::New()
 
 void Map::Free()
 {
-    for (int i=0; i<nLayers; i++)
+    for (int i=0; i<NumLayers(); i++)
     {
         delete[] pData[i];
-        pData[i]=NULL;
     }
     pData.clear();
     
-    if (pObstruct!=NULL) delete[] pObstruct;
-    if (pZone    !=NULL) delete[] pZone;
-    pObstruct=NULL;
-    pZone=NULL;
+    delete[] pObstruct;
+    delete[] pZone;
+    pObstruct=0;
+    pZone=0;
 }
 
 // Good Lord, do not judge me by this code when I pass on!
@@ -308,7 +303,7 @@ bool Map::Importv2Map(File& f)
     f.Read(c,51);                        // don't ask me!
     
     f.Read(cTemp);
-    nLayers=cTemp;
+    int nLayers=cTemp;
     
     for (i=0; i<nLayers; i++)
     {
@@ -460,19 +455,22 @@ bool Map::Importv2Map(File& f)
     std::vector<string>    sMovescripts;
     char nMovescripts;
     int nCount;
-    unsigned int nOfstbl[100];
     f.Read(nMovescripts);
+    u32* nOfstbl=new u32[nMovescripts*4];;
+
     f.Read(nCount);
     f.Read(nOfstbl,nMovescripts*4);
     nOfstbl[nMovescripts]=nCount;
     
     sMovescripts.resize(nMovescripts);
     
-    for (i=0; i<nMovescripts; i++)
+    for (i=0; i<nMovescripts-1; i++)
     {
         f.Read(c,nOfstbl[i+1]-nOfstbl[i]);
         sMovescripts[i]=c;
     }
+
+    delete[] nOfstbl;
     
     for (i=0; i<nEnts; i++)
     {
@@ -615,7 +613,8 @@ bool Map::Load(const char* fname)
     f.Read(nStartx);
     f.Read(nStarty);
     f.Read(bWrap);
-    
+
+    int nLayers;
     f.Read(nLayers);
     for (i=0; i<nLayers; i++)
     {
@@ -700,8 +699,6 @@ bool Map::Load(const char* fname)
 
 bool Map::Save(const char* fname)
 {
-    unsigned int i;
-    
     File f;
     
     bool bResult=f.OpenWrite(fname);
@@ -720,9 +717,9 @@ bool Map::Save(const char* fname)
     f.Write(nStartx);
     f.Write(nStarty);
     f.Write(bWrap);
-    
-    f.Write(nLayers);
-    for (i=0; i<nLayers; i++)
+
+    f.Write(NumLayers());
+    for (int i=0; i<NumLayers(); i++)
     {
         f.Write(info[i].pmulx);
         f.Write(info[i].pdivx);
@@ -730,7 +727,7 @@ bool Map::Save(const char* fname)
         f.Write(info[i].pdivy);
     }
     
-    for (i=0; i<nLayers; i++)
+    for (int i=0; i<NumLayers(); i++)
         f.WriteCompressed(pData[i],nWidth*nHeight*sizeof(u32));
     
     f.WriteCompressed(pObstruct,nWidth*nHeight*sizeof(u8));
@@ -738,7 +735,7 @@ bool Map::Save(const char* fname)
     
     f.Write(NumZones());
     
-    for (i=0; i<NumZones(); i++)
+    for (int i=0; i<NumZones(); i++)
     {
         f.WriteString(zoneinfo[i].sName.c_str());
         f.WriteString(zoneinfo[i].sDescription.c_str());
@@ -751,7 +748,7 @@ bool Map::Save(const char* fname)
     
     f.Write(entity.size());
     
-    for (i=0; i<entity.size(); i++)
+    for (u32 i=0; i<entity.size(); i++)
     {
         
         f.WriteString(entity[i].sName.c_str());
@@ -844,6 +841,11 @@ void Map::Resize(int newx,int newy)
     this->nWidth=newx; this->nHeight=newy;                          // whoops, one must be careful to not clog one's namespace up. >_<
 }
 
+int Map::NumLayers()
+{
+    return pData.size();
+}
+
 void Map::AddLayer(int pos)
 {
     // TODO: make this actually use the pos variable. :P
@@ -858,8 +860,6 @@ void Map::AddLayer(int pos)
     
     info.push_back(newlay);
     pData.push_back(pTemp);
-    
-    nLayers++;
 }
 
 void Map::DeleteLayer(int pos)
@@ -868,13 +868,13 @@ void Map::DeleteLayer(int pos)
 
 void Map::GetLayerInfo(SMapLayerInfo& nfo,int layidx)
 {
-    if (layidx>=0 && layidx<nLayers)
+    if (layidx>=0 && layidx<NumLayers())
         nfo=info[layidx];
 }
 
 void Map::SetLayerInfo(const SMapLayerInfo& nfo,int layidx)
 {
-    if (layidx>=0 && layidx<nLayers)
+    if (layidx>=0 && layidx<NumLayers())
     {
         info[layidx]=nfo;
         if (!info[layidx].pdivx) {    info[layidx].pdivx=1;    info[layidx].pmulx=0;    }

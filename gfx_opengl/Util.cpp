@@ -1,9 +1,4 @@
-/*
-uh... it's stuff! :D
-
-  added ExtensionsSupported, which checks if an OGL extension is supported. o_O surprising, isn't it?
-  (intended for use with pBuffers and possibly texture compression :))
-*/
+#include "gfx_opengl.h"
 
 void InitGL()
 {
@@ -31,33 +26,6 @@ void SizeWindow(int xsize,int ysize)
     glMatrixMode(GL_MODELVIEW);
     glLoadIdentity();
 }
-
-// "Borrowed" from Sphere's OpenGL code.
-// Credit goes to Chad "aegisknight" Auston
-bool ExtensionSupported(const char *extension)
-{
-    const GLubyte *extensions = NULL;
-    const GLubyte *start;
-    GLubyte *where, *terminator;
-    
-    where = (GLubyte *) strchr(extension, ' ');
-    if (where || *extension == '\0')
-	return 0;
-    extensions = glGetString(GL_EXTENSIONS);
-    start = extensions;
-    for (;;) {
-	where = (GLubyte *) strstr((const char *) start, extension);
-	if (!where)
-	    break;
-	terminator = where + strlen(extension);
-	if (where == start || *(where - 1) == ' ')
-	    if (*terminator == ' ' || *terminator == '\0')
-		return true;
-	    start = terminator;
-    }
-    return false;
-}
-
 
 void MakeClientFit()
 {
@@ -87,4 +55,3 @@ void MakeClientFit()
     
     MoveWindow(hGLWnd,window.left,window.top,window.right-window.left,window.bottom-window.top,true);
 }
-

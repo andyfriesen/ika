@@ -4,9 +4,11 @@
 
 #include <windows.h>
 #include <gl\gl.h>
-#include <gl\glaux.h>
 #include <gl\glu.h>
 #include <math.h>
+#include "gfx_opengl.h"
+#include "Util.h"
+#include "hardblits.h"
 #include "log.h"
 #include "pixel_matrix.h"
 #include "types.h"
@@ -16,61 +18,30 @@
 #else
 #  define EXPORT
 #endif
-typedef struct SImage* handle;
-
-struct SImage
-{
-    CPixelMatrix pixels;
-    const int& nWidth;
-    const int& nHeight;
-    const Rect& cliprect;
-    
-    GLuint	hTex;
-    int nTexwidth,nTexheight;
-    
-    bool bAltered;
-    bool bIsscreen;
-    
-    SImage():
-    hTex(0),
-        nTexwidth(0),nTexheight(0),
-        bAltered(false),bIsscreen(false),
-        nWidth(pixels.Width()), nHeight(pixels.Height()),
-        cliprect(pixels.GetClipRect())
-    {}
-    
-    ~SImage()
-    {
-        if (hTex)
-            glDeleteTextures(1,&hTex);
-    }
-};
 
 //------------------------------------- Prototypes --------------------------------------
 
 bool EXPORT gfxShutdown();
-bool EXPORT gfxSetRenderDest(handle);
-handle EXPORT gfxCreateImage(int x,int y);
+bool EXPORT gfxSetRenderDest(IMAGE);
+IMAGE EXPORT gfxCreateImage(int x,int y);
 void MakeClientFit();
 
 //-------------------------------------- Globals ----------------------------------------
 
 HWND hGLWnd;
-int xres,yres,gbpp;
+int  xres,yres,gbpp;
 bool bFullscreen;
 HDC  hDC;
 HGLRC hRC;
 
 int nImages=0;																			// number of allocated images at any given moment.  Handy for debugging.
-int nMaxtexsize;																		// The biggest texture the card can handle
+int nMaxtexsize;																		// The biggest texture the card can IMAGE
 
-handle hScreen;
-handle hRenderdest;
+IMAGE hScreen;
+IMAGE hRenderdest;
 
 //--------------------------------------- Code -------------------------------------------
 
-#include "stuff.h"
-#include "hardblits.h"
 
 int EXPORT gfxGetVersion()
 {
@@ -212,7 +183,7 @@ bool EXPORT gfxSwitchToFullScreen()
     return false;
 }
 
-handle EXPORT gfxCreateImage(int x,int y)
+IMAGE EXPORT gfxCreateImage(int x,int y)
 {
     nImages++;
     
@@ -225,7 +196,7 @@ handle EXPORT gfxCreateImage(int x,int y)
     return i;
 }
 
-bool EXPORT gfxFreeImage(handle img)
+bool EXPORT gfxFreeImage(IMAGE img)
 {
     if (img)
     {
@@ -236,11 +207,11 @@ bool EXPORT gfxFreeImage(handle img)
     return false;
 }
 
-handle EXPORT gfxCopyImage(handle img)
+IMAGE EXPORT gfxCopyImage(IMAGE img)
 {
-    bool EXPORT gfxCopyPixelData(handle,u32*,int,int);
+    bool EXPORT gfxCopyPixelData(IMAGE,u32*,int,int);
     
-    handle i=gfxCreateImage(img->nWidth,img->nHeight);
+    IMAGE i=gfxCreateImage(img->nWidth,img->nHeight);
     gfxCopyPixelData(i,(u32*)img->pixels.GetPixelData(),img->nWidth,img->nHeight);
     
     nImages++;
@@ -248,7 +219,7 @@ handle EXPORT gfxCopyImage(handle img)
     return i;
 }
 
-bool EXPORT gfxCopyPixelData(handle img,u32* data,int width,int height)
+bool EXPORT gfxCopyPixelData(IMAGE img,u32* data,int width,int height)
 {
     img->pixels.CopyPixelData((RGBA*)data,width,height);
     if (img->hTex)
@@ -263,7 +234,7 @@ bool EXPORT gfxCopyPixelData(handle img,u32* data,int width,int height)
     return true;
 }
 
-bool EXPORT gfxClipImage(handle img,Rect& r)
+bool EXPORT gfxClipImage(IMAGE img,Rect& r)
 {
     img->pixels.SetClipRect(r);
     if(img->bIsscreen) 
@@ -272,7 +243,7 @@ bool EXPORT gfxClipImage(handle img,Rect& r)
     return true;
 }
 
-handle EXPORT gfxGetScreenImage()
+IMAGE EXPORT gfxGetScreenImage()
 {
     return hScreen;
 }
@@ -323,7 +294,7 @@ bool EXPORT gfxPaletteMorph(int r,int g,int b)
     return false;
 }
 
-bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
+bool EXPORT gfxBlitImage(IMAGE img,int x,int y,bool transparent)
 {
     
     if (img->hTex && hRenderdest==hScreen)
@@ -348,7 +319,7 @@ bool EXPORT gfxBlitImage(handle img,int x,int y,bool transparent)
     return true;
 }
 
-bool EXPORT gfxScaleBlitImage(handle img,int x,int y,int w,int h,bool transparent)
+bool EXPORT gfxScaleBlitImage(IMAGE img,int x,int y,int w,int h,bool transparent)
 {
     if (img->hTex && hRenderdest==hScreen)
     {
@@ -363,26 +334,26 @@ bool EXPORT gfxScaleBlitImage(handle img,int x,int y,int w,int h,bool transparen
     return true;
 }
 
-bool EXPORT gfxDistortBlitImage(handle img,int x[4],int y[4],bool transparent)
+bool EXPORT gfxDistortBlitImage(IMAGE img,int x[4],int y[4],bool transparent)
 {
     if (img->hTex && hRenderdest==hScreen)
         DistortRenderTexture(img,x,y,transparent);
     return true;
 }
 
-bool EXPORT gfxCopyChan(handle,int,handle,int)
+bool EXPORT gfxCopyChan(IMAGE,int,IMAGE,int)
 {
     return false;
 }
 
-bool EXPORT gfxSetPixel(handle img,int x,int y,u32 colour)
+bool EXPORT gfxSetPixel(IMAGE img,int x,int y,u32 colour)
 {
     if (hRenderdest==hScreen)
         HardPoint(img,x,y,colour);
     return false;
 }
 
-int EXPORT gfxGetPixel(handle img,int x,int y)
+int EXPORT gfxGetPixel(IMAGE img,int x,int y)
 {
     int colour=0;
     if (img==hScreen)
@@ -394,7 +365,7 @@ int EXPORT gfxGetPixel(handle img,int x,int y)
         return img->pixels.GetPixel(x,y);
 }
 
-bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
+bool EXPORT gfxLine(IMAGE img,int x1,int y1,int x2,int y2,u32 colour)
 {
     if (img==hScreen)
         HardLine(x1,y1,x2,y2,colour);
@@ -406,7 +377,7 @@ bool EXPORT gfxLine(handle img,int x1,int y1,int x2,int y2,u32 colour)
     return true;
 }
 
-bool EXPORT gfxRect(handle img,int x1,int y1,int x2,int y2,u32 colour,bool filled)
+bool EXPORT gfxRect(IMAGE img,int x1,int y1,int x2,int y2,u32 colour,bool filled)
 {
     if (img==hScreen)
         HardRect(x1,y1,x2,y2,colour,filled);
@@ -424,37 +395,37 @@ bool EXPORT gfxRect(handle img,int x1,int y1,int x2,int y2,u32 colour,bool fille
     return true;
 }
 
-bool EXPORT gfxEllipse(handle img,int cx,int cy,int rx,int ry,u32 colour,bool filled)
+bool EXPORT gfxEllipse(IMAGE img,int cx,int cy,int rx,int ry,u32 colour,bool filled)
 {
     return false;
 }
 
-bool EXPORT gfxFlatPoly(handle img,int x[3],int y[3],u32 colour[3])
+bool EXPORT gfxFlatPoly(IMAGE img,int x[3],int y[3],u32 colour[3])
 {
     if (img==hScreen)
         HardPoly(img,x,y,colour);
     return true;
 }
 
-bool EXPORT gfxSetRenderDest(handle newrenderdest)
+bool EXPORT gfxSetRenderDest(IMAGE newrenderdest)
 {
     hRenderdest=newrenderdest;
     return true;
 }
 
-handle EXPORT gfxGetRenderDest()
+IMAGE EXPORT gfxGetRenderDest()
 {
     return hRenderdest;
 }
 
-int EXPORT gfxImageWidth(handle img)
+int EXPORT gfxImageWidth(IMAGE img)
 {
     if (img)
         return img->nWidth;
     return 0;
 }
 
-int EXPORT gfxImageHeight(handle img)
+int EXPORT gfxImageHeight(IMAGE img)
 {
     if (img)
         return img->nHeight;

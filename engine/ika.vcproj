@@ -141,6 +141,9 @@
 				RelativePath=".\font.cpp">
 			</File>
 			<File
+				RelativePath="graph.cpp">
+			</File>
+			<File
 				RelativePath=".\input.cpp">
 			</File>
 			<File
@@ -176,6 +179,9 @@
 			</File>
 			<File
 				RelativePath=".\font.h">
+			</File>
+			<File
+				RelativePath="graph.h">
 			</File>
 			<File
 				RelativePath="hooklist.h">
@@ -241,12 +247,6 @@
 			</File>
 			<File
 				RelativePath="..\common\fontfile.h">
-			</File>
-			<File
-				RelativePath="..\common\graph.cpp">
-			</File>
-			<File
-				RelativePath="..\common\graph.h">
 			</File>
 			<File
 				RelativePath="..\common\importpng.cpp">

@@ -111,6 +111,15 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
+				RelativePath="HardBlits.cpp">
+			</File>
+			<File
+				RelativePath="SImage.cpp">
+			</File>
+			<File
+				RelativePath="Util.cpp">
+			</File>
+			<File
 				RelativePath="gfx_opengl.cpp">
 			</File>
 		</Filter>
@@ -118,13 +127,16 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
 			<File
+				RelativePath="SImage.h">
+			</File>
+			<File
+				RelativePath="Util.h">
+			</File>
+			<File
 				RelativePath="gfx_opengl.h">
 			</File>
 			<File
 				RelativePath="hardblits.h">
-			</File>
-			<File
-				RelativePath="stuff.h">
 			</File>
 		</Filter>
 		<Filter

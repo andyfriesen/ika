@@ -171,14 +171,6 @@ METHOD(input_mousestate)
     b2=(pEngine->input.mouseb>>1)&1;
     b3=(pEngine->input.mouseb>>2)&1;
     
-    /*	PyObject* rvalue=PyTuple_New(5);	// x,y and three mouse buttons
-    
-      PyTuple_SetItem(rvalue,0,PyInt_FromLong(mx));
-      PyTuple_SetItem(rvalue,1,PyInt_FromLong(my));
-      PyTuple_SetItem(rvalue,2,PyInt_FromLong(b1));
-      PyTuple_SetItem(rvalue,3,PyInt_FromLong(b2));
-    PyTuple_SetItem(rvalue,4,PyInt_FromLong(b3));*/
-    
     PyObject* rvalue=Py_BuildValue("iiiii",mx,my,b1,b2,b3);
     
     return rvalue;

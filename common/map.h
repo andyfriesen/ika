@@ -177,9 +177,8 @@ class Map
 {
 private:   
     vector<SMapLayerInfo>    info;
-    vector<u32*>        pData;
+    vector<u32*>    pData;
     
-    int             nLayers;
     int             nWidth,nHeight;                         // map dimensions, in tiles
     
     u8*             pObstruct;
@@ -215,7 +214,7 @@ public:
     
     // layer manipulation
     void Resize(int newx,int newy);                         // resizes all layers and all that
-    int  NumLayers() { return nLayers; }                    // returns the number of layers the map uses
+    int  NumLayers();                                       // returns the number of layers the map uses
     void AddLayer(int pos);                                 // inserts a layer before pos
     void DeleteLayer(int pos);                              // deletes the pos-th layer
     void GetLayerInfo(SMapLayerInfo& nfo,int layidx);       // fills nfo with information about the specified layer
@@ -223,11 +222,11 @@ public:
     
     // General map properties
     const string& GetRString(void);                         // returns the render string
-    void            SetRString(const string& s);            // sets the render string
+    void          SetRString(const string& s);              // sets the render string
     const string& GetMusic(void);                           // returns the music played on this map
-    void            SetMusic(const string& s);              // sets the music file used
+    void          SetMusic(const string& s);                // sets the music file used
     const string& GetVSPName(void);                         // returns the name of the VSP used on this map
-    void            SetVSPName(const string& s);            // sets the VSP file used
+    void          SetVSPName(const string& s);              // sets the VSP file used
     
     // CHR list
     int      CountCHRs(void);
