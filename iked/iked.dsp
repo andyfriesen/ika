@@ -172,6 +172,10 @@ SOURCE=.\graph.cpp
 # End Source File
 # Begin Source File
 
+SOURCE=.\layervisibilitycontrol.cpp
+# End Source File
+# Begin Source File
+
 SOURCE=.\main.cpp
 # End Source File
 # Begin Source File
@@ -205,6 +209,10 @@ SOURCE=.\controller.h
 # Begin Source File
 
 SOURCE=.\graph.h
+# End Source File
+# Begin Source File
+
+SOURCE=.\layervisibilitycontrol.h
 # End Source File
 # Begin Source File
 

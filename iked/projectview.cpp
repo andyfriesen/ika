@@ -91,6 +91,7 @@ public:
         wxTreeItemId id=HitTest(event.GetPosition(),flags);
         SelectItem(id);
         pSelected=(CLeaf*)GetItemData(id);
+        if (!pSelected) return;
         
         if (pSelected->type==t_folder)
             PopupMenu(foldermenu,event.GetPosition());
