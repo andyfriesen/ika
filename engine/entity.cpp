@@ -208,7 +208,7 @@ void CEntity::Move(Direction d)
 
     direction=d;
 
-    if (direction!=olddir || !bMoving)
+    if (direction != olddir || !bMoving)
     {
         bMoving=true;
         SetAnimScript(pSprite->Script((int)direction));
@@ -331,13 +331,13 @@ Direction CEntity::GetMoveScriptCommand()
 
         switch(c)
         {
-        case 'U': bMoving=true;  newdir=face_up;                 movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'D': bMoving=true;  newdir=face_down;               movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'L': bMoving=true;  newdir=face_left;               movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'R': bMoving=true;  newdir=face_right;              movescriptct=get_int(curmovescript,movescriptofs);  break;
-        case 'F': bMoving=false; newdir=(Direction)get_int(curmovescript,movescriptofs);                             break;
-        case 'Z': bMoving=false; nSpecframe=get_int(curmovescript,movescriptofs);                                       break;
-        case 'W': bMoving=false; movescriptct=get_int(curmovescript,movescriptofs);                                     break;
+        case 'U': newdir=face_up;         movescriptct=get_int(curmovescript,movescriptofs);            break;
+        case 'D': newdir=face_down;       movescriptct=get_int(curmovescript,movescriptofs);            break;
+        case 'L': newdir=face_left;       movescriptct=get_int(curmovescript,movescriptofs);            break;
+        case 'R': newdir=face_right;      movescriptct=get_int(curmovescript,movescriptofs);            break;
+        case 'F': Stop();                 newdir=(Direction)get_int(curmovescript,movescriptofs);       break;
+        case 'Z': newdir = face_nothing;  nSpecframe=get_int(curmovescript,movescriptofs);              break;
+        case 'W': newdir = face_nothing;  Stop(); movescriptct=get_int(curmovescript,movescriptofs);    break;
     
         case 'X':
             {
@@ -363,7 +363,7 @@ Direction CEntity::GetMoveScriptCommand()
             break;
         }
 
-        return bMoving?newdir:face_nothing;
+        return newdir;
     }
     else
         movescriptct--;
@@ -402,7 +402,7 @@ void CEntity::Update()
 
     UpdateAnimation();
 
-    if (this==engine.pPlayer && movecode == mc_nothing)
+    if (this == engine.pPlayer && movecode == mc_nothing)
         newdir=HandlePlayer();
     else
         switch (movecode)

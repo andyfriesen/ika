@@ -142,10 +142,10 @@ void ProjectView::OnBeginEdit(wxTreeEvent& event)
 {
     wxTreeItemId id = event.GetItem();
     Leaf* leaf = (Leaf*)GetItemData(id);
-    if (leaf->type != t_folder && leaf->type != t_project)
-        event.Veto();
-    else
+    if (leaf->type == t_folder || leaf->type == t_project)
         event.Allow();
+    else
+        event.Veto();
 }
 
 void ProjectView::OnEndEdit(wxTreeEvent& event)

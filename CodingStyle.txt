@@ -8,8 +8,9 @@ Locals can be whatever you want, really.  Just be reasonable. ;)
 Class names should follow the Java convention.  (eg. ThisIsAClass)  Namespaces
 should do the same.
 
-Function names should be verbs, with the sole exception of accessor functions, 
-which may be nouns.
+Function names should be verbs, with the sole exception of accessor functions,
+which may be nouns.  They should use camel notation, with the first letter
+capitalized.
 
 Preprocessor constants should be in all uppercase, with underscores dilineating
 words. (ie THIS_IS_A_CONSTANT)  Use const variables wherever possbile. (they
@@ -20,16 +21,27 @@ is acceptable if it's a trivial operation, and it doesn't result in excessive
 line length. (more than 120 characters or so)
 
 ie.
-    if (something) { x++; y--; }
+class MyTestClass
+{
+    bool _myProperty;
 
-    if (blah)
+public:
+    void DoSomethingInteresting(int x, int y)
     {
-       ...
+        bool mylocal;
+
+        if (mylocal) { x++; y--; }
+
+        if (_myProperty)
+        {
+           ...
+        }
+        else
+        {
+           ...
+        }
     }
-    else
-    {
-       ...
-    }
+};
 
 Whenever possible, wrap globals in a meaningful namespace.  The simple fact
 is that globals are a pain in the ass, but being overly OOP is retarded too.
