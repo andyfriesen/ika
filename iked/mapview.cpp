@@ -24,8 +24,6 @@ CMapView::CMapView(CMainWnd* parent,const string& fname,const wxPoint& position,
 
     // Get resources
     pMap=pParentwnd->map.Load(fname);
-//    pVsp=pParentwnd->vsp.Load(pMap->GetVSPName());
-//    pTileset=new CTileSet(pParentwnd->graphfactory);
     pTileset=pParentwnd->vsp.Load(pMap->GetVSPName());
 }
 

@@ -1,16 +1,6 @@
 
 #include "graph.h"
 
-CGraphFrame* CGraphFactory::CreateFrame(wxWindow* parent)
-{
-    return new CGraphFrame(parent);
-}
-
-CImage* CGraphFactory::CreateImage(const CPixelMatrix& src)
-{
-    return new CImage(src);
-}
-
 //-------------------------------------------------------
 
 BEGIN_EVENT_TABLE(CGraphFrame,wxGLCanvas)
@@ -129,6 +119,16 @@ void CGraphFrame::ShowPage()
 CImage::CImage(const CPixelMatrix& src)
 {
     glGenTextures(1,&hTex);
+    Update(src);
+}
+
+CImage::~CImage()
+{
+    glDeleteTextures(1,&hTex);
+}
+
+void CImage::Update(const CPixelMatrix& src)
+{
     nWidth=src.Width();
     nHeight=src.Height();
 
@@ -137,9 +137,4 @@ CImage::CImage(const CPixelMatrix& src)
 
     glBindTexture(GL_TEXTURE_2D,hTex);
     glTexImage2D(GL_TEXTURE_2D,0,4,nWidth,nHeight,0,GL_RGBA,GL_UNSIGNED_BYTE,(u32*)src.GetPixelData());
-}
-
-CImage::~CImage()
-{
-    glDeleteTextures(1,&hTex);
 }

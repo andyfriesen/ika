@@ -18,13 +18,6 @@
 class CGraphFrame;
 class CImage;
 
-class CGraphFactory
-{
-public:
-    CGraphFrame* CreateFrame(wxWindow* parent);
-    CImage* CreateImage(const CPixelMatrix& srcdata);
-};
-
 class CGraphFrame : public wxGLCanvas
 {
 public:
@@ -56,6 +49,8 @@ protected:
 public:
     CImage(const CPixelMatrix& src);
     ~CImage();
+
+    void Update(const CPixelMatrix& src);
 };
 
 #endif

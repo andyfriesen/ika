@@ -3,8 +3,7 @@
 #include "pixel_matrix.h"
 #include "graph.h"
 
-CTileSet::CTileSet(CGraphFactory* p)
-: pGraphfactory(p)
+CTileSet::CTileSet()
 {
 }
 
@@ -16,15 +15,33 @@ CTileSet::~CTileSet()
 void CTileSet::Sync()
 {
     for (int i=0; i<bitmaps.size(); i++)
-        ;
+    {
+        CTile& tile=bitmaps[i];
+
+        if (tile.bAltered)
+            tile.pImg->Update(pVsp->GetTile(i));
+    }
+}
+
+void CTileSet::SyncAll()
+{
+    FreeBitmaps();
+
+    bitmaps.resize(pVsp->NumTiles());
+
+    for (int i=0; i<pVsp->NumTiles(); i++)
+    {
+        bitmaps[i].bAltered=false;
+        bitmaps[i].pImg=new CImage(pVsp->GetTile(i));
+    }
 }
 
 void CTileSet::FreeBitmaps()
 {
     for (int i=0; i<bitmaps.size(); i++)
     {
-        delete bitmaps[i];
-        bitmaps[i]=NULL;
+        delete bitmaps[i].pImg;
+        bitmaps[i].pImg=NULL;
     }
 }
 
@@ -40,15 +57,8 @@ bool CTileSet::Load(const char* fname)
 
     delete pVsp;
     pVsp=pNewvsp;
-    FreeBitmaps();
 
-    bAltered.resize(pVsp->NumTiles());
-    bitmaps.resize(pVsp->NumTiles());
-
-    for (int i=0; i<pVsp->NumTiles(); i++)
-    {
-        bitmaps[i]=pGraphfactory->CreateImage(pVsp->GetTile(i));
-    }
+    SyncAll();
 
     return true;
 }
