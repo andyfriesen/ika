@@ -215,9 +215,6 @@
 				RelativePath=".\engine.rc">
 			</File>
 			<File
-				RelativePath=".\icon1.ico">
-			</File>
-			<File
 				RelativePath="ika.ico">
 			</File>
 		</Filter>

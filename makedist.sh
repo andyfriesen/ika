@@ -28,6 +28,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
         cp engine/Release/ika.exe tempdist
         cp iked/Release/iked.exe tempdist
         cp winmaped/Release/winmaped.exe tempdist
+        upx tempdist/*.exe
         cd tempdist
         zip -r ../ika-win-$version.zip *
         cd ..

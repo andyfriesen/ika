@@ -219,6 +219,16 @@ void CEngine::Startup()
 #endif
         SDL_WM_SetCaption("ika "VERSION, 0);
 
+#ifdef WIN32
+        {
+            SDL_SysWMinfo info;
+            SDL_VERSION(&info.version);
+            HWND hWnd = SDL_GetWMInfo(&info);
+            if (hWnd)
+                SetClassLong(hWnd, GCL_HICON, (long)LoadIcon(GetModuleHandle(0), "AppIcon"));
+        }
+#endif
+
         if (!cfg.Int("nosound"))
         {
             Log::Write("Initializing sound");
