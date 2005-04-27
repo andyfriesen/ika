@@ -78,10 +78,20 @@ Joystick* Input::GetJoystick(uint index) {
 
 void Input::KeyDown(uint key) {
     _keyboard->KeyDown(key);
+
+    InputControl* ctrl = _keyboard->GetKey(key);
+    if (ctrl != 0) {
+        UpdateControl(ctrl, true);
+    }
 }
 
 void Input::KeyUp(uint key) {
     _keyboard->KeyUp(key);
+
+    InputControl* ctrl = _keyboard->GetKey(key);
+    if (ctrl != 0) {
+        UpdateControl(ctrl, false);
+    }
 }
 
 void Input::JoyAxisMove(uint stick, uint index, uint value) {

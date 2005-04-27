@@ -16,6 +16,8 @@ struct Keyboard : public InputDevice {
 
     virtual InputControl* GetControl(const std::string& name);
 
+    InputControl* GetKey(uint keyCode);
+
     // Actual processing goes on here.
     void KeyDown(uint keyCode);
     void KeyUp(uint keyCode);

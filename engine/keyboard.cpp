@@ -173,32 +173,33 @@ InputControl* Keyboard::GetControl(const std::string& name) {
     }
 
     uint keySym = iter->second;
-    KeyMap::iterator iter2 = _keys.find(keySym);
-    if (iter2 == _keys.end()) {
+    return GetKey(keySym);
+}
+
+InputControl* Keyboard::GetKey(uint keyCode) {
+    // HACK: all key codes between 0 and 321 inclusive hypothetically exist
+    // even if there is no name attached to them. :P
+    if (keyCode > 322) {
+        return 0;
+    }
+
+    KeyMap::iterator iter = _keys.find(keyCode);
+    if (iter == _keys.end()) {
         InputControl* key = new InputControl;
-        _keys[keySym] = key;
+        _keys[keyCode] = key;
         return key;
     } else {
-        return iter2->second;
+        return _keys[keyCode];
     }
 }
 
 void Keyboard::KeyDown(uint keyCode) {
-    KeyMap::iterator iter = _keys.find(keyCode);
-    if (iter != _keys.end()) {
-        iter->second->UpdatePosition(1.0f);
-    }
-
     if (keyCode < 256) {
         _keyQueue.push(keyCode);
     }
 }
 
 void Keyboard::KeyUp(uint keyCode) {
-    KeyMap::iterator iter = _keys.find(keyCode);
-    if (iter != _keys.end()) {
-        iter->second->UpdatePosition(0.0f);
-    }
 }
 
 bool Keyboard::WasKeyPressed() const {
