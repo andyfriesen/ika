@@ -80,7 +80,7 @@ struct Input {
     // This structure makes hooking scripts to controls really simple.
     void KeyDown(uint key);
     void KeyUp(uint key);
-    void JoyAxisMove(uint stick, uint axis, uint value);
+    void JoyAxisMove(uint stick, uint axis, int value);
     void JoyButtonChange(uint stick, uint button, bool value);
     void MouseMoved(int x, int y);
     void MouseButtonChange(uint button, bool value);

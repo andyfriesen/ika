@@ -94,7 +94,7 @@ void Input::KeyUp(uint key) {
     }
 }
 
-void Input::JoyAxisMove(uint stick, uint index, uint value) {
+void Input::JoyAxisMove(uint stick, uint index, int value) {
     if (stick >= _joysticks.size() || !_joysticks[stick]) return;
 
     const int EPSILON = 258;
@@ -115,7 +115,7 @@ void Input::JoyAxisMove(uint stick, uint index, uint value) {
     InputControl* reverseAxis = _joysticks[stick]->GetReverseAxis(index);
 
     UpdateControl(axis, fvalue);
-    UpdateControl(reverseAxis, fvalue);
+    UpdateControl(reverseAxis, -fvalue);
 }
 
 void Input::JoyButtonChange(uint stick, uint index, bool value) {
