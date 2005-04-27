@@ -111,7 +111,7 @@ namespace Script {
         }
 
         PyObject* Control_Pressed(ControlObject* self) {
-            return PyInt_FromLong(self->control->Pressed() ? 1 : 0);
+            return PyBool_FromLong(self->control->Pressed() ? 1 : 0);
         }
 
         PyObject* Control_Position(ControlObject* self) {
