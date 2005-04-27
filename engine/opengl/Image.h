@@ -16,7 +16,6 @@ namespace OpenGL
         virtual int Width();
         virtual int Height();
 
-    private:
         Texture* _texture;
         float _texCoords[4];               // Two x/y pairs.  Just like glTexCoord2dv is expecting
         int _width, _height;

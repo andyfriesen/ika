@@ -35,11 +35,11 @@ char* va(const char* format, ...) {
     static char str[1024];
     
     va_start(argptr, format);
-    #ifdef WIN32
+#ifdef WIN32
     _vsnprintf(str, sizeof(str)-1, format, argptr);
-    #else
+#else
     vsnprintf(str, sizeof(str)-1, format, argptr);
-    #endif
+#endif
     va_end(argptr);
     
     return str;

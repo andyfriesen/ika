@@ -328,6 +328,7 @@ namespace Script {
         METHOD(Video_GrabCanvas, VideoObject);
         METHOD1(Video_ClearScreen, VideoObject);
         METHOD1(Video_ShowPage, VideoObject);
+        METHOD(Video_RenderTo, VideoObject);
         METHOD(Video_SetResolution, VideoObject);
 
         void Init();

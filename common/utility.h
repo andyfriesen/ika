@@ -1,7 +1,7 @@
 /**
  * Things that just don't fit anywhere else, but are handy to have around.
  * It is here (and in common/utility.h) that the suckiness of C++ is mitigated.
- * 
+ *
  * Not ika specific at all.  Handy anywhere C++ is. (and I am, heh)
  */
 
@@ -12,13 +12,14 @@
 #include <string>
 #include <vector>
 
-#include "common/foreach.hpp"
+#include "foreach.hpp"
 
-#if defined(_MSC_VER)
-#   define DEPRECATED __declspec(deprecated)
-#else
-#   define DEPRECATED
-#endif
+#include "port.h"
+
+template <typename T, int N>
+int lengthof(const T (&array)[N]) {
+    return N;
+}
 
 // debug_cast<T>(U* u)
 // In debug mode, asserts that the cast is good via dynamic_cast,
@@ -42,35 +43,19 @@
     }
 #endif
 
-typedef unsigned char u8;
-typedef unsigned short u16;
-typedef unsigned int u32;
+template <bool B>
+struct static_assert {
+    int static_assert_failed[B ? 1 : -1];
+};
 
-#if defined(_MSC_VER) && _MSC_VER < 1300
-    // Silence stupid not-really-a-warning. (identifier too long for debugger hurk blah blah etc)
-#   pragma warning (disable:4786)                      
-    // Fix broken for() scoping in VC6
-#   define for if (0); else for
-#endif
-
-#if _MSC_VER
-    typedef __int64 s64;
-    typedef unsigned __int64 u64;
-#elif __GNUC__
-    typedef long long s64;
-    typedef unsigned long long u64;
-#endif
-
-// signed/unsigned ints of whatever size.
-typedef size_t uint;
-typedef ptrdiff_t sint;
-
-// There was a template version of this, but it was useless anyway.
-// It didn't work for locally defined arrays.
-#define lengthof(x) (sizeof (x) / sizeof (x[0]))
+static_assert<sizeof(u8) == 1>;
+static_assert<sizeof(u16) == 2>;
+static_assert<sizeof(u32) == 4>;
+static_assert<sizeof(u64) == 8>;
 
 // This really belongs in the language anyway, so fuckit.
 #define foreach BOOST_FOREACH
+
 // Tempted, but probably a bad idea:
 //#pragma warning (disable:4706) // assignment in if statement
 
@@ -112,7 +97,7 @@ inline T* the() {
 // Simple little predicate for for_each
 template <typename T>
 struct Destroy {
-    void operator()(T* t) { delete t; } 
+    void operator()(T* t) { delete t; }
 };
 
 bool isPowerOf2(uint i);
@@ -148,7 +133,7 @@ struct ScopedPtr {
     T* get()         const { return  _data; }
 
     operator bool () { return _data != 0; }
-  
+
     ScopedPtr& operator = (T* t) {
         delete _data;
         _data = t;
@@ -173,7 +158,7 @@ struct ScopedArray {
     T* get()              const { return  _data; }
 
     operator bool()       const { return _data != 0; }
-  
+
     ScopedArray& operator = (T* t) {
         delete[] _data;
         _data = t;
@@ -210,14 +195,14 @@ namespace Path {
     // ifdef and blah blah for platform independance
 #ifdef _WIN32
     const std::string delimiters = "\\/";
-#else // assume unix
+#else // assume Unix
     const std::string delimiters = "/";
 #endif
 
     // strips the path from the filename, and returns it.
     // If relativeto is not specified or is empty, then the entire path is returned.
     // If it is specified, then the path returned is relative to the path contained therein.
-    std::string getDirectory(const std::string& s); 
+    std::string getDirectory(const std::string& s);
 
     std::string getFileName(const std::string& s);           // same idea, but just returns the filename
 
@@ -226,4 +211,3 @@ namespace Path {
 
     bool equals(const std::string& s, const std::string& t); // returns true if the two paths are the same.  Disregards case in win32.
 };
-

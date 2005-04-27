@@ -34,4 +34,3 @@ namespace Log {
 #else
 #   define CDEBUG(x)
 #endif
-

@@ -1,3 +1,4 @@
+
 #include "ObjectDefs.h"
 #include "video/Driver.h"
 #include "video/Image.h"
@@ -43,6 +44,7 @@ namespace Script {
 #define SET(x) PyObject* set ## x(ImageObject* self, PyObject* value)
         GET(Width) { return PyInt_FromLong(self->img->Width()); }
         GET(Height) { return PyInt_FromLong(self->img->Height()); }
+
 #undef GET
 #undef SET
 

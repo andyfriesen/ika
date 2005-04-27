@@ -4,7 +4,7 @@
 #define SHARE_TEXTURES
 
 #ifdef SHARE_TEXTURES
-#include <set>
+#   include <set>
 #endif
 
 #include "SDL/SDL.h"
@@ -18,13 +18,13 @@
 #include "Image.h"
 
 /// OpenGL video driver implementation
-namespace OpenGL
-{
+namespace OpenGL {
+
     // Don't create stack instances, dork.
     // And keep the refcount up to date
-    struct Texture
-    {
+    struct Texture {
         friend struct Driver;
+
         uint handle;
         uint width;
         uint height;
@@ -40,6 +40,11 @@ namespace OpenGL
             , refCount(0)
             , unused(0, 0)
         {}
+
+    private:
+        // NO
+        Texture(const Texture&);
+        Texture& operator =(const Texture&);
     };
 
     struct NotYetImplementedException{};
@@ -165,11 +170,7 @@ namespace OpenGL
         TextureSet _textures;  // textures allocated.  Only used for 16x16 images at this moment.
 #endif
 
-#ifdef WIN32
-        void (__stdcall *glBlendEquationEXT)(int);
-#else
-        void (*glBlendEquationEXT)(int);
-#endif
+        void (IKA_STDCALL *glBlendEquationEXT)(int);
     };
 };
 

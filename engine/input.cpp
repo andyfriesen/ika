@@ -14,28 +14,26 @@ InputControl::InputControl()
 {}
 
 bool InputControl::Pressed() {
-    return GetPressed();
+    return Delta() > 0;
 }
 
 float InputControl::Position() {
-    _oldPos = _curPos;
-    _curPos = GetPosition();
-
     return _curPos;
 }
 
 float InputControl::Delta() {
-    float delta = _curPos - _oldPos;
-    //_oldPos = _curPos;
+    float delta = PeekDelta();
+    _oldPos = _curPos;
     return delta;
 }
 
 float InputControl::PeekDelta() {
-    return Delta();
+    return _curPos - _oldPos;
 }
 
-bool InputControl::GetPressed() {
-    return Delta() > 0.0f;
+void InputControl::UpdatePosition(float newPos) {
+    _oldPos = _curPos;
+    _curPos = newPos;
 }
 
 ScopedPtr<Input> Input::_theInstance;
@@ -87,39 +85,49 @@ void Input::KeyUp(uint key) {
 }
 
 void Input::JoyAxisMove(uint stick, uint index, uint value) {
-    if (_joysticks[stick]) {
-        AxisControl* axis = _joysticks[stick]->GetAxis(index);
+    if (stick >= _joysticks.size() || !_joysticks[stick]) return;
 
-        if (axis->onPress && value != 0) {
-            QueueEvent(&axis->onPress);
+    const int EPSILON = 258;
 
-        } else if (axis->onUnpress && value == 0) {
-            QueueEvent(&axis->onUnpress);
-        }
-
-        // FIXME: reverse axis events are not raised.
-        //ReverseAxisControl* r_axis = _joysticks[stick]->GetReverseAxis(axis);
+    // Kill nearly-centered values; joysticks aren't always very precise.
+    if (abs(value) < EPSILON) {
+        value = 0;
     }
+
+    // Cheap hack to get normalization
+    if (value == -32768) {
+        value++;
+    }
+
+    float fvalue = float(value) / 32767;
+
+    InputControl* axis = _joysticks[stick]->GetAxis(index);
+    InputControl* reverseAxis = _joysticks[stick]->GetReverseAxis(index);
+
+    UpdateControl(axis, fvalue);
+    UpdateControl(reverseAxis, fvalue);
 }
 
 void Input::JoyButtonChange(uint stick, uint index, bool value) {
-    if (_joysticks[stick]) {
-        ButtonControl* button = _joysticks[stick]->GetButton(index);
+    if (stick >= _joysticks.size() || !_joysticks[stick]) return;
 
-        if (value && button->onPress) {
-            QueueEvent(&button->onPress);
-        } else if (!value && button->onUnpress) {
-            QueueEvent(&button->onUnpress);
-        }
-    }
+    InputControl* button = _joysticks[stick]->GetButton(index);
+
+    UpdateControl(button, value);
 }
 
-void Input::MouseButtonChange(uint button, bool value) {
-    _mouse->Clicked(button, value);
+void Input::MouseButtonChange(uint index, bool value) {
+    InputControl* button = _mouse->GetButton(index);
+
+    UpdateControl(button, value);
 }
 
 void Input::MouseMoved(int x, int y) {
-    _mouse->Motion(float(x), float(y));
+    InputControl* mx = _mouse->GetAxis(Mouse::X);
+    InputControl* my = _mouse->GetAxis(Mouse::Y);
+
+    UpdateControl(mx, float(x));
+    UpdateControl(my, float(y));
 }
 
 void Input::Update() {
@@ -163,7 +171,9 @@ ScriptObject* Input::GetQueuedEvent() {
 }
 
 void Input::QueueEvent(ScriptObject* script) {
-    _eventQueue = script;
+    if (script) {
+        _eventQueue = script;
+    }
 }
 
 Input::Input()
@@ -190,4 +200,29 @@ Input::~Input() {
     for (uint i = 0; i < _joysticks.size(); i++) {
         delete _joysticks[i];
     }
+}
+
+void Input::UpdateControl(InputControl* ctrl, float newValue) {
+    if (!ctrl) return;
+
+    ctrl->UpdatePosition(newValue);
+
+    float pd = ctrl->PeekDelta();
+
+    if (pd) {
+        if (newValue != 0 && ctrl->onPress) {
+            QueueEvent(&ctrl->onPress);
+
+        } else if (ctrl->onUnpress) {
+            QueueEvent(&ctrl->onUnpress);
+        }
+    }
+}
+
+void Input::UpdateControl(InputControl* ctrl, int newValue) {
+    UpdateControl(ctrl, float(newValue));
+}
+
+void Input::UpdateControl(InputControl* ctrl, bool newValue) {
+    UpdateControl(ctrl, newValue ? 1.0f : 0.0f);
 }

@@ -6,9 +6,6 @@
 #include "keyboard.h" // EVIL
 #include "common/utility.h"
 
-struct MouseAxisControl;
-struct MouseButtonControl;
-
 struct Mouse : InputDevice {
 
     enum MouseAxis {
@@ -23,36 +20,16 @@ struct Mouse : InputDevice {
     virtual void Unpress();
     virtual InputControl* GetControl(const std::string& name);
 
-    MouseAxisControl* GetAxis(MouseAxis axis);
-    MouseButtonControl* GetButton(uint button);
-
-    void Motion(float x, float y);
-    void Clicked(uint button, bool isPressed);
+    InputControl* GetAxis(MouseAxis axis);
+    InputControl* GetButton(uint button);
 
 private:
-    ScopedPtr<MouseAxisControl> _xAxis;
-    ScopedPtr<MouseAxisControl> _yAxis;
-    ScopedPtr<MouseAxisControl> _wheel;
-    ScopedPtr<MouseButtonControl> _left;
-    ScopedPtr<MouseButtonControl> _right;
-    ScopedPtr<MouseButtonControl> _middle;
-};
-
-struct MouseAxisControl : InputControl {
-    MouseAxisControl()
-        : _pos(0)
-    {}
-
-    void SetPosition(float newPos);
-
-protected:
-    virtual float GetPosition();
-
-private:
-    float _pos;
-};
-
-struct MouseButtonControl : KeyControl {
+    ScopedPtr<InputControl> _xAxis;
+    ScopedPtr<InputControl> _yAxis;
+    ScopedPtr<InputControl> _wheel;
+    ScopedPtr<InputControl> _left;
+    ScopedPtr<InputControl> _right;
+    ScopedPtr<InputControl> _middle;
 };
 
 #endif

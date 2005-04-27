@@ -25,55 +25,17 @@ struct Joystick : InputDevice {
 
     uint GetNumAxes() const;
     uint GetNumButtons() const;
-    AxisControl* GetAxis(uint index);
-    ReverseAxisControl* GetReverseAxis(uint index);
+    InputControl* GetAxis(uint index);
+    InputControl* GetReverseAxis(uint index);
 
-    ButtonControl* GetButton(uint index);
+    InputControl* GetButton(uint index);
 
 private:
     struct _SDL_Joystick* _joystick;
 
-    std::vector<AxisControl*> _axes;
-    std::vector<ReverseAxisControl*> _reverseAxes;
-    std::vector<ButtonControl*> _buttons;
-};
-
-struct AxisControl : InputControl {
-    friend struct Joystick;
-
-protected:
-    AxisControl(_SDL_Joystick* j, uint index);
-
-    virtual bool  GetPressed();
-    virtual float GetPosition();
-
-private:
-    _SDL_Joystick* _joystick;
-    uint _index;
-};
-
-// Reverse of the PositiveAxisControl.  Duh.
-struct ReverseAxisControl : AxisControl {
-    friend struct Joystick;
-
-protected:
-    virtual float GetPosition();
-
-private:
-    ReverseAxisControl(_SDL_Joystick* j, uint index);
-};
-
-struct ButtonControl : public InputControl {
-    friend struct Joystick;
-
-protected:
-    virtual float GetPosition();
-
-private:
-    ButtonControl(_SDL_Joystick* j, uint index);
-
-    _SDL_Joystick* _joystick;
-    uint _index;
+    std::vector<InputControl*> _axes;
+    std::vector<InputControl*> _reverseAxes;
+    std::vector<InputControl*> _buttons;
 };
 
 #endif

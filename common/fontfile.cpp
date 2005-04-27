@@ -228,4 +228,46 @@ bool FontFile::Load(const char* fname) {
 }
 
 void FontFile::Save(const char* fname) {
+    File f;
+    f.OpenWrite(fname, 1);
+
+    u8 numSubsets = set.size();
+    u16 numGlyphs = glyph.size();
+
+    f.Write("FONT27");
+    f.Write(numSubsets);
+    f.Write(numGlyphs);
+
+    for(std::vector<SSubSet>::iterator s = set.begin(); s != set.end(); s++) {
+        u16 blah[256];
+        std::copy(&s->glyphIndex[0], &s->glyphIndex[256], &blah[0]);
+        f.Write(&blah[0], sizeof(blah));
+    }
+
+    for(uint i=0; i < glyph.size(); i++) {
+        u16 w = glyph[i].Width();
+        u16 h = glyph[i].Height();
+
+        f.Write(w);
+        f.Write(h);
+    }
+
+    std::vector<RGBA> pixels;
+    for (uint i = 0; i < glyph.size(); i++) {
+        Canvas* c = &glyph[i];
+        RGBA* p = c->GetPixels();
+        int len = c->Width() * c->Height();
+
+        for (int j = 0; j < len; j++) {
+            pixels.push_back(p[j]);
+        }
+    }
+
+    ScopedArray<RGBA> pBuffer = new RGBA[pixels.size()];
+
+    std::copy(pixels.begin(), pixels.end(),
+        std::raw_storage_iterator<RGBA*, int>(pBuffer.get()));
+
+    f.WriteCompressed(pBuffer.get(), pixels.size() * sizeof(RGBA));
+    f.Close();
 }

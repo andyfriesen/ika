@@ -3,14 +3,11 @@
 #include "video/Driver.h"
 #include "video/Image.h"
 
-namespace Script
-{
-    namespace Video
-    {
+namespace Script {
+    namespace Video {
         PyTypeObject type;
         
-        PyMethodDef methods[] =
-        {
+        PyMethodDef methods[] = {
             {   "Blit",         (PyCFunction)Video_Blit,        METH_VARARGS,
                 "Blit(image, x, y[, blendmode])\n\n"
                 "Draws the image at (x, y) at its original size.\n"
@@ -139,12 +136,14 @@ namespace Script
                 "advised to redraw the entire screen, instead of incrementally drawing."
             },
 
-            /** Disabled due to limitations inherent in SDL. (switching video modes causes all textures to be erased)
+#if 0
+            /// Disabled due to limitations inherent in SDL. (switching video modes causes all textures to be erased)
             {   "SetResolution",   (PyCFunction)Video_SetResolution, METH_VARARGS,
                 "SetResolution(xres, yres)\n\n"
                 "Changes the current video mode to (xres, yres).  If the video mode cannot be set,\n"
                 "ika will raise a RuntimeError exception."
-            },*/
+            },
+#endif
 
             {   0   }
         };
@@ -155,16 +154,14 @@ namespace Script
         GET(Colours) { return ::Script::Colours::New(self->video);  }
 #undef GET
 
-        PyGetSetDef properties[] =
-        {
+        PyGetSetDef properties[] = {
             {   "xres",     (getter)getXRes,    0,  "Gets the horizontal resolution of the current display mode, in pixels."    },
             {   "yres",     (getter)getYRes,    0,  "Gets the vertical resolution of the current display mode, in pixels."      },
             {   "colours",  (getter)getColours, 0,  "Gets a mapping containing the currently-defined colours by name."      },
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt = 1;
@@ -179,30 +176,28 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New(::Video::Driver* v)
-        {
+        PyObject* New(::Video::Driver* v) {
             VideoObject* video = PyObject_New(VideoObject, &type);
             video->video = v;
 
             return (PyObject*)video;
         }
 
-        void Destroy(VideoObject* self)
-        {
+        void Destroy(VideoObject* self) {
             PyObject_Del(self);
         }
 
 #define METHOD(x) PyObject* x(VideoObject* self, PyObject* args)
 #define METHOD1(x) PyObject* x(VideoObject* self)
 
-        METHOD(Video_Blit)
-        {
+        METHOD(Video_Blit) {
             Script::Image::ImageObject* image;
             int x, y;
             int trans = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!ii|i:Video.Blit", &Script::Image::type, &image, &x, &y, &trans))
+            if (!PyArg_ParseTuple(args, "O!ii|i:Video.Blit", &Script::Image::type, &image, &x, &y, &trans)) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->BlitImage(image->img, x, y);
@@ -210,15 +205,15 @@ namespace Script
             Py_INCREF(Py_None);
             return Py_None;
         }
-        
-        METHOD(Video_ClipBlit)
-        {
+
+        METHOD(Video_ClipBlit) {
             Script::Image::ImageObject* image;
             int x, y, ix, iy, iw, ih;
             int trans = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!iiiiii|i:Video.ClipBlit", &Script::Image::type, &image, &x, &y, &ix, &iy, &iw, &ih, &trans))
+            if (!PyArg_ParseTuple(args, "O!iiiiii|i:Video.ClipBlit", &Script::Image::type, &image, &x, &y, &ix, &iy, &iw, &ih, &trans)) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->ClipBlitImage(image->img, x, y, ix, iy, iw, ih);
@@ -227,15 +222,15 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_ScaleBlit)
-        {
+        METHOD(Video_ScaleBlit) {
             Script::Image::ImageObject* image;
             int x, y;
             int w, h;
             int trans = 1;
 
-            if (!PyArg_ParseTuple(args, "O!iiii|i:Video.ScaleBlit", &Script::Image::type, &image, &x, &y, &w, &h, &trans))
+            if (!PyArg_ParseTuple(args, "O!iiii|i:Video.ScaleBlit", &Script::Image::type, &image, &x, &y, &w, &h, &trans)) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->ScaleBlitImage(image->img, x, y, w, h);
@@ -244,14 +239,14 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_DistortBlit)
-        {
+        METHOD(Video_DistortBlit) {
             Script::Image::ImageObject* image;
             int x[4], y[4];
             int trans = 1;
 
-            if (!PyArg_ParseTuple(args, "O!(ii)(ii)(ii)(ii)|i:Video.DistortBlit", &Script::Image::type, &image, x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &trans))
+            if (!PyArg_ParseTuple(args, "O!(ii)(ii)(ii)(ii)|i:Video.DistortBlit", &Script::Image::type, &image, x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &trans)) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->DistortBlitImage(image->img, x, y);
@@ -260,16 +255,16 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_TileBlit)
-        {
+        METHOD(Video_TileBlit) {
             Script::Image::ImageObject* image;
             int x, y;
             int w, h;
             float scalex = 1, scaley = 1;
             int trans = 1;
 
-            if (!PyArg_ParseTuple(args, "O!iiii|ffi:Video.TileBlit", &Script::Image::type, &image, &x, &y, &w, &h, &scalex, &scaley, &trans))
+            if (!PyArg_ParseTuple(args, "O!iiii|ffi:Video.TileBlit", &Script::Image::type, &image, &x, &y, &w, &h, &scalex, &scaley, &trans)) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->TileBlitImage(image->img, x, y, w, h, scalex, scaley);
@@ -278,15 +273,15 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_TintBlit)
-        {
+        METHOD(Video_TintBlit) {
             Script::Image::ImageObject* image;
             int x, y;
             u32 tint;
             uint blendMode = 1;
 
-            if (!PyArg_ParseTuple(args, "O!iii|i:Video.TintBlit", &Script::Image::type, &image, &x, &y, &tint, &blendMode))
+            if (!PyArg_ParseTuple(args, "O!iii|i:Video.TintBlit", &Script::Image::type, &image, &x, &y, &tint, &blendMode)) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->TintBlitImage(image->img, x, y, tint);
@@ -295,8 +290,7 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_TintDistortBlit)
-        {
+        METHOD(Video_TintDistortBlit) {
             Script::Image::ImageObject* image;
             int x[4];
             int y[4];
@@ -309,8 +303,10 @@ namespace Script
                 x + 1, y + 1, tint + 1,
                 x + 2, y + 2, tint + 2,
                 x + 3, y + 3, tint + 3,
-                &blendMode))
+                &blendMode)
+            ) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->TintDistortBlitImage(image->img, x, y, tint);
@@ -319,8 +315,7 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_TintTileBlit)
-        {
+        METHOD(Video_TintTileBlit) {
             Script::Image::ImageObject* image;
             int x, y;
             int w, h;
@@ -330,8 +325,10 @@ namespace Script
 
             if (!PyArg_ParseTuple(args, "O!iiiii|ffi:Video.TintTileBlit", 
                 &Script::Image::type, &image, 
-                &x, &y, &w, &h, &colour, &scalex, &scaley, &trans))
+                &x, &y, &w, &h, &colour, &scalex, &scaley, &trans)
+            ) {
                 return 0;
+            }
 
             self->video->SetBlendMode((::Video::BlendMode)trans);
             self->video->TintTileBlitImage(image->img, x, y, w, h, scalex, scaley, colour);
@@ -340,13 +337,13 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_DrawPixel)
-        {
+        METHOD(Video_DrawPixel) {
             int x, y;
             u32 colour;
 
-            if (!PyArg_ParseTuple(args, "iii:Video.DrawPixel", &x, &y, &colour))
+            if (!PyArg_ParseTuple(args, "iii:Video.DrawPixel", &x, &y, &colour)) {
                 return 0;
+            }
 
             self->video->SetBlendMode(::Video::Normal);
             self->video->DrawPixel(x, y, colour);
@@ -355,13 +352,13 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_DrawLine)
-        {
+        METHOD(Video_DrawLine) {
             int x1, y1, x2, y2;
             u32 colour;
 
-            if (!PyArg_ParseTuple(args, "iiiii:Video.DrawLine", &x1, &y1, &x2, &y2, &colour))
+            if (!PyArg_ParseTuple(args, "iiiii:Video.DrawLine", &x1, &y1, &x2, &y2, &colour)) {
                 return 0;
+            }
 
             self->video->SetBlendMode(::Video::Normal);
             self->video->DrawLine(x1, y1, x2, y2, colour);
@@ -370,14 +367,14 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_DrawRect)
-        {
+        METHOD(Video_DrawRect) {
             int x1, y1, x2, y2;
             u32 colour;
             int filled = 0;
 
-            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawRect", &x1, &y1, &x2, &y2, &colour, &filled))
+            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawRect", &x1, &y1, &x2, &y2, &colour, &filled)) {
                 return 0;
+            }
 
             self->video->SetBlendMode(::Video::Normal);
             self->video->DrawRect(x1, y1, x2, y2, colour, filled != 0);
@@ -386,15 +383,15 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_DrawEllipse)
-        {
+        METHOD(Video_DrawEllipse) {
             int cx, cy;
             int rx, ry;
             u32 colour;
             int filled = 0;
 
-            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawEllipse", &cx, &cy, &rx, &ry, &colour, &filled))
+            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawEllipse", &cx, &cy, &rx, &ry, &colour, &filled)) {
                 return 0;
+            }
 
             self->video->SetBlendMode(::Video::Normal);
             self->video->DrawEllipse(cx, cy, rx, ry, colour, filled != 0);
@@ -403,14 +400,14 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_DrawTriangle)
-        {
+        METHOD(Video_DrawTriangle) {
             int x[3];
             int y[3];
             u32 col[3];
 
-            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii):Video.DrawTriangle", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2))
+            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii):Video.DrawTriangle", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2)) {
                 return 0;
+            }
 
             self->video->SetBlendMode(::Video::Normal);
             self->video->DrawTriangle(x, y, col);
@@ -419,8 +416,7 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_ClipScreen)
-        {
+        METHOD(Video_ClipScreen) {
             const char* keywords[] = {
                 "left", "top", "right", "bottom"
             };
@@ -432,8 +428,9 @@ namespace Script
             int right = p.x;
             int bottom = p.y;
 
-            if (!PyArg_ParseTuple(args, "|iiii:Video.ClipScreen", &left, &top, &right, &bottom))
+            if (!PyArg_ParseTuple(args, "|iiii:Video.ClipScreen", &left, &top, &right, &bottom)) {
                 return 0;
+            }
 
             self->video->ClipScreen(left, top, right, bottom);
 
@@ -441,16 +438,15 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_GrabImage)
-        {
+        METHOD(Video_GrabImage) {
             int x1, y1, x2, y2;
 
-            if (!PyArg_ParseTuple(args, "iiii:Video.GrabImage", &x1, &y1, &x2, &y2))
+            if (!PyArg_ParseTuple(args, "iiii:Video.GrabImage", &x1, &y1, &x2, &y2)) {
                 return 0;
+            }
 
             ::Video::Image* i = self->video->GrabImage(x1, y1, x2, y2);
-            if (!i)
-            {
+            if (!i) {
                 PyErr_SetString(PyExc_RuntimeError, "GrabImage failed!");
                 return 0;
             }
@@ -458,16 +454,15 @@ namespace Script
             return ::Script::Image::New(i);
         }
 
-        METHOD(Video_GrabCanvas)
-        {
+        METHOD(Video_GrabCanvas) {
             int x1, y1, x2, y2;
 
-            if (!PyArg_ParseTuple(args, "iiii:Video.GrabCanvas", &x1, &y1, &x2, &y2))
+            if (!PyArg_ParseTuple(args, "iiii:Video.GrabCanvas", &x1, &y1, &x2, &y2)) {
                 return 0;
+            }
 
             ::Canvas* c = self->video->GrabCanvas(x1, y1, x2, y2);
-            if (!c)
-            {
+            if (!c) {
                 PyErr_SetString(PyExc_RuntimeError, "GrabCanvas failed!");
                 return 0;
             }
@@ -475,16 +470,14 @@ namespace Script
             return ::Script::Canvas::New(c);
         }
 
-        METHOD1(Video_ClearScreen)
-        {
+        METHOD1(Video_ClearScreen) {
             self->video->ClearScreen();
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
-        METHOD1(Video_ShowPage)
-        {
+        METHOD1(Video_ShowPage) {
             engine->CheckMessages();
             self->video->ShowPage();
 
@@ -492,17 +485,16 @@ namespace Script
             return Py_None;
         }
 
-        METHOD(Video_SetResolution)
-        {
+        METHOD(Video_SetResolution) {
             int x;
             int y;
 
-            if (!PyArg_ParseTuple(args, "ii:SetResolution", &x, &y))
+            if (!PyArg_ParseTuple(args, "ii:SetResolution", &x, &y)) {
                 return 0;
+            }
 
             bool result = self->video->SwitchResolution(x, y);
-            if (!result)
-            {
+            if (!result) {
                 PyErr_SetString(PyExc_RuntimeError, va("Unable to set video mode %i x %i", x, y));
                 return 0;
             }
@@ -510,17 +502,6 @@ namespace Script
             Py_INCREF(Py_None);
             return Py_None;
         }
-
-        /*METHOD(ika_palettemorph)
-        {
-            int r = 255, g = 255, b = 255;
-
-            if (!PyArg_ParseTuple(args, "|iii:PaletteMorph", &r, &g, &b))
-                return NULL;
-
-            Py_INCREF(Py_None);
-            return Py_None;
-        }*/
 
 #undef METHOD
     }

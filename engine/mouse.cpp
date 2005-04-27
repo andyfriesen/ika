@@ -4,12 +4,12 @@
 #include "mouse.h"
 
 Mouse::Mouse()
-    : _xAxis(new MouseAxisControl)
-    , _yAxis(new MouseAxisControl)
-    , _wheel(new MouseAxisControl)
-    , _left(new MouseButtonControl)
-    , _right(new MouseButtonControl)
-    , _middle(new MouseButtonControl)
+    : _xAxis(new InputControl)
+    , _yAxis(new InputControl)
+    , _wheel(new InputControl)
+    , _left(new InputControl)
+    , _right(new InputControl)
+    , _middle(new InputControl)
 {
 }
 
@@ -33,20 +33,7 @@ InputControl* Mouse::GetControl(const std::string& name) {
     else                        return 0;
 }
 
-void Mouse::Motion(float x, float y) {
-    _xAxis->SetPosition(x);
-    _yAxis->SetPosition(y);
-}
-
-void Mouse::Clicked(uint button, bool isPressed) {
-    if (isPressed) {
-        GetButton(button)->KeyDown();
-    } else {
-        GetButton(button)->KeyUp();
-    }
-}
-
-MouseAxisControl* Mouse::GetAxis(MouseAxis axis) {
+InputControl* Mouse::GetAxis(MouseAxis axis) {
     switch (axis) {
         case X: return _xAxis.get();
         case Y: return _yAxis.get();
@@ -55,21 +42,14 @@ MouseAxisControl* Mouse::GetAxis(MouseAxis axis) {
     }
 }
 
-MouseButtonControl* Mouse::GetButton(uint button) {
+InputControl* Mouse::GetButton(uint button) {
     switch (button) {
         case 1: return _left.get();
         case 2: return _right.get();
         case 3: return _middle.get();
         default: {
-            throw std::runtime_error(va("Asked for invalid mouse button %i", button));
+            return 0;
+            //throw std::runtime_error(va("Asked for invalid mouse button %i", button));
         }
     }
-}
-
-void MouseAxisControl::SetPosition(float newPos) {
-    _pos = newPos;
-}
-
-float MouseAxisControl::GetPosition() {
-    return _pos;
 }

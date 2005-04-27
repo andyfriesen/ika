@@ -1,3 +1,5 @@
+
+#include <sstream>
 #include <stdexcept>
 
 #include "corona.h"
@@ -28,11 +30,12 @@ namespace Blitter {
 
 using Blitter::DoClipping;
 
-Canvas::Canvas()
+Canvas::Canvas() 
+    : _width(16)
+    , _height(16)
+    , _pixels(new RGBA[16 * 16])
+    , _cliprect(0, 0, _width, _height)
 {
-    _width = _height = 16;		// arbitrary
-    _pixels = new RGBA[_width*_height];
-    _cliprect = Rect(0, 0, _width, _height);
 }
 
 Canvas::Canvas(int width, int height)
@@ -60,24 +63,28 @@ Canvas::Canvas(u8* data, int width, int height, u8* pal)
     , _cliprect(0, 0, width, height)
 {
     _pixels = new RGBA[_width*_height];
-    for (int i = 0; i < width * height; i++)
+    for (int i = 0; i < width * height; i++) {
         _pixels[i] = RGBA(data[i], pal);
+    }
 }
 
-Canvas::Canvas(const Canvas& src)
-{
+Canvas::Canvas(const Canvas& src) {
     _width = src._width;
     _height = src._height;
+    
     _pixels = new RGBA[_width*_height];
-    memcpy(_pixels, src._pixels, _width*_height * sizeof(RGBA));
+    std::copy(src._pixels, src._pixels + _width * _height, _pixels);
+
     _cliprect = Rect(0, 0, _width, _height);
 }
 
-Canvas::Canvas(const char* fname)
-{
-    corona::Image* img = corona::OpenImage(fname, corona::FF_AUTODETECT, corona::PF_R8G8B8A8);
-    if (!img)
-        throw std::runtime_error(std::string("Unable to load image file ") + fname);
+Canvas::Canvas(const std::string& fname) {
+    corona::Image* img = corona::OpenImage(fname.c_str(), corona::FF_AUTODETECT, corona::PF_R8G8B8A8);
+    if (!img) {
+        std::stringstream ss;
+        ss << "Unable to load image file " << fname;
+        throw std::runtime_error(ss.str());
+    }
 
     RGBA* src = (RGBA*)img->getPixels();
     _width  = img->getWidth();
@@ -90,23 +97,20 @@ Canvas::Canvas(const char* fname)
     delete img;
 }
 
-Canvas::~Canvas()
-{
+Canvas::~Canvas() {
     delete[] _pixels;
 }
 
 
-void Canvas::Save(const char* fname)
-{
+void Canvas::Save(const std::string& fname) {
     corona::Image* img = corona::CreateImage(_width, _height, corona::PF_R8G8B8A8);
     RGBA* dest = (RGBA*)img->getPixels();
     std::copy(_pixels, _pixels + _width * _height, dest);
-    corona::SaveImage(fname, corona::FF_PNG, img);
+    corona::SaveImage(fname.c_str(), corona::FF_PNG, img);
     delete img;
 }
 
-Canvas& Canvas::operator = (const Canvas& rhs)
-{
+Canvas& Canvas::operator = (const Canvas& rhs) {
     if (this == &rhs) {
         return *this;
     }
@@ -121,8 +125,7 @@ Canvas& Canvas::operator = (const Canvas& rhs)
     return *this;
 }
 
-bool Canvas::operator == (const Canvas& rhs)
-{
+bool Canvas::operator == (const Canvas& rhs) {
     if (_width != rhs._width)
         return false;
     if (_height != rhs._height)

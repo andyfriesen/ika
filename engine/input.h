@@ -10,7 +10,6 @@
 #include "common/utility.h"
 #include "scriptobject.h"
 
-struct KeyControl;
 struct Joystick;
 struct Keyboard;
 struct Mouse;
@@ -42,7 +41,7 @@ struct InputControl {
     float PeekDelta();
 
     // Pretty looking method for 'unpressing'.
-    inline  void  Unpress() {
+    inline void Unpress() {
         Pressed(); 
     }
 
@@ -52,9 +51,7 @@ struct InputControl {
 
     operator bool() { return Position() > 0; }
 
-protected:
-    virtual bool GetPressed();
-    virtual float GetPosition() = 0;
+    void UpdatePosition(float newPos);
 
 private:
     // Used to implement Pressed() and Delta()
@@ -114,6 +111,10 @@ struct Input {
 private:
     Input();
     ~Input();
+
+    void UpdateControl(InputControl* ctrl, int newValue);
+    void UpdateControl(InputControl* ctrl, bool newValue);
+    void UpdateControl(InputControl* ctrl, float newValue);
 
     static ScopedPtr<Input> _theInstance;
 

@@ -151,7 +151,7 @@ Keyboard::~Keyboard() {
         iter != _keys.end();
         iter++
     ) {
-        KeyControl* c = iter->second;
+        InputControl* c = iter->second;
         delete c;
     }
 }
@@ -175,7 +175,7 @@ InputControl* Keyboard::GetControl(const std::string& name) {
     uint keySym = iter->second;
     KeyMap::iterator iter2 = _keys.find(keySym);
     if (iter2 == _keys.end()) {
-        KeyControl* key = new KeyControl;
+        InputControl* key = new InputControl;
         _keys[keySym] = key;
         return key;
     } else {
@@ -186,7 +186,7 @@ InputControl* Keyboard::GetControl(const std::string& name) {
 void Keyboard::KeyDown(uint keyCode) {
     KeyMap::iterator iter = _keys.find(keyCode);
     if (iter != _keys.end()) {
-        iter->second->KeyDown();
+        iter->second->UpdatePosition(1.0f);
     }
 
     if (keyCode < 256) {
@@ -197,7 +197,7 @@ void Keyboard::KeyDown(uint keyCode) {
 void Keyboard::KeyUp(uint keyCode) {
     KeyMap::iterator iter = _keys.find(keyCode);
     if (iter != _keys.end()) {
-        iter->second->KeyUp();
+        iter->second->UpdatePosition(0.0f);
     }
 }
 
@@ -219,34 +219,4 @@ void Keyboard::ClearKeyQueue() {
     while (_keyQueue.size()) {
         _keyQueue.pop();
     }
-}
-
-KeyControl::KeyControl()
-    : _pressed(false) 
-    , _position(false)
-{
-}
-
-void KeyControl::KeyDown() {
-    _position = _pressed = true;
-    if (onPress) {
-        the< ::Input>()->QueueEvent(&onPress);
-    }
-}
-
-void KeyControl::KeyUp() {
-    _position = _pressed = false;
-    if (onUnpress) {
-        the< ::Input>()->QueueEvent(&onUnpress);
-    }
-}
-
-float KeyControl::GetPosition() {
-    return _position ? 1.0f : 0.0f;
-}
-
-bool KeyControl::GetPressed() {
-    bool result = _pressed;
-    _pressed = false;
-    return result;
 }

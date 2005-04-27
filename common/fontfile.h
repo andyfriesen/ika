@@ -24,7 +24,7 @@ struct FontFile {
     
     bool Load(const char* fname);                           //!< Reads data from the specified filename.
     void Save(const char* fname);                           //!< Writes data to the specified filename, destroying any data that was there.
-    
+
     /// Returns the number of subsets.
     uint NumSubSets() const;
 

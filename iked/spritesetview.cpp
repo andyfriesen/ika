@@ -474,7 +474,7 @@ namespace iked {
         bool pad,
         commands::ImportMode importMode
     ) {
-        Canvas image(fileName.c_str());
+        Canvas image(fileName);
 
         std::vector<Canvas> frames; 
 

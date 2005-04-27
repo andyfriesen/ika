@@ -1,10 +1,14 @@
 
 #include "common/log.h"
 #include "utility.h"
+
 #include <stdarg.h>
-#include <fstream>
-#include <ios>
 #include <stdio.h>
+
+#include <ios>
+#include <iostream>
+#include <fstream>
+#include <set>
 
 using std::ios;
 using std::endl;
@@ -16,6 +20,8 @@ namespace Log {
     std::string logName;
 
     std::ofstream logFile;
+
+    std::set<std::string> flags;
 };
 
 // -----------------------
@@ -43,29 +49,28 @@ void Log::Writen(const char* s, ...) {
     }
     
     va_list lst;
-    
     va_start(lst, s);
 
 #ifdef _MSC_VER
-
     int bufferLength = _vscprintf(s, lst) + 1; // plus terminating null
     ScopedArray<char> buffer = new char[bufferLength];
     vsprintf(buffer.get(), s, lst);
     logFile << buffer.get();
 
 #elif defined(GNUC)
-    
     char* buffer = 0;
     int len = asprintf(&buffer, s, lst);
+
     if (len == -1) {
         logFile << "Log system error: Unable to write some stuff.";
+
     } else {
         logFile << buffer;
         ::free(buffer);
     }
 
 #else
-//#   error buffer overrun gayness that must be overcome!
+#   error Buffer overrun gayness that must be overcome!
     char buffer[1024];
     vsprintf(buffer, s, lst);
     logFile << buffer;
@@ -78,15 +83,38 @@ void Log::Write(const char* s, ...) {
     if (!isLogging) {
         return;
     }
-
-    char sTemp[1024];
-    va_list lst;
     
+    va_list lst;
     va_start(lst, s);
-    vsprintf(sTemp, s, lst);
-    va_end(lst);
 
-    logFile << sTemp << endl;
+#ifdef _MSC_VER
+    int bufferLength = _vscprintf(s, lst) + 1; // plus terminating null
+    ScopedArray<char> buffer = new char[bufferLength];
+    vsprintf(buffer.get(), s, lst);
+    logFile << buffer.get();
+
+#elif defined(GNUC)
+    char* buffer = 0;
+    int len = asprintf(&buffer, s, lst);
+
+    if (len == -1) {
+        logFile << "Log system error: Unable to write some stuff.";
+
+    } else {
+        logFile << buffer;
+        ::free(buffer);
+    }
+
+#else
+#   error Buffer overrun gayness that must be overcome!
+    char buffer[1024];
+    vsprintf(buffer, s, lst);
+    logFile << buffer;
+#endif
+
+    logFile << endl;
+
+    va_end(lst);
 }
 
 void Log::Write(const std::string& s) {

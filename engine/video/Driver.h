@@ -1,6 +1,8 @@
 #ifndef VIDEO_DRIVER_H
 #define VIDEO_DRIVER_H
 
+#include <stdexcept>
+
 #include "Image.h"
 #include "ColourHandler.h"
 
@@ -15,7 +17,11 @@
 /// The video driver interface lives here.
 namespace Video {
     /// Thrown when something in the video system screws up. ;)
-    struct Exception {};
+    struct Exception : public std::runtime_error {
+        Exception(const std::string& what="")
+            : std::runtime_error(what)
+        {}
+    };
 
     /// Different methods for alpha blending
     enum BlendMode {

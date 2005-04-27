@@ -3,9 +3,6 @@
 #include "SDL/SDL.h"
 #include "common/log.h"
 
-// Joystick values read to be less than this are trimmed to 0.
-static const int EPSILON = 258;
-
 Joystick::Joystick(uint index)
 : _joystick(SDL_JoystickOpen(index)) {
     assert(_joystick);
@@ -67,92 +64,38 @@ uint Joystick::GetNumButtons() const {
     return _buttons.size();
 }
 
-AxisControl* Joystick::GetAxis(uint index) {
+InputControl* Joystick::GetAxis(uint index) {
     if (index >= _axes.size()) {
         return 0;
     }
 
     if (_axes[index] == 0) {
-        _axes[index] = new AxisControl(_joystick, index);
+        _axes[index] = new InputControl;
     }
 
     return _axes[index];
 }
 
-ReverseAxisControl* Joystick::GetReverseAxis(uint index) {
+InputControl* Joystick::GetReverseAxis(uint index) {
     if (index >= _axes.size()) {
         return 0;
     }
 
     if (_reverseAxes[index] == 0) {
-        _reverseAxes[index] = new ReverseAxisControl(_joystick, index);
+        _reverseAxes[index] = new InputControl;
     }
 
     return _reverseAxes[index];
 }
 
-ButtonControl* Joystick::GetButton(uint index) {
+InputControl* Joystick::GetButton(uint index) {
     if (index >= _buttons.size()) {
         return 0;
     }
     
     if (_buttons[index] == 0) {
-        _buttons[index] = new ButtonControl(_joystick, index);
+        _buttons[index] = new InputControl;
     }
     
     return _buttons[index];
-}
-
-AxisControl::AxisControl(_SDL_Joystick* j, uint index)
-: _joystick(j)
-, _index(index) {
-    assert(_joystick);
-}
-
-bool AxisControl::GetPressed() {
-    // Axes are considered "pressed" if they are now moved beyond the 0.5 point, but were not before
-
-    float delta = PeekDelta();
-    float pos = Position();
-
-    bool value = (
-        (pos > 0.5f) &&
-        (pos - delta <= 0.5f)
-    );
-
-    return value;
-}
-
-float AxisControl::GetPosition() {
-    int i = SDL_JoystickGetAxis(_joystick, _index);
-    
-    // Kill nearly-centered values; joysticks aren't always very precise.
-    if (abs(i) < EPSILON) {
-        i = 0;
-    }
-
-    // Cheap hack to get normalization
-    if (i == -32768) {
-        i++;
-    }
-
-    return float(i) / 32767;
-}
-
-ReverseAxisControl::ReverseAxisControl(_SDL_Joystick* j, uint index)
-: AxisControl(j, index) {
-}
-
-float ReverseAxisControl::GetPosition() {
-    return -AxisControl::GetPosition();
-}
-
-ButtonControl::ButtonControl(_SDL_Joystick* j, uint index)
-: _joystick(j)
-, _index(index) {
-    assert(_joystick);
-}
-
-float ButtonControl::GetPosition() {
-    return float(SDL_JoystickGetButton(_joystick, _index));
 }

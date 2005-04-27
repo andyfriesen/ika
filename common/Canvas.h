@@ -19,10 +19,10 @@ struct Canvas {
     Canvas(u8* pData, int nWidth, int nHeight, u8* pal);
     Canvas(RGBA* pData, int nWidth, int nHeight);
     Canvas(const Canvas& src);
-    Canvas(const char* fname);
+    Canvas(const std::string& fname);
     ~Canvas();
 
-    void Save(const char* fname);
+    void Save(const std::string& fname);
 
     // The basics
     void CopyPixelData(u8* data, int width, int height, u8* pal);   ///< Copies raw, palettized pixel data into the image

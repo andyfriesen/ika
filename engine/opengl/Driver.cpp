@@ -14,11 +14,7 @@
 #include "common/Canvas.h"
 #include "common/log.h"
 
-#ifdef WIN32
-static void __stdcall glBlendEquationStub(int){}
-#else
-static void glBlendEquationStub(int){}
-#endif
+static void IKA_STDCALL glBlendEquationStub(int) {}
 
 namespace OpenGL {
 
@@ -81,11 +77,7 @@ namespace OpenGL {
         Log::Write("--Disabling cursor");
         SDL_ShowCursor(SDL_DISABLE);
 
-#ifdef WIN32
-        glBlendEquationEXT = (void (__stdcall *)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
-#else
-        glBlendEquationEXT = (void (*)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
-#endif
+        glBlendEquationEXT = (void (IKA_STDCALL *)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
 
         if (!glBlendEquationEXT)  {
             Log::Write("Warning! glBlendEquationEXT not found.  Colour subtraction disabled.");

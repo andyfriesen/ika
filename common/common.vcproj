@@ -205,6 +205,9 @@
 				RelativePath=".\oldbase64.h">
 			</File>
 			<File
+				RelativePath=".\port.h">
+			</File>
+			<File
 				RelativePath=".\refcount.h">
 			</File>
 			<File

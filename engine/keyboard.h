@@ -28,25 +28,10 @@ private:
     std::queue<char> _keyQueue;
 
     typedef std::map<std::string, uint> KeySymMap;
-    typedef std::map<uint, KeyControl*> KeyMap;
+    typedef std::map<uint, InputControl*> KeyMap;
 
     KeySymMap _nameToKeySym;
     KeyMap _keys;
-};
-
-struct KeyControl : public InputControl {
-    KeyControl();
-
-    void KeyDown();
-    void KeyUp();
-
-protected:
-    virtual bool GetPressed();
-    virtual float GetPosition();
-
-private:
-    bool _position;
-    bool _pressed;
 };
 
 #endif
