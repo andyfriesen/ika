@@ -187,15 +187,16 @@ void Input::QueueEvent(ScriptObject* script) {
 }
 
 Input::Input()
-: _keyboard(new Keyboard)
-, _mouse(new Mouse)
-, up(_up)
-, down(_down)
-, left(_left)
-, right(_right)
-, enter(_enter)
-, cancel(_cancel)
-, _eventQueue(0) {
+    : _keyboard(new Keyboard)
+    , _mouse(new Mouse)
+    , up(_up)
+    , down(_down)
+    , left(_left)
+    , right(_right)
+    , enter(_enter)
+    , cancel(_cancel)
+    , _eventQueue(0) 
+{
     _joysticks.resize(SDL_NumJoysticks());
 
     _up = _keyboard->GetControl("UP");

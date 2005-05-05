@@ -179,14 +179,14 @@ namespace rho.Import {
             frameNode
                 .AddChild(new DataNode("count").AddChild(frames.Count))
                 .AddChild(new DataNode("dimensions")
-                .AddChild(new DataNode("width").AddChild(Size.Width))
-                .AddChild(new DataNode("height").AddChild(Size.Height))
+                    .AddChild(new DataNode("width").AddChild(Size.Width))
+                    .AddChild(new DataNode("height").AddChild(Size.Height))
                 )
                 .AddChild(new DataNode("hotspot")
-                .AddChild(new DataNode("x").AddChild(HotSpot.X))
-                .AddChild(new DataNode("y").AddChild(HotSpot.Y))
-                .AddChild(new DataNode("width").AddChild(HotSpot.Width))
-                .AddChild(new DataNode("height").AddChild(HotSpot.Height))
+                    .AddChild(new DataNode("x").AddChild(HotSpot.X))
+                    .AddChild(new DataNode("y").AddChild(HotSpot.Y))
+                    .AddChild(new DataNode("width").AddChild(HotSpot.Width))
+                    .AddChild(new DataNode("height").AddChild(HotSpot.Height))
                 );
 
             MemoryStream data = new MemoryStream();
@@ -224,9 +224,11 @@ namespace rho.Import {
             data.Close();
             dos.Close();
 
-            frameNode.AddChild(new DataNode("data")
-                .AddChild(new DataNode("format").AddChild("zlib"))
-                .AddChild(cdata64));            
+            frameNode.AddChild(
+                new DataNode("data")
+                    .AddChild(new DataNode("format").AddChild("zlib"))
+                    .AddChild(cdata64)
+            );
 
             rootNode.Write(stream);
         }

@@ -1,122 +1,51 @@
 using System;
 using Scintilla;
 
-namespace Scintilla {
-    enum MarkNum {
-        FolderEnd = 25,
-        FolderOpenMid = 26,
-        FolderMidTail = 27,
-        FolderTail = 28,
-        FolderSub = 29,
-        Folder = 30,
-        FolderOpen = 31,
-    }
-
-    enum Mark {
-        Max = 31,
-        Circle = 0,
-        RoundRect = 1,
-        Arrow = 2,
-        SmallRect = 3,
-        ShortArrow = 4,
-        Empty = 5,
-        ArrowDown = 6,
-        Minus = 7,
-        Plus = 8,
-
-        // Shapes used for outlining column.
-        VLine = 9,
-        LCorner = 10,
-        TCorner = 11,
-        BoxPlus = 12,
-        BoxPlusConnected = 13,
-        BoxMinus = 14,
-        BoxMinusConnected = 15,
-        LCornerCurve = 16,
-        TCornerCurve = 17,
-        CirclePlus = 18,
-        CirclePlusConnected = 19,
-        CircleMinus = 20,
-        CircleMinusConnected = 21,
-
-        // Invisible mark that only sets the line background color.
-        Background = 22,
-        DotDotDot = 23,
-        Arrows = 24,
-        Pixmap = 25,
-
-        Character = 10000,
-    }
-    enum Margin {
-        Symbol = 0,
-        Number = 1,
-    };
-
-    [Flags]
-    enum MarginMask {
-        FolderEnd = 25,
-        FolderOpenMid = 26,
-        FolderMidTail = 27,
-        FolderTail = 28,
-        FolderSub = 29,
-        Folder = 30,
-        FolderOpen = 31,
-
-        MaskFolders = (
-            (1 << Folder) | 
-            (1 << FolderEnd) |
-            (1 << FolderSub) |
-            (1 << FolderTail) |
-            (1 << FolderMidTail) |
-            (1 << FolderOpenMid) |
-            (1 << FolderEnd))
-    };
-
-}
-
 namespace rho.TextEditor {
     class PythonHighlightStyle : HighlightStyle {
-        public void SetStyle(ScintillaControl c) {
-            c.StyleSetFore(0,  0x00808080);  // whitespace
-            c.StyleSetFore(1,  0x00007F00);  // code comments
-            c.StyleSetItalic(1, true);
-            c.StyleSetFont(1, "Comic Sans MS");
-            c.StyleSetFore(2,  0x00008800);  // numeric constants
-            c.StyleSetFont(2, "Verdana");
-            c.StyleSetFore(3,  0x00000080);  // " style string literals
-            c.StyleSetFont(3, "Courier New");
-            c.StyleSetFore(4,  0x00000080);  // ' style string literals
-            c.StyleSetFont(4, "Courier New");
-            c.StyleSetFore(5,  0x00800000);  // keyword
-            c.StyleSetFont(5, "Verdana");
-            c.StyleSetBold(5,  true);
-            c.StyleSetFore(6,  0x007F0000);  // ''' strings
-            c.StyleSetFont(6, "Courier New");
-            c.StyleSetFore(7,  0x007F0000);  // """ strings
-            c.StyleSetFont(7, "Courier New");
-            c.StyleSetFore(8,  0x00007F7F);  // class declaration name
-            c.StyleSetFont(8, "Verdana");
-            c.StyleSetFore(9,  0x00007F7F);  // function declarations
-            c.StyleSetFont(9,  "Verdana");
-            c.StyleSetFore(10, 0x007F007F);  // operators
-            c.StyleSetFont(10, "Verdana");
-            c.StyleSetBold(10, true);
-            c.StyleSetFore(11, 0x00000000);  // identifiers
-            c.StyleSetFont(11, "Verdana");
+        public void SetStyle(ScintillaText c) {
+            c.SetStyleFore(0,  0x00808080);  // whitespace
+            c.SetStyleFore(1,  0x00007F00);  // code comments
+            c.SetStyleItalic(1, true);
+            c.SetStyleFont(1, "Comic Sans MS");
+            c.SetStyleFore(2,  0x00008800);  // numeric constants
+            c.SetStyleFont(2, "Verdana");
+            c.SetStyleFore(3,  0x00000080);  // " style string literals
+            c.SetStyleFont(3, "Courier New");
+            c.SetStyleFore(4,  0x00000080);  // ' style string literals
+            c.SetStyleFont(4, "Courier New");
+            c.SetStyleFore(5,  0x00800000);  // keyword
+            c.SetStyleFont(5, "Verdana");
+            c.SetStyleBold(5,  true);
+            c.SetStyleFore(6,  0x007F0000);  // ''' strings
+            c.SetStyleFont(6, "Courier New");
+            c.SetStyleFore(7,  0x007F0000);  // """ strings
+            c.SetStyleFont(7, "Courier New");
+            c.SetStyleFore(8,  0x00007F7F);  // class declaration name
+            c.SetStyleFont(8, "Verdana");
+            c.SetStyleFore(9,  0x00007F7F);  // function declarations
+            c.SetStyleFont(9,  "Verdana");
+            c.SetStyleFore(10, 0x007F007F);  // operators
+            c.SetStyleFont(10, "Verdana");
+            c.SetStyleBold(10, true);
+            c.SetStyleFore(11, 0x00000000);  // identifiers
+            c.SetStyleFont(11, "Verdana");
             
-            c.Lexer = ScintillaControl.LEX_PYTHON;
+            c.Lexer = Lexer.Python;
 
-            c.set_KeyWords(0,
+            c.SetKeyWords(0,
                 "def lambda class return yield try raise except pass for while if else elif break continue "+
                 "global as import finally exec del print in is assert from and not or None True False"
-                );
+            );
 
 
-            c.set_MarginWidthN(0, 10);
-            c.set_MarginTypeN(0, (int)Margin.Symbol);
-            c.set_MarginSensitiveN(0, true);
-            c.set_MarginMaskN(0, (int)MarginMask.MaskFolders);
+            c.SetMarginWidth(0, 10);
+            c.SetMarginType(0, Margin.Symbol);
+            c.SetMarginSensitivity(0, true);
+            c.SetMarginMask(0, MarginMask.MaskFolders);
 
+            c.Fold = true;
+#if false
             c.set_Property("fold", "1");
 
             MarkNum[] marknum = new MarkNum[] { 
@@ -134,6 +63,7 @@ namespace rho.TextEditor {
             for (int i = 0; i < marknum.Length; i++) {
                 c.MarkerDefine((int)marknum[i], (int)(styles[2][i]));
             }
+#endif
         }
     }
 }

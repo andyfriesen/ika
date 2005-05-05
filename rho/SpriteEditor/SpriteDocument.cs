@@ -6,6 +6,10 @@ using rho.Documents;
 using rho.Import;
 
 namespace rho.SpriteEditor {
+
+    /// <summary>
+    /// The "controller" part of the Model-View-Controller pattern
+    /// </summary>
     public class SpriteDocument : AbstractDocument {
         public SpriteDocument()
         : this(16, 32) {

@@ -159,7 +159,7 @@ namespace rho.SpriteEditor {
         }
 
         protected override void OnKeyDown(KeyEventArgs e) {
-            Console.WriteLine(e.KeyCode);
+            //Console.WriteLine(e.KeyCode);
             switch (e.KeyCode) {
                 case Keys.Left: {
                     SelectedFrame -= 1;

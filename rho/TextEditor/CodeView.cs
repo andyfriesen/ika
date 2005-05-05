@@ -10,7 +10,7 @@ namespace rho.TextEditor {
     /// Summary description for CodeView.
     /// </summary>
     class CodeView : DockContent {
-        readonly ScintillaControl text = new ScintillaControl();
+        readonly ScintillaText text = new ScintillaText();
 
         void Init() {
             text.Dock = DockStyle.Fill;

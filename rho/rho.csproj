@@ -95,20 +95,20 @@
                     HintPath = "..\..\..\..\src\ICSharpCode.SharpZipLib.dll"
                 />
                 <Reference
-                    Name = "WeifenLuo.WinFormsUI"
-                    AssemblyName = "WeifenLuo.WinFormsUI"
-                    HintPath = "..\..\..\..\src\DockPanel\WeifenLuo.WinFormsUI.dll"
-                />
-                <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
                     HintPath = "..\..\..\..\Program Files\NUnit 2.2\bin\nunit.framework.dll"
                     AssemblyFolderKey = "hklm\dn\nunit.framework"
                 />
                 <Reference
-                    Name = "ScintillaNET"
-                    AssemblyName = "ScintillaNET"
-                    HintPath = "..\..\..\..\src\scintilla\ScintillaNET\Release\ScintillaNET.dll"
+                    Name = "WeifenLuo.WinFormsUI.Docking"
+                    AssemblyName = "WeifenLuo.WinFormsUI.Docking"
+                    HintPath = "..\..\..\..\src\DockPanel\WinFormsUI\bin\Release\WeifenLuo.WinFormsUI.Docking.dll"
+                />
+                <Reference
+                    Name = "Scintilla.NET"
+                    AssemblyName = "Scintilla.NET"
+                    HintPath = "..\..\..\scintilla.NET\scintilla.net\Release\Scintilla.NET.dll"
                 />
             </References>
         </Build>
@@ -389,7 +389,7 @@
                 />
                 <File
                     RelPath = "SpriteEditor\SpriteEditor.cs"
-                    SubType = "Code"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File
@@ -414,7 +414,7 @@
                 />
                 <File
                     RelPath = "TextEditor\CodeView.cs"
-                    SubType = "Code"
+                    SubType = "Form"
                     BuildAction = "Compile"
                 />
                 <File

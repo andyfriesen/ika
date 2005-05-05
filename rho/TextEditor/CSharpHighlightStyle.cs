@@ -3,20 +3,20 @@ using Scintilla;
 
 namespace rho.TextEditor {
     class CSharpHighlightStyle : HighlightStyle {
-        public void SetStyle(ScintillaControl c) {
-            c.StyleSetFore(1, 0x00888888);	// comments
-            c.StyleSetFore(2, 0x00888888);	// line comments
-            c.StyleSetFore(3, 0x0);			// doc comments (?)
-            c.StyleSetFore(4, 0x00FF00FF);	// numeric constants
-            c.StyleSetFore(5, 0x00FF0000);	// kewords
-            c.StyleSetBold(5, true);
-            c.StyleSetFore(6, 0x00FF8888);	// string literal
-            c.StyleSetFore(7, 0);
-            c.StyleSetFore(10, 0x00008800);
-            c.StyleSetItalic(2, true);
-            c.StyleSetBold(10, true);
+        public void SetStyle(ScintillaText c) {
+            c.SetStyleFore(1, 0x00888888);	// comments
+            c.SetStyleFore(2, 0x00888888);	// line comments
+            c.SetStyleFore(3, 0x0);			// doc comments (?)
+            c.SetStyleFore(4, 0x00FF00FF);	// numeric constants
+            c.SetStyleFore(5, 0x00FF0000);	// kewords
+            c.SetStyleBold(5, true);
+            c.SetStyleFore(6, 0x00FF8888);	// string literal
+            c.SetStyleFore(7, 0);
+            c.SetStyleFore(10, 0x00008800);
+            c.SetStyleItalic(2, true);
+            c.SetStyleBold(10, true);
 		
-            c.set_KeyWords(0, "if else do while switch case "+	// flow control
+            c.SetKeyWords(0, "if else do while switch case "+	// flow control
                 "void int uint string char byte bool object "+	// intrinsic types
                 "decimal enum float double sbyte short long ushort ulong "+
                 "using namespace as "+				// namespace stuff
@@ -35,7 +35,7 @@ namespace rho.TextEditor {
 		                
                 );
 
-            c.Lexer = ScintillaControl.LEX_CPP;
+            c.Lexer = Scintilla.Lexer.Cpp;
         }
     }
 }

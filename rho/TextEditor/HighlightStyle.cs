@@ -3,6 +3,6 @@ using Scintilla;
 
 namespace rho.TextEditor {
     public interface HighlightStyle {
-        void SetStyle(ScintillaControl text);
+        void SetStyle(ScintillaText text);
     }
 }
