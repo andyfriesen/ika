@@ -389,7 +389,7 @@
                 />
                 <File
                     RelPath = "SpriteEditor\SpriteEditor.cs"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File
@@ -414,7 +414,7 @@
                 />
                 <File
                     RelPath = "TextEditor\CodeView.cs"
-                    SubType = "Form"
+                    SubType = "Code"
                     BuildAction = "Compile"
                 />
                 <File

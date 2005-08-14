@@ -7,15 +7,7 @@
 #include "imagebank.h"
 #include "common/vsp.h"
 
-struct Tileset : ImageBank
-{
-private:
-    VSP* pVsp;
-
-    virtual void SetImage(const Canvas& img, uint idx);
-
-public:
-
+struct Tileset : ImageBank {
     Tileset();
     Tileset(VSP* vsp);
     ~Tileset();
@@ -38,6 +30,11 @@ public:
     std::vector<VSP::AnimState>& GetAnim();
 
     inline const VSP& GetVSP() const { return *pVsp; }
+
+private:
+    VSP* pVsp;
+
+    virtual void SetImage(const Canvas& img, uint idx);
 };
 
 #endif
