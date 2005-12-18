@@ -1,5 +1,5 @@
 /* Platform-specific compatibility hacks.
- * The idea is to consolodate all the ifdef hackery into one place so 
+ * The idea is to consolodate all the ifdef hackery into one place so
  * code can be simple elsewhere.
  */
 
@@ -59,3 +59,4 @@ typedef ptrdiff_t sint;
 #endif
 
 #endif
+
