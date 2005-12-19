@@ -145,9 +145,9 @@ namespace Script {
     }
 
     METHOD(ika_rgb) {
-        int r, g, b, a = 255;
+        u8 r, g, b, a = 255;
 
-        if (!PyArg_ParseTuple(args, "iii|i:RGB", &r, &g, &b, &a))
+        if (!PyArg_ParseTuple(args, "BBB|i:RGB", &r, &g, &b, &a))
             return 0;
 
         return PyInt_FromLong(RGBA(r, g, b, a).i);
@@ -235,8 +235,9 @@ namespace Script {
     }
 
     METHOD(ika_entitiesat) {
-        int x, y, width, height, layer;
-        if (!PyArg_ParseTuple(args, "iiiii|EntitiesAt", &x, &y, &width, &height, &layer))
+        int x, y, width, height;
+        uint layer;
+        if (!PyArg_ParseTuple(args, "iiiiI|EntitiesAt", &x, &y, &width, &height, &layer))
             return 0;
 
         int x2 = x+width;

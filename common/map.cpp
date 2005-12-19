@@ -204,7 +204,7 @@ bool Map::Load(const std::string& filename) {
 
                     std::string d64 = dataNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
-                    int compressedSize;
+                    int compressedSize = 0;
                         
                     if (ver == "1.0") {
 
@@ -236,7 +236,7 @@ bool Map::Load(const std::string& filename) {
 
                     std::string d64 = obsNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
-                    int compressedSize;
+                    int compressedSize = 0;
 
                     if (ver == "1.0") {
                         compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());

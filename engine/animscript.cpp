@@ -77,11 +77,10 @@ void AnimScript::update(uint time) {
     _count -= time;
 
     // used to make sure we don't loop around and around forever if the animation has no waits
-    int startOffset = _offset;
+    uint startOffset = _offset;
 
     while (_count < 0) {
         const Command& cmd = getCurrent();
-        int s = commands.size();
         _offset = (_offset + 1) % commands.size();
 
         switch (cmd.type) {

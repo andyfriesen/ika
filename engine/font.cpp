@@ -149,7 +149,7 @@ namespace Ika {
 
                 case colourMarker: {
                         i++;
-                        int pos = s.find(']', i);
+                        uint pos = s.find(']', i);
                         if (i >= len || s[i] != '[' || pos == std::string::npos) {
                             i--;
                             break;

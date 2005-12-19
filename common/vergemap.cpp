@@ -39,7 +39,7 @@ Map* ImportVerge1Map(const std::string& fileName) {
     Map* map = new Map;
 
     try {
-        u8 magic = fgetc(f);
+        int magic = fgetc(f);
         if (magic != 4) {
             throw std::runtime_error(va(
                 "Magic number was %i, not 4.  This is not a v1 map.",
@@ -52,11 +52,11 @@ Map* ImportVerge1Map(const std::string& fileName) {
         fread(buffer, 1, 13, f);    map->tilesetName = buffer;
         fread(buffer, 1, 13, f);    map->metaData["music"] = buffer;
 
-        int layerCount = fgetc(f);
-        int pmulx = fgetc(f);
-        int pmuly = pmulx;
-        int pdivx = fgetc(f);
-        int pdivy = pdivx;
+        fgetc(f);  // layerCount
+        fgetc(f);  // pmulx
+        //int pmuly = pmulx;
+        fgetc(f);  // pdivx
+        //int pdivy = pdivx;
 
         fread(buffer, 1, 30, f);    map->metaData["name"] = buffer;
 
@@ -170,7 +170,7 @@ Map* ImportVerge1Map(const std::string& fileName) {
             layer0->entities.push_back(ikaEnt);
         }
 
-        u8 numMoveScripts = fgetc(f);
+        int numMoveScripts = fgetc(f);
         int thingie = fgetq(f);
         fseek(f, numMoveScripts, SEEK_CUR); // skip movescripts
         fseek(f, thingie, SEEK_CUR);    // and other shit (who knows what the hell it is)
@@ -437,7 +437,7 @@ Map* ImportVerge3Map(const std::string& fileName) {
             double parallaxY;   fread(&parallaxY, 1, 8, f);
             int width = fgetw(f);
             int height = fgetw(f);
-            int lucent = fgetc(f);
+            fgetc(f);  // lucent
 
             ScopedArray<u16> data(new u16[width * height]);
             DecompressVerge3(data.get(), width * height * 2, f);
