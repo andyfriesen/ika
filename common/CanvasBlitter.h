@@ -291,15 +291,15 @@ namespace Blitter {
         // check for the cases in which the line is vertical or horizontal or only one pixel big
         // we can do those faster through other means
         if(y1 == y2 && x1 == x2) {
-            SetPixel(img, x1, y1, colour);
+            SetPixel(img, x1, y1, (RGBA) colour, blend);
             return;
         }
         if(y1 == y2) {
-            HLine(img, x1, x2, y1, colour);
+            HLine(img, x1, x2, y1, (RGBA) colour, blend);
             return;
         }
         if(x1 == x2) {
-            VLine(img, x1, y1, y2, colour);
+            VLine(img, x1, y1, y2, (RGBA) colour, blend);
             return;
         }
 
@@ -381,15 +381,15 @@ namespace Blitter {
 
         //make these checks again
         if(y1 == y2 && x1 == x2) {
-            SetPixel(img, x1, y1, colour);
+            SetPixel(img, x1, y1, (RGBA) colour, blend);
             return;
         }
         if(y1 == y2) {
-            HLine(img, x1, x2, y1, colour);
+            HLine(img, x1, x2, y1, (RGBA) colour, blend);
             return;
         }
         if(x1 == x2) {
-            VLine(img, x1, y1, y2, colour);
+            VLine(img, x1, y1, y2, (RGBA) colour, blend);
             return;
         }
 

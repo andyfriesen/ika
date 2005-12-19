@@ -4,7 +4,10 @@
 #include "mapview.h"
 #include "tilesetview.h"
 
+#include "common/log.h"
+
 #include "common/map.h"
+#include "common/matrix.h"
 #include "tileset.h"
 
 CompositeCommand::CompositeCommand()
@@ -52,6 +55,55 @@ void CompositeCommand::Undo(Executor* e)
         _commands[i]->Undo(e);
     } while (i-- != 0);
 }
+//-----------------------------------------------------------------------------
+
+
+
+SetBrushCommand::SetBrushCommand(uint tx, uint ty, uint li, const Matrix<uint>& brush)
+    : _tileX(tx)
+    , _tileY(ty)
+    , _layerIndex(li)
+    , _curBrush(brush)
+    , _oldBrush(brush.Width(), brush.Height())
+{}
+
+void SetBrushCommand::Do(Executor* e)
+{
+    Map* map = e->GetMap();
+    Map::Layer* layer = map->GetLayer(_layerIndex);
+
+    for (uint y = 0; y < _curBrush.Height(); y++)
+    {
+        
+        for (uint x = 0; x < _curBrush.Width(); x++)
+        {
+            _oldBrush(x, y) = layer->tiles(_tileX + x, _tileY + y);
+            layer->tiles(_tileX + x, _tileY + y) = _curBrush(x, y);
+        }
+    }
+
+
+    e->tilesSet.fire(MapEvent(map, _layerIndex));
+}
+
+void SetBrushCommand::Undo(Executor* e)
+{
+    Map* map = e->GetMap();
+    Map::Layer* layer = map->GetLayer(_layerIndex);
+    for (uint y = 0; y < _oldBrush.Height(); y ++)
+    {
+        
+        for (uint x = 0; x < _oldBrush.Width(); x ++)
+        {
+            layer->tiles(_tileX + x, _tileY + y) = _oldBrush(x, y);
+        }
+    }
+
+
+    e->tilesSet.fire(MapEvent(map, _layerIndex));
+}
+
+
 
 //-----------------------------------------------------------------------------
 

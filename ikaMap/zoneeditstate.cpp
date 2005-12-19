@@ -87,10 +87,10 @@ void ZoneEditState::OnRender()
                 RGBA(192, 192, 255, 128) :
                 RGBA(  0, 192, 255, 128);
 
-        video->RectFill(x, y, w, h, colour);
+        video->DrawRectFill(x, y, w, h, colour);
 
         colour.a = 255;
-        video->Rect    (x, y, w, h, RGBA(0, 192, 255, 255));
+        video->DrawRect    (x, y, w, h, RGBA(0, 192, 255, 255));
     }
 
     if (_dragging)
@@ -100,8 +100,8 @@ void ZoneEditState::OnRender()
         int w = _selection.Width();
         int h = _selection.Height();
 
-        video->RectFill(x, y, w, h, RGBA(255, 192, 192, 128));
-        video->Rect    (x, y, w, h, RGBA(255, 192, 192, 255));
+        video->DrawRectFill(x, y, w, h, RGBA(255, 192, 192, 128));
+        video->DrawRect    (x, y, w, h, RGBA(255, 192, 192, 255));
     }
 }
 

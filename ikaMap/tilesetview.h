@@ -1,7 +1,8 @@
 
 #ifndef TILESETVIEW_H
 #define TILESETVIEW_H
-
+#include "common/matrix.h"
+#include "common/types.h"
 #include "wxinc.h"
 #include "video.h"
 
@@ -16,6 +17,8 @@ private:
     Executor* _executor;
     int  _ywin;  // scroll position, in pixels.
     bool _pad;
+    Rect _selection;
+    bool _dragging;
 
 public:
     TilesetView(Executor* e, wxWindow* parent);
@@ -24,14 +27,18 @@ public:
     void OnSize(wxSizeEvent& event);
     void OnScroll(wxScrollWinEvent& event);
     void OnPaint(wxPaintEvent&);
-    void OnLeftClick(wxMouseEvent& event);
+    void OnMouseDown(wxMouseEvent& event);
+    void OnMouseUp(wxMouseEvent& event);
+    void OnMouseMove(wxMouseEvent& event);
 
     void Render();
 
     void UpdateScrollBars();
+    void SetSelectionTile(uint index);
 
     void OnTilesetChange(const TilesetEvent& event);
-    void OnCurrentTileChange(uint newTile);
+    void OnCurrentBrushChange(Matrix<uint>& newBrush);
+    void UpdateBrush();
 
     uint PointToTile(int x, int y) const;   // returns the tile under coordinates (x,y)
     void TileToPoint(uint index, int& x, int& y) const;   // returns the position of the tile in (x,y)

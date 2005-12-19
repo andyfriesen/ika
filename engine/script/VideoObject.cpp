@@ -78,30 +78,30 @@ namespace Script {
             },
 
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   METH_VARARGS,
-                "DrawPixel(x, y, colour)\n\n"
+                "DrawPixel(x, y, colour[, blendmode])\n\n"
                 "Draws a dot at (x, y) with the colour specified."
             },
 
             {   "DrawLine",     (PyCFunction)Video_DrawLine,    METH_VARARGS,
-                "DrawLine(x1, y1, x2, y2, colour)\n\n"
+                "DrawLine(x1, y1, x2, y2, colour[, blendmode])\n\n"
                 "Draws a straight line from (x1, y1) to (x2, y2) in the colour specified."
             },
 
             {   "DrawRect",     (PyCFunction)Video_DrawRect,    METH_VARARGS,
-                "DrawRect(x1, y1, x2, y2, colour[, fill])\n\n"
+                "DrawRect(x1, y1, x2, y2, colour[, fill, blendmode])\n\n"
                 "Draws a rectangle with (x1, y1) and (x2, y2) as opposite corners.\n"
                 "If fill is omitted or zero, an outline is drawn, else it is filled in."
             },
 
             {   "DrawEllipse",  (PyCFunction)Video_DrawEllipse, METH_VARARGS,
-                "DrawEllipse(cx, cy, rx, ry, colour[, filled])\n\n"
+                "DrawEllipse(cx, cy, rx, ry, colour[, filled, blendmode])\n\n"
                 "Draws an ellipse, centred at (cx, cy), of radius rx and ry on the X and\n"
                 "Y axis, respectively.  If filled is omitted or nonzero, the ellipse is filled in\n"
                 "else it is drawn as an outline."
             },
             
             {   "DrawTriangle", (PyCFunction)Video_DrawTriangle, METH_VARARGS,
-                "DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))\n\n"
+                "DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour)[, blendmode])\n\n"
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
 
@@ -340,12 +340,13 @@ namespace Script {
         METHOD(Video_DrawPixel) {
             int x, y;
             u32 colour;
+            uint blendMode = 1;
 
-            if (!PyArg_ParseTuple(args, "iii:Video.DrawPixel", &x, &y, &colour)) {
+            if (!PyArg_ParseTuple(args, "iii|i:Video.DrawPixel", &x, &y, &colour, &blendMode)) {
                 return 0;
             }
 
-            self->video->SetBlendMode(::Video::Normal);
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->DrawPixel(x, y, colour);
 
             Py_INCREF(Py_None);
@@ -355,12 +356,13 @@ namespace Script {
         METHOD(Video_DrawLine) {
             int x1, y1, x2, y2;
             u32 colour;
+            uint blendMode = 1;
 
-            if (!PyArg_ParseTuple(args, "iiiii:Video.DrawLine", &x1, &y1, &x2, &y2, &colour)) {
+            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawLine", &x1, &y1, &x2, &y2, &colour, &blendMode)) {
                 return 0;
             }
 
-            self->video->SetBlendMode(::Video::Normal);
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->DrawLine(x1, y1, x2, y2, colour);
 
             Py_INCREF(Py_None);
@@ -371,12 +373,13 @@ namespace Script {
             int x1, y1, x2, y2;
             u32 colour;
             int filled = 0;
+            uint blendMode = 1;
 
-            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawRect", &x1, &y1, &x2, &y2, &colour, &filled)) {
+            if (!PyArg_ParseTuple(args, "iiiii|ii:Video.DrawRect", &x1, &y1, &x2, &y2, &colour, &filled, &blendMode)) {
                 return 0;
             }
 
-            self->video->SetBlendMode(::Video::Normal);
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->DrawRect(x1, y1, x2, y2, colour, filled != 0);
 
             Py_INCREF(Py_None);
@@ -388,12 +391,13 @@ namespace Script {
             int rx, ry;
             u32 colour;
             int filled = 0;
+            uint blendMode = 1;
 
-            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawEllipse", &cx, &cy, &rx, &ry, &colour, &filled)) {
+            if (!PyArg_ParseTuple(args, "iiiii|ii:Video.DrawEllipse", &cx, &cy, &rx, &ry, &colour, &filled, &blendMode)) {
                 return 0;
             }
 
-            self->video->SetBlendMode(::Video::Normal);
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->DrawEllipse(cx, cy, rx, ry, colour, filled != 0);
 
             Py_INCREF(Py_None);
@@ -404,12 +408,13 @@ namespace Script {
             int x[3];
             int y[3];
             u32 col[3];
+            uint blendMode = 1;
 
-            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii):Video.DrawTriangle", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2)) {
+            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii)|i:Video.DrawTriangle", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2, &blendMode)) {
                 return 0;
             }
 
-            self->video->SetBlendMode(::Video::Normal);
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->DrawTriangle(x, y, col);
 
             Py_INCREF(Py_None);

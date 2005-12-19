@@ -4,6 +4,7 @@
 #include "common/utility.h"
 #include "common/map.h"
 #include "common/Canvas.h"
+#include "common/matrix.h"
 
 struct Executor;
 
@@ -45,6 +46,35 @@ struct CompositeCommand : Command
 private:
     std::vector<Command*> _commands;
 };
+
+struct SetBrushCommand : Command
+
+{
+
+private:
+
+    uint _tileX, _tileY;
+
+    uint _layerIndex;
+
+    Matrix<uint> _curBrush;
+
+    Matrix<uint> _oldBrush;
+
+
+
+public:
+
+    SetBrushCommand(uint tx, uint ty, uint li, const Matrix<uint>& brush);
+
+
+
+    virtual void Do(Executor* e);
+
+    virtual void Undo(Executor* e);
+
+};
+
 
 /**
  * Real easy; a command to set a single tile somewhere.

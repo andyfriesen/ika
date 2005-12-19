@@ -391,6 +391,9 @@
 			Name="Script"
 			Filter="">
 			<File
+				RelativePath=".\script\BrushObject.cpp">
+			</File>
+			<File
 				RelativePath="script\EditorObject.cpp">
 			</File>
 			<File

@@ -114,7 +114,7 @@ void EntityState::OnRenderCurrentLayer()
         int y = iter->y - hoty - ywin + layer->y;
 
         // outline them all
-        GetMapView()->GetVideo()->Rect(
+        GetMapView()->GetVideo()->DrawRect(
             x,
             y,
             width, 
@@ -123,7 +123,7 @@ void EntityState::OnRenderCurrentLayer()
 
         // Draw a white fady rect over the currently selected one
         if (&*iter == &layer->entities[_entIndex])
-            GetMapView()->GetVideo()->RectFill(
+            GetMapView()->GetVideo()->DrawRectFill(
                 x,
                 y,
                 width, 

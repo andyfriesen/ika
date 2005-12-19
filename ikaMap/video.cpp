@@ -92,7 +92,7 @@ void VideoFrame::OnMouseEvent(wxMouseEvent& event)
     wxPostEvent(GetParent(), event);
 }*/
 
-void VideoFrame::Rect(int x, int y, int w, int h, RGBA colour)
+void VideoFrame::DrawRect(int x, int y, int w, int h, RGBA colour)
 {
     x = x * nZoomscale / _curZoom;
     y = y * nZoomscale / _curZoom;
@@ -115,7 +115,7 @@ void VideoFrame::Rect(int x, int y, int w, int h, RGBA colour)
     glPopAttrib();
 }
 
-void VideoFrame::RectFill(int x, int y, int w, int h, RGBA colour)
+void VideoFrame::DrawRectFill(int x, int y, int w, int h, RGBA colour)
 {
     x = x * nZoomscale / _curZoom;
     y = y * nZoomscale / _curZoom;
@@ -137,6 +137,28 @@ void VideoFrame::RectFill(int x, int y, int w, int h, RGBA colour)
 
     glPopAttrib();
 }
+
+
+void VideoFrame::DrawSelectRect(int x, int y, int w, int h, RGBA colour)
+
+{
+    if (w < 0) {
+        x += w;
+        w -= w * 2;
+    }
+
+    if (h < 0) {
+        y += h;
+        h -= h * 2;
+    }
+    
+    DrawRect(x, y, w, h, RGBA(0, 0, 0));
+    DrawRect(x + 1, y + 1, w - 2, h - 2, colour);
+    DrawRect(x + 2, y + 2, w - 4, h - 4, RGBA(255, 255, 255));
+    DrawRect(x + 3, y + 3, w - 6, h - 6, RGBA(0, 0, 0));
+
+}
+
 
 void VideoFrame::Blit(Image& src, int x, int y, bool trans)
 {

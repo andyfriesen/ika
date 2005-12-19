@@ -50,6 +50,15 @@ public:                                                                         
 
     bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
     bool                            _isMapLoaded;                                   ///< true if a map is loaded (gah)
+
+    // Path variables for resource loading.
+    std::string                     fontPath;
+    std::string                     imagePath;
+    std::string                     mapPath;
+    std::string                     musicPath;
+    std::string                     soundPath;
+    std::string                     spritePath;
+    std::string                     tilesetPath;
     
 private:
     int                             xwin, ywin;                                     ///< world coordinates of the viewport
@@ -70,6 +79,7 @@ public:
     // interface
     void      Sys_Error(const char* errmsg);                                        ///< bitches, and quits
     void      Script_Error();                                                       ///< also bitchy and quitty
+    void      Script_Error(std::string msg);
     void      CheckMessages();                                                      ///< Play nice with Mr. Gates (or Torvalds, or Jobs, or...)
     
     void      GameTick();                                                           ///< 1/100th of a second's worth of AI

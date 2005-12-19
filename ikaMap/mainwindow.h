@@ -7,7 +7,7 @@
 #include <stdexcept>
 #include <stack>
 #include <map>
-
+#include "common/matrix.h"
 #include "common/utility.h"
 #include "executor.h"
 #include "common/listener.h"
@@ -116,9 +116,8 @@ struct MainWindow : public wxFrame, Executor {
     virtual void ShowLayer(uint index, bool show);
 
     virtual void EditLayerProperties(uint index);
-
-    virtual uint GetCurrentTile();
-    virtual void SetCurrentTile(uint i);
+    virtual Matrix<uint>& GetCurrentBrush();
+    virtual void SetCurrentBrush(Matrix<uint>& brush);
 
     virtual uint GetCurrentLayer();
     virtual void SetCurrentLayer(uint i);
@@ -173,6 +172,7 @@ private:
 
     uint _curTile;
     uint _curLayer;
+    Matrix<uint> _curBrush;
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
     static void ClearList(std::stack< ::Command*>& list);

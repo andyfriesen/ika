@@ -47,7 +47,7 @@ void Log::Writen(const char* s, ...) {
     if (!isLogging) {
         return;
     }
-    
+
     va_list lst;
     va_start(lst, s);
 
@@ -57,7 +57,7 @@ void Log::Writen(const char* s, ...) {
     vsprintf(buffer.get(), s, lst);
     logFile << buffer.get();
 
-#elif defined(GNUC)
+#elif defined(__GNUC__)
     char* buffer = 0;
     int len = asprintf(&buffer, s, lst);
 
@@ -83,7 +83,7 @@ void Log::Write(const char* s, ...) {
     if (!isLogging) {
         return;
     }
-    
+
     va_list lst;
     va_start(lst, s);
 
@@ -93,7 +93,7 @@ void Log::Write(const char* s, ...) {
     vsprintf(buffer.get(), s, lst);
     logFile << buffer.get();
 
-#elif defined(GNUC)
+#elif defined(__GNUC__)
     char* buffer = 0;
     int len = asprintf(&buffer, s, lst);
 
@@ -136,7 +136,7 @@ CCallbackLog::CCallbackLog(const char* s)
 {
     sHistory += "-> ";
     sHistory += s;
-    
+
     std::ofstream f("callback.log", ios::app);
     f << sHistory << std::endl;
 }

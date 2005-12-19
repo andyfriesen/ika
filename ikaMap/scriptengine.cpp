@@ -31,6 +31,7 @@ void ScriptEngine::Init() {
     );
 
     ScriptObject::Map::Init();
+    ScriptObject::Brush::Init();
     ScriptObject::Editor::Init();
     ScriptObject::Error::Init();
 

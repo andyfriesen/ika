@@ -30,8 +30,8 @@ NewMapDlg::NewMapDlg(wxWindow* parent)
     Ctrl<wxPanel>("panel_main")->GetSizer()->Fit(this);
 
     // defaults
-    Ctrl<wxTextCtrl>("edit_width")->SetValue("500");
-    Ctrl<wxTextCtrl>("edit_height")->SetValue("500");
+    Ctrl<wxTextCtrl>("edit_width")->SetValue("20");
+    Ctrl<wxTextCtrl>("edit_height")->SetValue("15");
     Ctrl<wxTextCtrl>("edit_tilewidth")->SetValue("16");
     Ctrl<wxTextCtrl>("edit_tileheight")->SetValue("16");
 }

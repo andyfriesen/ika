@@ -52,6 +52,7 @@ struct MapView : public wxPanel {
     void RenderLayer(Map::Layer* lay, int xoffset, int yoffset);
     void RenderEntities(Map::Layer* lay, int xoffset, int yoffset);
     void RenderObstructions(Map::Layer* lay, int xoffset, int yoffset);
+    void RenderBrush(int tx, int ty);
 
     void UpdateScrollBars();
 
@@ -81,7 +82,9 @@ struct MapView : public wxPanel {
     void TileToMap(int& x, int& y, uint layer) const;
 
     int  GetXWin() const { return _xwin; }
+    void SetXWin(int x) { _xwin = x;    };
     int  GetYWin() const { return _ywin; }
+    void SetYWin(int y) { _ywin = y;    };
 
     uint EntityAt(int x, int y, uint layer);
     uint ZoneAt(int x, int y, uint layer);

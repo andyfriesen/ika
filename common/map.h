@@ -82,6 +82,9 @@ struct Map {
         bool wrapx;
         bool wrapy;
 
+        double scaleX;
+        double scaleY;
+
         std::vector<Entity> entities;
         std::vector<Zone> zones;
 
@@ -97,6 +100,7 @@ struct Map {
             : label(l)
             , x(0)          , y(0)
             , wrapx(false)  , wrapy(false)
+            , scaleX(1.0)   , scaleY(1.0)
             , tiles(width, height)
             , obstructions(width, height)
             , tintColour(255, 255, 255)
@@ -106,6 +110,7 @@ struct Map {
             : label(l.label)
             , x(l.x)        , y(l.y)
             , wrapx(l.wrapx), wrapy(l.wrapy)
+            , scaleX(l.scaleX), scaleY(l.scaleY)
             , tiles(l.tiles)
             , obstructions(l.obstructions)
             , tintColour(255, 255, 255)

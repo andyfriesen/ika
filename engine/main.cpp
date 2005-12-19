@@ -33,10 +33,14 @@ void Engine::Sys_Error(const char* errmsg) {
 }
 
 void Engine::Script_Error() {
+    Script_Error("");
+}
+
+void Engine::Script_Error(std::string msg) {
     CDEBUG("script_error");
     Shutdown();
 
-    std::string err = script.GetErrorMessage();
+    std::string err = script.GetErrorMessage() + msg;
 
 #if (defined WIN32)
     if (!err.empty()) {
@@ -166,6 +170,16 @@ void Engine::Startup() {
     CDEBUG("Startup");
 
     CConfigFile cfg("user.cfg");
+
+    // Resource paths
+    fontPath        = cfg["fontpath"];
+    imagePath       = cfg["imagepath"];
+    mapPath         = cfg["mappath"];
+    musicPath       = cfg["musicpath"];
+    soundPath       = cfg["soundpath"];
+    spritePath      = cfg["spritepath"];
+    tilesetPath     = cfg["tilesetpath"];
+
 
     // init a few values
     _showFramerate  = cfg.Int("showfps") != 0;
@@ -408,45 +422,52 @@ void Engine::RenderLayer(uint layerIndex) {
     int lenX, lenY;          // x/y run length
     int firstX, firstY;      // x/y start
     int adjustX, adjustY;    // sub-tile offset
+    uint tileWidth, tileHeight;
+    uint layerWidth, layerHeight;
     const Map::Layer* layer = map.GetLayer(layerIndex);
+
+    tileWidth = tiles->Width();
+    tileHeight = tiles->Height();
+    layerWidth = layer->Width();
+    layerHeight = layer->Height();
 
     int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
     int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
 
-    firstX = xw / tiles->Width();
-    firstY = yw / tiles->Height();
+    firstX = xw / tileWidth;
+    firstY = yw / tileHeight;
 
-    adjustX = xw % tiles->Width();
-    adjustY = yw % tiles->Height();
+    adjustX = xw % tileWidth;
+    adjustY = yw % tileHeight;
 
     const Point res = video->GetResolution();
-    lenX = res.x / tiles->Width() + 1;
-    lenY = res.y / tiles->Height() + 2;
+    lenX = res.x / tileWidth + 1;
+    lenY = res.y / tileHeight + 2;
 
     if (firstX < 0) {
         lenX -= -firstX;
-        adjustX += firstX * tiles->Width();
+        adjustX += firstX * tileWidth;
         firstX = 0;
     }
 
     if (firstY < 0) {
         lenY -= -firstY;
-        adjustY += firstY * tiles->Height();
+        adjustY += firstY * tileHeight;
         firstY = 0;
     }
 
-    if (!layer->wrapx && (uint)(firstX + lenX) > layer->Width()) {
-        lenX = layer->Width() - firstX;
+    if (!layer->wrapx && (uint)(firstX + lenX) > layerWidth) {
+        lenX = layerWidth - firstX;
     }
 
-    if (!layer->wrapy && (uint)(firstY + lenY) > layer->Height()) {
-        lenY = layer->Height() - firstY;
+    if (!layer->wrapy && (uint)(firstY + lenY) > layerHeight) {
+        lenY = layerHeight - firstY;
     }
 
     if (lenX < 1 || lenY < 1) return;   // not visible
 
     const uint*  t = layer->tiles.GetPointer(firstX, firstY);
-    int xinc = layer->Width() - lenX;
+    int xinc = layerWidth - lenX;
 
     int curx = -adjustX;
     int cury = -adjustY;
@@ -458,15 +479,15 @@ void Engine::RenderLayer(uint layerIndex) {
     for (int y = 0; y < lenY; y++) {
         for (int x = 0; x < lenX; x++) {
             if (layer->wrapx || layer->wrapy) {
-                t = layer->tiles.GetPointer((firstX + x) % layer->Width(), (firstY + y) % layer->Height());
+                t = layer->tiles.GetPointer((firstX + x) % layerWidth, (firstY + y) % layerHeight);
             }
 
-            video->BlitImage(tiles->GetTile(*t), curx, cury);
+            video->ScaleBlitImage(tiles->GetTile(*t), curx, cury, tileWidth, tileHeight);
 
-            curx += tiles->Width();
+            curx += tileWidth;
             t++;
         }
-        cury += tiles->Height();
+        cury += tileHeight;
         curx = -adjustX;
         t += xinc;
     }
@@ -745,13 +766,15 @@ void Engine::DestroyEntity(Entity* e) {
 // Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure. 
 void Engine::LoadMap(const std::string& filename) {
     CDEBUG("loadmap");
+    
+    std::string mapName = mapPath + filename;
 
     try {
-        Log::Write("Loading map \"%s\"", filename.c_str());
+        Log::Write("Loading map \"%s\"", mapName.c_str());
 
-        std::string oldTilesetName = map.tilesetName;
+        std::string oldTilesetName = tilesetPath + map.tilesetName;
 
-        bool result = map.Load(filename);
+        bool result = map.Load(mapName);
 
         if (!result) {
             throw std::runtime_error("LoadMap(\"%s\") failed: invalid map file?");
@@ -764,9 +787,9 @@ void Engine::LoadMap(const std::string& filename) {
         }
 
         // Only load the tileset if it's different
-        if (map.tilesetName != oldTilesetName) {
+        if (tilesetPath + map.tilesetName != oldTilesetName) {
             delete tiles;                                               // nuke the old tileset
-            tiles = new Tileset(map.tilesetName, video);               // load up them tiles
+            tiles = new Tileset(tilesetPath + map.tilesetName, video);               // load up them tiles
         }
 
         script.ClearEntityList();
@@ -781,7 +804,7 @@ void Engine::LoadMap(const std::string& filename) {
             for (uint curEnt = 0; curEnt < ents.size(); curEnt++) {
                 Entity* ent = new Entity(this, ents[curEnt], curLayer);
                 entities.push_back(ent);
-                ent->sprite = sprite.Load(ent->spriteName, video);
+                ent->sprite = sprite.Load(spritePath + ent->spriteName, video);
                 script.AddEntityToList(ent);
 
                 entMap[&ents[curEnt]] = ent;
@@ -791,7 +814,7 @@ void Engine::LoadMap(const std::string& filename) {
         xwin = ywin = 0;                                                // just in case
         _isMapLoaded = true;
 
-        if (!script.LoadMapScripts(filename)) {
+        if (!script.LoadMapScripts(mapName)) {
             Script_Error();
         }
 
@@ -853,6 +876,7 @@ Engine::Engine()
     , xwin(0)
     , ywin(0)
     , cameraTarget(0)
+    , fontPath(""), imagePath(""), mapPath(""), musicPath(""), soundPath(""), spritePath(""), tilesetPath("")
     , _isMapLoaded(false)
     , _recurseStop(false) {}
 

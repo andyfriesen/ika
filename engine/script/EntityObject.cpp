@@ -74,6 +74,12 @@ namespace Script {
                 "Render scripts are ignored by this method, and can easily be used within\n"
                 "them without hassle."
             },
+            {   "Update", (PyCFunction)Entity_Update,                      METH_VARARGS,
+                "Entity.Update()\n\n"
+                
+                "Performs 1/100th of a second of entity AI. Calling this 100 times a second.\n"
+                "will cause the entity to move around as if the engine was in control."
+            },
 
             {   "GetAnimScript",    (PyCFunction)Entity_GetAnimScript,      METH_VARARGS,
                 "Entity.GetAnimScript(name ->str) -> str\n\n"
@@ -202,6 +208,7 @@ namespace Script {
             SET(Visible)            { self->ent->isVisible = PyInt_AsLong(value)!=0 ; return 0; }
             SET(Name)               { self->ent->name = PyString_AsString(value); return 0; }
             SET(MoveScript) {
+                self->ent->delayCount = 0;
                 self->ent->moveScript.set(value);
                 return 0;
             }
@@ -262,7 +269,7 @@ namespace Script {
                                                                                                 "would normally be drawn, and frame is the frame that would\n"
                                                                                                 "be displayed." 
             },
-            //{   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "Gets or sets the object called when the entity touches the player. (not implemented)" },
+            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "Gets or sets the object called when the entity touches the player." },
             //{   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated. (not implemented)"  },
             {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
             {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
@@ -496,6 +503,16 @@ namespace Script {
             Py_INCREF(Py_None);
             return Py_None;
         }
+
+
+        METHOD(Entity_Update) {
+
+            self->ent->Update();
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
 
         METHOD(Entity_GetAnimScript) {
             char* scriptName;

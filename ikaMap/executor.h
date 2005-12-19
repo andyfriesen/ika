@@ -3,6 +3,8 @@
 
 // Keep dependancies to an absolute bare minimum!
 // Otherwise we slaughter compile times any time this file changes.
+#include "common/matrix.h"
+
 #include "common/utility.h"
 #include "common/listener.h"
 #include "events.h"
@@ -44,13 +46,8 @@ struct Executor {
 
     // Displays a dialog so the user can tweak the layer.
     virtual void EditLayerProperties(uint index) = 0;
-
-    /*
-     * It'd probably be best to discard the idea of a current tile altogether
-     * and just use brushes for everything.
-     */
-    virtual uint GetCurrentTile() = 0;
-    virtual void SetCurrentTile(uint i) = 0;
+    virtual Matrix<uint>& GetCurrentBrush() = 0;
+    virtual void SetCurrentBrush(Matrix<uint>& brush) = 0;
 
     virtual uint GetCurrentLayer() = 0;
     virtual void SetCurrentLayer(uint i) = 0;
@@ -100,7 +97,7 @@ struct Executor {
     
     Listener<const MapEvent&>  mapVisibilityChanged;    // A layer has been hidden, or unhidden, or something.
     Listener<uint>             curLayerChanged;         // The current layer has changed.
-    Listener<uint>             curTileChanged;
+    Listener<Matrix<uint>& >   curBrushChanged;         // The current brush has changed.
 };
 
 #endif

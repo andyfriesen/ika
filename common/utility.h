@@ -16,6 +16,10 @@
 
 #include "port.h"
 
+#ifdef __GNUC__
+using namespace std;
+#endif
+
 template <typename T, int N>
 int lengthof(const T (&array)[N]) {
     return N;
@@ -48,10 +52,12 @@ struct static_assert {
     int static_assert_failed[B ? 1 : -1];
 };
 
+#ifndef __GNUC__
 static_assert<sizeof(u8) == 1>;
 static_assert<sizeof(u16) == 2>;
 static_assert<sizeof(u32) == 4>;
 static_assert<sizeof(u64) == 8>;
+#endif
 
 // This really belongs in the language anyway, so fuckit.
 #define foreach BOOST_FOREACH
@@ -70,6 +76,8 @@ struct Type2Type {
     typedef T Type;
 };
 
+#ifndef __GNUC__
+// note: g++ STL already has a swap(), it will use that instead
 template <typename T>
 inline void swap(T& a, T& b) {
     T c;
@@ -77,6 +85,7 @@ inline void swap(T& a, T& b) {
     a = b;
     b = c;
 }
+#endif //__GNUC__
 
 // Clamps val such that
 // lower <= val <= toUpper

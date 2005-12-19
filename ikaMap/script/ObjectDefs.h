@@ -27,7 +27,8 @@ namespace ScriptObject
 
         // Methods
         METHOD(Map_GetTile, MapObject);
-        METHOD(Map_SetTile, MapObject);
+        //METHOD(Map_SetTile, MapObject);
+        METHOD(Map_PlaceBrush, MapObject);
         METHOD(Map_GetObs, MapObject);
         METHOD(Map_SetObs, MapObject);
         METHOD(Map_GetMetaData, MapObject);
@@ -54,11 +55,35 @@ namespace ScriptObject
         extern PyMethodDef methods[];
     }
 
+    namespace Brush
+    {
+        struct BrushObject
+        {
+            PyObject_HEAD
+            MainWindow* mainWnd;
+        };
+
+        // Methods
+        METHOD(Brush_Resize, BrushObject);
+        METHOD1(Brush_Width, BrushObject);
+        METHOD1(Brush_Height, BrushObject);
+        METHOD(Brush_GetIndex, BrushObject);
+        METHOD(Brush_SetIndex, BrushObject);
+
+        void Init();
+        PyObject* New(MainWindow* mainWnd);
+        void Destroy(PyObject* self);
+
+        // Method table
+        extern PyMethodDef methods[];
+    }
+
     namespace Editor
     {
         struct EditorObject
         {
             PyObject_HEAD
+            PyObject* brush;
             MainWindow* mainWnd;
         };
 

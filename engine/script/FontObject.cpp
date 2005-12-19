@@ -36,17 +36,20 @@ namespace Script {
 
 #define GET(x) PyObject* get ## x(FontObject* self)
 #define SET(x) PyObject* set ## x(FontObject* self, PyObject* value)
-        GET(Width)   { return PyInt_FromLong(self->font->Width()); }
-        GET(Height)  { return PyInt_FromLong(self->font->Height()); }
-        GET(TabSize) { return PyInt_FromLong(self->font->TabSize()); }
-        SET(TabSize) { self->font->SetTabSize(PyInt_AsLong(value)); return 0; }
+        GET(Width)         { return PyInt_FromLong(self->font->Width()); }
+        GET(Height)        { return PyInt_FromLong(self->font->Height()); }
+        GET(TabSize)       { return PyInt_FromLong(self->font->TabSize()); }
+        SET(TabSize)       { self->font->SetTabSize(PyInt_AsLong(value)); return 0; }
+        GET(LetterSpacing) { return PyInt_FromLong(self->font->LetterSpacing()); }
+        SET(LetterSpacing) { self->font->SetLetterSpacing(PyInt_AsLong(value)); return 0; }
 #undef GET
 #undef SET
 
         PyGetSetDef properties[] = {
-            {   "width",    (getter)getWidth,       0,                  "Gets the width of the widest glyph in the font."   },
-            {   "height",   (getter)getHeight,      0,                  "Gets the height of the font."  },
-            {   "tabsize",  (getter)getTabSize,     (setter)setTabSize, "Gets or sets the tab size of the font."    },
+            {   "width",         (getter)getWidth,        0,                        "Gets the width of the widest glyph in the font."   },
+            {   "height",        (getter)getHeight,       0,                        "Gets the height of the font."  },
+            {   "tabsize",       (getter)getTabSize,      (setter)setTabSize,       "Gets or sets the tab size of the font."    },
+            {   "letterspacing", (getter)getLetterSpacing,(setter)setLetterSpacing, "Gets or sets the letter spacing of the font."   },
             {   0   }
         };
 

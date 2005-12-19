@@ -27,11 +27,13 @@
 #include "spriteset.h"
 #include "common/Canvas.h"
 
+
 // Other stuff
 #include "command.h"
 #include "events.h"
 #include "common/utility.h"
 #include "common/version.h"
+#include "common/matrix.h"
 
 // Scripting
 #include "scriptengine.h"
@@ -168,9 +170,12 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _curScript(0)
     , _curLayer(0)
     , _curTile(0)
+    , _curBrush(1, 1)
     , _changed(false)
     , _layerVisibility(20)
 {
+
+
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE));
 
     const int partitions[] = { 100, -1, 100 };
@@ -304,7 +309,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         curLayerChanged.add     (_mapView, &MapView::OnCurLayerChange);
         curLayerChanged.add     (_layerList, &LayerList::OnLayerActivated);
 
-        curTileChanged.add      (_tilesetView, &TilesetView::OnCurrentTileChange);
+        //curBrushChanged.add     (_tilesetView, &TilesetView::OnCurrentBrushChange);
     }
 
     // Create the menu.
@@ -429,8 +434,6 @@ void MainWindow::OnNewMap(wxCommandEvent&) {
         Tileset* newTileset;
         try {
             newMap = new Map();
-            newMap->width = dlg.width;
-            newMap->height = dlg.height;
             newMap->tilesetName = dlg.tilesetName;
 
             newTileset = new Tileset();
@@ -438,6 +441,9 @@ void MainWindow::OnNewMap(wxCommandEvent&) {
                 newTileset->Load(dlg.tilesetName);
             else
                 newTileset->New(dlg.tileWidth, dlg.tileHeight);
+            newMap->width = dlg.width * newTileset->Width();
+            newMap->height = dlg.height * newTileset->Height();
+            newMap->AddLayer("New Layer", dlg.width, dlg.height);
 
             _curMapName = "";
             _changed = false;
@@ -936,6 +942,10 @@ void MainWindow::LoadMap(const std::string& fileName) {
 
     ClearList(_undoList);
     ClearList(_redoList);
+    // Reset mapview viewpoint.
+    _mapView->SetXWin(0);
+    _mapView->SetYWin(0);
+    _mapView->UpdateScrollBars();
 
     _layerVisibility.resize(_map->NumLayers());
     std::fill(_layerVisibility.begin(), _layerVisibility.end(), true);
@@ -1018,17 +1028,23 @@ void MainWindow::EditLayerProperties(uint index) {
     }
 }
 
-uint MainWindow::GetCurrentTile() {
-    return _curTile;
+
+Matrix<uint>& MainWindow::GetCurrentBrush() {
+
+    return _curBrush;
+
 }
 
-void MainWindow::SetCurrentTile(uint i) {
-    if (i > _tileset->Count())
-        i = 0;
+void MainWindow::SetCurrentBrush(Matrix<uint>& brush) {
 
-    _curTile = i;
-    curTileChanged.fire(i);
+    _curBrush = brush;
+
+    GetTilesetView()->OnCurrentBrushChange(brush);
+
+//    curBrushChanged.fire(brush);
+
 }
+
 
 uint MainWindow::GetCurrentLayer() {
     return _curLayer;

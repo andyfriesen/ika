@@ -9,20 +9,20 @@ FontFile::~FontFile()
     glyph.clear();
 }
 
-uint FontFile::NumSubSets() const { 
+uint FontFile::NumSubSets() const {
     return set.size();
 }
 
-const FontFile::SSubSet& FontFile::GetSubSet(int subset) const { 
-    return set[subset];          
+const FontFile::SSubSet& FontFile::GetSubSet(int subset) const {
+    return set[subset];
 }
 
-const Canvas& FontFile::GetGlyph(int glyphidx) const { 
-    return glyph[glyphidx]; 
+const Canvas& FontFile::GetGlyph(int glyphidx) const {
+    return glyph[glyphidx];
 }
 
-uint FontFile::NumGlyphs() const { 
-    return glyph.size();                   
+uint FontFile::NumGlyphs() const {
+    return glyph.size();
 }
 
 int FontFile::Width() const {
@@ -41,31 +41,31 @@ bool FontFile::Load8bppFont(File& f)
     f.Read(&height, 2);
     f.Read(&subsetcount, 2);
     const int nGlyphs = subsetcount * 96;
-    
+
     ScopedArray<u8> buffer8(new u8[width * height * nGlyphs]);
     ScopedArray<RGBA> pPixels(new RGBA[width * height * nGlyphs]);
-    
+
     f.Read(buffer8.get(), width * height * nGlyphs * sizeof(u8));
-    
+
     // convert 8bpp to 32bpp
-    
+
     for (int i = 0; i < width * height * nGlyphs; i++)
     {
         char c = buffer8[i];
-        
+
         pPixels[i] = RGBA(c, cVergepal);
     }
-    
+
     glyph.resize(nGlyphs);
     RGBA* p = pPixels.get();
-    
+
     for (int nGlyph = 0; nGlyph < nGlyphs; nGlyph++)
     {
         glyph[nGlyph].CopyPixelData(p, width, height);
         p += width * height;
     }
-    
-    set.resize(subsetcount);                                            // not very readable :(  Allocates the needed number of subsets.        
+
+    set.resize(subsetcount);                                            // not very readable :(  Allocates the needed number of subsets.
     for (int nCurset = 0; nCurset < subsetcount; nCurset++)
     {
         SSubSet& ss = set[nCurset];
@@ -80,7 +80,7 @@ bool FontFile::Load8bppFont(File& f)
     // blegh
     this->width = width;
     this->height = height;
-    
+
     return true;
 }
 
@@ -94,33 +94,33 @@ bool FontFile::Load16bppFont(File& f)
 
     ScopedArray<u16> buffer16(new u16[width * height * nGlyphs]);
     ScopedArray<RGBA> pPixels(new RGBA[width * height * nGlyphs]);
-    
+
     f.Read(buffer16.get(), width * height * nGlyphs * sizeof(u16));
-    
+
     // now we have uncompressed 16 bit font stuff.  Convert it to 32 bits.
-    
+
     for (int i = 0; i < width * height * nGlyphs; i++)
     {
         u16 c = buffer16[i];
-        
+
         pPixels[i] = RGBA(
              (c & 31)  << 3,
             ((c >>  5) << 3) & 0xFF,
             ((c >> 10) << 3) & 0xFF,
             c ? 255 : 0);
     }
-    
+
     glyph.resize(nGlyphs);
-    
+
     RGBA* p = pPixels.get();
-    
+
     for (int nGlyph = 0; nGlyph < nGlyphs; nGlyph++)
     {
         glyph[nGlyph].CopyPixelData(p, width, height);
         p += width * height;
     }
-    
-    set.resize(subsetcount);                                            // not very readable :(  Allocates the needed number of subsets.        
+
+    set.resize(subsetcount);                                            // not very readable :(  Allocates the needed number of subsets.
     for (int nCurset = 0; nCurset < subsetcount; nCurset++)
     {
         SSubSet& ss = set[nCurset];
@@ -134,41 +134,41 @@ bool FontFile::Load16bppFont(File& f)
 
     this->width = width;
     this->height = height;
-    
+
     return true;
 }
 
 bool FontFile::Load32bppFont(File& f) {
     f.Seek(0);
-    
+
     char signature[6];
     f.Read(signature, 6);
     if (memcmp(signature, "FONT27", 6) != 0) {
         return false;
     }
-    
+
     u8   subsetCount;
     u16  glyphCount;
-    
+
     f.Read(subsetCount);
     f.Read(glyphCount);
-    
+
     set.resize(subsetCount);
     for (int nSet = 0; nSet < subsetCount; nSet++) {
         u16 i[256];
         f.Read(i, 256 * sizeof(u16));
-        
+
         for (int j = 0; j < 256; j++) {
             set[nSet].glyphIndex[j] = i[j];
         }
     }
-    
+
     std::vector<int>    glyphWidths;
     std::vector<int>    glyphHeights;
     int dataSize = 0;
 
     width = height = 0;
-    
+
     for (int i = 0; i < glyphCount; i++) {
         u16 w, h;
         f.Read(w);      f.Read(h);
@@ -179,10 +179,10 @@ bool FontFile::Load32bppFont(File& f) {
         if (width < w) width = w;
         if (height < h) height = h;
     }
-    
+
     ScopedArray<RGBA> pBuffer(new RGBA[dataSize]);
     f.ReadCompressed(pBuffer.get(), dataSize * sizeof(RGBA));
-    
+
     glyph.resize(glyphCount);
     RGBA* p = pBuffer.get();
     for (int nGlyph = 0; nGlyph < glyphCount; nGlyph++) {
@@ -190,7 +190,7 @@ bool FontFile::Load32bppFont(File& f) {
 
         p += glyphWidths[nGlyph] * glyphHeights[nGlyph];
     }
-    
+
     f.Close();
     return true;
 }
@@ -198,33 +198,33 @@ bool FontFile::Load32bppFont(File& f) {
 bool FontFile::Load(const char* fname) {
     File f;
     bool result;
-    
+
     result = f.OpenRead(fname);
     if (!result)
         return false;
-    
+
     char magic;
     f.Read(magic);
-    
+
     switch (magic) {
-        case 1: {    
-            result = Load8bppFont(f);              
+        case 1: {
+            result = Load8bppFont(f);
             break;
         }
-        case 2: {    
-            result = Load16bppFont(f);             
+        case 2: {
+            result = Load16bppFont(f);
             break;
         }
-        case 'F': {  
-            result = Load32bppFont(f);             
+        case 'F': {
+            result = Load32bppFont(f);
             break;
         }
-        default: {   
+        default: {
             result = false;
         }
     };
-    
-    return result;     
+
+    return result;
 }
 
 void FontFile::Save(const char* fname) {
@@ -263,7 +263,7 @@ void FontFile::Save(const char* fname) {
         }
     }
 
-    ScopedArray<RGBA> pBuffer = new RGBA[pixels.size()];
+    ScopedArray<RGBA> pBuffer( new RGBA[pixels.size()] );
 
     std::copy(pixels.begin(), pixels.end(),
         std::raw_storage_iterator<RGBA*, int>(pBuffer.get()));

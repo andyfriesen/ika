@@ -183,7 +183,7 @@ void CopyPasteState::OnRenderCurrentLayer()
 
         mv->RenderLayer(_tiles, -x, -y);
 
-        mv->GetVideo()->Rect(
+        mv->GetVideo()->DrawRect(
             x, y, 
             _tiles.Width() * ts->Width(),  _tiles.Height() * ts->Height(),
             RGBA(255, 255, 255));
@@ -196,8 +196,8 @@ void CopyPasteState::OnRenderCurrentLayer()
         int w = _selection.Width() * ts->Width();
         int h = _selection.Height() * ts->Height();
 
-        mv->GetVideo()->RectFill(x, y, w, h, RGBA(255, 255, 255, 128));
-        mv->GetVideo()->Rect    (x, y, w, h, RGBA(0, 255, 255));
+        mv->GetVideo()->DrawRectFill(x, y, w, h, RGBA(255, 255, 255, 128));
+        mv->GetVideo()->DrawRect    (x, y, w, h, RGBA(0, 255, 255));
     }
 }
 

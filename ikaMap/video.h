@@ -33,8 +33,9 @@ public:
     VideoFrame(wxWindow* parent);
     virtual ~VideoFrame();
 
-    void Rect(int x, int y, int w, int h, RGBA colour);
-    void RectFill(int x, int y, int w, int h, RGBA colour);
+    void DrawRect(int x, int y, int w, int h, RGBA colour);
+    void DrawRectFill(int x, int y, int w, int h, RGBA colour);
+    void DrawSelectRect(int x, int y, int w, int h, RGBA colour);
 
     void Blit(Image& src, int x, int y, bool trans = true);
     void ScaleBlit(Image& src, int x, int y, int w, int h, bool trans = true);

@@ -252,7 +252,7 @@ namespace Script {
                 return 0;
             }
 
-            if (!File::Exists(filename)) {
+            if (!File::Exists(engine->mapPath + filename)) {
                 PyErr_SetString(PyExc_IOError, va("Unable to load %s", filename));
                 return 0;
             }

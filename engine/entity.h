@@ -85,4 +85,12 @@ private:
     Entity& operator=(Entity&);
 };
 
+/*
+struct Player {
+    Entity*     player;                                             ///< Currently attached entity.
+    
+    void        UpdatePlayer();                                     ///< Updates the currently attached player entity.
+
+}
+*/
 #endif

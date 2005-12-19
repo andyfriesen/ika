@@ -26,11 +26,19 @@ namespace ScriptObject
                 "GetTile(x, y, layer) -> int\n\n"
                 "Returns the index of the tile at (x, y) on the layer specified."
             },
+            {   "PlaceBrush",   (PyCFunction)Map_PlaceBrush,    METH_VARARGS,
+                
+                "PlaceBrush(x, y, layer, tiles)\n\n"
+                "Sets a two-deep tuple of tile indexes starting at (x, y)\n"
+                "on the layer specified."
+            },
 
+            /*
             {   "SetTile",      (PyCFunction)Map_SetTile,       METH_VARARGS,
                 "SetTile(x, y, layer, tile)\n\n"
                 "Sets the tile at (x, y) of the layer specified."
             },
+            */
 
             {   "GetObs",       (PyCFunction)Map_GetObs,        METH_VARARGS,
                 "GetObs(x, y, layerIndex) -> int\n\n"
@@ -100,6 +108,7 @@ namespace ScriptObject
         GET(TileCount)  { return PyInt_FromLong(self->mainWnd->GetTileset()->Count()); }
         GET(TileWidth)  { return PyInt_FromLong(self->mainWnd->GetTileset()->Width()); }
         GET(TileHeight) { return PyInt_FromLong(self->mainWnd->GetTileset()->Height()); }
+        GET(Tileset)    { return PyString_FromString(self->mainWnd->GetTileset()->GetVSP().Name().c_str()); }
 
 #undef GET
 #undef SET
@@ -111,6 +120,7 @@ namespace ScriptObject
             {   "tilecount",    (getter)getTileCount,       0,                  "Gets the number of tiles in the current tileset"   },
             {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset"             },
             {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset"            },
+            {   "tileset",      (getter)getTileset,         0,                  "Gets the name of the tileset."                     },
             {   0   }
         };
 
@@ -168,6 +178,7 @@ namespace ScriptObject
             return PyInt_FromLong(self->GetMap()->GetLayer(lay)->tiles(x, y));
         }
 
+        /*
         METHOD(Map_SetTile)
         {
             int x, y;
@@ -184,8 +195,25 @@ namespace ScriptObject
                 //return 0;
             }
 
-            self->mainWnd->HandleCommand(new SetTileCommand(x, y, lay, tile));
+            self->mainWnd->HandleCommand(new SetBrushCommand(x, y, lay, Matrix<uint>(1, 1, *[tile])));
 
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        */
+        METHOD(Map_PlaceBrush)
+        {
+            /*
+            int x, y;
+            uint lay;
+            PyObject* brush_tuple;
+            if (!PyArg_ParseTuple(args, "iiiO:Map.PlaceBrush", &x, &y, &lay, &brush_tuple))
+                return 0;
+            if (PyTuple_Check(*brush_tuple))
+            {
+                
+            }
+            */
             Py_INCREF(Py_None);
             return Py_None;
         }

@@ -25,6 +25,7 @@ namespace Ika {
         , _width(0)
         , _height(0)
         , _tabSize(30)
+        , _letterSpacing(0)
     {
         CDEBUG("cfont::loadfnt");
 
@@ -83,7 +84,7 @@ namespace Ika {
 
         if (img) {
             _video->TintBlitImage(img, x, y, colour.i);
-            x += img->Width();
+            x += img->Width() + _letterSpacing;
         }
     }
 
@@ -104,7 +105,7 @@ namespace Ika {
             case Video::Subtract:   Blitter::Blit(glyph, dest, x, y, Blitter::SubtractBlend()); break;
         }
 
-        x += glyph.Width();
+        x += glyph.Width() + _letterSpacing;
     }
 
     template <typename Printer>
@@ -148,7 +149,7 @@ namespace Ika {
 
                 case colourMarker: {
                         i++;
-                        uint pos = s.find(']', i);
+                        int pos = s.find(']', i);
                         if (i >= len || s[i] != '[' || pos == std::string::npos) {
                             i--;
                             break;
@@ -233,7 +234,7 @@ namespace Ika {
 
             inline void operator ()(int& x, int y, int subset, char c, RGBA colour, Font* font) {
                 const Canvas& glyph = font->GetGlyphCanvas(c, subset);
-                x += glyph.Width();
+                x += glyph.Width() + font->LetterSpacing();
                 width = max(width, x);
             }
         };

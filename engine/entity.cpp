@@ -199,9 +199,8 @@ void Entity::Move(Direction d) {
         if (ent && ent->obstructsEntities) {
 
             // Adjacent activation
-            if (this == engine.player && ent->adjActivateScript) {
-                
-                engine.script.ExecObject(ent->adjActivateScript);
+            if (this->adjActivateScript) {
+                engine.script.ExecObject(this->adjActivateScript, ent);
             }
 
             Stop();
@@ -257,7 +256,7 @@ void Entity::Wait(uint time) {
 }
 
 void Entity::Update() {
-    Direction newDir = face_nothing;;
+    Direction newDir = face_nothing;
 
     UpdateAnimation();
     if (this == engine.player) {

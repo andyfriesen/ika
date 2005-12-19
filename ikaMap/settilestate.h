@@ -16,17 +16,22 @@ public:
     virtual void OnMouseUp(wxMouseEvent& event);
     virtual void OnMouseMove(wxMouseEvent& event);
     virtual void OnMouseWheel(wxMouseEvent& event);
+    virtual void OnRender();
+
     virtual void OnRenderCurrentLayer();
 
-    // lowest common denominator, since more than one of the above methods will be setting tiles.
-    // x and y are still in client coordinates.  _curTile is the tile that is set.
-    void SetTile(int x, int y);
 
-    uint GetCurTile() const;
-    void SetCurTile(uint t);
+    void SetTile(int x, int y);
+    Matrix<uint>& GetCurBrush() const;
+    void SetCurBrush(Matrix<uint>& b);
 
 private:
     int _oldX, _oldY;
+    int _curX, _curY;
+    int _offsetX, _offsetY;
+    int _dragX, _dragY;
+    bool _dragging;
+    Rect _selection;
 
     CompositeCommand* _curGroup;
 };

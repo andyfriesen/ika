@@ -150,6 +150,7 @@ namespace OpenGL {
                 iter != _textures.end(); 
                 iter++)
             {
+                Texture* t = *iter;
                 const Point& p = (*iter)->unused;
                 if (p.x <= 256 - 16 && p.y <= 256 - 16) {
                     tex = *iter;

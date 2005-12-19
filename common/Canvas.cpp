@@ -30,10 +30,12 @@ namespace Blitter {
 
 using Blitter::DoClipping;
 
-Canvas::Canvas() {
-	_width = _height = 16; // arbitrary
-	_pixels = new RGBA[_width * _height];
-    _cliprect = Rect(0, 0, _width, _height);
+Canvas::Canvas() 
+    : _width(16)
+    , _height(16)
+    , _pixels(new RGBA[16 * 16])
+    , _cliprect(0, 0, _width, _height)
+{
 }
 
 Canvas::Canvas(int width, int height)
