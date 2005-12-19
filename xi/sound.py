@@ -1,21 +1,30 @@
-# Sound core.
-# Coded by Andy Friesen
+#!/usr/bin/env python
+
+"""Sound core."""
+
+# Coded by Andy Friesen.
 # Copyright whenever.  All rights reserved.
-#
-# This source code may be used for any purpose, provided that
-# the original author is never misrepresented in any way.
-#
+
+# This source code may be used for any purpose, provided that the
+# original author is never misrepresented in any way.
+
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
 class NullSound(object):
-    'Sound stub.  Behaves like an ika sound object, but does nothing.'
+    """"Sound stub.
+    
+    Behaves like an ika sound object, but does nothing.
+    """
+
+    def __init__(self):
+        self.pan = 1
+        self.pitchshift = 1.0
+        self.volume = 1.0
+
     def Play(*args):
-        'Does nothing.'
-        pass
-    def Pause(*args):
-        'Does nothing.'
-        pass
+        """Does nothing."""
+
 
 null = NullSound()
 
@@ -28,8 +37,7 @@ cursorcancel = null
 buzz = null
 buysell = null
 
-# nuking everything in the namespace except the sounds themselves.
-# that way, in the unusual occurance that you need a dict of all the UI sounds
-# you can just use __dict__.
-del null
-del NullSound
+# Nuking everything in the namespace except the sounds themselves.
+# that way, in the unusual occurance that you need a dict of all the UI
+# sounds you can just use __dict__.
+del null, NullSound
