@@ -14,7 +14,6 @@ import ika
 from xi import gui
 from xi import misc
 from xi import controls
-from xi.textwrapping import *
 from xi.transition import Transition
 
 # TODO: have a maximum line count per textbox, and split the text
@@ -24,9 +23,8 @@ from xi.transition import Transition
 def createTextBox(text, **kw):
     wnd = kw.get('wnd', gui.default_window)
     font = kw.get('font', gui.default_font)
-    wrap = kw.get('wrap', wordWrap)
     textbox = gui.FrameDecorator(gui.StaticText(wnd=wnd, font=font))
-    textbox.addText(*wrap(text, ika.Video.xres - textbox.border * 2, textbox.font))
+    textbox.addText(*misc.wrapText(text, ika.Video.xres - textbox.border * 2, textbox.font))
     textbox.autoSize() # set the height
     textbox.width = ika.Video.xres - textbox.border * 2 # set the width
 

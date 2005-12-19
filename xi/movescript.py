@@ -44,10 +44,6 @@ class Script(object):
         self.offset = 0
         self.killed = False
 
-    def Reset(self):
-        self.killed = False
-        self.offset = 0
-
     def Kill(self, ent):
         self.killed = True
         ent.Stop()
@@ -159,10 +155,10 @@ class Script(object):
         self.script.append(doLoop)
         return self
 
-class Follow(object):
-    def __init__(self, ent, target):
-        self.ent = ent
-        self.target = target
+def Follow(ent, chaseTarget):
+    r16 = range(16)
 
-    def __call__(self, ent):
-        ent.MoveTo(self.target.x, self.target.y)
+    while True:
+        ent.MoveTo(chaseTarget.x, chaseTarget.y)
+        for count in r16:
+            yield None
