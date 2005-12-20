@@ -1,5 +1,8 @@
-# Coded by Ear
-# Public domain, I think.
+#!/usr/bin/env python
+
+# author: Ian Douglas Bollinger
+# This file has been placed in the public domain.
+
 
 class Decorator(object):
     def __init__(self, subject):
@@ -17,7 +20,8 @@ class Decorator(object):
 
     def __setattr__(self, name, value):
         try:
-            object.__getattribute__(self, name)  #obnoxious hack
+            # Obnoxious hack.
+            object.__getattribute__(self, name)
         except AttributeError:
             setattr(self.__dict__['__subject__'], name, value)
         else:
