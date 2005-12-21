@@ -13,7 +13,7 @@ from xi.itemdatabase import ItemDatabase
 from xi.statset import StatSet
 
 
-# Constants.  (Armour is not acceptible.)
+# (Armour is not acceptible.)
 equiptypes = ['weapon', 'armour', 'accessory']
 
 
@@ -23,7 +23,7 @@ class Item(object):
 
     def __init__(self):
         super(Item, self).__init__()
-        self.equiptype = ''
+        self.category = ''
         self.name = ''
         self.desc = ''
         # StatSet holding the stat bonuses bestowed by this item, if it
@@ -43,16 +43,18 @@ class InventoryEntry(object):
         self.item = item
         self.qty = qty
 
-    Name = property(lambda self: self.item.name)
-    Description = property(lambda self: self.item.desc)
+    name = property(lambda self: self.item.name)
+    description = property(lambda self: self.item.desc)
 
 
 class Inventory(object):
 
-    # Convenience only.
-    db = ItemDatabase()
+    _db = None
 
     def __init__(self):
+        if Inventory._db is None:
+            # Convenience only.
+            Inventory._db = itemdatabase.ItemDatabase()
         # List of InventoryEntry objects.
         self.items = []
 
@@ -68,10 +70,7 @@ class Inventory(object):
     def __len__(self):
         return len(self.items)
 
-    def __nonzero__(self):
-        return True
-
-    def Find(self, itemname):
+    def find(self, itemname):
         """Returns the InventoryEntry containing the specified item, or
         None.
         """
@@ -81,16 +80,16 @@ class Inventory(object):
         # Item not found in inventory.
         return None
 
-    def Give(self, itemname, qty=1):
+    def give(self, itemname, qty=1):
         """Adds the specified number of an item to the inventory."""
         item = self.Find(itemname)
         if i is not None:
             item.qty += qty
         else:
-            item = InventoryEntry(self.db[itemname], qty)
+            item = InventoryEntry(self._db[itemname], qty)
             self.items.append(item)
 
-    def Take(self, itemname, qty=1):
+    def take(self, itemname, qty=1):
         """Removes the specified number of an item from the
         inventory.
         """
