@@ -11,39 +11,34 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
+import xi
 from xi.skilldatabase import SkillDatabase
 
 
-class SkillCategory(object):
-    pass
-
-class AttackCategory(SkillCategory):
-    pass
-AttackCategory = AttackCategory()
-
-class DefenseCategory(SkillCategory):
-    pass
-DefenseCategory = DefenseCategory()
-
-class EnergyCategory(SkillCategory):
-    pass
-EnergyCategory = EnergyCategory()
-
-class ResistCategory(SkillCategory):
-    pass
-ResistCategory = ResistCategory()
-
-class RecoveryCategory(SkillCategory):
-    pass
-RecoveryCategory = RecoveryCategory()
-
-class AutomaticCategory(SkillCategory):
-    pass
-AutomaticCategory = AutomaticCategory()
-
+class SkillCategory(object): pass
+class AttackCategory(SkillCategory, xi.Singleton): pass
+class DefenseCategory(SkillCategory, xi.Singleton): pass
+class EnergyCategory(SkillCategory, xi.Singleton): pass
+class ResistCategory(SkillCategory, xi.Singleton): pass
+class RecoveryCategory(SkillCategory, xi.Singleton): pass
+class AutomaticCategory(SkillCategory, xi.Singleton): pass
 
 categories = [AttackCategory, DefenseCategory, EnergyCategory, ResistCategory,
               RecoveryCategory, AutomaticCategory]
+
+
+class TargetType(object): pass
+class TargetNone(TargetType, xi.Singleton): pass
+class TargetSelf(TargetType, xi.Singleton): pass
+class TargetAlly(TargetType, xi.Singleton): pass
+class TargetAllAllies(TargetType, xi.Singleton): pass
+class TargetEnemy(TargetType, xi.Singleton): pass
+class TargetAll(TargetType, xi.Singleton): pass
+class TargetCustom(TargetType, xi.Singleton): pass
+
+
+targetTypes = [TargetNone, TargetSelf, TargetAlly, TargetAllAllies,
+               TargetEnemy, TargetAllEnemies, TargetAll, TargetCustom]
 
 
 class Skill(object):
@@ -69,12 +64,14 @@ class Skill(object):
         self.mp = 0
         # List of names of people who can use this skill.
         self.used_by = []
+        # Description of what this skill can target.
+        self.target = TargetNone
 
 
 class SkillList(object):
 
     # Convenience only.
-    db = SkillDatabase()
+    _db = SkillDatabase()
 
     def __init__(self):
         # List of skill objects.
@@ -89,21 +86,21 @@ class SkillList(object):
     def __len__(self):
         return len(self.skills)
     
-    def Find(self, skillname):
+    def find(self, skillname):
         """Returns the skill with skillname or None."""
         for skill in self.skills:
             if skill.name == skillname:
                 return skill
         return None
 
-    def Learn(self, skillname):
+    def add(self, skillname):
         """Adds the skill with skillname to the skill list."""
         i = self.Find(skillname)
         if i is None:
-            i = self.db[skillname]
+            i = self._db[skillname]
             self.skills.append(i)
 
-    def Forget(self, skillname):
+    def remove(self, skillname):
         """Removes the skill with skillname from the skill list."""
         i = self.Find(skillname)
         if i is not None:
