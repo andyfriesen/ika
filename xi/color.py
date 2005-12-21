@@ -3,8 +3,18 @@
 import ika
 
 
-def font(color):
-    return '#[%X]' % color
+def font(*args):
+    if len(args) == 1:
+        red, green, blue, alpha = ika.GetRGB(args[0])
+    elif len(args) == 3:
+        red, green, blue = args
+        alpha = 0xFF
+    elif len(args) == 4:
+        red, green, blue, alpha = args
+    else:
+        raise TypeError('font() takes at most 4 arguments (%s given)' %
+                        len(args))
+    return '#[%X%X%X%X]' % (red, green, blue, alpha)
 
 
 o = 0x00
