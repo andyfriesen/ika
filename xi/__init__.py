@@ -1,13 +1,86 @@
 #!/usr/bin/env python
 
-__all__ = ['char', 'color', 'controls', 'cursor', 'datfile', 'decorator',
-           'effects', 'equipmenu', 'exception', 'field', 'fps', 'gui', 'item',
-           'itemdatabase', 'itemmenu', 'layout', 'mainmenu', 'menu',
-           'menuwindows', 'movescript', 'music', 'parser', 'party',
-           'proxy', 'skill', 'skilldatabase', 'skillmenu', 'sound',
-           'statelessproxy', 'statset', 'statusmenu', 'test', 'textbox',
+__all__ = ['character', 'color', 'controls', 'cursor', 'decorator', 'effects',
+           'equipmenu', 'field', 'fps', 'gui', 'item', 'itemdatabase',
+           'itemmenu', 'layout', 'mainmenu', 'menu', 'menuwindows',
+           'movescript', 'music', 'parser', 'party', 'skill', 'skilldatabase',
+           'skillmenu', 'sound', 'statset', 'statusmenu', 'test', 'textbox',
            'token', 'transition', 'utilmenu', 'widget', 'widgetmanager',
            'window']
+
+
+class XiException(Exception):
+    """Standard exception class."""
+
+
+class XiError(XiException, RuntimeError):
+    pass
+
+
+class XiWarning(XiException, Warning):
+    pass
+
+
+class Proxy(object):
+
+    def __init__(self, subject):
+        self.__dict__['__subject__'] = subject
+
+    def getSubject(self):
+        return self.__dict__['__subject__']
+
+    def __getattr__(self, name):
+        try:
+            return object.__getattribute__(self, name)
+        except AttributeError:
+            return getattr(self.__dict__['__subject__'], name)
+
+
+class Singleton(type):
+
+    def __new__(cls, name, bases, d):
+        def __init__(self, *args, **kw):
+            raise TypeError, ("Cannot create '%s' instances." %
+                              self.__class__.__name__)
+        instance = type(name, bases, d)()
+        instance.__class__.__init__ = __init__
+        return instance
+
+
+class StatelessProxy(object):
+    """This effectively accomplishes the same thing as a singleton,
+    except that it disregards object 'identity' all together.
+    """
+
+    def __init__(self):
+        if '__shared__' not in self.__class__.__dict__:
+            self.__class__.__shared__ = {}
+        self.__dict__ = self.__class__.__shared__
+
+
+class Decorator(object):
+
+    def __init__(self, subject):
+        super(Decorator, self).__init__()
+        self.__dict__['__subject__'] = subject
+
+    def getSubject(self):
+        return self.__dict__['__subject__']
+
+    def __getattr__(self, name):
+        try:
+            return object.__getattribute__(self, name)
+        except AttributeError:
+            return getattr(self.__dict__['__subject__'], name)
+
+    def __setattr__(self, name, value):
+        try:
+            # Obnoxious hack.
+            object.__getattribute__(self, name)
+        except AttributeError:
+            setattr(self.__dict__['__subject__'], name, value)
+        else:
+            object.__setattr__(self, name, value)
 
 
 def readonly(fget, doc=""):
