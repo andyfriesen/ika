@@ -1,19 +1,20 @@
 #!/usr/bin/env python
 
-# item module for the xi library
-# coded by Andy Friesen
-# copyright whenever.  All rights reserved.
-#
-# This source code may be used for any purpose, provided that
-# the original author is never misrepresented in any way.
-#
+"""Item module for the xi library."""
+
+# Coded by Andy Friesen.
+# Copyright whenever.  All rights reserved.
+
+# This source code may be used for any purpose, provided that the
+# original author is never misrepresented in any way.
+
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-import item
-from token import TokenStream
-from statelessproxy import StatelessProxy
-from exception import XiException
+import xi.item
+from xi.token import TokenStream
+from xi.statelessproxy import StatelessProxy
+from xi.exception import XiException
 
 
 class ItemDatabase(StatelessProxy):
@@ -22,7 +23,8 @@ class ItemDatabase(StatelessProxy):
         super(ItemDatabase, self).__init__()
         if len(self.__dict__) != 0:
             return
-        self._items = {}  # name:item object
+        # name:item object
+        self._items = {}
 
     def __getitem__(self, name):
         return self._items[name]
@@ -30,9 +32,10 @@ class ItemDatabase(StatelessProxy):
     def __iter__(self):
         return self._items.iteritems()
 
+    # We already have an init function--this should be something else.
     def Init(self, filename, fieldeffects=None, battleeffects=None):
         def ParseItem(f):
-            i = item.Item()
+            i = xi.item.Item()
             stats = i.stats
             i.name = f.GetLine()
             while not f.EOF():
@@ -44,7 +47,7 @@ class ItemDatabase(StatelessProxy):
                         s = f.GetLine()
                 elif t == 'equiptype':
                     e = f.Next()
-                    if e not in item.equiptypes:
+                    if e not in xi.item.equiptypes:
                         raise XiException("Unknown equip type '%s'." % e)
                     i.equiptype = e
                 elif t == 'equipby':
