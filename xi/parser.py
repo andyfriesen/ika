@@ -3,12 +3,15 @@
 # author: Ian D. Bollinger
 # This file has been placed in the public domain.
 
-
 class Node(list):
 
     def __init__(self, name=''):
         super(Node, self).__init__()
         self.name = name
+
+    def dict_extend(self, d):
+        for key, value in d.iteritems():
+            self.append(Node(key).append(value))
 
     def __getitem__(self, key):
         if isinstance(key, basestring):
@@ -47,7 +50,7 @@ class Node(list):
                 result = {}
                 for child in self:
                     if isinstance(child, Node):
-                        result[child.name] = child.todict(flat)
+                        result[child.name] = child.to_dict(flat)
                     else:
                         key = 'cdata'
                         i = 0
@@ -59,7 +62,7 @@ class Node(list):
             L = []
             for node in self:
                 if isinstance(node, Node):
-                    L.append(node.todict(flat))
+                    L.append(node.to_dict(flat))
                 else:
                     L.append(node)
             return {self.name: L}
