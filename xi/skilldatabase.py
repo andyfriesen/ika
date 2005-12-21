@@ -11,14 +11,13 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
+import xi
 import xi.skill
 
 from xi.token import TokenStream
-from xi.statelessproxy import StatelessProxy
-from xi.exception import XiException
 
 
-class SkillDatabase(StatelessProxy):
+class SkillDatabase(xi.StatelessProxy):
 
     def __init__(self):
         super(SkillDatabase, self).__init__()
@@ -47,7 +46,7 @@ class SkillDatabase(StatelessProxy):
                 elif t == 'type':
                     e = f.Next()
                     if e not in xi.skill.types:
-                        raise XiException('Unknown skill type %s.' % e)
+                        raise xi.XiException('Unknown skill type %s.' % e)
                     i.type = e
                 elif t == 'leadsto':
                     s = f.GetLine()
@@ -70,17 +69,17 @@ class SkillDatabase(StatelessProxy):
                         effectName = f.Next()
                         i.fieldeffect  = fieldeffects.__dict__[effectName]
                     except KeyError:
-                        raise XiException('Unable to find field effect %s for skill %s.' % (effectName, i.name))
+                        raise xi.XiException('Unable to find field effect %s for skill %s.' % (effectName, i.name))
                 elif t == 'battleeffect':
                     try:
                         effectName = f.Next()
                         i.battleeffect = battleeffects.__dict__[effectName]
                     except KeyError:
-                        raise XiException('Unable to find battle effect %s for skill %s.' % (effectName, i.name))
+                        raise xi.XiException('Unable to find battle effect %s for skill %s.' % (effectName, i.name))
                 elif t == 'end':
                     break
                 else:
-                    raise XiException('Unknown skills.dat directive %s.' % t)
+                    raise xi.XiException('Unknown skills.dat directive %s.' % t)
             return i
         file = TokenStream(filename)
         while not file.EOF():
@@ -89,4 +88,4 @@ class SkillDatabase(StatelessProxy):
                 i = ParseSkill(file)
                 self.__skills[i.name] = i
             else:
-                raise XiException('Unknown skills.dat token %s.' % t)
+                raise xi.XiException('Unknown skills.dat token %s.' % t)

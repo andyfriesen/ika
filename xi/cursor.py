@@ -1,114 +1,118 @@
-# Basic cursor classes
+#!/usr/bin/env python
+
+"""Basic cursor classes."""
+
 # Coded by Andy Friesen
 # Copyright whenever.  All rights reserved.
-#
-# This source code may be used for any purpose, provided that
-# the original author is never misrepresented in any way.
-#
+
+# This source code may be used for any purpose, provided that the
+# original author is never misrepresented in any way.
+
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
 import ika
 
-# base class (abstract)
+import xi
+
+
 class Cursor(object):
-    '''
-    Base cursor class.  Sort-of abstract,
-    it can be used on its own as a null-cursor.
-    '''
+    """Base cursor class.
+    
+    Sort of abstract, it can be used on its own as a null-cursor.
+    """
     def __init__(self, width, height, hotSpot):
+        super(Cursor, self).__init__()
         self._width = width
         self._height = height
-        self._hotSpot = hotSpot
 
-    def getWidth(self):
+    @xi.readonly
+    def width(self):
         return self._width
-    width = property(getWidth)
 
-    def getHeight(self):
+    @xi.readonly
+    def height(self):
         return self._height
-    height = property(getHeight)
 
-    def getSize(self):
+    @xi.readonly
+    def size(self):
         return self._width, self._height
-    size = property(getSize)
 
-    def getHotSpot(self):
-        return self._hotSpot
     def setHotSpot(self, (x, y)):
         self._hotSpot = int(x), int(y)
-    hotSpot = property(getHotSpot, setHotSpot)
+
+    hotSpot = property(lambda self: self._hotSpot, setHotSpot)
 
     def draw(self, x, y):
         pass
 
-# just an alias
+
+# Just an alias.
 NullCursor = Cursor
 
-# Basic cursor class that uses a font string as a cursor
+
 class TextCursor(Cursor):
-    def __init__(self, font, t = '>'):
-        width = font.StringWidth(t)
+    """Basic cursor class that uses a font string as a cursor."""
+
+    def __init__(self, font, text='>'):
+        width = font.StringWidth(text)
         height = font.height
         hotSpot = width, height / 2
-
-        Cursor.__init__(self, width, height, hotSpot)
-
-        c = ika.Canvas(self.width, self.height)
-        c.DrawText(font, 0, 0, t)
-        self._img = ika.Image(c)
+        super(TextCursor, self).__init__(width, height, hotSpot)
+        canvas = ika.Canvas(self.width, self.height)
+        canvas.DrawText(font, 0, 0, text)
+        self._image = ika.Image(canvas)
 
     def draw(self, x, y):
-        ika.Video.Blit(self._img, x - self.hotSpot[0], y - self.hotSpot[1])
+        ika.Video.Blit(self._image, x - self.hotSpot[0], y - self.hotSpot[1])
+
 
 class ImageCursor(Cursor):
-    def __init__(self, img, hotSpot = None):
-        if isinstance(img, (str, ika.Canvas)):
-            img = ika.Image(img)
-        elif not isinstance(img, ika.Image):
-            assert False, 'image argument must be an image, a canvas, or a string.'
 
+    def __init__(self, img, hotSpot=None):
+        if isinstance(img, (basestring, ika.Canvas)):
+            img = ika.Image(img)
+        else:
+            assert isinstance(img, ika.Image), \
+                'img must be an ika.Image, an ika.Canvas, or a string.'
         if hotSpot is None:
             hotSpot = img.width, img.height / 2
-
-        Cursor.__init__(self, img.width, img.height, hotSpot)
-
-        self._img = img
+        super(ImageCursor, self).__init__(img.width, img.height, hotSpot)
+        self._image = img
 
     def draw(self, x, y):
-        ika.Video.Blit(self._img, x - self.hotSpot[0], y - self.hotSpot[1])
+        ika.Video.Blit(self._image, x - self.hotSpot[0], y - self.hotSpot[1])
+
 
 class AnimatedCursor(Cursor):
-    def __init__(self, frames, delay = 10, hotspot = None):
-        assert len(frames) > 0, 'Need at least one animation frame. ;P'
 
+    def __init__(self, frames, delay=10, hotspot=None):
+        assert frames, 'At least one animation frame is required.'
         width = frames[0].width
         height = frames[0].height
         hotSpot = hotspot or (width, height / 2)
-        Cursor.__init__(self, width, height, hotSpot)
-
+        super(AnimatedCursor, self).__init__(width, height, hotSpot)
         self._delay = delay
         self._frames = frames
 
     def draw(self, x, y):
         frame = ika.GetTime() / self._delay
-
         ika.Video.Blit(self._frames[frame % len(self._frames)],
             x - self._hotSpot[0], y - self._hotSpot[1])
 
-    # static method to create a cursor by cutting frames out of one
-    # big image (vertical strip)
-    def createFromImageStrip(canvas, numFrames, width, height, delay = 10, hotspot = None):
+    def createFromImageStrip(canvas, numFrames, width, height, delay=10,
+                             hotspot=None):
+        """Static method to create a cursor by cutting frames out of one
+        big image (vertical strip).
+        """
         assert canvas.height % numFrames == 0, \
             "Image's height is not an even multiple of the number of frames."
-
         frames = [None] * numFrames
         # cut up the canvas, and create our images
         for i in range(numFrames):
             c = ika.Canvas(width, height)
             canvas.Blit(c, 0, -(i * height), ika.Opaque)
             frames[i] = ika.Image(c)
-
         return AnimatedCursor(frames, delay, hotspot)
 
     createFromImageStrip = staticmethod(createFromImageStrip)
