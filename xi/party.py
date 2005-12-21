@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # xi system party management stuff
 # coded by Andy Friesen
 # copyright whenever.  All rights reserved.
