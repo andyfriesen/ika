@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Commonly used windows for the xi menu system.
 # coded by Andy Friesen
 # copyright whenever.  All rights reserved.
@@ -38,14 +40,12 @@ class StatusBar(widget.TextFrame):
 class PortraitWindow(widget.Frame):
     "Displays the character's portrait, HP, MP, and experience totals."
 
-    __slots__ = widget.Frame.__slots__ + [
-        'text',         # The text label used by the window
-        'portrait'      # The bitmap used by the window
-        ]
+
 
     def __init__(self):
-        widget.Frame.__init__(self)
+        widget.Frame.__init__(self)        # The text label used by the window
         self.text = widget.TextLabel()
+        # The bitmap used by the window
         self.portrait = widget.Bitmap()
         self.widgets.append(self.portrait)
         self.widgets.append(self.text)
@@ -73,12 +73,10 @@ class PortraitWindow(widget.Frame):
 class StatusWindow(widget.Frame):
     "Displays a character's stats in a frame."
 
-    __slots__ = widget.Frame.__slots__ + [
-        'text'      # The text control used to display all the statistics
-        ]
 
     def __init__(self):
         widget.Frame.__init__(self)
+        # The text control used to display all the statistics
         self.text = widget.ColumnedTextLabel(columns = 3)
         self.AddChild(self.text)
 
@@ -111,12 +109,9 @@ class StatusWindow(widget.Frame):
 class EquipWindow(menu.Menu):
     "Displays a character's current equipment."
 
-    __slots__ = menu.Menu.__slots__ + [
-        'text'      # The text control used to display the equipment.
-        ]
-
     def __init__(self):
         self.text = widget.ColumnedTextLabel(columns = 2)
+        # The text control used to display the equipment.
         menu.Menu.__init__(self, textcontrol = self.text)
         self.active = False
 
@@ -140,9 +135,6 @@ class EquipWindow(menu.Menu):
 class SkillWindow(menu.Menu):
     "Displays a character's skills."
 
-    __slots__ = menu.Menu.__slots__ + [
-        'text'
-        ]
 
     def __init__(self):
         self.text = widget.ColumnedTextLabel(columns = 3)
@@ -173,9 +165,6 @@ class SkillWindow(menu.Menu):
 class InventoryWindow(menu.Menu):
     "Displays the group's inventory."
 
-    __slots__ = menu.Menu.__slots__ + [
-        'text'
-        ]
 
     def __init__(self):
         #self.text = widget.ColumnedTextLabel(columns = 3)

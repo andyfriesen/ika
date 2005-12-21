@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # equip menu for xi
 # coded by Andy Friesen
 # copyright whenever.  All rights reserved.
@@ -208,7 +210,7 @@ class EquipMenu(object):
 
     def Draw(self):
         ika.Input.Update()
-        ika.Map.Render()
+        ika.Render()
         trans.Draw()
         #for x in (self.equipwindow, self.portraitwindow, self.statwindow, self.itemlist, self.statbar, self.description):
         #    x.Draw()
