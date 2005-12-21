@@ -32,8 +32,11 @@ class SkillDatabase(xi.StatelessProxy):
     def __iter__(self):
         return self.__skills.iteritems()
 
-    def Init(self, filename, fieldeffects=None, battleeffects=None):
-        def ParseSkill(f):
+    def __len__(self):
+        return len(self.__skills)
+
+    def init(self, filename, fieldeffects=None, battleeffects=None):
+        def parseSkill(f):
             i = xi.skill.Skill()
             i.name = f.GetLine()
             while not f.EOF():
@@ -58,6 +61,11 @@ class SkillDatabase(xi.StatelessProxy):
                     while s != 'end':
                        i.useby.append(s)
                        s = f.Next().lower()
+                elif t == 'target':
+                    s = f.Next().lower()
+                    while s != 'end':
+                        i.target.append(s)
+                        s = f.Next().lower()
                 elif t == 'basic':
                     i.basic = True
                 elif t == 'minlevel':
@@ -85,7 +93,7 @@ class SkillDatabase(xi.StatelessProxy):
         while not file.EOF():
             t = file.Next().lower()
             if t == 'name':
-                i = ParseSkill(file)
+                i = parseSkill(file)
                 self.__skills[i.name] = i
             else:
                 raise xi.XiException('Unknown skills.dat token %s.' % t)

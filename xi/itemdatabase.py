@@ -11,13 +11,12 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
+import xi
 import xi.item
 from xi.token import TokenStream
-from xi.statelessproxy import StatelessProxy
-from xi.exception import XiException
 
 
-class ItemDatabase(StatelessProxy):
+class ItemDatabase(xi.StatelessProxy):
 
     def __init__(self):
         super(ItemDatabase, self).__init__()
@@ -32,9 +31,12 @@ class ItemDatabase(StatelessProxy):
     def __iter__(self):
         return self._items.iteritems()
 
+    def __len__(self):
+        return len(self._items)
+
     # We already have an init function--this should be something else.
-    def Init(self, filename, fieldeffects=None, battleeffects=None):
-        def ParseItem(f):
+    def init(self, filename, fieldeffects=None, battleeffects=None):
+        def parseItem(f):
             i = xi.item.Item()
             stats = i.stats
             i.name = f.GetLine()
@@ -48,7 +50,7 @@ class ItemDatabase(StatelessProxy):
                 elif t == 'equiptype':
                     e = f.Next()
                     if e not in xi.item.equiptypes:
-                        raise XiException("Unknown equip type '%s'." % e)
+                        raise xi.XiException("Unknown equip type '%s'." % e)
                     i.equiptype = e
                 elif t == 'equipby':
                     s = f.Next().lower()
@@ -69,13 +71,13 @@ class ItemDatabase(StatelessProxy):
                         effectName = f.Next()
                         i.fieldeffect  = fieldeffects.__dict__[effectName]
                     except KeyError:
-                        raise XiException('Unable to find field effect %s for item %s.' % (effectName, i.name))
+                        raise xi.XiException('Unable to find field effect %s for item %s.' % (effectName, i.name))
                 elif t == 'battleeffect':
                     try:
                         effectName = f.Next()
                         i.battleeeffect  = battleeffects.__dict__[effectName]
                     except KeyError:
-                        raise XiException('Unable to find battle effect %s for item %s.' % (effectName, i.name))
+                        raise xi.XiException('Unable to find battle effect %s for item %s.' % (effectName, i.name))
                 elif t == 'hp':
                     # HP and MP stay 0 because equipping doesn't change
                     # them.  It changes the maximums.
@@ -105,13 +107,13 @@ class ItemDatabase(StatelessProxy):
                 elif t == 'end':
                     break
                 else:
-                    raise XiException("Unknown items.dat directive '%s'." % t)
+                    raise xi.XiException("Unknown items.dat directive '%s'." % t)
             return i
         file = TokenStream(filename)
         while not file.EOF():
             t = file.Next().lower()
             if t == 'name':
-                i = ParseItem(file)
+                i = parseItem(file)
                 self._items[i.name] = i
             else:
-                raise XiException("Unknown items.dat token '%s'" % t)
+                raise xi.XiException("Unknown items.dat token '%s'" % t)
