@@ -33,6 +33,7 @@ class TargetSelf(TargetType, xi.Singleton): pass
 class TargetAlly(TargetType, xi.Singleton): pass
 class TargetAllAllies(TargetType, xi.Singleton): pass
 class TargetEnemy(TargetType, xi.Singleton): pass
+class TargetAllEnemies(TargetType, xi.Singleton): pass
 class TargetAll(TargetType, xi.Singleton): pass
 class TargetCustom(TargetType, xi.Singleton): pass
 

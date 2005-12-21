@@ -10,8 +10,8 @@
 
 import ika
 
+import xi
 from xi import token
-from xi.exception import XiException
 from xi.misc import *
 
 from skill import Skill, SkillList
@@ -161,7 +161,7 @@ class Character(object):
         "C.unequip(slotIndex) -- Unequip the item in the specified slot"
         slot = slot.lower()
         if not slot in item.types:
-            raise XiException('char.unequip: Invalid equip type specified.')
+            raise xi.XiException('char.unequip: Invalid equip type specified.')
 
         self.equipment[slot] = None
         self.calcEquip()
@@ -217,7 +217,7 @@ class Character(object):
         try:
             tokens = token.TokenStream(datFile)
         except IOError:
-            raise Exception('Could not open %s' % datFile)
+            raise xi.Exception('Could not open %s' % datFile)
 
         while not tokens.EOF():
             t = tokens.Next().lower()
