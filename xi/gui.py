@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 # Basic GUI elements
 # Coded by Andy Friesen
 # Copyright whenever.  All rights reserved.
@@ -22,15 +24,14 @@ essential to preserve polymorphic behaviour.
 
 import ika
 
-import window
-import cursor
+import xi
+import xi.window
+import xi.cursor
 
-import decorator
-Decorator = decorator.Decorator
 
 default_font = None
 default_cursor = None
-default_window = window.GradientWindow(
+default_window = xi.window.GradientWindow(
         ika.RGB(0, 0, 192),
         ika.RGB(0, 0, 128),
         ika.RGB(0, 0,  32),
@@ -46,17 +47,13 @@ def init(font, window = None, cursor = None):
     If window is omitted, a blue gradient window with a black border is used.
     The > character of the default font is used if the cursor is omitted.
     '''
-    # symbol conflict, heh.  But I want that keyword arg to be called cursor,
-    # so we do a tiny hack:
-    import cursor as xiCursor
-
     global default_font
     global default_window
     global default_cursor
 
     default_font = font
     default_window = window or default_window
-    default_cursor = cursor or xiCursor.TextCursor(default_font, '>')
+    default_cursor = cursor or xi.cursor.TextCursor(default_font, '>')
 
 class Widget(object):
     '''
@@ -270,13 +267,13 @@ class Frame(Widget):
         self.wnd.draw(self.x + xofs, self.y + yofs, self.width, self.height)
         self.client.draw(self.x + xofs + self.client.border, self.y + yofs + self.client.border)
 
-class FrameDecorator(Widget, Decorator):
+class FrameDecorator(Widget, xi.Decorator):
     """
     Decorates a widget with a frame.  This is generally better than using a
     Frame if you only want to enclose a single Widget object with the frame.
     """
     def __init__(self, subject, wnd = None):
-        Decorator.__init__(self, subject)
+        xi.Decorator.__init__(self, subject)
         Widget.__init__(self)
         self._wnd = wnd or default_window
         self.border = self._wnd.border * 2
