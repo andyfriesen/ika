@@ -26,13 +26,13 @@ itemdb = ItemDatabase()
 skilldb = SkillDatabase()
 
 class _EquipSlot(object):
-    __slots__ = ['type', 'item']
-    def __init__(self, type, item = None):
-        self.type = type        # the type of slot
+    __slots__ = ['category', 'item']
+    def __init__(self, category, item = None):
+        self.category = category        # the type of slot
         self.item = item        # the item in the slot, or None
 
     def __str__(self):
-        return self.type + '\t' + self.item.name
+        return self.category + '\t' + self.item.name
 
     def __repr__(self):
         return self.__str__()
@@ -140,7 +140,7 @@ class Character(object):
 
         if slot is None:
             for i, e in enumerate(self.equipment):
-                if e.type == item.type:
+                if e.category == item.category:
                     self.equip(itemname, i)
                     return
             return
@@ -160,7 +160,7 @@ class Character(object):
     def unequip(self, slot):
         "C.unequip(slotIndex) -- Unequip the item in the specified slot"
         slot = slot.lower()
-        if not slot in item.types:
+        if not slot in item.categories:
             raise xi.XiException('char.unequip: Invalid equip type specified.')
 
         self.equipment[slot] = None

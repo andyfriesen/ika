@@ -36,28 +36,20 @@ class StatSet(object):
 
     def clone(self):
         result = StatSet()
-        for variable in self.__slots__:
-            result.__dict__[variable] += self.__dict__[variable]
-        return result        
-
-    def __iadd__(self, other):
-        for variable in self.__slots__:
-            self.__dict__[variable] += other.__dict__[variable]
-        return self
-
-    def __add__(self, other):
-        result = self.Clone()
-        result += other
+        for attr in self.__slots__:
+            setattr(result, attr, getattr(self, attr))
         return result
 
-    def __isub__(self, other):
-        for variable in self.__slots__:
-            self.__dict__[variable] -= other.__dict__[variable]
-        return self
+    def __add__(self, other):
+        result = self.clone()
+        for attr in self.__slots__:
+            setattr(result, attr, getattr(self, attr) + getattr(other, attr))
+        return result
 
     def __sub__(self, other):
-        result = self.Clone()
-        result -= other
+        result = self.clone()
+        for attr in self.__slots__:
+            setattr(result, attr, getattr(self, attr) - getattr(other, attr))
         return result
         
     def __repr__(self):

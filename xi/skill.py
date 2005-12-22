@@ -109,13 +109,13 @@ class SkillList(object):
 
     def add(self, skillname):
         """Adds the skill with skillname to the skill list."""
-        i = self.Find(skillname)
+        i = self.find(skillname)
         if i is None:
             i = self._db[skillname]
             self.skills.append(i)
 
     def remove(self, skillname):
         """Removes the skill with skillname from the skill list."""
-        i = self.Find(skillname)
+        i = self.find(skillname)
         if i is not None:
             self.skills.remove(i)
