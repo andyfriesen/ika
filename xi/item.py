@@ -14,7 +14,7 @@ from xi.statset import StatSet
 
 
 # (Armour is not acceptible.)
-equiptypes = ['weapon', 'armour', 'accessory']
+categories = ['weapon', 'armour', 'accessory']
 
 
 class Item(object):

@@ -47,11 +47,11 @@ class ItemDatabase(xi.StatelessProxy):
                     while s != 'end':
                         i.desc += s
                         s = f.GetLine()
-                elif t == 'equiptype':
+                elif t == 'category':
                     e = f.Next()
-                    if e not in xi.item.equiptypes:
+                    if e not in xi.item.categories:
                         raise xi.XiException("Unknown equip type '%s'." % e)
-                    i.equiptype = e
+                    i.category = e
                 elif t == 'equipby':
                     s = f.Next().lower()
                     while s != 'end':

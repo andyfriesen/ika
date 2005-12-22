@@ -46,20 +46,20 @@ class SkillDatabase(xi.StatelessProxy):
                     while s != 'end':
                         i.desc += s
                         s = f.GetLine()
-                elif t == 'type':
+                elif t == 'category':
                     e = f.Next()
-                    if e not in xi.skill.types:
-                        raise xi.XiException('Unknown skill type %s.' % e)
-                    i.type = e
-                elif t == 'leadsto':
+                    if e not in xi.skill.categories:
+                        raise xi.XiException('Unknown skill category %s.' % e)
+                    i.category = e
+                elif t == 'leads_to':
                     s = f.GetLine()
                     while s != 'end':
-                       i.leadsto.append(s)
+                       i.leads_to.append(s)
                        s = f.GetLine()
-                elif t == 'useby':
+                elif t == 'used_by':
                     s = f.Next().lower()
                     while s != 'end':
-                       i.useby.append(s)
+                       i.used_by.append(s)
                        s = f.Next().lower()
                 elif t == 'target':
                     s = f.Next().lower()
@@ -68,20 +68,20 @@ class SkillDatabase(xi.StatelessProxy):
                         s = f.Next().lower()
                 elif t == 'basic':
                     i.basic = True
-                elif t == 'minlevel':
-                    i.minlevel = int(f.Next())
+                elif t == 'minimumlevel':
+                    i.minimumlevel = int(f.Next())
                 elif t == 'mp':
                     i.mp = int(f.Next())
-                elif t == 'fieldeffect':
+                elif t == 'field_effect':
                     try:
                         effectName = f.Next()
-                        i.fieldeffect  = fieldeffects.__dict__[effectName]
+                        i.field_effect  = fieldeffects.__dict__[effectName]
                     except KeyError:
                         raise xi.XiException('Unable to find field effect %s for skill %s.' % (effectName, i.name))
-                elif t == 'battleeffect':
+                elif t == 'battle_effect':
                     try:
                         effectName = f.Next()
-                        i.battleeffect = battleeffects.__dict__[effectName]
+                        i.battle_effect = battleeffects.__dict__[effectName]
                     except KeyError:
                         raise xi.XiException('Unable to find battle effect %s for skill %s.' % (effectName, i.name))
                 elif t == 'end':
