@@ -9,7 +9,7 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from xi.itemdatabase import ItemDatabase
+import xi.itemdatabase
 from xi.statset import StatSet
 
 
@@ -18,7 +18,8 @@ equiptypes = ['weapon', 'armour', 'accessory']
 
 
 class Item(object):
-    __slots__ = ['equiptype', 'name', 'desc', 'stats', 'consumable',
+    # Is this optimization necessary?
+    __slots__ = ['category', 'name', 'desc', 'stats', 'consumable',
                  'fieldeffect', 'battleeffect', 'cost', 'equipby', 'useby']
 
     def __init__(self):
@@ -54,7 +55,7 @@ class Inventory(object):
     def __init__(self):
         if Inventory._db is None:
             # Convenience only.
-            Inventory._db = itemdatabase.ItemDatabase()
+            Inventory._db = xi.itemdatabase.ItemDatabase()
         # List of InventoryEntry objects.
         self.items = []
 
