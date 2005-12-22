@@ -1,118 +1,151 @@
-#!/usr/bin/env python
-
-"""Skill menu for xi."""
-
+# Skill menu for xi
 # Coded by Andy Friesen
 # Copyright whenever.  All rights reserved.
-
-# This source code may be used for any purpose, provided that the
-# original author is never misrepresented in any way.
-
+#
+# This source code may be used for any purpose, provided that
+# the original author is never misrepresented in any way.
+#
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
 import ika
 
-import xi.controls
-import xi.menu
-import xi.menuwindows
-import xi.party
-import xi.widget
+import stats
+import statusmenu
+from xi.menuwindows import SkillWindow, PortraitWindow, StatusWindow
 
+from xi import gui
+from xi import controls
+from xi.fps import FPSManager
+from xi.menu import Menu, Cancel
+from xi.cursor import NullCursor
+from xi.misc import *
+
+_nullCursor = NullCursor(1, 1, (1, 1))
 
 class SkillMenu(object):
-    def __init__(self, statbar):
-        self.skillwindow = xi.menuwindows.SkillWindow()
-        self.portraitwindow = xi.menuwindows.PortraitWindow()
-        self.statwindow = xi.menuwindows.StatusWindow()
-        self.statbar = statbar
+    def __init__(self):
+        self.skillWindow = SkillWindow()
+        self.menu = gui.FrameDecorator(Menu(textctrl=self.skillWindow))
+        self.portraitWindow = PortraitWindow()
+        self.statWindow = gui.FrameDecorator(StatusWindow())
         self.charidx = 0
-        self.skillwindow.active = True
-        self.description = xi.widget.TextFrame()
-        self.description.AddText('')
 
-    CurChar = property(lambda self: xi.party.party[self.charidx])
+        self.description = gui.FrameDecorator(gui.StaticText(text=['','']))
 
-    def StartShow(self):
-        self.Refresh(self.CurChar)
-        
-        trans.AddWindowReverse(self.portraitwindow, (-self.portraitwindow.width, self.portraitwindow.y))
-        trans.AddWindowReverse(self.statwindow, (ika.Video.xres, self.statwindow.y))
-        trans.AddWindowReverse(self.description, (self.description.x, -self.description.height))
-        trans.AddWindowReverse(self.skillwindow, (self.skillwindow.x, ika.Video.yres))
-        
-    def StartHide(self):
-        trans.AddWindow(self.portraitwindow, (ika.Video.xres, self.portraitwindow.y), remove=True)
-        trans.AddWindow(self.statwindow, (-self.statwindow.width, self.statwindow.y), remove=True)
-        trans.AddWindow(self.description, (self.description.x, -self.description.height), remove=True)
-        trans.AddWindow(self.skillwindow, (self.skillwindow.x, ika.Video.yres), remove=True)
+    curChar = property(lambda self: stats.activeRoster[self.charidx])
 
-    def Refresh(self, char):
-        for x in (self.portraitwindow, self.statwindow):
-            x.Refresh(char)
-        self.skillwindow.Refresh(char,
-                                 lambda skill: (skill.fieldeffect is not None)
-                                               and (skill.mp <= char.MP))
-        if len(char.skills) > 0:
-            self.skillwindow.active = True
+    def setDescription(self, desc):
+        # wordwrap, take the first two lines (that's all we have room for) and join with a newline
+        t = '\n'.join(wrapText(desc, self.description.client.width, self.description.font)[:2])
+        self.description.text[0] = t
+
+    def startShow(self, trans):
+        self.refresh(self.curChar)
+
+        trans.addChild(self.portraitWindow, startRect=(-self.portraitWindow.width, self.portraitWindow.y))
+        trans.addChild(self.statWindow, startRect=(ika.Video.xres, self.statWindow.y))
+        trans.addChild(self.description, startRect=(self.description.x, -self.description.height))
+        trans.addChild(self.menu, startRect=(self.menu.x, ika.Video.yres))
+
+    def startHide(self, trans):
+        trans.addChild(self.portraitWindow, endRect=(ika.Video.xres, self.portraitWindow.y))
+        trans.addChild(self.statWindow, endRect=(-self.statWindow.width, self.statWindow.y))
+        trans.addChild(self.description, endRect=(self.description.x, -self.description.height))
+        trans.addChild(self.menu, endRect=(self.menu.x, ika.Video.yres))
+
+    def refresh(self, char):
+        self.portraitWindow.refresh(char)
+        self.statWindow.refresh(char)
+        self.skillWindow.refresh(char,
+            lambda skill: (skill.fieldEffect is not None) and (skill.mp <= char.mp)
+            )
+
+        if len(char.skills):
+            self.menu.cursor = gui.default_cursor
         else:
-            self.skillwindow.AddText('No skills')
-            self.skillwindow.active = False
-            self.skillwindow.CursorPos = 0
+            self.menu.cursor = _nullCursor
+
+        self.menu.cursorPos = min(self.menu.cursorPos, len(char.skills))
+
         # Layout
-        self.portraitwindow.DockTop().DockLeft()
-        self.statwindow.DockTop(self.portraitwindow).DockLeft()
-        self.statwindow.width = self.portraitwindow.width
-        self.description.DockTop().DockLeft(self.portraitwindow)
-        self.description.Right = self.statbar.x - self.statbar.border * 2
-        self.skillwindow.DockTop(self.description).DockLeft(self.portraitwindow)
-        self.skillwindow.Right = self.statbar.x - self.statbar.border * 2
-        self.skillwindow.Layout()
-        self.statbar.Refresh()
-        trans.Reset()
-        
-    def UpdateSkillWindow(self):
-        if left() and self.charidx > 0:
+        self.portraitWindow.dockTop().dockLeft()
+        self.statWindow.dockTop(self.portraitWindow).dockLeft()
+        self.statWindow.width = max(self.statWindow.width, self.portraitWindow.width)
+        self.portraitWindow.width = self.statWindow.width
+        self.description.autoSize()
+        self.description.dockTop().dockLeft(self.portraitWindow)
+        self.description.width = ika.Video.xres - self.description.x - self.description.border
+        self.menu.dockTop(self.description).dockLeft(self.portraitWindow)
+        self.menu.width = self.description.width
+
+        try:
+            s = char.skills[self.menu.cursorPos]
+            self.setDescription(s.desc)
+        except IndexError:
+            self.setDescription('')
+
+    def update(self):
+        if controls.left() and self.charidx > 0:
             self.charidx -= 1
-            self.Refresh(xi.party.party[self.charidx])
-        if right() and self.charidx < len(xi.party.party) - 1:
+            self.refresh(stats.activeRoster[self.charidx])
+
+        if controls.right() and self.charidx < len(stats.activeRoster) - 1:
             self.charidx += 1
-            self.Refresh(xi.party.party[self.charidx])
-        char = self.CurChar
-        if self.skillwindow.CursorPos < len(char.skills):
-            s = char.skills[self.skillwindow.CursorPos]
-            self.description.Text[0] = s.desc
+            self.refresh(stats.activeRoster[self.charidx])
+
+        char = self.curChar
+
+        if self.menu.cursorPos < len(char.skills):
+            s = char.skills[self.menu.cursorPos]
+            self.setDescription(s.desc)
         else:
-            self.description.Text[0] = ''
-        result = self.skillwindow.Update()
+            self.setDescription('')
+
+        result = self.menu.update()
         return result
 
-    def Execute(self):
+    def castSpell(self, char, skill):
+        try:
+            # see if the effect wants us for context
+            result = skill.fieldEffect(self.curChar, self)
+        except TypeError:
+            # if not, that's fine too
+            result = skill.fieldEffect(self.curChar)
+
+        # result will be None unless it was cancelled.
+        if result is None:
+            self.curChar.mp -= skill.mp
+            self.refresh(self.curChar)
+
+    def draw(self):
+        ika.Map.Render()
+        self.portraitWindow.draw()
+        self.statWindow.draw()
+        self.description.draw()
+        self.menu.draw()
+
+    def execute(self):
+        fps = FPSManager()
+        result = None
+
         self.charidx = 0
-        self.Refresh(xi.party.party[self.charidx])
-        curstate = self.UpdateSkillWindow
-        while True:
-            ika.Input.Update()
-            ika.Map.Render()
-            for x in (self.skillwindow, self.portraitwindow, self.statwindow, self.statbar, self.description):
-                x.Draw()
-            ika.Video.ShowPage()
-            result = curstate()
-            if xi.controls.cancel():
-                break
-            if result is None:
-                continue
-            elif result == xi.menu.Cancel:
-                break
-            else:
-                skill = self.CurChar.skills[result]
-                if skill.fieldeffect is not None and self.CurChar.MP >= skill.mp:
-                    result = skill.fieldeffect(self.CurChar)
-                    # if the effect wasn't cancelled somehow...
-                    if result is None:
-                        self.CurChar.MP -= skill.mp
-                        self.Refresh(self.CurChar)
+
+        self.refresh(self.curChar)
+
+        while result is not Cancel:
+            result = self.update()
+
+            if result not in (None, Cancel) and 0 <= result < len(self.curChar.skills):
+                skill = self.curChar.skills[result]
+
+                if skill.fieldEffect is not None and self.curChar.mp >= skill.mp:
+                    self.castSpell(self.curChar, self.curChar.skills[result])
+                    fps.sync()
                 else:
-                    # battle-only?  Not useable at all? @_x
+                    # Play a buzzing sound or somesuch.
                     pass
+
+            fps.render(self.draw)
+
         return True

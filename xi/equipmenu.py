@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # equip menu for xi
 # coded by Andy Friesen
 # copyright whenever.  All rights reserved.
@@ -12,221 +10,265 @@
 
 import ika
 
-import party
-import menu
-import itemmenu
-import statusmenu
-import widget
-import item
-from fps import FPSManager
-from statset import StatSet
+import stats
 
-from menu import Menu
-from transition import *
+from xi import gui
+from xi import controls
+from xi.fps import FPSManager
+from xi import wrapText
+from xi.menu import Menu, Cancel
+from xi.cursor import NullCursor
+from xi.statset import StatSet
 
-from menuwindows import *
-from misc import *
+from xi.menuwindows import EquipWindow, PortraitWindow, InventoryWindow, StatusWindow
 
-class StatPreviewWindow(StatusWindow):
+_nullCursor = NullCursor(8, 8, (8, 4))
+
+class StatPreviewWindow(gui.ColumnedTextLabel):
     def __init__(self):
-        widget.Frame.__init__(self)
-        self.text = widget.ColumnedTextLabel(columns = 3)
-        self.AddChild(self.text)
+        super(type(self), self).__init__(columns=3, pad=8)
 
-    def RefreshItemColumn(self, oldStats, newStats):
-        def PlusMinus(old, new):
-            if old > new:   s = '~4'  # Worse
-            elif old < new: s = '~6'  # better
-            else:           s = '~0'  # equal
+    def refresh(self, char):
+        self.clear()
+        def add(n, a):
+            a = isinstance(a, int) and '%3i' % a or a
+            self.addText(n, a, '     ')
 
-            return s + str(new) + '~0'
+        stats = char.stats
+        nstats = char.naturalstats
 
-        self.text.columns[1].SetText(
-            PlusMinus(oldStats.atk, newStats.atk),
-            PlusMinus(oldStats.grd, newStats.grd),
-            PlusMinus(oldStats.hit, newStats.hit),
-            PlusMinus(oldStats.eva, newStats.eva),
+        add('Attack', stats.atk)
+        add('Guard', stats.grd)
+        add('Hit %', stats.hit)
+        add('Evade %', stats.eva)
+        add('', '')
+
+        add('Strength', stats.str)
+        add('Vitality', stats.vit)
+        add('Magic', stats.mag)
+        add('Will', stats.wil)
+        add('Speed', stats.spd)
+        add('Luck', stats.luk)
+        self.autoSize()
+
+
+    def refreshItemColumn(self, oldStats, newStats):
+        def plusMinus(old, new):
+            if old > new:   s = 4  # Worse
+            elif old < new: s = 6  # better
+            else:           return '' # equal.  Show nothing.
+
+            return '->~%i%3i' % (s, new)
+
+        # more cheating. :P
+        self._columns[2].clear()
+        self._columns[2].addText(
+            plusMinus(oldStats.atk, newStats.atk),
+            plusMinus(oldStats.grd, newStats.grd),
+            plusMinus(oldStats.hit, newStats.hit),
+            plusMinus(oldStats.eva, newStats.eva),
             '',
-            PlusMinus(oldStats.str, newStats.str),
-            PlusMinus(oldStats.vit, newStats.vit),
-            PlusMinus(oldStats.mag, newStats.mag),
-            PlusMinus(oldStats.wil, newStats.wil),
-            PlusMinus(oldStats.spd, newStats.spd),
-            PlusMinus(oldStats.luk, newStats.luk),
+            plusMinus(oldStats.str, newStats.str),
+            plusMinus(oldStats.vit, newStats.vit),
+            plusMinus(oldStats.mag, newStats.mag),
+            plusMinus(oldStats.wil, newStats.wil),
+            plusMinus(oldStats.spd, newStats.spd),
+            plusMinus(oldStats.luk, newStats.luk),
             )
 
 class EquipMenu(object):
-    def __init__(self, statbar):
-        self.equipwindow = EquipWindow()
-        self.portraitwindow = PortraitWindow()
-        self.statwindow = StatPreviewWindow() #StatusWindow()
-        self.itemlist = InventoryWindow()
-        self.statbar = statbar
-        self.charidx = 0
-        self.slotidx = 0
-        self.itemlist.active = False
-        self.equipwindow.active = True
-        self.state = self.UpdateEquipWindow
-        self.description = widget.TextFrame()
-        self.description.AddText('')
+    def __init__(self):
+        self.equipWindow = EquipWindow()
+        self.portraitWindow = PortraitWindow()
+        self.statWindow = gui.FrameDecorator(StatPreviewWindow())
+        self.itemList = InventoryWindow(stats.inventory)
+        self.equipMenu = gui.FrameDecorator(Menu(textctrl=self.equipWindow))
+        self.itemMenu = gui.FrameDecorator(Menu(textctrl=self.itemList))
+        self.charIdx = 0
+        self.slotIdx = 0
+        self.itemMenu.cursor = _nullCursor
+        self.state = self.updateEquipWindow
+        self.description = gui.FrameDecorator(gui.StaticText(text=['','']))
 
-    CurChar = property(lambda self: party.party[self.charidx])
+    curChar = property(lambda self: stats.activeRoster[self.charIdx])
 
-    def CurEquipType(self):
-        return self.CurChar.equip[self.equipwindow.CursorPos].type
+    def curEquipType(self):
+        return self.curChar.equipment[self.equipMenu.cursorPos].type
 
-    def RefreshStatPreview(self):
-        char = self.CurChar                                    # current character
-        selecteditem = party.inv[self.itemlist.CursorPos].item # item the cursor is pointing to
-        slot = char.equip[self.equipwindow.CursorPos].type     # name of the slot the equip pointer is pointing to
+    def setDescription(self, desc):
+        # wordwrap, take the first two lines (that's all we have room for) and join with a newline
+        t = '\n'.join(wrapText(desc, self.description.client.width, self.description.font)[:2])
+        self.description.text[0] = t
 
-        if char.CanEquip(selecteditem.name) and slot == selecteditem.equiptype:
-            oldItem = char.equip[self.equipwindow.CursorPos].item
-            oldStats = oldItem and oldItem.stats or StatSet()
+    def refreshStatPreview(self):
+        char = self.curChar                                    # current character
+        selecteditem = stats.inventory[self.itemMenu.cursorPos].item # item the cursor is pointing to
+        slot = char.equipment[self.equipMenu.cursorPos].type     # name of the slot the equip pointer is pointing to
 
-            newStats = char.stats.Clone()
-            newStats -= oldStats
+        if char.canEquip(selecteditem.name) and slot == selecteditem.type:
+            oldItem = char.equipment[self.equipMenu.cursorPos].item
+            newStats = char.stats.clone()
+
+            if oldItem:
+                oldStats = oldItem.stats
+                newStats -= oldStats
+                newStats.atk -= oldStats.str
+                newStats.grd -= oldStats.vit
+
             newStats += selecteditem.stats
-            # blech. -_-
-            newStats.atk -= oldStats.str
+
+            # hack. update derived statistics
             newStats.atk += selecteditem.stats.str
             newStats.grd += selecteditem.stats.vit
-            self.statwindow.RefreshItemColumn(char.stats, newStats)
+            self.statWindow.refreshItemColumn(char.stats, newStats)
         else:
-            self.statwindow.RefreshItemColumn(char.stats, char.stats)
+            self.statWindow.refreshItemColumn(char.stats, char.stats)
 
-    def StartShow(self):
-        self.charidx = 0
-        self.Refresh(self.CurChar)
+    def startShow(self, trans):
+        self.charIdx = 0
+        self.equipMenu.cursorPos = 0
+        self.itemMenu.cursorPos = 0
+        self.itemMenu.ywin = 0
+        self.refresh(self.curChar)
 
-        trans.AddWindow(self.statbar, (self.statbar.x, -(self.statbar.height + self.statbar.border * 2)))
-        trans.AddWindowReverse(self.portraitwindow, (-self.portraitwindow.width, self.portraitwindow.y))
-        trans.AddWindowReverse(self.statwindow, (ika.Video.xres, self.statwindow.y))
-        trans.AddWindowReverse(self.description, (self.description.x, -self.description.height))
-        trans.AddWindowReverse(self.itemlist, (self.itemlist.x, ika.Video.yres))
-        trans.AddWindowReverse(self.equipwindow, (self.equipwindow.x, -self.equipwindow.height))
+        trans.addChild(self.portraitWindow, startRect=(-self.portraitWindow.width, self.portraitWindow.y))
+        trans.addChild(self.statWindow, startRect=(ika.Video.xres, self.statWindow.y))
+        trans.addChild(self.description, startRect=(self.description.x, -(self.description.height + self.description.border * 2)))
+        trans.addChild(self.itemMenu, startRect=(self.itemMenu.x, ika.Video.yres))
+        trans.addChild(self.equipMenu, startRect=(self.equipMenu.x, -self.equipMenu.height))
 
-    def StartHide(self):
-        self.statbar.DockTop().DockRight()
-        trans.AddWindowReverse(self.statbar, (self.statbar.x, ika.Video.yres + self.statbar.border * 2))
-        trans.AddWindow(self.portraitwindow, (ika.Video.xres, self.portraitwindow.y), remove = True)
-        trans.AddWindow(self.statwindow, (-self.statwindow.width, self.statwindow.y), remove = True)
-        trans.AddWindow(self.description, (self.description.x, -self.description.height), remove = True)
-        trans.AddWindow(self.itemlist, (self.itemlist.x, ika.Video.yres), remove = True)
-        trans.AddWindow(self.equipwindow, (self.equipwindow.x, -self.equipwindow.height), remove = True)
+    def startHide(self, trans):
+        trans.addChild(self.portraitWindow, endRect=(ika.Video.xres, self.portraitWindow.y))
+        trans.addChild(self.statWindow, endRect=(-self.statWindow.width, self.statWindow.y))
+        trans.addChild(self.description, endRect=(self.description.x, -(self.description.height + self.description.border * 2)))
+        trans.addChild(self.itemMenu, endRect=(self.itemMenu.x, ika.Video.yres))
+        trans.addChild(self.equipMenu, endRect=(self.equipMenu.x, -self.equipMenu.height))
 
-    def Refresh(self, char):
-        for x in (self.equipwindow, self.portraitwindow, self.statwindow):
-            x.Refresh(char)
+    def refresh(self, char):
+        for x in (self.equipWindow, self.portraitWindow, self.statWindow):
+            x.refresh(char)
+
+        if len(stats.inventory) > 0:
+            self.itemList.refresh(lambda i: char.canEquip(i.name) and i.type == self.curEquipType())
+        else:
+            self.itemList.clear()
+            self.itemList.addText('No Items', '', '')
 
         # Layout
-        self.portraitwindow.DockTop().DockLeft()
+        self.portraitWindow.dockTop().dockLeft()
 
-        self.description.DockTop().DockLeft(self.portraitwindow)
-        self.description.Right = ika.Video.xres - self.statbar.border #self.statbar.x - self.statbar.border * 2
+        self.statWindow.dockTop(self.portraitWindow).dockLeft()
+        self.statWindow.width = max(self.statWindow.width, self.portraitWindow.width)
+        self.portraitWindow.width = self.statWindow.width
 
-        self.statwindow.DockTop(self.portraitwindow).DockLeft()
-        self.statwindow.width = self.portraitwindow.width
-        self.equipwindow.DockTop(self.description).DockLeft(self.portraitwindow)
-        self.itemlist.DockTop(self.equipwindow).DockLeft(self.statwindow)
-        self.statbar.Refresh()
-        self.equipwindow.Right = self.description.Right #self.statbar.x - self.statbar.border * 2
+        self.description.autoSize()
+        self.description.dockTop().dockLeft(self.portraitWindow)
+        self.description.width = ika.Video.xres - self.description.x - self.description.border
 
-        if len(party.inv) > 0:
-            self.itemlist.Refresh(lambda i: char.CanEquip(i.name) and i.equiptype == self.CurEquipType())
-            self.itemlist.Right = self.description.Right#width = self.equipwindow.width
-            self.itemlist.Layout()
-        else:
-            self.itemlist.Clear()
-            self.itemlist.AddText('No Items')
+        self.equipMenu.dockTop(self.description).dockLeft(self.portraitWindow)
+        self.equipMenu.width = self.description.width
 
-    def UpdateEquipWindow(self):
-        char = self.CurChar
+        self.itemMenu.dockTop(self.equipMenu).dockLeft(self.statWindow)
+        self.itemMenu.width = self.description.width
 
-        if left() and self.charidx > 0:
-            self.charidx -= 1
-            self.Refresh(self.CurChar)
+        self.itemMenu.height = min(self.itemMenu.height, ika.Video.yres - self.itemMenu.y - self.itemMenu.border)
 
-        if right() and self.charidx < len(party.party) - 1:
-            self.charidx += 1
-            self.Refresh(self.CurChar)
+        self.itemMenu.cursorPos = max(0, min(self.itemMenu.cursorPos, len(stats.inventory) - 1))
 
-        eqtype = self.CurEquipType()
-        result = self.equipwindow.Update()
-        eqtype2 = self.CurEquipType()
-        # rehighlight the item list so that items that this character can equip in this slot are highlighted.
-        if eqtype != eqtype2:
-            self.itemlist.Rehighlight(lambda i: char.CanEquip(i.name) and i.equiptype == eqtype2)
+    def updateEquipWindow(self):
+        char = self.curChar
 
-        i = char.equip[self.equipwindow.CursorPos].item
-        self.description.Text[0] = i and i.desc or ''
+        if controls.left() and self.charIdx > 0:
+            self.charIdx -= 1
+            self.refresh(self.curChar)
 
-        if result is menu.Cancel or result is None:
+        if controls.right() and self.charIdx < len(stats.activeRoster) - 1:
+            self.charIdx += 1
+            self.refresh(self.curChar)
+
+        oldPos = self.equipMenu.cursorPos
+        eqtype = self.curEquipType()
+
+        result = self.equipMenu.update()
+
+        if result is None:
+            eqtype2 = self.curEquipType()
+            # rehighlight the item list so that items that this character can equip in this slot are highlighted.
+            if eqtype != eqtype2:
+                self.itemList.rehighlight(lambda i: char.canEquip(i.name) and i.type == eqtype2)
+
+            i = char.equipment[self.equipMenu.cursorPos].item
+            self.setDescription(i and i.desc or '')
+
+        if result is Cancel or result is None:
             return result
 
-        if len(party.inv) > 0:
-            self.slotidx = result
-            self.state = self.UpdateItemWindow
-            self.equipwindow.active = False
-            self.itemlist.active = True
+        if len(stats.inventory) > 0:
+            self.slotIdx = result
+            self.state = self.updateItemWindow
+
+            self.equipMenu.cursor, self.itemMenu.cursor = self.itemMenu.cursor, self.equipMenu.cursor
         return None
 
-    def UpdateItemWindow(self):
-        oldPos = self.itemlist.CursorPos
+    def updateItemWindow(self):
+        oldPos = self.itemMenu.cursorPos
 
-        result = self.itemlist.Update()
+        result = self.itemMenu.update()
 
-        i = party.inv[self.itemlist.CursorPos].item
-        self.description.Text[0] = i and i.desc or ''
+        i = stats.inventory[self.itemMenu.cursorPos].item
+        self.setDescription(i and i.desc or '')
 
-
-        if self.itemlist.CursorPos != oldPos:
-            self.RefreshStatPreview()
+        if self.itemMenu.cursorPos != oldPos:
+            self.refreshStatPreview()
 
         if result == None:
             return None
-        elif result == menu.Cancel:
+        elif result == Cancel:
             ika.Input.Unpress()
-            self.state = self.UpdateEquipWindow
-            self.equipwindow.active = True
-            self.itemlist.active = False
+            self.state = self.updateEquipWindow
+            self.equipMenu.cursor, self.itemMenu.cursor = self.itemMenu.cursor, self.equipMenu.cursor
 
             # Clear the stat preview thing.
-            s = self.CurChar.stats
-            self.statwindow.RefreshItemColumn(s, s)
+            s = self.curChar.stats
+            self.statWindow.refreshItemColumn(s, s)
             return None
 
         # actually change equipment here
-        char = self.CurChar
-        selecteditem = party.inv[self.itemlist.CursorPos].item
-        slot = char.equip[self.equipwindow.CursorPos].type
+        char = self.curChar
+        selecteditem = stats.inventory[self.itemMenu.cursorPos].item
+        slot = char.equipment[self.equipMenu.cursorPos].type
 
-        if char.CanEquip(selecteditem.name) and slot == selecteditem.equiptype:
-            char.Equip(selecteditem.name, self.equipwindow.CursorPos)
+        if char.canEquip(selecteditem.name) and slot == selecteditem.type:
+            char.equip(selecteditem.name, self.equipMenu.cursorPos)
 
-            self.Refresh(party.party[self.charidx])
+            self.refresh(stats.activeRoster[self.charIdx])
+
+        self.refreshStatPreview()
 
         return None
 
-    def Draw(self):
-        ika.Input.Update()
-        ika.Render()
-        trans.Draw()
-        #for x in (self.equipwindow, self.portraitwindow, self.statwindow, self.itemlist, self.statbar, self.description):
-        #    x.Draw()
+    def execute(self):
 
-    def Execute(self):
-        self.state = self.UpdateEquipWindow
+        def draw():
+            ika.Map.Render()
+            self.portraitWindow.draw()
+            self.statWindow.draw()
+            self.description.draw()
+            self.equipMenu.draw()
+            self.itemMenu.draw()
+
+        self.state = self.updateEquipWindow
         time = ika.GetTime()
+
         fps = FPSManager()
 
         while True:
             result = self.state()
-            if cancel():
+            if controls.cancel():
                 break
             if result is not None:
                 break
 
-            fps.Render(self.Draw)
+            fps.render(draw)
 
         return True

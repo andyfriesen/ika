@@ -1,128 +1,158 @@
-#!/usr/bin/env python
-
-"""Main menu."""
-
+# Main menu for pi
 # Coded by Andy Friesen
 # Copyright whenever.  All rights reserved.
-
-# This source code may be used for any purpose, provided that the
-# original author is never misrepresented in any way.
-
+#
+# This source code may be used for any purpose, provided that
+# the original author is never misrepresented in any way.
+#
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
 import ika
+import stats
 
-import xi.equipmenu
-import xi.itemmenu
-import xi.skillmenu
-import xi.statusmenu
-
+import xi
+from xi import gui
+from xi import menu
 from xi.fps import FPSManager
 from xi.menu import Menu
-from xi.menuwindows import StatusBar
-from xi.statelessproxy import StatelessProxy
+from xi.widgetmanager import *
 from xi.transition import Transition
+from xi.misc import *
 
+from menuwindows import StatusBar, MiscWindow
+from itemmenu import ItemMenu
+from equipmenu import EquipMenu
+from skillmenu import SkillMenu
+from statusmenu import StatusMenu
 
-class MainMenu(StatelessProxy):
+# main WM used for most (if not all) field menu stuff
+wm = WidgetManager()
 
+class MainMenu(xi.StatelessProxy):
     def __init__(self):
         super(MainMenu, self).__init__()
-        if self.__dict__:
+        if len(self.__dict__) != 0:
             return
-        # "Static constructor" logic follows.
-        self.statbar = StatusBar()
-        self.statbar.Refresh()
-        self.statbar.DockRight().DockTop()
-        self.mainmenu = Menu()
-        self.SetMenuItems(self.CreateMenuItems())
-        #self.mainmenu.AddText('Item', 'Skills', 'Equip', 'Status', 'Order',
-        #                      'Load', 'Save', 'Quit')
-        self.mainmenu.DockLeft().DockTop()
+        # "static constructor" logic follows
 
-    def SetMenuItems(self, menuItems):
-        self.mainmenu.Clear()
-        self.submenu = [None] * len(menuItems)
-        for i, (name, menu) in enumerate(menuItems):
-            self.mainmenu.AddText(name)
-            self.submenu[i] = menu
+        mm = self.mainMenu = gui.FrameDecorator(Menu())
 
-    def CreateMenuItems(self):
-        return [('Item', xi.itemmenu.ItemMenu(self.statbar)),
-                ('Skills', xi.skillmenu.SkillMenu(self.statbar)),
-                ('Equip', xi.equipmenu.EquipMenu(self.statbar)),
-                ('Status', xi.statusmenu.StatusMenu(self.statbar))]
+        self.statbar = gui.FrameDecorator(StatusBar())
+        self.statbar.refresh()
+        self.statbar.dockRight().dockTop()
+        self.miscwindow = gui.FrameDecorator(MiscWindow())
+        self.miscwindow.refresh()
+        self.miscwindow.dockRight().dockBottom()
 
-    def Draw(self):
-        self.statbar.Draw()
-        self.mainmenu.Draw()
+        self.setMenuItems(self.createMenuItems())
 
-    def Update(self):
-        return self.mainmenu.Update()
+        mm.autoSize()
+        mm.dockTop().dockLeft()
 
-    def Layout(self):
-        self.statbar.DockRight().DockTop()
-        self.mainmenu.DockLeft().DockTop()
+    def setMenuItems(self, menuItems):
+        self.mainMenu.clear()
+        self.mainMenu.addText(*[ name for (name, menu) in menuItems ])
+        self.submenu = [ menu for (name, menu) in menuItems ]
 
-    def Show(self):
-        self.Layout()
-        trans.AddWindowReverse(self.statbar, (self.statbar.Left,
-                                              ika.Video.yres))
-        trans.AddWindowReverse(self.mainmenu, (-self.mainmenu.width,
-                                               self.mainmenu.Top))
-        trans.Execute()
+    def createMenuItems(self):
+        return [
+            ('Item', ItemMenu(self.statbar)),
+            ('Skills', SkillMenu()),
+            ('Equip', EquipMenu()),
+            ('Status', StatusMenu()),
+            ]
 
-    def Hide(self):
-        trans.AddWindow(self.statbar,
-                        (self.statbar.Left, -self.statbar.height), remove=True)
-        trans.AddWindow(self.mainmenu, (ika.Video.xres, self.mainmenu.y),
-                        remove=True)
-        trans.Execute()
-        trans.Reset()
+    def draw(self):
+        ika.Map.Render()
+        self.statbar.draw()
+        self.miscwindow.draw()
+        self.mainMenu.draw()
 
-    def RunMenu(self, menu):
-        # Hold onto this so we can put the menu back later.
-        mainMenuPos = self.mainmenu.Rect
-        menu.StartShow()
-        trans.AddWindow(self.mainmenu, (ika.Video.xres + 20, self.mainmenu.y) )
-        trans.Execute()
-        result = menu.Execute()
-        menu.StartHide()
-        # put the menu at stage left
-        self.mainmenu.x = -self.mainmenu.width
-        # restore the menu's position
-        trans.AddWindow(self.mainmenu, mainMenuPos)
-        trans.Execute()
+    def update(self):
+        return self.mainMenu.update()
+
+    def layout(self):
+        self.mainMenu.dockLeft().dockTop()
+        self.statbar.dockRight().dockTop()
+        self.miscwindow.dockRight().dockBottom()
+
+    def show(self):
+        self.layout()
+
+        b = self.statbar.border
+
+        t = Transition()
+        t.addChild(self.statbar, startRect=(self.statbar.left, ika.Video.yres + b))
+        t.addChild(self.miscwindow, startRect=(self.miscwindow.left, ika.Video.yres + b))
+        t.addChild(self.mainMenu, startRect=(-self.mainMenu.width - b, self.mainMenu.top))
+
+        t.execute()
+
+    def hide(self):
+        t = Transition()
+        t.addChild(self.statbar, endRect=(self.statbar.left, -self.statbar.height))
+        t.addChild(self.miscwindow, endRect=(self.miscwindow.left, -self.miscwindow.height))
+        t.addChild(self.mainMenu, endRect=(ika.Video.xres, self.mainMenu.top))
+
+        t.execute()
+
+    def runMenu(self, menu):
+        # Save window positions, so we can put them back later.
+        mainMenuPos = self.mainMenu.rect
+        statBarPos = self.statbar.rect
+        miscWndPos = self.miscwindow.rect
+
+        t = Transition()
+        menu.startShow(t)
+        t.addChild(self.mainMenu, endRect=(ika.Video.xres + 20, self.mainMenu.y) )
+        t.addChild(self.statbar, endRect=(self.statbar.x, -(self.statbar.height + self.statbar.border * 2)))
+        t.addChild(self.miscwindow, endRect=(self.miscwindow.x, ika.Video.yres + self.miscwindow.border * 2))
+        t.execute()
+
+        result = menu.execute()
+
+        menu.startHide(t)
+        self.mainMenu.x = -self.mainMenu.width  # put the menu at stage left
+        t.addChild(self.mainMenu, endRect=mainMenuPos)       # restore the menu's position
+        t.addChild(self.statbar, endRect=statBarPos)
+        t.addChild(self.miscwindow, endRect=miscWndPos)
+        t.execute()
 
         return result
 
-    def Execute(self):
-        def draw():
-            ika.Map.Render()
-            self.Draw()
-        self.statbar.Refresh()
-        self.Show()
-        fps = FPSManager()
+
+    def execute(self):
+
+        self.statbar.refresh()
+        self.miscwindow.refresh()
+        self.show()
+
+        fps = FPSManager(100)
+
         while True:
-            result = self.Update()
+            result = self.update()
+            self.miscwindow.refresh()
+
             if result is menu.Cancel:
                 break
+
             elif result is not None:
-                result = self.RunMenu(self.submenu[result])
+                result = self.runMenu(self.submenu[result])
+                fps.sync()
                 if not result:
                     break
-            fps.Render(draw)
-        self.Hide()
 
+            fps.render(self.draw)
+
+        self.hide()
+
+#------------------------------------------------------------------------------
 
 class Dummy(object):
-
-    def StartShow(self):
+    def startShow(*args):
         pass
-
-    def StartHide(self):
+    def startHide(*args):
         pass
-
-    def Execute(self):
+    def execute(*args):
         return True
