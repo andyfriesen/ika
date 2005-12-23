@@ -10,8 +10,7 @@
 
 import ika
 
-import stats
-
+import xi.party
 from xi import gui
 from xi import controls
 from xi.fps import FPSManager
@@ -81,7 +80,7 @@ class EquipMenu(object):
         self.equipWindow = EquipWindow()
         self.portraitWindow = PortraitWindow()
         self.statWindow = gui.FrameDecorator(StatPreviewWindow())
-        self.itemList = InventoryWindow(stats.inventory)
+        self.itemList = InventoryWindow(xi.party.inventory)
         self.equipMenu = gui.FrameDecorator(Menu(textctrl=self.equipWindow))
         self.itemMenu = gui.FrameDecorator(Menu(textctrl=self.itemList))
         self.charIdx = 0
@@ -90,7 +89,7 @@ class EquipMenu(object):
         self.state = self.updateEquipWindow
         self.description = gui.FrameDecorator(gui.StaticText(text=['','']))
 
-    curChar = property(lambda self: stats.activeRoster[self.charIdx])
+    curChar = property(lambda self: xi.party.activeRoster[self.charIdx])
 
     def curEquipType(self):
         return self.curChar.equipment[self.equipMenu.cursorPos].type
@@ -102,7 +101,7 @@ class EquipMenu(object):
 
     def refreshStatPreview(self):
         char = self.curChar                                    # current character
-        selecteditem = stats.inventory[self.itemMenu.cursorPos].item # item the cursor is pointing to
+        selecteditem = inventory[self.itemMenu.cursorPos].item # item the cursor is pointing to
         slot = char.equipment[self.equipMenu.cursorPos].type     # name of the slot the equip pointer is pointing to
 
         if char.canEquip(selecteditem.name) and slot == selecteditem.type:
@@ -148,7 +147,7 @@ class EquipMenu(object):
         for x in (self.equipWindow, self.portraitWindow, self.statWindow):
             x.refresh(char)
 
-        if len(stats.inventory) > 0:
+        if len(xi.party.inventory) > 0:
             self.itemList.refresh(lambda i: char.canEquip(i.name) and i.type == self.curEquipType())
         else:
             self.itemList.clear()
@@ -173,7 +172,7 @@ class EquipMenu(object):
 
         self.itemMenu.height = min(self.itemMenu.height, ika.Video.yres - self.itemMenu.y - self.itemMenu.border)
 
-        self.itemMenu.cursorPos = max(0, min(self.itemMenu.cursorPos, len(stats.inventory) - 1))
+        self.itemMenu.cursorPos = max(0, min(self.itemMenu.cursorPos, len(xi.party.inventory) - 1))
 
     def updateEquipWindow(self):
         char = self.curChar
@@ -182,7 +181,7 @@ class EquipMenu(object):
             self.charIdx -= 1
             self.refresh(self.curChar)
 
-        if controls.right() and self.charIdx < len(stats.activeRoster) - 1:
+        if controls.right() and self.charIdx < len(xi.party.activeRoster) - 1:
             self.charIdx += 1
             self.refresh(self.curChar)
 
@@ -203,7 +202,7 @@ class EquipMenu(object):
         if result is Cancel or result is None:
             return result
 
-        if len(stats.inventory) > 0:
+        if len(xi.party.inventory) > 0:
             self.slotIdx = result
             self.state = self.updateItemWindow
 
@@ -215,7 +214,7 @@ class EquipMenu(object):
 
         result = self.itemMenu.update()
 
-        i = stats.inventory[self.itemMenu.cursorPos].item
+        i = xi.party.inventory[self.itemMenu.cursorPos].item
         self.setDescription(i and i.desc or '')
 
         if self.itemMenu.cursorPos != oldPos:
@@ -235,13 +234,13 @@ class EquipMenu(object):
 
         # actually change equipment here
         char = self.curChar
-        selecteditem = stats.inventory[self.itemMenu.cursorPos].item
+        selecteditem = xi.party.inventory[self.itemMenu.cursorPos].item
         slot = char.equipment[self.equipMenu.cursorPos].type
 
         if char.canEquip(selecteditem.name) and slot == selecteditem.type:
             char.equip(selecteditem.name, self.equipMenu.cursorPos)
 
-            self.refresh(stats.activeRoster[self.charIdx])
+            self.refresh(xi.party.activeRoster[self.charIdx])
 
         self.refreshStatPreview()
 

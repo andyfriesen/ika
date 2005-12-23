@@ -10,13 +10,13 @@
 
 import ika
 
-import stats
-
 import xi
+import xi.party
 from xi import gui
 from xi import menu
 from xi import layout
 from xi.misc import *
+
 
 class StatusBar(gui.StaticText):
     'Displays HP/MP counts for the party in a vertical status bar thing.'
@@ -26,7 +26,7 @@ class StatusBar(gui.StaticText):
 
     def refresh(self):
         self.clear()
-        for i, char in enumerate(stats.activeRoster):
+        for i, char in enumerate(xi.party.activeRoster):
             # Red if zero, yellow if less than a 4th max, and white otherwise.
             c = char.hp == 0 and '4' or char.hp < char.maxHP / 4 and '3' or '0'
             d = char.mp == 0 and '4' or char.mp < char.maxMP / 4 and '3' or '0'
@@ -35,7 +35,7 @@ class StatusBar(gui.StaticText):
             self.addText( 'HP\t~%c%i~0/~%c%i' % (c, char.hp, c, char.maxHP) )
             self.addText( 'MP\t~%c%i~0/~%c%i' % (d, char.mp, d, char.maxMP) )
 
-            if i + 1 < len(stats.activeRoster):
+            if i + 1 < len(xi.party.activeRoster):
                 self.addText( '' )
 
         self.autoSize()
@@ -52,7 +52,7 @@ class ShopEquipBar(gui.StaticText):
         if item is None:
             return              # probably not a good longterm thing
 
-        invItem = stats.inventory.find(item.name)
+        invItem = xi.party.inventory.find(item.name)
         if invItem is not None:
             count = invItem.qty
         else:
@@ -63,7 +63,7 @@ class ShopEquipBar(gui.StaticText):
 
         if item.equipby:        # a piece of equipment?
             self.addText('')
-            for char in stats.activeRoster:
+            for char in xi.party.activeRoster:
                 color = 2
                 type = "No Use"
                 if item is not None:
@@ -103,13 +103,13 @@ class MiscWindow(gui.StaticText, xi.StatelessProxy):
 
     def autoSize(self):
         self.width = max(
-            self.font.StringWidth(stats.CURRENCY + '999999999'),        # one BILLION dollars!
+            self.font.StringWidth(xi.party.CURRENCY_FORMAT + '999999999'),        # one BILLION dollars!
             self.font.StringWidth('99:99:99'))
         self.height = self.font.height * 2 # two lines
 
     def draw(self, xoffset = 0, yoffset = 0):
-        self.text[0] = stats.formatCurrency(stats.getMoney())
-        t = stats.getGameTime()
+        self.text[0] = xi.party.formatCurrency(stats.getMoney())
+        t = xi.party.getGameTime()
         colon = (t / 50 & 1) and '~2:~0' or ':'
         self.text[1] = 'T %s' % formatTime(t, colon)
 
@@ -235,7 +235,7 @@ class InventoryWindow(gui.ColumnedTextLabel):
     inventory = property(getInventory)
 
     def rehighlight(self, condition = lambda i: True):
-        for i, item in enumerate(stats.inventory):
+        for i, item in enumerate(xi.party.inventory):
             c = condition(item.item)
 
             self.rehighlightItem(i, c)
@@ -291,5 +291,5 @@ class ShopWindow(InventoryWindow):
         self.addText(
             c + inventorySlot.item.name,
             c + inventorySlot.item.type.capitalize(),
-            c + stats.formatCurrency(inventorySlot.item.cost).rjust(7)
+            c + xi.party.formatCurrency(inventorySlot.item.cost).rjust(7)
             )

@@ -10,6 +10,7 @@
 
 import ika
 
+import xi.party
 from xi import gui
 from xi import layout
 from xi.fps import FPSManager
@@ -19,9 +20,6 @@ from xi.misc import *
 
 import xi.menuwindows
 
-import stats
-
-from stats import inventory
 
 class ItemMenu(object):
     def __init__(self, statbar):
@@ -31,7 +29,7 @@ class ItemMenu(object):
         self.description = self.createDescriptionBar()
 
     def createInventoryWindow(self):
-        return xi.menuwindows.InventoryWindow(stats.inventory)
+        return xi.menuwindows.InventoryWindow(xi.party.inventory)
 
     #--------------------------------------------
 
@@ -53,8 +51,8 @@ class ItemMenu(object):
     #--------------------------------------------
 
     def updateDescriptionBar(self):
-        if self.menu.cursorPos < len(inventory):
-            self.setDescriptionBarText(inventory[self.menu.cursorPos].description)
+        if self.menu.cursorPos < len(xi.party.inventory):
+            self.setDescriptionBarText(xi.party.inventory[self.menu.cursorPos].description)
         else:
             self.setDescriptionBarText('')
 
@@ -101,7 +99,7 @@ class ItemMenu(object):
 
         self.statbar.refresh()
 
-        if len(inventory) == 0:
+        if len(xi.party.inventory) == 0:
             self.menu.addText('No Items', '', '')
 
         self.layout()
@@ -117,7 +115,7 @@ class ItemMenu(object):
             result = item.fieldEffect()
 
         if result is None and item.consumable:
-            inventory.take(item.name)
+            xi.party.inventory.take(item.name)
         self.refresh()
 
     def draw(self):
@@ -136,7 +134,7 @@ class ItemMenu(object):
 
             if result not in (None, Cancel):
                 # use an item
-                item = inventory[self.menu.cursorPos].item
+                item = xi.party.inventory[self.menu.cursorPos].item
                 if item.fieldEffect is not None:
                     self.useItem(item)
                     fps.sync()

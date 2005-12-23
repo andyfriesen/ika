@@ -10,6 +10,7 @@
 
 import ika
 
+import xi.party
 from xi import gui
 from xi import menu
 from xi import sound
@@ -18,7 +19,6 @@ from xi.transition import Transition
 from xi.fps import FPSManager
 from xi import item
 import xi.menuwindows
-import stats
 
 class ShopMenu(object):
     def __init__(self, *args):
@@ -44,7 +44,7 @@ class ShopMenu(object):
 
     def updateMoneyBar(self):
         # update the money display
-        self.money.text[0] = "bling bling:\n" + stats.formatCurrency(stats.getMoney())
+        self.money.text[0] = "bling bling:\n" + xi.party.formatCurrency(xi.party.getMoney())
 
     def updateDescriptionBar(self, item):
         if item is None:
@@ -81,11 +81,11 @@ class ShopMenu(object):
 
     def refresh(self):
         self.shopbar.refresh(self.inv[self.menu.cursorPos].item)
-        self.itemList.refresh(lambda i: i.cost > 0 and i.cost <= stats.getMoney())
+        self.itemList.refresh(lambda i: i.cost > 0 and i.cost <= xi.party.getMoney())
         #self.menu.autoSize()
         #self.menu.right = self.shopbar.left - self.shopbar.border * 2
 
-        if len(stats.inventory) == 0:
+        if len(xi.party.inventory) == 0:
             self.menu.addText('No Items')
 
         if self.menu.cursorPos < len(self.inv):
@@ -103,10 +103,10 @@ class ShopMenu(object):
         if result is not None:
             item = self.inv[self.menu.cursorPos].item
 
-            if item.cost <= stats.getMoney():
+            if item.cost <= xi.party.getMoney():
                 # buy it!
-                stats.takeMoney(item.cost)
-                stats.inventory.give(item.name)
+                xi.party.takeMoney(item.cost)
+                xi.party.inventory.give(item.name)
                 self.refresh()
                 sound.buysell.Play()
 

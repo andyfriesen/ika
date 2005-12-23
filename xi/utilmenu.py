@@ -11,6 +11,7 @@
 
 import math
 
+import xi.party
 from xi import gui
 from xi import controls
 from xi.menu import Menu, Cancel
@@ -18,7 +19,6 @@ from xi.transition import Transition
 from xi.layout import VerticalBoxLayout
 from xi import wrapText
 import ika
-import stats
 
 def selectCharacter(parent = None, caption = 'Use on whom?'):
     # A menu to select a character from the active roster.
@@ -27,7 +27,7 @@ def selectCharacter(parent = None, caption = 'Use on whom?'):
     menu = gui.FrameDecorator(Menu())
     caption.autoSize()
 
-    for char in stats.activeRoster:
+    for char in xi.party.activeRoster:
         menu.addText(char.name)
 
     menu.autoSize()

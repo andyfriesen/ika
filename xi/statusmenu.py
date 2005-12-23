@@ -10,6 +10,7 @@
 
 import ika
 
+import xi.party
 from xi import gui
 from xi import menu
 from xi import layout
@@ -17,9 +18,8 @@ from xi import controls
 from xi.misc import *
 from xi.fps import FPSManager
 
-import stats
-
 from xi.menuwindows import PortraitWindow, StatusWindow, EquipWindow, SkillWindow
+
 
 class StatusMenu(object):
 
@@ -31,7 +31,7 @@ class StatusMenu(object):
         self._curChar = 0
 
     def startShow(self, trans):
-        self.refresh(stats.activeRoster[0])
+        self.refresh(xi.party.activeRoster[0])
 
         trans.addChild(self.portraitWindow, startRect=(-self.portraitWindow.width, self.portraitWindow.y))
         trans.addChild(self.statWindow, startRect=(ika.Video.xres, self.statWindow.y))
@@ -71,10 +71,10 @@ class StatusMenu(object):
 
         if controls.left() and self._curChar > 0:
             self._curChar -= 1
-            self.refresh(stats.activeRoster[self._curChar])
-        if controls.right() and self._curChar < len(stats.activeRoster) - 1:
+            self.refresh(xi.party.activeRoster[self._curChar])
+        if controls.right() and self._curChar < len(xi.party.activeRoster) - 1:
             self._curChar += 1
-            self.refresh(stats.activeRoster[self._curChar])
+            self.refresh(xi.party.activeRoster[self._curChar])
 
         if controls.up():
             self.skillWindow.ywin -= 1

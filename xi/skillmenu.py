@@ -10,7 +10,7 @@
 
 import ika
 
-import stats
+import xi.party
 import statusmenu
 from xi.menuwindows import SkillWindow, PortraitWindow, StatusWindow
 
@@ -33,7 +33,7 @@ class SkillMenu(object):
 
         self.description = gui.FrameDecorator(gui.StaticText(text=['','']))
 
-    curChar = property(lambda self: stats.activeRoster[self.charidx])
+    curChar = property(lambda self: xi.party.activeRoster[self.charidx])
 
     def setDescription(self, desc):
         # wordwrap, take the first two lines (that's all we have room for) and join with a newline
@@ -88,11 +88,11 @@ class SkillMenu(object):
     def update(self):
         if controls.left() and self.charidx > 0:
             self.charidx -= 1
-            self.refresh(stats.activeRoster[self.charidx])
+            self.refresh(xi.party.activeRoster[self.charidx])
 
-        if controls.right() and self.charidx < len(stats.activeRoster) - 1:
+        if controls.right() and self.charidx < len(xi.party.activeRoster) - 1:
             self.charidx += 1
-            self.refresh(stats.activeRoster[self.charidx])
+            self.refresh(xi.party.activeRoster[self.charidx])
 
         char = self.curChar
 

@@ -9,16 +9,15 @@
 # suitability of this code for any purpose.
 
 import ika
-import stats
 
 import xi
+import xi.party
 from xi import gui
 from xi import menu
 from xi.fps import FPSManager
 from xi.menu import Menu
 from xi.widgetmanager import *
 from xi.transition import Transition
-from xi.misc import *
 
 from menuwindows import StatusBar, MiscWindow
 from itemmenu import ItemMenu
