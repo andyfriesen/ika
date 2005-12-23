@@ -17,7 +17,6 @@ import xi
 import xi.controls
 import xi.gui
 import xi.sound
-from xi.proxy import Proxy
 
 
 class Cancel(object):

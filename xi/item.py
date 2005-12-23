@@ -76,15 +76,15 @@ class Inventory(object):
         None.
         """
         for item in self.items:
-            if item.Name == itemname:
+            if item.name == itemname:
                 return item
         # Item not found in inventory.
         return None
 
     def give(self, itemname, qty=1):
         """Adds the specified number of an item to the inventory."""
-        item = self.Find(itemname)
-        if i is not None:
+        item = self.find(itemname)
+        if item is not None:
             item.qty += qty
         else:
             item = InventoryEntry(self._db[itemname], qty)
@@ -94,7 +94,7 @@ class Inventory(object):
         """Removes the specified number of an item from the
         inventory.
         """
-        item = self.Find(itemname)
+        item = self.find(itemname)
         if item is None:
             # Player doesn't have this item to begin with.
             return

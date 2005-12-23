@@ -3,10 +3,10 @@
 __all__ = ['character', 'color', 'controls', 'cursor', 'decorator', 'effects',
            'equipmenu', 'field', 'fps', 'gui', 'item', 'itemdatabase',
            'itemmenu', 'layout', 'mainmenu', 'menu', 'menuwindows',
-           'movescript', 'music', 'parser', 'party', 'skill', 'skilldatabase',
-           'skillmenu', 'sound', 'statset', 'statusmenu', 'test', 'textbox',
-           'token', 'transition', 'utilmenu', 'widget', 'widgetmanager',
-           'window']
+           'movescript', 'music', 'parser', 'party', 'shopmenu', 'skill',
+           'skilldatabase', 'skillmenu', 'sound', 'statset', 'statusmenu',
+           'test', 'textbox', 'token', 'transition', 'utilmenu', 'widget',
+           'widgetmanager', 'window']
 
 
 class XiException(Exception):

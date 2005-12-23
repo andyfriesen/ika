@@ -1,3 +1,5 @@
+#!/usr/bin/env python
+
 """Music handler."""
 
 import ika

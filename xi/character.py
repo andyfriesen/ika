@@ -12,7 +12,6 @@ import ika
 
 import xi
 from xi import token
-from xi.misc import *
 
 from skill import Skill, SkillList
 from statset import StatSet
@@ -20,10 +19,12 @@ from itemdatabase import ItemDatabase
 from skilldatabase import SkillDatabase
 
 import item
-import stats
+import xi.party
+
 
 itemdb = ItemDatabase()
 skilldb = SkillDatabase()
+
 
 class _EquipSlot(object):
     __slots__ = ['category', 'item']
@@ -147,10 +148,10 @@ class Character(object):
 
         # put what was equipped before back (if anything was there)
         if self.equipment[slot].item:
-            stats.inventory.give(self.equipment[slot].item.name)
+            xi.party.inventory.give(self.equipment[slot].item.name)
 
-        if stats.inventory.find(itemname) is not None:
-            stats.inventory.take(itemname)
+        if xi.party.inventory.find(itemname) is not None:
+            xi.party.inventory.take(itemname)
 
         self.equipment[slot].item = item
         self.calcEquip()
@@ -284,7 +285,7 @@ class Character(object):
 
             self.ent = ika.Entity(x, y, layerIndex, self.spriteName)
             self.ent.name = self.name
-            if self is stats.activeRoster[0]:
+            if self is xi.party.activeRoster[0]:
                 ika.SetPlayer(self.ent)
             else:
                 self.ent.isobs = False
