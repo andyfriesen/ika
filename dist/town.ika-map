@@ -1,0 +1,369 @@
+(ika-map 
+	(version 1.0)
+	(information 
+		(title Townie)
+		(meta 
+			(entitylayer Land 3)
+		)
+	)
+	(header 
+		(dimensions 
+			(width 1600)
+			(height 640)
+		)
+		(tileset town.vsp)
+	)
+	(waypoints 
+	)
+	(zones 
+		(zone 
+			(label AnnasHouse)
+			(script EnterAnnasHouse)
+		)
+		(zone 
+			(label FallDown)
+			(script FallDown)
+		)
+		(zone 
+			(label RiseUp)
+			(script RiseUp)
+		)
+		(zone 
+			(label TownBorder)
+			(script LeaveTown)
+		)
+	)
+	(layers 
+		(layer 
+			(type tile)
+			(label Underwater)
+			(dimensions 
+				(width 80)
+				(height 80)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2cEORDAUQNH6POb//8fGYtIEpUb7pmdxdiTcPKI1
+pZQmQvl0cA2MyexpRzxmTzviMXvaHVk2tefnRmj3bb7R
+cbRGpR21q2941FG78o6tr+HfmL1rzCBwxnsCAO6p3Qs7
+Y+2jXYmnv+V6bre3f3xVfo/zznGt7zc664x3G/b87LZu
+OPL/pl/31BQAAAAAAAAAAAAAAAAAIKYVAAD//w==
+			)
+			(obstructions 
+				(format tile)
+				eJzswQENAAAAwqD3T20PBxQAAAAAAMCXAQAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label Water)
+			(dimensions 
+				(width 80)
+				(height 80)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2UsOgyAUBVDWqTbR/W+iHdikMX7wV0DO4MyE8G4e
+RrAJITQU5ZXBGqiT3pMd5dF7sqM8ek92a7qP4cT4fpxj
+qobsfrVj3XvG1JZRbI6yO5/hWi/KLj7H1Gt4Gr23jx4E
+tnhPAMAx37uru+Z39pFdjKu/5XLObu7u+Ihpje3Cc6nr
+LZ1zxn8zzHnvps7Qvr4vzxr/4QEAAAAAAAAAAAAAAAAA
+PMEbAAD//w==
+			)
+			(obstructions 
+				(format tile)
+				eJzswQENAAAAwqD3T20PBxQAAAAAAMCXAQAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label Land)
+			(dimensions 
+				(width 80)
+				(height 80)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsmEtOwzAURU3JEhgxp0xg3DKBLcBSCxvET82TgrFT
+O3HS5vkc6aqVEin16fWn3Tvn9pXz6dP5fCSuvzk71Hb3
+6HPn0v6e1xnWatT09uXO7nY+7z6vkfssdU+o1Tdx1vWv
+MW8W3Qk1+tb1kfcpd9bmrTJ3jdv171Pz1XL3hNK+Dde4
+HG+W3Qml+4L2bmyutjBvlRxv6u7eje+trXVPSI1bzsDq
+rOtfczvXijvh2CfmT/eHMXfHRFpwN+Tg/npUf9q/2G+J
+1hzlIB7FzYs7r3OasHu4SxN2cc3enXy+g/ws+Lwl0S7W
+Po+EfoZJfWdbdfjk6ndvym+erTocdrDWWTi2X+f42+pZ
+XDu45OcPe46/ac/A3zRie9UW/D1kZDiG8FrNNf1SB2/R
+39S9sPa+eMp4jlV/l8YVOxPnnvta8CeZ66Z1f2vEur+S
+s/CU3OJ/Fkt0I+csZ8GdsIS/nLOcBXdC6v/j0oRjPCTu
+s7DmXZPSbuLvPyUOb3nuXpNwftO9ecTWS7oHAAAAAAAA
+AAAAAAAAAAAAAAAAAAAAAAAAAAAAAK3xCwAA//8=
+			)
+			(obstructions 
+				(format tile)
+				eJzswQENAAAAwqD3T20PBxQAAAAAAMCXAQAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label Land 2)
+			(dimensions 
+				(width 80)
+				(height 80)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2U1Kw0AYBuAsuyvkCLUbr6AH0SOpR1BXinoBf9oL
+aFX0TH7FLFJs0pZaZtI8D7xMaBL4eBlKYIpifcNqPYmc
+tqz8NWr4va27Zfe+djJdnm4it5GHDd8rq7Xe2z7vzXlP
+d5H72jrv7CnyHJmmG60THiMvkUmx2NlbZBb5bHivrF2P
+dzlg5l4j75GPYnVnLLqIHGzwfLn6kV65jpxFzlMP0mGX
+kauW+8v+2+zDX/v8XZGaPfY/+vxtAgAAkLvv1AN0xKDK
+cepBOkp/29HfdnLpr+kMNXdHVQ4Tz9F0hsp6nKECAAAA
+AAAAAAAAAAAAAABAf/0AAAD//w==
+			)
+			(obstructions 
+				(format tile)
+				eJzswQENAAAAwqD3T20PBxQAAAAAAMCXAQAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label Land 3)
+			(dimensions 
+				(width 80)
+				(height 80)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2bsJQkEQQNHtwCKsRVvQpuzASFAb8NuA36YcweAF
+svgJhtVz4DLJC4bhZVvKewbRsDJr31LKKBp35jO9x+ze
+zQ0BAPgF/ewFAAAAeMksmkeLzlymbtSWVbSONtE22kX7
+1I3acoiO0Sk6R5fomrpRe2pvkdTdbzfJXqJx/r/Pud13
+ptkLAAAAAAAAAAAAAAAAAAAAAH/vBgAA//8=
+			)
+			(obstructions 
+				(format tile)
+				eJzslsESgyAMRJP//+l2aosCATYLhx726Tig8AQkiFnB
+HwlvbhG4+Re7jnd+S1fl/HMe841uwbagb6TuGrLoAadL
+P+CE9OAd9v23rqv5CxGeqnI8cZKv8CD1EOXXhkGVeXZu
+RATZLq/qZxvYlW++w7avkSA+9/sjhtOCad90Bg5nE+Yr
+vyLvQgX3VQ0chgPog2MJK7YqdTcX8i0LeX3JC5vuFxXb
+3YGPHr1mX1D2IJivxyxaQXeW7EhxwEfF7lzIrPaAc+uH
+J4QQQgghhBBCpHkBAAD//w==
+			)
+			(entities 
+				(entity 
+					(label Clyde)
+					(x 69)
+					(y 129)
+					(sprite clyde.ika-sprite)
+					(speed 100)
+					(direction up)
+					(move_script MoveClyde)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script TalkToClyde)
+				)
+			)
+			(zones 
+				(zone 
+					(label AnnasHouse)
+					(x 55)
+					(y 384)
+					(width 18)
+					(height 16)
+				)
+				(zone 
+					(label RiseUp)
+					(x 448)
+					(y 224)
+					(width 48)
+					(height 48)
+				)
+			)
+		)
+		(layer 
+			(type tile)
+			(label Above)
+			(dimensions 
+				(width 80)
+				(height 80)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2NFNwzAUQNGMUIagDAASdIAyHNsAnzAciWglE/GR
+9vFwHJ8jWepH5VpXdhp5GJbZLfxe6X4cD7PPH1fMA8A6
+3dReAN0q3zG43HEcz7UX0TDPPgDW7nUcb7UX0Zhzs2ns
+T4Nlpnb72XiquqK23A4/ux3qLqc55353tRfSKP1ieu73
++Qdz9NIv6w6rh35Tu6w7rB76Zd7/le8v70m/sRaZ+2/L
+Df9r/231HL8kzt1Dv0z6xegXM++31f+QLL/1sweXexy+
+7630i5k6OsMxGsaVz0Pn+HL6xZRnWL/r9HCnlUm/GP1i
+9IvRDwAAAAAAAAAAAACAFn0BAAD//w==
+			)
+			(obstructions 
+				(format tile)
+				eJzs1LEKACAIRVH9/58OoihaGnyC0b2D4xkiNSMiuuYr
+CRZHNk6Jybnh6d7PuxZVDk/H4Qk8JejbxKvi6cDq3jxW
+hb90zs4V9p44gj95RERERESUXAMAAP//
+			)
+			(entities 
+			)
+			(zones 
+				(zone 
+					(label FallDown)
+					(x 512)
+					(y 224)
+					(width 48)
+					(height 48)
+				)
+				(zone 
+					(label TownBorder)
+					(x 448)
+					(y 640)
+					(width 48)
+					(height 16)
+				)
+			)
+		)
+		(layer 
+			(type tile)
+			(label Above 2)
+			(dimensions 
+				(width 60)
+				(height 60)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2EEKAjEMBdDcSY+lgh5ABT3AKOh5jTCFInQ5Uynv
+wV803SSbLBIRscvsqxwzp6p+iLGcM5cqt8x9rj8y126d
+LaPMVVLmneb/Z6e+ljL9vF+Zd49GAAAAWE3rtjGq1m1j
+VK3bxqjcNsa37d1ArLs3N9F/5rX25j/M+mVv2psAAAAA
+AAAAUHwAAAD//w==
+			)
+			(obstructions 
+				(format tile)
+				eJzswQEBAAAAgiD/r25IQAEAAPBoAAAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+	)
+)

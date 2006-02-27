@@ -1,0 +1,20 @@
+LIBRARY audiere.dll
+EXPORTS
+_AdrCreateLoopPointSource@4
+_AdrCreateMemoryFile@8
+_AdrCreatePinkNoise@0
+_AdrCreateSampleBuffer@20
+_AdrCreateSampleBufferFromSource@4
+_AdrCreateSquareWave@8
+_AdrCreateTone@8
+_AdrCreateWhiteNoise@0
+_AdrGetSampleSize@4
+_AdrGetSupportedAudioDevices@0
+_AdrGetSupportedFileFormats@0
+_AdrGetVersion@0
+_AdrOpenDevice@8
+_AdrOpenFile@8
+_AdrOpenSampleSource@8
+_AdrOpenSampleSourceFromFile@8
+_AdrOpenSound@12
+_AdrOpenSoundEffect@12

@@ -1,13 +1,10 @@
-#!/usr/bin/env python
-
-"""Entity movement classes."""
-
-# Coded by Andy Friesen.
+# Entity movement classes
+# Coded by Andy Friesen
 # Copyright whenever.  All rights reserved.
-
-# This source code may be used for any purpose, provided that the
-# original author is never misrepresented in any way.
-
+#
+# This source code may be used for any purpose, provided that
+# the original author is never misrepresented in any way.
+#
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
@@ -46,6 +43,10 @@ class Script(object):
         self.script = []
         self.offset = 0
         self.killed = False
+
+    def Reset(self):
+        self.killed = False
+        self.offset = 0
 
     def Kill(self, ent):
         self.killed = True
@@ -158,10 +159,10 @@ class Script(object):
         self.script.append(doLoop)
         return self
 
-def Follow(ent, chaseTarget):
-    r16 = range(16)
+class Follow(object):
+    def __init__(self, ent, target):
+        self.ent = ent
+        self.target = target
 
-    while True:
-        ent.MoveTo(chaseTarget.x, chaseTarget.y)
-        for count in r16:
-            yield None
+    def __call__(self, ent):
+        ent.MoveTo(self.target.x, self.target.y)

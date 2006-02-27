@@ -1,15 +1,14 @@
-#!/usr/bin/env python
-
-"""Basic layout management classes."""
-
-# Coded by Andy Friesen.
-# Copyright whenever.  All rights reserved.
-
-# This source code may be used for any purpose, provided that the
-# original author is never misrepresented in any way.
-
+# Basic layout management classes
+# coded by Andy Friesen
+# copyright whenever.  All rights reserved.
+#
+# This source code may be used for any purpose, provided that
+# the original author is never misrepresented in any way.
+#
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
+#
+# All glory to the list comprehension.
 
 import gui
 

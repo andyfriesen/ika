@@ -1,0 +1,161 @@
+(ika-map 
+	(version 1.1)
+	(information 
+		(title The River)
+		(meta 
+		)
+	)
+	(header 
+		(dimensions 
+			(width 1600)
+			(height 1600)
+		)
+		(tileset village.vsp)
+	)
+	(waypoints 
+	)
+	(zones 
+	)
+	(layers 
+		(layer 
+			(label B0)
+			(type tile)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsw8EJAAAMA6Hb/5WRC51DwVVTVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVVX/AQAA//8=
+			)
+			(obstructions 
+				(style tile)
+				(format zlib)
+				eJzswQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(label B1)
+			(type tile)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsnEFqwzAUBZU7lFy0m9BsTFal0DvHOkCir4Weh3gEszcM731LcnJprV1CfLfa+gk+05nRB4uqj8fODfC8n07Vx+/OH+B5P52qj77MyHr+d76KPsxIhpmMONfXcy/b0EeCmc5yhmTwPYuFncVCHyxmZog+Mnh2wqKaEWd6Ds97WVTnuj4yVDvLGZKj0ll9hmw6ieBc5+G7L4vqXLe3MnhPxcN7Khbei/CYyYidtR7PfXlci07srBzV3rKzMlR7y87KUcmIPnJU9uz6yFHpLH1kGXWWPvRxZvTBQh8s9MFCHyz0wUIfLEY+PONl+fAuneWjLzPC8mFGWD76MiMsH2aE5aMv331ZPuwslg87az0z32P1ZWetx85iUf0+ri87i+fEjLCc+JsdnZyZmT371nSymtl3YOf7epzvPJwlPGac2FssJ56lsJw4R3hOzAjLiT5YTvRxDK/28PrQh7z24TsWy4f7QpaPvuwslg87i+XDzmL56MvO0seZGd0hOkPyOENYmBEeZoSFGeHx7vzdjByD+3UWo4xsOtGJ6ASI852H853Fu32JGTkG7xBZ6IOFPljog4U+WOiDhXsQFqM9yKaTOJ5n8fBOl4XfarGg/Qf2EwAA//8=
+			)
+			(obstructions 
+				(style tile)
+				(format zlib)
+				eJzswQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(label A0)
+			(type tile)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsne1qwzAMRfsQe9zB/gz22iuUjDSLE8WWrBv7HOiPQZc6V7oSqT/6eACAhc/n6yt7EPAXh+/n6yd5LEAcAOAe0MO1oHfogle0wCs64A0t8IYG+EKLTF98JH3uHcAnWtA/9MAjWuARgGOoWVpQszTAF1psfUF88lnHgLqVDzHQgNqkBb1Dh0V7eocGi/bEQINtbaJW5bLni+3fxEgLalk/1rmPD/JZ5z4+0ASf5LLVH5/kgv46WPs5NawP1n6Oh/pC/muRkf/kgBbUwGPIVw1K5wG0xof41rHEwfu5kHrUhlU/8j6OGm3J+zhKtSqK0ufguXf2ct5DI2tPwnMvjjT30Aidr4FeWlC3tSj189o4EV8ftnWrto4d/Z81VsS0z1yUNcYz9zTLWZYz69Ob2vpi8YzXe2ajpEmrZ7zeMxvs/9BhT/uonCXO55xp77kfgdp0DYtXLJrig3oi9qn18MGoMS9pp3S/PXucEr33dFrnpmbQfo+rz4atHmJuqsyZtnsaoVsca22VeoeFu433Kj1i43ndmXza8rzRMjc/8zoUxb48c6+/c+8YFa/fWCOePvT6riRqDn2UPDjazxlxj1Fz6KP0laP9nGr3OIoHWslea72glh+9yPo+r3X/yaj+Uc/DGZ5NeuTWqPkbgXduzTqHpAra13PntewKY/Cmds1opAes85Gj+1Bl7nrm+UjOptai55qfEet9LyK8gv+OiczXs2tzXs1/IvcanHmB82r2UevnI+b9FTz2xHqikBOq3GG9Nfh5iriW8d5nbrketemdyF5ee72ZPaOYn4pjymbmHFWEHM3hFwAA//8=
+			)
+			(obstructions 
+				(style tile)
+				(format zlib)
+				eJzswQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(label A1)
+			(type tile)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsncFOxDAMRPvBSFyQuHDkw1kJVZTdpnUT25km70l7W5V27LHVdRKW5Y+3x+d9gd6scfh4fD473wsQBwC4B/RwLegduuAVLfCKDnhDC7yhAb7QAl9ogk+0wCd64BEt8AjAMdQsLahZGuALLZ59QXz6s40Bdas/xEADapMW9A4dVu3pHRqs2hMDDZ5rE7WqL8++2PMJMdKCWpbHNvfxQX+2uY8PNMEnfXnWH5/0Bf11sPZzalgO1n6Oh3Ih/7Xokf/kgBbUwGPIVw1K5wG0xof41rHGwfu9kHrUhlU/8j6OGm3J+zhKtSqK0t/Bc/+JmgtaexKe++VIcw+N0Pka6KUFdVuLUj+vjRPx9cGy7qfmOlussSKmObMoa4xn7mmWsyxn1ieb2vpi8YzXd2ajpEmrZ7y+Mxvs/9BhT/uonCXO55xp77kfgdp0DYtXLJrig3oi9qll+GDUmJe0U3rezB6nRPaeTutsagbt97j6btjqIWZTZc603dMI3eLYaqvUOyzc7X6vkhEbz+vO5NOW942W2fzM61AU+/LMvf7OvWNUvP7HGvH0Ieu3kqgZ+ih5cLSfM+IZo2boo/SVo/2cas84igda6b3WekUtP7Lo9Xte6/6TUf2jnoczvJtk5Nao+RuBd27NOkNSBe3rufNadoV78KZ2zWikB6zzyNF9qDK7nnkeydnUWmSu+Rmx3mcR4RX8d0xkvp5dm/NqXonca3DmBc6reeVr0evnI+a9le/FZ0+sJwo5ocod1luDn6eIaxnvfeaW61Gb/hPZy2uvN7NnFPNT8Z56M3OOKkKOAoAaPwAAAP//
+			)
+			(obstructions 
+				(style tile)
+				(format zlib)
+				eJzswQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+	)
+)

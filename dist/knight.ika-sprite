@@ -1,0 +1,135 @@
+(ika-sprite
+	(version 1.0)
+	(information
+		(title Untitled)
+		(meta
+		)
+	)
+	(header
+		(depth 32)
+	)
+	(scripts
+            (script
+                (label walk_up)
+                F9 W20 F10 W20 F9 W20 F11 W20
+            )
+            (script
+                (label walk_down)
+                F0 W20 F1 W20 F0 W20 F2 W20
+            )
+            (script
+                (label walk_left)
+                F3 W20 F4 W20 F3 W20 F5 W20
+            )
+            (script
+                (label walk_right)
+                F6 W20 F7 W20 F6 W20 F8 W20
+            )
+            (script
+                (label walk_upleft)
+                F3 W20 F4 W20 F3 W20 F5 W20
+            )
+            (script
+                (label walk_upright)
+                F6 W20 F7 W20 F6 W20 F8 W20
+            )
+            (script
+                (label walk_downleft)
+                F3 W20 F4 W20 F3 W20 F5 W20
+            )
+            (script
+                (label walk_downright)
+                F6 W20 F7 W20 F6 W20 F8 W20
+            )
+
+            (script
+                (label idle_down)
+                F0
+            )
+            (script
+                (label idle_up)
+                F9
+            )
+            (script
+                (label idle_left)
+                F3
+            )
+            (script
+                (label idle_right)
+                F6
+            )
+            (script
+                (label idle_upleft)
+                F3
+            )
+            (script
+                (label idle_upright)
+                F6
+            )
+            (script
+                (label idle_downleft)
+                F3
+            )
+            (script
+                (label idle_downright)
+                F6
+            )
+	)
+	(frames
+		(count 15)
+		(dimensions
+			(width 16)
+			(height 24)
+		)
+		(hotspot
+			(x 0)
+			(y 12)
+			(width 14)
+			(height 16)
+		)
+		(data
+			(format zlib)
+			eJzsnLFxG0kQRRHDmfKVwNkKgPa58hSBQmAGFwot+XLl
+XgYqhaAA9g4oNurj8//unlnwCBRHVSNqF/une6ZnXvcu
+F9q27bC9Uvvvz/GvbVb7x5ev27dff0/10dUrH+Mc6t01
+x4Y24vjYQh+Nr0F9HB9/bh8+nFro4xivQT3awT5Qz9rj
+Z85nPMZ+2Y6b66e/Xs5fnGPbaP98/unrqZ3nHY5VTNWc
+qH74Oqd/npRt+/nj1PBcNf6LMTzr2Xee+0+ff1/4GJ9n
+51Bz/Hc0jiXHjK/Fc+zjw8PDqbHfmf7x8fHcQo/nKn1o
+XKv0OPaw6eYg9H9+/Odi/KFF/+N86I8ajGEc8z5S+wa1
+zBPWdljkuKTa4vfi9+L3bfKbYzTCb2SX43elZ1Yzvzv6
+Lrud/8zvjv/BU5wD9J/ZrfjN+rhezb/iN69Dx/GMqSPX
+/h9tj3231xf/F/8X/+fq96r+Rr2r37EPp8/qd+S403fz
+QMd/rt+V/1G/cx509XtoMIZ4D8C2OCdUPOG4K4aM8Jfb
+W+WDGYbP+s0Mw1hVfak9hPzI9KfPgN8cR2afsnvUzsQf
+OcH85nrC2cafbi07PfMe8wDXQ9n6D24HNzmXZj4Er5X/
+2JwPjvccB+XDBfefLuOgONBZ864OrOKPNa1iXKYPf1HD
+rVoDqt6u9NGHu1/o6jFPuDF05jAbQ/YMhvdK1wfU8Nph
+u27+1bp/URcNcncPg/doF78Xv++F34q5OPZqL4Re1YnM
+kEqPNkfYg3p1v9DRHw4HWeuP6LnWV2PI+Kfi3OU3r7Ns
+HlGf2Y6W8Vut1VEG7+HtLbY94+FYhL7Tl+IOxreKwcof
+K3/cc/3veDdS/zvud+v/Pfqq9s/85/l2es4fqOXnRB0f
+HOujD2yjPOQ92NXZ/Tmhn7XVtYfXOvZXeuQePzut+lCM
+j3ORDzp9WF7DM/xs/Mwp5k9n7/O4VW7I9g2uNcwDGTeZ
+72c7lAt4TfC+U3E7a55q28x6zAWQG+z+4vyrckJnzbsa
+MFs76hkB5oIsb1acq/JuxrhO3s70+DyoGrvyHe8llDa7
+R6r2TmWb6ybXB/vBa6jav7yG1Dru8JTX2yiHVR8jGsXB
+Th8YK9yPi9+L38+L6ib4nb374fiN/rnnFhWDYl5G9Cqu
+o3p+/6erz54F8fpxz2bUvfOIbfcsyMUefwfs9nPGRMdd
+s6ZbLFb9jmjfos34i9cyhzt9IBsx9it/rPzxvKhuIn9k
+a+c16n9Vy47qs9h39TP1P+cRZ7t6RsPxGLXNPFF9hB/q
+OY9q2R6efc5zazlijy9ZzK6pVz66PezmGm3gMerdNcwa
+5r06r+4r+XNnX93L83nFrayGYVsqhyFXeX3zeZcPXEx5
+zM4+9u/0yjb74Mbvxs5zwHOvak5Xu0ZDjWMeN3edYt/2
+/XBuFVsz9kdfM/pr2a/0Ln9k9t37o52WvXuU9dP53UGW
+c0Y5uvi9+L34fX/87rC7y89Z/l7L/iy/K/vvgd972+L/
+4v/i//3xv5sHRvir+ujmj2vYH+V/ZX/xf+WP18wfzNuR
+/LG+P7zv+8P4Owf1LmqlP9uF7w+rWKnxX4zhxr4/rK7F
+c+zj+v9/3vf//3Mt/s/YZgbhXFd9qT2A81vN33r//w3f
+/ze8drX8C33y/QE1l9L+nb//j5zJaudMr/JFpY8+1vd/
+X9YKnXuAbN2OcFRxf4bBs23GJl7L/OuOmWtiV69We4e5
+v97/8bW74sYFn6/w/g/3kdlm1l/YfIfv/6z3//O9U9nm
+XJBx+x7f//8XAAD//w==
+		)
+	)
+)

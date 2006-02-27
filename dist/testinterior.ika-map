@@ -1,0 +1,96 @@
+(ika-map 
+	(version 1.0)
+	(information 
+		(title )
+		(meta 
+		)
+	)
+	(header 
+		(dimensions 
+			(width 320)
+			(height 240)
+		)
+		(tileset village_interior.vsp)
+	)
+	(waypoints 
+	)
+	(zones 
+	)
+	(layers 
+		(layer 
+			(type tile)
+			(label B1)
+			(dimensions 
+				(width 20)
+				(height 15)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzkz7EKwkAMxvGz2loFwaqItagPoN0Upw7qpGId+/5v
+4r+QQBR6FNcOP0KS4+MSO+fijuphixA7BDLTPjR7K2jI
+G2KOKWaIZKZ9IvtEZlojT16GFdYmT/tU9qnMtPry3qhQ
+YoC+6SuztzaevAuuuMmN9X0H5FJV/W4v73z/u+OBp9yY
+/eRotn3XNq+U+3L3/cd/8l5yd5MjTjh78kaYtLRAgSXG
+DXld8AEAAP//
+			)
+			(obstructions 
+				(format tile)
+				eJxiYBgFxAIAAAAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label B2)
+			(dimensions 
+				(width 20)
+				(height 15)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJxiYBgFtAZ1QFwPxO1QTC0QD6VjqGReOhD3AHEKlczL
+B+JuIM6h0JwaJDyVUkcBQQsSnksF8+gFRAfaAYMAAAAA
+AP//
+			)
+			(obstructions 
+				(format tile)
+				eJxiYBgFxAIAAAAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+	)
+)

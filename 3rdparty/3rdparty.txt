@@ -1,0 +1,7 @@
+This directory contains binaries and sources of libraries that ika requires to build.
+
+The sole exception is wxWindows, which is really huge.  I should probably put it here anyway.
+
+If you are not running Windows, you can all but certainly ignore this directory completely.
+
+ -- andy 14 Feb 2005

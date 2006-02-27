@@ -1,0 +1,66 @@
+# skills.dat
+# Lines starting with #s are comments.
+# The item format is as follows
+# All fields are optional:
+#
+# name Name of my skill
+#    desc
+#        Description for the skill.  Note that spaces are fine both here and in the item name.
+#        The current menu system allows for a two line description, so try not to go over.
+#    end
+#    type attack/defense/energy/resist/recovery/automatic
+#    target
+#      Pick a targetting type.  The currently supported target types are:
+#        self
+#        ally
+#        all allies
+#        enemy
+#        all enemies
+#        all
+#    end
+#    useby
+#        list of names, or "all"
+#    end
+#    minlevel VALUE                     The minimum required level to be able to learn this skill.
+#    cost VALUE                         How much stores will charge, if it can be bought.
+#    fieldeffect FUNCTIONNAME
+#    battleeffect FUNCTIONNAME
+#    mp MPCOST
+# end
+
+name Heal
+    desc
+        Restores HP (what a boring name)
+    end
+    type recovery
+    useby
+        Clyde
+        Asunya
+    end
+    target
+        ally
+    end
+    #battleeffect Heal
+    fieldeffect Heal
+    basic
+    mp 2
+end
+
+name Halo
+    desc
+        Restores lots of HP
+    end
+    type recovery
+    useby
+        Asunya
+    end
+    target
+        # One or all allies
+        ally
+        all allies
+    end
+    # Not implemented yet. :D
+    #battleeffect Halo
+    #fieldeffect Halo
+    mp 10
+end

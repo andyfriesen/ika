@@ -1,6 +1,6 @@
-# Item menu for pi
-# Coded by Andy Friesen
-# Copyright whenever.  All rights reserved.
+# item menu for xi
+# coded by Andy Friesen
+# copyright whenever.  All rights reserved.
 #
 # This source code may be used for any purpose, provided that
 # the original author is never misrepresented in any way.
@@ -10,139 +10,119 @@
 
 import ika
 
-import xi.party
-from xi import gui
-from xi import layout
-from xi.fps import FPSManager
-from xi.menu import Menu, Cancel
-from xi.transition import Transition
-from xi.misc import *
-
-import xi.menuwindows
-
+import party
+import menu
+import widget
+import item
+import mainmenu
+from fps import FPSManager
+from menuwindows import *
+from misc import *
+from transition import *
 
 class ItemMenu(object):
     def __init__(self, statbar):
         self.statbar = statbar
-        self.itemList = self.createInventoryWindow()
-        self.menu = gui.FrameDecorator(Menu(textctrl=self.itemList))
-        self.description = self.createDescriptionBar()
+        self.menu = self.CreateInventoryWindow()
+        self.description = self.CreateDescriptionBar()
+        self.description.AddText('')
 
-    def createInventoryWindow(self):
-        return xi.menuwindows.InventoryWindow(xi.party.inventory)
+    def CreateInventoryWindow(self):
+        return InventoryWindow()
 
     #--------------------------------------------
 
     # Maybe someone wants to make a multiline description field.
     # Like Star Ocean.  You could even put an image in here somewhere, or something.
-    def createDescriptionBar(self):
-        return gui.FrameDecorator(gui.StaticText(text=['','']))
+    def CreateDescriptionBar(self):
+        desc = widget.TextFrame()
+        return desc
 
     #--------------------------------------------
 
-    def setDescriptionBarText(self, desc):
-        # there's a second line, but we'll play ika's willingness to print
-        # newlines and just let it go.
-
-        # wordwrap, take the first two lines (that's all we have room for) and join with a newline
-        t = '\n'.join(wrapText(desc, self.description.client.width, self.description.font)[:2])
-        self.description.text[0] = t
+    def UpdateDescriptionBar(self, item):
+        self.description.Text[0] = item.Description
 
     #--------------------------------------------
 
-    def updateDescriptionBar(self):
-        if self.menu.cursorPos < len(xi.party.inventory):
-            self.setDescriptionBarText(xi.party.inventory[self.menu.cursorPos].description)
+    def Layout(self):
+        self.description.DockTop().DockLeft()
+        self.menu.DockLeft().DockTop(self.description)
+
+        self.menu.YMax = (ika.Video.yres - self.menu.y - 20) / self.menu.Font.height
+        self.description.Right = self.statbar.x - self.statbar.border * 2
+
+    #--------------------------------------------
+
+    def StartShow(self):
+        self.Layout()
+        self.Refresh()
+
+        trans.AddWindowReverse(self.description, (self.description.x, -self.description.height * 2) )
+        trans.AddWindowReverse(self.menu, (self.menu.x, ika.Video.yres) )
+
+    #--------------------------------------------
+
+    def StartHide(self):
+        trans.AddWindow(self.description, (self.description.x, -self.description.height * 2), remove = True )
+        trans.AddWindow(self.menu, (self.menu.x, ika.Video.yres), remove = True )
+
+    #--------------------------------------------
+
+    def Refresh(self):
+        self.menu.Refresh(lambda i: i.fieldeffect is not None)
+        self.menu.AutoSize()
+        self.statbar.Refresh()
+        self.menu.Right = self.statbar.Left - self.statbar.border * 2
+
+        if len(party.inv) > 0:
+            self.menu.active = True
         else:
-            self.setDescriptionBarText('')
+            self.menu.AddText('No Items')
+            self.menu.CursorPos = 0
+            self.menu.active = False
+
+        self.menu.Layout()
+        
+            
+        trans.Reset()
 
     #--------------------------------------------
 
-    def layout(self):
-        self.description.autoSize()
-        l = layout.VerticalBoxLayout(
-            0, 0, ika.Video.xres - 16, ika.Video.yres,
-            children=[self.description, self.menu],
-            pad=8,
-            stretch=True)
-        l.layout()
+    def Update(self):
+        result = self.menu.Update()
+        if result == menu.Cancel:
+            return menu.Cancel
 
-        # hack: Nudge each control down and to the right a bit.
-        self.description.x += 8
-        self.description.y += 8
-        self.menu.x += 8
-        self.menu.y += 8
+        if result is not None:
+            item = party.inv[self.menu.CursorPos].item
 
-        # Keep the menu from going past the bottom of the screen.
-        self.menu.height = ika.Video.yres - self.menu.y - self.menu.border * 4
+            if item.fieldeffect is not None:
+                result = item.fieldeffect()
+                if result is None and item.consumable:
+                    party.inv.Take(item.name)
+                self.Refresh()
 
     #--------------------------------------------
 
-    def startShow(self, transition):
-        self.layout()
-        self.refresh()
+    def Execute(self):
+        def Draw():
+            ika.Map.Render()
+            trans.Draw()
 
-        transition.addChild(self.description, startRect=(self.description.x, -self.description.height * 2) )
-        transition.addChild(self.menu, startRect=(self.menu.x, ika.Video.yres) )
-        self.updateDescriptionBar()
-
-    #--------------------------------------------
-
-    def startHide(self, transition):
-        transition.addChild(self.description, endRect=(self.description.x, -self.description.height * 2))
-        transition.addChild(self.menu, endRect=(self.menu.x, ika.Video.yres))
-
-    #--------------------------------------------
-
-    def refresh(self):
-        self.itemList.refresh(lambda i: i.fieldEffect is not None)
-
-        self.statbar.refresh()
-
-        if len(xi.party.inventory) == 0:
-            self.menu.addText('No Items', '', '')
-
-        self.layout()
-
-    #--------------------------------------------
-
-    def useItem(self, item):
-        try:
-            # first see if the effect wants us as an argument
-            result = item.fieldEffect(self)
-        except TypeError:
-            # if it doesn't, that's fine too.
-            result = item.fieldEffect()
-
-        if result is None and item.consumable:
-            xi.party.inventory.take(item.name)
-        self.refresh()
-
-    def draw(self):
-        ika.Map.Render()
-        self.description.draw()
-        self.menu.draw()
-
-    def execute(self):
         fps = FPSManager()
 
-        result = None
-        while result is not Cancel:
-            oldPos = self.menu.cursorPos
+        while True:
+            oldPos = self.menu.CursorPos
+            result = self.Update()
 
-            result = self.menu.update()
+            if result is not None:
+                break
 
-            if result not in (None, Cancel):
-                # use an item
-                item = xi.party.inventory[self.menu.cursorPos].item
-                if item.fieldEffect is not None:
-                    self.useItem(item)
-                    fps.sync()
+            if oldPos != self.menu.CursorPos:
+                self.UpdateDescriptionBar(party.inv[self.menu.CursorPos])
 
-            if oldPos != self.menu.cursorPos:
-                self.updateDescriptionBar()
-
-            fps.render(self.draw)
+            fps.Render(Draw)
 
         return True
 

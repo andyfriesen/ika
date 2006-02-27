@@ -1,0 +1,209 @@
+# Items.dat
+# Lines starting with #s are comments.
+# The item format is as follows
+# All fields are optional:
+#
+# name Name of my item
+#    desc
+#        Description for the item.  Note that spaces are fine both here and in
+#        the item name.  The current menu system allows for a two line
+#        description, so try not to go over. (like I just did)
+#    end
+#    type weapon/armour/accessory
+#    equipby
+#        list of names, or "all"
+#    end
+#    useby
+#        list of names, or "all"
+#    end
+#    consumable            If this is present, the item is destroyed when used.
+#    cost VALUE            How much stores will charge.  Default is 0. (which also forbids an item from being sold)
+#    fieldeffect FUNCTIONNAME
+#    battleeffect FUNCTIONNAME
+#    atk +/-VALUE
+#    grd +/-VALUE
+#    hit +/-VALUE
+#    eva +/-VALUE
+#    str +/-VALUE
+#    vit +/-VALUE
+#    mag +/-VALUE
+#    wil +/-VALUE
+#    spd +/-VALUE
+#    luk +/-VALUE
+# end
+
+# Consumables
+
+name Aspirin
+    desc
+        Painkiller that heals about 50 HP.
+        Bad for your blood pressure.
+    end
+    useby
+        all
+    end
+    consumable
+    fieldeffect Aspirin
+    cost 50
+end
+
+name Buffrin
+    desc
+        Painkiller that heals about 300HP.
+    end
+    useby
+        all
+    end
+    consumable
+    fieldeffect Buffrin
+    cost 300
+end
+
+name T3
+    desc
+        Industrial strength pain killing medication.
+        Restores all HP.
+    end
+    useby
+        all
+    end
+    consumable
+    fieldeffect T3
+    cost 1500
+end
+
+# weapons
+# swords
+
+name Wood Sword
+    desc
+        Not very sharp, but light and easy to handle
+    end
+    type weapon
+    equipby
+        Clyde
+    end
+    atk +5
+    hit +95
+    cost 150
+end
+
+name Dagger
+    desc
+        Short, light blade of stainless steel
+    end
+    type weapon
+    equipby
+        Claudia
+    end
+    atk +5
+    hit +95
+    cost 200
+end
+
+name Short Sword
+    desc
+        Too big to be a dagger
+    end
+    type weapon
+    equipby
+        Clyde
+        Claudia
+    end
+    atk +10
+    hit +80
+    cost 350
+end
+
+name Gladius
+    desc
+        Wide bladed sword
+    end
+    type weapon
+    equipby
+        Clyde
+    end
+    atk +15
+    hit +80
+    cost 400
+end
+
+name Sabre
+    desc
+        Light, elegant slashing weapon
+    end
+    type weapon
+    equipby
+        Clyde
+        Claudia
+    end
+    atk +13
+    hit +90
+    cost 500
+end
+
+# armour
+
+name Shirt
+    desc
+        Light and comfy
+    end
+    type armour
+    equipby
+        all
+    end
+    grd +2
+    cost 50
+end
+
+name Leather Vest
+    desc
+        Protects without sacrificing mobility
+    end
+    type armour
+    equipby
+        Clyde
+        Claudia
+    end
+    grd +6
+    cost 200
+end
+
+name Chainmail
+    desc
+        Shirt made of heavy interlocking metal rings
+    end
+    type armour
+    equipby
+        Clyde
+    end
+    grd +12
+    eva -10
+    cost 400
+end
+
+name Carbon Vest
+    desc
+        Strong, flexible vest made from carbon fibres
+    end
+    type armour
+    equipby
+        Clyde
+        Claudia
+    end
+    grd +16
+    eva -5
+    cost 800
+end
+
+# other stuff
+
+name Manual
+    desc
+        RTFM! RTFM!
+    end
+    useby
+        all
+    end
+    fieldeffect Manual
+end

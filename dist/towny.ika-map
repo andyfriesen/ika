@@ -1,0 +1,199 @@
+(ika-map
+	(version 1.0)
+	(information
+		(title )
+		(meta
+		)
+	)
+	(header
+		(dimensions
+			(width 640)
+			(height 320)
+		)
+		(tileset village.vsp)
+	)
+	(waypoints
+	)
+	(zones
+	)
+	(layers
+		(layer
+			(type tile)
+			(label B0)
+			(dimensions
+				(width 40)
+				(height 20)
+			)
+			(position
+				(x 0)
+				(y 0)
+			)
+			(parallax
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap
+				(x false)
+				(y false)
+			)
+			(data
+				(format zlib)
+				eJyUVrtOw0AQPJt0zo+AQDwlGgoIFOFRhIQP4BNogmjg
+G/gUaBAlJVBBvog9xSuNhtlzXIw28dp749nZO89TSveG
+ylAbngkV5FRcN2watgwbPXIvhldRv6Jrj4YnyDO/usCt
+FhzOAZyrAe/Eow7+z1v9PCJHfkbFHcOuYc+wbzgBcA6f
++yjUxXVdP9QRe9ul3xj0uiD9OIfPfYpelvTDe/r47xj0
+GhmuAZxj/b4K2nlk//GM3LYo6Ze1uTRcdWiLuZ9WQ+dY
+0sB9vp2WPkZ+Y6iv5nFimBpmhhuqOwEtp6KPyPEboup7
+xM97NBL8/Nk1wwBil+/xd+b4a1i0kTX1+/OsHablnEX6
+qXl0Xg7kmeu+tYjmgCP33XPZO+4h5Oc9mqb/fkJuAwJz
+VZHfyeEcvdeZY/aOe4jnN5pVrqs0ZP7qN9/jOi4CjaPz
+wzX2mR0kzZHX5Fz0Xsq/ygfMjzX2mWUNuE6Gz9NdYV3l
+29LZgPweoB6+Z1Wo6fEg6XnndZXeq+qHHPk9sa6qc0T8
+hi14Xa6JHLv04z5HfnJvnhlOW/B+1ADHYdL6Yc1Vzl/W
+UO0V+TrOf3T+Dokj+4/7rL7/Iv14VhpYr6H/0flWB/qx
+t51nH/2YI3NCrtE5X9o31F7UVz/erxuB0jdIad9Q+2O+
+/gcAAP//
+			)
+			(obstructions
+				(format tile)
+				eJxiYBgFo2AU4AIAAAAA//8=
+			)
+			(entities
+			)
+			(zones
+			)
+		)
+		(layer
+			(type tile)
+			(label B1)
+			(dimensions
+				(width 40)
+				(height 20)
+			)
+			(position
+				(x 0)
+				(y 0)
+			)
+			(parallax
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap
+				(x false)
+				(y false)
+			)
+			(data
+				(format zlib)
+				eJzMlj1OAzEQhd2EjjT5AQkSOAE3ACqgClQh94AGJUig
+CAjiPogqokHiWsxIftLjxbvxOhSM9LS2s579PB57EsJv
+m1F7Gv6fOV/X1AllfCPTpenqL6HEbk03hXPHpmvTJPHb
+vekhtrcK/ft8j2Fu7BAvxGyUaKP/ZFoU8L2YnuNzEfnm
+pruMuYgXYjZOtNHn+O2ZBg0YeW3O92p6y5jnMUKuHdH4
+bqiPXy4jrwmGMzwN6/PdY6S5Bp918WPGNkl5dU3KV5fv
+sBZ9a0A+l/TOsuJbajkxZT6345p3h6Z98Y84fNH495pv
+NmFUvrP4RK7hqWz6jXaBBjI/h4/zaULP1urUjS3n3lE+
+5M1O7J+YTsMqn9ec7QJ1N+RTOzddCJ+z9TJ8p6xP7SZ8
+cxnXc9p0f99FH3F8SO80Ob9+Rz/SuK8Te+F+cDY6FX4O
+pa/322d86jpzzy8YuY6kcs739YDGuKao8f1TxedWt88z
+6fM+eww5p1N+cL61vuk88PG+lPClajHnoscDe81+tb6B
+xTl7xMf+qvi4Liqfm/6fSa055wxzDW7Cx3UxxZeKIWIB
+5dwvXIOZry/vge8HAAD//w==
+			)
+			(obstructions
+				(format tile)
+				eJyskVEOgDAIQ3n3v7QxZBEoxM24z/IohQEWHywh60YG
+R66AgUMcP851thakDVd1Px6fOwTBVAZ3lS7gj5wnfuXS
+Sluc7XGH3ut45Xq7nIC0NxpiDL/Wt0Sh30sjXgAAAP//
+
+			)
+			(entities
+			)
+			(zones
+			)
+		)
+		(layer
+			(type tile)
+			(label A0)
+			(dimensions
+				(width 40)
+				(height 20)
+			)
+			(position
+				(x 0)
+				(y 0)
+			)
+			(parallax
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap
+				(x false)
+				(y false)
+			)
+			(data
+				(format zlib)
+				eJzslssKAiEUhl22DKLoAYqCijYte5Dud6hVtapX6/H6
+JQWRo6NnnNzMBx+I4Pgz6DkK8eMOHyKeDdyq8ZxQ87TW
+tWA7Yp+Xytgx5kLWXxzzjYJ1n5BQFjLjm5hfwXXkt5qM
+/TnM4Ame1djURxX5BsScPEMLuBTus0WROt8QTuGIyHeA
+RzUew0lAvhzou7qD+8xZKMy7es2WgoZTG/8JVXdqqqcH
++/CWOwiBrFm6Htn9N5RU597uLXZ/4ebjvltsfG+XMrje
+BGUper/Ekrq++fovZ6/U/7CbeK+6P/D4AgAA//8=
+			)
+			(obstructions
+				(format tile)
+				eJxiYBgFo2AU4AIAAAAA//8=
+			)
+			(entities
+			)
+			(zones
+			)
+		)
+		(layer
+			(type tile)
+			(label A1)
+			(dimensions
+				(width 40)
+				(height 20)
+			)
+			(position
+				(x 0)
+				(y 0)
+			)
+			(parallax
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap
+				(x false)
+				(y false)
+			)
+			(data
+				(format zlib)
+				eJxiYKAeUEbjKyCxlYA4B4jzKbSDFP0CJJpdAsTlUDYb
+iXqJBRlIbFLdR43wIwVQEn60AqZAbAZl43IfrnCidvih
+26+AxFbGIg8DuMKJ2uGHbD8HFnkJKtpFrDtwiZOa1qgJ
+CLkvB48aegBcdsPirwSPGnoAYtLRQLqPGDDY3UevvDpQ
+QHsA7R7scT/Y3UdK2syhmStIA7C2ADpdMpCOggKQW3KB
+OA8LDXPrQAJQGJUCcRkWupyBtDAEAAAA//8=
+			)
+			(obstructions
+				(format tile)
+				eJxiYBgFo2AU4AIAAAAA//8=
+			)
+			(entities
+			)
+			(zones
+			)
+		)
+	)
+)

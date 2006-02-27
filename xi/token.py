@@ -74,3 +74,5 @@ class TokenStream(object):
                 return s
 
             s = s + c
+
+

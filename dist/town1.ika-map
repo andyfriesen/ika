@@ -1,0 +1,354 @@
+(ika-map 
+	(version 1.0)
+	(information 
+		(title )
+		(meta 
+			(entitylayer B1)
+		)
+	)
+	(header 
+		(dimensions 
+			(width 960)
+			(height 960)
+		)
+		(tileset town.vsp)
+	)
+	(waypoints 
+	)
+	(zones 
+		(zone 
+			(label Default Zone)
+			(script )
+		)
+		(zone 
+			(label ToOverWorld)
+			(script ToOverWorld)
+		)
+	)
+	(layers 
+		(layer 
+			(type tile)
+			(label Underwater)
+			(dimensions 
+				(width 60)
+				(height 60)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs1sENgCAUBUHa0/4L4mQHAgk7UwGb9xMdAwCA3Z7T
+D2A5G9/PxtzGTQMAO/jnAIAzfIO5TfGmNTcUm2uKG2tu
+0NyguaHa/J5+BMu57Y5yd42tO76ti3v/2TwBAAD//w==
+
+			)
+			(obstructions 
+				(format tile)
+				eJzswQEBAAAAgiD/r25IQAEAAPBoAAAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label Water)
+			(dimensions 
+				(width 60)
+				(height 60)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs1kEKwzAQQ9E5Z9r7n6N0YfAiIQ316I9tCbT3Q0Pa
+IyIO13Vd13VduH3otyj6ivPQ71JtvIP5auOV/U9Dv1e1
+8Ur+EaENau9M5n9vekbzyNAWtXcGc0Zok9pb2ZwZ2qb2
+RgGf2huAifaGwPFrR/7nuAttVW8cCW+v7m3ZzdvH3rW9
+fXbzfrObtyXLq/wNfprdNm6xd92bbtnN7G+Xzat9v7yx
+zSuas7w210mmt6I521vNrPBWMqu8zfzWsC6j9LaSIbzk
+bRNe8rYpL+Wmveobp53qrWmjemvadrf16L1pl3rvDwAA
+AP//
+			)
+			(obstructions 
+				(format tile)
+				eJzswQEBAAAAgiD/r25IQAEAAPBoAAAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label B0)
+			(dimensions 
+				(width 60)
+				(height 60)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2UtOxDAMBuCwmOkZEGtAQuzZgOYCLLgq5YI0gmqC
+ZSdxHTsP8kveIdRPttw049zMzMzMzMxMi/ncat3qq/aD
+GOVlq4ffWt3/sN+7q3mvkc1hj8Na3bg9x3pM+UewUz1O
+2Xv2hz1etroBtTja36M59EJrjrm3XoczjfU3NI/S69RM
+QzNl78UMvRwztPdgxrwxd+/mmHdEc8o7mhmes0Y3S71n
+pN5du+ZcL2XGvGfXbp/hOTrmxcwxb6vmnJ1FmVPeFs1c
+726mrNAbuls4cx/xxqyUN+x1zW9Lzs6SWKHZ16OBD6ak
+N3c+4HelZa+53pg51wvNljsNek+J50zN89E+h/3WdMN3
+8IlpKuW37HXY41OGWdp/6v9Y9RqbaUm/OGastHc4dj9b
+Yi+V8GrNNnWWlniPFvRqvadzzdpeaNbyQnNsPq3NVvta
+ai71jrLqsdQs3XlWPeaYfX24n+/ES4ZXsrtqmaHh2V3v
+AZ62eg2qpFlzrn045luH33PdIX8rMWt/V1DnEWh/Q6zU
+3Y90X2snZbZ6V1l5fWJm6/OXVXLO2treRV35Nykz99lT
+v9HU9u45chdEWbnmGsnZ21rmWuH+JlPKXDsl3BxzK5G6
+c80txcLcYiTuHr0+UnMP80xltx/d4b15fWL3Y5z6BgAA
+//8=
+			)
+			(obstructions 
+				(format tile)
+				eJzswQEBAAAAgiD/r25IQAEAAPBoAAAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label B1)
+			(dimensions 
+				(width 60)
+				(height 60)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsmUtOw0AMhnOGLMoSRFmUJSzLFcoazsfzAjwvUF6C
+M2FLsWRZnneSmYnmk341SkKZv56MHU/XNRqNRqPRaDQa
+83KSewCNyVmBLoUOso5oWnbD51YIWaJv9HuhnN8Mn0vz
+bPO1YcdL8k1z2uWZqN37jh1r65XmuWZ2yrkle9b8Ikv1
+bPNh83wDugXdge5BD6DHcYc2GRjjK9C1ck16pvnwBHoG
+vYBeQW+g96kGODKmOY1Qfu6HT4zxGrQHfYA+QV+gb9BP
+V8f6bfOLmGJs+p7SPbv8ItyDvL9Xzpfs2ccvQh5c8ZX3
+l4avXwRrktPA7ynNd0huRa+/oEPQkbhm+91K8+wTY1qr
+j0FnoHN2bSXu1fIbeS6htxLiVyK92iglzjSnbXWTyW9o
+rVmSZ1vdROsUxlOrNbedP/T3+PvOXYfS84TrkKluWg/3
+8Lmr9b3IN+8NadRQf7ueU1PPQPbHUKXU33Ku9uzYZ03T
+egbaemyaR3/eIx0HWw0cWpfEaO61zNank35N75ApmHLA
+lJh6WnP1OHLGWI6heTaTknNyzOtUz6k5J0cd5vKs7T0R
+qTknR4wR6TllHLXU2nKcofmS1xwhebxj/6O33jU+pncC
+Go+2n6wphpzvVKb5HRq3UErx7Ot3jHqsBM/kNyTfut4X
+S4Xvmcfk2xp9k2dXr0DC81pt+4+xaxV/Hkv3HNoLMFGT
+Z4LXljHU6JkI7VUSNXtGYsZs24esgZhY833IGuOMhI47
+td4ugVpjlULsWsb5BwAA//8=
+			)
+			(obstructions 
+				(format tile)
+				eJzslssKxSAMRDv//9N3UbBVJ3GSlErhurBg5hgxD3sc
+//GZASCNFnB0nySccX4j4ninD7qftDVYp4lShpnwFZjq
+RJjLNJhcNNRA8whD8nxKMS5Ixx4l15HXsKNYwp6gBi9o
+3+xHa7DNYv1GGtv2cFzLSWCuLxLRMOGaeU2du9r1BrsC
+Wo4mKh39FGO9BH+yMcbC+UZv02ESNZ0lBhWm6bKrnYe2
+3ANnXnL9TZphuxV48L0Flf6aoqMG76Q/6/pp3z8AAAD/
+/w==
+			)
+			(entities 
+				(entity 
+					(label TownCrier)
+					(x 755)
+					(y 755)
+					(sprite sprite0.ika-sprite)
+					(speed 100)
+					(direction up)
+					(move_script )
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script TownCrier)
+				)
+				(entity 
+					(label WellWatcher)
+					(x 496)
+					(y 464)
+					(sprite sprite1.ika-sprite)
+					(speed 100)
+					(direction up)
+					(move_script WellWatcherMove)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script WellWatcher)
+				)
+				(entity 
+					(label TreeGuy)
+					(x 304)
+					(y 342)
+					(sprite sprite5.ika-sprite)
+					(speed 100)
+					(direction up)
+					(move_script )
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script TreeGuy)
+				)
+				(entity 
+					(label Ted)
+					(x 562)
+					(y 573)
+					(sprite sprite2.ika-sprite)
+					(speed 100)
+					(direction up)
+					(move_script TedMove)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script Ted)
+				)
+				(entity 
+					(label Joe)
+					(x 457)
+					(y 669)
+					(sprite sprite6.ika-sprite)
+					(speed 300)
+					(direction up)
+					(move_script JoeMove)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script Joe)
+				)
+				(entity 
+					(label Jitters)
+					(x 479)
+					(y 418)
+					(sprite sprite7.ika-sprite)
+					(speed 400)
+					(direction up)
+					(move_script JittersMove)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script Jitters)
+				)
+			)
+			(zones 
+				(zone 
+					(label ToOverWorld)
+					(x 672)
+					(y 944)
+					(width 288)
+					(height 16)
+				)
+				(zone 
+					(label ToOverWorld)
+					(x 944)
+					(y 704)
+					(width 16)
+					(height 240)
+				)
+			)
+		)
+		(layer 
+			(type tile)
+			(label A0)
+			(dimensions 
+				(width 60)
+				(height 60)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2XuKwjAQx/FcQFmP4Bn0Cu5pfB9Au48DrM/L6OGc
+gIOl1MWBpknj9wM/kBBoxn9mmjoHAAAAAAAAq6lkVsk8
+6onC2ki2lRQxD2Q0kowN+329u0qK5o8VzETyadj/V7O2
+b+gsqRnEPgAAvOgi6Un6/+yx9reUfZR+D5/ssfa3WHRO
+XEnWLT0v5hyqc9OP5NeFrXt6f17h4tWsc9NJcnaPupum
+tWq9Pm3XfKlZ07qbnqm0Vv//+jm0cN2av620VqU15+rZ
++8a17YMY5NRjX9GVHouwFpKly/+OS+v8kny77t1xWWmd
+B8nxvpbrnY9XrrMs5Z4DoF5u81i5z9bdGeQ2j2n/0e8r
+od6dU1HtP/ru/G74/gIAAJC2GwAAAP//
+			)
+			(obstructions 
+				(format tile)
+				eJzswQEBAAAAgiD/r25IQAEAAPBoAAAA//8=
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+	)
+)

@@ -1,0 +1,138 @@
+(ika-map 
+	(version 1.0)
+	(information 
+		(title )
+		(meta 
+		)
+	)
+	(header 
+		(dimensions 
+			(width 480)
+			(height 320)
+		)
+		(tileset cave.vsp)
+	)
+	(waypoints 
+	)
+	(zones 
+	)
+	(layers 
+		(layer 
+			(type tile)
+			(label B0)
+			(dimensions 
+				(width 30)
+				(height 20)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzslEEKwCAMBH1RvJn//6wUFMISY8SoPfSwhIo2O2Q1
+p5SyQ+TcFy0WvflgX4J6UlRZT/K+Khd4G+utfGH/3T5K
+7der0ler6G3G6+gsw7f0Y3ld5dS4Na4V1t66xczGmpd1
+dtYR2dWys+v9sDIZyYf/1zK5695iH5xf9CxHWf7a+/TL
+pwcAAP//
+			)
+			(obstructions 
+				(format tile)
+				eJxiYBgFo4D6AAAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label B1)
+			(dimensions 
+				(width 30)
+				(height 20)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsldsKwjAQROMNtF6r9VpUUAsKCvog6IOg//9TzuIG
+StqkEV2fHDgshDXDJlOjlFs9sDbWWmBc8LtPNQFNY20D
+lsK+tnk7oCvoS/NWjLUFGOV4l8AW7DyqS3XQUNl5E8Nb
+70W9R3DyqEWegcreLykCQ9BO7dUHF3D1qC7PkH0DS9+c
+59Z7Uf8dPDxqnnrsNeUZZpY+UsR+xMDR5yPyjdnz0718
+pc+YMpye8wBqoAz2Qp50VzrDZ65V9cpQqLLf1Teks6Qz
+fOOq80t3LnH2sbJnJBHyJNEZroT2dsn8b/qVfDJD2ZZ+
+B/NE75H0O2jz/es9PQEAAP//
+			)
+			(obstructions 
+				(format tile)
+				eJxiYBgFo4D6AAAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label A1)
+			(dimensions 
+				(width 30)
+				(height 20)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzMlbEOgDAIRNm6Ojrqokm76ab//1+2kw6IR4DGSy5d
+oK9HQpqIKAmWJPVZ/UduJBuRphZ5r4c2JferD9Wh4CJ9
+VkXN15O7VM9B3F7SMnegps2lVGfhfHJH4M4TYK70viec
+B4DLcQrdObRMNK81mzWvF7N5It2eeP4DGrYnF2F7zphj
+Z+J3L4rZwxcAAAD//w==
+			)
+			(obstructions 
+				(format tile)
+				eJxiYBgFo4D6AAAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+	)
+)

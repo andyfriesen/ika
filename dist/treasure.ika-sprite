@@ -1,0 +1,47 @@
+(ika-sprite
+	(version 1.0)
+	(information
+		(title Untitled)
+		(meta
+		)
+	)
+	(header
+		(depth 32)
+	)
+	(scripts
+		(script
+			(label open)
+			F0 W10 F1 W10 F2 W10 F3 W10 F4 W10 F5 W10 F6 W10 F7 W10 E
+		)
+	)
+	(frames
+		(count 8)
+		(dimensions
+			(width 16)
+			(height 18)
+		)
+		(hotspot
+			(x 0)
+			(y 4)
+			(width 16)
+			(height 16)
+		)
+		(data
+			(format zlib)
+			eJzsmUFOxDAMRTkEOw7Ckh1cYJbcgg0nQGy5Dnt2cKZQ
+V/zqy3JiZ9pOysiVvip1+p00iZ+cTCnlpgzWdJVzBO/j
+6bm8TnfRz/3trPL+tAjPRHhPPIjz8vaxPI9KPPB/fn0v
+bXO7WtwH8Wh/rf/a2/JHpf2tflt90X7v29mr25eLvx26
+ezjN42zN39/kL365JKZIPOKdv2u6EEeEZ+yvCb7AOlza
+xft6fLDOuA+1+eOY/G5r/nj91PrZWj/4je/WM9zZv0aj
+2bMXfzgf9Nrdkz+1PNybH622rX5Y7XsxavwEP/T4/xd+
+oD0IXo6DO8Rxkz/JH52f1pqP8CfKD4s/tfatPtTy/5z6
+IVI/sbfFD46DPLPG72j86F07ev56+aPHL/kzjj9788PK
+X+aH5ffU4k9k/+Pxp7d+uUT9ca38SP4kf7bmTw8/vPMf
+ix/e/surn3r3X5HzDx0D+Wv1P/mR/LkW/mzND127WLm8
+Zf2y9vzZ2z959Qv4odu2+IF4R+MH51tv3NH8SP4kf6wc
+jZ6/wN/iVi8/PIZ4/79ofuga5Ij86JHO3+RP8mcUf1KX
+33uyeO1GxfOf/Fnvz/+/xvDnFwAA//8=
+		)
+	)
+)

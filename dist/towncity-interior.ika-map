@@ -1,0 +1,185 @@
+(ika-map 
+	(version 1.1)
+	(information 
+		(title )
+		(meta 
+			(entitylayer B1)
+		)
+	)
+	(header 
+		(dimensions 
+			(width 1600)
+			(height 1600)
+		)
+		(tileset village_interior.vsp)
+	)
+	(waypoints 
+	)
+	(zones 
+		(zone 
+			(label BED)
+			(script BED_GOES_HERE)
+		)
+		(zone 
+			(label EAT)
+			(script EAT_HERE_YAY)
+		)
+		(zone 
+			(label OutsideClydesHouse)
+			(script OutsideClydesHouse)
+		)
+		(zone 
+			(label OutsideShop)
+			(script OutsideShop)
+		)
+	)
+	(layers 
+		(layer 
+			(label B0)
+			(type tile)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2ctKw1AUBdAoqNWRj5H6CzrxgaATXyg+Jip+lWP/13OhhVTSGEtuuW3Xgk1rFA7cfRKhrarZ+1rwefNGH2XRR1n0UZau5zOY8bxlpY+y6KMsXc9nJbLWktWe5y2rruezEdmN7EROIqfD99uRvch6z/NK99d+5t7X1MdBZD9yGbkavk85rJavj0n7udNwLce+pvk3kduG3GWYV7q2/fx9Lce+pvlPkeeGvGSYV7rReVxPSH13c+yrPsa19fFdjZ9VjvPRx7i280j3xGs1uz7OIueRi4zzStfWxyz2dTPyFnmP3EceIo/Dnz8iWz3PK12XPup723cfgw7pc17pJvXxWfub+t72va/6GJf6GD0v6knPitG98N+zSXx+NZ3Ux3HkqOG167Opie8/ppP6aOoivc5TH4ui3sc83x+LYrPld13/dzfRR1n0URZ9AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAADk9wMAAP//
+			)
+			(obstructions 
+				(style tile)
+				(format zlib)
+				eJzswQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAAAP//
+			)
+			(entities 
+			)
+			(zones 
+				(zone 
+					(label BED)
+					(x 153)
+					(y 320)
+					(width 52)
+					(height 25)
+				)
+				(zone 
+					(label EAT)
+					(x 162)
+					(y 200)
+					(width 61)
+					(height 20)
+				)
+			)
+		)
+		(layer 
+			(label B1)
+			(type tile)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs0jEKg0AUBNA9p6QKViFniK3GdJZJ7uoWsVAJ2ixf4T2YYuHDTLEpAQAAMGkW70fOJWIIf9XRAw6sCui8B3QewWvHzbX4Cib9jptbwf7PIt+CXWcwRA9g5p3Wf9Q/BWBLm9P98gzeAgAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABRRgAAAP//
+			)
+			(obstructions 
+				(style tile)
+				(format zlib)
+				eJzs1MsKgCAQBVD9/58OrJDCHpgaxTkbpcVcsRlDAL4gJn0jNkt1lUW5TtytdRF5U6qzXlWDjLiJKxzhWUb+qb0y4sF+ZEZI3fCseS8zTr7fD5nb5qh3W8gz1m+W28zx+xkj3jwAAAAAAAAAfmgCAAD//w==
+			)
+			(entities 
+				(entity 
+					(label merchant)
+					(x 640)
+					(y 160)
+					(sprite redguy.ika-sprite)
+					(speed 33)
+					(direction up)
+					(move_script MerchantMove)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script Merchant)
+				)
+			)
+			(zones 
+				(zone 
+					(label OutsideClydesHouse)
+					(x 272)
+					(y 290)
+					(width 16)
+					(height 14)
+				)
+				(zone 
+					(label OutsideShop)
+					(x 688)
+					(y 258)
+					(width 16)
+					(height 14)
+				)
+			)
+		)
+		(layer 
+			(label A0)
+			(type tile)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs0jEOQEAURdHZgA5rRUhQKy3YFCOZCPUQ5yS3+dUrfggAAAAAfMl4aSo757W20gN+bL8JKK9K1bEm1ma3P+pifWoovIUQ5tiSWrP7+af53wIA71Q9BAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA8FUHAAAA//8=
+			)
+			(obstructions 
+				(style tile)
+				(format zlib)
+				eJzswQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAAAP//
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+	)
+)

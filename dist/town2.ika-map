@@ -1,0 +1,212 @@
+(ika-map 
+	(version 1.0)
+	(information 
+		(title )
+		(meta 
+			(entitylayer B1)
+		)
+	)
+	(header 
+		(dimensions 
+			(width 1600)
+			(height 800)
+		)
+		(tileset town.vsp)
+	)
+	(waypoints 
+	)
+	(zones 
+		(zone 
+			(label EastExit)
+			(script EastExit)
+		)
+		(zone 
+			(label WestExit)
+			(script WestExit)
+		)
+	)
+	(layers 
+		(layer 
+			(type tile)
+			(label B0)
+			(dimensions 
+				(width 100)
+				(height 50)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzsmMtNBDEMhrMX6IEC9gAFsEjbAHCiRSSgAZ4N8LxD
+O3ikjQijyctx7CTrkT6BNEJs/i+2N1kbY9aDsQHOgG/g
+p4HPMzqbAOpBJm8f6oE2e81bLv+l7Pc1b5sJ5/+b57+v
+2S/lcrGDwznHjA3NnBS4/s+8P0wOLoGDHbUycWuB2oNv
+XSWcZuRHheuB0kftXhTLZGlduZwj86NkS5BRrV7kyz8n
+k61DzRwpPBwBq0IHterAdYDZk9P6TnbrsxwLudlGsB4s
+Kfm06CB1fUscm3DtxDJMZb4nUljKnmseYOsgJfMcXD+Y
+DCnhOpdR9KLU/d8zNc8FPgfXwA1w6/y8c3L3vV9F3o0A
+lwN3n98DD8Aj8AQ8Ay/mr2f43q8i70agJPPQeSnUi16B
+N+Ad+AA+gS/nM4Xex/62FOn6y80+dEadO3C/v9jef8W4
+NgzS9RfKv+Qs7M7d1h241K6/GKH8MWcxie8/hwGk/eZC
+dT9Tw0Ms45CHFnxgZhE2fzsXpvMTdT9KyTkVSR+YWZSS
+u83ezmObf8sepF1MYGbRfL+7v3PMZGoHrbjAMt/v1Hu/
+Vt6jeeBAXaRjzxu9e5DOsRRj/p//RvUgfe8Ryt8+S/ch
+o3mwSN97xOrAh5SL2uuXvvdwayHnrpbTg9Te5CbXAcYH
+Zf7Y3t7CTIg9WA85PqhrANvba82E1Kc0a04fOevH9naq
+mcCdMacPzl5BUQfSedecH9L59lwHpT56obf8W/VB8Uhn
+2buPkXLs1Yc6aMOHOmjDh3qQ92Ef6bX1SE6+KY/0enpH
+81UURVEURaHlFwAA//8=
+			)
+			(obstructions 
+				(format tile)
+				eJzswTEBAAAAwqD1T20KP6AAAAAAgLcBAAD//w==
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+		(layer 
+			(type tile)
+			(label B1)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs2kFSwjAUBmBuoCtY6rjCpS71CnIxz+BhDQtHtIWE
+8pKU8n0zbxWgmfztSzPDasXSffaeAH989Z4AVKTfzIt+
+w12j7yxNRC/TD+NE9DL9sA/9BPrx/AFT6B1tOCvMi7NC
+PxE9R36sU+2O1KbjvJZmbJ03I+OnvNeZWjNz6De5dd5l
+xg9dex6lauRWcr+f6zn495busCdFk8XQqb22RgY/ZDG0
+7nBNOQzl9oH7VA+pHoOve2tZ5M6LpfvxU6qXVK8Xz+j2
+MihR470oRw7jWu8Rchh36TPxNqFk8ev/e+sU1jXG1J7k
+3o53bhbWv66Pws/JoI1tZlwO7R3LRA797DOxPwPAdfH/
+TwAAAAAAAAAAAAAAAAAAAAAAAAAAAACo7xsAAP//
+			)
+			(obstructions 
+				(format tile)
+				eJzsllEKAyEMRM39L91SqDRVMeoELH3vY2WRnUk0uikF
+QI3ZnQ72xXjGz67Ijz13Im6kjkUmBqn6GAQNrD6fo6h6
+nEF56Vkd3686g1Ljn+WxlN/mYYrmd7LUkcCyj7C2VLxs
+X1fmpizBoUfS+lyMIl2n0epJ/m3bH0a39CDIUGkeVlYg
+j/TKXcjAh5uzCX7ZZ5uw12cF8jhpCaMhpAh/OGTr/1xj
+ag16A7FirkG3MVMadE0vutFWddMuhdTLBgAAAAAAAAAA
+AOBPeQAAAP//
+			)
+			(entities 
+				(entity 
+					(label TownCrier)
+					(x 256)
+					(y 512)
+					(sprite clyde.ika-sprite)
+					(speed 100)
+					(direction up)
+					(move_script TownCrierMove)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script TownCrier)
+				)
+				(entity 
+					(label WellWatcher)
+					(x 512)
+					(y 396)
+					(sprite claudia.ika-sprite)
+					(speed 100)
+					(direction up)
+					(move_script WellWatcherMove)
+					(obstructs_entities true)
+					(obstructed_by_entities true)
+					(obstructed_by_map true)
+					(adj_activate_script )
+					(activate_script WellWatcher)
+				)
+			)
+			(zones 
+				(zone 
+					(label WestExit)
+					(x 0)
+					(y 336)
+					(width 16)
+					(height 384)
+				)
+				(zone 
+					(label EastExit)
+					(x 1582)
+					(y 97)
+					(width 16)
+					(height 304)
+				)
+			)
+		)
+		(layer 
+			(type tile)
+			(label A0)
+			(dimensions 
+				(width 100)
+				(height 100)
+			)
+			(position 
+				(x 0)
+				(y 0)
+			)
+			(parallax 
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap 
+				(x false)
+				(y false)
+			)
+			(data 
+				(format zlib)
+				eJzs1uEJwkAMBtAuUHdw3W5TJ/QQCiIilnp+afse5H9I
+LrkMAwAAAAAAAJ9M6QSA07Bv9knfAEgYW1zSSRQyt7il
+k2iu6QQKmNMJ8FBlJs5qqf8SZJiDvOdZIMcs/M/r/n8X
+bPNNjdW6HzdODfZ6ljnIc2P+xpo/1X/bh7ecpwc1uG1q
+0Ic8O6mvtbcP26gvAAAAAAAAAAAAAAAAAAAAAAAAAAAA
+R3QHAAD//w==
+			)
+			(obstructions 
+				(format tile)
+				eJzswQENAAAAwqD3T20ON6AAAAAAAAAAAADg3wAAAP//
+
+			)
+			(entities 
+			)
+			(zones 
+			)
+		)
+	)
+)

@@ -1,0 +1,218 @@
+(ika-map 
+	(version '1.1')
+	(information 
+		(title '')
+		(meta 
+			(entitylayer 'B1')
+		)
+	)
+	(header 
+		(dimensions 
+			(width '640')
+			(height '480')
+		)
+		(tileset 'village.vsp')
+	)
+	(waypoints )
+	(zones 
+		(zone 
+			(label 'ClydesHouse')
+			(script 'ClydesHouse')
+		)
+		(zone 
+			(label 'LeaveTown')
+			(script 'LeaveTown')
+		)
+		(zone 
+			(label 'Store')
+			(script 'Store')
+		)
+	)
+	(layers 
+		(layer 
+			(label 'B0')
+			(type 'tile')
+			(dimensions 
+				(width '40')
+				(height '30')
+			)
+			(position 
+				(x '0')
+				(y '0')
+			)
+			(parallax 
+				(mulx '1')
+				(muly '1')
+				(divx '1')
+				(divy '1')
+			)
+			(wrap 
+				(x 'false')
+				(y 'false')
+			)
+			(data 
+				(format 'zlib')
+				'eJysVz1zEzEQlePrwh9xBoaPMEOTwjEu4pDCOBTQhSINFS3/CpKBIZ1n3OBz4zN/CGm8b/LuZaWzgeLN6iR59+1qtSsvQwh1xJIkxu8jPpB8HTGWPb8jVhEL0bGR718R84hexMEe8oD0bEhfmr+K+EjyTcRFRGNgbiv7fWNyI9/gx77twrE2/Q1hbvIsYmI4j7iMeOfEaWVcS7bWpB+8d4nfwtG/No7DiFPDKOKa4sxxUp0vM7a6fpfkJwHO57Gt895pxFvDLKIylPw9iXhq0lsfGJ5FPLdxsv0k4kh8QA7hN73wkCNk31CZ7lcRx7aechK5yWs8Dz3gNbZ55cfxbew3zO9EAI4VccS5jyTOM+HE89CTcvpc/El8X5hP3v0FP/jA/MCNoXFhfen+4B6pHfgyoz1Jx8R4X4SH58bxAz+2z3HD+TIH9beifV7+HUY8Ijm2sxja2IvfZ+HH9pmX8qycdZW8FzaZH2KRi1/txE959DPwuOT29M3mD+L2nWIxzZxHuiOao1zjasfmvj1K73/JR+z/Erb1b02xnZhchXZfqkO7R6Mf4w7xd25NuXjnjxxown2/THIYtrmJ/q89k+tlwlXY9mNw4O/cWm36SrlaEbcFjc9Cu6ZoH2pEooalvDim70lhDf7iDIBrwtL4cL9N42lo1xT08o3tQx59Dfd9eUS28X1aWON3B/vK/BAvfgtgnKurLH+aVNvcE3Jr3jk0wg/x8Oo6amvpHs5NogfANveE3NrCsY17XarpzK3rfYL8WYZ2r/L6Btb4Hefp1TqjfQa1PFdTmTO/MfX969mATHtXGZ/1DnNvOaSxx4vHrHMd2jUxQe8h18vS+1ptedw4fjmOGpfEkeuP5jnXJ3DTWuzZ4Pj1JH65s831WO+M9C3g5ZmnK5cbuXtUyscuW6X3Remdwz7r/e3q7V3vJ41f7v3FuaJQu6kf3BFud+Sas7kLWB//R+J58Pomtm+E777c95XoqQOaPxJe3m85rrcO9//FFT01F78754w1rjfEx4vzv3BF7RjIPNvXM/ak8tGc+FuOqHUaP5Z/AAAA//8='
+			)
+			(obstructions 
+				(style 'tile')
+				(format 'zlib')
+				'eJxiYBgFo2AUjIKhAQAAAAD//w=='
+			)
+			(entities )
+			(zones )
+		)
+		(layer 
+			(label 'B1')
+			(type 'tile')
+			(dimensions 
+				(width '40')
+				(height '30')
+			)
+			(position 
+				(x '0')
+				(y '0')
+			)
+			(parallax 
+				(mulx '1')
+				(muly '1')
+				(divx '1')
+				(divy '1')
+			)
+			(wrap 
+				(x 'false')
+				(y 'false')
+			)
+			(data 
+				(format 'zlib')
+				'eJy0V01PFEEQ7ZgsnFZJYMGEZYmaeODADW/qCTihJ/HiD+Cg4mGVCx8X0D/F0R9mVawXHo/unp51fEmleqZ7el59dHX3OKU0NllLf7Eaz+PUjpnJNNqnJp9FA0uVOeYm301+hEZb59802VqQm+OryRfSZ8TT535MorgwuRSN+dlWzHNk8p40wP9gbufpzn5o5qv4lnn30+SGNOafh62MDyYfSScZO8/Mr2C+wKfK+F8m16T7wnPI/XRFugV9xnL+tgLrR3Pc7fT4v0t3ObAdmt/DJy3g/D2VvheFb0bEbznaT0J7/I/T/RwovX9j8raDH+ev5lwOvEad38tobzR8y3hqcmBySO/gY/jZ84DXr+fESSM38KuB/ay4NVlP93MFPoafPQ/Yf54Tzyr/m8qz1jCVaWHcVvBTG3ajjbir/3K1mG0cCs7lN/FblX7E/Tq4of5tZubymLLdznec+u97DPbnlJ513zoPbrn69zo0xzQXz0UA22pxWQpOnPMz6t8PzWcEnY/jsmfyqvAv7SvFgs8lk/RwPWr+OzQWDLdRaxjvz7pX89hcLHQ95fj0gduIXAYX3p/RRh/GdsV2CKCmwSfgwj4q9Wnc/ic/9R/vCaU+1DycEx7FM/u0du6cNYxBjmAMx1X3DT2ToR/nhMvgOaIxvOdwjavVfebDPPVdbV/T2HKNY361dVlD7p9qR80+/ReftUYpD9S4FvS9k5SgMVPuXHcn8a6lroNjKeYzGZuzpWX91s5GWtdzNb7Et+WM05JPk+4hWTD3IWrsojxasD7QPCvyvEOi6HO3+lfg3On8+O4DbrmzfJ+7VQ169u3SfPcBv+cDcCj52u3ku3+X5nlq8W39PzjUfM13/xbdxe8PAAAA//8='
+			)
+			(obstructions 
+				(style 'tile')
+				(format 'zlib')
+				'eJy8UkkSwCAII///dKejkS3W9lIuKoYQFrOvBuAVAHbCDeR9PNMNTqwILQPx6slhRQcmGXE0c78ngKjofuXkka8ISg7dkkUqKslZBgXwjOuyWBiiVerw39QpwkaBeI1p6qDoniPlP1oniCvx3glK0eXHwtKz6Slhu4XM66ExpOTWnob0kx2EzDa6agXHmpBk3m5XhR5xtt/tCwAA//8='
+			)
+			(entities 
+				(entity 
+					(label 'Crier')
+					(x '568')
+					(y '294')
+					(sprite 'flattop.ika-sprite')
+					(speed '100')
+					(direction 'up')
+					(move_script 'CrierMove')
+					(obstructs_entities 'true')
+					(obstructed_by_entities 'true')
+					(obstructed_by_map 'true')
+					(adj_activate_script '')
+					(activate_script 'Crier')
+				)
+				(entity 
+					(label 'Joe')
+					(x '282')
+					(y '127')
+					(sprite 'friedrice.ika-sprite')
+					(speed '300')
+					(direction 'up')
+					(move_script 'JoeMove')
+					(obstructs_entities 'true')
+					(obstructed_by_entities 'true')
+					(obstructed_by_map 'true')
+					(adj_activate_script '')
+					(activate_script 'Joe')
+				)
+				(entity 
+					(label 'RedMage')
+					(x '371')
+					(y '117')
+					(sprite 'redguy.ika-sprite')
+					(speed '100')
+					(direction 'up')
+					(move_script 'RedMageMove')
+					(obstructs_entities 'true')
+					(obstructed_by_entities 'true')
+					(obstructed_by_map 'true')
+					(adj_activate_script '')
+					(activate_script 'RedMage')
+				)
+				(entity 
+					(label 'Claudia')
+					(x '496')
+					(y '132')
+					(sprite 'claudia.ika-sprite')
+					(speed '100')
+					(direction 'up')
+					(move_script 'ClaudiaMove')
+					(obstructs_entities 'true')
+					(obstructed_by_entities 'true')
+					(obstructed_by_map 'true')
+					(adj_activate_script '')
+					(activate_script 'Claudia')
+				)
+			)
+			(zones 
+				(zone 
+					(label 'LeaveTown')
+					(x '626')
+					(y '225')
+					(width '16')
+					(height '176')
+				)
+				(zone 
+					(label 'LeaveTown')
+					(x '0')
+					(y '276')
+					(width '16')
+					(height '144')
+				)
+				(zone 
+					(label 'ClydesHouse')
+					(x '176')
+					(y '32')
+					(width '16')
+					(height '18')
+				)
+				(zone 
+					(label 'Store')
+					(x '224')
+					(y '127')
+					(width '16')
+					(height '16')
+				)
+			)
+		)
+		(layer 
+			(label 'A0')
+			(type 'tile')
+			(dimensions 
+				(width '40')
+				(height '30')
+			)
+			(position 
+				(x '0')
+				(y '0')
+			)
+			(parallax 
+				(mulx '1')
+				(muly '1')
+				(divx '1')
+				(divy '1')
+			)
+			(wrap 
+				(x 'false')
+				(y 'false')
+			)
+			(data 
+				(format 'zlib')
+				'eJzsV7tOQzEMzYiYGDvyVEuhYumABF/CYwGGDi10uBIjIz/EB2JLtjBWrh2nua2QONJRmsSJz3VcK0kpj4OecQtL4FvFulPgWXBNRB/r6oDvwEUq04p2E+AlcAa8aKSPfWtdjHVmTOs9Im3nQt/U8Klj7MVvTC1qmCuOM2OsF3U9AB9JW4m+CbUyxiNDG9pfkS1+x63gIdmcqHGJF2r31Pix4ZP16e/W0HGVfe0vspah80DuOXP2z+05Mua8tTl7nbfROmLZWzmB+CrYS8cvqs/TEMEQ8WuJIeKHuAPep5+axP2FMVeKFvF7Aj4Dr4E3oj835iL4COjbV/1t5MOn+O3lu57fRb56dVWC9Vlr+ub0WUR9RmytNX1zeBY1d7BITdtEH4L/n7V3RQ/8LbX6EKhtlX7XkRaQ+WPF3DuProEWy29tnm8LqPMvaPzH7sHvJHwr9N3vh6pFni9+vyGnxNwbU99pNvVttVj3XtNw8bBi3ZHvVWHb2j9raF33JdbOvPRfmpcl55prS/Yr1erZRc7Vy0G53zcAAAD//w=='
+			)
+			(obstructions 
+				(style 'tile')
+				(format 'zlib')
+				'eJxiYBgFo2AUjIKhAQAAAAD//w=='
+			)
+			(entities )
+			(zones )
+		)
+	)
+)

@@ -1,30 +1,27 @@
-#!/usr/bin/env python
-
-"""Skill module for the xi library."""
-
-# Coded by Andy Friesen.
-# Copyright whenever.  All rights reserved.
-
-# This source code may be used for any purpose, provided that the
-# original author is never misrepresented in any way.
-
+# skill module for the xi library
+# coded by Andy Friesen
+# copyright whenever.  All rights reserved.
+#
+# This source code may be used for any purpose, provided that
+# the original author is never misrepresented in any way.
+#
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-import xi
-import xi.skill
+from token import TokenStream
+from statelessproxy import StatelessProxy
+from exception import XiException
 
-from xi.token import TokenStream
+import skill
 
-
-class SkillDatabase(xi.StatelessProxy):
-
+class SkillDatabase(StatelessProxy):
     def __init__(self):
-        super(SkillDatabase, self).__init__()
-        if self.__dict__:
+        StatelessProxy.__init__(self)
+
+        if len(self.__dict__) != 0:
             return
-        # name: skill object
-        self.__skills = {}
+
+        self.__skills = {}  # name:skill object
 
     def __getitem__(self, name):
         return self.__skills[name]
@@ -32,68 +29,70 @@ class SkillDatabase(xi.StatelessProxy):
     def __iter__(self):
         return self.__skills.iteritems()
 
-    def __len__(self):
-        return len(self.__skills)
+    def Init(self, filename, fieldeffects = None, battleeffects = None):
+        def ParseSkill(f):
+            i = skill.Skill()
 
-    def init(self, filename, fieldeffects=None, battleeffects=None):
-        def parseSkill(f):
-            i = xi.skill.Skill()
             i.name = f.GetLine()
+
             while not f.EOF():
                 t = f.Next().lower()
+
                 if t == 'desc':
                     s = f.GetLine()
                     while s != 'end':
                         i.desc += s
                         s = f.GetLine()
-                elif t == 'category':
+
+                elif t == 'type':
                     e = f.Next()
-                    if e not in xi.skill.categories:
-                        raise xi.XiException('Unknown skill category %s.' % e)
-                    i.category = e
-                elif t == 'leads_to':
+                    if e not in skill.types:
+                        raise XiException('Unknown skill type '+`e`)
+                    i.type = e
+
+                elif t == 'leadsto':
                     s = f.GetLine()
                     while s != 'end':
-                       i.leads_to.append(s)
+                       i.leadsto.append(s)
                        s = f.GetLine()
-                elif t == 'used_by':
+
+                elif t == 'useby':
                     s = f.Next().lower()
                     while s != 'end':
-                       i.used_by.append(s)
+                       i.useby.append(s)
                        s = f.Next().lower()
-                elif t == 'target':
-                    s = f.Next().lower()
-                    while s != 'end':
-                        i.target.append(s)
-                        s = f.Next().lower()
-                elif t == 'basic':
-                    i.basic = True
-                elif t == 'minimumlevel':
-                    i.minimumlevel = int(f.Next())
-                elif t == 'mp':
-                    i.mp = int(f.Next())
-                elif t == 'field_effect':
+
+                elif t == 'basic':          i.basic = True
+                elif t == 'minlevel':       i.minlevel = int(f.Next())
+                elif t == 'mp':             i.mp = int(f.Next())
+                elif t == 'fieldeffect':
                     try:
                         effectName = f.Next()
-                        i.field_effect  = fieldeffects.__dict__[effectName]
+                        i.fieldeffect  = fieldeffects.__dict__[effectName]
                     except KeyError:
-                        raise xi.XiException('Unable to find field effect %s for skill %s.' % (effectName, i.name))
-                elif t == 'battle_effect':
+                        raise XiException('Unable to find field effect %s for skill %s' % (`effectName`, `i.name`))
+                    
+                elif t == 'battleeffect':
                     try:
                         effectName = f.Next()
-                        i.battle_effect = battleeffects.__dict__[effectName]
+                        i.battleeffect = battleeffects.__dict__[effectName]
                     except KeyError:
-                        raise xi.XiException('Unable to find battle effect %s for skill %s.' % (effectName, i.name))
+                        raise XiException('Unable to find battle effect %s for skill %s' % (`effectName`, `i.name`))
+
                 elif t == 'end':
                     break
                 else:
-                    raise xi.XiException('Unknown skills.dat directive %s.' % t)
+                    raise XiException('Unknown skills.dat directive ' + `t`)
+
             return i
+
         file = TokenStream(filename)
+
         while not file.EOF():
             t = file.Next().lower()
+
             if t == 'name':
-                i = parseSkill(file)
+                i = ParseSkill(file)
                 self.__skills[i.name] = i
             else:
-                raise xi.XiException('Unknown skills.dat token %s.' % t)
+                raise XiException('Unknown skills.dat token ' + `t`)

@@ -1,0 +1,726 @@
+<html>
+<head><title>ika Python Reference</title></head>
+<body>
+<h1>ika Python Reference</h1>
+<h2>Constants</h2>
+<ul>
+<li>Opaque (int)</li>
+<li>SubtractBlend (int)</li>
+<li>AddBlend (int)</li>
+<li>AlphaBlend (int)</li>
+<li>Matte (int)</li>
+</ul>
+<h2>Functions</h2>
+<ul>
+<li>
+<h4>UnhookTimer([function])</h4>
+<p>Removes the function from the timer queue if it is present.  If not, the call does<br />
+nothing.  If the argument is omitted, then the list is cleared in its entirety.</p>
+</li>
+<li>
+<h4>Log(message)</h4>
+<p>Writes a string to ika.log, if logging is enabled.</p>
+</li>
+<li>
+<h4>Delay(time)</h4>
+<p>Freezes the engine for a number of 'ticks'. (one tick is 1/100th of a second)</p>
+</li>
+<li>
+<h4>GetPlayer(entity) -> Entity</h4>
+<p>Returns the current player entity, or None if there isn't one.</p>
+</li>
+<li>
+<h4>Exit([message])</h4>
+<p>Exits ika immediately, displaying the message onscreen, if specified.</p>
+</li>
+<li>
+<h4>SetPlayer(entity)</h4>
+<p>Sets the player entity to the entity passed.  The player entity is the entity<br />
+that moves according to user input.  Passing None instead unsets any player entity<br />
+that may have been previously set.</p>
+</li>
+<li>
+<h4>EntitiesAt(x, y, width, height, layer) -> list</h4>
+<p>Returns a list containing all entities within the given rect,<br />
+on the given layer.  If there are no entities there, the empty<br />
+list is returned.</p>
+</li>
+<li>
+<h4>HookRetrace(function)</h4>
+<p>Adds the function to the retrace queue. (it will be called whenever the map is drawn, <br />
+whether by Map.Render or by other means)</p>
+</li>
+<li>
+<h4>GetTime() -> int</h4>
+<p>Returns the number of ticks since the engine was started.</p>
+</li>
+<li>
+<h4>ProcessEntities()</h4>
+<p>Performs 1/100th of a second of entity AI.  Calling this 100 times a second<br />
+will cause entities to move around as if the engine was in control.</p>
+</li>
+<li>
+<h4>GetCaption() -> string</h4>
+<p>Returns the caption on the ika window title bar.</p>
+</li>
+<li>
+<h4>Wait(time)</h4>
+<p>Runs the engine for a number of ticks, disallowing player input.<br />
+Unlike Delay, Wait causes entities to be processed, the tileset to be animated, and the map drawn.</p>
+</li>
+<li>
+<h4>GetFrameRate() -> int</h4>
+<p>Returns the current engine framerate, in frames per second.</p>
+</li>
+<li>
+<h4>GetCameraTarget() -> Entity</h4>
+<p>Returns the entity that the camera is following, or None if it is free.</p>
+</li>
+<li>
+<h4>SetCameraTarget(entity)</h4>
+<p>Sets the camera target to the entity specified.  If None is passed instead, <br />
+the camera remains stationary, and can be altered with the Map.xwin and Map.ywin<br />
+properties.</p>
+</li>
+<li>
+<h4>Random(min, max) -> int</h4>
+<p>Returns a random integer less than or equal to min, and less than max.<br />
+ie.  min <= value < max</p>
+</li>
+<li>
+<h4>RGB(r, g, b[, a]) -> int</h4>
+<p>Creates a 32bpp colour value from the four colour levels passed.  If alpha is<br />
+omitted, it is assumed to be 255. (opaque)</p>
+</li>
+<li>
+<h4>GetRGB(colour) -> tuple(int, int, int, int)</h4>
+<p>Returns a 4-tuple containing the red, blue, green, and alpha values of the colour<br />
+passed, respectively.</p>
+</li>
+<li>
+<h4>SetCaption(newcaption)</h4>
+<p>Sets the caption on the ika window title bar.</p>
+</li>
+<li>
+<h4>HookTimer(function)</h4>
+<p>Adds the function to the timer queue. (the function will be called 100 times per second.<br />
+This feature should be used sparingly, as it will cause serious problems if the queue<br />
+cannot be executed in less than 1/100th of a second.</p>
+</li>
+<li>
+<h4>UnhookRetrace([function])</h4>
+<p>Removes the function from the retrace queue if it is present.  If not, the call does<br />
+nothing.  If the argument is omitted, then the list is cleared in its entirety.</p>
+</li>
+</ul>
+<h2>Objects</h2>
+<h3>Input</h3>
+<p>Interface for hardware input devices. (such as the keyboard and mouse)</p>
+<ul>
+<li>
+<h4>Input.right</h4>
+<p>Gets the standard "Right" control.</p>
+</li>
+<li>
+<h4>Input.keyboard</h4>
+<p>Gets the keyboard device.</p>
+</li>
+<li>
+<h4>Input.joysticks</h4>
+<p>Gets a tuple containing all the connected joystick devices.</p>
+</li>
+<li>
+<h4>Input.Update()</h4>
+<p>Updates the state of the mouse, and any attached input devices.<br />
+Also gives the OS a chance to do background tasks.  Continious<br />
+loops should call this occasionally to give the OS time to perform<br />
+its tasks.</p>
+</li>
+<li>
+<h4>Input.up</h4>
+<p>Gets the standard "Up" control.</p>
+</li>
+<li>
+<h4>Input.down</h4>
+<p>Gets the standard "Down" control.</p>
+</li>
+<li>
+<h4>Input.enter</h4>
+<p>Gets the standard "Enter" control.</p>
+</li>
+<li>
+<h4>Input.cancel</h4>
+<p>Gets the standard "Cancel" control.</p>
+</li>
+<li>
+<h4>Input.Unpress()</h4>
+<p>Unsets the Pressed() property of all controls.  Has no effect on<br />
+their positions.<br />
+Individual controls can be unpressed by simply calling their Pressed()<br />
+method, discarding the result.</p>
+</li>
+<li>
+<h4>Input.mouse</h4>
+<p>Gets the mouse device.</p>
+</li>
+<li>
+<h4>Input.left</h4>
+<p>Gets the standard "Left" control.</p>
+</li>
+</ul>
+<h3>Map</h3>
+<p>Represents the current map</p>
+<ul>
+<li>
+<h4>Map.GetZones(layerIndex) -> list</h4>
+<p>Returns a list of tuples containing information about every zone on the layer<br />
+specified.  The tuples are in the format (x, y, width, height, script)</p>
+</li>
+<li>
+<h4>Map.height</h4>
+<p>Gets the height of the current map, in pixels</p>
+</li>
+<li>
+<h4>Map.FindLayerByName(name) -> integer</h4>
+<p>Returns the index of the first layer with the given name, or None if no such layer<br />
+exists.</p>
+</li>
+<li>
+<h4>Map.GetLayerProperties(layerIndex) -> (label, width, height, wrapx, wrapy)</h4>
+<p>Returns a 5-tuple containing information about the map layer specified.</p>
+</li>
+<li>
+<h4>Map.GetParallax(layer) -> (int, int, int, int)</h4>
+<p>Returns a 4-tuple containing parallax settings for the layer specified.<br />
+Its contents are as follows:<br />
+( parallax X multiplier, <br />
+  parallax X divisor, <br />
+  parallax Y multiplier, <br />
+  parallax Y divisor )</p>
+</li>
+<li>
+<h4>Map.GetWaypoints() -> list</h4>
+<p>Returns a list of three-tuples in the format of (name, x, y), one for<br />
+each waypoint defined within the editor.</p>
+</li>
+<li>
+<h4>Map.SetLayerName(layerIndex, newName)</h4>
+<p>Sets the layer's name to newName.  Subsequent GetLayerName and FindLayerByName will<br />
+use this as the layer's name, as if it were set in the editor.</p>
+</li>
+<li>
+<h4>Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)</h4>
+<p>Sets the specified layer's parallax settings according to the multipliers<br />
+and divisors given.  If either of the divisors are zero, a parallax value of 0/1<br />
+will be used for that axis.</p>
+</li>
+<li>
+<h4>Map.entities</h4>
+<p>Gets a dictionary of entities currently tied to the map</p>
+</li>
+<li>
+<h4>Map.tilesetname</h4>
+<p>Gets or sets the name of the current tileset</p>
+</li>
+<li>
+<h4>Map.title</h4>
+<p>Gets or sets the map's title.</p>
+</li>
+<li>
+<h4>Map.width</h4>
+<p>Gets the width of the current map, in pixels</p>
+</li>
+<li>
+<h4>Map.layercount</h4>
+<p>Gets the number of layers on the current map.</p>
+</li>
+<li>
+<h4>Map.GetLayerPosition(layerIndex) -> (x, y)</h4>
+<p>Returns a tuple containing the layer's position on the map. (in pixels)</p>
+</li>
+<li>
+<h4>Map.SetTile(x, y, layer, tile)</h4>
+<p>Sets the tile at (x, y) of the layer specified.</p>
+</li>
+<li>
+<h4>Map.SetLayerPosition(layerIndex, x, y)</h4>
+<p>Sets the layer's position to the (x,y) coordinates specified.</p>
+</li>
+<li>
+<h4>Map.numtiles</h4>
+<p>Gets the number of tiles in the current tileset</p>
+</li>
+<li>
+<h4>Map.GetAllEntities() -> list</h4>
+<p>Creates a list of every single existing entity, and returns it.</p>
+</li>
+<li>
+<h4>Map.xwin</h4>
+<p>Gets or sets the X coordinate of the camera</p>
+</li>
+<li>
+<h4>Map.GetMetaData() -> dict</h4>
+<p>Creates a dictionary containing the map's metadata, and returns it.</p>
+</li>
+<li>
+<h4>Map.tilewidth</h4>
+<p>Gets the width of the current tileset</p>
+</li>
+<li>
+<h4>Map.GetLayerName(layerIndex) -> string</h4>
+<p>Returns the name of the layer with the given index.</p>
+</li>
+<li>
+<h4>Map.Switch(filename)</h4>
+<p>Switches the current map to the map file specified.<br />
+The new map's AutoExec event is executed, if it exists.</p>
+</li>
+<li>
+<h4>Map.GetObs(x, y, layerIndex) -> int</h4>
+<p>Returns 1 if the tile at (x, y) is obstructed, or 0 if not.</p>
+</li>
+<li>
+<h4>Map.ywin</h4>
+<p>Gets or sets the Y coordinate of the camera</p>
+</li>
+<li>
+<h4>Map.Render([layerList])</h4>
+<p>Draws the map and entities.  layerList is a sequence of integers;<br />
+ika will only draw these layers (in the order given).  If layerList<br />
+is omitted, all layers will be drawn, in their predefined order (set<br />
+in the editor)<br />
+<br />
+If layerList is omitted, the screen is cleared to black before rendering<br />
+begins.</p>
+</li>
+<li>
+<h4>Map.tileheight</h4>
+<p>Gets the height of the current tileset</p>
+</li>
+<li>
+<h4>Map.GetTile(x, y, layer) -> int</h4>
+<p>Returns the index of the tile at (x, y) on the layer specified.</p>
+</li>
+<li>
+<h4>Map.SetObs(x, y, layerIndex, obs)</h4>
+<p>If obs is nonzero, the tile at (x, y) is obstructed, else it is<br />
+unobstructed.</p>
+</li>
+</ul>
+<h3>Video</h3>
+<p>Interface for ika's graphics engine.</p>
+<ul>
+<li>
+<h4>Video.GrabCanvas(x1, y1, x2, y2) -> canvas</h4>
+<p>Grabs a rectangle from the screen, copies it to a canvas, and returns it.</p>
+</li>
+<li>
+<h4>Video.DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour))</h4>
+<p>Draws a triangle onscreen.  Each point is drawn in the colour specified.</p>
+</li>
+<li>
+<h4>Video.DrawPixel(x, y, colour)</h4>
+<p>Draws a dot at (x, y) with the colour specified.</p>
+</li>
+<li>
+<h4>Video.ClipScreen(left=0, top=0, right=xres, bottom=yres)</h4>
+<p>Clips the video display to the rectangle specfied.  All drawing<br />
+operations will be confined to this region.<br />
+<br />
+Calling ClipScreen with no arguments will reset the clipping rect<br />
+to its default setting. (the whole screen)</p>
+</li>
+<li>
+<h4>Video.ShowPage()</h4>
+<p>Flips the back and front video buffers.  This must be called after the screen<br />
+has been completely drawn, or the scene will never be presented to the player.<br />
+This method is not guaranteed to preserve the contents of the screen, so it is<br />
+advised to redraw the entire screen, instead of incrementally drawing.</p>
+</li>
+<li>
+<h4>Video.DrawLine(x1, y1, x2, y2, colour)</h4>
+<p>Draws a straight line from (x1, y1) to (x2, y2) in the colour specified.</p>
+</li>
+<li>
+<h4>Video.TintBlit(image, x, y, tintColour[, blendMode])</h4>
+<p>Draws the image onscreen, using tintColour to 'tint' the image.<br />
+Each pixel is multiplied by tintColour.  The resultant values are then<br />
+scaled before the pixel is plotted.<br />
+<br />
+In English, this means that RGBA(255, 255, 255, 255) is a normal blit,<br />
+while RGBA(0, 0, 0, 255) will leave the alpha channel intact, but reduce<br />
+all pixels to black. (effectively drawing a silhouette)<br />
+<br />
+blendMode is handled the same way as all the other blits.<br />
+<br />
+Lots of effects could be created by using this creatively.  Experiment!</p>
+</li>
+<li>
+<h4>Video.DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[, blendmode])</h4>
+<p>Draws the image onscreen, stretched to the four points specified.<br />
+blendmode specifies the algorithm used to blend pixels.  It is one of<br />
+ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.<br />
+The default is ika.Alphablend.</p>
+</li>
+<li>
+<h4>Video.yres</h4>
+<p>Gets the vertical resolution of the current display mode, in pixels.</p>
+</li>
+<li>
+<h4>Video.ClearScreen()</h4>
+<p>Clears the screen. (with blackness)</p>
+</li>
+<li>
+<h4>Video.DrawEllipse(cx, cy, rx, ry, colour[, filled])</h4>
+<p>Draws an ellipse, centred at (cx, cy), of radius rx and ry on the X and<br />
+Y axis, respectively.  If filled is omitted or nonzero, the ellipse is filled in<br />
+else it is drawn as an outline.</p>
+</li>
+<li>
+<h4>Video.Blit(image, x, y[, blendmode])</h4>
+<p>Draws the image at (x, y) at its original size.<br />
+blendmode specifies the algorithm used to blend pixels.  It is one of<br />
+ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.<br />
+The default is ika.Alphablend.</p>
+</li>
+<li>
+<h4>Video.xres</h4>
+<p>Gets the horizontal resolution of the current display mode, in pixels.</p>
+</li>
+<li>
+<h4>Video.DrawRect(x1, y1, x2, y2, colour[, fill])</h4>
+<p>Draws a rectangle with (x1, y1) and (x2, y2) as opposite corners.<br />
+If fill is omitted or zero, an outline is drawn, else it is filled in.</p>
+</li>
+<li>
+<h4>Video.TintDistortBlit(image, (upleftX, upleftY, upleftTint), (uprightX, uprightY, uprightTint), (downrightX, downrightY, downrightTint), (downleftX, downleftY, downrightTint)[, blendmode])</h4>
+<p>Combines the effects of DistortBlit and TintBlit.  Each corner can be tinted individually,<br />
+using the same algorithm as TintBlit.  The corners, if not the same, are smoothly interpolated<br />
+across the image.</p>
+</li>
+<li>
+<h4>Video.GrabImage(x1, y1, x2, y2) -> image</h4>
+<p>Grabs a rectangle from the screen, copies it to an image, and returns it.</p>
+</li>
+<li>
+<h4>Video.ScaleBlit(image, x, y, width, height[, blendmode])</h4>
+<p>Draws the image at (x, y), stretching it out to the size given.<br />
+blendmode specifies the algorithm used to blend pixels.  It is one of<br />
+ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.<br />
+The default is ika.Alphablend.</p>
+</li>
+<li>
+<h4>Video.TileBlit(image, x, y, width, height[, scalex[, scaley[, blendmode]]])</h4>
+<p>Draws the image onscreen, "tiling" it as necessary to fit the rectangle specified.<br />
+scalex and scaley are floating point values used as a scale factor.  The default is 1.<br />
+blendmode specifies the algorithm used to blend pixels.  It is one of<br />
+ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.<br />
+The default is ika.Alphablend.</p>
+</li>
+</ul>
+<h3>Canvas</h3>
+<p>A software representation of an image that can be manipulated easily.<br />
+<br />
+Canvas(filename)<br />
+<br />
+Loads the image specified by 'filename' into a new canvas.<br />
+<br />
+Canvas(width, height)<br />
+<br />
+Creates a new, blank canvas of the specified size.</p>
+<ul>
+<li>
+<h4>Canvas.Rotate()</h4>
+<p>Rotates the contents of the canvas 90 degrees, clockwise.</p>
+</li>
+<li>
+<h4>Canvas.Clip([x, y, width, height])</h4>
+<p>Sets the clipping rectangle of the canvas.  Blitting to the canvas will be confined to<br />
+the clip rectangle; blitting the canvas on others will only blit the clipped region.<br />
+<br />
+If no arguments are specified, the clip rectangle is reset to cover the whole canvas.</p>
+</li>
+<li>
+<h4>Canvas.ScaleBlit(destcanvas, x, y, width, height, blendmode)</h4>
+<p>Draws the image on destcanvas, at position (x, y), scaled to (width, height) pixels in size.<br />
+blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend.</p>
+</li>
+<li>
+<h4>Canvas.DrawText(font, x, y, text)</h4>
+<p>Draws a string starting at (x,y) with the font.  No word wrapping is done.</p>
+</li>
+<li>
+<h4>Canvas.Flip()</h4>
+<p>Flips the contents of the canvas on the X axis.<br />
+(turns it upside down)</p>
+</li>
+<li>
+<h4>Canvas.height</h4>
+<p>Gets the height of the canvas</p>
+</li>
+<li>
+<h4>Canvas.SetPixel(x, y, colour)</h4>
+<p>Sets the pixel at (x, y) on the canvas to the colour specified.  This function<br />
+totally disregards alpha.  It *sets* the pixel, in the truest sense of the word.</p>
+</li>
+<li>
+<h4>Canvas.width</h4>
+<p>Gets the width of the canvas</p>
+</li>
+<li>
+<h4>Canvas.WrapBlit(destcanvas, x, y, width, height, [offsetx, offsety, blendmode])</h4>
+<p>Tiles the image within the region specified, on destcanvas.  The tiling is offset<br />
+(moved) by offsetx and offsety. (both default to zero) blendmode is either ika.Opaque, ika.Matte<br />
+ika.AlphaBlend.  blendmode defaults to Opaque</p>
+</li>
+<li>
+<h4>Canvas.Mirror()</h4>
+<p>Mirrors the contents of the canvas along the Y axis.<br />
+(left to right)</p>
+</li>
+<li>
+<h4>Canvas.Save(fname)</h4>
+<p>Writes the image to the filename specified in PNG format.<br />
+<br />
+ie.  canvas.Save('myimage.png')</p>
+</li>
+<li>
+<h4>Canvas.GetPixel(x, y)</h4>
+<p>Returns the pixel at position (x, y) on the canvas, as a packed 32bpp RGBA colour.</p>
+</li>
+<li>
+<h4>Canvas.Clear([colour])</h4>
+<p>Sets every pixel on the canvas to the colour given.  If colour is omitted, <br />
+flat black is used.</p>
+</li>
+<li>
+<h4>Canvas.Resize(width, height)</h4>
+<p>Resizes the canvas to the size specified.  No scaling takes place; if the dimensions<br />
+given are smaller than the existing image, it is cropped.  Blank, transparent space is<br />
+added when the canvas is enlarged.</p>
+</li>
+<li>
+<h4>Canvas.Blit(destcanvas, x, y, blendmode)</h4>
+<p>Draws the image on destcanvas, at position (x, y)<br />
+blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend.</p>
+</li>
+</ul>
+<h3>Sound</h3>
+<p>A hunk of sound data, like a sound effect, or a piece of music.</p>
+<ul>
+<li>
+<h4>Sound.Play()</h4>
+<p>Plays the stream.</p>
+</li>
+<li>
+<h4>Sound.Pause()</h4>
+<p>Pauses the stream.  Calling Sound.Play() will cause playback to resume<br />
+where it left off.</p>
+</li>
+<li>
+<h4>Sound.pitchshift</h4>
+<p>Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing</p>
+</li>
+<li>
+<h4>Sound.volume</h4>
+<p>The volume of the sound.  Ranges from 0 to 1, with 1 being full volume.</p>
+</li>
+<li>
+<h4>Sound.loop</h4>
+<p>If nonzero, the sound loops.  If zero, then the sound stops playing when it reaches the end.</p>
+</li>
+<li>
+<h4>Sound.position</h4>
+<p>The chronological position of the sound, in milliseconds.</p>
+</li>
+<li>
+<h4>Sound.pan</h4>
+<p>Panning.  0 is left.  2 is right.  1 is centre.</p>
+</li>
+</ul>
+<h3>Image</h3>
+<p>A hardware-dependant image.</p>
+<ul>
+<li>
+<h4>Image.ScaleBlit(x, y, width, height[, transparent])</h4>
+<p>Blits the image, but stretches it out to the dimensions<br />
+specified in (width, height).</p>
+</li>
+<li>
+<h4>Image.DistortBlit((x1, y1), (x2, y2), (x3, y3), (x4, y4)[, transparency])</h4>
+<p>Blits the image scaled to the four points specified.</p>
+</li>
+<li>
+<h4>Image.height</h4>
+<p>Gets the height of the image.</p>
+</li>
+<li>
+<h4>Image.width</h4>
+<p>Gets the width of the image.</p>
+</li>
+<li>
+<h4>Image.Blit(x, y[, transparent])</h4>
+<p>Draws the image at (x, y).<br />
+If transparent is specified and 0 the image is opaque.<br />
+Otherwise, alpha blending is enabled.</p>
+</li>
+</ul>
+<h3>Entity</h3>
+<p>Entity(x, y, layer, spritename) -> Entity<br />
+<br />
+Creates a new entity at pixel coordinates (x,y) on the<br />
+layer index specified.  The new entity uses the sprite<br />
+indicated.</p>
+<ul>
+<li>
+<h4>Entity.entobs</h4>
+<p>If nonzero, the entity is unable to walk through entities whose isobs property is set.</p>
+</li>
+<li>
+<h4>Touches(ent) -> boolean</h4>
+<p>Returns true if the entity is touching entity ent, else False.</p>
+</li>
+<li>
+<h4>Entity.specframe</h4>
+<p>If nonzeno, this frame is displayed instead of the normal animation</p>
+</li>
+<li>
+<h4>Entity.layer</h4>
+<p>Gets or sets the index of the layer that the entity exists on.</p>
+</li>
+<li>
+<h4>Entity.visible</h4>
+<p>If nonzero, the entity is drawn when onscreen</p>
+</li>
+<li>
+<h4>Entity.speed</h4>
+<p>Gets or sets the entity's speed, in pixels/second</p>
+</li>
+<li>
+<h4>Entity.MoveTo(x, y)</h4>
+<p>Directs the entity to move towards the position specified.</p>
+</li>
+<li>
+<h4>Entity.actscript</h4>
+<p>Gets or sets the object called when the entity is activated.</p>
+</li>
+<li>
+<h4>Entity.Stop()</h4>
+<p>Directs the entity to stop whatever it is doing.</p>
+</li>
+<li>
+<h4>Entity.hoty</h4>
+<p>Gets the Y position of the entity's hotspot.</p>
+</li>
+<li>
+<h4>Entity.hotx</h4>
+<p>Gets the X position of the entity's hotspot.</p>
+</li>
+<li>
+<h4>Entity.mapobs</h4>
+<p>If nonzero, the entity is unable to walk on obstructed areas of the map.</p>
+</li>
+<li>
+<h4>Entity.Wait(time)</h4>
+<p>Causes the entity to halt for the given interval before<br />
+resuming motion.</p>
+</li>
+<li>
+<h4>Entity.direction</h4>
+<p>Gets or sets the entity's direction</p>
+</li>
+<li>
+<h4>Entity.sprite</h4>
+<p>Gets or sets the sprite used to display the entity.</p>
+</li>
+<li>
+<h4>Entity.curframe</h4>
+<p>Gets the entity's currently displayed frame</p>
+</li>
+<li>
+<h4>Entity.Draw([x[, y]])</h4>
+<p>Draws the entity at the position specified.  x and y default to<br />
+the position where they would normally draw, given the window position<br />
+and the entity position.</p>
+</li>
+<li>
+<h4>Entity.IsMoving() -> int</h4>
+<p>If the entity is moving, the result is 1.  If not, it is 0.</p>
+</li>
+<li>
+<h4>Entity.adjacentactivate</h4>
+<p>Gets or sets the object called when the entity touches the player. (not implemented)</p>
+</li>
+<li>
+<h4>Entity.hotheight</h4>
+<p>Gets the height of the entity's hotspot.</p>
+</li>
+<li>
+<h4>Entity.isobs</h4>
+<p>If nonzero, the entity will obstruct other entities.</p>
+</li>
+<li>
+<h4>Entity.DetectCollision() -> Entity</h4>
+<p>If an entity is touching the entity, then it is returned.<br />
+None is returned if there is no entity touching it.</p>
+</li>
+<li>
+<h4>Entity.name</h4>
+<p>Gets or sets the entity's name.  This is more or less for your own convenience only.</p>
+</li>
+<li>
+<h4>Entity.y</h4>
+<p>Gets or sets the entity's Y position. (in pixels)</p>
+</li>
+<li>
+<h4>Entity.x</h4>
+<p>Gets or sets the entity's X position. (in pixels)</p>
+</li>
+<li>
+<h4>Entity.hotwidth</h4>
+<p>Gets the width of the entity's hotspot.</p>
+</li>
+<li>
+<h4>Entity.movescript</h4>
+<p>Gets or sets the entity's current move script.</p>
+</li>
+</ul>
+<h3>Font</h3>
+<p>ika.Font(fontFileName)->font<br />
+<br />
+A proportional bitmap font.  fontFileName is a string that contains<br />
+the filename to a font file.</p>
+<ul>
+<li>
+<h4>Font.CenterPrint(x, y, text)</h4>
+<p>Prints a string of text on screen, <br />
+with x as the center point rather than the leftmost point.</p>
+</li>
+<li>
+<h4>Font.StringWidth(text) -> int</h4>
+<p>Returns how many pixels in width the passed string would be, <br />
+if printed in this font.</p>
+</li>
+<li>
+<h4>Font.RightPrint(x, y, text)</h4>
+<p>Prints a string of text on screen, with x as the rightmost point<br />
+rather than the leftmost point.</p>
+</li>
+<li>
+<h4>Font.height</h4>
+<p>Gets the height of the font.</p>
+</li>
+<li>
+<h4>Font.width</h4>
+<p>Gets the width of the widest glyph in the font.</p>
+</li>
+<li>
+<h4>Font.tabsize</h4>
+<p>Gets or sets the tab size of the font.</p>
+</li>
+<li>
+<h4>Font.Print(x, y, text)</h4>
+<p>Prints a string of text on screen at (x, y).</p>
+</li>
+</ul>
+</body></html>

@@ -1,5 +1,3 @@
-#!/usr/bin/env python
-
 # Basic GUI elements
 # Coded by Andy Friesen
 # Copyright whenever.  All rights reserved.
@@ -24,14 +22,15 @@ essential to preserve polymorphic behaviour.
 
 import ika
 
-import xi
-import xi.window
-import xi.cursor
+import window
+import cursor
 
+import decorator
+Decorator = decorator.Decorator
 
 default_font = None
 default_cursor = None
-default_window = xi.window.GradientWindow(
+default_window = window.GradientWindow(
         ika.RGB(0, 0, 192),
         ika.RGB(0, 0, 128),
         ika.RGB(0, 0,  32),
@@ -47,13 +46,17 @@ def init(font, window = None, cursor = None):
     If window is omitted, a blue gradient window with a black border is used.
     The > character of the default font is used if the cursor is omitted.
     '''
+    # symbol conflict, heh.  But I want that keyword arg to be called cursor,
+    # so we do a tiny hack:
+    import cursor as xiCursor
+
     global default_font
     global default_window
     global default_cursor
 
     default_font = font
     default_window = window or default_window
-    default_cursor = cursor or xi.cursor.TextCursor(default_font, '>')
+    default_cursor = cursor or xiCursor.TextCursor(default_font, '>')
 
 class Widget(object):
     '''
@@ -99,13 +102,13 @@ class Widget(object):
 
     # breaking the above rule.  doh.
     # These depend on x, y, width, and height anyway.
-    # you shouldn't need to override them.
+    # Don't override them.
     left = property(lambda self: self.x)
     top = property(lambda self: self.y)
     right = property(lambda self: self.x + self.width)
     bottom = property(lambda self: self.y + self.height)
 
-    # it is important that these accessors go through the above properties for
+    # It is important that these accessors go through the above properties for
     # polymorphic purposes.
     def getPosition(self):
         return self.x, self.y
@@ -267,13 +270,13 @@ class Frame(Widget):
         self.wnd.draw(self.x + xofs, self.y + yofs, self.width, self.height)
         self.client.draw(self.x + xofs + self.client.border, self.y + yofs + self.client.border)
 
-class FrameDecorator(Widget, xi.Decorator):
+class FrameDecorator(Widget, Decorator):
     """
     Decorates a widget with a frame.  This is generally better than using a
     Frame if you only want to enclose a single Widget object with the frame.
     """
     def __init__(self, subject, wnd = None):
-        xi.Decorator.__init__(self, subject)
+        Decorator.__init__(self, subject)
         Widget.__init__(self)
         self._wnd = wnd or default_window
         self.border = self._wnd.border * 2

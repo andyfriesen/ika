@@ -1,0 +1,133 @@
+(ika-map
+	(version 1.0)
+	(information
+		(title )
+		(meta
+		)
+	)
+	(header
+		(dimensions
+			(width 320)
+			(height 320)
+		)
+		(tileset village.vsp)
+	)
+	(waypoints
+	)
+	(zones
+	)
+	(layers
+		(layer
+			(type tile)
+			(label 1)
+			(dimensions
+				(width 20)
+				(height 20)
+			)
+			(position
+				(x 0)
+				(y 0)
+			)
+			(parallax
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap
+				(x false)
+				(y false)
+			)
+			(data
+				(format zlib)
+				eJzElEEOgjAQRVvLZTSYoGxQWagrJC7AcP+z+EnGxEwG
+mA5NWLx0U17eNLTeObcDPtGa0uUTu2L7NPs1rj3IwREc
+DH2cClzAFdwMffUCsX2S4zdvbehrwItoE5zfHTyIp+Bb
+21eAEziDEgRC29eBnvgI/tGVTTg1/x+fP5txau7Fm9oa
+oS8Y+gb6rqP51/YF5vhvs/QFxtSsMe8Ld0qurd8/zfoF
+AAD//w==
+			)
+			(obstructions
+				(format tile)
+				eJxiYBgFgwkAAAAA//8=
+			)
+			(entities
+			)
+			(zones
+			)
+		)
+		(layer
+			(type tile)
+			(label 2)
+			(dimensions
+				(width 20)
+				(height 20)
+			)
+			(position
+				(x 0)
+				(y 0)
+			)
+			(parallax
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap
+				(x false)
+				(y false)
+			)
+			(data
+				(format zlib)
+				eJxiYBgFo4CBwRSIzahklgISW5kM/b5A7I9EUwpCgTgc
+iaYUEHIfHxDLkmAeuvtA5vpBMcx8aRLNRDc/DIqR/U+u
+mfJA7M2A3f9s5DgQCIIZsMcPOeax4hAXBmJRMswTA2IR
+KpmFbCYvEqbErIEEAAAAAP//
+			)
+			(obstructions
+				(format tile)
+				eJxiYBgFgwkAAAAA//8=
+			)
+			(entities
+			)
+			(zones
+			)
+		)
+		(layer
+			(type tile)
+			(label 3)
+			(dimensions
+				(width 20)
+				(height 20)
+			)
+			(position
+				(x 0)
+				(y 0)
+			)
+			(parallax
+				(mulx 1)
+				(muly 1)
+				(divx 1)
+				(divy 1)
+			)
+			(wrap
+				(x false)
+				(y false)
+			)
+			(data
+				(format zlib)
+				eJxiYBgeQAWIValklgYQ6wCxLhBrU2AOJxRTCkzQ8EC7
+BwYEgFiQxuZxUNE8DizmkwIk0PRTw/8SVDYPGVDbPHT/
+U8vMUTB0AQAAAP//
+			)
+			(obstructions
+				(format tile)
+				eJxiYBgFgwkAAAAA//8=
+			)
+			(entities
+			)
+			(zones
+			)
+		)
+	)
+)

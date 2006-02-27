@@ -1,6 +1,6 @@
-# Status menu for pi
-# Coded by Andy Friesen
-# Copyright whenever.  All rights reserved.
+# Status menu for xi
+# coded by Andy Friesen
+# copyright whenever.  All rights reserved.
 #
 # This source code may be used for any purpose, provided that
 # the original author is never misrepresented in any way.
@@ -9,97 +9,96 @@
 # suitability of this code for any purpose.
 
 import ika
+import widget
+import mainmenu
+import party
+import equipmenu
 
-import xi.party
-from xi import gui
-from xi import menu
-from xi import layout
-from xi import controls
-from xi.misc import *
-from xi.fps import FPSManager
+from party import party
 
-from xi.menuwindows import PortraitWindow, StatusWindow, EquipWindow, SkillWindow
+from transition import *
+
+from menuwindows import StatusWindow, PortraitWindow, StatusBar, EquipWindow, SkillWindow
+from misc import *
 
 
 class StatusMenu(object):
+    __slots__ = [
+        'statbar',          # The status bar that sits at the right edge of the screen
+        'portraitwindow',   # Window that contains the character's portrait, HP, MP, Level, and EXP
+        'statwindow',       # Contains the character's strength, magic, et cetera.
+        'equipwindow',      # Holds the character's current equipment.
+        'skillwindow',      # Shows the skills that the character can use
+        'charidx'           # Index of the current character
+        ]
+        
+    def __init__(self, statbar):
+        self.statbar = statbar
+        self.portraitwindow = PortraitWindow()
+        self.statwindow = StatusWindow()
+        self.equipwindow = EquipWindow()
+        self.skillwindow = SkillWindow()
+        self.charidx = 0
+        
+    CurChar = property(lambda self: party[self.charidx])
+    
+    def StartShow(self):
+        self.Refresh(self.CurChar)
+        
+        trans = Transition()
+        trans.AddWindowReverse(self.portraitwindow, (-self.portraitwindow.width, self.portraitwindow.y))
+        trans.AddWindowReverse(self.statwindow, (ika.Video.xres, self.statwindow.y))
+        trans.AddWindowReverse(self.equipwindow, (self.equipwindow.x, -self.equipwindow.height))
+        trans.AddWindowReverse(self.skillwindow, (self.skillwindow.x, ika.Video.yres))
+        
+    def StartHide(self):
+        trans.AddWindow(self.portraitwindow, (ika.Video.xres, self.portraitwindow.y), remove = True)
+        trans.AddWindow(self.statwindow, (-self.statwindow.width, self.statwindow.y), remove = True)
+        trans.AddWindow(self.equipwindow, (self.equipwindow.x, -self.equipwindow.height), remove = True)
+        trans.AddWindow(self.skillwindow, (self.skillwindow.x, ika.Video.yres), remove = True)
 
-    def __init__(self):
-        self.portraitWindow = PortraitWindow()
-        self.statWindow = gui.FrameDecorator(StatusWindow())
-        self.equipWindow = gui.FrameDecorator(EquipWindow())
-        self.skillWindow = gui.FrameDecorator(SkillWindow())
-        self._curChar = 0
+    def Refresh(self, curchar):
+        self.portraitwindow.Refresh(curchar)
+        self.statwindow.Refresh(curchar)
+        self.equipwindow.Refresh(curchar)
+        self.skillwindow.Refresh(curchar)
 
-    def startShow(self, trans):
-        self.refresh(xi.party.activeRoster[0])
+        if self.skillwindow.Text.Length == 0:
+            self.skillwindow.AddText('No skills')
+    
+        self.statbar.Refresh()
+        self.portraitwindow.DockTop().DockLeft()
+        self.statwindow.DockTop(self.portraitwindow).DockLeft()
+        self.statwindow.width = self.portraitwindow.width
+        self.equipwindow.DockTop().DockLeft(self.portraitwindow)
+        self.skillwindow.DockTop(self.equipwindow).DockLeft(self.statwindow)
+        self.equipwindow.Right = self.statbar.x - self.statbar.border * 2
+        self.skillwindow.width = self.equipwindow.width
+        self.skillwindow.Layout()
+        
 
-        trans.addChild(self.portraitWindow, startRect=(-self.portraitWindow.width, self.portraitWindow.y))
-        trans.addChild(self.statWindow, startRect=(ika.Video.xres, self.statWindow.y))
-        trans.addChild(self.equipWindow, startRect=(self.equipWindow.x, -self.equipWindow.height))
-        trans.addChild(self.skillWindow, startRect=(self.skillWindow.x, ika.Video.yres))
-
-    def startHide(self, trans):
-        trans.addChild(self.portraitWindow, endRect=(-self.portraitWindow.width, self.portraitWindow.y))
-        trans.addChild(self.statWindow, endRect=(ika.Video.xres, self.statWindow.y))
-        trans.addChild(self.equipWindow, endRect=(self.equipWindow.x, -self.equipWindow.height))
-        trans.addChild(self.skillWindow, endRect=(self.skillWindow.x, ika.Video.yres))
-
-    def refresh(self, curchar):
-        self.portraitWindow.refresh(curchar)
-        self.statWindow.refresh(curchar)
-        self.equipWindow.refresh(curchar)
-
-        self.equipWindow.y = self.portraitWindow.y
-
-        self.portraitWindow.dockTop().dockLeft()
-        self.statWindow.dockTop(self.portraitWindow).dockLeft()
-
-        self.statWindow.width = max(self.statWindow.width, self.portraitWindow.width)
-        self.portraitWindow.width = self.statWindow.width
-
-        self.equipWindow.dockTop().dockLeft(self.portraitWindow)
-        self.skillWindow.dockTop(self.equipWindow).dockLeft(self.statWindow)
-        self.equipWindow.width = ika.Video.xres - self.equipWindow.border - self.equipWindow.x
-        self.skillWindow.width = self.equipWindow.width
-        self.skillWindow.refresh(curchar)
-        self.skillWindow.height = min(self.skillWindow.height, ika.Video.yres - self.skillWindow.y - self.skillWindow.border)
-
-    #--------------------------------------------
-
-    def update(self):
-        ika.Input.Update()
-
-        if controls.left() and self._curChar > 0:
-            self._curChar -= 1
-            self.refresh(xi.party.activeRoster[self._curChar])
-        if controls.right() and self._curChar < len(xi.party.activeRoster) - 1:
-            self._curChar += 1
-            self.refresh(xi.party.activeRoster[self._curChar])
-
-        if controls.up():
-            self.skillWindow.ywin -= 1
-
-        if controls.down():
-            self.skillWindow.ywin += 1
-
-        if controls.cancel() or controls.enter():
-            return menu.Cancel
-
-    #--------------------------------------------
-
-    def draw(self):
-        ika.Map.Render()
-        self.portraitWindow.draw()
-        self.statWindow.draw()
-        self.equipWindow.draw()
-        self.skillWindow.draw()
-
-    def execute(self):
-        fps = FPSManager()
-        result = None
-
-        while result is None:
-            result = self.update()
-            fps.render(self.draw)
-
+    def Execute(self):
+        curchar = 0
+    
+        self.Refresh(party[curchar])
+    
+        while 1:
+            ika.Map.Render()
+            for x in (self.equipwindow, self.statwindow, self.statbar, self.portraitwindow, self.skillwindow):
+                x.Draw()
+                
+            ika.Video.ShowPage()
+    
+            ika.Input.Update()
+            if left() and curchar > 0:
+                curchar -= 1
+                self.Refresh(party[curchar])
+    
+            if right() and curchar < len(party) - 1:
+                curchar += 1
+                self.Refresh(party[curchar])
+    
+            if enter() or cancel():
+                break
+    
         return True

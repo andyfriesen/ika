@@ -1,0 +1,24 @@
+name Clyde
+portrait clydeportrait.png
+sprite clyde.ika-sprite
+class Clyde
+EXP   0 - 1000000
+HP  30 - 800
+MP  10 - 400
+STR 24 - 400
+VIT 15 - 250
+MAG 15 - 220
+WIL 10 - 180
+SPD  2 -  10
+LUK 10 - 200
+equipslots
+    weapon
+    armour
+    accessory
+    accessory
+end
+
+#  Level - Spell
+#  3       WhiteLight
+#  7       ShiningLance
+# 15       Bladesong
