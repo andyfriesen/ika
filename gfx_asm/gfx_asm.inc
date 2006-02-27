@@ -1,2 +1,0 @@
-
-LPVOID  typedef DWORD
