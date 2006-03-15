@@ -421,7 +421,7 @@ namespace Script {
         if (!PyArg_ParseTuple(args, "|s:SetMapPath", &s))
             return 0;
 
-        engine->_mapPath = s;
+        engine->mapPath = s;
 
         Py_INCREF(Py_None);
         return Py_None;
