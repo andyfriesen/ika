@@ -480,6 +480,8 @@ namespace Script {
 
     METHOD(ika_render, PyObject);
 
+    METHOD(ika_setmappath, PyObject);
+
     extern PyMethodDef standard_methods[];
 
 #undef METHOD

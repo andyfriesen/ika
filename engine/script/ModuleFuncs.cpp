@@ -415,6 +415,18 @@ namespace Script {
         return Py_None;
     }
 
+    METHOD(ika_setmappath) {
+        char* s = "";
+
+        if (!PyArg_ParseTuple(args, "|s:SetMapPath", &s))
+            return 0;
+
+        engine->_mapPath = s;
+
+        Py_INCREF(Py_None);
+        return Py_None;
+    }
+
     PyMethodDef standard_methods[] = {
         //  name  | function
 
@@ -559,6 +571,12 @@ namespace Script {
             "order (set in the editor)\n\n"
             "If layerList is omitted, the screen is cleared to black before rendering\n"
             "begins."
+        },
+
+        {   "SetMapPath",   (PyCFunction)ika_setmappath,    METH_VARARGS,
+            "SetMapPath(newmappath)\n\n"
+            "Sets the folder for ika to load both map and tileset files from.\n"
+            "Make to sure to end your folder with a trailing /!"
         },
 
         {    0    }
