@@ -9,6 +9,10 @@ struct Executor;
 struct Map;
 
 struct ZonePropertiesDlg : public wxDialog {
+    ZonePropertiesDlg(Executor* e, uint layerIndex, uint zoneIndex);
+
+    DECLARE_EVENT_TABLE()
+
 private:
     Executor*   _executor;
     uint        _layerIndex;
@@ -34,11 +38,6 @@ private:
     void OnRenameBlueprint(wxCommandEvent&);
     void OnDeleteZone(wxCommandEvent&);
     void OnOk(wxCommandEvent&);
-
-public:
-    ZonePropertiesDlg(Executor* e, uint layerIndex, uint zoneIndex);
-
-    DECLARE_EVENT_TABLE()
 };
 
 #endif
