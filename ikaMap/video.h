@@ -61,19 +61,19 @@ public:
     DECLARE_EVENT_TABLE()
 };
 
-struct Image
-{
+struct Image {
     friend struct VideoFrame;
-protected:
-    GLuint hTex;
-    int nWidth, nHeight;
-    int nTexwidth, nTexheight;
-
-public:
     Image(const Canvas& src);
     ~Image();
 
     void Update(const Canvas& src);
+
+protected:
+    GLuint _handle;
+    int _width;
+    int _height;
+    int _texWidth;
+    int _texHeight;
 };
 
 #endif

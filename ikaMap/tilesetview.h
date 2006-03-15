@@ -17,8 +17,6 @@ private:
     Executor* _executor;
     int  _ywin;  // scroll position, in pixels.
     bool _pad;
-    Rect _selection;
-    bool _dragging;
 
 public:
     TilesetView(Executor* e, wxWindow* parent);
@@ -34,11 +32,9 @@ public:
     void Render();
 
     void UpdateScrollBars();
-    void SetSelectionTile(uint index);
 
     void OnTilesetChange(const TilesetEvent& event);
-    void OnCurrentBrushChange(Matrix<uint>& newBrush);
-    void UpdateBrush();
+    void OnCurrentTileChange(uint newTile);
 
     uint PointToTile(int x, int y) const;   // returns the tile under coordinates (x,y)
     void TileToPoint(uint index, int& x, int& y) const;   // returns the position of the tile in (x,y)

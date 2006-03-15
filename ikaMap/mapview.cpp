@@ -323,15 +323,16 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset) {
         }
     }
 }
-void MapView::RenderBrush(int tx, int ty)
-{
+
+void MapView::RenderBrush(int tx, int ty) {
     Tileset* ts = _executor->GetTileset();
-    if (!ts->Count())
+    if (!ts->Count()) {
         return;
+    }
 
     int tileX = ts->Width();
     int tileY = ts->Height();
-    Matrix<uint>& brush = _executor->GetCurrentBrush();
+    const Brush& brush = _executor->GetCurrentBrush();
     int width = brush.Width() * tileX;
     int height = brush.Height() * tileY;
     int xoffset = tx * tileX - _xwin;
@@ -342,12 +343,15 @@ void MapView::RenderBrush(int tx, int ty)
     glColor4f(1.0, 1.0, 1.0, 0.5);
     for (int y = 0; y < lenY; y++) {
         for (int x = 0; x < lenX; x++) {
-            int t = brush(x, y);
+            const Brush::Tile& t = brush.tiles(x, y);
 
-            _video->Blit(
-                ts->GetImage(t),
-                xoffset + x * tileX, yoffset + y * tileY,
-                true);
+            if (t.mask) {
+                _video->Blit(
+                    ts->GetImage(t.index),
+                    xoffset + x * tileX, yoffset + y * tileY,
+                    true
+                );
+            }
         }
     }
     glColor4f(1.0, 1.0, 1.0, 1.0);

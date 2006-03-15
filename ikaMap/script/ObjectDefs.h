@@ -83,7 +83,7 @@ namespace ScriptObject
         struct EditorObject
         {
             PyObject_HEAD
-            PyObject* brush;
+            //PyObject* brush;
             MainWindow* mainWnd;
         };
 

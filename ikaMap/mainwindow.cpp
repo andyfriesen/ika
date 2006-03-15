@@ -34,6 +34,7 @@
 #include "common/utility.h"
 #include "common/version.h"
 #include "common/matrix.h"
+#include "brush.h"
 
 // Scripting
 #include "scriptengine.h"
@@ -170,7 +171,6 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _curScript(0)
     , _curLayer(0)
     , _curTile(0)
-    , _curBrush(1, 1)
     , _changed(false)
     , _layerVisibility(20)
 {
@@ -309,7 +309,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         curLayerChanged.add     (_mapView, &MapView::OnCurLayerChange);
         curLayerChanged.add     (_layerList, &LayerList::OnLayerActivated);
 
-        //curBrushChanged.add     (_tilesetView, &TilesetView::OnCurrentBrushChange);
+        curTileChanged.add      (_tilesetView, &TilesetView::OnCurrentTileChange);
     }
 
     // Create the menu.
@@ -389,8 +389,9 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 }
 
 MainWindow::~MainWindow() {
-    for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++)
+    for (SpriteMap::iterator iter = _sprites.begin(); iter != _sprites.end(); iter++) {
         delete iter->second;
+    }
     _sprites.clear();
 
     ClearList(_undoList);
@@ -399,8 +400,9 @@ MainWindow::~MainWindow() {
     delete _map;
     delete _tileset;
 
-    for (uint i = 0; i < _scripts.size(); i++)
+    for (uint i = 0; i < _scripts.size(); i++) {
         delete _scripts[i];
+    }
     _scripts.clear();
 
     ScriptEngine::ShutDown();
@@ -1029,22 +1031,25 @@ void MainWindow::EditLayerProperties(uint index) {
 }
 
 
-Matrix<uint>& MainWindow::GetCurrentBrush() {
-
+const Brush& MainWindow::GetCurrentBrush() {
     return _curBrush;
-
 }
 
-void MainWindow::SetCurrentBrush(Matrix<uint>& brush) {
-
+void MainWindow::SetCurrentBrush(const Brush& brush) {
     _curBrush = brush;
-
-    GetTilesetView()->OnCurrentBrushChange(brush);
-
+//    GetTilesetView()->OnCurrentBrushChange(brush);
 //    curBrushChanged.fire(brush);
-
 }
 
+uint MainWindow::GetCurrentTile() {
+    return _curTile;
+}
+
+void MainWindow::SetCurrentTile(uint i) {
+    assert(0 <= i && i < _tileset->Count());
+    _curTile = i;
+    curTileChanged.fire(i);
+}
 
 uint MainWindow::GetCurrentLayer() {
     return _curLayer;

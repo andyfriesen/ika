@@ -47,32 +47,16 @@ private:
     std::vector<Command*> _commands;
 };
 
-struct SetBrushCommand : Command
-
-{
-
-private:
-
-    uint _tileX, _tileY;
-
-    uint _layerIndex;
-
-    Matrix<uint> _curBrush;
-
-    Matrix<uint> _oldBrush;
-
-
-
-public:
-
+struct SetBrushCommand : Command {
     SetBrushCommand(uint tx, uint ty, uint li, const Matrix<uint>& brush);
-
-
-
     virtual void Do(Executor* e);
-
     virtual void Undo(Executor* e);
 
+private:
+    uint _tileX, _tileY;
+    uint _layerIndex;
+    Matrix<uint> _curBrush;
+    Matrix<uint> _oldBrush;
 };
 
 

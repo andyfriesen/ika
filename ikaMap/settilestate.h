@@ -22,16 +22,12 @@ public:
 
 
     void SetTile(int x, int y);
-    Matrix<uint>& GetCurBrush() const;
-    void SetCurBrush(Matrix<uint>& b);
+    uint GetCurTile() const;
+    void SetCurTile(uint tile);
 
 private:
     int _oldX, _oldY;
     int _curX, _curY;
-    int _offsetX, _offsetY;
-    int _dragX, _dragY;
-    bool _dragging;
-    Rect _selection;
 
     CompositeCommand* _curGroup;
 };

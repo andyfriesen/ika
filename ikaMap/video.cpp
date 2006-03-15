@@ -54,15 +54,13 @@ VideoFrame::VideoFrame(wxWindow* parent)
     _instances.insert(this);
 }
 
-VideoFrame::~VideoFrame()
-{
+VideoFrame::~VideoFrame() {
     int q = _instances.size();
     _instances.erase(this);
     q = _instances.size();
 }
 
-void VideoFrame::OnSize(wxSizeEvent& event)
-{
+void VideoFrame::OnSize(wxSizeEvent& event) {
     int w = event.GetSize().GetWidth();
     int h = event.GetSize().GetHeight();
 
@@ -76,8 +74,7 @@ void VideoFrame::OnSize(wxSizeEvent& event)
     glScissor(0, 0, w, h);
 }
 
-void VideoFrame::OnMouseEvent(wxMouseEvent& event)
-{
+void VideoFrame::OnMouseEvent(wxMouseEvent& event) {
     // Tweak the mouse position, so that the parent doesn't have to compensate for interacting with the frame.
     event.m_x = event.m_x * _curZoom / nZoomscale;
     event.m_y = event.m_y * _curZoom / nZoomscale;
@@ -86,14 +83,7 @@ void VideoFrame::OnMouseEvent(wxMouseEvent& event)
     wxPostEvent(GetParent(), event);
 }
 
-/*void VideoFrame::OnPaint(wxPaintEvent& event)
-{
-    wxPaintDC dc(this);
-    wxPostEvent(GetParent(), event);
-}*/
-
-void VideoFrame::DrawRect(int x, int y, int w, int h, RGBA colour)
-{
+void VideoFrame::DrawRect(int x, int y, int w, int h, RGBA colour) {
     x = x * nZoomscale / _curZoom;
     y = y * nZoomscale / _curZoom;
     w = w * nZoomscale / _curZoom;
@@ -102,6 +92,9 @@ void VideoFrame::DrawRect(int x, int y, int w, int h, RGBA colour)
     glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
     glColor4ub(colour.r, colour.g, colour.b, colour.a);
     glDisable(GL_TEXTURE_2D);
+
+    glPushMatrix();
+    glTranslatef(0.375f, 0.375f, 0);
 
     glBegin(GL_LINE_LOOP);
 
@@ -112,11 +105,11 @@ void VideoFrame::DrawRect(int x, int y, int w, int h, RGBA colour)
 
     glEnd();
 
+    glPopMatrix();
     glPopAttrib();
 }
 
-void VideoFrame::DrawRectFill(int x, int y, int w, int h, RGBA colour)
-{
+void VideoFrame::DrawRectFill(int x, int y, int w, int h, RGBA colour) {
     x = x * nZoomscale / _curZoom;
     y = y * nZoomscale / _curZoom;
     w = w * nZoomscale / _curZoom;
@@ -125,6 +118,9 @@ void VideoFrame::DrawRectFill(int x, int y, int w, int h, RGBA colour)
     glPushAttrib(GL_CURRENT_BIT | GL_ENABLE_BIT);
     glColor4ub(colour.r, colour.g, colour.b, colour.a);
     glDisable(GL_TEXTURE_2D);
+
+    glPushMatrix();
+    glTranslatef(0.375f, 0.375f, 0);
 
     glBegin(GL_QUADS);
 
@@ -135,13 +131,12 @@ void VideoFrame::DrawRectFill(int x, int y, int w, int h, RGBA colour)
 
     glEnd();
 
+    glPopMatrix();
     glPopAttrib();
 }
 
 
-void VideoFrame::DrawSelectRect(int x, int y, int w, int h, RGBA colour)
-
-{
+void VideoFrame::DrawSelectRect(int x, int y, int w, int h, RGBA colour) {
     if (w < 0) {
         x += w;
         w -= w * 2;
@@ -156,32 +151,31 @@ void VideoFrame::DrawSelectRect(int x, int y, int w, int h, RGBA colour)
     DrawRect(x + 1, y + 1, w - 2, h - 2, colour);
     DrawRect(x + 2, y + 2, w - 4, h - 4, RGBA(255, 255, 255));
     DrawRect(x + 3, y + 3, w - 6, h - 6, RGBA(0, 0, 0));
-
 }
 
-
-void VideoFrame::Blit(Image& src, int x, int y, bool trans)
-{
-    ScaleBlit(src, x, y, src.nWidth, src.nHeight, trans);
+void VideoFrame::Blit(Image& src, int x, int y, bool trans) {
+    ScaleBlit(src, x, y, src._width, src._height, trans);
 }
 
-void VideoFrame::ScaleBlit(Image& src, int x, int y, int w, int h, bool trans)
-{
+void VideoFrame::ScaleBlit(Image& src, int x, int y, int w, int h, bool trans) {
     x = x * nZoomscale / _curZoom;
     y = y * nZoomscale / _curZoom;
     w = w * nZoomscale / _curZoom;
     h = h * nZoomscale / _curZoom;
     
-    if (_curZoom!=nZoomscale)        w++, h++;
+    if (_curZoom != nZoomscale) {
+        w++; h++;
+    }
 
-    GLfloat nTexendx = 1.0f * src.nWidth / src.nTexwidth;
-    GLfloat nTexendy = 1.0f * src.nHeight / src.nTexheight;
+    GLfloat nTexendx = 1.0f * src._width / src._texWidth;
+    GLfloat nTexendy = 1.0f * src._height / src._texHeight;
 
-    SetTex(src.hTex);
-    if (trans)
+    SetTex(src._handle);
+    if (trans) {
         glEnable(GL_BLEND);
-    else
+    } else {
         glDisable(GL_BLEND);
+    }
 
     glBegin(GL_QUADS);
 
@@ -193,76 +187,69 @@ void VideoFrame::ScaleBlit(Image& src, int x, int y, int w, int h, bool trans)
     glEnd();
 }
 
-void VideoFrame::Clear()
-{
+void VideoFrame::Clear() {
     glClear(GL_COLOR_BUFFER_BIT);
 }
 
-void VideoFrame::SetClearColour(RGBA colour)
-{
+void VideoFrame::SetClearColour(RGBA colour) {
     SetCurrent();
     glClearColor(colour.r / 255.0, colour.g / 255.0, colour.b / 255.0, colour.a / 255.0);
 }
 
-void VideoFrame::ShowPage()
-{
+void VideoFrame::ShowPage() {
     SwapBuffers();
 }
 
-int VideoFrame::LogicalWidth() const
-{
+int VideoFrame::LogicalWidth() const {
     return GetClientSize().GetWidth() * _curZoom / nZoomscale;
 }
 
-int VideoFrame::LogicalHeight() const
-{
+int VideoFrame::LogicalHeight() const {
     return GetClientSize().GetHeight() * _curZoom / nZoomscale;
 }
 
-int VideoFrame::GetZoom() const
-{
+int VideoFrame::GetZoom() const {
     return _curZoom;
 }
 
-void VideoFrame::SetZoom(int z)
-{
+void VideoFrame::SetZoom(int z) {
     _curZoom = max(1, z);
 }
 
-void VideoFrame::IncZoom(int amt)
-{
+void VideoFrame::IncZoom(int amt) {
     _curZoom = max(1, _curZoom + amt);
-
 }
 
-Image::Image(const Canvas& src)
-{
-    glGenTextures(1, &hTex);
+Image::Image(const Canvas& src) {
+    glGenTextures(1, &_handle);
     Update(src);
 }
 
-Image::~Image()
-{
+Image::~Image() {
     SetTex(0);
-    glDeleteTextures(1, &hTex);
+    glDeleteTextures(1, &_handle);
 }
 
-void Image::Update(const Canvas& src)
-{
-    nWidth = src.Width();
-    nHeight = src.Height();
+void Image::Update(const Canvas& src) {
+    _width = src.Width();
+    _height = src.Height();
 
-    nTexwidth = 1;
-    nTexheight = 1;
+#if 1
+    _texWidth = nextPowerOf2(_width);
+    _texHeight = nextPowerOf2(_height);
+#else
+    _texWidth = 1;
+    _texHeight = 1;
 
-    while (nTexwidth < nWidth) nTexwidth<<=1;
-    while (nTexheight < nHeight) nTexheight<<=1;
+    while (_texWidth < _width) _texWidth <<= 1;
+    while (_texHeight < _height) _texHeight <<= 1;
+#endif
 
     Canvas tmp(src);
-    tmp.Resize(nTexwidth, nTexheight);
+    tmp.Resize(_texWidth, _texHeight);
 
-    SetTex(hTex);
-    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, nTexwidth, nTexheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (u32*)tmp.GetPixels());
+    SetTex(_handle);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, _texWidth, _texHeight, 0, GL_RGBA, GL_UNSIGNED_BYTE, (u32*)tmp.GetPixels());
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);

@@ -116,8 +116,11 @@ struct MainWindow : public wxFrame, Executor {
     virtual void ShowLayer(uint index, bool show);
 
     virtual void EditLayerProperties(uint index);
-    virtual Matrix<uint>& GetCurrentBrush();
-    virtual void SetCurrentBrush(Matrix<uint>& brush);
+    virtual const Brush& GetCurrentBrush();
+    virtual void SetCurrentBrush(const Brush& brush);
+
+    virtual uint GetCurrentTile();
+    virtual void SetCurrentTile(uint i);
 
     virtual uint GetCurrentLayer();
     virtual void SetCurrentLayer(uint i);
@@ -155,7 +158,7 @@ private:
 
     // Store and reuse the dialog so that it can remember its previous values.
     ScopedPtr<ImportTilesDlg> _importTilesDlg;
-    
+
     typedef std::map<std::string, SpriteSet*> SpriteMap;
     SpriteMap _sprites;
 
@@ -172,7 +175,7 @@ private:
 
     uint _curTile;
     uint _curLayer;
-    Matrix<uint> _curBrush;
+    Brush _curBrush;
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
     static void ClearList(std::stack< ::Command*>& list);

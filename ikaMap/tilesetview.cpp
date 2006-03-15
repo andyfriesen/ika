@@ -27,8 +27,6 @@ TilesetView::TilesetView(Executor* e, wxWindow* parent)
     , _executor(e)
     , _ywin(0)
     , _pad(true)
-    , _selection(0, 0, 1, 1)
-    , _dragging(false)
 {}
 
 TilesetView::~TilesetView()
@@ -80,125 +78,16 @@ void TilesetView::OnPaint(wxPaintEvent&) {
     Render();
     ShowPage();
 }
-/*
-void TilesetView::OnLeftClick(wxMouseEvent& event) {
-    std::string b = "Beta!";
-    Log::Write("Click!" + b);
-    //exit(1);
-    //VideoFrame::OnMouseEvent(event);
-    //Tileset* ts = _executor->GetTileset();
-    Log::Write("Click");
-    _dragging = true;
-    exit(1);
-    //_selection.left = event.m_x / ts->Width();
-    //_selection.top = event.m_y / ts->Height();
-}
 
-
-void TilesetView::OnLeftClick(wxMouseEvent& event) {
+void TilesetView::OnMouseDown(wxMouseEvent& event) {
     VideoFrame::OnMouseEvent(event);
 
-    Tileset* ts = _executor->GetTileset();
-
-    if (event.ControlDown())
-
-    {
-        _selection.right = event.m_x / (ts->Width() + (_pad ? 1 : 0)) + 1;
-
-        _selection.bottom = event.m_y / (ts->Height() + (_pad ? 1 : 0)) + 1;
-
-    }
-
-    else
-    
-    {
-        _selection.left = event.m_x / (ts->Width() + (_pad ? 1 : 0));
-
-        _selection.top = event.m_y / (ts->Height() + (_pad ? 1 : 0));
-
-        _selection.right = _selection.left + 1;
-
-        _selection.bottom = _selection.top + 1;
-    }
-
-
-
-    // Update brush.
-    UpdateBrush();
-
-
-    Refresh();
-}
-*/
-
-
-
-void TilesetView::OnMouseDown(wxMouseEvent& event)
-
-{
-
-    VideoFrame::OnMouseEvent(event);
-
-    Tileset* ts = _executor->GetTileset();
-
-    if (event.LeftDown() && !_dragging)
-
-    {
-
-        _selection.left = event.GetX() / (ts->Width() + (_pad ? 1 : 0));
-
-        _selection.top = event.GetY() / (ts->Height() + (_pad ? 1 : 0));
-
-        _selection.right = _selection.left + 1;
-
-        _selection.bottom = _selection.top + 1;
-
-
-
-        _dragging = true;
-
-    }
-
+    uint index = PointToTile(event.m_x, event.m_y);
+    _executor->SetCurrentTile(index);
 }
 
-
-void TilesetView::OnMouseUp(wxMouseEvent& event)
-
-{
-
-    Tileset* ts = _executor->GetTileset();
-
-    if (_dragging && !event.LeftIsDown())
-
-    {
-
-        _selection.right = event.m_x / (ts->Width() + (_pad ? 1 : 0)) + 1;
-
-        _selection.bottom = event.m_y / (ts->Height() + (_pad ? 1 : 0)) + 1;
-
-
-
-        _dragging = false;
-
-
-
-        UpdateBrush();
-
-        Refresh();
-
-    }
-
-}
-
-
-
-void TilesetView::OnMouseMove(wxMouseEvent& event)
-
-{
-
-}
-
-
+void TilesetView::OnMouseMove(wxMouseEvent&) { }
+void TilesetView::OnMouseUp(wxMouseEvent&) { }
 
 void TilesetView::Render() {
     SetCurrent();
@@ -255,16 +144,11 @@ breakLoop:;
 
     // Highlight the current tile.
     {
+        int x;
+        int y;
+        TileToPoint(_executor->GetCurrentTile(), x, y);
 
-
-        uint w = ts->Width();
-        uint h = ts->Height();
-        DrawSelectRect(_selection.left * (w + 1),
-                _selection.top * (h + 1),
-                (_selection.right - _selection.left) * (w + 1),
-                (_selection.bottom - _selection.top) * (h + 1), 
-                RGBA(127, 255, 255));
-
+        DrawSelectRect(x, y, tileWidth, tileHeight, RGBA(127, 255, 255));
     }
 }
 
@@ -278,68 +162,13 @@ void TilesetView::UpdateScrollBars() {
 }
 
 
-void TilesetView::SetSelectionTile(uint index)
-
-{
-
-    const Tileset* ts = _executor->GetTileset();
-
-
-
-    int x, y;
-
-    TileToPoint(index, x, y);
-
-    x /= ts->Width() + (_pad ? 1 : 0);
-
-    y /= ts->Width() + (_pad ? 1 : 0);
-
-
-
-    _selection.left = x;
-
-    _selection.top = y;
-
-    _selection.right = x + 1;
-
-    _selection.bottom = y + 1;
-
-
-
-    Refresh();
-
-}
-
-
 void TilesetView::OnTilesetChange(const TilesetEvent& event) {
-    _selection.top = 0;
-
-    _selection.left = 0;
-
-    _selection.bottom = 1;
-
-    _selection.right = 1;
-
-
-
     Refresh();
 }
 
-void TilesetView::OnCurrentBrushChange(Matrix<uint>& newBrush) {
+void TilesetView::OnCurrentTileChange(uint newTile) {
     Refresh();
-    //_executor->SetStatusBar(va("Tile: %3i", newTile), 2);
-}
-void TilesetView::UpdateBrush() {
-    uint h = _selection.bottom - _selection.top;
-    uint w = _selection.right - _selection.left;
-    Matrix<uint> brush = _executor->GetCurrentBrush();
-    brush.Resize(w, h);
-    for (uint x = 0; x < w; x ++) {
-        for (uint y = 0; y < h; y ++) {
-            brush(x, y) = (_selection.top + y) * TilesPerRow() + _selection.left + x;
-        }
-    }
-    _executor->SetCurrentBrush(brush);
+    _executor->SetStatusBar(va("Tile: %3i", newTile), 2);
 }
 
 uint TilesetView::PointToTile(int x, int y) const {

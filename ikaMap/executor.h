@@ -7,6 +7,7 @@
 
 #include "common/utility.h"
 #include "common/listener.h"
+#include "brush.h"
 #include "events.h"
 
 class wxWindow; // -_-.  Okay because we don't have to actually include wx stuff.
@@ -46,15 +47,19 @@ struct Executor {
 
     // Displays a dialog so the user can tweak the layer.
     virtual void EditLayerProperties(uint index) = 0;
-    virtual Matrix<uint>& GetCurrentBrush() = 0;
-    virtual void SetCurrentBrush(Matrix<uint>& brush) = 0;
+    virtual const Brush& GetCurrentBrush() = 0;
+    virtual void SetCurrentBrush(const Brush& brush) = 0;
 
     virtual uint GetCurrentLayer() = 0;
     virtual void SetCurrentLayer(uint i) = 0;
 
+    virtual uint GetCurrentTile() = 0;
+    virtual void SetCurrentTile(uint i) = 0;
+
     virtual void SetStatusBar(const std::string& text, int field = 1) = 0;
 
     // Mustn't use these to mutate!!  Send a command!
+    // TODO: const correctness is neato.
     virtual Map* GetMap() = 0;
     virtual Tileset* GetTileset() = 0;
     virtual SpriteSet* GetSpriteSet(const std::string& filename) = 0;
@@ -97,7 +102,8 @@ struct Executor {
     
     Listener<const MapEvent&>  mapVisibilityChanged;    // A layer has been hidden, or unhidden, or something.
     Listener<uint>             curLayerChanged;         // The current layer has changed.
-    Listener<Matrix<uint>& >   curBrushChanged;         // The current brush has changed.
+    Listener<uint>             curTileChanged;          // The current tile has changed.
+    Listener<const Brush&>     curBrushChanged;         // The active brush has changed.
 };
 
 #endif

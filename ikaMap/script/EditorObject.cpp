@@ -57,7 +57,7 @@ namespace ScriptObject
             return 0;
         }
         */
-        GET(CurBrush)   {   Py_INCREF(self->brush); return self->brush;}
+        //GET(CurBrush)   {   Py_INCREF(self->brush); return self->brush;}
         //SET(CurBrush)   {   }
         
 #undef GET
@@ -68,7 +68,7 @@ namespace ScriptObject
             {   "xwin",         (getter)getXWin,            0,                          "Gets the current x position of the map viewport."  },
             {   "ywin",         (getter)getYWin,            0,                          "Gets the current y position of the map viewport."  },
             {   "curlayer",     (getter)getCurLayer,        (setter)setCurLayer,        "Gets or sets the active map layer."                },
-            {   "curbrush",      (getter)getCurBrush,         0,                        "Gets or sets the current brush."                    },
+            //{   "curbrush",      (getter)getCurBrush,         0,                        "Gets or sets the current brush."                    },
             {   0   }
         };
 
@@ -93,7 +93,7 @@ namespace ScriptObject
             EditorObject* object = PyObject_New(EditorObject, &type);
 
             if (!object)    return 0;
-            object->brush = ScriptObject::Brush::New(mainWnd);
+            //object->brush = ScriptObject::Brush::New(mainWnd);
             object->mainWnd = mainWnd;
 
             return (PyObject*)object;
