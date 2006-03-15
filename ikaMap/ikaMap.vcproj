@@ -384,6 +384,9 @@
 				RelativePath="py.ico">
 			</File>
 			<File
+				RelativePath=".\select.cur">
+			</File>
+			<File
 				RelativePath="select.ico">
 			</File>
 			<File

@@ -20,16 +20,22 @@ struct Brush {
      */
 
     Brush();
+    Brush(const Matrix<uint>& tiles);
     Brush(const Map::Layer& layer, const Rect& r);
     Brush(const Map::Layer& layer, const Rect& r, const Matrix<bool>& mask);
 
-    uint Width() const;
-    uint Height() const;
+    uint Width() const  { return tiles.Width(); }
+    uint Height() const { return tiles.Height(); }
+    bool Empty() const  { return tiles.Empty(); }
 
     struct Tile {
         uint index;
         u8   obstruct;
         bool mask;          ///< If true, this tile is excluded from paste operations.
+
+        Tile()
+            : index(0), obstruct(0), mask(false)
+        {}
     };
 
     Matrix<Tile> tiles;

@@ -1,5 +1,6 @@
 // Microsoft Visual C++ generated resource script.
 //
+#include "resrc1.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
@@ -75,7 +76,7 @@ END
 // Menu
 //
 
-WXWINDOWMENU MENU
+WXWINDOWMENU MENU 
 BEGIN
     POPUP "&Window"
     BEGIN
@@ -95,6 +96,13 @@ END
 //
 
 WXBITMAP_STD_COLOURS    BITMAP                  "colours.bmp"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Cursor
+//
+
+SELECTCURSOR            CURSOR                  "select.cur"
 #endif    // Neutral resources
 /////////////////////////////////////////////////////////////////////////////
 
@@ -114,19 +122,19 @@ LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_CAN
 // TEXTINCLUDE
 //
 
-1 TEXTINCLUDE
+1 TEXTINCLUDE 
 BEGIN
     "resrc1.h\0"
 END
 
-2 TEXTINCLUDE
+2 TEXTINCLUDE 
 BEGIN
     "#include ""resource.h""\r\n"
     "#include ""afxres.h""\r\n"
     "\0"
 END
 
-3 TEXTINCLUDE
+3 TEXTINCLUDE 
 BEGIN
     "\r\n"
     "\0"

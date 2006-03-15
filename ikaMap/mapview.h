@@ -53,6 +53,7 @@ struct MapView : public wxPanel {
     void RenderLayer(Map::Layer* lay, int xoffset, int yoffset);
     void RenderEntities(Map::Layer* lay, int xoffset, int yoffset);
     void RenderObstructions(Map::Layer* lay, int xoffset, int yoffset);
+    void RenderBrush(const Brush& brush, int x, int y);
     void RenderBrush(int tx, int ty);
 
     void UpdateScrollBars();

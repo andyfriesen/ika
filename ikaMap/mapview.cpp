@@ -326,41 +326,44 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset) {
     }
 }
 
-void MapView::RenderBrush(int tx, int ty) {
+void MapView::RenderBrush(const Brush& brush, int xp, int yp) {
     Tileset* ts = _executor->GetTileset();
     if (!ts->Count()) {
         return;
     }
 
-    const Brush& brush = _executor->GetCurrentBrush();
-
-    //*
-    TileToScreen(tx, ty);
-    int lenX = brush.Width();
-    int lenY = brush.Height();
-    int xoffset = tx;
-    int yoffset = ty;
     int tileX = ts->Width();
     int tileY = ts->Height();
-    int width = brush.Width() * tileX;
-    int height = brush.Height() * tileY;
 
-    glColor4f(1.0, 1.0, 1.0, 0.5);
+    int width  = _video->LogicalWidth();
+    int height = _video->LogicalHeight();
+
+    int lenX = brush.Width();
+    int lenY = brush.Height();
+
     for (int y = 0; y < lenY; y++) {
         for (int x = 0; x < lenX; x++) {
             const Brush::Tile& t = brush.tiles(x, y);
 
             if (t.mask) {
+                /*glColor4ub(255, 0, 0, 255);
                 _video->Blit(
                     ts->GetImage(t.index),
-                    xoffset + x * tileX, yoffset + y * tileY,
+                    xp + x * tileX, yp + y * tileY,
                     true
                 );
+                glColor4ub(255, 255, 255, 255);*/
+                _video->DrawRectFill(xp + x * tileX, yp + y * tileY, 16, 16, RGBA(255, 0, 0, 255));
             }
         }
     }
-    glColor4f(1.0, 1.0, 1.0, 1.0);
-    _video->DrawSelectRect(xoffset, yoffset, width, height, RGBA(127, 255, 255, 127));
+
+    _video->DrawSelectRect(xp, yp, brush.Width() * tileX, brush.Height() * tileY, RGBA(127, 255, 255, 127));
+}
+
+void MapView::RenderBrush(int tx, int ty) {
+    Tileset* ts = _executor->GetTileset();
+    RenderBrush(_executor->GetCurrentBrush(), tx * ts->Width(), ty * ts->Height());
 }
 
 void MapView::UpdateScrollBars() {
