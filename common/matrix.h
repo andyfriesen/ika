@@ -84,6 +84,8 @@ struct Matrix {
 
     T& operator ()(uint x, uint y) {
         if (x >= _width || y >= _height) {
+            // x_x
+            // TODO: make this raise an exception.
             static T blah;
             return blah;
         }

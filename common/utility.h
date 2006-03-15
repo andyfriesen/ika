@@ -21,7 +21,7 @@ using namespace std;
 #endif
 
 template <typename T, int N>
-int lengthof(const T (&array)[N]) {
+uint lengthof(const T (&array)[N]) {
     return N;
 }
 
