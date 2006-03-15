@@ -16,16 +16,13 @@ CopyPasteState::CopyPasteState(Executor* e)
     , _offsetY(0)
 {}
 
-void CopyPasteState::OnMouseDown(wxMouseEvent& event)
-{
+void CopyPasteState::OnMouseDown(wxMouseEvent& event) {
     const Tileset* ts = GetTileset();
     const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 
-    if (event.LeftDown())
-    {
-        if (!_tiles.Empty())
-        {
+    if (event.LeftDown()) {
+        if (!_tiles.Empty()) {
             int x = _selX;
             int y = _selY;
             int x2 = x + _tiles.Width();
@@ -41,19 +38,16 @@ void CopyPasteState::OnMouseDown(wxMouseEvent& event)
                 // If within, then we start moving it around.
                 _offsetX = event.GetX();
                 _offsetY = event.GetY();
-            }
-            else
-            {
+            } else {
                 // If without, then we dump the selection where it is, clear the selection rect, and let
-                //   control flow to the second section, below. (thereby allowing the user to grab a new 
+                //   control flow to the second section, below. (thereby allowing the user to grab a new
                 //   selection)
                 Paste();
             }
         }
 
         // If there is no selection, or the mouse cursor is outside the old (now purged) tile buffer
-        if (_tiles.Empty() && !_dragging)
-        {
+        if (_tiles.Empty() && !_dragging) {
             // Begin the drag state.
             _selection.left = event.GetX();
             _selection.top = event.GetY();
@@ -64,9 +58,7 @@ void CopyPasteState::OnMouseDown(wxMouseEvent& event)
 
             _dragging = true;
         }
-    }
-    else if (event.RightDown() && _tiles.Empty())
-    {
+    } else if (event.RightDown() && _tiles.Empty()) {
         // Paste the clipboard, baby.
         _selX = event.GetX();
         _selY = event.GetY();
@@ -77,10 +69,8 @@ void CopyPasteState::OnMouseDown(wxMouseEvent& event)
     }
 }
 
-void CopyPasteState::OnMouseUp(wxMouseEvent& event)
-{
-    if (!_tiles.Empty())
-    {
+void CopyPasteState::OnMouseUp(wxMouseEvent& event) {
+    if (!_tiles.Empty()) {
         // Update this so the dragging stuff knows where we're dragging from.
         _selection.left = _selX;
         _selection.right = _selX + _tiles.Width();
@@ -88,11 +78,9 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event)
         _selection.bottom = _selY + _tiles.Height();
 
         // nothing, I think.  We move the selection around in OnMouseMove
-        // Maybe send a command so that undo/redo will move the selection from wherever it was when 
+        // Maybe send a command so that undo/redo will move the selection from wherever it was when
         // the mouse button was pushed, to where it is now that it's been released.
-    }
-    else if (_dragging)
-    {
+    } else if (_dragging) {
         Map::Layer* layer = GetCurLayer();
 
         _dragging = false;
@@ -104,16 +92,13 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event)
         _selX = _selection.left;
         _selY = _selection.top;
 
-        if (_selection.Width() > 1 || _selection.Height() > 1)
-        {
+        if (_selection.Width() > 1 || _selection.Height() > 1) {
             _tiles.Resize(_selection.Width(), _selection.Height());
-            for (uint y = 0; y < _tiles.Height(); y++)
-            {
+            for (uint y = 0; y < _tiles.Height(); y++) {
                 const uint sourceY = y + _selection.top;
                 uint sourceX = _selection.left;
 
-                for (uint x = 0; x < _tiles.Width(); x++)
-                {
+                for (uint x = 0; x < _tiles.Width(); x++) {
                     _tiles(x, y) = layer->tiles(sourceX, sourceY);
                     sourceX++;
                 }
@@ -132,12 +117,10 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event)
     }
 }
 
-void CopyPasteState::OnMouseMove(wxMouseEvent& event)
-{
+void CopyPasteState::OnMouseMove(wxMouseEvent& event) {
     if (!event.LeftIsDown())    return; // nothing to do
 
-    if (!_dragging)
-    {
+    if (!_dragging) {
         int deltaX = (event.GetX() - _offsetX) / GetTileset()->Width();
         int deltaY = (event.GetY() - _offsetY) / GetTileset()->Height();
 
@@ -147,9 +130,7 @@ void CopyPasteState::OnMouseMove(wxMouseEvent& event)
         // Move the layer to wherever it's been dragged.
 
         GetMapView()->Refresh();
-    }
-    else
-    {
+    } else {
         _selection.right = event.GetX();
         _selection.bottom = event.GetY();
 
@@ -166,30 +147,24 @@ void CopyPasteState::OnMouseMove(wxMouseEvent& event)
     }
 }
 
-void CopyPasteState::OnRenderCurrentLayer()
-{
+void CopyPasteState::OnRenderCurrentLayer() {
     const Tileset* ts = GetTileset();
     const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
 
-    if (!_tiles.Empty())
-    {
+    if (!_tiles.Empty()) {
         // Draw floating selection
-        const int x = _selX * ts->Width()  + 
-                curLayer->x - mv->GetXWin();
-        
-        const int y = _selY * ts->Height() + 
-                curLayer->y - mv->GetYWin();
+        const int x = _selX * ts->Width()  + curLayer->x - mv->GetXWin();
+        const int y = _selY * ts->Height() + curLayer->y - mv->GetYWin();
 
         mv->RenderLayer(_tiles, -x, -y);
 
         mv->GetVideo()->DrawRect(
-            x, y, 
+            x, y,
             _tiles.Width() * ts->Width(),  _tiles.Height() * ts->Height(),
             RGBA(255, 255, 255));
-    }
-    else if (_dragging)
-    {
+
+    } else if (_dragging) {
         // Draw the current selection rectangle
         int x = _selection.left * ts->Width() - mv->GetXWin() + curLayer->x;
         int y = _selection.top * ts->Height() - mv->GetYWin() + curLayer->y;
@@ -201,13 +176,11 @@ void CopyPasteState::OnRenderCurrentLayer()
     }
 }
 
-void CopyPasteState::OnEndState()
-{
+void CopyPasteState::OnEndState() {
     Paste();
 }
 
-void CopyPasteState::Paste()
-{
+void CopyPasteState::Paste() {
     if (_tiles.Empty()) return; // :P
 
     HandleCommand(new PasteTilesCommand(_selX, _selY, GetCurLayerIndex(), _tiles));

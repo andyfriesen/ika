@@ -26,7 +26,7 @@ private:
 
 public:
     CopyPasteState(Executor* e);
-    
+
     virtual void OnMouseDown(wxMouseEvent& event);
     virtual void OnMouseUp(wxMouseEvent& event);
     virtual void OnMouseMove(wxMouseEvent& event);

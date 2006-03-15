@@ -5,6 +5,7 @@
 #include "common/map.h"
 #include "common/Canvas.h"
 #include "common/matrix.h"
+#include "brush.h"
 
 struct Executor;
 
@@ -13,7 +14,7 @@ struct Executor;
  * MainWindow holds a list of these to implement undo and redo.
  * It works pretty well.
  *
- * If the number of commands grows too much, move them all into 
+ * If the number of commands grows too much, move them all into
  * their own separate source files, so we don't wind up with a
  * single monstrous source file.
  *
@@ -74,6 +75,19 @@ private:
     uint _layerIndex;
     uint _tileIndex;
     uint _oldTileIndex;
+};
+
+struct PasteBrushCommand : Command {
+    PasteBrushCommand(int x, int y, uint layerIndex, const Brush& brush);
+
+    virtual void Do(Executor* e);
+    virtual void Undo(Executor* e);
+
+private:
+    int _x;
+    int _y;
+    uint _layerIndex;
+    Brush _brush;
 };
 
 struct PasteTilesCommand : Command {

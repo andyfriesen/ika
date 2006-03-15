@@ -117,7 +117,7 @@ void EntityState::OnRenderCurrentLayer()
         GetMapView()->GetVideo()->DrawRect(
             x,
             y,
-            width, 
+            width,
             height,
             RGBA(255, 255, 255));
 
@@ -126,7 +126,7 @@ void EntityState::OnRenderCurrentLayer()
             GetMapView()->GetVideo()->DrawRectFill(
                 x,
                 y,
-                width, 
+                width,
                 height,
                 RGBA(255, 255, 255, 128));
     }

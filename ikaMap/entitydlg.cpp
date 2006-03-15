@@ -16,7 +16,7 @@ EntityDlg::EntityDlg(Executor* e, uint layer, uint index)
     , _index(index)
 {
     wxXmlResource::Get()->LoadDialog(this, e->GetParentWindow(), wxT("dialog_entity"));
-    
+
     wxSizer* s = get<wxPanel>("panel_main")->GetSizer();
     wxASSERT(s);
     s->Fit(this);
@@ -38,7 +38,7 @@ void EntityDlg::UpdateData()
     newData.obstructsEntities = get<wxCheckBox>("check_obstructs")->GetValue();
     newData.obstructedByEntities = get<wxCheckBox>("check_obstructedbyentities")->GetValue();
     newData.obstructedByMap = get<wxCheckBox>("check_obstructedbymap")->GetValue();
-    
+
     newData.x                 = atoi(get<wxTextCtrl>("edit_x")->GetValue().c_str());
     newData.y                 = atoi(get<wxTextCtrl>("edit_y")->GetValue().c_str());
 }

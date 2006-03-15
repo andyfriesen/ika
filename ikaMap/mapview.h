@@ -7,6 +7,7 @@
 #include "common/map.h"
 #include "editstate.h"
 #include "settilestate.h"
+#include "brushstate.h"
 #include "copypastestate.h"
 #include "obstructionstate.h"
 #include "entitystate.h"
@@ -111,6 +112,7 @@ struct MapView : public wxPanel {
     */
     void SetEditState(EditState* newState);
     void Cock();    // Sets the default tile-setting state.  Thanks aegis!
+    void SetBrushState();
     void SetCopyPasteState();
     void SetObstructionState();
     void SetEntityState();
@@ -134,6 +136,7 @@ private:
 
     // Instances of the various edit states.  We only ever create one of each.
     TilesetState _tilesetState;
+    BrushState _brushState;
     CopyPasteState _copyPasteState;
     ObstructionState _obstructionState;
     EntityState _entityState;

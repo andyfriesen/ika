@@ -9,7 +9,7 @@ Tileset::Tileset()
 }
 
 Tileset::Tileset(VSP* v)
-    : pVsp(v) 
+    : pVsp(v)
 {
     SyncAll();
 }

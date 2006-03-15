@@ -27,7 +27,7 @@ namespace ScriptObject
                 "Returns the index of the tile at (x, y) on the layer specified."
             },
             {   "PlaceBrush",   (PyCFunction)Map_PlaceBrush,    METH_VARARGS,
-                
+
                 "PlaceBrush(x, y, layer, tiles)\n\n"
                 "Sets a two-deep tuple of tile indexes starting at (x, y)\n"
                 "on the layer specified."
@@ -211,7 +211,7 @@ namespace ScriptObject
                 return 0;
             if (PyTuple_Check(*brush_tuple))
             {
-                
+
             }
             */
             Py_INCREF(Py_None);

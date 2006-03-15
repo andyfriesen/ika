@@ -19,11 +19,11 @@ public:
     ScriptState(Executor* e);
 
     void SetScript(Script* script);
-    
+
     virtual void OnMouseDown(wxMouseEvent& event);
     virtual void OnMouseUp(wxMouseEvent& event);
     virtual void OnMouseMove(wxMouseEvent& event);
-  
+
     virtual void OnBeginState();
     virtual void OnEndState();
 

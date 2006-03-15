@@ -30,10 +30,10 @@ void ZoneEditState::OnMouseDown(wxMouseEvent& event)
     {
         _curZoneIndex = zoneIndex;
         ZonePropertiesDlg dlg(GetExecutor(), GetCurLayerIndex(), _curZoneIndex);
-        
+
         // Show the zone properties dialog
         int result = dlg.ShowModal();
-        
+
         GetMapView()->Refresh();
     }
 }
@@ -82,7 +82,7 @@ void ZoneEditState::OnRender()
         int w = zone.position.Width();
         int h = zone.position.Height();
 
-        RGBA colour = 
+        RGBA colour =
             (i == _curZoneIndex) ?
                 RGBA(192, 192, 255, 128) :
                 RGBA(  0, 192, 255, 128);

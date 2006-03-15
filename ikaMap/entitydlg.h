@@ -33,7 +33,7 @@ public:
     void OnDelete(wxCommandEvent& event);
 
     Map::Entity newData;
-    
+
     DECLARE_EVENT_TABLE()
 };
 

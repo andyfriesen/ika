@@ -51,19 +51,21 @@ void TilesetView::OnScroll(wxScrollWinEvent& event) {
             else if (et == wxEVT_SCROLLWIN_PAGEDOWN)     { val += page;     }
             else if (et == wxEVT_SCROLLWIN_THUMBTRACK)   { val = pos;       }
             else if (et == wxEVT_SCROLLWIN_THUMBRELEASE) { val = pos;       }
-            
+
             val = clamp(val, min, max);
         }
     };
 
     const Tileset* ts = _executor->GetTileset();
 
+    wxSize size = GetSize();
+
     Local::HandleEvent(
-        _ywin, 
-        0, 
-        NumTileRows() * (ts->Height() + (_pad ? 1 : 0)), 
-        LogicalHeight(), 
-        event.GetPosition(), 
+        _ywin,
+        0,
+        NumTileRows() * (ts->Height() + (_pad ? 1 : 0)) - LogicalHeight(),
+        LogicalHeight() - size.GetHeight(),
+        event.GetPosition(),
         event.GetEventType()
     );
 
@@ -161,7 +163,6 @@ void TilesetView::UpdateScrollBars() {
     SetScrollbar(wxVERTICAL, _ywin, LogicalHeight(), NumTileRows() * tileHeight);
 }
 
-
 void TilesetView::OnTilesetChange(const TilesetEvent& event) {
     Refresh();
 }
@@ -174,13 +175,17 @@ void TilesetView::OnCurrentTileChange(uint newTile) {
 uint TilesetView::PointToTile(int x, int y) const {
     const Tileset* ts = _executor->GetTileset();
 
+    y += _ywin;
+
     uint tileWidth  = ts->Width()  + (_pad ? 1 : 0);
     uint tileHeight = ts->Height() + (_pad ? 1 : 0);
 
     x /= tileWidth;
     y /= tileHeight;
-    
-    return y * TilesPerRow() + x;
+
+    uint index = y * TilesPerRow() + x;
+
+    return clamp<uint>(index, 0, ts->Count() - 1);
 }
 
 void TilesetView::TileToPoint(uint index, int& x, int& y) const {

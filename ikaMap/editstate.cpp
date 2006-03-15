@@ -17,7 +17,7 @@ TilesetView* EditState::GetTilesetView()    const { return _executor->GetTileset
 Map*         EditState::GetMap()            const { return _executor->GetMap(); }
 
 Map::Layer*  EditState::GetCurLayer() const
-{ 
+{
     if (_executor->GetMap()->NumLayers() == 0)
         return 0;
     else

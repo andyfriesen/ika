@@ -31,7 +31,7 @@ namespace ScriptObject
         PyObject* elements; // sequence
 
         if (!PyArg_ParseTuple(args, "isO:ShowDialog", &cols, &caption, &elements))
-            return 0;        
+            return 0;
 
         if (!PySequence_Check(elements))
         {
@@ -146,7 +146,7 @@ namespace ScriptObject
             }
 
             ::Entity* ent=((ScriptObject::Entity::EntityObject*)pValue)->ent;
-            
+
             if (x>ent->x+ent->sprite->nHotw)    continue;
             if (y>ent->y+ent->sprite->nHoth)    continue;
             if (x2<ent->x)    continue;

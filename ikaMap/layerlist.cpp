@@ -103,7 +103,7 @@ LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxS
 }
 
 void LayerList::OnMapLayersChanged(const MapEvent& event) {
-    // probably not a good idea.  Better to only do this when 
+    // probably not a good idea.  Better to only do this when
     // layers have been moved around, destroyed, created, etc.
     // But what the fuck.
     Update(event.map);

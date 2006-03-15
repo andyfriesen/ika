@@ -127,6 +127,9 @@
 				RelativePath=".\brush.cpp">
 			</File>
 			<File
+				RelativePath=".\brushstate.cpp">
+			</File>
+			<File
 				RelativePath="command.cpp">
 			</File>
 			<File
@@ -224,6 +227,9 @@
 				RelativePath=".\brush.h">
 			</File>
 			<File
+				RelativePath=".\brushstate.h">
+			</File>
+			<File
 				RelativePath="command.h">
 			</File>
 			<File
@@ -279,6 +285,9 @@
 			</File>
 			<File
 				RelativePath="resource.h">
+			</File>
+			<File
+				RelativePath=".\resrc1.h">
 			</File>
 			<File
 				RelativePath="script.h">
@@ -367,6 +376,9 @@
 			</File>
 			<File
 				RelativePath="obstruction.ico">
+			</File>
+			<File
+				RelativePath=".\pencil.ico">
 			</File>
 			<File
 				RelativePath="py.ico">

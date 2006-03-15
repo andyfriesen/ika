@@ -40,7 +40,7 @@ Command* TileAnimDlg::Execute(const std::vector<VSP::AnimState>& animData)
         return 0;
 
     std::vector<Command*> commands;
-    
+
     for (std::map<uint, VSP::AnimState>::iterator
         iter = _changedStrands.begin();
         iter != _changedStrands.end();

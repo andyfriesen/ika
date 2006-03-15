@@ -21,8 +21,7 @@ struct Command;
  * can do some simple things on its own. (mostly accessors to keep
  * the code brief)
  */
-struct EditState
-{
+struct EditState {
     EditState(Executor* e);
     virtual ~EditState(){}
 

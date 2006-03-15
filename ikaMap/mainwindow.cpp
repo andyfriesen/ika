@@ -76,6 +76,7 @@ namespace {
         id_cursorright,
 
         id_tilepaint,
+        id_brushpaint,
         id_copypaste,
         id_obstructionedit,
         id_zoneedit,
@@ -138,6 +139,7 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_cursorright, MainWindow::OnCursorRight)
 
     EVT_BUTTON(id_tilepaint, MainWindow::OnSetTilePaintState)
+    EVT_BUTTON(id_brushpaint, MainWindow::OnSetBrushState)
     EVT_BUTTON(id_copypaste, MainWindow::OnSetCopyPasteState)
     EVT_BUTTON(id_obstructionedit, MainWindow::OnSetObstructionState)
     EVT_BUTTON(id_zoneedit, MainWindow::OnSetZoneState)
@@ -159,11 +161,11 @@ void MainWindow::ClearList(std::stack< ::Command*>& list) {
 }
 
 MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long style)
-    : wxFrame(0, -1, 
+    : wxFrame(0, -1,
 #if defined(_DEBUG)
-        va("ikaMap version %s (debug)", IKA_VERSION), 
+        va("ikaMap version %s (debug)", IKA_VERSION),
 #else
-        va("ikaMap version %s", IKA_VERSION), 
+        va("ikaMap version %s", IKA_VERSION),
 #endif
         position, size, style)
     , _map(0)
@@ -174,8 +176,6 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _changed(false)
     , _layerVisibility(20)
 {
-
-
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE));
 
     const int partitions[] = { 100, -1, 100 };
@@ -197,7 +197,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         uint id;
         const char* toolTip;
     } toolButtons[] =  {
-        {   "brushicon",        id_tilepaint,       "Place individual tiles on the map."                            },
+        {   "pencilicon",       id_tilepaint,       "Place individual tiles on the map."                            },
+        {   "brushicon",        id_brushpaint,      "Paint tiles on the map using brushes."                         },
         {   "selecticon",       id_copypaste,       "Select a group of tiles, and duplicate them elsewhere."        },
         {   "obstructionicon",  id_obstructionedit, "Edit obstructed areas."                                        },
         {   "zoneicon",         id_zoneedit,        "Edit zones."                                                   },
@@ -217,8 +218,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
         for (uint i = 0; i < numToolButtons; i++) {
             wxBitmapButton* b = new wxBitmapButton(
-                sidePanel, 
-                toolButtons[i].id, 
+                sidePanel,
+                toolButtons[i].id,
                 wxIcon(toolButtons[i].iconName, wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
                 wxDefaultPosition,
                 wxDefaultSize,
@@ -229,7 +230,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
             miniSizer->Add(b);
         }
-        
+
         sizer->Add(miniSizer);
     }
 
@@ -280,7 +281,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
         layerCreated.add        (_mapView, &MapView::OnMapChange);
         layerCreated.add        (_layerList, &LayerList::OnMapLayersChanged);
-        
+
         layerDestroyed.add      (_mapView, &MapView::OnMapChange);
         layerDestroyed.add      (_layerList, &LayerList::OnMapLayersChanged);
 
@@ -743,6 +744,11 @@ void MainWindow::OnSetTilePaintState(wxCommandEvent&) {
     _mapView->Cock();
 }
 
+void MainWindow::OnSetBrushState(wxCommandEvent&) {
+    HighlightToolButton(id_brushpaint);
+    _mapView->SetBrushState();
+}
+
 void MainWindow::OnSetCopyPasteState(wxCommandEvent&) {
     HighlightToolButton(id_copypaste);
     _mapView->SetCopyPasteState();
@@ -803,7 +809,7 @@ void MainWindow::OnMoveLayerDown(wxCommandEvent&) {
 }
 
 void MainWindow::UpdateTitle() {
-    const std::string name = 
+    const std::string name =
         _map->title.length() ?  _map->title :
         _curMapName.length() ?  _curMapName :
                                 "Untitled Map";
@@ -847,6 +853,7 @@ void MainWindow::SetChanged(bool changed) {
 void MainWindow::HighlightToolButton(uint buttonId) {
     static const uint ids[] = {
         id_tilepaint,
+        id_brushpaint,
         id_copypaste,
         id_obstructionedit,
         id_zoneedit,
@@ -854,7 +861,7 @@ void MainWindow::HighlightToolButton(uint buttonId) {
         id_entityedit,
         id_scripttool
     };
-    
+
     for (uint i = 0; i < lengthof(ids); i++) {
         uint id = ids[i];
         wxButton* button = wxStaticCast(FindWindowById(id, this), wxButton);
@@ -903,9 +910,9 @@ void MainWindow::LoadMap(const std::string& fileName) {
 
     if (!result) {
         ::wxMessageBox(va("Unable to load map %s.\n"
-                          "The file may be corrupted, or an unrecognized format.", fileName.c_str()), 
-                       "DANGER WILL ROBINSON", 
-                       wxOK | wxCENTRE | wxICON_ERROR, 
+                          "The file may be corrupted, or an unrecognized format.", fileName.c_str()),
+                       "DANGER WILL ROBINSON",
+                       wxOK | wxCENTRE | wxICON_ERROR,
                        this);
         delete newMap;
         return;
@@ -1069,7 +1076,7 @@ void MainWindow::SetStatusBar(const std::string& text, int field) {
 
 void MainWindow::SetZoom(uint factor) {
     _mapView->SetZoom(factor);
-    _mapView->Refresh();    
+    _mapView->Refresh();
     _mapView->UpdateScrollBars();
     UpdateTitle();
 }

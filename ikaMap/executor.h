@@ -22,7 +22,7 @@ struct MapView;
 struct TilesetView;
 
 /*
- * The Executor is the class that is responsible for actually doing most 
+ * The Executor is the class that is responsible for actually doing most
  * everything.  Executor accepts messages, and relays them to the components
  * that are subscribing to the appropriate listeners.
  *
@@ -76,7 +76,7 @@ struct Executor {
     /*
      * I'm not a fan of implementation inheritance, but doing this
      * any other way will result in serious asspains.
-     * 
+     *
      * Some sort of way to have heirarchical events is in order.  For instance, the MapView
      * could simple subscribe to mapChanged, and be notified when any change at all occurs.
      * Other controls could subscribe to more specific events.
@@ -99,7 +99,7 @@ struct Executor {
     Listener<const TilesetEvent&>  tilesetChanged;
 
     Listener<const MapTilesetEvent&> mapLoaded;
-    
+
     Listener<const MapEvent&>  mapVisibilityChanged;    // A layer has been hidden, or unhidden, or something.
     Listener<uint>             curLayerChanged;         // The current layer has changed.
     Listener<uint>             curTileChanged;          // The current tile has changed.

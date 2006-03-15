@@ -65,7 +65,7 @@ namespace ScriptObject
 
         PyObject* New()
         {
-            return (PyObject*)PyObject_New(PyObject, &type);    
+            return (PyObject*)PyObject_New(PyObject, &type);
         }
 
         void Destroy(PyObject* self)

@@ -129,7 +129,7 @@ ZonePropertiesDlg::ZonePropertiesDlg(Executor* e, uint layerIndex, uint zoneInde
     _editY = XRCCTRL(*this, "edit_y", wxTextCtrl);
     _editWidth = XRCCTRL(*this, "edit_width", wxTextCtrl);
     _editHeight = XRCCTRL(*this, "edit_height", wxTextCtrl);
-    
+
     UpdateList();
     UpdateDlg();
 }
@@ -173,9 +173,9 @@ void ZonePropertiesDlg::OnNewBlueprint(wxCommandEvent&) {
 void ZonePropertiesDlg::OnDeleteBlueprint(wxCommandEvent&) {
     int result = wxMessageBox(
         "Are you sure you want to remove this blueprint?\n"
-        "This is not the same as deleting the zone!", 
-        "All the cool kids are doin' it.", 
-        wxYES_NO | wxCENTRE | wxICON_QUESTION, 
+        "This is not the same as deleting the zone!",
+        "All the cool kids are doin' it.",
+        wxYES_NO | wxCENTRE | wxICON_QUESTION,
         this
     );
 
@@ -221,11 +221,11 @@ void ZonePropertiesDlg::OnRenameBlueprint(wxCommandEvent&) {
         wxMessageBox(
             va(
                 "The blueprint label %s is already taken.\n"
-                "You'll have to pick a unique label", 
+                "You'll have to pick a unique label",
                 newLabel.c_str()
             ),
             "Blueprint labels must be unique",
-            wxOK | wxCENTRE, 
+            wxOK | wxCENTRE,
             this
         );
         return;
@@ -258,9 +258,9 @@ void ZonePropertiesDlg::OnRenameBlueprint(wxCommandEvent&) {
 
 void ZonePropertiesDlg::OnDeleteZone(wxCommandEvent&) {
     if (wxMessageBox(
-            "Are you sure you want to remove this zone?", 
-            "KILL", 
-            wxYES_NO | wxCENTER | wxICON_QUESTION, 
+            "Are you sure you want to remove this zone?",
+            "KILL",
+            wxYES_NO | wxCENTER | wxICON_QUESTION,
             this
         ) == wxYES
     ) {

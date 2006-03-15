@@ -67,7 +67,7 @@ void SetBrushCommand::Do(Executor* e) {
     Map* map = e->GetMap();
     Map::Layer* layer = map->GetLayer(_layerIndex);
 
-    for (uint y = 0; y < _curBrush.Height(); y++) {        
+    for (uint y = 0; y < _curBrush.Height(); y++) {
         for (uint x = 0; x < _curBrush.Width(); x++) {
             _oldBrush(x, y) = layer->tiles(_tileX + x, _tileY + y);
             layer->tiles(_tileX + x, _tileY + y) = _curBrush(x, y);
@@ -114,6 +114,48 @@ void SetTileCommand::Undo(Executor* e) {
 
     map->GetLayer(_layerIndex)->tiles(_tileX, _tileY) = _oldTileIndex;
     e->tilesSet.fire(MapEvent(map, _layerIndex));
+}
+
+//-----------------------------------------------------------------------------
+
+PasteBrushCommand::PasteBrushCommand(int x, int y, uint layerIndex, const Brush& brush)
+    : _x(x)
+    , _y(y)
+    , _layerIndex(layerIndex)
+    , _brush(brush)
+{}
+
+void PasteBrushCommand::Do(Executor* e) {
+    Map* map = e->GetMap();
+    Map::Layer* lay = map->GetLayer(_layerIndex);
+    Matrix<uint>& tiles = lay->tiles;
+    Matrix<u8>& obs = lay->obstructions;
+
+    for (uint y = 0; y < _brush.Height(); y++) {
+        for (uint x = 0; x < _brush.Width(); x++) {
+            Brush::Tile& tile = _brush.tiles(x, y);
+            if (tile.mask) {
+                uint index = tile.index;
+                u8 obstruct = tile.obstruct;
+
+                tile.index = tiles(x + _x, y + _y);
+                tiles(x + _x, y + _y) = index;
+
+                tile.obstruct = obs(x + _x, y + _y);
+                obs(x + _x, y + _y) = obstruct;
+
+                //swap(tile.index, tiles(x + _x, y + _y));
+                //swap(tile.obstruct, obs(x + _x, y + _y));
+            }
+        }
+    }
+
+    e->tilesSet.fire(MapEvent(map, _layerIndex));
+}
+
+void PasteBrushCommand::Undo(Executor* e) {
+    // yay swappage
+    Do(e);
 }
 
 //-----------------------------------------------------------------------------
@@ -199,7 +241,7 @@ void CreateLayerCommand::Undo(Executor* e) {
 
 DestroyLayerCommand::DestroyLayerCommand(uint index)
     : _index(index)
-    , _savedLayer(0) 
+    , _savedLayer(0)
 {}
 
 DestroyLayerCommand::~DestroyLayerCommand() {
@@ -226,7 +268,7 @@ void DestroyLayerCommand::Undo(Executor* e) {
 
 SwapLayerCommand::SwapLayerCommand(uint i1, uint i2)
     : _index1(i1)
-    , _index2(i2) 
+    , _index2(i2)
 {}
 
 void SwapLayerCommand::Do(Executor* e) {
@@ -240,9 +282,9 @@ void SwapLayerCommand::Do(Executor* e) {
     else if (curLayer == _index2)   e->SetCurrentLayer(_index1);
 
     map->SwapLayers(_index1, _index2);
-    
+
     mapView->Thaw();
-    
+
     e->layersReordered.fire(MapEvent(map));
 }
 
@@ -301,7 +343,7 @@ void ResizeLayerCommand::Undo(Executor* e) {
 
 ChangeLayerPropertiesCommand::ChangeLayerPropertiesCommand(
     Map::Layer* layer,
-    const std::string& label, 
+    const std::string& label,
     bool wrapx,
     bool wrapy,
     int x,
@@ -423,9 +465,9 @@ DestroyEntityCommand::DestroyEntityCommand(uint layerIndex, uint entityIndex)
 
 void DestroyEntityCommand::Do(Executor* e) {
     Map::Layer* lay = e->GetMap()->GetLayer(_layerIndex);
-    
+
     _oldData = lay->entities[_entityIndex];
-    
+
     lay->entities.erase(lay->entities.begin() + _entityIndex);
 
     e->entitiesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
@@ -570,7 +612,7 @@ DefineZoneBluePrintCommand::DefineZoneBluePrintCommand(Map::Zone& newZone, Map::
 
 DefineZoneBluePrintCommand::DefineZoneBluePrintCommand(int, Map::Zone& oldZone)
     : _oldZone(oldZone)
-    , _mode(destroy) 
+    , _mode(destroy)
 {}
 
 DefineZoneBluePrintCommand::DefineZoneBluePrintCommand(Map::Zone& newZone, int)
@@ -582,7 +624,7 @@ void DefineZoneBluePrintCommand::Do(Executor* e) {
     switch (_mode) {
     case create:    // fallthrough
     case update:    e->GetMap()->zones[_newZone.label] = _newZone;    break;  // already have the old zone data
-    case destroy:   e->GetMap()->zones.erase(_oldZone.label);   break;        
+    case destroy:   e->GetMap()->zones.erase(_oldZone.label);   break;
     }
 }
 
@@ -607,7 +649,7 @@ void PlaceZoneCommand::Do(Executor* e) {
     z.position = _position;
 
     e->GetMap()->GetLayer(_layerIndex)->zones.push_back(z);
-    
+
     e->zonesChanged.fire(MapEvent(e->GetMap(), _layerIndex));
 }
 

@@ -31,7 +31,7 @@ void TilesetState::OnRenderCurrentLayer() {
     wxPoint mousePos = GetMapView()->ScreenToClient(::wxGetMousePosition());
 
     // Round position to the nearest tile
-    GetMapView()->ScreenToTile(mousePos.x, mousePos.y);	
+    GetMapView()->ScreenToTile(mousePos.x, mousePos.y);
     GetMapView()->TileToScreen(mousePos.x, mousePos.y);
 
     int w = GetTileset()->Width();
@@ -52,7 +52,7 @@ void TilesetState::OnMouseDown(wxMouseEvent& event) {
         GetMapView()->ScreenToTile(x, y);
         SetCurTile(GetCurLayer()->tiles(x, y));
 
-    } 
+    }
 }
 
 void TilesetState::OnMouseUp(wxMouseEvent& event) {
@@ -106,7 +106,7 @@ void TilesetState::OnMouseWheel(wxMouseEvent& event) {
     curTile += i;
 
     // If we've gone over, wrap-around.
-    while (curTile >= GetTileset()->Count()) 
+    while (curTile >= GetTileset()->Count())
         curTile -= GetTileset()->Count();
 
     SetCurTile(curTile);
@@ -118,7 +118,7 @@ void TilesetState::SetTile(int x, int y) {
 
     if (GetCurLayer()->tiles(x, y) == GetCurTile()) {
         // Avoid flooding the undo buffer with commands that don't actually do anything.
-        return; 
+        return;
     }
 
     Command* cmd = new SetTileCommand(x, y, GetCurLayerIndex(), GetCurTile());

@@ -134,7 +134,7 @@ void Script::OnRenderCurrentLayer()
 void Script::OnBeginState()
 {
     if (!onBeginState)  return;
-    
+
     PyObject* result = PyObject_CallObject(onBeginState, 0);
     if (!result)    ReportError();
     Py_XDECREF(result);
@@ -143,7 +143,7 @@ void Script::OnBeginState()
 void Script::OnEndState()
 {
     if (!onEndState) return;
-    
+
     PyObject* result = PyObject_CallObject(onEndState, 0);
     if (!result)    ReportError();
     Py_XDECREF(result);
@@ -191,7 +191,7 @@ std::string Script::GetDesc() const
 
 bool Script::IsTool() const
 {
-    return 
+    return
         onMouseDown             != 0 ||
         onMouseUp               != 0 ||
         onMouseMove             != 0 ||
@@ -273,7 +273,7 @@ void Script::Reload()
     if (!module) ReportError();
 
     // FINALLY got the module loaded now.  Time to gank the relevant methods from it.
-   
+
     PyObject* dict = PyModule_GetDict(module);
     assert(dict);
 

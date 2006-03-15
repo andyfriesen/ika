@@ -32,6 +32,7 @@ MapView::MapView(Executor* executor, wxWindow* parent)
     , _executor(executor)
 
     , _tilesetState(executor)
+    , _brushState(executor)
     , _copyPasteState(executor)
     , _obstructionState(executor)
     , _entityState(executor)
@@ -75,7 +76,7 @@ void MapView::OnScroll(wxScrollWinEvent& event) {
             else if (et == wxEVT_SCROLLWIN_PAGEDOWN)     { val += page;     }
             else if (et == wxEVT_SCROLLWIN_THUMBTRACK)   { val = pos;       }
             else if (et == wxEVT_SCROLLWIN_THUMBRELEASE) { val = pos;       }
-            
+
             val = clamp(val, min, max);
         }
     };
@@ -140,9 +141,10 @@ void MapView::OnMouseMove(wxMouseEvent& event) {
         UpdateScrollBars();
         Render();
         ShowPage();
-    }
-    else if (_executor->GetMap()->NumLayers())
+
+    } else if (_executor->GetMap()->NumLayers()) {
         _editState->OnMouseMove(event);
+    }
 }
 
 void MapView::OnMouseWheel(wxMouseEvent& event) {
@@ -201,7 +203,7 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset) {
 
     int firstX = xoffset / tileX;
     int firstY = yoffset / tileY;
-    
+
     int lenX = width  / tileX + 2;
     int lenY = height / tileY + 2;
 
@@ -295,7 +297,7 @@ void MapView::RenderObstructions(Map::Layer* lay, int xoffset, int yoffset) {
 
     int firstX = xoffset / tileX;
     int firstY = yoffset / tileY;
-    
+
     int lenX = width  / tileX + 2;
     int lenY = height / tileY + 3;
 
@@ -330,16 +332,19 @@ void MapView::RenderBrush(int tx, int ty) {
         return;
     }
 
+    const Brush& brush = _executor->GetCurrentBrush();
+
+    //*
+    TileToScreen(tx, ty);
+    int lenX = brush.Width();
+    int lenY = brush.Height();
+    int xoffset = tx;
+    int yoffset = ty;
     int tileX = ts->Width();
     int tileY = ts->Height();
-    const Brush& brush = _executor->GetCurrentBrush();
     int width = brush.Width() * tileX;
     int height = brush.Height() * tileY;
-    int xoffset = tx * tileX - _xwin;
-    int yoffset = ty * tileY - _ywin;
-    
-    int lenX = width  / tileX + 2;
-    int lenY = height / tileY + 2;
+
     glColor4f(1.0, 1.0, 1.0, 0.5);
     for (int y = 0; y < lenY; y++) {
         for (int x = 0; x < lenX; x++) {
@@ -531,6 +536,10 @@ void MapView::SetEditState(EditState* newState) {
 
 void MapView::Cock() {
     SetEditState(&_tilesetState);
+}
+
+void MapView::SetBrushState() {
+    SetEditState(&_brushState);
 }
 
 void MapView::SetCopyPasteState() {

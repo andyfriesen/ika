@@ -1,7 +1,7 @@
 
 /**
- * This code is a bit more complicated than I'd like, and it searches 
- * for things the most obvious way possible. :x (optimize that if it 
+ * This code is a bit more complicated than I'd like, and it searches
+ * for things the most obvious way possible. :x (optimize that if it
  * becomes an issue)
  */
 
@@ -113,7 +113,7 @@ public:
                     Log::Write("Deallocating %s", i->sFilename.c_str());
                     delete i->pData;
                     rsrc.erase(i);
-                    
+
                 }
                 else
                     Log::Write("Decref       %s", i->sFilename.c_str());

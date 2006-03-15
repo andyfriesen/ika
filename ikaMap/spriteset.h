@@ -17,7 +17,7 @@ struct SpriteSet : ImageBank
     bool Save(const std::string& fname);
 
     virtual Canvas& Get(uint idx);
-    virtual uint Count() const;   
+    virtual uint Count() const;
     int Width() const;
     int Height() const;
 

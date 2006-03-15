@@ -9,12 +9,12 @@
  *
  * A script is loaded up. (ooh, complex, that)
  * The script is free to implement certain functions:
- * 
- * OnMouseDown(x, y)  - called when the mouse is clicked in the map area.  x/y are the world pixel coordinates that the 
+ *
+ * OnMouseDown(x, y)  - called when the mouse is clicked in the map area.  x/y are the world pixel coordinates that the
  *                      mouse click occurred at.
  * OnMouseUp(x, y)    - Same as above, but called when the mouse button is released.
  * OnMouseMove(x, y)  - Same, except when the mouse is moved. (whether any buttons are down or not)
- * OnMouseWheel(x, y, wheelDelta) - Same as above, but wheelDelta is added.  (it's the amount and direction of the 
+ * OnMouseWheel(x, y, wheelDelta) - Same as above, but wheelDelta is added.  (it's the amount and direction of the
  *                                  mousewheel movement
  * OnRender()         - Called after drawing the entire map.
  * OnRenderCurrentLayer() - Called after drawing the current layer.
@@ -29,7 +29,7 @@
  *                      Scripts that have an OnActivated method will be available in the Tools submenu of the editor.
  *
  * Next up, the interface.
- * For compatibility (and fun) both ikaMap and ika use a module called ika.  The ika.Map interface from ika is 
+ * For compatibility (and fun) both ikaMap and ika use a module called ika.  The ika.Map interface from ika is
  * translated to ikaMap as faithfully as possible.  A separate reference will be available, as there are things
  * ikaMap can do that ika can't.
  *

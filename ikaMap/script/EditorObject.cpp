@@ -15,7 +15,7 @@ namespace ScriptObject
     {
         PyTypeObject type;
 
-        PyMethodDef methods[] = 
+        PyMethodDef methods[] =
         {
             {   "MapToTile",    (PyCFunction)Editor_MapToTile,  METH_VARARGS,
                 "MapToTile(x, y, layer=-1) -> (x,y)\n\n"
@@ -44,7 +44,7 @@ namespace ScriptObject
 #define SET(x) PyObject* set ## x(EditorObject* self, PyObject* value)
 
         GET(XWin)           {   return PyInt_FromLong(self->mainWnd->GetMapView()->GetXWin());  }
-        //SET(XWin)   
+        //SET(XWin)
         GET(YWin)           {   return PyInt_FromLong(self->mainWnd->GetMapView()->GetYWin());  }
         //SET(YWin)
         GET(CurLayer)   {   return PyInt_FromLong(self->mainWnd->GetCurrentLayer());          }
@@ -52,14 +52,14 @@ namespace ScriptObject
         /*
         GET(CurTile)    {   return PyInt_FromLong(self->mainWnd->GetCurrentTile());       }
         SET(CurTile)
-        {   
-            self->mainWnd->SetCurrentTile(PyInt_AsLong(value));   
+        {
+            self->mainWnd->SetCurrentTile(PyInt_AsLong(value));
             return 0;
         }
         */
         //GET(CurBrush)   {   Py_INCREF(self->brush); return self->brush;}
         //SET(CurBrush)   {   }
-        
+
 #undef GET
 #undef SET
 
@@ -115,7 +115,7 @@ namespace ScriptObject
             if (!PyArg_ParseTuple(args, "ii|i:MapToTile", &x, &y, &layer))
                 return 0;
 
-            if (layer >= self->mainWnd->GetMap()->NumLayers()) 
+            if (layer >= self->mainWnd->GetMap()->NumLayers())
                 layer = self->mainWnd->GetCurrentLayer();
 
             self->mainWnd->GetMapView()->MapToTile(x, y, layer);
@@ -131,7 +131,7 @@ namespace ScriptObject
             if (!PyArg_ParseTuple(args, "ii|i:MapToTile", &x, &y, &layer))
                 return 0;
 
-            if (layer >= self->mainWnd->GetMap()->NumLayers()) 
+            if (layer >= self->mainWnd->GetMap()->NumLayers())
                 layer = self->mainWnd->GetCurrentLayer();
 
             self->mainWnd->GetMapView()->TileToMap(x, y, layer);

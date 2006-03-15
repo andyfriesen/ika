@@ -146,7 +146,7 @@ void VideoFrame::DrawSelectRect(int x, int y, int w, int h, RGBA colour) {
         y += h;
         h -= h * 2;
     }
-    
+
     DrawRect(x, y, w, h, RGBA(0, 0, 0));
     DrawRect(x + 1, y + 1, w - 2, h - 2, colour);
     DrawRect(x + 2, y + 2, w - 4, h - 4, RGBA(255, 255, 255));
@@ -162,7 +162,7 @@ void VideoFrame::ScaleBlit(Image& src, int x, int y, int w, int h, bool trans) {
     y = y * nZoomscale / _curZoom;
     w = w * nZoomscale / _curZoom;
     h = h * nZoomscale / _curZoom;
-    
+
     if (_curZoom != nZoomscale) {
         w++; h++;
     }

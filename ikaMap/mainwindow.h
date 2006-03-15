@@ -80,6 +80,7 @@ struct MainWindow : public wxFrame, Executor {
     void OnCursorRight(wxCommandEvent&);
 
     void OnSetTilePaintState(wxCommandEvent&);
+    void OnSetBrushState(wxCommandEvent&);
     void OnSetCopyPasteState(wxCommandEvent&);
     void OnSetObstructionState(wxCommandEvent&);
     void OnSetZoneState(wxCommandEvent&);
@@ -164,7 +165,7 @@ private:
 
     std::vector<Script*> _scripts;
     uint _curScript;    // the currently active tool script
-    
+
     std::stack< ::Command*> _undoList;
     std::stack< ::Command*> _redoList;
 

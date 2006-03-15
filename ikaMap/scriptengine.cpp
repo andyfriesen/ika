@@ -23,7 +23,7 @@ void ScriptEngine::Init() {
 
     PyImport_AddModule("ikamap");
     PyObject* ikaModule = Py_InitModule3(
-        "ikamap", 
+        "ikamap",
         ScriptObject::standard_methods,
         "ikaMap standard module\n"
         "\n"

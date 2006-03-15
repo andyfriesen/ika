@@ -15,7 +15,7 @@ struct Image;
 
 struct VideoFrame : public wxGLCanvas
 {
-    /*    
+    /*
         We keep a list of all open VideoFrame instances so that they can all have the same OpenGL context.
         When creating a new instance, the constructor uses an (any, it doesn't matter which) element from
         this set, if there is one.  If not, then it creates a new OpenGL context.

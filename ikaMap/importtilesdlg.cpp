@@ -143,7 +143,7 @@ void ImportTilesDlg::SetDefaultValues()
 void ImportTilesDlg::ImportTiles(int width, int height, int numFrames, int rowSize, const std::string& fileName, bool pad, bool autoCount)
 {
     Canvas image(fileName);
-    tiles.clear(); 
+    tiles.clear();
 
     int xstep = width + (pad ? 1 : 0);
     int ystep = height + (pad ? 1 : 0);
@@ -162,7 +162,7 @@ void ImportTilesDlg::ImportTiles(int width, int height, int numFrames, int rowSi
             Canvas frame(width, height);
             Blitter::Blit(image, frame, -xpos, -ypos, Blitter::OpaqueBlend());
             tiles.push_back(frame);
-            
+
             curframe++;
 
             xpos += xstep;
