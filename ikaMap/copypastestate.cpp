@@ -157,6 +157,7 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event) {
         _state = NoneState;
 
         // Easier to remove than add.  Find the overlap, and flip a few mask bits.
+        _selection.Normalize();
         int xofs = _selection.left - _selX;
         int yofs = _selection.top - _selY;
 
