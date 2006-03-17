@@ -208,6 +208,9 @@
 				RelativePath="tilesetview.cpp">
 			</File>
 			<File
+				RelativePath=".\togglebitmapbutton.cpp">
+			</File>
+			<File
 				RelativePath=".\userdialog.cpp">
 			</File>
 			<File
@@ -314,6 +317,9 @@
 				RelativePath="tilesetview.h">
 			</File>
 			<File
+				RelativePath=".\togglebitmapbutton.h">
+			</File>
+			<File
 				RelativePath=".\userdialog.h">
 			</File>
 			<File
@@ -379,9 +385,6 @@
 			</File>
 			<File
 				RelativePath="py.ico">
-			</File>
-			<File
-				RelativePath=".\select.cur">
 			</File>
 			<File
 				RelativePath="select.ico">

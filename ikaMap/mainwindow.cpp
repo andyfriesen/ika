@@ -11,6 +11,7 @@
 #include "mapview.h"
 #include "tilesetview.h"
 #include "layerlist.h"
+#include "togglebitmapbutton.h"
 
 // Dialogs
 #include "newmapdlg.h"
@@ -217,14 +218,18 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         wxSizer* miniSizer = new wxGridSizer(6);
 
         for (uint i = 0; i < numToolButtons; i++) {
+#if 0
             wxBitmapButton* b = new wxBitmapButton(
+#else
+            wxBitmapButton* b = new ToggleBitmapButton(
+#endif
                 sidePanel,
                 toolButtons[i].id,
                 wxIcon(toolButtons[i].iconName, wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
                 wxDefaultPosition,
                 wxDefaultSize,
-                wxBU_EXACTFIT | wxBU_AUTODRAW
-                );
+                0//wxBU_EXACTFIT
+            );
 
             b->SetToolTip(toolButtons[i].toolTip);
 
@@ -797,8 +802,9 @@ void MainWindow::OnDestroyLayer(wxCommandEvent&) {
 void MainWindow::OnMoveLayerUp(wxCommandEvent&) {
     uint curLay = GetCurrentLayer();
 
-    if (curLay != 0 && curLay < _map->NumLayers())
+    if (curLay != 0 && curLay < _map->NumLayers()) {
         HandleCommand(new SwapLayerCommand(curLay, curLay - 1));
+    }
 }
 
 void MainWindow::OnMoveLayerDown(wxCommandEvent&) {
@@ -864,9 +870,12 @@ void MainWindow::HighlightToolButton(uint buttonId) {
 
     for (uint i = 0; i < lengthof(ids); i++) {
         uint id = ids[i];
-        wxButton* button = wxStaticCast(FindWindowById(id, this), wxButton);
+
+        ToggleBitmapButton* button = wxDynamicCast(FindWindowById(id, this), ToggleBitmapButton);
+        //wxButton* button = wxStaticCast(FindWindowById(id, this), wxButton);
         if (button) {
-            button->Enable(id != buttonId); // the current button is disabled, since I have no mechanism to keep it pressed at present. (suck)
+            //button->Enable(id != buttonId); // the current button is disabled, since I have no mechanism to keep it pressed at present. (suck)
+            button->SetPressed(id == buttonId);
         }
     }
 }
