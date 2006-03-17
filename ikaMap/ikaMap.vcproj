@@ -36,7 +36,7 @@
 				OutputFile="$(OutDir)/ikaMap.exe"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../common,../3rdparty/lib,$(WXWIN)/lib,$(WXWIN)/contrib/lib"
-				IgnoreDefaultLibraryNames="libcd.lib,libcid.lib,msvcrt.lib"
+				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/ikaMap.pdb"
 				SubSystem="2"
@@ -86,7 +86,7 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxmsw.lib png.lib zlib.lib jpeg.lib tiff.lib opengl32.lib glu32.lib corona.lib wxxrc.lib"
+				AdditionalDependencies="comctl32.lib rpcrt4.lib wsock32.lib winmm.lib wxbase.lib png.lib zlib.lib jpeg.lib tiff.lib opengl32.lib glu32.lib corona.lib wxxrc.lib"
 				OutputFile="$(OutDir)/ikaMap.exe"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../common,../3rdparty/lib,$(WXWIN)/lib,$(WXWIN)/contrib/lib"
@@ -285,9 +285,6 @@
 			</File>
 			<File
 				RelativePath="resource.h">
-			</File>
-			<File
-				RelativePath=".\resrc1.h">
 			</File>
 			<File
 				RelativePath="script.h">

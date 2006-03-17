@@ -341,24 +341,77 @@ void MapView::RenderBrush(const Brush& brush, int xp, int yp) {
     int lenX = brush.Width();
     int lenY = brush.Height();
 
-    for (int y = 0; y < lenY; y++) {
-        for (int x = 0; x < lenX; x++) {
-            const Brush::Tile& t = brush.tiles(x, y);
+    int xPos = xp;
+    int yPos = yp;
 
-            if (t.mask) {
-                /*glColor4ub(255, 0, 0, 255);
+    for (int y = 0; y < lenY; y++) {
+        xPos = xp;
+
+        const Brush::Tile* iter = brush.tiles.GetPointer(0, y);
+        for (int x = 0; x < lenX; x++) {
+            if (iter->mask) {
                 _video->Blit(
-                    ts->GetImage(t.index),
-                    xp + x * tileX, yp + y * tileY,
+                    ts->GetImage(iter->index),
+                    xPos, yPos,
                     true
                 );
-                glColor4ub(255, 255, 255, 255);*/
-                _video->DrawRectFill(xp + x * tileX, yp + y * tileY, 16, 16, RGBA(255, 0, 0, 255));
+                _video->DrawRectFill(xPos, yPos, 16, 16, RGBA(255, 0, 0, 128));
             }
+            ++iter;
+            xPos += tileX;
         }
+        yPos += tileY;
     }
 
     _video->DrawSelectRect(xp, yp, brush.Width() * tileX, brush.Height() * tileY, RGBA(127, 255, 255, 127));
+}
+void MapView::RenderBrushOutline(const Brush& brush, int xp, int yp) {
+    Tileset* ts = _executor->GetTileset();
+    if (!ts->Count()) {
+        return;
+    }
+
+    int tileX = ts->Width();
+    int tileY = ts->Height();
+
+    int width  = _video->LogicalWidth();
+    int height = _video->LogicalHeight();
+
+    int lenX = brush.Width() + 1;
+    int lenY = brush.Height() + 1;
+
+    int xPos = xp;
+    int yPos = yp;
+
+    const Matrix<Brush::Tile>& tiles = brush.tiles;
+
+    for (int y = 0; y < lenY; y++) {
+        xPos = xp;
+
+        for (int x = 0; x < lenX; x++) {
+            bool m = tiles(x, y).mask;
+
+            bool left = (x == 0 && m) || (tiles(x - 1, y).mask != m);
+            bool top  = (y == 0 && m) || (tiles(x, y - 1).mask != m);
+
+            if (m) {
+                _video->DrawRectFill(xPos, yPos, tileX, tileY, RGBA(127, 127, 127, 127));
+            }
+
+            if (left) {
+                _video->DrawRect(xPos, yPos, 1, tileY, RGBA(255, 255, 255));
+            }
+
+            if (top) {
+                _video->DrawRect(xPos, yPos, tileX, 1, RGBA(255, 255, 255));
+            }
+
+            xPos += tileX;
+        }
+        yPos += tileY;
+    }
+
+    _video->DrawRect(xp, yp, brush.Width() * tileX, brush.Height() * tileY, RGBA(255, 0, 0));
 }
 
 void MapView::RenderBrush(int tx, int ty) {

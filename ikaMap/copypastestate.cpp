@@ -276,7 +276,7 @@ void CopyPasteState::OnRenderCurrentLayer() {
         int xofs = _selX;
         int yofs = _selY;
         mv->TileToScreen(xofs, yofs);
-        mv->RenderBrush(_tiles, xofs, yofs);
+        mv->RenderBrushOutline(_tiles, xofs, yofs);
     }
 
     if (_state != NoneState) {
