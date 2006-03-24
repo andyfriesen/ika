@@ -7,11 +7,69 @@
 
 #define FOLLOWTHEWHITERABBIT
 
+template <typename T> struct Matrix;
+
+template <typename T>
+struct MatrixIterator {
+    MatrixIterator(Matrix<T>& m, uint x, uint y, uint width, uint height) 
+        : subject(m)
+        , x(x)
+        , y(y)
+        , width(width)
+        , height(height)
+        , curX(x)
+        , curY(y)
+    {}
+
+    const T& operator *() const {
+        return subject(curX, curY);
+    }
+
+    T& operator *() {
+        return subject(curX, curY);
+    }
+
+    MatrixIterator& operator ++() {
+        curX++;
+        if (curX >= x + width) {
+            curX = x;
+            curY++;
+        }
+
+        return *this;
+    }
+
+    MatrixIterator& operator --() {
+        if (curX <= x) {
+            curY--;
+            curX = x + width - 1;
+        } else {
+            curX--;
+        }
+        return *this;
+    }
+
+    bool Valid() const {
+        return curY < y + height && curX < x + width;
+    }
+
+private:
+    Matrix<T>& subject;
+    uint x;
+    uint y;
+    uint width;
+    uint height;
+    uint curX;
+    uint curY;
+};
+
 /**
  * General purpose 2D array container thing.
  */
 template <typename T>
 struct Matrix {
+    typedef MatrixIterator<T> iterator;
+
     Matrix(uint w, uint h)
         : _width(w)
         , _height(h) 
@@ -107,6 +165,10 @@ struct Matrix {
         return _data + (y * _width) + x;
     }
 
+    iterator Begin(uint x, uint y, uint width, uint height) {
+        return iterator(*this, x, y, width, height);
+    }
+
     uint Width() const  { return _width; }
     uint Height() const { return _height; }
     bool Empty() const { return _data == 0; }
@@ -166,4 +228,3 @@ private:
     uint _width;
     uint _height;
 };
-

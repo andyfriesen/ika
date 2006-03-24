@@ -228,7 +228,7 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
                 wxIcon(toolButtons[i].iconName, wxBITMAP_TYPE_ICO_RESOURCE, 16, 16),
                 wxDefaultPosition,
                 wxDefaultSize,
-                0//wxBU_EXACTFIT
+                wxBU_AUTODRAW//wxBU_EXACTFIT
             );
 
             b->SetToolTip(toolButtons[i].toolTip);
@@ -693,9 +693,9 @@ void MainWindow::OnCloneLayer(wxCommandEvent&) {
     HandleCommand(new CloneLayerCommand(curLayer));
 }
 
-void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   SetZoomRelative(-1); }//{   _mapView->IncZoom(-1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
-void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   SetZoomRelative(+1); }//{   _mapView->IncZoom(+1);      _mapView->Refresh();        _mapView->UpdateScrollBars();   }
-void MainWindow::OnZoomMapNormal(wxCommandEvent&)       {   SetZoom        (16); }//{   _mapView->SetZoom(16);      _mapView->Refresh();        _mapView->UpdateScrollBars();   } // 16:16 == 100%
+void MainWindow::OnZoomMapIn(wxCommandEvent&)           {   SetZoomRelative(-1); }
+void MainWindow::OnZoomMapOut(wxCommandEvent&)          {   SetZoomRelative(+1); }
+void MainWindow::OnZoomMapNormal(wxCommandEvent&)       {   SetZoom        (16); }
 void MainWindow::OnZoomTilesetIn(wxCommandEvent&)       {   _tilesetView->IncZoom(-1);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTilesetOut(wxCommandEvent&)      {   _tilesetView->IncZoom(+1);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   }
 void MainWindow::OnZoomTilesetNormal(wxCommandEvent&)   {   _tilesetView->SetZoom(16);  _tilesetView->Refresh();    _tilesetView->UpdateScrollBars();   } // 16:16 == 100%
@@ -872,9 +872,7 @@ void MainWindow::HighlightToolButton(uint buttonId) {
         uint id = ids[i];
 
         ToggleBitmapButton* button = wxDynamicCast(FindWindowById(id, this), ToggleBitmapButton);
-        //wxButton* button = wxStaticCast(FindWindowById(id, this), wxButton);
         if (button) {
-            //button->Enable(id != buttonId); // the current button is disabled, since I have no mechanism to keep it pressed at present. (suck)
             button->SetPressed(id == buttonId);
         }
     }

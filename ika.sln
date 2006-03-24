@@ -26,6 +26,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ikaImport", "ikaImport\ikaI
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcproj", "{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
@@ -56,6 +60,10 @@ Global
 		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.Build.0 = Debug|Win32
 		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.ActiveCfg = Release|Win32
 		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.Build.0 = Release|Win32
+		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Debug.ActiveCfg = Debug|Win32
+		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Debug.Build.0 = Debug|Win32
+		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Release.ActiveCfg = Release|Win32
+		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Release.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

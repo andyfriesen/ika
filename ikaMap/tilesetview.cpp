@@ -150,7 +150,8 @@ breakLoop:;
         int y;
         TileToPoint(_executor->GetCurrentTile(), x, y);
 
-        DrawSelectRect(x, y, tileWidth, tileHeight, RGBA(127, 255, 255));
+        DrawSelectRect(x - 1, y - 1, ts->Width() + 1, ts->Height() + 1, RGBA(127, 255, 255));
+        //DrawRectFill(x, y, ts->Width(), ts->Height(), RGBA(127, 255, 255));
     }
 }
 
@@ -204,7 +205,7 @@ void TilesetView::TileToPoint(uint index, int& x, int& y) const {
         }
 
         y = (index / tilesPerRow) * tileHeight - _ywin;
-        x = (index % tilesPerRow) * tileWidth;
+        x = _pad + (index % tilesPerRow) * tileWidth;
     }
 }
 

@@ -415,8 +415,8 @@ void MapView::RenderBrushOutline(const Brush& brush, int xp, int yp) {
 }
 
 void MapView::RenderBrush(int tx, int ty) {
-    Tileset* ts = _executor->GetTileset();
-    RenderBrush(_executor->GetCurrentBrush(), tx * ts->Width(), ty * ts->Height());
+    TileToScreen(tx, ty);
+    RenderBrush(_executor->GetCurrentBrush(), tx, ty);
 }
 
 void MapView::UpdateScrollBars() {

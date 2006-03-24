@@ -574,7 +574,7 @@ namespace OpenGL {
             //y1++;
             glBegin(GL_LINE_LOOP);
         }
-        
+
         glVertex2i(x1, y1);
         glVertex2i(x2, y1);
         glVertex2i(x2, y2);

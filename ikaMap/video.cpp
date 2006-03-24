@@ -7,7 +7,6 @@ static const int nZoomscale = 16;
 
 BEGIN_EVENT_TABLE(VideoFrame, wxGLCanvas)
     EVT_ERASE_BACKGROUND(VideoFrame::OnErase)
-    //EVT_PAINT(VideoFrame::OnPaint)
     EVT_SIZE(VideoFrame::OnSize)
 
     // VideoFrames send all mouse events to their parent window, after adapting for zoom
@@ -120,7 +119,7 @@ void VideoFrame::DrawRectFill(int x, int y, int w, int h, RGBA colour) {
     glDisable(GL_TEXTURE_2D);
 
     glPushMatrix();
-    glTranslatef(0.375f, 0.375f, 0);
+    //glTranslatef(0.375f, 0.375f, 0);
 
     glBegin(GL_QUADS);
 
