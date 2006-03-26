@@ -147,7 +147,7 @@ namespace Script {
     METHOD(ika_rgb) {
         u8 r, g, b, a = 255;
 
-        if (!PyArg_ParseTuple(args, "BBB|i:RGB", &r, &g, &b, &a))
+        if (!PyArg_ParseTuple(args, "BBB|B:RGB", &r, &g, &b, &a))
             return 0;
 
         return PyInt_FromLong(RGBA(r, g, b, a).i);

@@ -26,44 +26,56 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ikaImport", "ikaImport\ikaI
 	ProjectSection(ProjectDependencies) = postProject
 	EndProjectSection
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "unittests", "unittests\unittests.vcproj", "{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}"
-	ProjectSection(ProjectDependencies) = postProject
-	EndProjectSection
-EndProject
 Global
 	GlobalSection(SolutionConfiguration) = preSolution
 		Debug = Debug
+		Debug Unicode = Debug Unicode
 		Release = Release
+		Release Unicode = Release Unicode
 	EndGlobalSection
 	GlobalSection(ProjectConfiguration) = postSolution
 		{86231232-3F9D-440A-A33B-3170501C170E}.Debug.ActiveCfg = Debug|Win32
 		{86231232-3F9D-440A-A33B-3170501C170E}.Debug.Build.0 = Debug|Win32
+		{86231232-3F9D-440A-A33B-3170501C170E}.Debug Unicode.ActiveCfg = Debug|Win32
 		{86231232-3F9D-440A-A33B-3170501C170E}.Release.ActiveCfg = Release|Win32
 		{86231232-3F9D-440A-A33B-3170501C170E}.Release.Build.0 = Release|Win32
+		{86231232-3F9D-440A-A33B-3170501C170E}.Release Unicode.ActiveCfg = Release|Win32
 		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug.ActiveCfg = Debug|.NET
 		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug.Build.0 = Debug|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Debug Unicode.ActiveCfg = Debug|.NET
 		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.ActiveCfg = Release|.NET
 		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release.Build.0 = Release|.NET
+		{5079A4EA-DB90-497D-8759-4ABC0EEB82C6}.Release Unicode.ActiveCfg = Release|.NET
 		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Debug.ActiveCfg = Debug|Win32
 		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Debug.Build.0 = Debug|Win32
+		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Debug Unicode.ActiveCfg = Debug|Win32
+		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Debug Unicode.Build.0 = Debug|Win32
 		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Release.ActiveCfg = Release|Win32
 		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Release.Build.0 = Release|Win32
+		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Release Unicode.ActiveCfg = Release|Win32
+		{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}.Release Unicode.Build.0 = Release|Win32
 		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Debug.ActiveCfg = Debug|Win32
 		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Debug.Build.0 = Debug|Win32
+		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Debug Unicode.ActiveCfg = Debug|Win32
+		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Debug Unicode.Build.0 = Debug|Win32
 		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Release.ActiveCfg = Release|Win32
 		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Release.Build.0 = Release|Win32
+		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Release Unicode.ActiveCfg = Release|Win32
+		{DA8FCF02-D1DC-4E12-BD5C-E52D6F0CB01D}.Release Unicode.Build.0 = Release|Win32
 		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug.ActiveCfg = Debug|Win32
 		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug.Build.0 = Debug|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug Unicode.ActiveCfg = Debug|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Debug Unicode.Build.0 = Debug|Win32
 		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release.ActiveCfg = Release|Win32
 		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release.Build.0 = Release|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release Unicode.ActiveCfg = Release|Win32
+		{71F0DE24-F543-42E5-90C7-0B5AF0517458}.Release Unicode.Build.0 = Release|Win32
 		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.ActiveCfg = Debug|Win32
 		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug.Build.0 = Debug|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Debug Unicode.ActiveCfg = Debug|Win32
 		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.ActiveCfg = Release|Win32
 		{E522652F-513B-4694-9518-8760F2F17F4C}.Release.Build.0 = Release|Win32
-		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Debug.ActiveCfg = Debug|Win32
-		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Debug.Build.0 = Debug|Win32
-		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Release.ActiveCfg = Release|Win32
-		{C04BA6F8-5085-4BFD-9AFC-F84F478ED140}.Release.Build.0 = Release|Win32
+		{E522652F-513B-4694-9518-8760F2F17F4C}.Release Unicode.ActiveCfg = Release|Win32
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 	EndGlobalSection

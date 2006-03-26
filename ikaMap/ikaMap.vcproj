@@ -32,10 +32,10 @@
 				Name="VCCustomBuildTool"/>
 			<Tool
 				Name="VCLinkerTool"
-				AdditionalDependencies="rpcrt4.lib comctl32.lib wsock32.lib winmm.lib wxmswd.lib pngd.lib zlibd.lib jpegd.lib tiffd.lib opengl32.lib glu32.lib regexd.lib corona.lib wxxrcd.lib"
+				AdditionalDependencies="rpcrt4.lib comctl32.lib wsock32.lib winmm.lib opengl32.lib glu32.lib corona.lib wxmswd.lib wxxrcd.lib zlibd.lib jpegd.lib pngd.lib regexd.lib tiffd.lib"
 				OutputFile="$(OutDir)/ikaMap.exe"
 				LinkIncremental="2"
-				AdditionalLibraryDirectories="../common,../3rdparty/lib,$(WXWIN)/lib,$(WXWIN)/contrib/lib"
+				AdditionalLibraryDirectories="../common;../3rdparty/lib;&quot;$(WXWIN)\lib&quot;"
 				IgnoreDefaultLibraryNames=""
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile="$(OutDir)/ikaMap.pdb"

@@ -155,7 +155,8 @@ std::vector<std::string> split(const std::string& delimiter, const std::string& 
         uint endPos = s.find(delimiter, startPos);
 
         if (endPos != std::string::npos) {
-            result.push_back(s.substr(startPos, endPos));
+            std::string blah = s.substr(startPos, endPos - startPos);
+            result.push_back(s.substr(startPos, endPos - startPos));
             startPos = endPos + delimiter.length();
         } else {
             result.push_back(s.substr(startPos));
