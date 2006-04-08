@@ -1,7 +1,9 @@
 Import('*')
 
-ikamap = env.Program('ikamap',
+ikamap = ikaMap_env.Program('ikamap',
     source = Split('''
+        brush.cpp
+        brushstate.cpp
         command.cpp
         copypastestate.cpp
         editstate.cpp
@@ -28,6 +30,7 @@ ikamap = env.Program('ikamap',
         tileanimdlg.cpp
         tileset.cpp
         tilesetview.cpp
+        togglebitmapbutton.cpp
         userdialog.cpp
         video.cpp
         zoneeditstate.cpp

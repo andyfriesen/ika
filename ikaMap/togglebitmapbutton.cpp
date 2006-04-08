@@ -3,13 +3,16 @@
 #include "togglebitmapbutton.h"
 #include <wx/object.h>
 
+#ifndef wxDEFAULT_BUTTON_MARGIN
+const uint wxDEFAULT_BUTTON_MARGIN = 4;
+#endif
+
 IMPLEMENT_DYNAMIC_CLASS(ToggleBitmapButton, wxBitmapButton)
 
 BEGIN_EVENT_TABLE(ToggleBitmapButton, wxBitmapButton)
-
-#ifndef WIN32_IS_GAY
-    EVT_PAINT(ToggleBitmapButton::OnPaint)
-#endif
+    #ifndef WIN32_IS_GAY
+        EVT_PAINT(ToggleBitmapButton::OnPaint)
+    #endif
 END_EVENT_TABLE()
 
 ToggleBitmapButton::ToggleBitmapButton(
@@ -32,10 +35,13 @@ ToggleBitmapButton::ToggleBitmapButton(
         SetSize(GetBestSize());
     }
 
+#ifdef WIN32
     HWND hWnd = (HWND)GetHWND();
     style = GetWindowLong(hWnd, GWL_STYLE);
     SetWindowLong(hWnd, GWL_STYLE, style | BS_PUSHLIKE | BS_AUTOCHECKBOX);
+#endif
 }
+
 
 wxSize ToggleBitmapButton::GetBestSize() const {
     const wxBitmap& bmp = GetBitmapLabel();

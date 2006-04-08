@@ -72,9 +72,9 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event) {
             newClip = _selection;
         } else {
             newClip.left = min(_selection.left, _selX);
-            newClip.right = max(_selection.right, _selX + _tiles.Width());
+            newClip.right = max(_selection.right, _selX + int(_tiles.Width()));
             newClip.top = min(_selection.top, _selY);
-            newClip.bottom = max(_selection.bottom, _selY + _tiles.Height());
+            newClip.bottom = max(_selection.bottom, _selY + int(_tiles.Height()));
         }
 
         int ofsX = _selX - newClip.left;
