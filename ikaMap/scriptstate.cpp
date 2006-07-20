@@ -8,7 +8,7 @@
 #include "mapview.h"
 
 ScriptState::ScriptState(Executor* mainWnd)
-    : EditState(mainWnd)
+    : EditState(mainWnd, "Script")
     , _script(0)
 {
 }

@@ -3,6 +3,7 @@
 #define MAINWINDOW_H
 
 #include <wx/wx.h>
+#include <wx/utils.h>
 
 #include <stdexcept>
 #include <stack>
@@ -177,6 +178,15 @@ private:
     uint _curTile;
     uint _curLayer;
     Brush _curBrush;
+
+    // Menus
+    wxMenu*     _fileMenu;
+    //wxMenu*     _editMenu;
+    //wxMenu*     _viewMenu;
+    //wxMenu*     _mapMenu;
+    //wxMenu*     _layerMenu;
+    //wxMenu*     _toolsMenu;
+    wxMenu*     _helpMenu;
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
     static void ClearList(std::stack< ::Command*>& list);

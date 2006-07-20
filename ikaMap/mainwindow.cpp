@@ -48,20 +48,17 @@ namespace {
         id_filenew,
         id_fileopen,
         id_filesave,
-        id_filesavemapas,
-        id_fileloadtileset,
+        id_filesaveas,
         id_filesavetilesetas,
-        id_fileexporttiles,
+        id_fileexporttileset,
         id_fileexit,
 
         id_editundo,
         id_editredo,
-        id_editmapproperties,
-        id_importtiles,
-        id_exporttiles,
-        id_edittileanim,
-        id_clonelayer,
+        id_editpreferences,
 
+        id_viewzoommap,
+        id_viewzoomtileset,
         id_zoommapin,
         id_zoommapout,
         id_zoommapnormal,
@@ -69,12 +66,44 @@ namespace {
         id_zoomtilesetout,
         id_zoomtilesetnormal,
 
+        id_maploadtileset,
+        id_mapimporttiles,
+        id_maptileanims,
+        id_mapproperties,
+
+        id_layernew,
+        id_layerclone,
+        id_layerdelete,
+        id_layermoveup,
+        id_layermovedown,
+        id_layershowall,
+        id_layershowonly,
+        id_layerproperties,
+
         id_configurescripts,
+
+        id_helpabout,
+        id_helpcontents,
 
         id_cursorup,
         id_cursordown,
         id_cursorleft,
         id_cursorright,
+
+        id_toolnew,
+        id_toolopen,
+        id_toolsave,
+
+        id_toolundo,
+        id_toolredo,
+
+        id_toolpencil,
+        id_toolbrush,
+        id_toolselection,
+        id_toolobstructions,
+        id_toolzones,
+        id_toolentities,
+        id_toolwaypoints,
 
         id_tilepaint,
         id_brushpaint,
@@ -112,17 +141,25 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
     EVT_MENU(id_filenew, MainWindow::OnNewMap)
     EVT_MENU(id_fileopen, MainWindow::OnOpenMap)
     EVT_MENU(id_filesave, MainWindow::OnSaveMap)
-    EVT_MENU(id_filesavemapas, MainWindow::OnSaveMapAs)
-    EVT_MENU(id_fileloadtileset, MainWindow::OnLoadTileset)
+    EVT_MENU(id_filesaveas, MainWindow::OnSaveMapAs)
     EVT_MENU(id_filesavetilesetas, MainWindow::OnSaveTilesetAs)
+    EVT_MENU(id_fileexporttileset, MainWindow::OnExportTileset)
     EVT_MENU(id_fileexit, MainWindow::OnExit)
+
     EVT_MENU(id_editundo, MainWindow::OnUndo)
     EVT_MENU(id_editredo, MainWindow::OnRedo)
-    EVT_MENU(id_editmapproperties, MainWindow::OnEditMapProperties)
-    EVT_MENU(id_importtiles, MainWindow::OnImportTiles)
-    EVT_MENU(id_exporttiles, MainWindow::OnExportTileset)
-    EVT_MENU(id_clonelayer, MainWindow::OnCloneLayer)
-    EVT_MENU(id_edittileanim, MainWindow::OnEditTileAnim)
+
+    EVT_MENU(id_maploadtileset, MainWindow::OnLoadTileset)
+    EVT_MENU(id_mapimporttiles, MainWindow::OnImportTiles)
+    EVT_MENU(id_maptileanims, MainWindow::OnEditTileAnim)
+    EVT_MENU(id_mapproperties, MainWindow::OnEditMapProperties)
+
+    EVT_MENU(id_layernew, MainWindow::OnNewLayer)
+    EVT_MENU(id_layerclone, MainWindow::OnCloneLayer)
+    EVT_MENU(id_layerdelete, MainWindow::OnDestroyLayer)
+    //EVT_MENU(id_layershowall, MainWindow::OnShowAllLayers)
+    //EVT_MENU(id_layershowonly, MainWindow::OnShowCurrentLayer)
+    //EVT_MENU(id_layerproperties, MainWindow::OnEditLayerProperties)
 
     EVT_MENU(id_zoommapin, MainWindow::OnZoomMapIn)
     EVT_MENU(id_zoommapout, MainWindow::OnZoomMapOut)
@@ -179,16 +216,17 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 {
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE));
 
-    const int partitions[] = { 100, -1, 100 };
+    const int partitions[] = { 400, -1, 100 };
     CreateStatusBar(lengthof(partitions));
     _statusBar = GetStatusBar();
     _statusBar->SetStatusWidths(lengthof(partitions), partitions);
+
 
     _sideBar = new wxSashLayoutWindow(this, id_sidebar, wxDefaultPosition, wxDefaultSize, wxCLIP_CHILDREN);
     _sideBar->SetAlignment(wxLAYOUT_LEFT);
     _sideBar->SetOrientation(wxLAYOUT_VERTICAL);
     _sideBar->SetSashVisible(wxSASH_RIGHT, true);
-    _sideBar->SetDefaultSize(wxSize(150, 1000));
+    _sideBar->SetDefaultSize(wxSize(150, 100));
 
     wxPanel* sidePanel = new wxPanel(_sideBar);
     wxBoxSizer* sizer = new wxBoxSizer(wxVERTICAL);
@@ -320,47 +358,91 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
 
     // Create the menu.
     {
-        wxMenu* fileMenu = new wxMenu;
-        fileMenu->Append(id_filenew, "&New Map\tCtrl-N", "Open a fresh, blank map.");
-        fileMenu->Append(id_fileopen, "&Open Map\tCtrl-O", "Open an existing map.");
-        fileMenu->Append(id_filesave, "&Save\tCtrl-S", "Save the current map and tileset to disk.");
-        fileMenu->Append(id_filesavemapas, "Save Map &As...", "Save the current map under a new filename.");
-        fileMenu->AppendSeparator();
-        fileMenu->Append(id_fileloadtileset, "&Load Tileset...", "Replace the map's tileset with a different, pre-existing tileset.");
-        fileMenu->Append(id_filesavetilesetas, "Save &Tileset As...", "Save the current tileset under a new name.");
-        fileMenu->AppendSeparator();
-        fileMenu->Append(id_fileexit, "E&xit\tCtrl-Alt-Del", "Quit ikaMap");
+        _fileMenu = new wxMenu;
+        _fileMenu->Append(id_filenew, "&New...\tCtrl-N", "Open a fresh, blank map.");
+        _fileMenu->Append(id_fileopen, "&Open...\tCtrl-O", "Open an existing map.");
+        _fileMenu->AppendSeparator();
+        _fileMenu->Append(id_filesave, "&Save\tCtrl-S", "Save the current map and tileset to disk.");
+        _fileMenu->Append(id_filesaveas, "Save &As...\tCtrl-A", "Save the current map under a new filename.");
+        //fileMenu->Append(id_fileloadtileset, "&Load Tileset...", "Replace the map's tileset with a different, pre-existing tileset.");
+        _fileMenu->Append(id_filesavetilesetas, "Save &Tileset As...", "Save the current tileset under a new name.");
+        _fileMenu->Append(id_fileexporttileset, "Export Tileset As...", "Save as the tileset as an image.");
+        _fileMenu->AppendSeparator();
+        _fileMenu->Append(id_fileexit, "E&xit\tCtrl-Alt-Del", "Quit ikaMap");
 
         wxMenu* editMenu = new wxMenu;
         editMenu->Append(id_editundo, "&Undo\tCtrl-Z", "Undo the last action.");
         editMenu->Append(id_editredo, "&Redo\tCtrl-Y", "Redo the last undone action.");
-        editMenu->AppendSeparator();
-        editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
-        editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
-        editMenu->Append(id_exporttiles, "&Export Tiles...", "Save the tileset as an image.");
-        editMenu->Append(id_edittileanim, "Edit Tile &Animations...", "");
-        editMenu->AppendSeparator();
-        editMenu->Append(id_clonelayer, "Clone Layer", "Create a copy of the current layer.");
+        //editMenu->AppendSeparator();
+        //editMenu->Append(id_editmapproperties, "Map &Properties...", "Edit the map's title, and dimensions.");
+        //editMenu->Append(id_importtiles, "Import &Tiles...", "Grab one or more tiles from an image file.");
+        //editMenu->Append(id_exporttiles, "&Export Tiles...", "Save the tileset as an image.");
+        //editMenu->Append(id_edittileanim, "Edit Tile &Animations...", "");
+        //editMenu->AppendSeparator();
+        //editMenu->Append(id_clonelayer, "Clone Layer", "Create a copy of the current layer.");
+
+
+        wxMenu* mapZoomMenu = new wxMenu;
+        mapZoomMenu->Append(id_zoommapin, "Zoom In\t+");
+        mapZoomMenu->Append(id_zoommapout, "Zoom Out\t-");
+        mapZoomMenu->Append(id_zoommapnormal, "Actual Size\t=", "Revert zoom to actual size.");
+
+        wxMenu* tilesetZoomMenu = new wxMenu;
+        tilesetZoomMenu->Append(id_zoomtilesetin, "Zoom In\tNumpad 8");
+        tilesetZoomMenu->Append(id_zoomtilesetout, "Zoom Out\tNumpad 2");
+        tilesetZoomMenu->Append(id_zoomtilesetnormal, "Actual Size\tNumpad 5", "Revert tileset zoom to actual size.");
 
         wxMenu* viewMenu = new wxMenu;
-        viewMenu->Append(id_zoommapin, "Zoom Map In\t+");
-        viewMenu->Append(id_zoommapout, "Zoom Map Out\t-");
-        viewMenu->Append(id_zoommapnormal, "Zoom Map to 100%\t=", "Stop zooming the map.");
-        viewMenu->AppendSeparator();
-        viewMenu->Append(id_zoomtilesetin, "Zoom Tileset In\tNumpad 8");
-        viewMenu->Append(id_zoomtilesetout, "Zoom Tileset Out\tNumpad 2");
-        viewMenu->Append(id_zoomtilesetnormal, "Zoom Tileset to 100%\tNumpad 5", "Stop zooming on the tileset.");
+        viewMenu->Append(id_viewzoommap, "Map Zoom", mapZoomMenu);
+        viewMenu->Append(id_viewzoomtileset, "Tileset Zoom", tilesetZoomMenu);
+
+
+        wxMenu* mapMenu = new wxMenu;
+        mapMenu->Append(id_maploadtileset, "&Load Tileset", "Replace the map's tileset with a different, existing tileset.");
+        mapMenu->Append(id_mapimporttiles, "Import Tiles", "Import an image to convert for the map's tileset.");
+        mapMenu->AppendSeparator();
+
+        mapMenu->Append(id_maptileanims, "Tile Animations", "Edit the tileset's animations.");
+        mapMenu->Append(id_mapproperties, "Properties", "Edit current map properties.");
+
+
+
+        wxMenu* layerMenu = new wxMenu;
+        layerMenu->Append(id_layernew, "New", "Create a new map layer.");
+        layerMenu->Append(id_layerclone, "Clone", "Create a copy of the current map layer.");
+        layerMenu->Append(id_layerdelete, "Delete", "Delete the current map layer.");
+        layerMenu->AppendSeparator();
+
+        layerMenu->Append(id_layermoveup, "Move Up", "Move the current map layer up.");
+        layerMenu->Append(id_layermovedown, "Move Down", "Move the current map layer down.");
+        layerMenu->AppendSeparator();
+
+        layerMenu->Append(id_layershowall, "Show All Layers", "Show all the map layers.");
+        layerMenu->Append(id_layershowonly, "Show Current Layer Only", "Show only the current map layer.");
+        layerMenu->AppendSeparator();
+
+        layerMenu->Append(id_layerproperties, "Properties", "Edit the current map layer's properties.");
+
 
         wxMenu* toolMenu = new wxMenu;
-        toolMenu->Append(id_configurescripts, "Configure Plugin &Scripts...", "Load and unload Python scripts");
+        toolMenu->Append(id_configurescripts, "&Script Manager", "Load and unload Python scripts");
         wxMenu* scriptMenu = new wxMenu;
-        toolMenu->Append(id_scriptlist, "Scripts", scriptMenu);    // we fill this submenu later
+        toolMenu->Append(id_scriptlist, "Loaded Scripts", scriptMenu);    // we fill this submenu later
+
+
+
+        _helpMenu = new wxMenu;
+        _helpMenu->Append(id_helpabout, "&About");
+
 
         wxMenuBar* menuBar = new wxMenuBar;
-        menuBar->Append(fileMenu, "&File");
+        menuBar->Append(_fileMenu, "&File");
         menuBar->Append(editMenu, "&Edit");
         menuBar->Append(viewMenu, "&View");
+        menuBar->Append(mapMenu, "&Map");
+        menuBar->Append(layerMenu, "&Layer");
         menuBar->Append(toolMenu, "&Tools");
+        menuBar->Append(_helpMenu, "&Help");
         SetMenuBar(menuBar);
     }
 
@@ -452,6 +534,7 @@ void MainWindow::OnNewMap(wxCommandEvent&) {
             newMap->width = dlg.width * newTileset->Width();
             newMap->height = dlg.height * newTileset->Height();
             newMap->AddLayer("New Layer", dlg.width, dlg.height);
+            SetCurrentLayer(0);
 
             _curMapName = "";
             _changed = false;
@@ -962,6 +1045,9 @@ void MainWindow::LoadMap(const std::string& fileName) {
     _mapView->SetXWin(0);
     _mapView->SetYWin(0);
     _mapView->UpdateScrollBars();
+
+    // Reset to top layer.
+    SetCurrentLayer(0);
 
     _layerVisibility.resize(_map->NumLayers());
     std::fill(_layerVisibility.begin(), _layerVisibility.end(), true);

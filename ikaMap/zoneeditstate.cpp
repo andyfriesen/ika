@@ -9,7 +9,7 @@
 #include "zoneeditstate.h"
 
 ZoneEditState::ZoneEditState(Executor* e)
-    : EditState(e)
+    : EditState(e, "Zones")
     , _curZoneIndex(-1)
     , _dragging(false)
 {}

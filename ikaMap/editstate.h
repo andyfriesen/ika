@@ -22,8 +22,10 @@ struct Command;
  * the code brief)
  */
 struct EditState {
-    EditState(Executor* e);
+    EditState(Executor* e, std::string name);
     virtual ~EditState(){}
+
+    std::string GetName();
 
     virtual void OnMouseDown(wxMouseEvent&) = 0;
     virtual void OnMouseUp(wxMouseEvent&) = 0;
@@ -53,6 +55,7 @@ protected:
 
 private:
     Executor*       _executor;
+    std::string     _name;
 };
 
 #endif

@@ -13,6 +13,15 @@ struct Map;
 struct Executor;
 class wxWindow;
 
+struct LayerText : public wxStaticText {
+    LayerText(wxWindow* parent);
+
+    void OnMouseDown(wxMouseEvent& event);
+
+    DECLARE_EVENT_TABLE();
+};
+
+
 /**
  * Displays information about a single map layer.
  * Draws pretty icons next to the name of the layer.
@@ -26,7 +35,7 @@ struct LayerBox : public wxWindow {
     void SetLabel(const std::string& label);
 
     void DoToggleVisibility(wxCommandEvent& event);
-    void DoActivateLayer(wxCommandEvent& event);
+    void DoActivateLayer(wxMouseEvent& event);
     void DoContextMenu(wxContextMenuEvent& event);
 
     DECLARE_EVENT_TABLE();
@@ -50,13 +59,15 @@ struct LayerList : public wxScrolledWindow {
 
     // These we recieve from the LayerBoxes.
     void OnToggleVisibility(wxCommandEvent& event);
-    void OnActivateLayer(wxCommandEvent& event);
+    void OnActivateLayer(wxMouseEvent& event);
     void OnShowContextMenu(wxContextMenuEvent& event);
 
     // Menu event handlers
     void OnEditLayerProperties(wxCommandEvent&);
     void OnShowOnly(wxCommandEvent&);
     void OnShowAll(wxCommandEvent&);
+    void OnCloneLayer(wxCommandEvent&);
+    void OnDeleteLayer(wxCommandEvent&);
 
     void Update(Map* map);
     void UpdateIcons();

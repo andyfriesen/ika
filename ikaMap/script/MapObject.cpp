@@ -33,12 +33,10 @@ namespace ScriptObject
                 "on the layer specified."
             },
 
-            /*
             {   "SetTile",      (PyCFunction)Map_SetTile,       METH_VARARGS,
                 "SetTile(x, y, layer, tile)\n\n"
                 "Sets the tile at (x, y) of the layer specified."
             },
-            */
 
             {   "GetObs",       (PyCFunction)Map_GetObs,        METH_VARARGS,
                 "GetObs(x, y, layerIndex) -> int\n\n"
@@ -178,7 +176,6 @@ namespace ScriptObject
             return PyInt_FromLong(self->GetMap()->GetLayer(lay)->tiles(x, y));
         }
 
-        /*
         METHOD(Map_SetTile)
         {
             int x, y;
@@ -195,12 +192,12 @@ namespace ScriptObject
                 //return 0;
             }
 
-            self->mainWnd->HandleCommand(new SetBrushCommand(x, y, lay, Matrix<uint>(1, 1, *[tile])));
+            self->mainWnd->HandleCommand(new SetTileCommand(x, y, lay, tile));
 
             Py_INCREF(Py_None);
             return Py_None;
         }
-        */
+
         METHOD(Map_PlaceBrush)
         {
             /*

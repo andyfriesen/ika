@@ -16,7 +16,7 @@
 #undef USE_GROUP_JUJU
 
 TilesetState::TilesetState(Executor* e)
-    : EditState(e)
+    : EditState(e, "Pencil")
     , _oldX(-1)
     , _oldY(-1)
     , _curX(0)
@@ -36,7 +36,7 @@ void TilesetState::OnRenderCurrentLayer() {
 
     int w = GetTileset()->Width();
     int h = GetTileset()->Height();
-    GetMapView()->GetVideo()->DrawRect(mousePos.x, mousePos.y, w, h, RGBA(255, 192, 192, 255));
+    GetMapView()->GetVideo()->DrawSelectRect(mousePos.x, mousePos.y, w, h, RGBA(255, 192, 192, 255));
 }
 
 void TilesetState::OnMouseDown(wxMouseEvent& event) {
@@ -44,7 +44,7 @@ void TilesetState::OnMouseDown(wxMouseEvent& event) {
         // Left Click to set a single tile
         SetTile(event.m_x, event.m_y);
 
-    } else if (event.LeftDown() && event.ShiftDown()) {
+    } else if (event.RightDown()) {
         // Shift + Left Click to make the tile under the cursor the current one
         int x = event.m_x;
         int y = event.m_y;
@@ -90,9 +90,9 @@ void TilesetState::OnMouseMove(wxMouseEvent& event) {
     if (event.LeftIsDown() && !event.ShiftDown()) {
         SetTile(event.m_x, event.m_y);
 
-    } else {
-        GetMapView()->Refresh();
     }
+
+    GetMapView()->Refresh();
 }
 
 void TilesetState::OnMouseWheel(wxMouseEvent& event) {

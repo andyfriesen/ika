@@ -21,7 +21,7 @@
  */
 
 CopyPasteState::CopyPasteState(Executor* e)
-    : EditState(e)
+    : EditState(e, "Selection")
     , _state(NoneState)
     , _dragging(false)
     , _selX(0)

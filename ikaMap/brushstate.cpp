@@ -5,7 +5,7 @@
 #include "command.h"
 
 BrushState::BrushState(Executor* e)
-    : EditState(e)
+    : EditState(e, "Brush")
     , _oldX(-1)
     , _oldY(-1)
 {}

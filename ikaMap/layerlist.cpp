@@ -1,4 +1,5 @@
 
+#include "command.h"
 #include "layerlist.h"
 #include "mainwindow.h"
 #include "common/map.h"
@@ -11,12 +12,32 @@ namespace {
         id_editLayerProperties,
         id_showOnly,
         id_showAll,
+        id_cloneLayer,
+        id_deleteLayer
     };
 }
 
+
+BEGIN_EVENT_TABLE(LayerText, wxStaticText)
+    EVT_LEFT_DOWN(LayerText::OnMouseDown)
+END_EVENT_TABLE()
+
+LayerText::LayerText(wxWindow* parent)
+    : wxStaticText(parent, -1, "-")
+{
+}
+
+void LayerText::OnMouseDown(wxMouseEvent& event)
+{
+    Log::Write("Activate layer at layer text.");
+    GetParent()->ProcessEvent(event);
+    //event.Skip();
+}
+
+
 BEGIN_EVENT_TABLE(LayerBox, wxWindow)
+    EVT_LEFT_DOWN(LayerBox::DoActivateLayer)
     EVT_BUTTON(id_showLayer, LayerBox::DoToggleVisibility)
-    EVT_BUTTON(id_activateLayer, LayerBox::DoActivateLayer)
     EVT_CONTEXT_MENU(LayerBox::DoContextMenu)
 END_EVENT_TABLE()
 
@@ -29,7 +50,7 @@ LayerBox::LayerBox(wxWindow* parent, wxPoint position, wxSize size)
 
     _visibilityIcon = new wxBitmapButton(this, id_showLayer, blankIcon, wxDefaultPosition, wxSize(16, 16), style);
     _activeIcon     = new wxBitmapButton(this, id_activateLayer, blankIcon, wxDefaultPosition, wxSize(16, 16), style);
-    _label = new wxStaticText(this, -1, "-");
+    _label = new LayerText(this);
 
     wxSizer* sizer = new wxBoxSizer(wxHORIZONTAL);
     sizer->Add(_visibilityIcon, 0, wxBOTTOM, 4);
@@ -52,9 +73,10 @@ void LayerBox::DoToggleVisibility(wxCommandEvent& event) {
     event.Skip();
 }
 
-void LayerBox::DoActivateLayer(wxCommandEvent& event) {
-    event.SetInt(GetId());
-    event.Skip();
+void LayerBox::DoActivateLayer(wxMouseEvent& event) {
+    event.SetId(GetId());
+    GetParent()->ProcessEvent(event);
+    //event.Skip();
 }
 
 void LayerBox::DoContextMenu(wxContextMenuEvent& event) {
@@ -74,14 +96,18 @@ namespace {
     };
 }
 
+
+
 BEGIN_EVENT_TABLE(LayerList, wxScrolledWindow)
-    EVT_BUTTON(id_activateLayer, LayerList::OnActivateLayer)
+    EVT_LEFT_DOWN(LayerList::OnActivateLayer)
     EVT_BUTTON(id_showLayer, LayerList::OnToggleVisibility)
     EVT_CONTEXT_MENU(LayerList::OnShowContextMenu)
 
     EVT_MENU(id_editLayerProperties, LayerList::OnEditLayerProperties)
     EVT_MENU(id_showOnly, LayerList::OnShowOnly)
     EVT_MENU(id_showAll, LayerList::OnShowAll)
+    EVT_MENU(id_cloneLayer, LayerList::OnCloneLayer)
+    EVT_MENU(id_deleteLayer, LayerList::OnDeleteLayer)
 END_EVENT_TABLE()
 
 LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxSize size)
@@ -96,9 +122,16 @@ LayerList::LayerList(Executor* executor, wxWindow* parent, wxPoint position, wxS
     Layout();
     SetScrollRate(0, 1);
 
+    // Create layer right-click menu here.
     _contextMenu = new wxMenu();
     _contextMenu->Append(id_showOnly, "Show &Only", "Hide all layers except this one.");
     _contextMenu->Append(id_showAll, "Show &All", "Unhide all layers.");
+    _contextMenu->AppendSeparator();
+
+    _contextMenu->Append(id_cloneLayer, "&Clone Layer", "Create an exact duplicate of this layer.");
+    _contextMenu->Append(id_deleteLayer, "&Delete Layer", "Delete this layer.");
+    _contextMenu->AppendSeparator();
+
     _contextMenu->Append(id_editLayerProperties, "&Properties", "Edit the properties of this layer.");
 }
 
@@ -130,12 +163,16 @@ void LayerList::OnToggleVisibility(wxCommandEvent& event) {
     _executor->ShowLayer(layerIndex, b);
 }
 
-void LayerList::OnActivateLayer(wxCommandEvent& event) {
-    uint layerIndex = event.GetInt();
+void LayerList::OnActivateLayer(wxMouseEvent& event) {
+    Log::Write("Activate layer at layer list");
 
-    wxASSERT(layerIndex < _executor->GetMap()->NumLayers());
+    uint layerIndex = event.GetId();
 
-    _executor->SetCurrentLayer(layerIndex);
+    if (layerIndex < _executor->GetMap()->NumLayers()) {
+    //wxASSERT(layerIndex < _executor->GetMap()->NumLayers());
+
+        _executor->SetCurrentLayer(layerIndex);
+    }
 }
 
 void LayerList::OnShowContextMenu(wxContextMenuEvent& event) {
@@ -176,6 +213,20 @@ void LayerList::OnShowAll(wxCommandEvent&) {
 
     for (uint i = 0; i < layerCount; i++) {
         _executor->ShowLayer(i);
+    }
+}
+
+void LayerList::OnCloneLayer(wxCommandEvent&) {
+    wxASSERT(_contextMenuIndex != -1);
+
+    _executor->HandleCommand(new CloneLayerCommand(_contextMenuIndex));
+}
+
+void LayerList::OnDeleteLayer(wxCommandEvent&) {
+    wxASSERT(_contextMenuIndex != -1);
+
+    if (wxMessageBox("Are you sure you wish to delete this layer?", "Notice", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxID_YES) {
+        _executor->HandleCommand(new DestroyLayerCommand(_contextMenuIndex));
     }
 }
 

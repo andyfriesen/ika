@@ -121,7 +121,7 @@ void MapView::OnMouseMove(wxMouseEvent& event) {
         int x = event.GetX();
         int y = event.GetY();
         ScreenToTile(x, y);
-        _executor->SetStatusBar(va("(%i, %i)", x, y), 0);
+        _executor->SetStatusBar(_editState->GetName() + va(": (%i, %i)", x, y), 1);
     }
 
     if (event.MiddleIsDown()) {

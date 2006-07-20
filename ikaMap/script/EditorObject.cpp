@@ -49,14 +49,12 @@ namespace ScriptObject
         //SET(YWin)
         GET(CurLayer)   {   return PyInt_FromLong(self->mainWnd->GetCurrentLayer());          }
         SET(CurLayer)   {   self->mainWnd->SetCurrentLayer(PyInt_AsLong(value));  return 0;   }
-        /*
         GET(CurTile)    {   return PyInt_FromLong(self->mainWnd->GetCurrentTile());       }
         SET(CurTile)
         {
             self->mainWnd->SetCurrentTile(PyInt_AsLong(value));
             return 0;
         }
-        */
         //GET(CurBrush)   {   Py_INCREF(self->brush); return self->brush;}
         //SET(CurBrush)   {   }
 
@@ -68,6 +66,7 @@ namespace ScriptObject
             {   "xwin",         (getter)getXWin,            0,                          "Gets the current x position of the map viewport."  },
             {   "ywin",         (getter)getYWin,            0,                          "Gets the current y position of the map viewport."  },
             {   "curlayer",     (getter)getCurLayer,        (setter)setCurLayer,        "Gets or sets the active map layer."                },
+            {   "curtile",      (getter)getCurTile,         (setter)setCurTile,         "Gets or sets the active tile."                     },
             //{   "curbrush",      (getter)getCurBrush,         0,                        "Gets or sets the current brush."                    },
             {   0   }
         };

@@ -6,8 +6,9 @@
 #include "tileset.h"
 #include "command.h"
 
-EditState::EditState(Executor* e)
+EditState::EditState(Executor* e, std::string name)
     : _executor(e)
+    , _name(name)
 {
 }
 
@@ -23,6 +24,13 @@ Map::Layer*  EditState::GetCurLayer() const
     else
         return _executor->GetMap()->GetLayer(_executor->GetCurrentLayer());
 }
+
+
+std::string EditState::GetName()
+{
+    return _name;
+}
+
 
 uint      EditState::GetCurLayerIndex()     const { return _executor->GetCurrentLayer(); }
 Tileset*  EditState::GetTileset()           const { return _executor->GetTileset(); }

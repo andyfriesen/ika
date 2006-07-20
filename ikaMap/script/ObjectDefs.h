@@ -27,7 +27,7 @@ namespace ScriptObject
 
         // Methods
         METHOD(Map_GetTile, MapObject);
-        //METHOD(Map_SetTile, MapObject);
+        METHOD(Map_SetTile, MapObject);
         METHOD(Map_PlaceBrush, MapObject);
         METHOD(Map_GetObs, MapObject);
         METHOD(Map_SetObs, MapObject);

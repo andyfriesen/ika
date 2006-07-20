@@ -106,6 +106,7 @@ private:
     std::string _name; // module name, I guess
     std::string _fileName;
     std::string _desc; // __doc__
+    std::string _iconName;
 
 public:
     Script(const std::string& fileName);

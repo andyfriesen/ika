@@ -8,8 +8,6 @@
 
 #include "scriptengine.h" // geh
 
-#include "common/log.h"
-
 Script::Script(const std::string& fileName)
     : module(0)
     , onMouseDown(0)
@@ -25,6 +23,7 @@ Script::Script(const std::string& fileName)
     , onActivated(0)
 
     , _fileName(fileName)
+    , _iconName("")
 {
     ScriptEngine::Init(); // init python, if it hasn't already been initted.
 
@@ -296,6 +295,21 @@ void Script::Reload()
         _desc = PyString_AsString(docString);
     else
         _desc = "No description available";
+
+    //Tool icon.
+    PyObject* iconString = PyDict_GetItemString(dict, "__icon__");
+    if (iconString != Py_None) {
+        _iconName = PyString_AsString(iconString);
+
+        // Load icon here.
+        std::string iconPath = Path::getDirectory(_fileName) + _iconName;
+
+        //wxIcon icon = LoadIcon(iconPath);
+    }
+    else {
+        _iconName = "";
+        //_icon = wxIcon("py", wxBITMAP_TYPE_ICO_RESOURCE, 32, 32);
+    }
 }
 
 void Script::Deallocate()

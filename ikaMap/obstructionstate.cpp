@@ -6,7 +6,7 @@
 #include "command.h"
 
 ObstructionState::ObstructionState(Executor* e)
-    : EditState(e)
+    : EditState(e, "Obstructions")
     , _oldX(-1)
     , _oldY(-1)
 {}

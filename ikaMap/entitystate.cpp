@@ -9,7 +9,7 @@
 #include "command.h"
 
 EntityState::EntityState(Executor* e)
-    : EditState(e)
+    : EditState(e, "Entities")
     , _entLayerIndex(0)
     , _entIndex(-1)
 {}
