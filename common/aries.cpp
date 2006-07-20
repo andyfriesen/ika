@@ -18,7 +18,7 @@ namespace aries {
     std::string readIdentifier(std::istream& stream) {
         std::stringstream ss;
 
-        while (true) {
+        for (;;) {
             char c = stream.peek();
 
             if (isWhiteSpace(c) || !stream.good()) {
@@ -36,7 +36,7 @@ namespace aries {
         // C++ badly needs a
         // do { ... } while (condition) { ... }
         // construct.
-        while (true) {
+        for (;;) {
             char c = stream.peek();
             if (isWhiteSpace(c) || !stream.good()) {
                 break;
@@ -101,7 +101,7 @@ namespace aries {
                 // Backslash is interpreted like in C.
 
                 std::stringstream ss;
-                while (true) {
+                for (;;) {
                     if (!stream.good()) {
                         throw std::runtime_error("Unterminated string literal data");
                     }
