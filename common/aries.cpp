@@ -47,11 +47,11 @@ namespace aries {
 
     // Removes all leading and trailing whitespace from the string.
     std::string stripString(const std::string& str) {
-        uint start = 0;
-        uint end = str.length();
+        unsigned int start = 0;
+        unsigned int end = str.length();
 
-        while (isWhiteSpace(str[start]) && start < str.length()) start++;
-        while (isWhiteSpace(str[end - 1]) && end > 0) end--;
+        while (start < str.length() && isWhiteSpace(str[start])) start++;
+        while (end > 0 && isWhiteSpace(str[end - 1])) end--;
         if (start >= end) {
             return "";
         } else {
@@ -198,7 +198,7 @@ namespace aries {
     {}
 
     DataNode::~DataNode() {
-        for (uint i = 0; i < _children.size(); i++) {
+        for (unsigned int i = 0; i < _children.size(); i++) {
             delete _children[i];
         }
     }
@@ -216,7 +216,7 @@ namespace aries {
     DataNode* DataNode::clone() const {
         DataNode* newNode = new DataNode(_name);
 
-        for (uint i = 0; i < _children.size(); i++) {
+        for (unsigned int i = 0; i < _children.size(); i++) {
             newNode->addChild(*_children[i]);
         }
 
@@ -313,7 +313,7 @@ namespace aries {
         return stream;
     }
 
-    void DataNode::write(std::ostream& stream, uint indentLevel) const {
+    void DataNode::write(std::ostream& stream, unsigned int indentLevel) const {
         indentLevel += 1;
 
         stream << "(" << _name << " ";
@@ -328,7 +328,7 @@ namespace aries {
             stream << ")";
 
         } else {
-            for (uint i = 0; i < _children.size(); i++) {
+            for (unsigned int i = 0; i < _children.size(); i++) {
                 const Node* const child = _children[i];
 
                 stream << "\n";
