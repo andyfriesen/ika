@@ -1,4 +1,4 @@
-# Common colour constant things for writing coloured text
+"""Common colour constant things for writing coloured text
 # Coded by Andy Friesen
 # Copyright whenever.  All rights reserved.
 #
@@ -7,36 +7,35 @@
 #
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
+"""
 
 import binascii
 import struct
 
 import ika
-o = 0x00
-x = 0xFF
+
 
 def hexColour(r, g, b, a=255):
     c = ika.RGB(r, g, b, a)
     v = binascii.hexlify(struct.pack('!l', c))
     return v
 
-colours = dict(
-    [ (name, '#[%s]' % hexColour(*value))
+hexColor = hexColour
 
-        for name, value in
-        (
-            ('black',   (o, o, o)),
-            ('blue',    (o, o, x)),
-            ('green',   (o, x, o)),
-            ('aqua',    (o, x, x)),
-            ('red',     (x, o, o)),
-            ('violet',  (x, o, x)),
-            ('yellow',  (x, x, o)),
-            ('white',   (x, x, x)),
-        )
-    ]
-)
 
-del o
-del x
-del ika
+_o = 0x00
+_x = 0xFF
+
+colours = dict([(name, '#[%s]' % hexColour(*value))
+                for name, value in (('black',   (_o, _o, _o)),
+                                    ('blue',    (_o, _o, _x)),
+                                    ('green',   (_o, _x, _o)),
+                                    ('aqua',    (_o, _x, _x)),
+                                    ('red',     (_x, _o, _o)),
+                                    ('violet',  (_x, _o, _x)),
+                                    ('yellow',  (_x, _x, _o)),
+                                    ('white',   (_x, _x, _x)))])
+
+colors = colours
+
+__all__ = ['colors', 'colours', 'hexColor', 'hexColour']
