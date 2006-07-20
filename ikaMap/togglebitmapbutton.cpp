@@ -2,6 +2,7 @@
 #include "common/types.h"
 #include "togglebitmapbutton.h"
 #include <wx/object.h>
+#include <windows.h>
 
 #ifndef wxDEFAULT_BUTTON_MARGIN
 const uint wxDEFAULT_BUTTON_MARGIN = 4;

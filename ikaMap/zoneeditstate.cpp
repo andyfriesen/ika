@@ -32,7 +32,7 @@ void ZoneEditState::OnMouseDown(wxMouseEvent& event)
         ZonePropertiesDlg dlg(GetExecutor(), GetCurLayerIndex(), _curZoneIndex);
 
         // Show the zone properties dialog
-        int result = dlg.ShowModal();
+        dlg.ShowModal();
 
         GetMapView()->Refresh();
     }
