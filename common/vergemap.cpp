@@ -1,7 +1,7 @@
-
 #include <algorithm>
+#include <cstdio>
+#include <limits>
 #include <stdexcept>
-#include <stdio.h>
 
 #include "zlib.h"
 
@@ -600,7 +600,7 @@ void ExportVerge3Map(const std::string& fileName, Map* map) {
         buffer = map->metaData["rstring"];
     } else {
         buffer.clear();
-        for (uint i = 0; i < buffer.size(); i++) {
+        for (unsigned char i = 0; i < buffer.size(); i++) {
             buffer += '1' + i;
         }
         buffer += "ER";
@@ -623,7 +623,9 @@ void ExportVerge3Map(const std::string& fileName, Map* map) {
         fwrite(&parallaxDummy, 1, 8, f);
         fwrite(&parallaxDummy, 1, 8, f);
 
+		assert(lay->Width() <= (std::numeric_limits<unsigned short>::max)());
         fputw(lay->Width(), f);
+		assert(lay->Height() <= (std::numeric_limits<unsigned short>::max)());
         fputw(lay->Height(), f);
         fputc(0, f); // lucent
 

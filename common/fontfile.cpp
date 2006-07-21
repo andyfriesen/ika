@@ -1,3 +1,5 @@
+#include <limits>
+
 #include "fontfile.h"
 #include "fileio.h"
 #include "rle.h"
@@ -231,8 +233,11 @@ void FontFile::Save(const char* fname) {
     File f;
     f.OpenWrite(fname, 1);
 
-    u8 numSubsets = set.size();
-    u16 numGlyphs = glyph.size();
+	assert(set.size() <= (std::numeric_limits<unsigned char>::max)());
+    unsigned char numSubsets = set.size();
+
+	assert(glyph.size() <= (std::numeric_limits<unsigned short>::max)());
+	unsigned short numGlyphs = glyph.size();
 
     f.Write("FONT27");
     f.Write(numSubsets);
@@ -244,9 +249,11 @@ void FontFile::Save(const char* fname) {
         f.Write(&blah[0], sizeof(blah));
     }
 
-    for(uint i=0; i < glyph.size(); i++) {
-        u16 w = glyph[i].Width();
-        u16 h = glyph[i].Height();
+    for (unsigned int i = 0; i < glyph.size(); i++) {
+		assert(glyph[i].Width() <= (std::numeric_limits<unsigned short>::max)());
+        unsigned short w = glyph[i].Width();
+		assert(glyph[i].Height() <= (std::numeric_limits<unsigned short>::max)());
+        unsigned short h = glyph[i].Height();
 
         f.Write(w);
         f.Write(h);

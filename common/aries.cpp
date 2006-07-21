@@ -1,18 +1,27 @@
-
-#include "aries.h"
-
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <stack>
+#include <string>
 #include <cassert>
 #include <stdexcept>
+
+#include "aries.h"
+
+// New as of 0.60: quoted strings behave like C string literals.
+// (except using single quotes instead of double)
+// Backslash is interpreted like in C.
 
 namespace aries {
     // Helper functions for the parser
 
+	// These are defined as constants because they look too similar if
+	// used in the code directly.  It confuses [andy's] feeble mind.
+	const char _singleQuote = '\'';
+	const char _backSlash = '\\';
+
     bool isWhiteSpace(char c) {
-        return c==' ' || c=='\t' || c=='\n' || c=='\r';
+        return c == ' ' || c == '\t' || c == '\n' || c == '\r';
     }
 
     std::string readIdentifier(std::istream& stream) {
@@ -20,8 +29,11 @@ namespace aries {
 
         for (;;) {
             char c = stream.peek();
+			if (stream.fail()) {
+				throw std::runtime_error("Error reading document.");
+			}
 
-            if (isWhiteSpace(c) || !stream.good()) {
+            if (isWhiteSpace(c)) {
                 break;
             }
 
@@ -33,9 +45,6 @@ namespace aries {
     }
 
     void eatWhiteSpace(std::istream& stream) {
-        // C++ badly needs a
-        // do { ... } while (condition) { ... }
-        // construct.
         for (;;) {
             char c = stream.peek();
             if (isWhiteSpace(c) || !stream.good()) {
@@ -50,8 +59,10 @@ namespace aries {
         unsigned int start = 0;
         unsigned int end = str.length();
 
-        while (start < str.length() && isWhiteSpace(str[start])) start++;
-        while (end > 0 && isWhiteSpace(str[end - 1])) end--;
+        while (start < str.length() && isWhiteSpace(str[start]))
+			start++;
+        while (end > 0 && isWhiteSpace(str[end - 1]))
+			end--;
         if (start >= end) {
             return "";
         } else {
@@ -60,26 +71,31 @@ namespace aries {
     }
 
     DataNode* Node::readDocument(std::istream& stream) {
-        // I don't want to recurse for some reason, so I keep the context in an explicit stack.
+        // I don't want to recurse for some reason, so I keep the context in an
+		// explicit stack.
         std::stack<DataNode*> docStack;
         DataNode* rootNode = new DataNode("root");
         docStack.push(rootNode);
 
         /*
          * Read a character.
-         *   If it's not an opening parenth, then grab characters until we get to a parenth, and pack it into a single StringNode.
-         *   If it is, then grab characters up until a space, then create a new DataNode, and parse its children.
-         *   If it is a closing parenth, then the node is complete.  We resume parsing its parent.
+         *   If it's not an opening parenth, then grab characters until we get
+		 *   to a parenth, and pack it into a single StringNode.
+         *   If it is, then grab characters up until a space, then create a new
+		 *   DataNode, and parse its children.
+         *   If it is a closing parenth, then the node is complete.  We resume
+		 *   parsing its parent.
          */
 
-        while (stream.good()) {
-            assert(docStack.size() >= 1);
-
+        for (;;) {
+			assert(docStack.size() >= 1);
             char c = stream.get();
-
-            if (isWhiteSpace(c)) {
+			if (stream.eof()) {
+				break;
+			} else if (stream.fail()) {
+				throw std::runtime_error("Error reading document.");
+			} else if (isWhiteSpace(c)) {
                 continue;
-
             } else if (c == '(') {
                 std::string nodeName = stripString(readIdentifier(stream));
                 DataNode* newNode = new DataNode(nodeName);
@@ -87,44 +103,31 @@ namespace aries {
                 docStack.push(newNode);
 
             } else if (c == ')') {
-                // the root node is 1, and you may not actually terminate that node, as it is implicit, and not part
-                // of the document itself.
+                // the root node is 1, and you may not actually terminate that
+				// node, as it is implicit, and not part of the document
+				// itself.
                 if (docStack.size() < 2) {
-                    throw std::runtime_error("Malformed markup document");
+                    throw std::runtime_error("Too many closing parentheses encountered.");
                 }
 
                 docStack.pop();
 
-            } else if (c == '\'') {
-                // New as of 0.60: quoted strings behave like C string literals.
-                // (except using single quotes instead of double)
-                // Backslash is interpreted like in C.
-
+            } else if (c == _singleQuote) {
                 std::stringstream ss;
                 for (;;) {
-                    if (!stream.good()) {
-                        throw std::runtime_error("Unterminated string literal data");
-                    }
-
-                    // These are defined as constants because they look too similar if used in the code directly.
-                    // It confuses my feeble mind. :(
-                    const char quote = '\'';
-                    const char backSlash = '\\';
-
                     c = stream.get();
-
-                    if (c == quote) {
+                    if (stream.fail()) {
+                        throw std::runtime_error("Unterminated string literal data.");
+                    }
+                    if (c == _singleQuote) {
                         break;
-
-                    } else if (c != backSlash) {
+                    } else if (c != _backSlash) {
                         ss << c;
-
                     } else {
-                        if (!stream.good()) {
+                        c = stream.get();
+                        if (stream.fail()) {
                             throw std::runtime_error("Unterminated string literal data (unterminated escape sequence too!)");
                         }
-
-                        c = stream.get();
                         if (c == 'n') {
                             ss << '\n';
                         } else if (c == 't') {
@@ -139,11 +142,13 @@ namespace aries {
 
             } else {
                 // The way string literals used to be encoded.
-
                 std::stringstream ss;
                 while (c != '(' && c != ')' && stream.good()) {
                     ss << c;
                     c = stream.get();
+					if (stream.fail()) {
+						throw std::runtime_error("Unterminated element.");
+					}
                 }
                 stream.unget();
 
@@ -177,17 +182,17 @@ namespace aries {
     }
 
     std::ostream& StringNode::write(std::ostream& stream) const {
-        stream << '\'';
+        stream << _backSlash;
         for (std::string::const_iterator c = _str.begin(); c != _str.end(); c++) {
-            if (*c == '\'') {
-                stream << "\\\'";
-            } else if (*c == '\\') {
-                stream << "\\\\";
+            if (*c == _backSlash) {
+                stream << _backSlash << _singleQuote;
+            } else if (*c == _backSlash) {
+                stream << _backSlash << _backSlash;
             } else {
                 stream << *c;
             }
         }
-        stream << '\'';
+        stream << _singleQuote;
         return stream;
     }
 
@@ -346,42 +351,6 @@ namespace aries {
         }
     }
 
-    void unittest() {
-        aries::DataNode* root = new aries::DataNode("root");
-        root//->addChild(aries::StringNode("wee!"))
-            ->addChild(
-                aries::newNode("child")
-                    ->addChild("String data!")
-                )
-            ->addChild(
-                aries::newNode("child2")
-                    ->addChild(
-                        aries::newNode("child3")
-                            ->addChild("nesting!")
-                            ->addChild("This is so hot.")
-                    )
-                )
-            ->addChild(aries::newNode("empty-child"))
-            ->addChild("YOU CAN'T DO THIS ON TV (or can you?!?!?!?!)")
-        ;
-            //->addChild("FEEL THE BURN");
-
-        std::stringstream ss;
-        ss << root;
-
-        std::cout << ss.str() << std::endl;
-
-        aries::DataNode* n = aries::Node::readDocument(ss);
-
-        std::cout << n->getChild("root") << std::endl;
-
-        std::cout << std::endl << "There should be no surrounding quotes in the following string.  Also, it should have parenths!" << std::endl;
-        std::cout << '\t' << n->getChild("root")->getString() << std::endl;
-
-        delete root;
-        delete n;
-    }
-
     DataNode* newNode(const std::string& str) {
         return new DataNode(str);
     }
@@ -396,9 +365,3 @@ std::istream& operator >> (std::istream& stream, aries::DataNode*& node) {
     node = aries::Node::readDocument(stream);
     return stream;
 }
-
-#ifdef DEFINE_MAIN
-    int main() {
-        aries::unittest();
-    }
-#endif

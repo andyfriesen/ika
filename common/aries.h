@@ -83,7 +83,6 @@
 #include <vector>
 
 namespace aries {
-    typedef unsigned int uint;
     typedef std::vector<struct Node*> NodeList;
     typedef std::vector<struct DataNode*> DataNodeList;
 
@@ -171,8 +170,6 @@ namespace aries {
         NodeList _children;
         std::string _name;
     };
-
-    void unittest();                                            ///< Pretty crappy unit test, but it's better than nothing.
 
     /**
      * since VC7 does not consider new DataNode(...)->addChild(...) to be valid C++,
