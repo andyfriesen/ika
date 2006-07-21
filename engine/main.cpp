@@ -171,16 +171,6 @@ void Engine::Startup() {
 
     CConfigFile cfg("user.cfg");
 
-    // Resource paths
-    fontPath        = cfg["fontpath"];
-    imagePath       = cfg["imagepath"];
-    mapPath         = cfg["mappath"];
-    musicPath       = cfg["musicpath"];
-    soundPath       = cfg["soundpath"];
-    spritePath      = cfg["spritepath"];
-    tilesetPath     = cfg["tilesetpath"];
-
-
     // init a few values
     _showFramerate  = cfg.Int("showfps") != 0;
     _frameSkip      = min(1, cfg.Int("frameskip"));
@@ -767,12 +757,12 @@ void Engine::DestroyEntity(Entity* e) {
 void Engine::LoadMap(const std::string& filename) {
     CDEBUG("loadmap");
     
-    std::string mapName = mapPath + filename;
+    std::string mapName = _mapPath + filename;
 
     try {
         Log::Write("Loading map \"%s\"", mapName.c_str());
 
-        std::string oldTilesetName = tilesetPath + map.tilesetName;
+        std::string oldTilesetName = _mapPath + map.tilesetName;
 
         bool result = map.Load(mapName);
 
@@ -787,9 +777,9 @@ void Engine::LoadMap(const std::string& filename) {
         }
 
         // Only load the tileset if it's different
-        if (tilesetPath + map.tilesetName != oldTilesetName) {
+        if (_mapPath + map.tilesetName != oldTilesetName) {
             delete tiles;                                               // nuke the old tileset
-            tiles = new Tileset(tilesetPath + map.tilesetName, video);               // load up them tiles
+            tiles = new Tileset(_mapPath + map.tilesetName, video);               // load up them tiles
         }
 
         script.ClearEntityList();
@@ -804,7 +794,7 @@ void Engine::LoadMap(const std::string& filename) {
             for (uint curEnt = 0; curEnt < ents.size(); curEnt++) {
                 Entity* ent = new Entity(this, ents[curEnt], curLayer);
                 entities.push_back(ent);
-                ent->sprite = sprite.Load(spritePath + ent->spriteName, video);
+                ent->sprite = sprite.Load(ent->spriteName, video);
                 script.AddEntityToList(ent);
 
                 entMap[&ents[curEnt]] = ent;
@@ -876,7 +866,7 @@ Engine::Engine()
     , xwin(0)
     , ywin(0)
     , cameraTarget(0)
-    , fontPath(""), imagePath(""), mapPath(""), musicPath(""), soundPath(""), spritePath(""), tilesetPath("")
+    , _mapPath("")
     , _isMapLoaded(false)
     , _recurseStop(false) {}
 

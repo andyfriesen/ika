@@ -52,13 +52,7 @@ public:                                                                         
     bool                            _isMapLoaded;                                   ///< true if a map is loaded (gah)
 
     // Path variables for resource loading.
-    std::string                     fontPath;
-    std::string                     imagePath;
-    std::string                     mapPath;
-    std::string                     musicPath;
-    std::string                     soundPath;
-    std::string                     spritePath;
-    std::string                     tilesetPath;
+    std::string                     _mapPath;
     
 private:
     int                             xwin, ywin;                                     ///< world coordinates of the viewport
