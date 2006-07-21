@@ -1,3 +1,4 @@
+#include <limits>
 
 #include "entitystate.h"
 #include "executor.h"
@@ -11,7 +12,7 @@
 EntityState::EntityState(Executor* e)
     : EditState(e, "Entities")
     , _entLayerIndex(0)
-    , _entIndex(-1)
+    , _entIndex((std::numeric_limits<unsigned int>::max)())
 {}
 
 void EntityState::OnMouseDown(wxMouseEvent& event)
@@ -20,7 +21,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
     int y = event.GetY();
     GetMapView()->ScreenToLayer(x, y);
 
-    Map::Layer* lay = GetCurLayer();
+    // Map::Layer* lay = GetCurLayer();  // Unused.
     uint entIndex = GetMapView()->EntityAt(x, y, GetCurLayerIndex());
 
     if (entIndex != -1)
@@ -50,7 +51,7 @@ void EntityState::OnMouseDown(wxMouseEvent& event)
     } // create a new entity etc
     else    // deselect
     {
-        entIndex = -1;
+        entIndex = (std::numeric_limits<unsigned int>::max)();
         GetMapView()->Refresh();
     }
 }
@@ -75,7 +76,7 @@ void EntityState::OnKeyPress(wxKeyEvent& event)
         if (result == wxYES)
         {
             HandleCommand(new DestroyEntityCommand(_entLayerIndex, _entIndex));
-            _entIndex = -1;
+            _entIndex = (std::numeric_limits<unsigned int>::max)();
         }
     }
 }
@@ -131,7 +132,8 @@ void EntityState::OnRenderCurrentLayer()
                 RGBA(255, 255, 255, 128));
     }
 }
-void EntityState::OnSwitchLayers(uint oldLayer, uint newLayer)
+
+void EntityState::OnSwitchLayers(unsigned int oldLayer, unsigned int newLayer)
 {
-    _entIndex = -1;
+	_entIndex = (std::numeric_limits<unsigned int>::max)();
 }

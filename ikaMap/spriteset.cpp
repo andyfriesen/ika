@@ -35,7 +35,7 @@ bool SpriteSet::Load(const std::string& fname)
 bool SpriteSet::Save(const std::string& fname)
 {
     std::string fileName(fname);
-    int pos = fileName.rfind('.');
+    unsigned int pos = fileName.rfind('.');
 
     // If the extension is CHR, then export to the old format.
     if (pos != std::string::npos && Path::equals("chr", fileName.substr(pos)) == true)

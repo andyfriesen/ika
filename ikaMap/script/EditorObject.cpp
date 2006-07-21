@@ -1,3 +1,4 @@
+#include <limits>
 
 #include "../wxinc.h"
 
@@ -109,7 +110,7 @@ namespace ScriptObject
         METHOD(Editor_MapToTile)
         {
             int x, y;
-            uint layer = -1;
+            unsigned int layer = (std::numeric_limits<unsigned int>::max)();
 
             if (!PyArg_ParseTuple(args, "ii|i:MapToTile", &x, &y, &layer))
                 return 0;
@@ -125,7 +126,7 @@ namespace ScriptObject
         METHOD(Editor_TileToMap)
         {
             int x, y;
-            uint layer = -1;
+            unsigned int layer = (std::numeric_limits<unsigned int>::max)();
 
             if (!PyArg_ParseTuple(args, "ii|i:MapToTile", &x, &y, &layer))
                 return 0;

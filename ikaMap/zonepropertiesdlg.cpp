@@ -184,14 +184,12 @@ void ZonePropertiesDlg::OnDeleteBlueprint(wxCommandEvent&) {
     }
 
     Map* map = GetMap();
-    Map::Layer* layer = map->GetLayer(_layerIndex);
+    //Map::Layer* layer = map->GetLayer(_layerIndex);  // Unused.
     std::string label = _bluePrintList->GetStringSelection().c_str();
 
     std::vector<Command*> commands;
     commands.push_back(new DefineZoneBluePrintCommand(0, map->zones[label]));
 
-    uint i = 0;
-    int j = 0;
     for (uint i = 0; i < GetMap()->NumLayers(); i++) {
         std::vector<Map::Layer::Zone>& zones = GetMap()->GetLayer(i)->zones;
 

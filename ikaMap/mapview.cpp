@@ -1,3 +1,4 @@
+#include <limits>
 
 #include "mapview.h"
 
@@ -166,12 +167,12 @@ void MapView::OnCurLayerChange(uint index) {
 
 void MapView::Render() {
     Map* map = _executor->GetMap();
-    int curLayer = _executor->GetCurrentLayer();
+    unsigned int curLayer = _executor->GetCurrentLayer();
 
     _video->SetCurrent();
     _video->Clear();
 
-    for (uint i = 0; i < map->NumLayers(); i++) {
+    for (unsigned int i = 0; i < map->NumLayers(); i++) {
         if (_executor->IsLayerVisible(i)) {
             Map::Layer* lay = map->GetLayer(i);
 
@@ -179,7 +180,8 @@ void MapView::Render() {
             RenderLayer(lay, _xwin - lay->x, _ywin - lay->y);
             RenderEntities(lay, _xwin - lay->x, _ywin - lay->y);
 
-            if (i == curLayer) _editState->OnRenderCurrentLayer();
+            if (i == curLayer)
+				_editState->OnRenderCurrentLayer();
         }
     }
 
@@ -335,8 +337,8 @@ void MapView::RenderBrush(const Brush& brush, int xp, int yp) {
     int tileX = ts->Width();
     int tileY = ts->Height();
 
-    int width  = _video->LogicalWidth();
-    int height = _video->LogicalHeight();
+    //int width  = _video->LogicalWidth();   // Unused.
+    //int height = _video->LogicalHeight();  // Unused.
 
     int lenX = brush.Width();
     int lenY = brush.Height();
@@ -374,8 +376,8 @@ void MapView::RenderBrushOutline(const Brush& brush, int xp, int yp) {
     int tileX = ts->Width();
     int tileY = ts->Height();
 
-    int width  = _video->LogicalWidth();
-    int height = _video->LogicalHeight();
+    // int width  = _video->LogicalWidth();   // Unused.
+    // int height = _video->LogicalHeight();  // Unused.
 
     int lenX = brush.Width() + 1;
     int lenY = brush.Height() + 1;
@@ -520,12 +522,12 @@ void MapView::TileToMap(int& x, int& y, uint layer) const {
     y = (y * lay->parallax.divy / lay->parallax.muly) - lay->y;
 }
 
-uint MapView::EntityAt(int x, int y, uint layer) {
+unsigned int MapView::EntityAt(int x, int y, unsigned int layer) {
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     std::vector<Map::Entity>& ents = _executor->GetMap()->GetLayer(layer)->entities;
 
-    for (uint i = 0; i < ents.size(); i++) {
+    for (unsigned int i = 0; i < ents.size(); i++) {
         Map::Entity& ent = ents[i];
 
         /*if (ent.x > x)  continue;
@@ -553,15 +555,15 @@ uint MapView::EntityAt(int x, int y, uint layer) {
         return i;
     }
 
-    return -1;
+	return (std::numeric_limits<unsigned int>::max)();
 }
 
-uint MapView::ZoneAt(int x, int y, uint layer) {
+unsigned int MapView::ZoneAt(int x, int y, unsigned int layer) {
     wxASSERT(layer < _executor->GetMap()->NumLayers());
 
     std::vector<Map::Layer::Zone>& zones = _executor->GetMap()->GetLayer(layer)->zones;
 
-    for (uint i = 0; i < zones.size(); i++) {
+    for (unsigned int i = 0; i < zones.size(); i++) {
         Map::Layer::Zone& zone = zones[i];
 
         if (zone.position.left   <= x &&
@@ -570,7 +572,7 @@ uint MapView::ZoneAt(int x, int y, uint layer) {
             zone.position.bottom >= y)
             return i;
     }
-    return -1;
+	return (std::numeric_limits<unsigned int>::max)();
 }
 
 SpriteSet* MapView::GetEntitySpriteSet(Map::Entity* ent) const {

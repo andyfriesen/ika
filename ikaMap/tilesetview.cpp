@@ -158,7 +158,7 @@ breakLoop:;
 void TilesetView::UpdateScrollBars() {
     const Tileset* ts = _executor->GetTileset();
 
-    uint tileWidth  = ts->Width()  + (_pad ? 1 : 0);
+    //uint tileWidth  = ts->Width()  + (_pad ? 1 : 0);  // Unused.
     uint tileHeight = ts->Height() + (_pad ? 1 : 0);
 
     SetScrollbar(wxVERTICAL, _ywin, LogicalHeight(), NumTileRows() * tileHeight);

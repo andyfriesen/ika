@@ -38,7 +38,8 @@ struct EditState {
     virtual void OnMouseWheel(wxMouseEvent&) {}
     virtual void OnRender() {}
     virtual void OnRenderCurrentLayer() {}
-    virtual void OnSwitchLayers(uint oldLayer, uint newLayer) {}
+    virtual void OnSwitchLayers(unsigned int oldLayer,
+								unsigned int newLayer) {}
     virtual void OnKeyPress(wxKeyEvent&) {}
 
 protected:

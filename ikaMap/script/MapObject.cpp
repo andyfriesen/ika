@@ -170,7 +170,6 @@ namespace ScriptObject
                 // Error checking crap can wait.
                 return PyInt_FromLong(0);
                 //PyErr_SetString(PyExc_RuntimeError, va("Cannot GetTile from layer %i.  The map only has %i layers.", lay, self->GetMap()->NumLayers()));
-                return 0;
             }
 
             return PyInt_FromLong(self->GetMap()->GetLayer(lay)->tiles(x, y));

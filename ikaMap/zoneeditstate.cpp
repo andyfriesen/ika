@@ -1,3 +1,4 @@
+#include <limits>
 
 #include "wxinc.h"
 #include "common/map.h"
@@ -10,7 +11,7 @@
 
 ZoneEditState::ZoneEditState(Executor* e)
     : EditState(e, "Zones")
-    , _curZoneIndex(-1)
+    , _curZoneIndex((std::numeric_limits<unsigned int>::max)())
     , _dragging(false)
 {}
 
@@ -105,7 +106,8 @@ void ZoneEditState::OnRender()
     }
 }
 
-void ZoneEditState::OnSwitchLayers(uint oldLayer, uint newLayer)
+void ZoneEditState::OnSwitchLayers(unsigned int oldLayer,
+								   unsigned int newLayer)
 {
-    _curZoneIndex = -1;
+    _curZoneIndex = (std::numeric_limits<unsigned int>::max)();
 }

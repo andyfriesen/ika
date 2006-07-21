@@ -1,3 +1,4 @@
+#include <limits>
 
 #include "command.h"
 #include "layerlist.h"
@@ -177,8 +178,8 @@ void LayerList::OnActivateLayer(wxMouseEvent& event) {
 
 void LayerList::OnShowContextMenu(wxContextMenuEvent& event) {
     _contextMenuIndex = event.GetId();
-
-    if (0 <= _contextMenuIndex && _contextMenuIndex < _boxes.size()) {
+	wxASSERT(_boxes.size() <= (std::numeric_limits<signed int>::max)());
+    if (_contextMenuIndex != -1 && _contextMenuIndex < _boxes.size()) {
         // open the menu iff we have a valid layer index.
         PopupMenu(_contextMenu.get(), ScreenToClient(::wxGetMousePosition()));
     } else {
@@ -195,11 +196,12 @@ void LayerList::OnEditLayerProperties(wxCommandEvent& event) {
 void LayerList::OnShowOnly(wxCommandEvent&) {
     wxASSERT(_contextMenuIndex != -1);
 
-    const uint layerCount = _executor->GetMap()->NumLayers();
+    const unsigned int layerCount = _executor->GetMap()->NumLayers();
+	wxASSERT(layerCount != (std::numeric_limits<unsigned int>::max)());
 
     _executor->SetCurrentLayer(_contextMenuIndex);
 
-    for (uint i = 0; i < layerCount; i++) {
+    for (unsigned int i = 0; i < layerCount; i++) {
         if (i != _contextMenuIndex) {
             _executor->ShowLayer(i, false);
         }
@@ -223,7 +225,7 @@ void LayerList::OnCloneLayer(wxCommandEvent&) {
 }
 
 void LayerList::OnDeleteLayer(wxCommandEvent&) {
-    wxASSERT(_contextMenuIndex != -1);
+	wxASSERT(_contextMenuIndex != -1);
 
     if (wxMessageBox("Are you sure you wish to delete this layer?", "Notice", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxID_YES) {
         _executor->HandleCommand(new DestroyLayerCommand(_contextMenuIndex));

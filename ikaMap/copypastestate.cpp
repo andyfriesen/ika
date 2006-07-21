@@ -35,8 +35,8 @@ CopyPasteState::CopyPasteState(Executor* e)
 }
 
 void CopyPasteState::OnMouseDown(wxMouseEvent& event) {
-    const Tileset* ts = GetTileset();
-    const Map::Layer* curLayer = GetCurLayer();
+    // const Tileset* ts = GetTileset();            // Unused.
+    // const Map::Layer* curLayer = GetCurLayer();  // Unused.
     MapView* mv = GetMapView();
 
     int x = event.GetX();
@@ -87,16 +87,18 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event) {
 
         // Copy the old bit over.
         for (uint y = 0; y < _tiles.Height(); y++) {
-            for (uint x = 0; x < _tiles.Width(); x++) {
-                Brush::Tile& t = newBrush.tiles(x + ofsX, y + ofsY);
-                Brush::Tile& u = _tiles.tiles(x, y);
+            for (unsigned int x = 0; x < _tiles.Width(); x++) {
+                //Brush::Tile& t = newBrush.tiles(x + ofsX, y + ofsY);  // Unused.
+                //Brush::Tile& u = _tiles.tiles(x, y);					// Unused.
                 newBrush.tiles(x + ofsX, y + ofsY) = _tiles.tiles(x, y);
             }
         }
 
         // Add the new stuff.
-        for (uint y = _selection.top; y < _selection.bottom; y++) {
-            for (uint x = _selection.left; x < _selection.right; x++) {
+		assert(_selection.top > 0 && _selection.right > 0 &&
+			   _selection.bottom > 0 && _selection.left > 0);
+        for (unsigned int y = _selection.top; y < _selection.bottom; y++) {
+            for (unsigned int x = _selection.left; x < _selection.right; x++) {
                 Brush::Tile& t = newBrush.tiles(x - newClip.left, y - newClip.top);
                 t.index = lay->tiles(x, y);
                 t.mask = true;
