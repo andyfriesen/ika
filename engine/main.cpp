@@ -412,52 +412,45 @@ void Engine::RenderLayer(uint layerIndex) {
     int lenX, lenY;          // x/y run length
     int firstX, firstY;      // x/y start
     int adjustX, adjustY;    // sub-tile offset
-    uint tileWidth, tileHeight;
-    uint layerWidth, layerHeight;
     const Map::Layer* layer = map.GetLayer(layerIndex);
-
-    tileWidth = tiles->Width();
-    tileHeight = tiles->Height();
-    layerWidth = layer->Width();
-    layerHeight = layer->Height();
 
     int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
     int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
 
-    firstX = xw / tileWidth;
-    firstY = yw / tileHeight;
+    firstX = xw / tiles->Width();
+    firstY = yw / tiles->Height();
 
-    adjustX = xw % tileWidth;
-    adjustY = yw % tileHeight;
+    adjustX = xw % tiles->Width();
+    adjustY = yw % tiles->Height();
 
     const Point res = video->GetResolution();
-    lenX = res.x / tileWidth + 1;
-    lenY = res.y / tileHeight + 2;
+    lenX = res.x / tiles->Width() + 1;
+    lenY = res.y / tiles->Height() + 2;
 
     if (firstX < 0) {
         lenX -= -firstX;
-        adjustX += firstX * tileWidth;
+        adjustX += firstX * tiles->Width();
         firstX = 0;
     }
 
     if (firstY < 0) {
         lenY -= -firstY;
-        adjustY += firstY * tileHeight;
+        adjustY += firstY * tiles->Height();
         firstY = 0;
     }
 
-    if (!layer->wrapx && (uint)(firstX + lenX) > layerWidth) {
-        lenX = layerWidth - firstX;
+    if (!layer->wrapx && (uint)(firstX + lenX) > layer->Width()) {
+        lenX = layer->Width() - firstX;
     }
 
-    if (!layer->wrapy && (uint)(firstY + lenY) > layerHeight) {
-        lenY = layerHeight - firstY;
+    if (!layer->wrapy && (uint)(firstY + lenY) > layer->Height()) {
+        lenY = layer->Height() - firstY;
     }
 
     if (lenX < 1 || lenY < 1) return;   // not visible
 
     const uint*  t = layer->tiles.GetPointer(firstX, firstY);
-    int xinc = layerWidth - lenX;
+    int xinc = layer->Width() - lenX;
 
     int curx = -adjustX;
     int cury = -adjustY;
@@ -469,15 +462,15 @@ void Engine::RenderLayer(uint layerIndex) {
     for (int y = 0; y < lenY; y++) {
         for (int x = 0; x < lenX; x++) {
             if (layer->wrapx || layer->wrapy) {
-                t = layer->tiles.GetPointer((firstX + x) % layerWidth, (firstY + y) % layerHeight);
+                t = layer->tiles.GetPointer((firstX + x) % layer->Width(), (firstY + y) % layer->Height());
             }
 
-            video->ScaleBlitImage(tiles->GetTile(*t), curx, cury, tileWidth, tileHeight);
+            video->BlitImage(tiles->GetTile(*t), curx, cury);
 
-            curx += tileWidth;
+            curx += tiles->Width();
             t++;
         }
-        cury += tileHeight;
+        cury += tiles->Height();
         curx = -adjustX;
         t += xinc;
     }
