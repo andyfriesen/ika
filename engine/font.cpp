@@ -195,7 +195,8 @@ namespace Ika {
                             colour = RGBA(255, 255, 255);
                         }
 
-                        i = pos + 1;
+                        i = pos;
+                        continue;
                     }
             };
 
