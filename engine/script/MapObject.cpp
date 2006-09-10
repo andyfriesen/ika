@@ -181,6 +181,20 @@ namespace Script {
             return PyInt_FromLong(engine->tiles->Height()); 
         }
 
+        GET(Module) {
+            // If a map is loaded, return its module.
+            if (engine->_isMapLoaded) {
+                Py_INCREF(Script::mapModule);
+
+                return Script::mapModule;
+
+            // If no map, return None.
+            } else {
+                Py_INCREF(Py_None);
+                return Py_None;
+            }
+        }
+
         GET(Width)      { return PyInt_FromLong(engine->map.width); }
         GET(Height)     { return PyInt_FromLong(engine->map.height); }
         //GET(RString)    { return PyString_FromString(engine->map.GetRString().c_str()); }
@@ -215,6 +229,9 @@ namespace Script {
                                                                                 "Don't set this: use ika.Tileset.Load instead."
             },
             {   "entities",     (getter)getEntities,        0,                  "Gets a dictionary of entities currently tied to the map"   },
+            {   "module",       (getter)getModule,          0,                  "Gets the loaded Python module of the current map.\n"
+                                                                                "Returns None if no map has been loaded."
+            },
             {   0   }
         };
 
