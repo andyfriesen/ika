@@ -8,8 +8,6 @@
 # There is no warranty, express or implied on the functionality, or
 # suitability of this code for any purpose.
 
-from string import join
-
 def characterWrap(text, maxWidth, font):
     result = []
     buffer = []
@@ -34,11 +32,11 @@ def characterWrap(text, maxWidth, font):
             if current == '\n':
                 # line break
                 # spit out everything except the line break
-                result.append(join(buffer[:-1],""))
+                result.append(''.join(buffer[:-1]))
                 buffer = []
                 pos += 1
                 continue
-            
+
             if current == '~':
                 # subset
                 # I think this is broken but I'm not sure...
@@ -57,21 +55,21 @@ def characterWrap(text, maxWidth, font):
                     continue
 
             # perform wrapping calculations here
-            runningWidth = font.StringWidth(join(buffer, ""))
+            runningWidth = font.StringWidth(''.join(buffer))
             if (runningWidth >= maxWidth):
                 # too large, so spit out everything except the last character of buffer
-                result.append(join(buffer[:-1],""))
+                result.append(''.join(buffer[:-1]))
                 buffer = list(buffer[len(buffer)-1])
 
         pos += 1
 
     if len(buffer) > 0:
         # spit out the leftovers
-        result.append(join(buffer,""))
-        
-    return result    
+        result.append(''.join(buffer))
 
-def wordWrap(text, maxWidth, font):   
+    return result
+
+def wordWrap(text, maxWidth, font):
     result = []
     pos = 0
     lastSpace = 0
