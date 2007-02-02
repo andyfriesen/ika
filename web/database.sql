@@ -34,7 +34,8 @@ CREATE TABLE board (
   ip varchar(80) default NULL,
   deleted tinyint(1) NOT NULL default '0',
   locked tinyint(1) default '0',
-  PRIMARY KEY  (id)
+  PRIMARY KEY  (id),
+  INDEX(parentid, deleted)
 ) ENGINE=MyISAM AUTO_INCREMENT=3808 DEFAULT CHARSET=latin1 PACK_KEYS=1;
 
 --
