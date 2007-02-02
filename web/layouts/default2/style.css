@@ -1,0 +1,88 @@
+body {
+    color: white;
+    background: #0e101d url(images/stars2.png);
+    margin: 16px;
+}
+
+hr {
+    color: #0080FF;
+    background: #0080FF;
+}
+
+h1 {
+    font: 14pt verdana, arial, helvetica;
+    color: white;
+    text-decoration: underline;
+    text-align: center
+}
+
+h2 {
+    font: 12pt verdana, arial, helvetica;
+    color: white;
+    text-decoration: underline
+}
+
+a:link, a:visited {
+    color: #40A0FF;
+    text-decoration: none;
+}
+
+a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+#logo {
+    background: url(images/ikalogo.png);
+    height: 385px;
+    padding: 0 0 0 .4em;
+    width: 400px;
+}
+
+#ielogo {
+    background: url(images/ikalogonoalpha.png);
+    height: 385px;
+    padding: 0 0 0 0.4em;
+    width: 400px;
+}
+
+.body {
+    color: white;
+    font: 10pt verdana, arial, helvetica;
+    text-align: justify;
+}
+
+.sidebar {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
+
+.menu {
+    background: #151724 url(images/stars.png);
+    border: 2px inset #0080FF;
+    color: white;
+    font: 12pt verdana, arial, helvetica;
+    margin: 0 0 16px 0;
+    padding: 8px;
+}
+
+.box {
+    background: #151724 url(images/stars.png);
+    border: 2px #0080FF inset;
+    color: white;
+    font: 10pt verdana, arial, helvetica;
+    padding: 2px;
+}
+
+code {
+    color: #eee;
+    font: monospace;
+}
+
+.operator {color: #088}
+.reserved {color: blue}
+.stdlib {color: #82C}
+.string, .string .operator, .string .reserved, .string .stdlib,
+.string .comment, .comment, .comment .operator, .comment .reserved,
+.comment .stdlib, .comment .string {color: #08F}

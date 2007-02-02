@@ -1,0 +1,83 @@
+body {
+    background: #ddd url(images/ika-default_bg.gif);
+    color: black;
+    margin: 0;
+}
+
+hr {
+    background: #eee;
+    color: #003399;
+}
+
+h1 {
+    color: black;
+    font: 14pt verdana, arial, helvetica;
+    letter-spacing: 5px;
+    text-align: center;
+}
+
+h2 {
+    color: black;
+    font: 11pt verdana, arial, helvetica;
+    letter-spacing: 5px;
+}
+
+a:link, a:visited {
+    color: #027;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #039;
+    text-decoration: underline;
+}
+
+.body {
+    color: white;
+    font: 12pt verdana, arial, helvetica;
+    left: 130px;
+    position: absolute;
+    text-align: justify;
+    top: 110px;
+}
+
+.sidebar {
+    left: 1px;
+    margin: 6px;
+    position: fixed;
+    text-align: right;
+    top: 110px;
+    width: 120px;
+}
+
+.logo, .ielogo {
+    background-image: url(images/ika-default_logo.gif);
+    height: 100px
+}
+
+.menu {
+    background: #eee;
+    border: 1px solid black;
+    color: white;
+    font: 10pt verdana, arial, helvetica;
+    margin: 0 0 10px 0;
+    padding: 5px;
+    text-align: left;
+}
+
+.box {
+    background: #ccc;
+    border: 1px solid black;
+    color: black;
+    font: 10pt verdana, arial, helvetica;
+    margin: 6px;
+    padding: 6px;
+}
+
+code {font: monospace}
+.operator { color: #08F}
+.reserved1, .reserved2 {color: blue}
+.string, .string .operator, .string .reserved1, .string .reserved2
+.string .comment {color: #408}
+.comment, .comment .operator, .comment .reserved1, .comment .reserved2,
+.comment .string {color: #0A8}

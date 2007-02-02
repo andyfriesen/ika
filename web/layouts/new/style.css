@@ -1,0 +1,109 @@
+@import url(complex.css);  /* Hide from IE3 and NS4. */
+/*body {font-size: 100%}  Ignored by IE3. */
+
+/* font ------------------------------------------------------------- */
+
+/* main font family */
+a, abbr, address, blockquote, body, button, caption, cite, col,
+colgroup, dd, del, dfn, div, dl, dt, em, fieldset, form, h1, h2, h3, h4,
+h5, h6, input, label, legend, li, ol, optgroup, option, p, param,
+select, strong, sub, sup, table, tbody, td, tfoot, th, thead, tr, ul {
+    font-family: Verdana, Geneva, "Bitstream Vera Sans", Helvetica,
+                 sans-serif;
+}
+
+span {font-family: inherit}
+
+/* monospace font */
+code, input, kbd, pre, samp, select, textarea, var {
+    font-family: "Bitstream Vera Sans Mono", Fixedsys, monospace;
+}
+
+/* italic font */
+address, cite, var {font-style: italic}
+
+/* strip bold */
+th {font-weight: normal}
+
+/* bold font */
+h1, h2, h3, h4, h5, h6, dt {font-weight: bold}
+strong {font-weight: bold} /* overridden: should be bolder */
+
+pre {white-space: pre}
+
+/* text-align ------------------------------------------------------- */
+caption, h1 {text-align: center}
+p, li, .text {text-align: left}
+
+/* list-style-type -------------------------------------------------- */
+ul, ul ul ul ul {list-style-type: disc}
+ul ul, ul ul ul ul ul {list-style-type: circle}
+ul ul ul, ul ul ul ul ul ul {list-style-type: square}
+ol {list-style-type: decimal}
+ol ol {list-style-type: lower-alpha}
+ol ol ol {list-style-type: lower-roman}
+ol ol ol ol {list-style-type: upper-alpha}
+ol ol ol ol ol {list-style-type: upper-roman}
+
+/* background-color ------------------------------------------------- */
+body, html {background-color: #eee}
+h1, .notice, .box, .postbox, .block {background-color: #ddd}
+hr {background-color: #4d626f}
+th, .subbox {background-color: #c9d3d9}
+td {background-color: #ccc}
+.error {background-color: #ecc}
+
+/* border ----------------------------------------------------------- */
+abbr, img, table {border: 0}
+h1, hr, td, th, .error, .notice, .box, .block {border: 1px solid #4d626f}
+.postbox {
+    border-top: 1px solid #4d626f;
+    border-right: 1px solid #4d626f;
+    border-left: 1px solid #4d626f;
+}
+.subbox {
+    border-bottom:  1px dotted #4d626f;
+}
+ hr {/*/*/ border: 1px solid #4d626f; /* */} /* hide from NS4 */
+
+/* color ------------------------------------------------------------ */
+body {color: black}
+h1 {color: #4d626f}
+
+.operator {
+    color: maroon;
+    font-weight: bold;
+}
+
+.reserved {
+    color: navy;
+    font-weight: bold;
+}
+
+.definition {
+    color: blue;
+    font-weight: bold;
+}
+
+.stdlib {color: blue}
+.exception {color: red}
+.string {color: purple}
+
+.comment {
+    color: green;
+    font-style: italic;
+}
+
+.number {color: olive}
+
+.string span {
+    color: purple;
+    font-weight: normal;
+    font-style: normal;
+}
+
+.comment span {
+    color: green;
+    font-style: italic;
+    font-weight: normal;
+}

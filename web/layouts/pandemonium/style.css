@@ -1,0 +1,95 @@
+body {
+    background: black;
+    color: #c5c5c5;
+    margin: 0px
+}
+
+hr {
+    background: #595959;
+    color: #0e0e0e;
+}
+
+h1 {
+    background: #595959;
+    color: #0e0e0e;
+    font: 14pt verdana, arial, helvetica;
+    text-align: center;
+    text-decoration: underline;
+}
+
+h2 {
+    background: #595959;
+    color: #0e0e0e;
+    font: 12pt verdana, arial, helvetica;
+    text-decoration: underline;
+}
+
+a:link, a:visited {
+    color: #a1a1a1;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #d30101;
+    text-decoration: underline;
+}
+
+.body {
+    color: white;
+    font: 12pt verdana, arial, helvetica;
+    position: absolute;
+    text-align: justify;
+    top: 300px;
+}
+
+.sidebar {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
+
+.menu {
+    background: #595959;
+    border-width: 2px;
+    border-style: inset;
+    border-bottom-color: #8E8E8E;
+    border-left-color: #6F6F6F;
+    border-right-color: #8E8E8E;
+    border-top-color: #6F6F6F;
+    color: white;
+    font: 10pt verdana, arial, helvetica;
+    margin: 0 0 16px 0;
+    padding: 5px;
+}
+
+.box {
+    background: #595959;
+    border-width: 2px;
+    border-style: inset;
+    border-bottom-color: #8E8E8E;
+    border-left-color: #6F6F6F;
+    border-right-color: #8E8E8E;
+    border-top-color: #6F6F6F;
+    color: #1d1d1d;
+    font: 10pt verdana, arial, helvetica;
+    margin: 16px;
+    padding: 3px;
+}
+
+.logo, .ielogo {
+    background: url("images/ika-pdmon_logo.gif");
+    left: 16px;
+    position: absolute;
+    top: 16px;
+}
+
+.code {
+    color: black;
+    font: monospace;
+}
+
+.operator {color: #888}
+.reserved, .stdlib {color: #aaa}
+.string, .string .operator, .string .reserved, .string .stdlib,
+.string .comment, .comment, .comment .operator, .comment .reserved,
+.comment .stdlib, .comment .string {color: white}

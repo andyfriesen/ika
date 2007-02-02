@@ -1,0 +1,94 @@
+body {
+    background: #FF890B url(layout/ika-cm_bg.jpg) bottom right no-repeat;
+    color: black;
+    font-size: 10pt;
+    margin: 0px;
+}
+
+hr {
+    color: #f80;
+    background: #fa0;
+}
+
+h1 {
+    color: #ff890b;
+    font: 12pt verdana, arial, helvetica;
+    letter-spacing: 10px;
+    text-align: center;
+    text-decoration: none;
+}
+
+h2 {
+    color: black;
+    font: 12pt verdana, arial, helvetica;
+    text-decoration: underline;
+}
+
+a:link {
+    color: #b30;
+    text-decoration: none;
+}
+
+a:visited {color: #b30}
+
+a:hover {
+    color: #830;
+    text-decoration: underline;
+}
+
+.body {
+    color: black;
+    font: 12pt verdana, arial, helvetica;
+    position: absolute;
+/*    text-align: justify; */
+    top: 200px;
+}
+
+.sidebar {
+    position: absolute;
+    right: 16px;
+    top: 16px;
+}
+
+.menu {
+    background: #fda url(images/ika-cm_menubg.gif);
+    color: white;
+    font: 10pt verdana, arial, helvetica;
+    padding: 5px;
+    margin: 0 0 16px 0;
+}
+
+.box {
+    background: #fda;
+    border: 1px black inset;
+    color: black;
+    font: 10pt verdana, arial, helvetica;
+    padding: 3px;
+    margin: 16px;
+}
+
+.ielogo {
+    background: url(images/ika-cm_logo.gif);
+    height: 150px;
+    width: 250px;
+}
+
+.logo {
+    background: url(images/ika-cm_logo.gif);
+    height: 150px;
+    position: absolute;
+    width: 250px;
+}
+
+code {
+    color: black;
+    font: monospace;
+}
+
+.operator {color: #0B8833}
+.reserved {color: red}
+.stdlib {color: #A00}
+.string, .string .operator, .string .reserved, .string .stdlib,
+.string .comment {color: #840}
+.comment, .comment .operator, .comment .reserved, .comment .stdlib,
+.comment .string {color: #A84}

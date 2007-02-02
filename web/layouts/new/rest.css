@@ -1,0 +1,10 @@
+/* main font size */
+a, abbr, address, blockquote, body, button, caption, cite, code, col,
+colgroup, dd, dfn, div, dl, dt, em, fieldset, form, input, kbd, label,
+legend, li, ol, optgroup, option, p, param, pre, samp, select, span,
+strong, table, tbody, td, textarea, tfoot, thead, tr, ul,
+var {font-size: 1em}
+
+table.box, form table, html .sidebar hr {
+    width: 100%;
+}

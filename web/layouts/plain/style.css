@@ -1,0 +1,14 @@
+.logo {
+    background: url(images/ikalogo.png);    height: 385px;
+    padding: 0;
+    position: absolute;
+    right: 0.4em;
+    width: 395px;
+}
+.ielogo {
+    background: url(images/ikalogo.png);    height: 385px;
+    padding-top: 0 .4em 0;
+    position: absolute;
+    width: 395px;
+}
+.box {width: 100%}code {font-family: monospace}
