@@ -17,8 +17,8 @@
 
 TilesetState::TilesetState(Executor* e)
     : EditState(e, "Pencil")
-    , _oldX(-1)
-    , _oldY(-1)
+    , _oldX(0)
+    , _oldY(0)
     , _curX(0)
     , _curY(0)
     , _curGroup(0)
@@ -28,35 +28,32 @@ void TilesetState::OnRender() {
 }
 
 void TilesetState::OnRenderCurrentLayer() {
-    wxPoint mousePos = GetMapView()->ScreenToClient(::wxGetMousePosition());
-
-    // Round position to the nearest tile
-    GetMapView()->ScreenToTile(mousePos.x, mousePos.y);
-    GetMapView()->TileToScreen(mousePos.x, mousePos.y);
+    MapView* mv = GetMapView();
 
     int w = GetTileset()->Width();
     int h = GetTileset()->Height();
-    GetMapView()->GetVideo()->DrawSelectRect(mousePos.x, mousePos.y, w, h, RGBA(255, 192, 192, 255));
+
+    mv->GetVideo()->DrawSelectRect(_oldX * w - mv->GetXWin(), _oldY * h - mv->GetYWin(), w, h, RGBA(255, 192, 192, 255));
 }
 
 void TilesetState::OnMouseDown(wxMouseEvent& event) {
+    int x = event.m_x;
+    int y = event.m_y;
+
     if (event.LeftDown() && !event.ShiftDown()) {
         // Left Click to set a single tile
-        SetTile(event.m_x, event.m_y);
+        SetTile(x, y);
 
-    } else if (event.RightDown()) {
+    } else if (event.LeftDown() && event.ShiftDown()) {
         // Shift + Left Click to make the tile under the cursor the current one
-        int x = event.m_x;
-        int y = event.m_y;
-
         GetMapView()->ScreenToTile(x, y);
+
         SetCurTile(GetCurLayer()->tiles(x, y));
 
     }
 }
 
 void TilesetState::OnMouseUp(wxMouseEvent& event) {
-    _oldX = _oldY = -1;
     // odd that the mouse button is able to go up without first going down
 
 #if defined(USE_GROUP_JUJU)
@@ -79,13 +76,9 @@ void TilesetState::OnMouseMove(wxMouseEvent& event) {
 
     if (x == _oldX && y == _oldY)   return;
     if (x < 0 || y < 0)             return;
-    if (uint(x) >= GetCurLayer()->Width() ||
-        uint(y) >= GetCurLayer()->Height()
-    ) {
-        return;
-    }
 
-    _oldX = x; _oldY = y;
+    _oldX = min(x, GetCurLayer()->Width());
+    _oldY = min(y, GetCurLayer()->Height());
 
     if (event.LeftIsDown() && !event.ShiftDown()) {
         SetTile(event.m_x, event.m_y);
