@@ -286,6 +286,16 @@ namespace OpenGL {
         );
     }
 
+    Rect* Driver::GetClipRect() {
+        GLint* cliprect = new GLint[4];
+        glGetIntegerv(GL_SCISSOR_BOX, cliprect);
+
+        int height = cliprect[3];
+        int y = _yres - cliprect[1] - height;
+
+        return new Rect(cliprect[0], y, cliprect[0] + cliprect[2], y + height);
+    }
+
     void Driver::ShowPage() {
         if (_doubleSize) {
             // Grab the whole screen into our buffer texture and draw it at double size.
@@ -473,8 +483,16 @@ namespace OpenGL {
             // This isn't so bad, really, but we could do another optimization
             // and see if we could get away with doing some big long horizontal
             // or vertical strips.  Something for another day.
+
+            // Calculate clipping rect based off current one.
+            Rect* cliprect = GetClipRect();
+            int cx = (cliprect->left > x) ? cliprect->left : x;
+            int cy = (cliprect->top > y) ? cliprect->top : y;
+            int cx2 = (cliprect->right < x + w) ? cliprect->right : x + w;
+            int cy2 = (cliprect->bottom < y + h) ? cliprect->bottom : y + h;
+
             glPushAttrib(GL_SCISSOR_BIT);
-            ClipScreen(x, y, x + w, y + h);
+            ClipScreen(cx, cy, cx2, cy2);
 
             float imgWidth = float(img->_width) * scalex;
             float imgHeight = float(img->_height) * scaley;

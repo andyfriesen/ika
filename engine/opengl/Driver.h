@@ -74,6 +74,9 @@ namespace OpenGL {
         /// Clips the image to the provided rectangle.
         virtual void ClipScreen(int left, int top, int right, int bottom);
 
+        /// Returns the current clipping rectangle.
+        virtual Rect* GetClipRect();
+
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage();
 
