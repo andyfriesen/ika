@@ -44,13 +44,15 @@ namespace Script {
 #define SET(x) PyObject* set ## x(ImageObject* self, PyObject* value)
         GET(Width) { return PyInt_FromLong(self->img->Width()); }
         GET(Height) { return PyInt_FromLong(self->img->Height()); }
+        GET(TextureID) { return PyInt_FromLong(self->img->GetTextureID()); }
 
 #undef GET
 #undef SET
 
         PyGetSetDef properties[] = {
-            {   "width",    (getter)getWidth,   0,  "Gets the width of the image."  },
-            {   "height",   (getter)getHeight,  0,  "Gets the height of the image." },
+            {   "width",        (getter)getWidth,       0,  "Gets the width of the image."  },
+            {   "height",       (getter)getHeight,      0,  "Gets the height of the image." },
+            {   "textureid",    (getter)getTextureID,   0,  "Gets the texture ID of the image."},
             {   0   }
         };
 

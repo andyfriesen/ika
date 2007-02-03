@@ -325,6 +325,7 @@ namespace Script {
         METHOD(Video_DrawEllipse, VideoObject);
         METHOD(Video_DrawTriangle, VideoObject);
         METHOD(Video_ClipScreen, VideoObject);
+        METHOD1(Video_GetClipRect, VideoObject);
         METHOD(Video_GrabImage, VideoObject);
         METHOD(Video_GrabCanvas, VideoObject);
         METHOD1(Video_ClearScreen, VideoObject);

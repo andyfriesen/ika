@@ -113,6 +113,11 @@ namespace Script {
                 "to its default setting. (the whole screen)"
             },
 
+            {   "GetClipRect",  (PyCFunction)Video_GetClipRect, METH_NOARGS,
+                "GetClipRect() -> (x, y, x2, y2)\n\n"
+                "Returns the current clipping rectangle."
+            },
+
             {   "GrabImage",    (PyCFunction)Video_GrabImage, METH_VARARGS,
                 "GrabImage(x1, y1, x2, y2) -> image\n\n"
                 "Grabs a rectangle from the screen, copies it to an image, and returns it."
@@ -441,6 +446,15 @@ namespace Script {
 
             Py_INCREF(Py_None);
             return Py_None;
+        }
+
+        METHOD1(Video_GetClipRect) {
+            Rect* points = self->video->GetClipRect();
+
+            PyObject* cliprect = PyTuple_Pack(4, PyInt_FromLong(points->left), PyInt_FromLong(points->top), PyInt_FromLong(points->right), PyInt_FromLong(points->bottom));
+
+            Py_INCREF(cliprect);
+            return cliprect;
         }
 
         METHOD(Video_GrabImage) {
