@@ -54,6 +54,9 @@ namespace Video {
         /// Clips the image to the provided rectangle.
         virtual void ClipScreen(int left, int top, int right, int bottom) = 0;
 
+        /// Returns the current clipping rectangle as a four-index integer array.
+        virtual Rect* GetClipRect() = 0;
+
         /// Flips the buffers, displays the screen, whatever.
         virtual void ShowPage() = 0;
 
