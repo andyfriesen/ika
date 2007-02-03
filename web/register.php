@@ -4,17 +4,15 @@ include "bin/main.php";
 
 GenerateHeader("Register");
 
-StartBox();
 do
 {
     if (isset($register))
     {
-        echo "<p>TEST $Username</p>";
         $Username = htmlspecialchars($Username);
 
-        $result = mysql_query("SELECT count(*) the_count FROM users WHERE name='$username'");
+        $result = mysql_query("SELECT count(*) AS the_count FROM users WHERE name='$Username'");
         $row = mysql_fetch_array($result);
-        if ($row["the_count"])
+        if ($row["the_count"] > 0)
         {
             Error("A user by that name already exists.");
             unset($register);
@@ -33,14 +31,18 @@ do
         $result = mysql_query($query);
         if (!$result)
         {
+            StartBox("Notice");
             MySQL_NonFatalError();
+            EndBox();
             unset($register);
             break;
         }
 
         // Success!
+        StartBox("Notice");
         echo "<p>You are registered now.</p>";
         echo '<p><a href="index.php">Return to the main page.</a></p>';
+        EndBox();
     }
 }
 while (False);
@@ -54,13 +56,14 @@ if (!isset($register))
     if (!isset($Retype))
         $Retype = "";
 
+    StartBox("Registration Form");
     CreateForm("$PHP_SELF?register=1",
         "Username", "input",    $Username,
         "Password", "password", $Password,
         "Retype",   "password", $Retype,
         "Submit",   "submit",   ""
     );
+    EndBox();
 }
-EndBox();
 
 ?>

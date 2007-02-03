@@ -30,7 +30,7 @@ function BrowseArticles($articles)
         return;
     }
 
-    StartBox();
+    StartBox("All Articles");
     echo '<table class="box">';
     echo "<tr><th>Title</th><th>Author</th><th>Description</th><th>Date</th></tr>";
     foreach ($articles as $a)
@@ -61,7 +61,7 @@ function ShowArticle($id)
 
     $result = mysql_fetch_array($result);
 
-    StartBox();
+    StartBox("Article Body");
     MakePost($result["title"], $result["text"], $result["author"], LVL_COMPLEX_HTML);
     EndBox();
     die();
@@ -211,6 +211,15 @@ function CanModify($id, $username)
     return $result["author"] == $username;
 }
 
+function DisplayArticleOptions()
+{
+    StartBox("Options");
+    echo "<table><tr>";
+    echo "<td><a class='button' href='$PHP_SELF?create=1'>submit article</a></td>";
+    echo "</tr></table>";
+    EndBox();
+}
+
 # -----------------------------------------------------------------------------
 
 include "bin/main.php";
@@ -244,9 +253,11 @@ else if (isset($update) and CanModify($safe_get["update"], $_username))
     }
 }
 
+DisplayArticleOptions();
+
 $articles = GetArticles(isset($queued) ? $safe_get["queued"] : 0);
 BrowseArticles($articles);
 
-Box("<a href='$PHP_SELF?create=1'>Submit an article.</a>");
+DisplayArticleOptions();
 
 ?>

@@ -1,8 +1,6 @@
 <?php
 
-# Enums, so we don't have to mess with the table format for every new category.
-$sCategory = array('Engine', 'Games', 'Technical Demonstrations', 'Python Code',
-                   'Artwork', 'Miscellaneous');
+include "includes.php";
 
 # Shows a nice columnized view of the file.
 function ShowFile($file, $queued) {
@@ -48,7 +46,7 @@ function ShowFile($file, $queued) {
 
 
 function BrowseFiles($categoryid, $queued) {
-    global $sCategory;
+    global $fileCategory;
 
     $result = mysql_query("SELECT * FROM files WHERE queued=$queued AND ".
                           "category=$categoryid ORDER BY date DESC")
@@ -60,11 +58,9 @@ function BrowseFiles($categoryid, $queued) {
 
     # no files at all?
     if (!$files) return;
-
-    StartBox();
     
     echo '<table class="box">';
-    echo "<tr><th class='main' colspan='4'>{$sCategory[$categoryid]}</th></tr>";
+    echo "<tr><th class='main' colspan='4'>{$fileCategory[$categoryid]}</th></tr>";
     echo '<tr>';
     echo '<th style="width: 10%">Name</th>';              # Move to stylesheet!
     echo '<th style="width: 10%">Author</th>';            # Move to stylesheet!
@@ -76,8 +72,6 @@ function BrowseFiles($categoryid, $queued) {
     }
 
     echo "</table>";
-    
-    EndBox();
 }
 
 
@@ -88,14 +82,14 @@ function CreateFile()
     "Title",       "input",     "",
     "Author",      "input",     isset($_username) ? $_username : "Anonymous",
     "Filename",    "filename",  isset($Filename)  ? $Filename  : "",
-    "Category",    "select",    $sCategory, $sCategory, $sCategory[0],
+    "Category",    "select",    $fileCategory, $fileCategory, $fileCategory[0],
     "Description", "smalltext", "",
     "Submit",      "submit",    "");
 }
 
 function AddFile($title, $author, $description, $category) {
     global $Title, $Author, $Category, $Filename, $Description, $Filename_name,
-           $sCategory, $filedir, $PHP_SELF, $URL;
+           $fileCategory, $filedir, $PHP_SELF, $URL;
 
     if (!is_uploaded_file($Filename)) {
         FatalError("$Filename did not upload properly.");
@@ -107,8 +101,8 @@ function AddFile($title, $author, $description, $category) {
 
     $date = date("Y-m-d");
 
-    for ($c = 0, $i = 0; $i < sizeof($sCategory); $i++) {
-        if ($category == $sCategory[$i]) {
+    for ($c = 0, $i = 0; $i < sizeof($fileCategory); $i++) {
+        if ($category == $fileCategory[$i]) {
             $c = $i;
             break;
         }
@@ -144,13 +138,20 @@ function RemoveFile($id) {
 
     if ($row["queued"]) {
         unlink($filedir.$row["filename"]);
-        mysql_query("DELETE FROM files WHERE id=$delete");
+        mysql_query("DELETE FROM files WHERE id=$id");
         Box('The file has been deleted and removed from the database.');
     } else {
-        mysql_query("UPDATE files SET queued=1 WHERE id=$delete");
+        mysql_query("UPDATE files SET queued=1 WHERE id=$id");
         Box('The file has been returned to the file queue.  ' .
             'Remove it from the queue to completely erase it.');
     }
+}
+
+function DisplayFileOptions()
+{
+    StartBox("Options");
+    echo "<table><tr><td><a class='button' href='$PHP_SELF?create=1'>submit file</a></td></tr></table>";
+    EndBox();
 }
 
 # -----------------------------------------------------------------------------
@@ -160,23 +161,29 @@ include_once "bin/main.php";
 GenerateHeader("Files");
 VerifyLogin();
 
+DisplayFileOptions();
+
 if (isset($submit))
     AddFile($safe_post["Title"], $safe_post["Name"], $safe_post["Description"], $safe_post["Category"]);
 else if (isset($approve) and isset($admin))
     ApproveFile($safe_get["approve"]);
 else if (isset($remove) and isset($admin))
-    DeleteFile($safe_get["remove"]);
+    RemoveFile($safe_get["remove"]);
 
 if (isset($queued) and isset($admin)) {
+    StartBox("Browse Queued Files");
     for ($i = 0; $i < 5; $i++) {
         BrowseFiles($i, 1);
     }
+    EndBox();
 } else {
+    StartBox("Browse Files");
     for ($i = 0; $i < 5; $i++) {
         BrowseFiles($i, 0);
     }
+    EndBox();
 }
 
-Box("<a href='$PHP_SELF?create=1'>Submit a file.</a>");
+DisplayFileOptions();
 
 ?>

@@ -49,9 +49,11 @@ ol ol ol ol ol {list-style-type: upper-roman}
 body, html {background-color: #eee}
 .notice, .box, .postbox, .block {background-color: #ddd}
 hr {background-color: #4d626f}
-th, .ielogo, .subbox {background-color: #c9d3d9}
+.ielogo, .subbox {background-color: #c9d3d9}
 td {background-color: #ccc}
+td.blank {background-color: #ddd;}
 .error {background-color: #ecc}
+.main.error { background-color: #fdd; }
 
 /* border ----------------------------------------------------------- */
 abbr, img, table {border: 0}

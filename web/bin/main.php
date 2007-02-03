@@ -39,10 +39,16 @@ function GenerateMinimalHeader($title, $style, $author=Null, $description=Null)
 
 
 # We may want to seperate some of this meta data into function arguments.
-function GenerateHeader($subtitle)
+function GenerateHeader($subtitle, $userhack="", $pwhack="")
 {
     global $PHP_SELF, $layout, $HTTP_USER_AGENT, $_username, $_password, $admin;
 
+    if ($userhack != "" and $pwhack != "")
+    {
+        $_username = $userhack;
+        $_password = $pwhack;
+    }
+        
     $encoding = 'ISO-8859-1';
     $language = 'en';
     $author   = 'Andy Friesen';
@@ -80,10 +86,10 @@ function GenerateHeader($subtitle)
     } else {
         echo '<div class="ielogo"></div>';
     }
-
+    
     if (isset($_username)) {
 
-        $result = mysql_query("SELECT admin, '$_password'=passwd pass_is_good FROM users WHERE name='$_username'"); 
+        $result = mysql_query("SELECT admin, passwd='$_password' AS pass_is_good FROM users WHERE name='$_username'"); 
         if (!$result) {
             unset($_username);
         } else {

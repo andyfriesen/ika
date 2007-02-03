@@ -11,20 +11,29 @@ function Logout()
     unset($_password);
     unset($logout);
 
-    GenerateHeader("Login");
-    Notice("You are now logged out.");
+    GenerateHeader("Authentication", "Anonymous", "Anonymous");
+    
+    StartBox("Notice");
+    echo "<p>You are now logged out.</p>";
+    echo "<p><a href='index.php'>Go back to the main page.</a>";
+    EndBox();
+    
+    die();
 }
 
 
 function Login()
 {
-    global $Username, $Password, $_username, $_password;
+    global $safe_post, $_username, $_password;
 
+    $Username = $safe_post["Username"];
+    $Password = $safe_post["Password"];
+    
     ConnectToDB();
 
     $sha1 = sha1($Password);
 
-    $result = mysql_query("SELECT '$sha1'=passwd pass_is_good FROM users WHERE name='$Username'");
+    $result = mysql_query("SELECT passwd='$sha1' AS pass_is_good FROM users WHERE name='$Username'");
     $row = mysql_fetch_array($result);
 
     //if ($Password == $row["password"])
@@ -36,14 +45,20 @@ function Login()
         $_username = $Username;
         $_password = $Password;
 
-        GenerateHeader("Login");
-        Box("You are now logged in as $_username.</p>" .
-            "<p><a href='index.php'>Go back to the main page.</a>");   # THIS NEEDS WORK!
+        GenerateHeader("Authentication", $_username, $sha1);
+        
+        StartBox("Notice");
+        echo "<p>You are now logged in as $_username.</p>";
+        echo "<p><a href='index.php'>Go back to the main page.</a>";
+        EndBox();
+        
+        die();
     }
     else
     {
-        GenerateHeader("Login");
-        FatalError("The password you entered is incorrect.");
+        GenerateHeader("Authentication");
+        
+        Error("The password you entered is incorrect.");
     }
 }
 
@@ -51,13 +66,15 @@ function Login()
 
 include "bin/main.php";
 
-if (isset($logout))
+if (isset($logout) and isset($_username))
     Logout();
-else if (isset($login))
+else if (isset($login) and isset($_POST["Submit"]))
     Login();
-else if (!isset($login) and !isset($_username))
+else
+    GenerateHeader("Authentication");
+
+if (!isset($_username))
 {
-    GenerateHeader("Login");
     
     StartBox("Log In");
     
@@ -68,5 +85,11 @@ else if (!isset($login) and !isset($_username))
         
     EndBox();
 }
-
+else
+{
+    StartBox("Notice");
+    echo "<p>You are already logged in as $_username.</p>";
+    echo "<p><a href='index.php'>Go back to the main page.</a>";
+    EndBox();
+}
 ?>

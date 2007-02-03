@@ -116,10 +116,12 @@ function EndBox() {
 }
 
 function Error($text) {
+    echo "<div class='main error'>Error</div>";
     echo "<div class='error'>$text</div>";
 }
 
 function FatalError($text) {
+    echo "<div class='main error'>Fatal Error</div>";
     die("<div class='error'>$text</div>");
 }
 
@@ -192,6 +194,10 @@ function CreateForm($accepturl)
 
             case "static":
                 echo "<td>$name</td><td>$value</td>";
+                break;
+                
+            case "hidden":
+                echo "<td><input type='hidden' name='$name' value='$value' id='form$i' tabindex='$tabindex' />$name</td><td>$value</td>";
                 $tabindex++;
                 break;
             

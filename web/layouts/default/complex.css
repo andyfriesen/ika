@@ -260,6 +260,14 @@ table.box
 	border: 0px;
 }
 
+th
+{
+	font-size: 1.2em;
+	background: #c0cad0;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
 th.main, div.main
 {
 	font-size: 1.5em;
@@ -272,6 +280,12 @@ th.main, div.main
 	text-align: center;
 	border: 1px solid #4d626f;
 	font-variant: small-caps; 
+}
+
+th.main
+{
+	background: #c9d3d9;
+	font-size: 1.3em;
 }
 
 div.main { border-bottom: 0px; }
@@ -290,6 +304,12 @@ div.header { background-color: #e4e8f0; text-align: right;  border: 1px solid #4
 	text-align: center;
 	margin-top: 20px;
 	padding-bottom: 20px;
+}
+
+td.blank
+{
+	border: 0px;
+	background: #cccccc
 }
 
 /* inside articles -------------------------------------------------- */

@@ -5,7 +5,7 @@ function ShowThumbNails($cursor) {
 
     $count = 0;
     $die = False;
-    StartBox();
+    StartBox("All Thumbnails");
     echo '<div style="clear: both">&nbsp;</div>';  // CONVERT TO CSS!
 
     while (True) {
@@ -69,13 +69,14 @@ function ShowImage($id) {
 function ShowSubmitImageForm() {
     global $PHP_SELF, $_username;
 
-    //echo "<h2'>Submit an Image</h2>";
+    StartBox("Submit Image");
     CreateForm("$PHP_SELF",
         "Name",        "static",   isset($_username) ? $_username : "Anonymous",
         "Title",       "input",    "",
         "Filename",    "filename", "",
         "Description", "text",     "",
         "Submit",      "submit",   "submit");
+    EndBox();
 }
 
 
