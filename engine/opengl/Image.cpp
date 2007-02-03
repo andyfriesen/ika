@@ -27,5 +27,10 @@ namespace OpenGL
     {
         return _height;
     }
+
+    int Image::GetTextureID()
+    {
+        return _texture->handle;
+    }
 }
 
