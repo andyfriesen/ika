@@ -439,12 +439,16 @@ void Engine::RenderLayer(uint layerIndex) {
         firstY = 0;
     }
 
-    if (!layer->wrapx && (uint)(firstX + lenX) > layer->Width()) {
-        lenX = layer->Width() - firstX;
+    if (!layer->wrapx) {
+        if (firstX + lenX > layer->Width()) {
+            lenX = layer->Width() - firstX;
+        }
     }
 
-    if (!layer->wrapy && (uint)(firstY + lenY) > layer->Height()) {
-        lenY = layer->Height() - firstY;
+    if (!layer->wrapy) {
+        if (firstY + lenY > layer->Height()) {
+            lenY = layer->Height() - firstY;
+        }
     }
 
     if (lenX < 1 || lenY < 1) return;   // not visible
@@ -844,8 +848,17 @@ Point Engine::GetCamera() {
 
 void Engine::SetCamera(Point p) {
     Point res = video->GetResolution();
-    xwin = max<int>(0, min<int>(p.x, map.width - res.x - 1));
-    ywin = max<int>(0, min<int>(p.y, map.height - res.y - 1));
+    if (map.width > 0) {
+        xwin = max<int>(0, min<int>(p.x, map.width - res.x - 1));
+    } else {
+        xwin = p.x;
+    }
+
+    if (map.height > 0) {
+        ywin = max<int>(0, min<int>(p.y, map.height - res.y - 1));
+    } else {
+        ywin = p.y;
+    }
 }
 
 void Engine::SyncTime() {
