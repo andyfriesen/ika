@@ -30,6 +30,10 @@ void BrushState::OnMouseMove(wxMouseEvent& event) {
         return;
     }
 
+    if (event.LeftIsDown()) {
+        HandleCommand(new PasteBrushCommand(x, y, GetCurLayerIndex(), GetExecutor()->GetCurrentBrush()));
+    }
+
     _oldX = x;
     _oldY = y;
     GetMapView()->Refresh();
