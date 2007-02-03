@@ -49,10 +49,10 @@ namespace Blitter {
     struct AddBlend {
         inline RGBA operator()(RGBA src, RGBA dest) const {
             // add and clamp to 255
-            dest.r = min<u8>(dest.r + src.r, 255);
-            dest.g = min<u8>(dest.g + src.g, 255);
-            dest.b = min<u8>(dest.b + src.b, 255);
-            dest.a = min<u8>(dest.a + src.a, 255);
+            dest.r = (u8)min<int>(dest.r + src.r, 255);
+            dest.g = (u8)min<int>(dest.g + src.g, 255);
+            dest.b = (u8)min<int>(dest.b + src.b, 255);
+            dest.a = (u8)min<int>(dest.a + src.a, 255);
             return dest;
         }
     };
@@ -60,10 +60,10 @@ namespace Blitter {
     struct SubtractBlend {
         inline RGBA operator()(RGBA src, RGBA dest) const {
             // subtract and clamp at 0
-            dest.r = max<u8>(dest.r - src.r, 0);
-            dest.g = max<u8>(dest.g - src.g, 0);
-            dest.b = max<u8>(dest.b - src.b, 0);
-            dest.a = max<u8>(dest.a - src.a, 0);
+            dest.r = (u8)max<int>(dest.r - src.r, 0);
+            dest.g = (u8)max<int>(dest.g - src.g, 0);
+            dest.b = (u8)max<int>(dest.b - src.b, 0);
+            dest.a = (u8)max<int>(dest.a - src.a, 0);
             return dest;
         }
     };
