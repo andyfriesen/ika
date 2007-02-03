@@ -182,9 +182,9 @@ namespace aries {
     }
 
     std::ostream& StringNode::write(std::ostream& stream) const {
-        stream << _backSlash;
+        stream << _singleQuote;
         for (std::string::const_iterator c = _str.begin(); c != _str.end(); c++) {
-            if (*c == _backSlash) {
+            if (*c == _singleQuote) {
                 stream << _backSlash << _singleQuote;
             } else if (*c == _backSlash) {
                 stream << _backSlash << _backSlash;
