@@ -1147,6 +1147,7 @@ uint MainWindow::GetCurrentTile() {
 
 void MainWindow::SetCurrentTile(uint i) {
     assert(0 <= i && i < _tileset->Count());
+
     _curTile = i;
     curTileChanged.fire(i);
 }

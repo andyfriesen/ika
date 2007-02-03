@@ -1,8 +1,6 @@
 
 #include "video.h"
 
-static const int nZoomscale = 16;
-
 //-------------------------------------------------------
 
 BEGIN_EVENT_TABLE(VideoFrame, wxGLCanvas)

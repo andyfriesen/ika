@@ -13,6 +13,8 @@
 
 struct Image;
 
+static const int nZoomscale = 16;
+
 struct VideoFrame : public wxGLCanvas
 {
     /*
