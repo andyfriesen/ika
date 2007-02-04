@@ -1,10 +1,6 @@
-
-#include <cassert>
-#include <vector>
-#include <math.h>
+#include <windows.h>
 
 #include "SDL/SDL_opengl.h"
-//#include "GL/gl.h"
 
 #include "Driver.h"
 #include "Image.h"
@@ -79,7 +75,7 @@ namespace OpenGL {
 
         glBlendEquationEXT = (void (IKA_STDCALL *)(int))SDL_GL_GetProcAddress("glBlendEquationEXT");
 
-        if (!glBlendEquationEXT)  {
+        if (!glBlendEquationEXT) {
             Log::Write("Warning! glBlendEquationEXT not found.  Colour subtraction disabled.");
             glBlendEquationEXT = &glBlendEquationStub;
         }
@@ -100,12 +96,14 @@ namespace OpenGL {
 #if 1
         return false;
 #else
-        if (!SDL_VideoModeOK(x, y, _bpp, SDL_OPENGL | (_fullScreen ? SDL_FULLSCREEN : 0)))
+        if (!SDL_VideoModeOK(x, y, _bpp, SDL_OPENGL | (_fullScreen ? SDL_FULLSCREEN : 0))) {
             return false;
+        }
 
         _screen = SDL_SetVideoMode(x, y, _bpp, SDL_OPENGL | (_fullScreen ? SDL_FULLSCREEN : 0));
-        if (!_screen)
+        if (!_screen) {
             throw std::runtime_error("OpenGL Video panic.  No video display!!");
+        }
 
         _xres = x;
         _yres = y;
@@ -146,8 +144,8 @@ namespace OpenGL {
         if (src.Width() == 16 && src.Height() == 16) {
             Texture* tex = 0;
             for (TextureSet::iterator
-                iter  = _textures.begin(); 
-                iter != _textures.end(); 
+                iter  = _textures.begin();
+                iter != _textures.end();
                 iter++)
             {
                 const Point& p = (*iter)->unused;
@@ -206,8 +204,8 @@ namespace OpenGL {
                 texheight = src.Height();
             } else {
                 dealloc = true;
-                texwidth  = 1;  while (texwidth < src.Width())  texwidth <<= 1;
-                texheight = 1;  while (texheight < src.Height()) texheight <<= 1;
+                texwidth  = 1; while (texwidth < src.Width()) { texwidth <<= 1; }
+                texheight = 1; while (texheight < src.Height()) { texheight <<= 1; }
 
                 pixels = new RGBA[texwidth * texheight];
                 for (int y = 0; y < src.Height(); y++) {
@@ -239,7 +237,9 @@ namespace OpenGL {
     }
 
     void Driver::FreeImage(Video::Image* img) {
-        if (!img)   return;
+        if (!img) {
+            return;
+        }
 
         SwitchTexture(0);
         
@@ -251,9 +251,9 @@ namespace OpenGL {
             _textures.erase(tex);
             glDeleteTextures(1, &tex->handle);
             delete tex;
-        }
-        else
+        } else {
             tex->refCount--;
+        }
 #else
         glDeleteTextures(1, &tex->handle);
         delete tex;
@@ -263,10 +263,12 @@ namespace OpenGL {
     }
 
     void Driver::ClipScreen(int left, int top, int right, int bottom) {
-        if (left > right)
+        if (left > right) {
             swap(left, right);
-        if (top > bottom)
+        }
+        if (top > bottom) {
             swap(top, bottom);
+        }
 
         // gah.
         // Convert x1,y1-x2,y2 to left,bottom/width,height.
@@ -338,8 +340,9 @@ namespace OpenGL {
     }
 
     Video::BlendMode Driver::SetBlendMode(Video::BlendMode bm) {
-        if (bm == _blendMode)
+        if (bm == _blendMode) {
             return bm;
+        }
 
         // Unset the blend equation if it was previously changed. (it is always changed if the current mode is Video::Subtract)
         if (_blendMode == Video::Subtract) {
@@ -388,10 +391,10 @@ namespace OpenGL {
 
         SwitchTexture(img->_texture->handle);
         glBegin(GL_QUADS);
-        glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2i(x, y);
-        glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2i(x + w, y);
-        glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2i(x + w, y + h);
-        glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + h);
+        glTexCoord2f(texCoords[0], texCoords[3]); glVertex2i(x, y);
+        glTexCoord2f(texCoords[2], texCoords[3]); glVertex2i(x + w, y);
+        glTexCoord2f(texCoords[2], texCoords[1]); glVertex2i(x + w, y + h);
+        glTexCoord2f(texCoords[0], texCoords[1]); glVertex2i(x, y + h);
         glEnd();
     }
     
@@ -404,10 +407,18 @@ namespace OpenGL {
 
         float texCoords[4] = {0,0,0,0};
         memcpy(texCoords, img->_texCoords, sizeof(float) * 4);
-        if (ix > w || ix < 0) ix = 0;
-        if (iy > h || iy < 0) iy = 0;
-        if (iw > w || iw < 0) iw = w;
-        if (ih > h || ih < 0) ih = h;
+        if (ix > w || ix < 0) {
+            ix = 0;
+        }
+        if (iy > h || iy < 0) {
+            iy = 0;
+        }
+        if (iw > w || iw < 0) {
+            iw = w;
+        }
+        if (ih > h || ih < 0) {
+            ih = h;
+        }
 
         float cw = texCoords[2] - texCoords[0];
         float ch = texCoords[3] - texCoords[1];
@@ -418,10 +429,10 @@ namespace OpenGL {
 
         SwitchTexture(img->_texture->handle);
         glBegin(GL_QUADS);
-        glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2i(x, y);
-        glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2i(x + iw, y);
-        glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2i(x + iw, y + ih);
-        glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + ih);
+        glTexCoord2f(texCoords[0], texCoords[3]); glVertex2i(x, y);
+        glTexCoord2f(texCoords[2], texCoords[3]); glVertex2i(x + iw, y);
+        glTexCoord2f(texCoords[2], texCoords[1]); glVertex2i(x + iw, y + ih);
+        glTexCoord2f(texCoords[0], texCoords[1]); glVertex2i(x, y + ih);
         glEnd();
     }
 
@@ -473,10 +484,10 @@ namespace OpenGL {
         // simplest case.  We can draw one big textured quad for the whole thing.
         if (tex->width == img->_width && tex->height == img->_height) {
             glBegin(GL_QUADS);
-            glTexCoord2f(0,    1);      glVertex2i(x, y);
-            glTexCoord2f(texX, 1);      glVertex2i(x + w, y);
-            glTexCoord2f(texX, texY);   glVertex2i(x + w, y + h);
-            glTexCoord2f(0,    texY);   glVertex2i(x, y + h);
+            glTexCoord2f(0,    1);    glVertex2i(x, y);
+            glTexCoord2f(texX, 1);    glVertex2i(x + w, y);
+            glTexCoord2f(texX, texY); glVertex2i(x + w, y + h);
+            glTexCoord2f(0,    texY); glVertex2i(x, y + h);
             glEnd();
         } else {
             // backup: Draw a grid of textured quads.
@@ -502,10 +513,10 @@ namespace OpenGL {
             glBegin(GL_QUADS);
             for (float curY = float(y); curY < y + h; curY += imgWidth) {
                 for (float curX = float(x); curX < x + w; curX += imgHeight) {
-                    glTexCoord2f(texCoords[0], texCoords[3]);   glVertex2f(curX, curY);
-                    glTexCoord2f(texCoords[2], texCoords[3]);   glVertex2f(curX + imgWidth, curY);
-                    glTexCoord2f(texCoords[2], texCoords[1]);   glVertex2f(curX + imgWidth, curY + imgHeight);
-                    glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2f(curX, curY + imgHeight);
+                    glTexCoord2f(texCoords[0], texCoords[3]); glVertex2f(curX, curY);
+                    glTexCoord2f(texCoords[2], texCoords[3]); glVertex2f(curX + imgWidth, curY);
+                    glTexCoord2f(texCoords[2], texCoords[1]); glVertex2f(curX + imgWidth, curY + imgHeight);
+                    glTexCoord2f(texCoords[0], texCoords[1]); glVertex2f(curX, curY + imgHeight);
                 }
             }
             glEnd();
@@ -629,10 +640,11 @@ namespace OpenGL {
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
 
-        if (filled)
+        if (filled) {
             glBegin(GL_LINES);
-        else
+        } else {
             glBegin(GL_POINTS);
+        }
 
         // most bloated for statement ever.
         for (int 
@@ -697,8 +709,12 @@ namespace OpenGL {
         // They just get copied from the screen to a texture (which also video memory)
 
         // clip
-        if (x1 > x2) swap(x1, x2);
-        if (y1 > y2) swap(y1, y2);
+        if (x1 > x2) {
+            swap(x1, x2);
+        }
+        if (y1 > y2) {
+            swap(y1, y2);
+        }
 
         int w = x2 - x1;
         int h = y2 - y1;
@@ -740,8 +756,12 @@ namespace OpenGL {
         }
 
         // clip
-        if (x1 > x2) swap(x1, x2);
-        if (y1 > y2) swap(y1, y2);
+        if (x1 > x2) {
+            swap(x1, x2);
+        }
+        if (y1 > y2) {
+            swap(y1, y2);
+        }
 
         int w = x2 - x1;
         int h = y2 - y1;
