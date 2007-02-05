@@ -1,10 +1,18 @@
-#ifndef FPSCOUNTER_H
-#define FPSCOUNTER_H
+#pragma once
+
+#include "timer.h"
 
 struct FPSCounter {
-    FPSCounter();
+    FPSCounter()
+        : frames(0)
+        , fps(0)
+        , count(0)
+        , lastTime(GetTime())
+    {}
 
-    inline int FPS() const { return fps; }
+    inline int FPS() const {
+        return fps; 
+    }
 
     void Update();
 
@@ -12,7 +20,5 @@ private:
     int frames;
     int count;
     int fps;
-    int lasttime;
+    int lastTime;
 };
-
-#endif
