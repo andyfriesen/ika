@@ -1,5 +1,4 @@
-#ifndef ANIMSCRIPT_H
-#define ANIMSCRIPT_H
+#pragma once
 
 #include <vector>
 #include <string>
@@ -10,7 +9,9 @@ struct AnimScript {
         char type;
         int amount;
 
-        Command() : type(0), amount(0)
+        Command()
+            : type(0)
+            , amount(0)
         {}
 
         Command(char t, int a)
@@ -23,22 +24,28 @@ struct AnimScript {
     explicit AnimScript(const std::string& script);
 
     const Command& getCurrent() const;
-    inline uint getCurFrame() const { return _curFrame; }
-    inline bool isDead() const { return _dead; }
+
+    inline uint getCurFrame() const {
+        return _currentFrame;
+    }
+
+    inline bool isDead() const {
+        return _dead;
+    }
 
     void update(int time);
 
     std::string toString() const;
 
-    inline bool isEmpty() const { return commands.empty(); }
+    inline bool isEmpty() const {
+        return commands.empty();
+    }
 
 private:
     uint _offset;
     int  _count;
-    uint _curFrame;
+    uint _currentFrame;
     bool _dead;
 
     std::vector<Command> commands;
 };
-
-#endif

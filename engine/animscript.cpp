@@ -1,19 +1,21 @@
-
+#include <cctype>
+#include <cstdlib>
 #include <sstream>
+#include <string>
 #include "animscript.h"
 #include "common/log.h"
 
 AnimScript::AnimScript()
     : _offset(0)
     , _count(0)
-    , _curFrame(0)
+    , _currentFrame(0)
     , _dead(true)
-{ }
+{}
 
 AnimScript::AnimScript(const std::string& script)
     : _offset(0)
     , _count(0)
-    , _curFrame(0)
+    , _currentFrame(0)
     , _dead(false)
 {
     uint index = 0;
@@ -22,46 +24,32 @@ AnimScript::AnimScript(const std::string& script)
         char c = script[index++];
 
         // eat whitespace
-        if (c == ' ' || c == '\n' || c == '\r' || c == '\t') {
+        if (std::isspace(c)) {
             continue;
         }
 
         // eat more whitespace
-        while (
-            index < script.length() && (
-            script[index] == ' '  || 
-            script[index] == '\n' || 
-            script[index] == '\r' || 
-            script[index] == '\t')
-        ) {
-            index++;
+        while (index < script.length() && std::isspace(script[index])) {
+            ++index;
         }
 
         // get a number
         uint end = index;
-        while (end < script.length() && script[end] >= '0' && script[end] <= '9') {
-            end++;
+        while (end < script.length() && std::isdigit(script[end])) {
+            ++end;
         }
 
         // force c to uppercase
-        if (c >= 'a' && c <= 'z') {
-            c ^= 32;
+        if (std::islower(c)) {
+            c = char(std::toupper(c));
         }
-
-        commands.push_back(
-            Command(
-                c, 
-                atoi(script.substr(index, end - index).c_str())
-            )
-        );
-
+        commands.push_back(Command(c, std::atoi(script.substr(index, end - index).c_str())));
         index = end;
     }
 }
 
 const AnimScript::Command& AnimScript::getCurrent() const {
     static Command dummy;
-
     if (_offset > commands.size()) {
         return dummy;
     } else {
@@ -85,7 +73,7 @@ void AnimScript::update(int time) {
 
         switch (cmd.type) {
             case 'F': {
-                _curFrame = cmd.amount;
+                _currentFrame = cmd.amount;
                 break;
             }
 
