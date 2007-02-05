@@ -1,4 +1,3 @@
-
 #pragma once
 
 #include <map>
@@ -17,51 +16,50 @@ struct File;
  */
 struct CCHRfile {
     typedef std::map<std::string, std::string> StringMap;
-    StringMap               moveScripts;
-    StringMap               metaData;    ///< Authoring information and the like.
+    StringMap moveScripts;
+    StringMap metaData;  ///< Authoring information and the like.
     
     CCHRfile(int width = 16, int height = 16);
-    ~CCHRfile();
+
+    ~CCHRfile() { ClearFrames(); }
 
     void ClearFrames();
 
     Canvas& GetFrame(uint frame) const;
-    const std::vector<Canvas*>& GetAllFrames();
-    void UpdateFrame(const Canvas& newdata, uint nFrame);
-    inline int Width(int nFrame = 0)  const   {   return nWidth;  }
-    inline int Height(int nFrame = 0) const   {   return nHeight; }
-    inline uint NumFrames()           const   {   return frame.size();            }
+    inline const std::vector<Canvas*>& GetAllFrames() { return _frame; }
+    void UpdateFrame(const Canvas& newData, uint frame);
+    inline int Width(int /*frame*/ = 0) const { return _width; }
+    inline int Height(int /*frame*/ = 0) const { return _height; }
+    inline uint NumFrames() const { return _frame.size(); }
     
-    inline int& HotX(int frame = 0)           {   return nHotx;   }       
-    inline int& HotY(int frame = 0)           {   return nHoty;   }     ///< Hotspot position
-    inline int& HotW(int frame = 0)           {   return nHotw;   }
-    inline int& HotH(int frame = 0)           {   return nHoth;   }     ///< Hotspot size
+    inline int& HotX(int /*frame*/ = 0) { return _hotspotX; }
+    inline int& HotY(int /*frame*/ = 0) { return _hotspotY; }       ///< Hotspot position.
+    inline int& HotW(int /*frame*/ = 0) { return _hotspotWidth; }
+    inline int& HotH(int /*frame*/ = 0) { return _hotspotHeight; }  ///< Hotspot size.
 
-    void AppendFrame();                                                 ///< Adds a new, empty frame
+    void AppendFrame();                         ///< Adds a new, empty frame.
     void AppendFrame(Canvas& c);
-    void AppendFrame(Canvas* c);                                        ///< Append the frame
-    void InsertFrame(uint i);                                           ///< Inserts a new, empty frame at the specified position
-    void InsertFrame(uint i, Canvas& c);
-    void InsertFrame(uint i, Canvas* c);                                ///< Inserts the image as a new frame at the specified position
-    void DeleteFrame(uint i);                                           ///< Removes the specified frame
+    void AppendFrame(Canvas* c);                ///< Append the frame.
+    void InsertFrame(uint index);               ///< Inserts a new, empty frame at the specified position.
+    void InsertFrame(uint index, Canvas& c);
+    void InsertFrame(uint index, Canvas* c);    ///< Inserts the image as a new frame at the specified position.
+    void DeleteFrame(uint index);               ///< Removes the specified frame.
 
-    void Resize(int width, int height);                                 ///< Resize all the frames
+    void Resize(int width, int height);         ///< Resize all the frames.
 
-    void New(int framex, int framey);                                   ///< Creates a new sprite of the specified dimensions
-    void Load(const std::string& fname);                                ///< Loads sprite data from a file
-    void Save(const std::string& fname);                                ///< Writes the sprite data to a file
-    void SaveOld(const std::string& fname);                             ///< Writes the sprite data to a file, in VERGE's CHR format
+    void New(int frameX, int frameY);           ///< Creates a new sprite of the specified dimensions.
+    void Load(const std::string& filename);     ///< Loads sprite data from a file.
+    void Save(const std::string& filename);     ///< Writes the sprite data to a file.
+    void SaveOld(const std::string& filename);  ///< Writes the sprite data to a file, in VERGE's CHR format.
 
     std::string GetStandingScript(Direction dir);
     std::string GetWalkingScript(Direction dir);
 
 private:
-
-    std::vector<Canvas*>   frame;               ///< frame data
-
-    int        nWidth, nHeight;
-    int        nHotx, nHoty;                    ///< hotspot position
-    int        nHotw, nHoth;                    ///< hotspot width / height
+    std::vector<Canvas*> _frame;       ///< Frame data.
+    int _width, _height;
+    int _hotspotX, _hotspotY;         ///< Hotspot position.
+    int _hotspotWidth, _hotspotHeight; ///< Hotspot width and height.
 
     void LoadCHR(const std::string& filename);
     void Loadv2CHR(File& f);
