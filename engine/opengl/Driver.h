@@ -1,5 +1,4 @@
-#ifndef OPENGL_DRIVER_H
-#define OPENGL_DRIVER_H
+#pragma once
 
 #define SHARE_TEXTURES
 
@@ -115,7 +114,7 @@ namespace OpenGL {
         virtual void DrawPixel(int x, int y, u32 colour);
 
         /// Gets the value of a pixel on the screen.
-        virtual u32 GetPixel(int x, int y) NYI
+        virtual u32 GetPixel(int /*x*/, int /*y*/) NYI
 
         /// Draws a line on the screen.
         virtual void DrawLine(int x1, int y1, int x2, int y2, u32 colour);
@@ -176,5 +175,3 @@ namespace OpenGL {
         void (IKA_STDCALL *glBlendEquationEXT)(int);
     };
 };
-
-#endif
