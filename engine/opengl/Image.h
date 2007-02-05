@@ -1,10 +1,9 @@
-#ifndef OPENGL_IMAGE_H
-#define OPENGL_IMAGE_H
+#pragma once
 
 #include "video/Image.h"
+#include "../../common/utility.h"
 
-namespace OpenGL
-{
+namespace OpenGL {
     struct Driver;
     struct Texture;
 
@@ -16,15 +15,13 @@ namespace OpenGL
         virtual int Width();
         virtual int Height();
 
-        virtual int GetTextureID();
+        virtual uint GetTextureID();
 
         Texture* _texture;
-        float _texCoords[4];               // Two x/y pairs.  Just like glTexCoord2dv is expecting
+        float _texCoords[4];  // Two x/y pairs.  Just like glTexCoord2dv is expecting
         int _width, _height;
 
         Image(Texture* texture, const float texCoords[4], int width, int height);
-        ~Image();       // protected for a reason.  Use Driver::FreeImage to nuke it.
+        ~Image();  // Protected for a reason.  Use Driver::FreeImage to nuke it.
     };
 };
-
-#endif
