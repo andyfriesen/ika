@@ -1,8 +1,3 @@
-/*
- * Font stuff.
- * You know the drill. --tSB
- */
-
 #include "common/fontfile.h"
 #include "common/fileio.h"
 #include "common/rle.h"
@@ -16,7 +11,6 @@
 #include <cassert>
 
 namespace Ika {
-
     static const char subsetMarker = '~';
     static const char colourMarker = '#';
 
@@ -50,7 +44,7 @@ namespace Ika {
         _glyphs.clear();
     }
 
-    int Font::GetGlyphIndex(char c, uint subset) const {
+    uint Font::GetGlyphIndex(char c, uint subset) const {
         if (subset >= 0 && subset < _fontFile.NumSubSets()) {
             return _fontFile.GetSubSet(subset).glyphIndex[c];
         } else {
@@ -89,20 +83,31 @@ namespace Ika {
     }
 
     void Font::PrintChar(int& x, int y, uint subset, char c, RGBA /*colour*/, Canvas& dest, Video::BlendMode blendMode) {
-        //if (c < 0 || c > 96)
+        //if (c < 0 || c > 96) {
         //    return;
+        //}
 
-        assert((uint)GetGlyphIndex(c, subset) < _fontFile.NumGlyphs()); // paranoia check
+        assert(GetGlyphIndex(c, subset) < _fontFile.NumGlyphs());  // paranoia check
 
         Canvas& glyph = const_cast<Canvas&>(GetGlyphCanvas(c, subset));
 
         switch (blendMode) {
             default:
-            case Video::None:       Blitter::Blit(glyph, dest, x, y, Blitter::OpaqueBlend());      break;
-            case Video::Add:        Blitter::Blit(glyph, dest, x, y, Blitter::AddBlend());    break;
-            case Video::Matte:      Blitter::Blit(glyph, dest, x, y, Blitter::MatteBlend());       break;
-            case Video::Normal:     Blitter::Blit(glyph, dest, x, y, Blitter::AlphaBlend());       break;
-            case Video::Subtract:   Blitter::Blit(glyph, dest, x, y, Blitter::SubtractBlend()); break;
+            case Video::None:
+                Blitter::Blit(glyph, dest, x, y, Blitter::OpaqueBlend());
+                break;
+            case Video::Add:
+                Blitter::Blit(glyph, dest, x, y, Blitter::AddBlend());
+                break;
+            case Video::Matte:
+                Blitter::Blit(glyph, dest, x, y, Blitter::MatteBlend());
+                break;
+            case Video::Normal:
+                Blitter::Blit(glyph, dest, x, y, Blitter::AlphaBlend());
+                break;
+            case Video::Subtract:
+                Blitter::Blit(glyph, dest, x, y, Blitter::SubtractBlend());
+                break;
         }
 
         x += glyph.Width() + _letterSpacing;
@@ -118,13 +123,13 @@ namespace Ika {
 
         for (uint i = 0; i < len; i++) {
             switch (s[i]) {
-                case '\n': {        // newline
-                    y += _height;
+                case '\n': {  // newline
+                    y += int(_height);
                     x = startx;
                     continue;
                 }
 
-                case '\t': {        // tab
+                case '\t': {  // tab
                     x += _tabSize - (x - startx) % _tabSize;
                     continue;
                 }
@@ -133,7 +138,7 @@ namespace Ika {
                     i++;
 
                     if (i >= len) {
-                        break; // subset marker at end of string.  just print it
+                        break;  // Subset marker at end of string.  Just print it.
                     }
 
                     if (i < len && s[i] >= '0' && s[i] <= '0' + static_cast<char>(_fontFile.NumSubSets())) {
@@ -157,7 +162,7 @@ namespace Ika {
 
                         std::string t(s.substr(i + 1, pos - i - 1));
 
-                        if(_video->hasColour(t)) {
+                        if (_video->hasColour(t)) {
                             colour = _video->getColour(t);
                         } else if (isHexNumber(t)) {
                             t.reserve(8);
