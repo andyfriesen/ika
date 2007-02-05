@@ -29,21 +29,21 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
             hFrame[i] = video->CreateImage(vsp->GetTile(i));
         }
     }
-    catch(...) {	
+    catch(...) {
         throw TilesetException();
     }
     
-    // Next up, set up the tile animation stuff
-    tileIndex.resize(frameCount);                               // Make the vectors fit
+    // Next up, set up the tile animation stuff.
+    tileIndex.resize(frameCount);  // Make the vectors fit.
     flipFlag.resize(frameCount);
     for (int i = 0; i < frameCount; i++) {
-        tileIndex[i] = i;                                       // set initial values for the vectors
+        tileIndex[i] = i;  // Set initial values for the vectors.
         flipFlag[i] = false;
     }
 
     animstate = vsp->vspAnim;
     for (uint j = 0; j < vsp->vspAnim.size(); j++) {
-        animstate[j].count = animstate[j].delay;                // init the counter
+        animstate[j].count = animstate[j].delay;  // Init the counter.
     }
 }
 
@@ -58,23 +58,28 @@ void Tileset::Save(const std::string& fileName) const {
 }
 
 Video::Image* Tileset::GetTile(uint index) const {
-    if (hFrame.empty()) return 0;
-
-    if (index < 0 || index >= tileIndex.size()) index = 0;
-
+    if (hFrame.empty()) {
+        return 0;
+    }
+    if (index < 0 || index >= tileIndex.size()) {
+        index = 0;
+    }
     index = tileIndex[index];
-
-    if (index < 0 || index >= tileIndex.size()) index = 0;
-
+    if (index < 0 || index >= tileIndex.size()) {
+        index = 0;
+    }
     return hFrame[index];
 }
 
 void Tileset::UpdateAnimation(int time) {
-    int i = time - animTimer;					// how many ticks have elapsed?
+    int i = time - animTimer;  // How many ticks have elapsed?
     animTimer = time;
-    if (i < 1) return;						// not very much, wait a little longer
-    if (i > 100) i = 100;   // hack
-    
+    if (i < 1) {  // Not very much, wait a little longer.
+        return;
+    }
+    if (i > 100) {  // Hack.
+        i = 100;
+    }
     while (i--) {
         for (int j = 0; j < 100; j++) {
             if (animstate[j].start < animstate[j].finish) {
@@ -86,10 +91,10 @@ void Tileset::UpdateAnimation(int time) {
 
 void Tileset::AnimateStrand(VSP::AnimState& anim) {
     anim.count--;
-    
-    if (anim.count > 0)	return;
-    
-    switch(anim.mode) {
+    if (anim.count > 0) {
+        return;
+    }
+    switch (anim.mode) {
         case VSP::linear: {
             for (int i = anim.start; i <= anim.finish; i++) {
                 tileIndex[i]++;
@@ -135,13 +140,13 @@ void Tileset::AnimateStrand(VSP::AnimState& anim) {
             }
             break;
         }
+    }
 
 #if _DEBUG
-        for (int i = anim.start; i <= anim.finish; i++) {
-            assert(anim.start <= tileIndex[i] && tileIndex[i] <= anim.finish);
-        }
-#endif
+    for (int i = anim.start; i <= anim.finish; i++) {
+        assert(anim.start <= tileIndex[i] && tileIndex[i] <= anim.finish);
     }
-    
+#endif
+
     anim.count = anim.delay;
 }
