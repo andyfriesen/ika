@@ -34,7 +34,7 @@ int sgn(int x) {
     return 0;
 }
 
-char* va(const char* format, ...) {
+DEPRECATED char* va(const char* format, ...) {
     va_list argptr;
     static char str[1024];
     
