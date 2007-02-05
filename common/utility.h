@@ -127,7 +127,7 @@ std::string toUpper(const std::string& s);
 
 std::string toString(int i);
 bool isHexNumber(const std::string& s);
-uint hexToInt(const std::string& s);
+u32 hexToInt(const std::string& s);
 //--
 
 /// Pointer that deletes its datum when it dies.

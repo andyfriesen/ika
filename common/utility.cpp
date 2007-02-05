@@ -25,8 +25,12 @@ uint nextPowerOf2(uint i) {
 }
 
 int sgn(int x) {
-    if (x < 0) return -1;
-    if (x > 0) return  1;
+    if (x < 0) {
+        return -1;
+    }
+    if (x > 0) {
+        return  1;
+    }
     return 0;
 }
 
@@ -48,7 +52,7 @@ char* va(const char* format, ...) {
 void SeedRandom() {
     time_t curTime;
     time(&curTime);
-    srand(curTime);
+    srand(u32(curTime));
 }
 
 int Random(int min, int max) {
@@ -130,11 +134,11 @@ bool isHexNumber(const std::string& s) {
     return true;
 }
 
-uint hexToInt(const std::string& s) {
+u32 hexToInt(const std::string& s) {
     const std::string digits = "0123456789ABCDEF";
     std::string t = toUpper(s);
 
-    uint value = 0;
+    u32 value = 0;
     for (uint i = 0; i < t.length(); i++) {
         uint digit = digits.find(t[i]);
         if (digit != std::string::npos) {
