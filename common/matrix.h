@@ -5,13 +5,13 @@
 
 #include "common/utility.h"
 
-#define FOLLOWTHEWHITERABBIT
+//#define FOLLOWTHEWHITERABBIT
 
-template <typename T> struct Matrix;
+template <typename T, typename U = int> struct Matrix;
 
-template <typename T>
+template <typename T, typename U = int>
 struct MatrixIterator {
-    MatrixIterator(Matrix<T>& m, uint x, uint y, uint width, uint height) 
+    MatrixIterator(Matrix<T>& m, U x, U y, U width, U height) 
         : subject(m)
         , x(x)
         , y(y)
@@ -55,22 +55,22 @@ struct MatrixIterator {
 
 private:
     Matrix<T>& subject;
-    uint x;
-    uint y;
-    uint width;
-    uint height;
-    uint curX;
-    uint curY;
+    U x;
+    U y;
+    U width;
+    U height;
+    U curX;
+    U curY;
 };
 
 /**
  * General purpose 2D array container thing.
  */
-template <typename T>
+template <typename T, typename U>
 struct Matrix {
     typedef MatrixIterator<T> iterator;
 
-    Matrix(uint w, uint h)
+    Matrix(U w, U h)
         : _width(w)
         , _height(h) 
     {
@@ -82,7 +82,7 @@ struct Matrix {
         }
     }
 
-    Matrix(uint w, uint h, T* d)
+    Matrix(U w, U h, T* d)
         : _width(w)
         , _height(h)
     {
@@ -99,7 +99,7 @@ struct Matrix {
     // This is exceptionally handy for getting subsections of other
     // matrices.  Somewhat dangerous because range checking cannot
     // be done.
-    Matrix(uint w, uint h, T* d, uint pitch)
+    Matrix(U w, U h, T* d, U pitch)
         : _width(w)
         , _height(h) 
     {
@@ -140,7 +140,7 @@ struct Matrix {
         delete[] _data;
     }
 
-    T& operator ()(uint x, uint y) {
+    T& operator ()(U x, U y) {
         if (x >= _width || y >= _height) {
             // x_x
             // TODO: make this raise an exception.
@@ -151,29 +151,29 @@ struct Matrix {
         return _data[y * _width + x];
     }
 
-    const T& operator ()(uint x, uint y) const {
+    const T& operator ()(U x, U y) const {
         return (*const_cast<Matrix<T>*>(this))(x, y);
     }
 
     // allows efficient sequential access
     // TODO: iterator thing for extra safety
     // and robustness
-    const T* GetPointer(uint x, uint y) const {
+    const T* GetPointer(U x, U y) const {
         assert(x >= 0 && y >= 0);
         assert(x < _width && y < _height);
 
         return _data + (y * _width) + x;
     }
 
-    iterator Begin(uint x, uint y, uint width, uint height) {
+    iterator Begin(U x, U y, U width, U height) {
         return iterator(*this, x, y, width, height);
     }
 
-    uint Width() const  { return _width; }
-    uint Height() const { return _height; }
+    U Width() const  { return _width; }
+    U Height() const { return _height; }
     bool Empty() const { return _data == 0; }
 
-    void Resize(uint newx, uint newy) {
+    void Resize(U newx, U newy) {
         // trivial case
         if (newx == _width && newy == _height) {
             return;
@@ -185,8 +185,8 @@ struct Matrix {
             _data = 0;
 
         } else {
-            int sx = newx < _width  ? newx : _width;
-            int sy = newy < _height ? newy : _height;
+            size_t sx = newx < _width  ? newx : _width;
+            size_t sy = newy < _height ? newy : _height;
 
             T* tempData = new T[newx * newy];
             std::fill(tempData, tempData + newx * newy, T());
@@ -225,6 +225,6 @@ struct Matrix {
 
 private:
     T* _data;
-    uint _width;
-    uint _height;
+    U _width;
+    U _height;
 };

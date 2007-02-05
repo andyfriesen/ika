@@ -96,7 +96,7 @@ struct Map {
         Matrix<u8> obstructions;
         Matrix<uint> tiles;
 
-        Layer(const std::string& l = "", uint width = 0, uint height = 0)
+        Layer(const std::string& l = "", int width = 0, int height = 0)
             : label(l)
             , x(0)          , y(0)
             , wrapx(false)  , wrapy(false)
@@ -118,15 +118,15 @@ struct Map {
 
         // note to self: copy constructor
 
-        uint Width() const  { return tiles.Width();  }
-        uint Height() const { return tiles.Height(); }
-        void Resize(uint newx, uint newy) {
+        int Width() const  { return tiles.Width();  }
+        int Height() const { return tiles.Height(); }
+        void Resize(int newx, int newy) {
             tiles.Resize(newx, newy);
             obstructions.Resize(newx, newy);
         }
     };
 
-    uint width, height;
+    int width, height;
     std::string tilesetName;
     //std::vector<std::string> tilesetNames;
 
@@ -155,7 +155,7 @@ public:
     uint LayerIndex(Layer* lay) const;
     uint LayerIndex(const std::string& label) const;
 
-    Map::Layer* AddLayer(const std::string& label = "", uint width = 0, uint height = 0);
+    Map::Layer* AddLayer(const std::string& label = "", int width = 0, int height = 0);
     void AddLayer(Layer* lay);                  // Assumes ownership of lay.  Careful.
     void InsertLayer(Layer* lay, uint index);   // Also assumes ownership.  The layer is inserted BEFORE index.
     void DestroyLayer(uint index);

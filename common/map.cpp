@@ -204,7 +204,7 @@ bool Map::Load(const std::string& filename) {
 
                     std::string d64 = dataNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
-                    int compressedSize = 0;
+                    size_t compressedSize = 0;
                         
                     if (ver == "1.0") {
 
@@ -236,7 +236,7 @@ bool Map::Load(const std::string& filename) {
 
                     std::string d64 = obsNode->getString();
                     ScopedArray<u8> compressed(new u8[d64.length()]);
-                    int compressedSize = 0;
+                    size_t compressedSize = 0;
 
                     if (ver == "1.0") {
                         compressedSize = oldBase64::decode(d64, compressed.get(), d64.length());
@@ -429,13 +429,13 @@ void Map::Save(const std::string& filename) {
                     );
 
             {
-                const int dataSize = lay->Width() * lay->Height() * sizeof(uint);
+                const size_t dataSize = lay->Width() * lay->Height() * sizeof(uint);
                 ScopedArray<u8> compressed(new u8[dataSize]);
-                int compressSize = Compression::compress(
-                    reinterpret_cast<const u8*>(lay->tiles.GetPointer(0, 0)),
-                    dataSize,
-                    compressed.get(),
-                    dataSize);
+                size_t compressSize = Compression::compress(
+                       reinterpret_cast<const u8*>(lay->tiles.GetPointer(0, 0)),
+                       dataSize,
+                       compressed.get(),
+                       dataSize);
 
                 //std::string d64 = base64::encode(reinterpret_cast<u8*>(compressed.get()), compressSize);
                 std::string d64 = base64::encode(std::string(compressed.get(), compressed.get() + compressSize));
@@ -448,11 +448,11 @@ void Map::Save(const std::string& filename) {
 
             {
                 ScopedArray<u8> compressed(new u8[lay->Width() * lay->Height() * sizeof(uint)]);
-                int compressSize = Compression::compress(
-                    lay->obstructions.GetPointer(0, 0),
-                    lay->Width() * lay->Height(),
-                    compressed.get(),
-                    lay->Width() * lay->Height());
+                size_t compressSize = Compression::compress(
+                       lay->obstructions.GetPointer(0, 0),
+                       lay->Width() * lay->Height(),
+                       compressed.get(),
+                       lay->Width() * lay->Height());
 
                 std::string d64 = base64::encode(std::string(compressed.get(), compressed.get() + compressSize));
 
@@ -534,7 +534,7 @@ uint Map::LayerIndex(const std::string& label) const {
     return (uint)-1;
 }
 
-Map::Layer* Map::AddLayer(const std::string& name, uint width, uint height) {
+Map::Layer* Map::AddLayer(const std::string& name, int width, int height) {
     Map::Layer* lay = new Layer(name, width, height);
     AddLayer(lay);
     return lay;
