@@ -69,7 +69,7 @@ const AnimScript::Command& AnimScript::getCurrent() const {
     }
 }
 
-void AnimScript::update(uint time) {
+void AnimScript::update(int time) {
     if (commands.empty() || _dead) {
         return;
     }

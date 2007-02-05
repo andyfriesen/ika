@@ -138,7 +138,7 @@ void Engine::MainLoop() {
     int now = GetTime();
     SyncTime();
 
-    while (true) {
+    for (;;) {
         CheckMessages();
 
         int skipcount = 0;
@@ -363,7 +363,7 @@ void Engine::RenderEntities(uint layerIndex) {
     int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
 
     // first, get a list of entities onscreen
-    int width, height;
+    uint width, height;
     for (EntityList::iterator i = entities.begin(); i != entities.end(); i++) {
         Entity* e = *i;
         const Sprite* sprite = e->sprite;

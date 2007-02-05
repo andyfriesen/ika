@@ -25,7 +25,7 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
     
     try {
         hFrame.resize(frameCount);
-        for (int i = 0; i < frameCount; i++) {
+        for (uint i = 0; i < frameCount; i++) {
             hFrame[i] = video->CreateImage(vsp->GetTile(i));
         }
     }
@@ -36,7 +36,7 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
     // Next up, set up the tile animation stuff.
     tileIndex.resize(frameCount);  // Make the vectors fit.
     flipFlag.resize(frameCount);
-    for (int i = 0; i < frameCount; i++) {
+    for (uint i = 0; i < frameCount; i++) {
         tileIndex[i] = i;  // Set initial values for the vectors.
         flipFlag[i] = false;
     }
@@ -48,7 +48,7 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
 }
 
 Tileset::~Tileset() {
-    for (int i = 0; i < frameCount; i++) {
+    for (uint i = 0; i < frameCount; i++) {
         video->FreeImage(hFrame[i]);
     }
 }
@@ -96,7 +96,7 @@ void Tileset::AnimateStrand(VSP::AnimState& anim) {
     }
     switch (anim.mode) {
         case VSP::linear: {
-            for (int i = anim.start; i <= anim.finish; i++) {
+            for (uint i = anim.start; i <= anim.finish; i++) {
                 tileIndex[i]++;
                 if (tileIndex[i] > anim.finish) {
                     tileIndex[i] = anim.start;
@@ -106,7 +106,7 @@ void Tileset::AnimateStrand(VSP::AnimState& anim) {
         }
 
         case VSP::reverse: {
-            for (int i = anim.start; i <= anim.finish; i++) {
+            for (uint i = anim.start; i <= anim.finish; i++) {
                 tileIndex[i]--;
                 if (tileIndex[i] < anim.start)
                     tileIndex[i] = anim.finish;
@@ -115,16 +115,16 @@ void Tileset::AnimateStrand(VSP::AnimState& anim) {
         }
 
         case VSP::random: {
-            for (int i = anim.start; i <= anim.finish; i++) {
+            for (uint i = anim.start; i <= anim.finish; i++) {
                 tileIndex[i] = Random(anim.start, anim.finish + 1);
             }
             break;
         }
 
         case VSP::flip: {
-            for (int i = anim.start; i <= anim.finish; i++) {
+            for (uint i = anim.start; i <= anim.finish; i++) {
                 std::vector<bool>::reference flipped = flipFlag[i];
-                std::vector<int>::reference index = tileIndex[i];
+                std::vector<uint>::reference index = tileIndex[i];
 
                 if (flipped && index <= anim.start) {
                     flipped = false;
@@ -143,7 +143,7 @@ void Tileset::AnimateStrand(VSP::AnimState& anim) {
     }
 
 #if _DEBUG
-    for (int i = anim.start; i <= anim.finish; i++) {
+    for (uint i = anim.start; i <= anim.finish; i++) {
         assert(anim.start <= tileIndex[i] && tileIndex[i] <= anim.finish);
     }
 #endif

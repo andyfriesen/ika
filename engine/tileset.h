@@ -22,7 +22,7 @@ struct Tileset {
 
     Video::Image* GetTile(uint index) const;
 
-    inline int NumTiles() const { return frameCount; }  ///< Returns the number of tiles in the tileset.
+    inline uint NumTiles() const { return frameCount; }  ///< Returns the number of tiles in the tileset.
 
     inline int Width() const { return frameWidth; }     ///< Width of the tiles in the tileset.
     inline int Height() const { return frameHeight; }   ///< Height of the tiles in the tileset.
@@ -34,10 +34,10 @@ private:
     ScopedPtr<VSP> vsp;                                 ///< Source tileset.
 
     std::vector<Video::Image*> hFrame;                  ///< Array of image handles.
-    int frameCount;                                     ///< Number of tiles in the tileset.
+    uint frameCount;                                    ///< Number of tiles in the tileset.
     int frameWidth, frameHeight;                        ///< Tile dimensions
 
-    std::vector<int>    tileIndex;                      ///< Translation table for actual tiles <--> the tile that should be drawn. (animating tiles)
+    std::vector<uint>    tileIndex;                     ///< Translation table for actual tiles <--> the tile that should be drawn. (animating tiles)
     std::vector<bool>   flipFlag;                       ///< For tiles in the "flip" mode. (back and forth)
     
     std::vector<VSP::AnimState>    animstate;           ///< Animation states for each tile

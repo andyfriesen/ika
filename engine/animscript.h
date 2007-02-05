@@ -26,7 +26,7 @@ struct AnimScript {
     inline uint getCurFrame() const { return _curFrame; }
     inline bool isDead() const { return _dead; }
 
-    void update(uint time);
+    void update(int time);
 
     std::string toString() const;
 
