@@ -7,10 +7,8 @@
 #include "common/fileio.h"
 #include "common/log.h"
 
-namespace Script
-{
-    namespace Error
-    {
+namespace Script {
+    namespace Error {
         int softspace = 1;
 
         PyTypeObject type;
@@ -30,48 +28,49 @@ namespace Script
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt = 1;
-            type.ob_type=&PyType_Type;
-            type.tp_name="ErrorHandler";
+            type.ob_type = &PyType_Type;
+            type.tp_name = "ErrorHandler";
             type.tp_basicsize = sizeof type;
-            type.tp_dealloc=(destructor)Destroy;
+            type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
             type.tp_getset = properties;
             PyType_Ready(&type);
 
             // replace stdout and stderr with our error object
             PyObject* pSysmodule = PyImport_ImportModule("sys");
-            if (pSysmodule == 0)    {   Log::Write("Could not get sys module.");    return; }
-
+            if (pSysmodule == 0) {
+                Log::Write("Could not get sys module.");
+                return;
+            }
             PyObject* pSysdict = PyModule_GetDict(pSysmodule);
-            if (pSysdict == 0)      {   Log::Write("Could not init sys module.");   return; }
+            if (pSysdict == 0) {
+                Log::Write("Could not init sys module.");
+                return;
+            }
 
             PyObject* errorHandler = New();
             PyDict_SetItemString(pSysdict, "stdout", errorHandler);
             PyDict_SetItemString(pSysdict, "stderr", errorHandler);
-            
+
             Py_DECREF(errorHandler);
             Py_DECREF(pSysmodule);
         }
 
-        PyObject* New()
-        {
-            return (PyObject*)PyObject_New(PyObject, &type);    
+        PyObject* New() {
+            return (PyObject*)PyObject_New(PyObject, &type);
         }
 
-        void Destroy(PyObject* self)
-        {
+        void Destroy(PyObject* self) {
             PyObject_Del(self);
         }
 
-#define METHOD(x) PyObject* x(PyObject* self, PyObject* args)
+#define METHOD(x) PyObject* x(PyObject* /*self*/, PyObject* args)
 
-        METHOD(Error_Write)
-        {
+        METHOD(Error_Write) {
             const char* msg;
 
             if (!PyArg_ParseTuple(args, "s:Error.Write", &msg))
@@ -86,16 +85,13 @@ namespace Script
 
 #undef METHOD
 
-        PyObject* getSoftSpace(PyObject* self)
-        {
+        PyObject* getSoftSpace(PyObject* /*self*/) {
             return PyInt_FromLong(softspace);
         }
 
-        PyObject* setSoftSpace(PyObject* self, PyObject* value)
-        {
+        PyObject* setSoftSpace(PyObject* /*self*/, PyObject* value) {
             softspace = PyObject_IsTrue(value);
             return 0;
         }
-
     }
 }

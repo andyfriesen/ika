@@ -5,10 +5,8 @@
 
 #include <cassert>
 
-namespace Script
-{
-    namespace Keyboard
-    {
+namespace Script {
+    namespace Keyboard {
         PyTypeObject type;
 
         PyMethodDef methods[] =
@@ -32,8 +30,7 @@ namespace Script
             {   0   }
         };
 
-        void Init()
-        {
+        void Init() {
             memset(&type, 0, sizeof type);
 
             type.ob_refcnt = 1;
@@ -49,8 +46,7 @@ namespace Script
             PyType_Ready(&type);
         }
 
-        PyObject* New()
-        {
+        PyObject* New() {
             Script::InputDevice::DeviceObject* keyboard = PyObject_New(Script::InputDevice::DeviceObject, &type);
             keyboard->device = the< ::Input>()->GetKeyboard();
 
@@ -58,28 +54,24 @@ namespace Script
             return (PyObject*)keyboard;
         }
 
-        void Destroy(PyObject* self)
-        {
+        void Destroy(PyObject* self) {
             PyObject_Del(self);
         }
 
-#define METHOD(x) PyObject* x(PyObject* self)
+#define METHOD(x) PyObject* x(PyObject* /*self*/)
 
-        METHOD(Keyboard_GetKey)
-        {
+        METHOD(Keyboard_GetKey) {
             char c = the< ::Input>()->GetKeyboard()->GetKey();
 
-            if (c)
+            if (c) {
                 return PyString_FromStringAndSize(&c, 1);
-            else
-            {
+            } else {
                 Py_INCREF(Py_None);
                 return Py_None;
             }
         }
 
-        METHOD(Keyboard_WasKeyPressed)
-        {
+        METHOD(Keyboard_WasKeyPressed) {
             PyObject* o = the< ::Input>()->GetKeyboard()->WasKeyPressed()
                 ? Py_True
                 : Py_False;
@@ -88,8 +80,7 @@ namespace Script
             return o;
         }
 
-        METHOD(Keyboard_ClearKeyQueue)
-        {
+        METHOD(Keyboard_ClearKeyQueue) {
             the< ::Input>()->GetKeyboard()->ClearKeyQueue();
             Py_INCREF(Py_None);
             return Py_None;

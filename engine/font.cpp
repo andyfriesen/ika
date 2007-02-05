@@ -88,7 +88,7 @@ namespace Ika {
         }
     }
 
-    void Font::PrintChar(int& x, int y, uint subset, char c, RGBA colour, Canvas& dest, Video::BlendMode blendMode) {
+    void Font::PrintChar(int& x, int y, uint subset, char c, RGBA /*colour*/, Canvas& dest, Video::BlendMode blendMode) {
         //if (c < 0 || c > 96)
         //    return;
 
@@ -233,7 +233,7 @@ namespace Ika {
                 : width(0)
             {}
 
-            inline void operator ()(int& x, int y, int subset, char c, RGBA colour, Font* font) {
+            inline void operator ()(int& x, int /*y*/, int subset, char c, RGBA /*colour*/, Font* font) {
                 const Canvas& glyph = font->GetGlyphCanvas(c, subset);
                 x += glyph.Width() + font->LetterSpacing();
                 width = max(width, x);

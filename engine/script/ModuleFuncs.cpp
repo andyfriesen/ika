@@ -4,8 +4,9 @@
 #include "timer.h"
 #include "SDL/SDL.h"
 
-#define METHOD(x)  PyObject* x(PyObject* self, PyObject* args)
-#define METHOD1(x) PyObject* x(PyObject*)
+#define METHOD(x)  PyObject* x(PyObject* /*self*/, PyObject* args)
+#define METHOD1(x) PyObject* x(PyObject* /*self*/)
+#define METHOD2(x) PyObject* x(PyObject* self, PyObject* args)
 
 namespace Script {
     Engine*    engine;
@@ -198,7 +199,7 @@ namespace Script {
     }
 
     // FIXME?  Is there a more intuitive way to do this?
-    METHOD(ika_setplayer) {
+    METHOD2(ika_setplayer) {
         Script::Entity::EntityObject* ent;
 
         if (!PyArg_ParseTuple(args, "O:SetPlayerEntity", &ent))
@@ -584,4 +585,5 @@ namespace Script {
 
 #undef METHOD
 #undef METHOD1
+#undef METHOD2
 }

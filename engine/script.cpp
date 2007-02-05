@@ -102,7 +102,7 @@ void ScriptEngine::Shutdown() {
     Py_Finalize();
 }
 
-bool ScriptEngine::LoadSystemScripts(const std::string& fname) {
+bool ScriptEngine::LoadSystemScripts(const std::string& /*fname*/) {
     Py_XDECREF(sysModule);                                              // free it if it's already allocated
 
     sysModule = PyImport_ImportModule("system");

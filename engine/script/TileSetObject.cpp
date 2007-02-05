@@ -26,8 +26,8 @@ namespace Script {
             { 0 }
         };
 
-#define GET(x) PyObject* get ## x(TilesetObject* self)
-#define SET(x) PyObject* set ## x(TilesetObject* self, PyObject* value)
+#define GET(x) PyObject* get ## x(TilesetObject* /*self*/)
+#define SET(x) PyObject* set ## x(TilesetObject* /*self*/, PyObject* value)
 
         GET(TileCount)  { return PyInt_FromLong(engine->tiles->NumTiles()); }
         GET(TileWidth)  { return PyInt_FromLong(engine->tiles->Width());    }
@@ -71,7 +71,7 @@ namespace Script {
             PyObject_Del(self);
         }
 
-#define METHOD(x) PyObject* x(TilesetObject* self, PyObject* args)
+#define METHOD(x) PyObject* x(TilesetObject* /*self*/, PyObject* args)
 
         METHOD(Tileset_Save) {
             char* fileName = 0;

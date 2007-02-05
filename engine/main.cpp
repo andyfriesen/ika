@@ -876,7 +876,7 @@ Engine::Engine()
     , _isMapLoaded(false)
     , _recurseStop(false) {}
 
-int main(int argc, char* args[]) {
+int main(int /*argc*/, char* /*args*/[]) {
     Engine engine;
     engine.Startup();
     engine.MainLoop();

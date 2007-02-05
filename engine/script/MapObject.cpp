@@ -141,8 +141,8 @@ namespace Script {
             {   0   }   // end of list
         };
 
-#define GET(x) PyObject* get ## x(PyObject* self)
-#define SET(x) PyObject* set ## x(PyObject* self, PyObject* value)
+#define GET(x) PyObject* get ## x(PyObject* /*self*/)
+#define SET(x) PyObject* set ## x(PyObject* /*self*/, PyObject* value)
 
         GET(Title)      { return PyString_FromString(engine->map.title.c_str()); }
         SET(Title)      { engine->map.title = PyString_AsString(value); return 0;   }
@@ -260,7 +260,8 @@ namespace Script {
             PyObject_Del(self);
         }
 
-#define METHOD(x) PyObject* x(PyObject* self, PyObject* args)
+#define METHOD(x) PyObject* x(PyObject* /*self*/, PyObject* args)
+#define METHOD1(x) PyObject* x(PyObject* /*self*/, PyObject* /*args*/)
 
         METHOD(Map_Switch) {
             char* filename;
@@ -280,7 +281,7 @@ namespace Script {
             return Py_None;
         }
         
-        METHOD(Map_GetMetaData) {
+        METHOD1(Map_GetMetaData) {
             PyObject* dict = PyDict_New();
 
             for (std::map<std::string, std::string>::iterator iter = engine->map.metaData.begin(); iter != engine->map.metaData.end(); iter++) {
@@ -648,7 +649,7 @@ namespace Script {
             return list;
         }
 
-        METHOD(Map_GetAllEntities) {
+        METHOD1(Map_GetAllEntities) {
             PyObject* list = PyList_New(Script::Entity::instances.size());
 
             int i = 0;
@@ -670,5 +671,6 @@ namespace Script {
         }
 
 #undef METHOD
+#undef METHOD1
     }
 }

@@ -55,8 +55,9 @@ namespace Script {
             {   0   }
         };
 
-#define GET(x) PyObject* get ## x(InputObject* self)
-#define SET(x) PyObject* set ## x(InputObject* self, PyObject* value)
+#define GET(x) PyObject* get ## x(InputObject* /*self*/)
+#define GET1(x) PyObject* get ## x(InputObject* self)
+#define SET(x) PyObject* set ## x(InputObject* /*self*/, PyObject* value)
 
         GET(Up)         { return Script::Control::New(the< ::Input>()->up);      }
         GET(Down)       { return Script::Control::New(the< ::Input>()->down);    }
@@ -64,9 +65,9 @@ namespace Script {
         GET(Right)      { return Script::Control::New(the< ::Input>()->right);   }
         GET(Enter)      { return Script::Control::New(the< ::Input>()->enter);   }
         GET(Cancel)     { return Script::Control::New(the< ::Input>()->cancel);  }
-        GET(Keyboard)   { Py_INCREF(self->keyboard); return self->keyboard;     }
-        GET(Mouse)      { Py_INCREF(self->mouse); return self->mouse;           }
-        GET(Joysticks)  { Py_INCREF(self->joysticks); return self->joysticks;   }
+        GET1(Keyboard)  { Py_INCREF(self->keyboard); return self->keyboard;     }
+        GET1(Mouse)     { Py_INCREF(self->mouse); return self->mouse;           }
+        GET1(Joysticks) { Py_INCREF(self->joysticks); return self->joysticks;   }
 
         SET(Up) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
@@ -135,6 +136,7 @@ namespace Script {
         }
 
 #undef GET
+#undef GET1
 #undef SET
 
         PyGetSetDef properties[] = {
@@ -195,7 +197,7 @@ namespace Script {
         }
 
 #define METHOD(x)  PyObject* x(InputObject* self, PyObject* args)
-#define METHOD1(x) PyObject* x(InputObject* self)
+#define METHOD1(x) PyObject* x(InputObject* /*self*/)
 
         METHOD1(Input_Update) {
             engine->CheckMessages();

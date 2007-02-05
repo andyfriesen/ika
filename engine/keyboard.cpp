@@ -199,7 +199,7 @@ void Keyboard::KeyDown(uint keyCode) {
     }
 }
 
-void Keyboard::KeyUp(uint keyCode) {
+void Keyboard::KeyUp(uint /*keyCode*/) {
 }
 
 bool Keyboard::WasKeyPressed() const {

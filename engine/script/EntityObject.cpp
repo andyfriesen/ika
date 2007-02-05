@@ -316,7 +316,7 @@ namespace Script {
         }
 
         // This is much more complicated than it should be.
-        PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
+        PyObject* New(PyTypeObject* /*type*/, PyObject* args, PyObject* kw) {
             static char* keywords[] = { "x", "y", "layer", "spritename", 0 };
 
             int x, y;
@@ -365,6 +365,7 @@ namespace Script {
         }
 
 #define METHOD(x) PyObject* x(EntityObject* self, PyObject* args)
+#define METHOD1(x) PyObject* x(EntityObject* self, PyObject* /*args*/)
 
         METHOD(Entity_MoveTo) {
             int x, y;
@@ -505,8 +506,7 @@ namespace Script {
         }
 
 
-        METHOD(Entity_Update) {
-
+        METHOD1(Entity_Update) {
             self->ent->Update();
 
             Py_INCREF(Py_None);
@@ -540,7 +540,8 @@ namespace Script {
 
             return dict;
         }
-
-        /////////////////
     }
 }
+
+#undef METHOD
+#undef METHOD1
