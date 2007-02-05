@@ -61,9 +61,12 @@ enum Direction {
 /// A color.
 union RGBA {
     // Nonstandard, but supported by both GCC and MSVC.
+#pragma warning (push)
+#pragma warning (disable : 4201)
     struct {
         u8 r, g, b, a;
     };
+#pragma warning (pop)
 
     u32 i;
 
