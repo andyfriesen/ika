@@ -13,7 +13,7 @@ bool isPowerOf2(uint i) {
 }
 
 // http://bob.allegronetwork.com/prog/tricks.html#nextPowerOf2
-uint nextPowerOf2(uint i) {
+int nextPowerOf2(int i) {
     i--;
     i |= (i >> 1);
     i |= (i >> 2);

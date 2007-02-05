@@ -110,7 +110,7 @@ struct Destroy {
 };
 
 bool isPowerOf2(uint i);
-uint nextPowerOf2(uint i);
+int nextPowerOf2(int i);
 
 int sgn(int x);
 void SeedRandom();

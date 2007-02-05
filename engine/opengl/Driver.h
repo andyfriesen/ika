@@ -25,14 +25,14 @@ namespace OpenGL {
         friend struct Driver;
 
         uint handle;
-        uint width;
-        uint height;
+        int width;
+        int height;
         uint refCount;
 
         Point unused;   // where the next image should go
 
     protected:
-        Texture(uint p = 0, uint w = 0, uint h = 0)
+        Texture(uint p = 0, int w = 0, int h = 0)
             : handle(p)
             , width(w)
             , height(h)

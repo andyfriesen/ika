@@ -92,10 +92,12 @@ namespace OpenGL {
 
     // Trouble is, SDL nukes the GL context when it switches modes.
     // Which means that our textures go down the crapper. ;_;
-    bool Driver::SwitchResolution(int x, int y) {
 #if 1
+    bool Driver::SwitchResolution(int /*x*/, int /*y*/) {
         return false;
+    }
 #else
+    bool Driver::SwitchResolution(int x, int y) {
         if (!SDL_VideoModeOK(x, y, _bpp, SDL_OPENGL | (_fullScreen ? SDL_FULLSCREEN : 0))) {
             return false;
         }
@@ -117,8 +119,8 @@ namespace OpenGL {
         glViewport(0, 0, _xres, _yres);
 
         return true;
-#endif
     }
+#endif
 
     // This is far, far too long.  Refactor.
     Image* Driver::CreateImage(Canvas& src) {
@@ -726,8 +728,8 @@ namespace OpenGL {
             y2 -= _yres;
         }
 
-        uint texwidth = nextPowerOf2(w);
-        uint texheight = nextPowerOf2(h);
+        int texwidth = nextPowerOf2(w);
+        int texheight = nextPowerOf2(h);
         uint handle;
         glGenTextures(1, &handle);
         SwitchTexture(handle);
