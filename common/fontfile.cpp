@@ -6,8 +6,7 @@
 #include "vergepal.h"
 #include "utility.h"
 
-FontFile::~FontFile()
-{
+FontFile::~FontFile() {
     glyph.clear();
 }
 
@@ -15,11 +14,11 @@ uint FontFile::NumSubSets() const {
     return set.size();
 }
 
-const FontFile::SSubSet& FontFile::GetSubSet(int subset) const {
+const FontFile::SSubSet& FontFile::GetSubSet(uint subset) const {
     return set[subset];
 }
 
-const Canvas& FontFile::GetGlyph(int glyphidx) const {
+const Canvas& FontFile::GetGlyph(uint glyphidx) const {
     return glyph[glyphidx];
 }
 
@@ -27,17 +26,15 @@ uint FontFile::NumGlyphs() const {
     return glyph.size();
 }
 
-int FontFile::Width() const {
+uint FontFile::Width() const {
     return width;
 }
 
-int FontFile::Height() const {
+uint FontFile::Height() const {
     return height;
 }
 
-
-bool FontFile::Load8bppFont(File& f)
-{
+bool FontFile::Load8bppFont(File& f) {
     short int width, height, subsetcount;
     f.Read(&width, 2);
     f.Read(&height, 2);
@@ -51,8 +48,7 @@ bool FontFile::Load8bppFont(File& f)
 
     // convert 8bpp to 32bpp
 
-    for (int i = 0; i < width * height * nGlyphs; i++)
-    {
+    for (int i = 0; i < width * height * nGlyphs; i++) {
         char c = buffer8[i];
 
         pPixels[i] = RGBA(c, cVergepal);
@@ -61,15 +57,13 @@ bool FontFile::Load8bppFont(File& f)
     glyph.resize(nGlyphs);
     RGBA* p = pPixels.get();
 
-    for (int nGlyph = 0; nGlyph < nGlyphs; nGlyph++)
-    {
+    for (int nGlyph = 0; nGlyph < nGlyphs; nGlyph++) {
         glyph[nGlyph].CopyPixelData(p, width, height);
         p += width * height;
     }
 
     set.resize(subsetcount);                                            // not very readable :(  Allocates the needed number of subsets.
-    for (int nCurset = 0; nCurset < subsetcount; nCurset++)
-    {
+    for (int nCurset = 0; nCurset < subsetcount; nCurset++) {
         SSubSet& ss = set[nCurset];
 
         for (int j = 0; j < 256; j++)
@@ -86,8 +80,7 @@ bool FontFile::Load8bppFont(File& f)
     return true;
 }
 
-bool FontFile::Load16bppFont(File& f)
-{
+bool FontFile::Load16bppFont(File& f) {
     short int width, height, subsetcount;
     f.Read(&width, 2);
     f.Read(&height, 2);
@@ -101,14 +94,13 @@ bool FontFile::Load16bppFont(File& f)
 
     // now we have uncompressed 16 bit font stuff.  Convert it to 32 bits.
 
-    for (int i = 0; i < width * height * nGlyphs; i++)
-    {
+    for (int i = 0; i < width * height * nGlyphs; i++) {
         u16 c = buffer16[i];
 
         pPixels[i] = RGBA(
-             (c & 31)  << 3,
-            ((c >>  5) << 3) & 0xFF,
-            ((c >> 10) << 3) & 0xFF,
+            u8((c & 31) << 3),
+            u8(((c >>  5) << 3) & 0xFF),
+            u8(((c >> 10) << 3) & 0xFF),
             c ? 255 : 0);
     }
 
@@ -116,15 +108,13 @@ bool FontFile::Load16bppFont(File& f)
 
     RGBA* p = pPixels.get();
 
-    for (int nGlyph = 0; nGlyph < nGlyphs; nGlyph++)
-    {
+    for (int nGlyph = 0; nGlyph < nGlyphs; nGlyph++) {
         glyph[nGlyph].CopyPixelData(p, width, height);
         p += width * height;
     }
 
     set.resize(subsetcount);                                            // not very readable :(  Allocates the needed number of subsets.
-    for (int nCurset = 0; nCurset < subsetcount; nCurset++)
-    {
+    for (int nCurset = 0; nCurset < subsetcount; nCurset++) {
         SSubSet& ss = set[nCurset];
 
         for (int j = 0; j < 256; j++)
@@ -173,13 +163,18 @@ bool FontFile::Load32bppFont(File& f) {
 
     for (int i = 0; i < glyphCount; i++) {
         u16 w, h;
-        f.Read(w);      f.Read(h);
+        f.Read(w);
+        f.Read(h);
         glyphWidths.push_back(w);
         glyphHeights.push_back(h);
         dataSize += w * h;
 
-        if (width < w) width = w;
-        if (height < h) height = h;
+        if (width < w) {
+            width = w;
+        }
+        if (height < h) {
+            height = h;
+        }
     }
 
     ScopedArray<RGBA> pBuffer(new RGBA[dataSize]);
@@ -233,27 +228,27 @@ void FontFile::Save(const char* fname) {
     File f;
     f.OpenWrite(fname, 1);
 
-	assert(set.size() <= (std::numeric_limits<unsigned char>::max)());
-    unsigned char numSubsets = set.size();
+    assert(set.size() <= (std::numeric_limits<u8>::max)());
+    u8 numSubsets = u8(set.size());
 
-	assert(glyph.size() <= (std::numeric_limits<unsigned short>::max)());
-	unsigned short numGlyphs = glyph.size();
+    assert(glyph.size() <= (std::numeric_limits<u16>::max)());
+    u16 numGlyphs = u16(glyph.size());
 
     f.Write("FONT27");
     f.Write(numSubsets);
     f.Write(numGlyphs);
 
-    for(std::vector<SSubSet>::iterator s = set.begin(); s != set.end(); s++) {
+    for (std::vector<SSubSet>::iterator s = set.begin(); s != set.end(); s++) {
         u16 blah[256];
         std::copy(&s->glyphIndex[0], &s->glyphIndex[256], &blah[0]);
-        f.Write(&blah[0], sizeof(blah));
+        f.Write(&blah[0], sizeof blah);
     }
 
-    for (unsigned int i = 0; i < glyph.size(); i++) {
-		assert(glyph[i].Width() <= (std::numeric_limits<unsigned short>::max)());
-        unsigned short w = glyph[i].Width();
-		assert(glyph[i].Height() <= (std::numeric_limits<unsigned short>::max)());
-        unsigned short h = glyph[i].Height();
+    for (uint i = 0; i < glyph.size(); i++) {
+        assert(glyph[i].Width() <= (std::numeric_limits<u16>::max)());
+        u16 w = u16(glyph[i].Width());
+        assert(glyph[i].Height() <= (std::numeric_limits<u16>::max)());
+        u16 h = u16(glyph[i].Height());
 
         f.Write(w);
         f.Write(h);
@@ -270,7 +265,7 @@ void FontFile::Save(const char* fname) {
         }
     }
 
-    ScopedArray<RGBA> pBuffer( new RGBA[pixels.size()] );
+    ScopedArray<RGBA> pBuffer(new RGBA[pixels.size()]);
 
     std::copy(pixels.begin(), pixels.end(),
         std::raw_storage_iterator<RGBA*, int>(pBuffer.get()));

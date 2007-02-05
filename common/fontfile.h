@@ -29,19 +29,19 @@ struct FontFile {
     uint NumSubSets() const;
 
     /// Returns the specified subset table.
-    const SSubSet& GetSubSet(int subset) const;
+    const SSubSet& GetSubSet(uint subset) const;
 
     /// Returns the specified glyph.
-    const Canvas& GetGlyph(int glyphidx) const;
+    const Canvas& GetGlyph(uint glyphidx) const;
 
     /// Returns the number of glyphs in the font.
     uint NumGlyphs() const;
 
     /// Returns the width of the widest character in the font
-    int Width() const;
+    uint Width() const;
 
     /// Returns the height of the highest character in the font
-    int Height() const;
+    uint Height() const;
     
 private:
     bool Load8bppFont(File& f);
@@ -51,6 +51,6 @@ private:
     std::vector<SSubSet>    set;                    ///< font subsets.
     std::vector<Canvas>     glyph;                  ///< Actual font glyphs.
 
-    int width, height;                              ///< The width and height of the largest characters in the font.
+    uint width, height;                             ///< The width and height of the largest characters in the font.
 };
 
