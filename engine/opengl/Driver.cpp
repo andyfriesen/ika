@@ -304,8 +304,8 @@ namespace OpenGL {
         if (_doubleSize) {
             // Grab the whole screen into our buffer texture and draw it at double size.
             glDisable(GL_BLEND);
-            uint texW = nextPowerOf2(_xres);
-            uint texH = nextPowerOf2(_yres);
+            int texW = nextPowerOf2(_xres);
+            int texH = nextPowerOf2(_yres);
             SwitchTexture(_bufferTex);
             glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, _yres, texW, texH, 0);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
@@ -797,7 +797,7 @@ namespace OpenGL {
     inline void Driver::SwitchTexture(uint tex) {
         if (tex != _lasttex) {
             _lasttex = tex;
-            glBindTexture(GL_TEXTURE_2D, tex);
+            glBindTexture(GL_TEXTURE_2D, (GLuint)tex);
         }
     }
 };

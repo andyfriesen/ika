@@ -116,7 +116,7 @@ void Tileset::AnimateStrand(VSP::AnimState& anim) {
 
         case VSP::random: {
             for (uint i = anim.start; i <= anim.finish; i++) {
-                tileIndex[i] = Random(anim.start, anim.finish + 1);
+                tileIndex[i] = Random(int(anim.start), int(anim.finish + 1));
             }
             break;
         }

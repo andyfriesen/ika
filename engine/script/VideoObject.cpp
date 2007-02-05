@@ -430,6 +430,7 @@ namespace Script {
             const char* keywords[] = {
                 "left", "top", "right", "bottom"
             };
+            keywords;  // To remove use warning.
 
             Point p = self->video->GetResolution();
 

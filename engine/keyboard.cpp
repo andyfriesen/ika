@@ -195,7 +195,8 @@ InputControl* Keyboard::GetKey(uint keyCode) {
 
 void Keyboard::KeyDown(uint keyCode) {
     if (keyCode < 256) {
-        _keyQueue.push(keyCode);
+        // This probably should not be a char.
+        _keyQueue.push((char)keyCode);
     }
 }
 

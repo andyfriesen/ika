@@ -197,7 +197,7 @@ void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent) {
     Py_DECREF(result);
 }
 
-void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent, int x, int y, int frame) {
+void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent, int x, int y, uint frame) {
     CDEBUG("ScriptEngine::ExecObject");
 
     Script::Entity::EntityObject* entObject =

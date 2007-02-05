@@ -25,7 +25,7 @@ struct ScriptEngine {
 
     void ExecObject(const ScriptObject& func);
     void ExecObject(const ScriptObject& func, const Entity* ent);       // needed for entity movescripts.  Passes the entity as an argument to the function object.
-    void ExecObject(const ScriptObject& func, const Entity* ent, int x, int y, int frame);       // Used for entity renderscripts.  Passes the entity, along with three ints.
+    void ExecObject(const ScriptObject& func, const Entity* ent, int x, int y, uint frame);       // Used for entity renderscripts.  Passes the entity, along with three ints.
 
     ScriptObject GetObjectFromMapScript(const std::string& name);       // a bit verbose, but it says what it does.
 

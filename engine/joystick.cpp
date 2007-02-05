@@ -4,7 +4,7 @@
 #include "common/log.h"
 
 Joystick::Joystick(uint index)
-: _joystick(SDL_JoystickOpen(index)) {
+: _joystick(SDL_JoystickOpen(int(index))) {
     assert(_joystick);
 
     _axes.resize(SDL_JoystickNumAxes(_joystick));
