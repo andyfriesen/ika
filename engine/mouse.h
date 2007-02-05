@@ -1,9 +1,6 @@
-
-#ifndef MOUSE_H
-#define MOUSE_H
+#pragma once
 
 #include "input.h"
-#include "keyboard.h" // EVIL
 #include "common/utility.h"
 
 struct Mouse : InputDevice {
@@ -31,5 +28,3 @@ private:
     ScopedPtr<InputControl> _right;
     ScopedPtr<InputControl> _middle;
 };
-
-#endif
