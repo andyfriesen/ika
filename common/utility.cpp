@@ -2,10 +2,14 @@
  * Details in utility.h
  */
 
-#include <stdarg.h>
+#include <algorithm>
+#include <cctype>
+#include <cstdarg>
+#include <ctime>
+#include <string>
+#include <sstream>
 #include <stdlib.h>
 #include <stdio.h>
-#include <time.h>
 #include "utility.h"
 
 bool isPowerOf2(uint i) {
@@ -50,41 +54,37 @@ DEPRECATED char* va(const char* format, ...) {
 }
 
 void SeedRandom() {
-    time_t curTime;
-    time(&curTime);
-    srand(u32(curTime));
+    std::time_t curTime;
+    std::time(&curTime);
+    std::srand(u32(curTime));
 }
 
 int Random(int min, int max) {
     int i;
 
     if (min == max) {
-        // :P
         return min;
     }
-    
+
     if (max < min) {
         swap(max, min);
     }
-    
+
     i = (rand() % (max - min)) + min;
-    
+
     return i;
 }
-
-#include <string>
-#include <sstream>
 
 const std::string trim(const std::string& s) {
     uint start = 0;
     uint end = s.length();
 
     while (s[start] == ' ' && start < s.length()) {
-        start++;
+        ++start;
     }
 
     while (s[end - 1] == ' ' && end > start) {
-        end--;
+        --end;
     }
 
     if (start >= end) {
@@ -96,25 +96,13 @@ const std::string trim(const std::string& s) {
 
 std::string toLower(const std::string& s) {
     std::string t(s);
-
-    for (uint i = 0; i < t.length(); i++) {
-        if (t[i] >= 'A' && t[i] <= 'Z') {
-            t[i] ^= 32;
-        }
-    }
-    
+    std::transform(t.begin(), t.end(), t.begin(), std::tolower);
     return t;
 }
 
 std::string toUpper(const std::string& s) {
     std::string t(s);
-
-    for (uint i = 0; i < t.length(); i++) {
-        if (t[i] >= 'a' && t[i] <= 'z') {
-            t[i] ^= 32;
-        }
-    }
-
+    std::transform(t.begin(), t.end(), t.begin(), std::toupper);
     return t;
 }
 
