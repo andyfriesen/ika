@@ -244,7 +244,7 @@ namespace OpenGL {
         }
 
         SwitchTexture(0);
-        
+
         // Refcount update/cleanup
         Texture* tex = static_cast<OpenGL::Image*>(img)->_texture;
 

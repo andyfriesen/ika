@@ -43,10 +43,10 @@ public:                                                                         
     Tileset*                        tiles;                                          ///< Images.  Of Tiles.
     ScriptEngine                    script;
     
-    SpriteController               sprite;                                         ///< sprite files
+    SpriteController                sprite;                                         ///< sprite files
     EntityList                      entities;                                       ///< entities
 
-    Video::Driver*                  video;                                          ///< video. ;)
+    Video::Driver*                  video;
 
     bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
     bool                            _isMapLoaded;                                   ///< true if a map is loaded (gah)
@@ -61,7 +61,7 @@ private:
 public:
     Entity*                         player;                                         ///< Points to the current player entity
     Entity*                         cameraTarget;                                   ///< Points to the current camera target
-    std::vector<uint>                renderList;                                    ///< List of layer indeces to draw by default.
+    std::vector<uint>               renderList;                                     ///< List of layer indeces to draw by default.
     
     // Odds and ends
     HookList                        _hookRetrace;

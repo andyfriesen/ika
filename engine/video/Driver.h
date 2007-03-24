@@ -9,7 +9,7 @@
 #include "common/types.h"
 #include "common/Canvas.h"
 
-// linux hack.
+// Linux hack: X11 libraries #define this constant
 #ifdef None
 #   undef None
 #endif

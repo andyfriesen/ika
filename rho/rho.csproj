@@ -97,18 +97,18 @@
                 <Reference
                     Name = "nunit.framework"
                     AssemblyName = "nunit.framework"
-                    HintPath = "..\..\..\..\Program Files\NUnit 2.2\bin\nunit.framework.dll"
-                    AssemblyFolderKey = "hklm\dn\nunit.framework"
+                    HintPath = "..\..\..\..\Program Files\NUnit 2.4\bin\nunit.framework.dll"
+                    AssemblyFolderKey = "hkcu\dn\nunit 2.4.0"
                 />
                 <Reference
-                    Name = "WeifenLuo.WinFormsUI.Docking"
-                    AssemblyName = "WeifenLuo.WinFormsUI.Docking"
-                    HintPath = "..\..\..\..\src\DockPanel\WinFormsUI\bin\Release\WeifenLuo.WinFormsUI.Docking.dll"
+                    Name = "WeifenLuo.WinFormsUI"
+                    AssemblyName = "WeifenLuo.WinFormsUI"
+                    HintPath = "..\3rdparty\dlls\WeifenLuo.WinFormsUI.dll"
                 />
                 <Reference
                     Name = "Scintilla.NET"
                     AssemblyName = "Scintilla.NET"
-                    HintPath = "..\..\..\scintilla.NET\scintilla.net\Release\Scintilla.NET.dll"
+                    HintPath = "..\3rdparty\dlls\Scintilla.NET.dll"
                 />
             </References>
         </Build>

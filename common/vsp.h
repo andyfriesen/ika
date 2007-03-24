@@ -29,15 +29,15 @@ struct VSP {
         random,
         flip
     };
-    
+
     struct AnimState {
         int start;
         int finish;
         int delay;
         int mode;
-        
+
         int count;
-        
+
         AnimState() 
             : start(0)
             , finish(0)
@@ -46,7 +46,7 @@ struct VSP {
             , count(0)
         {}
     };
-    
+
     VSP();
     VSP(const std::string& fname);
     

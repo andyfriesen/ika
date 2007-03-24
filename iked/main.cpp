@@ -477,7 +477,7 @@ namespace iked {
             { "dat",        t_text      }
         };
 
-        static const types_count = sizeof types / sizeof types[0];
+        static const int types_count = sizeof types / sizeof types[0];
 
         std::string sExt = ::toLower(Path::getExtension(fname));
         

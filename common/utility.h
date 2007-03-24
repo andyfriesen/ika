@@ -115,7 +115,7 @@ int nextPowerOf2(int i);
 int sgn(int x);
 void SeedRandom();
 int Random(int min, int max);
-DEPRECATED char* va(const char* format, ...);
+char* va(const char* format, ...);
 
 // String utilities
 const std::string trim(const std::string& s);

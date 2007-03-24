@@ -170,8 +170,6 @@ void LayerList::OnActivateLayer(wxMouseEvent& event) {
     uint layerIndex = event.GetId();
 
     if (layerIndex < _executor->GetMap()->NumLayers()) {
-    //wxASSERT(layerIndex < _executor->GetMap()->NumLayers());
-
         _executor->SetCurrentLayer(layerIndex);
     }
 }
@@ -227,7 +225,7 @@ void LayerList::OnCloneLayer(wxCommandEvent&) {
 void LayerList::OnDeleteLayer(wxCommandEvent&) {
 	wxASSERT(_contextMenuIndex != -1);
 
-    if (wxMessageBox("Are you sure you wish to delete this layer?", "Notice", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxID_YES) {
+    if (wxMessageBox("Are you sure you wish to delete this layer?", "Notice", wxYES_NO | wxNO_DEFAULT | wxICON_QUESTION) == wxYES) {
         _executor->HandleCommand(new DestroyLayerCommand(_contextMenuIndex));
     }
 }
