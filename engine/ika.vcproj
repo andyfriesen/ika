@@ -109,7 +109,7 @@
 				OutputFile=".\Debug/ika.exe"
 				LinkIncremental="2"
 				SuppressStartupBanner="TRUE"
-				AdditionalLibraryDirectories="..\common\,..\3rdparty\lib,\src\python-2.3a2\PCbuild"
+				AdditionalLibraryDirectories="..\common\,..\3rdparty\lib"
 				GenerateDebugInformation="TRUE"
 				ProgramDatabaseFile=".\Debug/ika.pdb"
 				SubSystem="2"/>

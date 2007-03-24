@@ -318,8 +318,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling resources"
-						CommandLine="d:\src\wxWin\contrib\utils\wxrc\wxrc /c $(InputFileName)
-"
+						CommandLine="$(WXWIN)\contrib\utils\wxrc\wxrc /c $(InputFileName)"
 						Outputs="$(InputName).cpp"/>
 				</FileConfiguration>
 				<FileConfiguration
@@ -327,8 +326,7 @@
 					<Tool
 						Name="VCCustomBuildTool"
 						Description="Compiling resources"
-						CommandLine="d:\src\wxWin\contrib\utils\wxrc\wxrc /c $(InputFileName)
-"
+						CommandLine="$(WXWIN)\contrib\utils\wxrc\wxrc /c $(InputFileName)"
 						Outputs="$(InputName).cpp"/>
 				</FileConfiguration>
 			</File>

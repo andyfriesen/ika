@@ -1,3 +1,5 @@
+# run with nmake, not GNU make
+
 CC=cl
 CCPP=cl
 CPPFLAGS=/I.. /I../3rdparty/include /I../3rdparty/include/freetype /EHsc

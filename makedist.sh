@@ -93,7 +93,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
             sed "s/@@VERSION@@/$version/g" < $original_path/ika.nis > $demo_path/ika.nis
 
-            /cygdrive/d/Program\ Files/NSIS/makensis.exe ika.nis && \
+            /cygdrive/c/Program\ Files/NSIS/makensis.exe ika.nis && \
                 mv ika-install-$version.exe $original_path
 
             popd
@@ -101,7 +101,8 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
         echo Assembling source archive...
             pushd $src_path
-                cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/ika export -D today common engine iked ikaMap xi >> $makedist_path/makedist.log
+                #cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/ika export -D today common engine iked ikaMap xi >> $makedist_path/makedist.log
+
                 # hack, since cvs won't pull it in on its own:
                 cp $original_path/SConstruct $src_path
             popd
