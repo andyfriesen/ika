@@ -62,7 +62,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
             cp 3rdparty/dlls/corona.dll $dll_path
             cp 3rdparty/dlls/msvcp71.dll $dll_path
             cp 3rdparty/dlls/msvcr71.dll $dll_path
-            cp 3rdparty/dlls/python24.dll $dll_path
+            cp 3rdparty/dlls/python25.dll $dll_path
             cp 3rdparty/dlls/zlib.dll $dll_path
             cp 3rdparty/dlls/sdl.dll $dll_path
 
@@ -93,7 +93,7 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
             sed "s/@@VERSION@@/$version/g" < $original_path/ika.nis > $demo_path/ika.nis
 
-            /cygdrive/c/Program\ Files/NSIS/makensis.exe ika.nis && \
+            C:/Program\ Files/NSIS/makensis.exe ika.nis && \
                 mv ika-install-$version.exe $original_path
 
             popd
@@ -101,7 +101,9 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
         echo Assembling source archive...
             pushd $src_path
-                #cvs -z3 -d:pserver:anonymous@cvs.sourceforge.net:/cvsroot/ika export -D today common engine iked ikaMap xi >> $makedist_path/makedist.log
+                for x in common engine iked ikaMap rho xi; do
+                    svn export -r head https://ika.svn.sourceforge.net/svnroot/ika/trunk/$x $x >> $makedist_path/makedist.log
+                done
 
                 # hack, since cvs won't pull it in on its own:
                 cp $original_path/SConstruct $src_path
