@@ -38,10 +38,10 @@ int sgn(int x) {
     return 0;
 }
 
-DEPRECATED char* va(const char* format, ...) {
+char* va(const char* format, ...) {
     va_list argptr;
     static char str[1024];
-    
+
     va_start(argptr, format);
 #ifdef WIN32
     _vsnprintf(str, sizeof(str)-1, format, argptr);
@@ -49,7 +49,7 @@ DEPRECATED char* va(const char* format, ...) {
     vsnprintf(str, sizeof(str)-1, format, argptr);
 #endif
     va_end(argptr);
-    
+
     return str;
 }
 

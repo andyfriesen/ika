@@ -28,8 +28,7 @@ Tileset::Tileset(const std::string& fname, Video::Driver* v)
         for (uint i = 0; i < frameCount; i++) {
             hFrame[i] = video->CreateImage(vsp->GetTile(i));
         }
-    }
-    catch(...) {
+    } catch(...) {
         throw TilesetException();
     }
     

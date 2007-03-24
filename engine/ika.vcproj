@@ -193,9 +193,6 @@
 			<File
 				RelativePath=".\tileset.cpp">
 			</File>
-			<File
-				RelativePath=".\timer.cpp">
-			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"

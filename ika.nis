@@ -35,7 +35,7 @@ Section "ika DLLs"
         File "corona.dll"
         File "msvcp71.dll"
         File "msvcr71.dll"
-        File "python24.dll"
+        File "python25.dll"
         File "zlib.dll"
 SectionEnd
 
