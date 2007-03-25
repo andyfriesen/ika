@@ -4,7 +4,7 @@ body {
     font-size : 11pt;
     font-weight : normal;
     font-family : verdana, helvetica, sans-serif;
-    color : rgb(0,0,0);
+    color : rgb(255, 255, 255);
     margin : 0 0 50px;
 }
 a:link , a:visited {
@@ -23,7 +23,7 @@ a:active , a:hover {
     text-decoration : underline;
     color : rgb(154,205,50);
 }
-h4 {
+h2 {
     background : rgb(0,0,0);
     font-size : 20pt;
     font-weight : normal;
@@ -32,12 +32,21 @@ h4 {
     color : rgb(255,255,255);
     padding-top : 10px;
 }
-h2 {
+h3 {
+    background : rgb(0,0,0);
+    font-size : 16pt;
+    font-weight : normal;
+    font-family : verdana, helvetica, sans-serif;
+    text-align : left;
+    color : rgb(255,255,255);
+    padding-top : 10px;
+}
+h4 {
     background : rgb(0,0,0);
     font-size : 14pt;
     font-weight : normal;
     font-family : verdana, helvetica, sans-serif;
-    text-align : center;
+    text-align : left;
     color : rgb(255,255,255);
     padding : 5px;
 }
