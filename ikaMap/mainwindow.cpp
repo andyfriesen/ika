@@ -213,6 +213,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     , _curTile(0)
     , _changed(false)
     , _layerVisibility(20)
+    , _nullState(0)
+    , _editState(&_nullState)
 {
     SetIcon(wxIcon("appicon", wxBITMAP_TYPE_ICO_RESOURCE));
 
@@ -1174,7 +1176,22 @@ void MainWindow::SetCurrentLayer(uint i) {
 }
 
 EditState* MainWindow::GetEditState() const {
-    return _mapView->GetEditState();
+    return _editState;
+}
+
+void MainWindow::SetEditState(EditState* es) {
+    if (_editState != 0) {
+        _editState->OnEndState();
+    }
+
+    _editState = es;
+    _editState->OnBeginState();
+
+    _mapView->Render();
+    _mapView->ShowPage();
+
+    _tilesetView->Render();
+    _tilesetView->Refresh();
 }
 
 void MainWindow::SetStatusBar(const std::string& text, int field) {

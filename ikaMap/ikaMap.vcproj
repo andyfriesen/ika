@@ -284,6 +284,9 @@
 				RelativePath="newmapdlg.h">
 			</File>
 			<File
+				RelativePath=".\nullstate.h">
+			</File>
+			<File
 				RelativePath="obstructionstate.h">
 			</File>
 			<File

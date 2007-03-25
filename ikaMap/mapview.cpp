@@ -41,8 +41,6 @@ MapView::MapView(Executor* executor, wxWindow* parent)
     , _zoneEditState(executor)
     , _scriptState(executor)
 
-    , _editState(&_tilesetState)
-
     , _xwin(0)
     , _ywin(0) {
     _video = new VideoFrame(this);
@@ -107,15 +105,15 @@ void MapView::OnMouseDown(wxMouseEvent& event) {
     if (event.MiddleDown()) {
         _scrollX = event.GetX();
         _scrollY = event.GetY();
-    }
 
-    else if (_executor->GetMap()->NumLayers())
-        _editState->OnMouseDown(event);
+    } else if (_executor->GetMap()->NumLayers()) {
+        _executor->GetEditState()->OnMouseDown(event);
+    }
 }
 
 void MapView::OnMouseUp(wxMouseEvent& event) {
     if (_executor->GetMap()->NumLayers() > 0)
-        _editState->OnMouseUp(event);
+        _executor->GetEditState()->OnMouseUp(event);
 }
 
 void MapView::OnMouseMove(wxMouseEvent& event) {
@@ -123,7 +121,7 @@ void MapView::OnMouseMove(wxMouseEvent& event) {
         int x = event.GetX();
         int y = event.GetY();
         ScreenToTile(x, y);
-        _executor->SetStatusBar(_editState->GetName() + va(": (%i, %i)", x, y), 1);
+        _executor->SetStatusBar(_executor->GetEditState()->GetName() + va(": (%i, %i)", x, y), 1);
     }
 
     if (event.MiddleIsDown()) {
@@ -145,17 +143,17 @@ void MapView::OnMouseMove(wxMouseEvent& event) {
         ShowPage();
 
     } else if (_executor->GetMap()->NumLayers()) {
-        _editState->OnMouseMove(event);
+        _executor->GetEditState()->OnMouseMove(event);
     }
 }
 
 void MapView::OnMouseWheel(wxMouseEvent& event) {
     if (_executor->GetMap()->NumLayers())
-        _editState->OnMouseWheel(event);
+        _executor->GetEditState()->OnMouseWheel(event);
 }
 
 void MapView::OnKeyPress(wxKeyEvent& event) {
-    _editState->OnKeyPress(event);
+    _executor->GetEditState()->OnKeyPress(event);
 }
 
 void MapView::OnMapChange(const MapEvent& event) {
@@ -182,12 +180,12 @@ void MapView::Render() {
             RenderEntities(lay, _xwin - lay->x, _ywin - lay->y);
 
             if (i == curLayer) {
-                _editState->OnRenderCurrentLayer();
+                _executor->GetEditState()->OnRenderCurrentLayer();
             }
         }
     }
 
-    _editState->OnRender();
+    _executor->GetEditState()->OnRender();
 }
 
 void MapView::ShowPage() {
@@ -225,8 +223,8 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset) {
         firstY = 0;
     }
 
-    if ((uint)(firstX + lenX) > tiles.Width())  lenX = tiles.Width()  - firstX;
-    if ((uint)(firstY + lenY) > tiles.Height()) lenY = tiles.Height() - firstY;
+    if (firstX + lenX > tiles.Width())  lenX = tiles.Width()  - firstX;
+    if (firstY + lenY > tiles.Height()) lenY = tiles.Height() - firstY;
 
     for (int y = 0; y < lenY; y++) {
         for (int x = 0; x < lenX; x++) {
@@ -235,7 +233,8 @@ void MapView::RenderLayer(const Matrix<uint>& tiles, int xoffset, int yoffset) {
             _video->Blit(
                 ts->GetImage(t),
                 x * tileX - adjustX, y * tileY - adjustY,
-                true);
+                true
+            );
         }
     }
 }
@@ -585,48 +584,30 @@ VideoFrame* MapView::GetVideo() const {
     return _video;
 }
 
-EditState* MapView::GetEditState() const {
-    return _editState;
-}
-
-void MapView::SetEditState(EditState* newState) {
-    _editState->OnEndState();
-    _editState = newState;
-    _editState->OnBeginState();
-
-    Render();
-    ShowPage();
-
-    // THIS SHOULDNT BE HERE
-    // but it works until I can put the new tool structure in.
-    _executor->GetTilesetView()->Render();
-    _executor->GetTilesetView()->Refresh();
-}
-
 void MapView::Cock() {
-    SetEditState(&_tilesetState);
+    _executor->SetEditState(&_tilesetState);
 }
 
 void MapView::SetBrushState() {
-    SetEditState(&_brushState);
+    _executor->SetEditState(&_brushState);
 }
 
 void MapView::SetCopyPasteState() {
-    SetEditState(&_copyPasteState);
+    _executor->SetEditState(&_copyPasteState);
 }
 
 void MapView::SetObstructionState() {
-    SetEditState(&_obstructionState);
+    _executor->SetEditState(&_obstructionState);
 }
 void MapView::SetEntityState() {
-    SetEditState(&_entityState);
+    _executor->SetEditState(&_entityState);
 }
 
 void MapView::SetZoneState() {
-    SetEditState(&_zoneEditState);
+    _executor->SetEditState(&_zoneEditState);
 }
 void MapView::SetScriptTool(Script* script) {
     _scriptState.SetScript(script);
 
-    SetEditState(&_scriptState);
+    _executor->SetEditState(&_scriptState);
 }

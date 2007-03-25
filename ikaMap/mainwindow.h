@@ -12,6 +12,7 @@
 #include "common/utility.h"
 #include "executor.h"
 #include "common/listener.h"
+#include "nullstate.h"
 
 class wxSashLayoutWindow;
 class wxSashEvent;
@@ -128,6 +129,7 @@ struct MainWindow : public wxFrame, Executor {
     virtual void SetCurrentLayer(uint i);
 
     virtual EditState* GetEditState() const;
+    virtual void SetEditState(EditState* es);
 
     virtual void SetStatusBar(const std::string& text, int field);
     void SetZoom(uint factor);
@@ -152,13 +154,14 @@ protected:
     DECLARE_EVENT_TABLE()
 
 private:
-    wxStatusBar*        _statusBar;
+    wxStatusBar* _statusBar;
     wxSashLayoutWindow* _topBar;
     wxSashLayoutWindow* _bottomBar;
     wxSashLayoutWindow* _sideBar;
-    LayerList*          _layerList;
-    MapView*            _mapView;
-    TilesetView*        _tilesetView;
+    LayerList* _layerList;
+    MapView* _mapView;
+    TilesetView* _tilesetView;
+    EditState* _editState;
 
     // Store and reuse the dialog so that it can remember its previous values.
     ScopedPtr<ImportTilesDlg> _importTilesDlg;
@@ -189,6 +192,9 @@ private:
     //wxMenu*     _layerMenu;
     //wxMenu*     _toolsMenu;
     wxMenu*     _helpMenu;
+
+    // HACK: Need to have an initial EditState
+    NullState _nullState;
 
     // helper function for clearing the undo or redo list.  Deletes Commands as it does so, to avoid leaks.
     static void ClearList(std::stack< ::Command*>& list);

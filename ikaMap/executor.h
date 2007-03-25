@@ -58,6 +58,7 @@ struct Executor {
     virtual void SetCurrentLayer(uint i) = 0;
 
     virtual EditState* GetEditState() const = 0;
+    virtual void SetEditState(EditState* es) = 0;
 
     virtual void SetStatusBar(const std::string& text, int field = 1) = 0;
 

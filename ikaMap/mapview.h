@@ -112,8 +112,6 @@ struct MapView : public wxPanel {
     aegisz: just call it cock() and be done with it
     andys evil clone: hah.
     */
-    EditState* GetEditState() const;
-    void SetEditState(EditState* newState);
     void Cock();    // Sets the default tile-setting state.  Thanks aegis!
     void SetBrushState();
     void SetCopyPasteState();
@@ -133,9 +131,6 @@ private:
 
     // used for middlemouse-button scrolling.
     int _scrollX, _scrollY;
-
-    // The current state
-    EditState* _editState;
 
     // Instances of the various edit states.  We only ever create one of each.
     TilesetState _tilesetState;
