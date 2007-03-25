@@ -127,6 +127,8 @@ struct MainWindow : public wxFrame, Executor {
     virtual uint GetCurrentLayer();
     virtual void SetCurrentLayer(uint i);
 
+    virtual EditState* GetEditState() const;
+
     virtual void SetStatusBar(const std::string& text, int field);
     void SetZoom(uint factor);
     void SetZoomRelative(int factor);

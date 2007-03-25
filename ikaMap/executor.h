@@ -17,6 +17,7 @@ struct Command;
 struct Map;
 struct Tileset;
 struct SpriteSet;
+struct EditState;
 
 struct MapView;
 struct TilesetView;
@@ -50,11 +51,13 @@ struct Executor {
     virtual const Brush& GetCurrentBrush() = 0;
     virtual void SetCurrentBrush(const Brush& brush) = 0;
 
+    virtual uint GetCurrentTile() = 0;
+    virtual void SetCurrentTile(uint i) = 0;
+
     virtual uint GetCurrentLayer() = 0;
     virtual void SetCurrentLayer(uint i) = 0;
 
-    virtual uint GetCurrentTile() = 0;
-    virtual void SetCurrentTile(uint i) = 0;
+    virtual EditState* GetEditState() const = 0;
 
     virtual void SetStatusBar(const std::string& text, int field = 1) = 0;
 

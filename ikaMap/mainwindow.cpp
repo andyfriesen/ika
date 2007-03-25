@@ -1173,6 +1173,10 @@ void MainWindow::SetCurrentLayer(uint i) {
     curLayerChanged.fire(i);
 }
 
+EditState* MainWindow::GetEditState() const {
+    return _mapView->GetEditState();
+}
+
 void MainWindow::SetStatusBar(const std::string& text, int field) {
     GetStatusBar()->SetStatusText(text.c_str(), field);
 }

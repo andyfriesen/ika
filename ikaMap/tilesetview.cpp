@@ -2,9 +2,9 @@
 
 #include "tilesetview.h"
 
+#include "editstate.h"
 #include "mainwindow.h"
 #include "tileset.h"
-#include "mapview.h"
 #include "common/log.h"
 
 #include "common/utility.h"
@@ -228,7 +228,8 @@ void TilesetView::Render() {
 
 breakLoop:;
 
-    _executor->GetMapView()->GetEditState()->OnTilesetViewRender();
+    _executor->GetEditState()->OnTilesetViewRender();
+
     // Highlight the current tile.
     {
         //int x;

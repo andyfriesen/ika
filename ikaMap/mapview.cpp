@@ -181,8 +181,9 @@ void MapView::Render() {
             RenderLayer(lay, _xwin - lay->x, _ywin - lay->y);
             RenderEntities(lay, _xwin - lay->x, _ywin - lay->y);
 
-            if (i == curLayer)
-				_editState->OnRenderCurrentLayer();
+            if (i == curLayer) {
+                _editState->OnRenderCurrentLayer();
+            }
         }
     }
 
