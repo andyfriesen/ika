@@ -76,6 +76,8 @@ if [ $MACHTYPE==i686-pc-cygwin ]
 
         echo Assembling the main dist zip...
             cp -R dist/* $demo_path
+            cp doc/index.html $demo_path/python_reference.html
+            #cp doc/ikamap.html $demo_path
 
             cp $core_path/* $demo_path
             cp $dll_path/*.dll $demo_path

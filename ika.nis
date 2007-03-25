@@ -21,7 +21,7 @@ Section "ika core files"
         ; File "iked.exe"
         File "rho.exe"
         File "user.cfg"
-        File "ref.html"
+        File "python_reference.html"
         File "ikamap.html"
         WriteRegStr HKLM SOFTWARE\ika "Install_Dir" "$INSTDIR"
         WriteRegStr HKLM "Software\Microsoft\Windows\CurrentVersion\Uninstall\ika" "DisplayName" "ika (remove only)"
@@ -42,7 +42,7 @@ SectionEnd
 Section "rho"
         File "rho.exe"
         File "ICSharpCode.SharpZipLib.dll"
-        File "ScintillaNET.dll"
+        File "Scintilla.NET.dll"
         File "WeifenLuo.WinFormsUI.dll"
 SectionEnd
 
