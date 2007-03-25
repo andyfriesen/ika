@@ -38,8 +38,6 @@ public:
     void SetSelection(int x, int y, int w, int h);
 
     void Render();
-    void SetTileRender();
-    void SetBrushRender();
 
     void UpdateScrollBars();
 
@@ -51,6 +49,10 @@ public:
     void TileToPoint(uint index, int& x, int& y) const;   // returns the position of the tile in (x,y)
 
     void PointToCoords(int& x, int& y) const;   // returns the tileset grid coordinates of the point.
+
+    bool IsPadded() const;
+    int GetYWin() const;
+    Rect GetBrushSelection() const;
 
 private:
     // Simple helper things.

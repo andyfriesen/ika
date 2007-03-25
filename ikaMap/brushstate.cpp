@@ -2,6 +2,7 @@
 #include "brushstate.h"
 #include "executor.h"
 #include "mapview.h"
+#include "tileset.h"
 #include "tilesetview.h"
 #include "command.h"
 
@@ -49,5 +50,14 @@ void BrushState::OnRenderCurrentLayer() {
 }
 
 void BrushState::OnTilesetViewRender() {
-    GetExecutor()->GetTilesetView()->SetBrushRender();
+    //GetExecutor()->GetTilesetView()->SetBrushRender();
+    TilesetView* tsv = GetExecutor()->GetTilesetView();
+
+    Tileset* ts = GetExecutor()->GetTileset();
+    int tileWidth  = ts->Width()  + (tsv->IsPadded() ? 1 : 0);
+    int tileHeight = ts->Height() + (tsv->IsPadded() ? 1 : 0);
+
+    Rect selected = tsv->GetBrushSelection();
+    int ywin = tsv->GetYWin();
+    tsv->DrawSelectRect(selected.left * tileWidth, selected.top * tileHeight - ywin, tileWidth * (selected.Width() + 1), tileHeight * (selected.Height() + 1), RGBA(127, 255, 255));
 }

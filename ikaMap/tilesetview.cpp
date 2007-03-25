@@ -228,41 +228,8 @@ void TilesetView::Render() {
 
 breakLoop:;
 
+    // Call the current edit state's tilesetview render function.
     _executor->GetEditState()->OnTilesetViewRender();
-
-    // Highlight the current tile.
-    {
-        //int x;
-        //int y;
-        //TileToPoint(_executor->GetCurrentTile(), x, y);
-
-        //DrawSelectRect(_selected.left * tileWidth, _selected.top * tileHeight - _ywin, tileWidth * (_selected.Width() + 1), tileHeight * (_selected.Height() + 1), RGBA(127, 255, 255));
-        //DrawSelectRect(x - 1, y - 1, ts->Width() + 1, ts->Height() + 1, RGBA(127, 255, 255));
-        //DrawRectFill(x, y, ts->Width(), ts->Height(), RGBA(127, 255, 255));
-    }
-}
-
-void TilesetView::SetTileRender() {
-    Tileset* ts = _executor->GetTileset();
-    int x;
-    int y;
-    int tileWidth  = ts->Width()  + (_pad ? 1 : 0);
-    int tileHeight = ts->Height() + (_pad ? 1 : 0);
-
-    TileToPoint(_executor->GetCurrentTile(), x, y);
-
-    DrawSelectRect(x - 1, y - 1, ts->Width() + 1, ts->Height() + 1, RGBA(127, 255, 255));
-}
-
-void TilesetView::SetBrushRender() {
-    if (_drawBrushSelection) {
-        Tileset* ts = _executor->GetTileset();
-        int tileWidth  = ts->Width()  + (_pad ? 1 : 0);
-        int tileHeight = ts->Height() + (_pad ? 1 : 0);
-
-        DrawSelectRect(_selected.left * tileWidth, _selected.top * tileHeight - _ywin, tileWidth * (_selected.Width() + 1), tileHeight * (_selected.Height() + 1), RGBA(127, 255, 255));
-        //DrawSelectRect(0, 0 - _ywin, 32, 32, RGBA(127, 255, 255));
-    }
 }
 
 void TilesetView::UpdateScrollBars() {
@@ -350,4 +317,18 @@ uint TilesetView::NumTileRows() const {
     } else {
         return _executor->GetTileset()->Count() / TilesPerRow() + 1;
     }
+}
+
+
+
+bool TilesetView::IsPadded() const {
+    return _pad;
+}
+
+int TilesetView::GetYWin() const {
+    return _ywin;
+}
+
+Rect TilesetView::GetBrushSelection() const {
+    return _selected;
 }

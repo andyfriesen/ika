@@ -37,7 +37,17 @@ void TilesetState::OnRenderCurrentLayer() {
 }
 
 void TilesetState::OnTilesetViewRender() {
-    GetExecutor()->GetTilesetView()->SetTileRender();
+    TilesetView* tsv = GetExecutor()->GetTilesetView();
+
+    Tileset* ts = GetExecutor()->GetTileset();
+    int x;
+    int y;
+    int tileWidth  = ts->Width()  + (tsv->IsPadded() ? 1 : 0);
+    int tileHeight = ts->Height() + (tsv->IsPadded() ? 1 : 0);
+
+    tsv->TileToPoint(GetExecutor()->GetCurrentTile(), x, y);
+
+    tsv->DrawSelectRect(x - 1, y - 1, ts->Width() + 1, ts->Height() + 1, RGBA(127, 255, 255));
 }
 
 void TilesetState::OnMouseDown(wxMouseEvent& event) {
