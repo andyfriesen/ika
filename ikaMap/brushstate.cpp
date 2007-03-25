@@ -50,7 +50,6 @@ void BrushState::OnRenderCurrentLayer() {
 }
 
 void BrushState::OnTilesetViewRender() {
-    //GetExecutor()->GetTilesetView()->SetBrushRender();
     TilesetView* tsv = GetExecutor()->GetTilesetView();
 
     Tileset* ts = GetExecutor()->GetTileset();
