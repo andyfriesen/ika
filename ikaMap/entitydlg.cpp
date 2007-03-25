@@ -51,8 +51,8 @@ void EntityDlg::UpdateDlg()
     get<wxTextCtrl>("edit_movescript")->SetValue(           newData.moveScript.c_str());
     get<wxTextCtrl>("edit_script")->SetValue(               newData.activateScript.c_str());
     get<wxCheckBox>("check_obstructs")->SetValue(           newData.obstructsEntities);
-    get<wxCheckBox>("check_obstructedbyentities")->SetValue(newData.obstructedByMap);
-    get<wxCheckBox>("check_obstructedbymap")->SetValue(     newData.obstructedByEntities);
+    get<wxCheckBox>("check_obstructedbyentities")->SetValue(newData.obstructedByEntities);
+    get<wxCheckBox>("check_obstructedbymap")->SetValue(     newData.obstructedByMap);
 
     get<wxTextCtrl>("edit_x")->SetValue(                    toString(newData.x).c_str());
     get<wxTextCtrl>("edit_y")->SetValue(                    toString(newData.y).c_str());
