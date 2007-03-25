@@ -14,6 +14,7 @@
 #include "togglebitmapbutton.h"
 
 // Dialogs
+#include "aboutdlg.h"
 #include "newmapdlg.h"
 #include "mapdlg.h"
 #include "layerdlg.h"
@@ -170,6 +171,8 @@ BEGIN_EVENT_TABLE(MainWindow, wxFrame)
 
     EVT_MENU(id_configurescripts, MainWindow::OnConfigureScripts)
     EVT_MENU_RANGE(id_customscript, id_lastcustomscript, MainWindow::OnSetCurrentScript)
+
+    EVT_MENU(id_helpabout, MainWindow::OnAbout)
 
     EVT_MENU(id_cursorup, MainWindow::OnCursorUp)
     EVT_MENU(id_cursordown, MainWindow::OnCursorDown)
@@ -817,6 +820,11 @@ void MainWindow::OnSetCurrentScript(wxCommandEvent& event) {
     _curScript = id;
     HighlightToolButton(id_scripttool);
     _mapView->SetScriptTool(_scripts[_curScript]);
+}
+
+void MainWindow::OnAbout(wxCommandEvent&) {
+    AboutDlg dlg(this);
+    dlg.ShowModal();
 }
 
 void MainWindow::OnCursorUp(wxCommandEvent&) {

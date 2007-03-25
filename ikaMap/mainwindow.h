@@ -76,6 +76,8 @@ struct MainWindow : public wxFrame, Executor {
     void OnConfigureScripts(wxCommandEvent&);
     void OnSetCurrentScript(wxCommandEvent& event);
 
+    void OnAbout(wxCommandEvent&);
+
     void OnCursorDown(wxCommandEvent&);
     void OnCursorUp(wxCommandEvent&);
     void OnCursorLeft(wxCommandEvent&);

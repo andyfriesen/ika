@@ -1001,7 +1001,7 @@
             </object>
             <object class="sizeritem">
               <object class="wxButton" name="wxID_OK">
-                <label>Ok</label>
+                <label>OK</label>
                 <default>1</default>
               </object>
               <flag>wxEXPAND</flag>
@@ -1214,5 +1214,45 @@
     </object>
     <size>320,240</size>
     <title>Export tiles</title>
+  </object>
+  <object class="wxDialog" name="dialog_about">
+    <object class="wxPanel" name="panel_main">
+      <object class="wxBoxSizer">
+        <orient>wxVERTICAL</orient>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <object class="sizeritem">
+              <object class="wxStaticText" name="text_version">
+                <label>ikaMap v.0</label>
+              </object>
+            </object>
+            <orient>wxVERTICAL</orient>
+            <object class="sizeritem">
+              <object class="wxStaticText" name="text_authors">
+                <label>Andy Friesen, August Bigelow</label>
+              </object>
+            </object>
+            <object class="sizeritem">
+              <object class="wxStaticText" name="text_website">
+                <label>Visit http://ika.sourceforge.net</label>
+              </object>
+            </object>
+          </object>
+        </object>
+        <object class="sizeritem">
+          <object class="wxBoxSizer">
+            <orient>wxHORIZONTAL</orient>
+            <object class="sizeritem">
+              <object class="wxButton" name="wxID_OK">
+                <label>OK</label>
+              </object>
+            </object>
+          </object>
+          <flag>wxALIGN_CENTER</flag>
+        </object>
+      </object>
+    </object>
+    <title>About</title>
+    <size>200,80</size>
   </object>
 </resource>

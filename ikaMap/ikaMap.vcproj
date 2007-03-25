@@ -124,6 +124,9 @@
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
 			<File
+				RelativePath=".\aboutdlg.cpp">
+			</File>
+			<File
 				RelativePath=".\brush.cpp">
 			</File>
 			<File
@@ -226,6 +229,9 @@
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc">
+			<File
+				RelativePath=".\aboutdlg.h">
+			</File>
 			<File
 				RelativePath=".\brush.h">
 			</File>
