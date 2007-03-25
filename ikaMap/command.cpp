@@ -226,7 +226,11 @@ void CreateLayerCommand::Do(Executor* e) {
 
     _layerIndex = map->NumLayers();
 
-    map->AddLayer(layName, 100, 100); // arbitrary initial size for now
+    // Get the currently selected layer's width and height to use for the new layer.
+    Map::Layer* layer = map->GetLayer(e->GetCurrentLayer());
+    uint w = layer->Width();
+    uint h = layer->Height();
+    map->AddLayer(layName, w, h); // arbitrary initial size for now
 
     e->layerCreated.fire(MapEvent(map, _layerIndex));
 }
