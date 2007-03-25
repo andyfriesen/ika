@@ -1,911 +1,1079 @@
-<?xml version="1.0" encoding="iso-8859-1"?>
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html>
 <head>
 <title>ika Python Reference</title>
-<meta http-equiv="content-type" content="text/html; charset=iso-8859-1" />
-<meta name="author" content="Ear &amp; the Speed Bump" />
-<meta name="copyright" content="Copyright &copy; 2001 ika Documentation Team" />
-<meta name="description" content="Official ika documentation." />
-<meta name="keywords" content="ika, documentation, doc, docs, coding, code, python, rpg, rpgmaker, gce, game, creation, engine" />
-<link rel="stylesheet" href="docs.css" type="text/css" />
-</head>
-<body>
+<meta http-equiv="content-type" content="text/html; charset=iso-8859-1">
+<meta name="author" content="Andy Friesen &amp; Ian D. Bollinger">
+<meta name="copyright" content="Copyright &copy; 2001 ika Documentation Team">
+<link rel="stylesheet" href="docs.css" type="text/css">
+</head><body>
+
+<h1>ika Python Reference</h1>
+
+<div id="main">
+
+
 <h2 id="Constants">Constants</h2>
 <p>List of constants found in the ika module.</p>
 <h3 id="BlendModes">Blend Modes</h3>
 <p>A list of constants signifying which blending mode to use in drawing functions.</p>
-<ul>
-<li>
-<h4 id="AddBlend">ika.AddBlend -> <u>int</u> == 3 (read)</h4>
+
+<div class="entry">
+<h4 id="AddBlend">ika.AddBlend -&gt; <span class="type">int</span> == 3 (read)</h4>
 Each pixel's RGBA values will be added to the values of the pixel behind it.
-</li>
-<li>
-<h4 id="AlphaBlend">ika.AlphaBlend -> <u>int</u> == 2 (read)</h4>
+</div>
+<div class="entry">
+<h4 id="AlphaBlend">ika.AlphaBlend -&gt; <span class="type">int</span> == 2 (read)</h4>
 All alpha values will be treated normally. This is the default blend mode.
-</li>
-<li>
-<h4 id="Matte">ika.Matte -> <u>int</u> == 1 (read)</h4>
-All nonzero alpha pixels will be plotted at full opacity.  Pixels with 0 alpha will not be plotted.  This blend mode only works with Canvases.
-</li>
-<li>
-<h4 id="Opaque">ika.Opaque -> <u>int</u> == 0 (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Matte">ika.Matte -&gt; <span class="type">int</span> == 1 (read)</h4>
+All nonzero alpha pixels will be plotted at full opacity. Pixels with 0
+alpha will not be plotted. This blend mode only works with Canvases.
+</div>
+<div class="entry">
+<h4 id="Opaque">ika.Opaque -&gt; <span class="type">int</span> == 0 (read)</h4>
 All alpha values will be treated as if they were 255.
-</li>
-<li>
-<h4 id="SubtractBlend">ika.SubtractBlend -> <u>int</u> == 4 (read)</h4>
+</div>
+<div class="entry">
+<h4 id="SubtractBlend">ika.SubtractBlend -&gt; <span class="type">int</span> == 4 (read)</h4>
 Each pixel's RGBA values will be subtracted from the values of the pixel behind it.
-</li>
-</ul><br />
+</div>
+
 <h3 id="MiscConstants">Miscellaneous</h3>
 <p>Other constants.</p>
-<ul>
-<li>
-<h4 id="Version">ika.Version -> <u>string</u> (read)</h4>
+
+<div class="entry">
+<h4 id="Version">ika.Version -&gt; <span class="type">string</span> (read)</h4>
 Returns the version of ika currently being used (as a string), including any alpha/beta suffixes.
-</li>
-</ul><br />
-<hr />
+</div>
+
+
 <h2 id="Functions">Functions</h2>
 <p>Global functions in the ika module.</p>
-<ul>
-<li>
-<h4 id="Delay">ika.Delay(<u>int</u> <i>duration</i>)</h4>
-Freezes the engine for <i>duration</i> 'ticks'. (one tick is 1/100th of a second). The engine will simply stop doing anything until the given time has elapsed.
+
+<div class="entry">
+<h4 id="Delay">ika.Delay(<span class="type">int</span> <var>duration</var>)</h4>
+Freezes the engine for <var>duration</var> 'ticks'. (one tick is 1/100th of a second). The engine will simply stop doing anything until the given time has elapsed.
 If you wish to have the engine process normally for a time, use <a href="#Wait">Wait</a> instead.
-</li>
-<li>
-<h4 id="EntitiesAt">ika.EntitiesAt(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>, <u>int</u> <i>layer</i>) -> <u>list</u> <i>entList</i></h4>
-Returns <i>entList</i>, a list containing all entities within the rectangle (<i>x</i>, <i>y</i>, <i>x</i>+<i>width</i>, <i>y</i>+<i>height</i>) on the given <i>layer</i>.  If there are no entities there, an empty list is returned.
-</li>
-<li>
-<h4 id="Exit">ika.Exit([<u>string</u> <i>message</i>])</h4>
-Exits ika immediately, displaying <i>message</i> in a small window containing an OK button, if specified.
-</li>
-<li>
-<h4 id="GetCameraTarget">ika.GetCameraTarget() -> <u>ika.Entity</u> <i>target</i></h4>
-Returns the entity that the camera is following (<i>target</i>), or None if it is free.
+</div>
+<div class="entry">
+<h4 id="EntitiesAt">ika.EntitiesAt(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>, <span class="type">int</span> <var>layer</var>) -&gt; <span class="type">list</span> <var>entList</var></h4>
+Returns <var>entList</var>, a list containing all entities within the rectangle (<var>x</var>, <var>y</var>, <var>x</var>+<var>width</var>, <var>y</var>+<var>height</var>) on the given <var>layer</var>.  If there are no entities there, an empty list is returned.
+</div>
+<div class="entry">
+<h4 id="Exit">ika.Exit([<span class="type">string</span> <var>message</var>])</h4>
+Exits ika immediately, displaying <var>message</var> in a small window containing an OK button, if specified.
+</div>
+<div class="entry">
+<h4 id="GetCameraTarget">ika.GetCameraTarget() -&gt; <span class="type">ika.Entity</span> <var>target</var></h4>
+Returns the entity that the camera is following (<var>target</var>), or None if it is free.
 See also: <a href="#SetCameraTarget">ika.SetCameraTarget</a>.
-</li>
-<li>
-<h4 id="GetCaption">ika.GetCaption() -> <u>string</u> <i>caption</i></h4>
-Returns the <i>caption</i> currently being displayed in the ika window title bar.
+</div>
+<div class="entry">
+<h4 id="GetCaption">ika.GetCaption() -&gt; <span class="type">string</span> <var>caption</var></h4>
+Returns the <var>caption</var> currently being displayed in the ika window title bar.
 See also: <a href="#SetCaption">ika.SetCaption</a>.
-</li>
-<li>
-<h4 id="GetFrameRate">ika.GetFrameRate() -> <u>int</u> <i>frameRate</i></h4>
-Returns the current engine frame rate, <i>frameRate</i>, in frames per second. (Note: There is no function to automatically set frame rate. You must write your own method for this or use a library. A tutorial on this subject is in the works.)
-</li>
-<li>
-<h4 id="GetPlayer">ika.GetPlayer() -> <u>ika.Entity</u> <i>player</i> or <u>None</u></h4>
+</div>
+<div class="entry">
+<h4 id="GetFrameRate">ika.GetFrameRate() -&gt; <span class="type">int</span> <var>frameRate</var></h4>
+Returns the current engine frame rate, <var>frameRate</var>,
+in frames per second. (Note: There is no function to automatically set
+frame rate. You must write your own method for this or use a library. A
+tutorial on this subject is in the works.)
+</div>
+<div class="entry">
+<h4 id="GetPlayer">ika.GetPlayer() -&gt; <span class="type">ika.Entity</span> <var>player</var> or <span class="type">None</span></h4>
 Returns the current player entity, or None if there isn't one.
 See also: <a href="#SetPlayer">ika.SetPlayer</a>.
-</li>
-<li>
-<h4 id="GetRGB">ika.GetRGB(<u>int</u> <i>color</i>) -> <u>tuple</u> <i>components</i> (<u>int</u> <i>red</i>, <u>int</u> <i>green</i>, <u>int</u> <i>blue</i>, <u>int</u> <i>alpha</i>)</h4>
-Returns a 4-tuple <i>components</i> containing the <i>red</i>, <i>blue</i>, <i>green</i>, and <i>alpha</i> values of the <i>color</i> passed, respectively.
+</div>
+<div class="entry">
+<h4 id="GetRGB">ika.GetRGB(<span class="type">int</span> <var>color</var>) -&gt; <span class="type">tuple</span> <var>components</var> (<span class="type">int</span> <var>red</var>, <span class="type">int</span> <var>green</var>, <span class="type">int</span> <var>blue</var>, <span class="type">int</span> <var>alpha</var>)</h4>
+Returns a 4-tuple <var>components</var> containing the <var>red</var>, <var>blue</var>, <var>green</var>, and <var>alpha</var> values of the <var>color</var> passed, respectively.
 See also: <a href="#RGB">ika.RGB</a>.
-</li>
-<li>
-<h4 id="GetTime">ika.GetTime() -> <u>int</u> <i>ticks</i></h4>
-Returns the number of <i>ticks</i> elapsed since the engine started execution.
-</li>
-<li>
-<h4 id="HookRetrace">ika.HookRetrace(<u>function</u> <i>hook</i>)</h4>
-Adds the function <i>hook</i> to the retrace queue. (It will be called whenever the map is drawn, whether by Map.Render or by other means.)
+</div>
+<div class="entry">
+<h4 id="GetTime">ika.GetTime() -&gt; <span class="type">int</span> <var>ticks</var></h4>
+Returns the number of <var>ticks</var> elapsed since the engine started execution.
+</div>
+<div class="entry">
+<h4 id="HookRetrace">ika.HookRetrace(<span class="type">function</span> <var>hook</var>)</h4>
+Adds the function <var>hook</var> to the retrace queue. (It will be called whenever the map is drawn, whether by Map.Render or by other means.)
 See also: <a href="#UnhookRetrace">ika.UnhookRetrace</a>, <a href="#HookTimer">ika.HookTimer</a>, and <a href="#UnhookTimer">ika.UnhookTimer</a>.
-</li>
-<li>
-<h4 id="HookTimer">ika.HookTimer(<u>function</u> <i>hook</i>)</h4>
-Adds the function <i>hook</i> to the timer queue. The function will be called 100 times per second. (This feature should be used sparingly, as it will cause serious problems if the queue cannot be executed in less than 1/100th of a second.)
+</div>
+<div class="entry">
+<h4 id="HookTimer">ika.HookTimer(<span class="type">function</span> <var>hook</var>)</h4>
+Adds the function <var>hook</var>
+to the timer queue. The function will be called 100 times per second.
+(This feature should be used sparingly, as it will cause serious
+problems if the queue cannot be executed in less than 1/100th of a
+second.)
 See also: <a href="#UnhookTimer">ika.UnhookTimer</a>, <a href="#HookRetrace">ika.HookRetrace</a>, and <a href="#UnhookRetrace">ika.UnhookRetrace</a>.
-</li>
-<li>
-<h4 id="Log">ika.Log(<u>string</u> <i>message</i>)</h4>
-Writes <i>message</i> to ika.log, if logging is enabled in user.cfg. The same effect can be achieved by using the Python <b>print</b> command, as it is overloaded.
-</li>
-<li>
+</div>
+<div class="entry">
+<h4 id="Log">ika.Log(<span class="type">string</span> <var>message</var>)</h4>
+Writes <var>message</var> to ika.log, if logging is enabled in user.cfg. The same effect can be achieved by using the Python <strong>print</strong> command, as it is overloaded.
+</div>
+<div class="entry">
 <h4 id="ProcessEntities">ika.ProcessEntities()</h4>
-Performs a tick (1/100th of a second) of entity AI.  Calling this 100 times a second will cause entities to move around as if the engine was in control.
-</li>
-<li>
-<h4 id="Random">ika.Random(<u>int</u> <i>min</i>, <u>int</u> <i>max</i>) -> <u>int</u> <i>value</i></h4>
-Returns a random integer <i>value</i> greater than or equal to <i>min</i> and less than <i>max</i>. (ie.  <i>min</i> <= <i>value</i> < <i>max</i>)
-</li>
-<li>
-<h4 id="Render">ika.Render([<u>list</u> <i>layerList</i> [<u>int</u> <i>layerIndex</i>, ...]])</h4>
-Draws the map and entities.  <i>layerList</i> is a sequence of integers; ika will only draw these layers (in the order given).  If <i>layerList</i> is omitted, all layers will be drawn, in their predefined order (set in the editor). If <i>layerList</i> is omitted, the screen is cleared to black before rendering begins.
-</li>
-<li>
-<h4 id="RGB">ika.RGB(<u>int</u> <i>red</i>, <u>int</u> <i>green</i>, <u>int</u> <i>blue</i>[, <u>int</u> <i>alpha</i>]) -> <u>int</u> <i>color</i></h4>
-Creates a 32-bit <i>color</i> value from the four color levels passed.  If <i>alpha</i> is omitted, it is assumed to be 255 (opaque).
+Performs a tick (1/100th of a second) of entity AI. Calling this 100
+times a second will cause entities to move around as if the engine was
+in control.
+</div>
+<div class="entry">
+<h4 id="Random">ika.Random(<span class="type">int</span> <var>min</var>, <span class="type">int</span> <var>max</var>) -&gt; <span class="type">int</span> <var>value</var></h4>
+Returns a random integer <var>value</var> greater than or equal to <var>min</var> and less than <var>max</var>. (ie.  <var>min</var> &lt;= <var>value</var> &lt; <var>max</var>)
+</div>
+<div class="entry">
+<h4 id="Render">ika.Render([<span class="type">list</span> <var>layerList</var> [<span class="type">int</span> <var>layerIndex</var>, ...]])</h4>
+Draws the map and entities.  <var>layerList</var> is a sequence of integers; ika will only draw these layers (in the order given).  If <var>layerList</var> is omitted, all layers will be drawn, in their predefined order (set in the editor). If <var>layerList</var> is omitted, the screen is cleared to black before rendering begins.
+</div>
+<div class="entry">
+<h4 id="RGB">ika.RGB(<span class="type">int</span> <var>red</var>, <span class="type">int</span> <var>green</var>, <span class="type">int</span> <var>blue</var>[, <span class="type">int</span> <var>alpha</var>]) -&gt; <span class="type">int</span> <var>color</var></h4>
+Creates a 32-bit <var>color</var> value from the four color levels passed.  If <var>alpha</var> is omitted, it is assumed to be 255 (opaque).
 See also: <a href="#GetRGB">ika.GetRGB</a>.
-</li>
-<li>
-<h4 id="SetCameraTarget">ika.SetCameraTarget(<u>ika.Entity</u> <i>target</i>)</h4>
-Sets the camera target to the entity specified (<i>target</i>).  If None is passed instead, the camera remains stationary, and can be altered with the <a href="#Map.xwin">ika.Map.xwin</a> and <a href="#Map.ywin">ika.Map.ywin</a> properties.
+</div>
+<div class="entry">
+<h4 id="SetCameraTarget">ika.SetCameraTarget(<span class="type">ika.Entity</span> <var>target</var>)</h4>
+Sets the camera target to the entity specified (<var>target</var>).  If None is passed instead, the camera remains stationary, and can be altered with the <a href="#Map.xwin">ika.Map.xwin</a> and <a href="#Map.ywin">ika.Map.ywin</a> properties.
 See also: <a href="#GetCameraTarget">ika.GetCameraTarget</a>.
-</li>
-<li>
-<h4 id="SetCaption">ika.SetCaption(<u>string</u> <i>caption</i>)</h4>
-Sets the <i>caption</i> currently being displayed in the ika window title bar.
+</div>
+<div class="entry">
+<h4 id="SetCaption">ika.SetCaption(<span class="type">string</span> <var>caption</var>)</h4>
+Sets the <var>caption</var> currently being displayed in the ika window title bar.
 See also: <a href="#GetCaption">ika.GetCaption</a>.
-</li>
-<li>
-<h4 id="SetMapPath">ika.SetMapPath(<u>string</u> <i>mapPath</i>)</h4>
+</div>
+<div class="entry">
+<h4 id="SetMapPath">ika.SetMapPath(<span class="type">string</span> <var>mapPath</var>)</h4>
 Sets the folder for ika to load both map and tileset files from. Make sure to end the string with a slash ("/").
-</li>
-<li>
-<h4 id="SetPlayer">ika.SetPlayer(<u>ika.Entity</u> <i>player</i>)</h4>
-Sets the player entity to the entity passed.  The player entity is the entity that moves according to user input.  Passing None instead unsets any player entity that may have been previously set.
+</div>
+<div class="entry">
+<h4 id="SetPlayer">ika.SetPlayer(<span class="type">ika.Entity</span> <var>player</var>)</h4>Sets
+the player entity to the entity passed. The player entity is the entity
+that moves according to user input. Passing None instead unsets any
+player entity that may have been previously set.
 See also: <a href="#GetPlayer">ika.GetPlayer</a>.
-</li>
-<li>
-<h4 id="UnhookRetrace">ika.UnhookRetrace([<u>function</u> <i>hook</i>])</h4>
-Removes the function <i>hook</i> from the retrace queue if it is present.  If not, the call does nothing.  If <i>hook</i> is omitted, then the list is cleared in its entirety.
+</div>
+<div class="entry">
+<h4 id="UnhookRetrace">ika.UnhookRetrace([<span class="type">function</span> <var>hook</var>])</h4>
+Removes the function <var>hook</var> from the retrace queue if it is present.  If not, the call does nothing.  If <var>hook</var> is omitted, then the list is cleared in its entirety.
 See also: <a href="#HookRetrace">ika.HookRetrace</a>, <a href="#HookTimer">ika.HookTimer</a>, and <a href="#UnhookTimer">ika.UnhookTimer</a>.
-</li>
-<li>
-<h4 id="UnhookTimer">ika.UnhookTimer([<u>function</u> <i>hook</i>])</h4>
-Removes <i>hook</i> from the timer queue if it is present.  If not, the call does nothing.  If <i>hook</i> is omitted, then the timer queue is cleared in its entirety.
+</div>
+<div class="entry">
+<h4 id="UnhookTimer">ika.UnhookTimer([<span class="type">function</span> <var>hook</var>])</h4>
+Removes <var>hook</var> from the timer queue if it is present.  If not, the call does nothing.  If <var>hook</var> is omitted, then the timer queue is cleared in its entirety.
 See also: <a href="#HookTimer">ika.HookTimer</a>, <a href="#HookRetrace">ika.HookRetrace</a>, and <a href="#UnhookRetrace">ika.UnhookRetrace</a>.
-</li>
-<li>
-<h4 id="Wait">ika.Wait(<u>int</u> <i>ticks</i>)</h4>
+</div>
+<div class="entry">
+<h4 id="Wait">ika.Wait(<span class="type">int</span> <var>ticks</var>)</h4>
 Runs the engine for a number of ticks, disallowing player input.  Unlike <a href="#Delay">Delay</a>, Wait causes entities to be processed, the tileset to be animated, and the map drawn.
-</li>
-</ul><br />
-<hr />
-<h2 id="Objects">Objects</h2>
-<p>Global objects in the ika module. Each one represents a type of resource used by ika. Some are singletons that represent various parts of ika's core functionality.</p>
-<h3 id="Input">Input</h3>
-<p>A singleton which is an interface for hardware input devices such as the keyboard and mouse. More information on utilizing the keyboard, joystick, and mouse can be found <a href="http://ika.sourceforge.net/articles.php?view=15">here</a>.</p>
-<ul>
-<li>
-<h4 id="Control">Control Objects</h4>
-A Control object is an object representing some key, button, or analog input device. These objects are not inherently exposed to you as the scripter, but the various Input Device objects (keyboard, mouse, and joystick) return these for your use. Control objects have these properties:
+</div>
 
-<b>control.Position() -> <u>int</u> <i>value</i></b> -- int representing whether or not a control is currently pressed down.
-<b>control.Pressed() -> <u>int</u> <i>value</i></b> -- int representing whether or not a control has been pressed since the last time control.Pressed was called. The value becomes 0 after control.Pressed is called and will not change to 1 unless the control is pressed again.
-<b>control.Delta() -> <u>int</u> <i>value</i></b> -- int representing amount control has changed since last calling it. For keyboard, this is the same as control.Pressed.
-<b>control.onpress -> <u>function</u></b> -- function that is called when the control is pressed. Defaults to None; setting this is not required.
-<b>control.onunpress -> <u>function</u></b> -- function that is called when the control is released. Defaults to None; setting this is not required.
+
+<h2 id="Objects">Objects</h2>
+<p>Global objects in the ika module. Each one represents a type of
+resource used by ika. Some are singletons that represent various parts
+of ika's core functionality.</p>
+<h3 id="Input">Input</h3>
+<p>A singleton which is an interface for hardware input devices such as
+the keyboard and mouse. More information on utilizing the keyboard,
+joystick, and mouse can be found <a href="http://ika.sourceforge.net/articles.php?view=15">here</a>.</p>
+
+<div class="entry">
+<h4 id="Control">Control Objects</h4>
+A Control object is an object representing some key, button, or analog
+input device. These objects are not inherently exposed to you as the
+scripter, but the various Input Device objects (keyboard, mouse, and
+joystick) return these for your use. Control objects have these
+properties:
+<strong>control.Position() -&gt; <span class="type">int</span> <var>value</var></strong> -- int representing whether or not a control is currently pressed down.
+<strong>control.Pressed() -&gt; <span class="type">int</span> <var>value</var></strong> -- int
+representing whether or not a control has been pressed since the last
+time control.Pressed was called. The value becomes 0 after
+control.Pressed is called and will not change to 1 unless the control
+is pressed again.
+<strong>control.Delta() -&gt; <span class="type">int</span> <var>value</var></strong> -- int representing amount control has changed since last calling it. For keyboard, this is the same as control.Pressed.
+<strong>control.onpress -&gt; <span class="type">function</span></strong> -- function that is called when the control is pressed. Defaults to None; setting this is not required.
+<strong>control.onunpress -&gt; <span class="type">function</span></strong> -- function that is called when the control is released. Defaults to None; setting this is not required.
 
 See also: <a href="#Input.keyboard">ika.Input.keyboard</a>, <a href="#Input.mouse">ika.Input.mouse</a>, and <a href="#Input.joysticks">ika.Input.joysticks</a>.
-</li>
-<li>
-<h4 id="Input.cancel">ika.Input.cancel -> <u>Control</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Input.cancel">ika.Input.cancel -&gt; <span class="type">Control</span> (read/write)</h4>
 Gets the standard "Cancel" control. Has no inherent effect. Defaults to Escape (ika.Input.keyboard["ESCAPE"]).
 See also: <a href="#Input.enter">ika.Input.enter</a>.
-</li>
-<li>
-<h4 id="Input.down">ika.Input.down -> <u>Control</u> (read/write)</h4>
-Gets the standard "Down" control.  Moves the player down when the engine has control. Defaults to the down arrow key (ika.Input.keyboard["DOWN"]).
+</div>
+<div class="entry">
+<h4 id="Input.down">ika.Input.down -&gt; <span class="type">Control</span> (read/write)</h4>Gets
+the standard "Down" control. Moves the player down when the engine has
+control. Defaults to the down arrow key (ika.Input.keyboard["DOWN"]).
 See also: <a href="#Input.up">ika.Input.up</a>, <a href="#Input.left">ika.Input.left</a>, and <a href="#Input.right">ika.Input.right</a>.
-</li>
-<li>
-<h4 id="Input.enter">ika.Input.enter -> <u>Control</u> (read/write)</h4>
-Gets the standard "Enter" control. Activates entities and zones when the engine has control. Defaults to Enter/Return (ika.Input.keyboard["RETURN"]).
+</div>
+<div class="entry">
+<h4 id="Input.enter">ika.Input.enter -&gt; <span class="type">Control</span> (read/write)</h4>
+Gets the standard "Enter" control. Activates entities and zones when
+the engine has control. Defaults to Enter/Return
+(ika.Input.keyboard["RETURN"]).
 See also: <a href="#Input.cancel">ika.Input.cancel</a>.
-</li>
-<li>
-<h4 id="Input.keyboard">ika.Input.keyboard -> <u>Input Device</u> (read)</h4>
-Gets the keyboard device. This device contains all of the Controls on the keyboard, which can be accessed as if Input.keyboard were a dictionary. Use ika.Input.keyboard[keyname] to get the desired Control.
-
-<b>ika.Input.keyboard[<u>string</u> <i>keyName</i>] -> <u>Control</u></b> -- method for retrieving keyboard Control objects.
+</div>
+<div class="entry">
+<h4 id="Input.keyboard">ika.Input.keyboard -&gt; <span class="type">Input Device</span> (read)</h4>
+Gets the keyboard device. This device contains all of the Controls on
+the keyboard, which can be accessed as if Input.keyboard were a
+dictionary. Use ika.Input.keyboard[keyname] to get the desired Control.
+<strong>ika.Input.keyboard[<span class="type">string</span> <var>keyName</var>] -&gt; <span class="type">Control</span></strong> -- method for retrieving keyboard Control objects.
 
 Click <a href="#Control">here</a> for information on using Control objects.
 Click <a href="http://ika.sourceforge.net/articles.php?view=12">here</a> for the list of available keycodes.
 Click <a href="http://ika.sourceforge.net/articles.php?view=15">here</a> for a more in-depth explanation.
-</li>
-<li>
-<h4 id="Input.joysticks">ika.Input.joysticks -> <u>tuple</u> ([<u>Input Device</u>, ...]) (read)</h4>
-Gets a tuple containing all the connected joystick devices. Joystick support is limited, but functional. Joystick features are accessed via several member variables of a joystick object.
-
-<b>ika.Input.joysticks[<u>int</u> <i>index</i>] -> <u>Joystick</u></b> -- method for retrieving Joystick objects. The variables below are members of Joystick objects which each contain that joystick's relevant Control objects.
-
-<b>joystick.axes -> <u>list</u></b> -- list containing the value of each axis.
-<b>joystick.reverseAxes -> <u>list</u></b> -- list containing the reversed value of each axis.
-<b>joystick.buttons -> <u>list</u></b> -- list containing the position of each button.
+</div>
+<div class="entry">
+<h4 id="Input.joysticks">ika.Input.joysticks -&gt; <span class="type">tuple</span> ([<span class="type">Input Device</span>, ...]) (read)</h4>Gets
+a tuple containing all the connected joystick devices. Joystick support
+is limited, but functional. Joystick features are accessed via several
+member variables of a joystick object.
+<strong>ika.Input.joysticks[<span class="type">int</span> <var>index</var>] -&gt; <span class="type">Joystick</span></strong>
+-- method for retrieving Joystick objects. The variables below are
+members of Joystick objects which each contain that joystick's relevant
+Control objects.
+<strong>joystick.axes -&gt; <span class="type">list</span></strong> -- list containing the value of each axis.
+<strong>joystick.reverseAxes -&gt; <span class="type">list</span></strong> -- list containing the reversed value of each axis.
+<strong>joystick.buttons -&gt; <span class="type">list</span></strong> -- list containing the position of each button.
 (Since joysticks come in different varieties, the length of these lists may differ.)
 
 Click <a href="#Control">here</a> for information on using Control objects.
 Click <a href="http://ika.sourceforge.net/articles.php?view=15">here</a> for a more in-depth explanation.
-</li>
-<li>
-<h4 id="Input.left">ika.Input.left -> <u>Control</u> (read/write)</h4>
-Gets the standard "Left" control. Moves the player left when the engine has control. Defaults to the left arrow key (ika.Input.keyboard["LEFT"]).
+</div>
+<div class="entry">
+<h4 id="Input.left">ika.Input.left -&gt; <span class="type">Control</span> (read/write)</h4>Gets
+the standard "Left" control. Moves the player left when the engine has
+control. Defaults to the left arrow key (ika.Input.keyboard["LEFT"]).
 See also: <a href="#Input.up">ika.Input.up</a>, <a href="#Input.down">ika.Input.down</a>, and <a href="#Input.right">ika.Input.right</a>.
-</li>
-<li>
-<h4 id="Input.mouse">ika.Input.mouse -> <u>Input Device</u> (read)</h4>
-Gets the mouse device. This device contains all of the Controls on the mouse (listed below), which are accessed as normal member variables of ika.Input.mouse.
+</div>
+<div class="entry">
+<h4 id="Input.mouse">ika.Input.mouse -&gt; <span class="type">Input Device</span> (read)</h4>
+Gets the mouse device. This device contains all of the Controls on the
+mouse (listed below), which are accessed as normal member variables of
+ika.Input.mouse.
+<strong>ika.Input.mouse.control -&gt; <span class="type">Control</span></strong> -- method for retrieving mouse Control objects.
 
-<b>ika.Input.mouse.control -> <u>Control</u></b> -- method for retrieving mouse Control objects.
-
-<b>mouse.x -> <u>Control</u></b> -- control holding x-axis information. This Control's Position function returns a value from 0 to the value of ika.Video.xres, or the screen's horizontal resolution.
-<b>mouse.y -> <u>Control</u></b> -- control holding y-axis information. This Control's Position function returns a value from 0 to the value of ika.Video.yres, or the screen's vertical resolution.
-<b>mouse.left -> <u>Control</u></b> -- control holding left mouse button information.
-<b>mouse.middle -> <u>Control</u></b> -- control holding middle mouse button information.
-<b>mouse.right -> <u>Control</u></b> -- control holding right mouse button information.
-(On mice with no middle button, middle button functionality is emulated by having both left and right buttons pressed simultaneously. ika.Input.mouse.middle will reflect this.)
-
+<strong>mouse.x -&gt; <span class="type">Control</span></strong> -- control holding x-axis
+information. This Control's Position function returns a value from 0 to
+the value of ika.Video.xres, or the screen's horizontal resolution.
+<strong>mouse.y -&gt; <span class="type">Control</span></strong> -- control holding y-axis
+information. This Control's Position function returns a value from 0 to
+the value of ika.Video.yres, or the screen's vertical resolution.
+<strong>mouse.left -&gt; <span class="type">Control</span></strong> -- control holding left mouse button information.
+<strong>mouse.middle -&gt; <span class="type">Control</span></strong> -- control holding middle mouse button information.
+<strong>mouse.right -&gt; <span class="type">Control</span></strong> -- control holding right mouse
+button information.
+(On mice with no middle button, middle button functionality is emulated
+by having both left and right buttons pressed simultaneously.
+ika.Input.mouse.middle will reflect this.)
 Click <a href="#Control">here</a> for information on using Control objects.
 Click <a href="http://ika.sourceforge.net/articles.php?view=15">here</a> for a more in-depth explanation.
-</li>
-<li>
-<h4 id="Input.right">ika.Input.right -> <u>Control</u> (read/write)</h4>
-Gets the standard "Right" control. Moves the player right when the engine has control. Defaults to the right arrow key (ika.Input.keyboard["RIGHT"]).
+</div>
+<div class="entry">
+<h4 id="Input.right">ika.Input.right -&gt; <span class="type">Control</span> (read/write)</h4>
+Gets the standard "Right" control. Moves the player right when the
+engine has control. Defaults to the right arrow key
+(ika.Input.keyboard["RIGHT"]).
 See also: <a href="#Input.up">ika.Input.up</a>, <a href="#Input.down">ika.Input.down</a>, and <a href="#Input.left">ika.Input.left</a>.
-</li>
-<li>
+</div>
+<div class="entry">
 <h4 id="Input.Unpress">ika.Input.Unpress()</h4>
-Unsets the Pressed property of all controls.  Has no effect on their positions. Individual controls can be unpressed by simply calling their Pressed method, discarding the result.
-</li>
-<li>
-<h4 id="Input.up">ika.Input.up -> <u>Control</u> (read/write)</h4>
-Gets the standard "Up" control.  Moves the player up when the engine has control.  Defaults to the up arrow key (ika.Input.keyboard["UP"]).
+Unsets the Pressed property of all controls. Has no effect on their
+positions. Individual controls can be unpressed by simply calling their
+Pressed method, discarding the result.
+</div>
+<div class="entry">
+<h4 id="Input.up">ika.Input.up -&gt; <span class="type">Control</span> (read/write)</h4>Gets
+the standard "Up" control. Moves the player up when the engine has
+control. Defaults to the up arrow key (ika.Input.keyboard["UP"]).
 See also: <a href="#Input.down">ika.Input.down</a>, <a href="#Input.left">ika.Input.left</a>, and <a href="#Input.right">ika.Input.right</a>.
-</li>
-<li>
+</div>
+<div class="entry">
 <h4 id="Input.Update">ika.Input.Update()</h4>
-Updates the state of any attached input devices. Also gives the OS a chance to do background tasks.  Continuous loops should call this occasionally to give the OS time to perform its tasks.  (Note: If this function is not called in a loop, the player will have no control in that loop.  This also means they will not be able to close the program with Alt-F4.  You should ALWAYS use this in a loop unless you have a very specific reason not to do so.)
-</li>
-</ul><br />
+Updates the state of any attached input devices. Also gives the OS a
+chance to do background tasks. Continuous loops should call this
+occasionally to give the OS time to perform its tasks. (Note: If this
+function is not called in a loop, the player will have no control in
+that loop. This also means they will not be able to close the program
+with Alt-F4. You should ALWAYS use this in a loop unless you have a
+very specific reason not to do so.)
+</div>
+
 <h3 id="Map">Map</h3>
-<p>A singleton which represents the current map. Since this is a singleton, it is always the map the engine is currently using; there is no way to create a different object for a different map.</p>
-<ul>
-<li>
-<h4 id="Map.entities">ika.Map.entities -> <u>dict</u> {<u>string</u> <i>entName</i>: <u>ika.Entity</u> <i>ent</i>, ...} (read/write)</h4>
+<p>A singleton which represents the current map. Since this is a
+singleton, it is always the map the engine is currently using; there is
+no way to create a different object for a different map.</p>
+
+<div class="entry">
+<h4 id="Map.entities">ika.Map.entities -&gt; <span class="type">dict</span> {<span class="type">string</span> <var>entName</var>: <span class="type">ika.Entity</span> <var>ent</var>, ...} (read/write)</h4>
 Gets a dictionary of entities currently tied to the map. Entities not in this list will not be affected by <a href="#Map.ProcessEntities">ika.Map.ProcessEntities</a>.
 See also: <a href="#Map.GetAllEntities">ika.Map.GetAllEntities</a>.
-</li>
-<li>
-<h4 id="Map.FindLayerByName">ika.Map.FindLayerByName(<u>string</u> <i>layerName</i>) -> <u>int</u> <i>layerIndex</i></h4>
-Returns the <i>layerIndex</i> of the first layer with the given <i>layerName</i>, or None if no such layer exists.
-</li>
-<li>
-<h4 id="Map.GetAllEntities">ika.Map.GetAllEntities() -> <u>list</u> <i>entityList</i> [<u>ika.Entity</u> <i>ent</i>, ...]</h4>
+</div>
+<div class="entry">
+<h4 id="Map.FindLayerByName">ika.Map.FindLayerByName(<span class="type">string</span> <var>layerName</var>) -&gt; <span class="type">int</span> <var>layerIndex</var></h4>
+Returns the <var>layerIndex</var> of the first layer with the given <var>layerName</var>, or None if no such layer exists.
+</div>
+<div class="entry">
+<h4 id="Map.GetAllEntities">ika.Map.GetAllEntities() -&gt; <span class="type">list</span> <var>entityList</var> [<span class="type">ika.Entity</span> <var>ent</var>, ...]</h4>
 Creates a list of every single existing entity, and returns it. This includes entities created through code.
 See also: <a href="#Map.entities">ika.Map.entities</a>.
-</li>
-<li>
-<h4 id="Map.GetLayerName">ika.Map.GetLayerName(<u>int</u> <i>layerIndex</i>) -> <u>string</u></h4>
+</div>
+<div class="entry">
+<h4 id="Map.GetLayerName">ika.Map.GetLayerName(<span class="type">int</span> <var>layerIndex</var>) -&gt; <span class="type">string</span></h4>
 Returns the name of the layer with the given index.
-</li>
-<li>
-<h4 id="Map.GetLayerPosition">ika.Map.GetLayerPosition(<u>int</u> <i>layerIndex</i>) -> <u>tuple</u> <i>position</i> (<u>int</u> <i>x</i>, <u>int</u> <i>y</i>)</h4>
-Returns a tuple containing the position on the map, in pixels, of the layer with index <i>layerIndex</i>. This position corresponds the top-left corner of the layer.
+</div>
+<div class="entry">
+<h4 id="Map.GetLayerPosition">ika.Map.GetLayerPosition(<span class="type">int</span> <var>layerIndex</var>) -&gt; <span class="type">tuple</span> <var>position</var> (<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>)</h4>
+Returns a tuple containing the position on the map, in pixels, of the layer with index <var>layerIndex</var>. This position corresponds the top-left corner of the layer.
 See also: <a href="#Map.SetLayerPosition">ika.Map.SetLayerPosition</a>.
-</li>
-<li>
-<h4 id="Map.GetLayerProperties">ika.Map.GetLayerProperties(<u>int</u> <i>layerIndex</i>) -> <u>tuple</u> <i>layerProperties</i> (<u>string</u> <i>label</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>, <u>int</u> <i>wrapx</i>, <u>int</u> <i>wrapy</i>)</h4>
-Returns a tuple <i>layerProperties</i> containing information about the map layer specified. This function is subject to an out-of-bounds error if the <i>layerIndex</i> passed is not valid.
-</li>
-<li>
-<h4 id="Map.GetLayerTint">ika.Map.GetLayerTint(<u>int</u> <i>layerIndex</i>) -> <u>int</u> <i>tintColor</i></h4>
-Returns the tint color of the layer with the given index <i>layerIndex</i>. Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Map.GetLayerProperties">ika.Map.GetLayerProperties(<span class="type">int</span> <var>layerIndex</var>) -&gt; <span class="type">tuple</span> <var>layerProperties</var> (<span class="type">string</span> <var>label</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>, <span class="type">int</span> <var>wrapx</var>, <span class="type">int</span> <var>wrapy</var>)</h4>
+Returns a tuple <var>layerProperties</var> containing information about the map layer specified. This function is subject to an out-of-bounds error if the <var>layerIndex</var> passed is not valid.
+</div>
+<div class="entry">
+<h4 id="Map.GetLayerTint">ika.Map.GetLayerTint(<span class="type">int</span> <var>layerIndex</var>) -&gt; <span class="type">int</span> <var>tintColor</var></h4>
+Returns the tint color of the layer with the given index <var>layerIndex</var>. Color values are created by <a href="#RGB">ika.RGB</a>.
 See also: <a href="#Map.SetLayerTint">ika.Map.SetLayerTint</a>.
-</li>
-<li>
-<h4 id="Map.GetMetaData">ika.Map.GetMetaData() -> <u>dict</u> <i>metadata</i> {<u>string</u> <i>key</i>: <u>string</u> <i>value</i>, ...}</h4>
+</div>
+<div class="entry">
+<h4 id="Map.GetMetaData">ika.Map.GetMetaData() -&gt; <span class="type">dict</span> <var>metadata</var> {<span class="type">string</span> <var>key</var>: <span class="type">string</span> <var>value</var>, ...}</h4>
 Creates a dictionary containing the map's metadata, and returns it.
-</li>
-<li>
-<h4 id="Map.GetObs">ika.Map.GetObs(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>layerIndex</i>) -> <u>int</u> <i>obs</i></h4>
+</div>
+<div class="entry">
+<h4 id="Map.GetObs">ika.Map.GetObs(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>layerIndex</var>) -&gt; <span class="type">int</span> <var>obs</var></h4>
 Returns 1 if the tile at (x, y) is obstructed, or 0 if not.
-</li>
-<li>
-<h4 id="Map.GetParallax">ika.Map.GetParallax(<u>int</u> <i>layerIndex</i>) -> (<u>int</u> <i>xmul</i>, <u>int</u> <i>xdiv</i>, <u>int</u> <i>ymul</i>, <u>int</u> <i>ydiv</i>)</h4>
-Returns a 4-tuple in the format (x multiplier, x divisor, y multiplier, y divisor) containing parallax settings for the layer <i>layerIndex</i> specified.
+</div>
+<div class="entry">
+<h4 id="Map.GetParallax">ika.Map.GetParallax(<span class="type">int</span> <var>layerIndex</var>) -&gt; (<span class="type">int</span> <var>xmul</var>, <span class="type">int</span> <var>xdiv</var>, <span class="type">int</span> <var>ymul</var>, <span class="type">int</span> <var>ydiv</var>)</h4>
+Returns a 4-tuple in the format (x multiplier, x divisor, y multiplier, y divisor) containing parallax settings for the layer <var>layerIndex</var> specified.
 See also: <a href="#Map.SetParallax">ika.Map.SetParallax</a>.
-</li>
-<li>
-<h4 id="Map.GetTile">ika.Map.GetTile(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>layerIndex</i>) -> <u>int</u> <i>tileIndex</i></h4>
-Returns the index of the tile at (<i>x</i>, <i>y</i>) on the layer <i>layerIndex</i> specified.
-</li>
-<li>
-<h4 id="Map.GetWaypoints">ika.Map.GetWaypoints() -> <u>list</u> <i>waypoints</i> [<u>tuple</u> <i>waypoint</i> (<u>string</u> <i>name</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>), ...]</h4>
-Returns a list of tuples in the format of (<i>name</i>, <i>x</i>, <i>y</i>), one for each waypoint defined within the editor. (Note: Waypoints are currently unimplemented and so, do nothing. This function is useless. You won't use it.)
-</li>
-<li>
-<h4 id="Map.GetZones">ika.Map.GetZones(<u>int</u> <i>layerIndex</i>) -> <u>list</u> <i>zones</i> [<u>tuple</u> <i>zoneInfo</i> (<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>, <u>function</u> <i>activateScript</i>), ...]</h4>
-Returns a list of tuples (<i>zones</i>) containing information about every zone on the layer <i>layerIndex</i> specified.  The tuples are in the format (<i>x</i>, <i>y</i>, <i>width</i>, <i>height</i>, <i>activateScript</i>). <i>activateScript</i> is a function that executes when the zone is entered or activated adjacently.
-</li>
-<li>
-<h4 id="Map.height">ika.Map.height -> <u>int</u> (read)</h4>
-Gets the height of the current map, in pixels. This value determines only how far the camera may scroll and is independent from individual layer heights.
+</div>
+<div class="entry">
+<h4 id="Map.GetTile">ika.Map.GetTile(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>layerIndex</var>) -&gt; <span class="type">int</span> <var>tileIndex</var></h4>
+Returns the index of the tile at (<var>x</var>, <var>y</var>) on the layer <var>layerIndex</var> specified.
+</div>
+<div class="entry">
+<h4 id="Map.GetWaypoints">ika.Map.GetWaypoints() -&gt; <span class="type">list</span> <var>waypoints</var> [<span class="type">tuple</span> <var>waypoint</var> (<span class="type">string</span> <var>name</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>), ...]</h4>
+Returns a list of tuples in the format of (<var>name</var>, <var>x</var>, <var>y</var>),
+one for each waypoint defined within the editor. (Note: Waypoints are
+currently unimplemented and so, do nothing. This function is useless.
+You won't use it.)
+</div>
+<div class="entry">
+<h4 id="Map.GetZones">ika.Map.GetZones(<span class="type">int</span> <var>layerIndex</var>) -&gt; <span class="type">list</span> <var>zones</var> [<span class="type">tuple</span> <var>zoneInfo</var> (<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>, <span class="type">function</span> <var>activateScript</var>), ...]</h4>
+Returns a list of tuples (<var>zones</var>) containing information about every zone on the layer <var>layerIndex</var> specified.  The tuples are in the format (<var>x</var>, <var>y</var>, <var>width</var>, <var>height</var>, <var>activateScript</var>). <var>activateScript</var> is a function that executes when the zone is entered or activated adjacently.
+</div>
+<div class="entry">
+<h4 id="Map.height">ika.Map.height -&gt; <span class="type">int</span> (read)</h4>Gets the
+height of the current map, in pixels. This value determines only how
+far the camera may scroll and is independent from individual layer
+heights.
 See also: <a href="#Map.width">ika.Map.width</a>.
-</li>
-<li>
-<h4 id="Map.layercount">ika.Map.layercount -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Map.layercount">ika.Map.layercount -&gt; <span class="type">int</span> (read)</h4>
 Gets the number of layers on the current map.
-</li>
-<li>
+</div>
+<div class="entry">
 <h4 id="Map.module">ika.Map.module</h4>
 Gets the Python module corresponding to the current map.
-</li>
-<li>
-<h4 id="Map.numtiles">ika.Map.numtiles -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Map.numtiles">ika.Map.numtiles -&gt; <span class="type">int</span> (read)</h4>
 Gets the number of tiles in the current tileset.
-</li>
-<li>
-<h4 id="Map.SetLayerName">ika.Map.SetLayerName(<u>int</u> <i>layerIndex</i>, <u>string</u> <i>newName</i>)</h4>
-Sets the name of the layer with <i>layerIndex</i> to <i>newName</i>.  Subsequent GetLayerName and FindLayerByName will use this as the layer's name, as if it were set in the editor.  (Obviously, this value is only temporary and will not change in the map file itself.)
-</li>
-<li>
-<h4 id="Map.SetLayerPosition">ika.Map.SetLayerPosition(<u>int</u> <i>layerIndex</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>)</h4>
-Sets the layer's position to the (<i>x</i>, <i>y</i>) coordinates, in pixels, specified. This position corresponds the top-left corner of the layer.
+</div>
+<div class="entry">
+<h4 id="Map.SetLayerName">ika.Map.SetLayerName(<span class="type">int</span> <var>layerIndex</var>, <span class="type">string</span> <var>newName</var>)</h4>
+Sets the name of the layer with <var>layerIndex</var> to <var>newName</var>.
+Subsequent GetLayerName and FindLayerByName will use this as the
+layer's name, as if it were set in the editor. (Obviously, this value
+is only temporary and will not change in the map file itself.)
+</div>
+<div class="entry">
+<h4 id="Map.SetLayerPosition">ika.Map.SetLayerPosition(<span class="type">int</span> <var>layerIndex</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>)</h4>
+Sets the layer's position to the (<var>x</var>, <var>y</var>) coordinates, in pixels, specified. This position corresponds the top-left corner of the layer.
 See also: <a href="#Map.GetLayerPosition">ika.Map.GetLayerPosition</a>.
-</li>
-<li>
-<h4 id="Map.SetLayerTint">ika.Map.SetLayerTint(<u>int</u> <i>layerIndex</i>, <u>int</u> <i>tintColor</i>)</h4>
-Sets the tint color of the layer with index <i>layerIndex</i> to <i>tintColor</i>. All tiles on the layer, when drawn, will be tinted this color. Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Map.SetLayerTint">ika.Map.SetLayerTint(<span class="type">int</span> <var>layerIndex</var>, <span class="type">int</span> <var>tintColor</var>)</h4>
+Sets the tint color of the layer with index <var>layerIndex</var> to <var>tintColor</var>. All tiles on the layer, when drawn, will be tinted this color. Color values are created by <a href="#RGB">ika.RGB</a>.
 See also: <a href="#Map.GetLayerTint">ika.Map.GetLayerTint</a>.
-</li>
-<li>
-<h4 id="Map.SetObs">ika.Map.SetObs(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>layerIndex</i>, <u>int</u> <i>obs</i>)</h4>
-If obs is nonzero, the tile at (<i>x</i>, <i>y</i>), in tiles, is obstructed, else it is unobstructed.
+</div>
+<div class="entry">
+<h4 id="Map.SetObs">ika.Map.SetObs(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>layerIndex</var>, <span class="type">int</span> <var>obs</var>)</h4>
+If obs is nonzero, the tile at (<var>x</var>, <var>y</var>), in tiles, is obstructed, else it is unobstructed.
 See also: <a href="#Map.GetObs">ika.Map.GetObs</a>.
-</li>
-<li>
-<h4 id="Map.SetParallax">ika.Map.SetParallax(<u>int</u> <i>layerIndex</i>, <u>int</u> <i>xmul</i>, <u>int</u> <i>xdiv</i>, <u>int</u> <i>ymul</i>, <u>int</u> <i>ydiv</i>)</h4>
-Sets the specified layer's parallax settings according to the multipliers<br /> and divisors given.  If either of the divisors are zero, a parallax value of 0/1 will be used for that axis.
+</div>
+<div class="entry">
+<h4 id="Map.SetParallax">ika.Map.SetParallax(<span class="type">int</span> <var>layerIndex</var>, <span class="type">int</span> <var>xmul</var>, <span class="type">int</span> <var>xdiv</var>, <span class="type">int</span> <var>ymul</var>, <span class="type">int</span> <var>ydiv</var>)</h4>
+Sets the specified layer's parallax settings according to the multipliers and divisors given.  If either of the divisors are zero, a parallax value of 0/1 will be used for that axis.
 See also: <a href="#Map.GetParallax">ika.Map.GetParallax</a>.
-</li>
-<li>
-<h4 id="Map.SetTile">ika.Map.SetTile(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>layerIndex</i>, <u>int</u> <i>tileIndex</i>)</h4>
-Sets the tile at (<i>x</i>, <i>y</i>) of layer <i>layerIndex</i> to the tile with index <i>tileIndex</i> in the current tileset. These indeces can be determined by loading the tileset in the map editor.
-</li>
-<li>
-<h4 id="Map.Switch">ika.Map.Switch(<u>string</u> <i>mapFilename</i>)</h4>
+</div>
+<div class="entry">
+<h4 id="Map.SetTile">ika.Map.SetTile(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>layerIndex</var>, <span class="type">int</span> <var>tileIndex</var>)</h4>
+Sets the tile at (<var>x</var>, <var>y</var>) of layer <var>layerIndex</var> to the tile with index <var>tileIndex</var> in the current tileset. These indeces can be determined by loading the tileset in the map editor.
+</div>
+<div class="entry">
+<h4 id="Map.Switch">ika.Map.Switch(<span class="type">string</span> <var>mapFilename</var>)</h4>
 Switches the current map to the map file specified.
 The new map's AutoExec event is executed, if it exists.
-</li>
-<li>
-<h4 id="Map.tilesetname">ika.Map.tilesetname -> <u>string</u> (read/write)</h4>
-Gets or sets the filename of the current tileset. This will change the tiles used in the map instantly but will not change the value in the map file itself.
-</li>
-<li>
-<h4 id="Map.tileheight">ika.Map.tileheight -> <u>int</u></h4>
+</div>
+<div class="entry">
+<h4 id="Map.tilesetname">ika.Map.tilesetname -&gt; <span class="type">string</span> (read/write)</h4>Gets
+or sets the filename of the current tileset. This will change the tiles
+used in the map instantly but will not change the value in the map file
+itself.
+</div>
+<div class="entry">
+<h4 id="Map.tileheight">ika.Map.tileheight -&gt; <span class="type">int</span></h4>
 Gets the height of tiles, in pixels, in the current tileset.
 See also: <a href="#Map.tilewidth">ika.Map.tilewidth</a>.
-</li>
-<li>
-<h4 id="Map.tilewidth">ika.Map.tilewidth -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Map.tilewidth">ika.Map.tilewidth -&gt; <span class="type">int</span> (read)</h4>
 Gets the width of tiles, in pixels, in the current tileset.
 See also: <a href="#Map.tileheight">ika.Map.tileheight</a>.
-</li>
-<li>
-<h4 id="Map.title">ika.Map.title -> <u>string</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Map.title">ika.Map.title -&gt; <span class="type">string</span> (read/write)</h4>
 Gets or sets the map's title. This parameter has no effect and is merely metadata displayed in the map editor.
-</li>
-<li>
-<h4 id="Map.width">ika.Map.width -> <u>int</u> (read)</h4>
-Gets the width of the current map, in pixels. This value determines only how far the camera may scroll and is independent from individual layer widths.
+</div>
+<div class="entry">
+<h4 id="Map.width">ika.Map.width -&gt; <span class="type">int</span> (read)</h4>Gets the
+width of the current map, in pixels. This value determines only how far
+the camera may scroll and is independent from individual layer widths.
 See also: <a href="#Map.height">ika.Map.height</a>.
-</li>
-<li>
-<h4 id="Map.xwin">ika.Map.xwin -> <u>int</u> (read/write)</h4>
-Gets or sets the x coordinate, in pixels, of the camera. This position corresponds to the top-left corner of the screen. The value cannot exceed the map width.
+</div>
+<div class="entry">
+<h4 id="Map.xwin">ika.Map.xwin -&gt; <span class="type">int</span> (read/write)</h4>
+Gets or sets the x coordinate, in pixels, of the camera. This position
+corresponds to the top-left corner of the screen. The value cannot
+exceed the map width.
 See also: <a href="#Map.ywin">ika.Map.ywin</a> and <a href="#Map.width">ika.Map.width</a>.
-</li>
-<li>
-<h4 id="Map.ywin">ika.Map.ywin -> <u>int</u> (read/write)</h4>
-Gets or sets the y coordinate, in pixels, of the camera. This position corresponds to the top-left corner of the screen. The value cannot exceed the map height.
+</div>
+<div class="entry">
+<h4 id="Map.ywin">ika.Map.ywin -&gt; <span class="type">int</span> (read/write)</h4>
+Gets or sets the y coordinate, in pixels, of the camera. This position
+corresponds to the top-left corner of the screen. The value cannot
+exceed the map height.
 See also: <a href="#Map.xwin">ika.Map.xwin</a> and <a href="#Map.height">ika.Map.height</a>.
-</li>
-</ul><br />
+</div>
+
 <h3 id="Video">Video</h3>
 <p>Interface for ika's graphics engine. This object is a singleton, which means there can only be one instance of it at any time.</p>
-<ul>
-<li>
-<h4 id="Video.Blit">ika.Video.Blit(<u>ika.Image</u> <i>image</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>[, <u>int</u> <i>blendMode</i>])</h4>
-Draws the <i>image</i> at (<i>x</i>, <i>y</i>) at its original size.
+
+<div class="entry">
+<h4 id="Video.Blit">ika.Video.Blit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>[, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws the <var>image</var> at (<var>x</var>, <var>y</var>) at its original size.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
+</div>
+<div class="entry">
 <h4 id="Video.ClearScreen">ika.Video.ClearScreen()</h4>
-Clears the screen by drawing a black rectangle over it. The effect, like with all other drawing functions, will not appear until <a href="#Video.ShowPage">ika.Video.ShowPage</a> is called.
-</li>
-<li>
-<h4 id="Video.ClipBlit">ika.Video.ClipBlit(<u>ika.Image</u> <i>image</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>clipx</i>, <u>int</u> <i>clipy</i>, <u>int</u> <i>clipw</i>, <u>int</u> <i>cliph</i>[, <u>int</u> <i>blendMode</i>])</h4>
-Draws a portion of the <i>image</i> starting at the coordinates (<i>clipx</i>, <i>clipy</i>) with a width of <i>clipw</i> and height of <i>cliph</i> at screen coordinates (<i>x</i>, <i>y</i>).
+Clears the screen by drawing a black rectangle over it. The effect,
+like with all other drawing functions, will not appear until <a href="#Video.ShowPage">ika.Video.ShowPage</a> is called.
+</div>
+<div class="entry">
+<h4 id="Video.ClipBlit">ika.Video.ClipBlit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>clipx</var>, <span class="type">int</span> <var>clipy</var>, <span class="type">int</span> <var>clipw</var>, <span class="type">int</span> <var>cliph</var>[, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws a portion of the <var>image</var> starting at the coordinates (<var>clipx</var>, <var>clipy</var>) with a width of <var>clipw</var> and height of <var>cliph</var> at screen coordinates (<var>x</var>, <var>y</var>).
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Video.ClipScreen">ika.Video.ClipScreen([<u>int</u> <i>left</i> = 0, <u>int</u> <i>top</i> = 0, <u>int</u> <i>right</i> = <a href="#Video.xres">ika.Video.xres</a>, <u>int</u> <i>bottom</i> = <a href="#Video.yres">ika.Video.yres</a>])</h4>
-Clips the video display to the rectangle specfied.  All drawing operations will be confined to this region; any pixels drawn outside of this range will be omitted. Calling ClipScreen with no arguments will reset the clipping rect to its default setting. (the whole screen).
-</li>
-<li>
+</div>
+<div class="entry">
+<h4 id="Video.ClipScreen">ika.Video.ClipScreen([<span class="type">int</span> <var>left</var> = 0, <span class="type">int</span> <var>top</var> = 0, <span class="type">int</span> <var>right</var> = <a href="#Video.xres">ika.Video.xres</a>, <span class="type">int</span> <var>bottom</var> = <a href="#Video.yres">ika.Video.yres</a>])</h4>
+Clips the video display to the rectangle specfied. All drawing
+operations will be confined to this region; any pixels drawn outside of
+this range will be omitted. Calling ClipScreen with no arguments will
+reset the clipping rect to its default setting. (the whole screen).
+</div>
+<div class="entry">
 <h4 id="Video.GetClipRect">ika.Video.GetClipRect()</h4>
-Return a 4-tuple containing the currently set clip rect. (as set by <a href="Video.ClipScreen">Video.ClipScreen</a>)
-</li>
-<li>
-<h4 id="Video.DistortBlit">ika.Video.DistortBlit(<u>ika.Image</u> <i>image</i>, <u>tuple</u> <i>upleft</i> (<u>int</u> <i>upleftX</i>, <u>int</u> <i>upleftY</i>), <u>tuple</u> <i>upright</i> (<u>int</u> <i>uprightX</i>, <u>int</u> <i>uprightY</i>), <u>tuple</u> <i>downright</i> (<u>int</u> <i>downrightX</i>, <u>int</u> <i>downrightY</i>), <u>tuple</u> <i>downleft</i> (<u>int</u> <i>downleftX</i>, <u>int</u> <i>downleftY</i>)[, <u>int</u> <i>blendmode</i>])</h4>
-Draws the <i>image</i> onscreen, stretched to the four points specified. Remember that the point tuples go in clockwise order around the image, starting at the top left.
+Return a 4-tuple containing the currently set clip rect. (as set by <a href="http://implicit.dyndns.org/ikadoc/Video.ClipScreen">Video.ClipScreen</a>)
+</div>
+<div class="entry">
+<h4 id="Video.DistortBlit">ika.Video.DistortBlit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">tuple</span> <var>upleft</var> (<span class="type">int</span> <var>upleftX</var>, <span class="type">int</span> <var>upleftY</var>), <span class="type">tuple</span> <var>upright</var> (<span class="type">int</span> <var>uprightX</var>, <span class="type">int</span> <var>uprightY</var>), <span class="type">tuple</span> <var>downright</var> (<span class="type">int</span> <var>downrightX</var>, <span class="type">int</span> <var>downrightY</var>), <span class="type">tuple</span> <var>downleft</var> (<span class="type">int</span> <var>downleftX</var>, <span class="type">int</span> <var>downleftY</var>)[, <span class="type">int</span> <var>blendmode</var>])</h4>
+Draws the <var>image</var>
+onscreen, stretched to the four points specified. Remember that the
+point tuples go in clockwise order around the image, starting at the
+top left.
 See also: <a href="#BlendModes">Blend Modes</a> and <a href="#Video.TintDistortBlit">ika.Video.TintDistortBlit</a>.
-</li>
-<li>
-<h4 id="Video.DrawEllipse">ika.Video.DrawEllipse(<u>int</u> <i>cx</i>, <u>int</u> <i>cy</i>, <u>int</u> <i>rx</i>, <u>int</u> <i>ry</i>, <u>int</u> <i>color</i>[, <u>int</u> <i>filled</i>, <u>int</u> <i>blendMode</i>])</h4>
-Draws an ellipse, centered at (<i>cx</i>, <i>cy</i>), of radius <i>rx</i> and <i>ry</i> on the X and Y axis, respectively.  If <i>filled</i> is non-zero, the ellipse is filled in; else, it is drawn as an outline (including if the parameter is omitted). Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Video.DrawEllipse">ika.Video.DrawEllipse(<span class="type">int</span> <var>cx</var>, <span class="type">int</span> <var>cy</var>, <span class="type">int</span> <var>rx</var>, <span class="type">int</span> <var>ry</var>, <span class="type">int</span> <var>color</var>[, <span class="type">int</span> <var>filled</var>, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws an ellipse, centered at (<var>cx</var>, <var>cy</var>), of radius <var>rx</var> and <var>ry</var> on the X and Y axis, respectively.  If <var>filled</var>
+is non-zero, the ellipse is filled in; else, it is drawn as an outline
+(including if the parameter is omitted). Color values are created by <a href="#RGB">ika.RGB</a>.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Video.DrawLine">ika.Video.DrawLine(<u>int</u> <i>x1</i>, <u>int</u> <i>y1</i>, <u>int</u> <i>x2</i>, <u>int</u> <i>y2</i>, <u>int</u> <i>color</i>[, <u>int</u> <i>blendMode</i>])</h4>
-Draws a straight line from (<i>x1</i>, <i>y1</i>) to (<i>x2</i>, <i>y2</i>) in the <i>color</i> specified. Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Video.DrawLine">ika.Video.DrawLine(<span class="type">int</span> <var>x1</var>, <span class="type">int</span> <var>y1</var>, <span class="type">int</span> <var>x2</var>, <span class="type">int</span> <var>y2</var>, <span class="type">int</span> <var>color</var>[, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws a straight line from (<var>x1</var>, <var>y1</var>) to (<var>x2</var>, <var>y2</var>) in the <var>color</var> specified. Color values are created by <a href="#RGB">ika.RGB</a>.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Video.DrawPixel">ika.Video.DrawPixel(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>color</i>[, <u>int</u> <i>blendMode</i>])</h4>
-Draws a pixel at (<i>x</i>, <i>y</i>) with the <i>color</i> specified. Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Video.DrawPixel">ika.Video.DrawPixel(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>color</var>[, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws a pixel at (<var>x</var>, <var>y</var>) with the <var>color</var> specified. Color values are created by <a href="#RGB">ika.RGB</a>.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Video.DrawRect">ika.Video.DrawRect(<u>int</u> <i>x1</i>, <u>int</u> <i>y1</i>, <u>int</u> <i>x2</i>, <u>int</u> <i>y2</i>, <u>int</u> <i>color</i>[, <u>int</u> <i>filled</i>, <u>int</u> <i>blendMode</i>])</h4>
-Draws a rectangle with (<i>x1</i>, <i>y1</i>) and (<i>x2</i>, <i>y2</i>) as the top-left and bottom-right corners, respectively. If <i>filled</i> is omitted or zero, an outline is drawn; else, it is filled in.
+</div>
+<div class="entry">
+<h4 id="Video.DrawRect">ika.Video.DrawRect(<span class="type">int</span> <var>x1</var>, <span class="type">int</span> <var>y1</var>, <span class="type">int</span> <var>x2</var>, <span class="type">int</span> <var>y2</var>, <span class="type">int</span> <var>color</var>[, <span class="type">int</span> <var>filled</var>, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws a rectangle with (<var>x1</var>, <var>y1</var>) and (<var>x2</var>, <var>y2</var>) as the top-left and bottom-right corners, respectively. If <var>filled</var> is omitted or zero, an outline is drawn; else, it is filled in.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Video.DrawTriangle">ika.Video.DrawTriangle(<u>tuple</u> <i>point1</i> (<u>int</u> <i>x1</i>, <u>int</u> <i>y1</i>, <u>int</u> <i>color1</i>), <u>tuple</u> <i>point2</i> (<u>int</u> <i>x2</i>, <u>int</u> <i>y2</i>, <u>int</u> <i>color2</i>), <u>tuple</u> <i>point3</i> (<u>int</u> <i>x3</i>, <u>int</u> <i>y3</i>, <u>int</u> <i>color3</i>))</h4>
-Draws a triangle onscreen.  Each point is the specific color specified, and the other pixels in the triangle are blended between based on their positions. Color values are created by <a href="#RGB">ika.RGB</a>.
-</li>
-<li>
-<h4 id="Video.GrabCanvas">ika.Video.GrabCanvas(<u>int</u> <i>x1</i>, <u>int</u> <i>y1</i>, <u>int</u> <i>x2</i>, <u>int</u> <i>y2</i>) -> <u>ika.Canvas</u> <i>screenGrab</i></h4>
-Grabs a rectangle from the screen, copies it to a canvas (<i>screenGrab</i>), and returns it.
+</div>
+<div class="entry">
+<h4 id="Video.DrawTriangle">ika.Video.DrawTriangle(<span class="type">tuple</span> <var>point1</var> (<span class="type">int</span> <var>x1</var>, <span class="type">int</span> <var>y1</var>, <span class="type">int</span> <var>color1</var>), <span class="type">tuple</span> <var>point2</var> (<span class="type">int</span> <var>x2</var>, <span class="type">int</span> <var>y2</var>, <span class="type">int</span> <var>color2</var>), <span class="type">tuple</span> <var>point3</var> (<span class="type">int</span> <var>x3</var>, <span class="type">int</span> <var>y3</var>, <span class="type">int</span> <var>color3</var>))</h4>
+Draws a triangle onscreen. Each point is the specific color specified,
+and the other pixels in the triangle are blended between based on their
+positions. Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Video.GrabCanvas">ika.Video.GrabCanvas(<span class="type">int</span> <var>x1</var>, <span class="type">int</span> <var>y1</var>, <span class="type">int</span> <var>x2</var>, <span class="type">int</span> <var>y2</var>) -&gt; <span class="type">ika.Canvas</span> <var>screenGrab</var></h4>
+Grabs a rectangle from the screen, copies it to a canvas (<var>screenGrab</var>), and returns it.
 See also: <a href="#Image">ika.Image</a>.
-</li>
-<li>
-<h4 id="Video.GrabImage">ika.Video.GrabImage(<u>int</u> <i>x1</i>, <u>int</u> <i>y1</i>, <u>int</u> <i>x2</i>, <u>int</u> <i>y2</i>) -> <u>ika.Image</u> <i>screenGrab</i></h4>
-Grabs a rectangle from the screen, copies it to an image (<i>screenGrab</i>), and returns it.
+</div>
+<div class="entry">
+<h4 id="Video.GrabImage">ika.Video.GrabImage(<span class="type">int</span> <var>x1</var>, <span class="type">int</span> <var>y1</var>, <span class="type">int</span> <var>x2</var>, <span class="type">int</span> <var>y2</var>) -&gt; <span class="type">ika.Image</span> <var>screenGrab</var></h4>
+Grabs a rectangle from the screen, copies it to an image (<var>screenGrab</var>), and returns it.
 See also: <a href="#Image">ika.Image</a>.
-</li>
-<li>
-<h4 id="Video.ScaleBlit">ika.Video.ScaleBlit(<u>ika.Image</u> <i>image</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>[, <u>int</u> <i>blendMode</i>])</h4>
-Draws the <i>image</i> at (<i>x</i>, <i>y</i>), stretching it out to the <i>width</i> and <i>height</i> given.
+</div>
+<div class="entry">
+<h4 id="Video.ScaleBlit">ika.Video.ScaleBlit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>[, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws the <var>image</var> at (<var>x</var>, <var>y</var>), stretching it out to the <var>width</var> and <var>height</var> given.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
+</div>
+<div class="entry">
 <h4 id="Video.ShowPage">ika.Video.ShowPage()</h4>
-Flips the back and front video buffers.  This must be called after you have called all desired drawing functions, or the scene will never be presented to the player. Calling this function is the only way to update the screen's contents. This function is not guaranteed to preserve the contents of the screen, so it is advised to redraw the entire screen, instead of incrementally drawing.
-</li>
-<li>
-<h4 id="Video.TileBlit">ika.Video.TileBlit(<u>ika.Image</u> <i>image</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>[, <u>float</u> <i>scalex</i>[, <u>float</u> <i>scaley</i>[, <u>int</u> <i>blendMode</i>]]])</h4>
-Draws the <i>image</i> onscreen, "tiling" it as necessary to fit the rectangle specified. <i>scalex</i> and <i>scaley</i> are floating point values used as a scale factor.  The default is 1 for each.
+Flips the back and front video buffers. This must be called after you
+have called all desired drawing functions, or the scene will never be
+presented to the player. Calling this function is the only way to
+update the screen's contents. This function is not guaranteed to
+preserve the contents of the screen, so it is advised to redraw the
+entire screen, instead of incrementally drawing.
+</div>
+<div class="entry">
+<h4 id="Video.TileBlit">ika.Video.TileBlit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>[, <span class="type">float</span> <var>scalex</var>[, <span class="type">float</span> <var>scaley</var>[, <span class="type">int</span> <var>blendMode</var>]]])</h4>
+Draws the <var>image</var> onscreen, "tiling" it as necessary to fit the rectangle specified. <var>scalex</var> and <var>scaley</var> are floating point values used as a scale factor.  The default is 1 for each.
 See also: <a href="#BlendModes">Blend Modes</a> and <a href="#Video.TintTileBlit">ika.Video.TintTileBlit</a>.
-</li>
-<li>
-<h4 id="Video.TintBlit">ika.Video.TintBlit(<u>ika.Image</u> <i>image</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>tintColor</i>[, <u>int</u> <i>blendMode</i>])</h4>
-Draws the <i>image</i> onscreen, using <i>tintColor</i> to 'tint' the image.
-Each pixel is multiplied by <i>tintColor</i>.  The resultant values are then
+</div>
+<div class="entry">
+<h4 id="Video.TintBlit">ika.Video.TintBlit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>tintColor</var>[, <span class="type">int</span> <var>blendMode</var>])</h4>
+Draws the <var>image</var> onscreen, using <var>tintColor</var> to 'tint' the image.
+Each pixel is multiplied by <var>tintColor</var>.
+The resultant values are then
 scaled before the pixel is plotted.
-In English, this means that RGBA(255, 255, 255, 255) is a normal blit, while RGBA(0, 0, 0, 255) will leave the alpha channel intact, but reduce
+In English, this means that RGBA(255, 255, 255, 255) is a normal blit,
+while RGBA(0, 0, 0, 255) will leave the alpha channel intact, but
+reduce
 all pixels to black. (effectively drawing a silhouette).
 See also: <a href="#BlendModes">Blend Modes</a>, <a href="#Video.TintDistortBlit">ika.Video.TintDistortBlit</a>, and <a href="#Video.TintTileBlit">ika.Video.TintTileBlit</a>.
-</li>
-<li>
-<h4 id="Video.TintDistortBlit">ika.Video.TintDistortBlit(<u>ika.Image</u> <i>image</i>, <u>tuple</u> <i>upleft</i> (<u>int</u> <i>upleftX</i>, <u>int</u> <i>upleftY</i>, <u>int</u> <i>upleftTintColor</i>), <u>tuple</u> <i>upright</i> (<u>int</u> <i>uprightX</i>, <u>int</u> <i>uprightY</i>, <u>int</u> <i>uprightTintColor</i>), <u>tuple</u> <i>downright</i> (<u>int</u> <i>downrightX</i>, <u>int</u> <i>downrightY</i>, <u>int</u> <i>downrightTintColor</i>), <u>tuple</u> <i>downleft</i> (<u>int</u> <i>downleftX</i>, <u>int</u> <i>downleftY</i>, <u>int</u> <i>downleftTintColor</i>)[, <u>int</u> <i>blendMode</i>])</h4>
-Combines the effects of <a href="#Video.DistortBlit">ika.Video.DistortBlit</a> and <a href="#Video.TintBlit">TintBlit</a>.  Each corner can be tinted individually.  The corners, if not the same, are smoothly interpolated across the image. Remember that the point tuples go in clockwise order around the image, starting at the top left. Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Video.TintDistortBlit">ika.Video.TintDistortBlit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">tuple</span> <var>upleft</var> (<span class="type">int</span> <var>upleftX</var>, <span class="type">int</span> <var>upleftY</var>, <span class="type">int</span> <var>upleftTintColor</var>), <span class="type">tuple</span> <var>upright</var> (<span class="type">int</span> <var>uprightX</var>, <span class="type">int</span> <var>uprightY</var>, <span class="type">int</span> <var>uprightTintColor</var>), <span class="type">tuple</span> <var>downright</var> (<span class="type">int</span> <var>downrightX</var>, <span class="type">int</span> <var>downrightY</var>, <span class="type">int</span> <var>downrightTintColor</var>), <span class="type">tuple</span> <var>downleft</var> (<span class="type">int</span> <var>downleftX</var>, <span class="type">int</span> <var>downleftY</var>, <span class="type">int</span> <var>downleftTintColor</var>)[, <span class="type">int</span> <var>blendMode</var>])</h4>
+Combines the effects of <a href="#Video.DistortBlit">ika.Video.DistortBlit</a> and <a href="#Video.TintBlit">TintBlit</a>.
+Each corner can be tinted individually. The corners, if not the same,
+are smoothly interpolated across the image. Remember that the point
+tuples go in clockwise order around the image, starting at the top
+left. Color values are created by <a href="#RGB">ika.RGB</a>.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Video.TintTileBlit">ika.Video.TintTileBlit(<u>ika.Image</u> <i>image</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>, <u>int</u> <i>tintColor</i>[, <u>float</u> <i>scalex</i>[, <u>float</u> <i>scaley</i>[, <u>int</u> <i>blendMode</i>]]])</h4>
-Draws the <i>image</i> onscreen, "tiling" it as necessary to fit the rectangle specified. Also tints each pixel the color <i>tintColor</i>. <i>scalex</i> and <i>scaley</i> are floating point values used as a scale factor.  The default is 1 for each.
+</div>
+<div class="entry">
+<h4 id="Video.TintTileBlit">ika.Video.TintTileBlit(<span class="type">ika.Image</span> <var>image</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>, <span class="type">int</span> <var>tintColor</var>[, <span class="type">float</span> <var>scalex</var>[, <span class="type">float</span> <var>scaley</var>[, <span class="type">int</span> <var>blendMode</var>]]])</h4>
+Draws the <var>image</var> onscreen, "tiling" it as necessary to fit the rectangle specified. Also tints each pixel the color <var>tintColor</var>. <var>scalex</var> and <var>scaley</var> are floating point values used as a scale factor.  The default is 1 for each.
 See also: <a href="#BlendModes">Blend Modes</a>, <a href="#Video.TintBlit">ika.Video.TintBlit</a>, and <a href="#Video.TileBlit">ika.Video.TileBlit</a>.
-</li>
-<li>
-<h4 id="Video.xres">ika.Video.xres -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Video.xres">ika.Video.xres -&gt; <span class="type">int</span> (read)</h4>
 Gets the horizontal resolution of the current display mode, in pixels. The default, if left unchanged in user.cfg, is 640.
 See also: <a href="#Video.yres">ika.Video.yres</a>.
-</li>
-<li>
-<h4 id="Video.yres">ika.Video.yres -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Video.yres">ika.Video.yres -&gt; <span class="type">int</span> (read)</h4>
 Gets the vertical resolution of the current display mode, in pixels. The default, if left unchanged in user.cfg, is 480.
 See also: <a href="#Video.xres">ika.Video.xres</a>.
-</li>
-</ul><br />
+</div>
+
 <h3>Canvas</h3>
-<p>A software representation of an image that can be manipulated easily. Canvases cannot be blit onto the screen directly; they must first be transformed into images.
+<p>A software representation of an image that can be manipulated
+easily. Canvases cannot be blit onto the screen directly; they must
+first be transformed into images.
 See also: <a href="#Image">ika.Image</a>.</p>
-<ul>
-<li>
-<h4 id="CanvasConstructor1">ika.Canvas(<u>string</u> <i>imageFilename</i>) -> <u>ika.Canvas</u> <i>canvas</i></h4>
-Loads the image specified by '<i>imageFilename</i>' into a new <i>canvas</i>.
-</li>
-<li>
-<h4 id="CanvasConstructor2">ika.Canvas(<u>int</u> <i>width</i>, <u>int</u> <i>height</i>) -> <u>ika.Canvas</u> <i>canvas</i></h4>
-Creates a new, blank canvas of the specified size (<i>width</i>, <i>height</i>) in pixels.
-</li>
-<li>
-<h4 id="Canvas.Blit">ika.Canvas.Blit(<u>ika.Canvas</u> <i>destCanvas</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>blendMode</i>)</h4>
-Draws the canvas on <i>destCanvas</i>, at position (<i>x</i>, <i>y</i>)
+
+<div class="entry">
+<h4 id="CanvasConstructor1">ika.Canvas(<span class="type">string</span> <var>imageFilename</var>) -&gt; <span class="type">ika.Canvas</span> <var>canvas</var></h4>
+Loads the image specified by '<var>imageFilename</var>' into a new <var>canvas</var>.
+</div>
+<div class="entry">
+<h4 id="CanvasConstructor2">ika.Canvas(<span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>) -&gt; <span class="type">ika.Canvas</span> <var>canvas</var></h4>
+Creates a new, blank canvas of the specified size (<var>width</var>, <var>height</var>) in pixels.
+</div>
+<div class="entry">
+<h4 id="Canvas.Blit">ika.Canvas.Blit(<span class="type">ika.Canvas</span> <var>destCanvas</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>blendMode</var>)</h4>
+Draws the canvas on <var>destCanvas</var>, at position (<var>x</var>, <var>y</var>)
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Canvas.Clear">ika.Canvas.Clear([<u>int</u> <i>color</i>])</h4>
+</div>
+<div class="entry">
+<h4 id="Canvas.Clear">ika.Canvas.Clear([<span class="type">int</span> <var>color</var>])</h4>
 Sets every pixel on the canvas to the colour given.  If color is omitted, black is used.
-</li>
-<li>
-<h4 id="Canvas.Clip">ika.Canvas.Clip([<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>])</h4>
-Sets the clipping rectangle of the canvas.  Blitting to the canvas will be confined to the clip rectangle; blitting the canvas on others will only blit the clipped region. If no arguments are specified, the clip rectangle is reset to cover the whole canvas.
-</li>
-<li>
-<h4 id="Canvas.DrawText">ika.Canvas.DrawText(<u>ika.Font</u> <i>font</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>string</u> <i>text</i>)</h4>
-Draws the string <i>text</i> starting at (<i>x</i>,<i>y</i>) with the <i>font</i> specified.  No word wrapping is done.
-</li>
-<li>
+</div>
+<div class="entry">
+<h4 id="Canvas.Clip">ika.Canvas.Clip([<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>])</h4>
+Sets the clipping rectangle of the canvas. Blitting to the canvas will
+be confined to the clip rectangle; blitting the canvas on others will
+only blit the clipped region. If no arguments are specified, the clip
+rectangle is reset to cover the whole canvas.
+</div>
+<div class="entry">
+<h4 id="Canvas.DrawText">ika.Canvas.DrawText(<span class="type">ika.Font</span> <var>font</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">string</span> <var>text</var>)</h4>
+Draws the string <var>text</var> starting at (<var>x</var>,<var>y</var>) with the <var>font</var> specified.  No word wrapping is done.
+</div>
+<div class="entry">
 <h4 id="Canvas.Flip">ika.Canvas.Flip()</h4>
 Flips the contents of the canvas on the X axis (turns it upside down).
 See also: <a href="#Canvas.Mirror">ika.Canvas.Mirror</a>.
-</li>
-<li>
-<h4 id="Canvas.GetPixel">ika.Canvas.GetPixel(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>) -> <u>int</u> <i>color</i></h4>
+</div>
+<div class="entry">
+<h4 id="Canvas.GetPixel">ika.Canvas.GetPixel(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>) -&gt; <span class="type">int</span> <var>color</var></h4>
 Returns the pixel at position (x, y) on the canvas, as a packed 32bpp RGBA color. Color values are created by <a href="#RGB">ika.RGB</a>.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Canvas.height">ika.Canvas.height -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Canvas.height">ika.Canvas.height -&gt; <span class="type">int</span> (read)</h4>
 Gets the height, in pixels, of the canvas.
 See also: <a href="#Canvas.width">ika.Canvas.width</a>.
-</li>
-<li>
+</div>
+<div class="entry">
 <h4 id="Canvas.Mirror">ika.Canvas.Mirror()</h4>
 Mirrors the contents of the canvas along the Y axis (left to right).
 See also: <a href="#Canvas.Flip">ika.Canvas.Flip</a>.
-</li>
-<li>
-<h4 id="Canvas.Resize">ika.Canvas.Resize(<u>int</u> <i>width</i>, <u>int</u> <i>height</i>)</h4>
-Resizes the canvas to the size specified.  No scaling takes place; if the dimensions given are smaller than the existing image, it is cropped.  Blank, transparent space is added when the canvas is enlarged.
-</li>
-<li>
-<h4 id="Canvas.Rotate">ika.Canvas.Rotate()</h4>
-Rotates the contents of the canvas 90 degrees, clockwise. The size of the canvas does not change, so if the canvas was not square, any pixels outside the range will be cropped.
-</li>
-<li>
-<h4 id="Canvas.Save">ika.Canvas.Save(<u>string</u> <i>filename</i>)</h4>
-Writes the image to the <i>filename</i> specified in PNG format ("myimage.png", for example).
-</li>
-<li>
-<h4 id="Canvas.ScaleBlit">ika.Canvas.ScaleBlit(<u>ika.Canvas</u> <i>destcanvas</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>[, <u>int</u> <i>blendmode</i>)</h4>
-Draws the image on <i>destCanvas</i>, at position (<i>x</i>, <i>y</i>), scaled to (<i>width</i>, <i>height</i>) pixels in size.
+</div>
+<div class="entry">
+<h4 id="Canvas.Resize">ika.Canvas.Resize(<span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>)</h4>Resizes
+the canvas to the size specified. No scaling takes place; if the
+dimensions given are smaller than the existing image, it is cropped.
+Blank, transparent space is added when the canvas is enlarged.
+</div>
+<div class="entry">
+<h4 id="Canvas.Rotate">ika.Canvas.Rotate()</h4>Rotates the contents of
+the canvas 90 degrees, clockwise. The size of the canvas does not
+change, so if the canvas was not square, any pixels outside the range
+will be cropped.
+</div>
+<div class="entry">
+<h4 id="Canvas.Save">ika.Canvas.Save(<span class="type">string</span> <var>filename</var>)</h4>
+Writes the image to the <var>filename</var> specified in PNG format ("myimage.png", for example).
+</div>
+<div class="entry">
+<h4 id="Canvas.ScaleBlit">ika.Canvas.ScaleBlit(<span class="type">ika.Canvas</span> <var>destcanvas</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>[, <span class="type">int</span> <var>blendmode</var>)</h4>
+Draws the image on <var>destCanvas</var>, at position (<var>x</var>, <var>y</var>), scaled to (<var>width</var>, <var>height</var>) pixels in size.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-<li>
-<h4 id="Canvas.SetPixel">ika.Canvas.SetPixel(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>color</i>)</h4>
-Sets the pixel at (<i>x</i>, <i>y</i>) on the canvas to the <i>color</i> specified.  This function totally disregards alpha.  It *sets* the pixel, in the truest sense of the word. Color values are created by <a href="#RGB">ika.RGB</a>.
-</li>
-<li>
-<h4 id="Canvas.TileBlit">ika.Canvas.TileBlit(<u>ika.Canvas</u> <i>destCanvas</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>[, <u>int</u> <i>offsetx</i>, <u>int</u> <i>offsety</i>, <u>int</u> <i>blendMode</i>])</h4>
-Tiles the canvas within the region specified, on <i>destCanvas</i>.  The tiling is offsetn(moved) by <i>offsetx</i> and <i>offsety</i> (both default to zero).
-</li>
-<li>
-<h4 id="Canvas.width">ika.Canvas.width -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Canvas.SetPixel">ika.Canvas.SetPixel(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>color</var>)</h4>
+Sets the pixel at (<var>x</var>, <var>y</var>) on the canvas to the <var>color</var>
+specified. This function totally disregards alpha. It *sets* the pixel,
+in the truest sense of the word. Color values are created by <a href="#RGB">ika.RGB</a>.
+</div>
+<div class="entry">
+<h4 id="Canvas.TileBlit">ika.Canvas.TileBlit(<span class="type">ika.Canvas</span> <var>destCanvas</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>[, <span class="type">int</span> <var>offsetx</var>, <span class="type">int</span> <var>offsety</var>, <span class="type">int</span> <var>blendMode</var>])</h4>
+Tiles the canvas within the region specified, on <var>destCanvas</var>.  The tiling is offsetn(moved) by <var>offsetx</var> and <var>offsety</var> (both default to zero).
+</div>
+<div class="entry">
+<h4 id="Canvas.width">ika.Canvas.width -&gt; <span class="type">int</span> (read)</h4>
 Gets the width, in pixels, of the canvas.
 See also: <a href="#Canvas.height">ika.Canvas.height</a>.
-</li>
-<li>
-<h4 id="Canvas.WrapBlit">ika.Canvas.WrapBlit(<u>ika.Canvas</u> <i>destCanvas</i>, <u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>, [<u>int</u> <i>offsetx</i>, <u>int</u> <i>offsety</i>, <u>int</u> <i>blendMode</i>])</h4>
-Tiles the image within the region specified, on destcanvas.  The tiling is offset (moved) by <i>offsetx</i> and <i>offsety</i>.
+</div>
+<div class="entry">
+<h4 id="Canvas.WrapBlit">ika.Canvas.WrapBlit(<span class="type">ika.Canvas</span> <var>destCanvas</var>, <span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>, [<span class="type">int</span> <var>offsetx</var>, <span class="type">int</span> <var>offsety</var>, <span class="type">int</span> <var>blendMode</var>])</h4>
+Tiles the image within the region specified, on destcanvas.  The tiling is offset (moved) by <var>offsetx</var> and <var>offsety</var>.
 See also: <a href="#BlendModes">Blend Modes</a>.
-</li>
-</ul><br />
+</div>
+
 <h3 id="Music">Music</h3>
-<p>A hunk of music data. Music can be in .mod, .s3m, .xm, .it, .mp3, or .ogg format. This type is intended for music and not sound effects. It has more definable attributes than Sound objects. Multiple music files can be loaded at once.
+<p>A hunk of music data. Music can be in .mod, .s3m, .xm, .it, .mp3, or
+.ogg format. This type is intended for music and not sound effects. It
+has more definable attributes than Sound objects. Multiple music files
+can be loaded at once.
 See also: <a href="#Sound">Sound</a>.</p>
-<ul>
-<li>
-<h4 id="MusicConstructor">ika.Music(<u>string</u> <i>musicFilename</i>) -> <u>ika.Music</u> <i>music</i></h4>
-Loads a music file into memory and stores it in an ika.Music object. The music engine which ika uses, audiere, can sometimes be picky about certain music file specifications. If one setting causes problems (such as a crash or an error), try re-encoding the file at a different bitrate. This problem is intermittent and fairly rare.
-</li>
-<li>
-<h4 id="Music.loop">ika.Music.loop -> <u>int</u> (read/write)</h4>
-Gets or sets the looping status of the music. If non-zero, the music file will loop when it encounters a loop point (if it is a .mod, .s3m, .xm, or .it file) or when the song finishes. If zero, the song will stop once finished and will need to be played again to start.
-</li>
-<li>
-<h4 id="Music.pan">ika.Music.pan -> <u>float</u> (read/write)</h4>
-Gets or sets the panning (horizontal position) of the music. 0.0 is far left; 1.0 is center; 2.0 is far right. The default is 1.0.
-</li>
-<li>
+
+<div class="entry">
+<h4 id="MusicConstructor">ika.Music(<span class="type">string</span> <var>musicFilename</var>) -&gt; <span class="type">ika.Music</span> <var>music</var></h4>
+Loads a music file into memory and stores it in an ika.Music object.
+The music engine which ika uses, audiere, can sometimes be picky about
+certain music file specifications. If one setting causes problems (such
+as a crash or an error), try re-encoding the file at a different
+bitrate. This problem is intermittent and fairly rare.
+</div>
+<div class="entry">
+<h4 id="Music.loop">ika.Music.loop -&gt; <span class="type">int</span> (read/write)</h4>Gets
+or sets the looping status of the music. If non-zero, the music file
+will loop when it encounters a loop point (if it is a .mod, .s3m, .xm,
+or .it file) or when the song finishes. If zero, the song will stop
+once finished and will need to be played again to start.
+</div>
+<div class="entry">
+<h4 id="Music.pan">ika.Music.pan -&gt; <span class="type">float</span> (read/write)</h4>Gets
+or sets the panning (horizontal position) of the music. 0.0 is far
+left; 1.0 is center; 2.0 is far right. The default is 1.0.
+</div>
+<div class="entry">
 <h4 id="Music.Pause">ika.Music.Pause()</h4>
 Pauses the music's playback. Has no effect if the music had previously finished playing and is not looping.
 See also: <a href="#Music.Play">ika.Music.Play</a>.
-</li>
-<li>
-<h4 id="Music.pitchshift">ika.Music.pitchshift -> <u>float</u> (read/write)</h4>
-Gets or sets the music's pitch shift setting. This setting determines the frequency at which the music is played.  The relationship between the value of this parameter and its effect is uncertain at this time. The default is 1.0. (Note: This parameter may not have an effect with music objects. Testing is being done.)
-</li>
-<li>
-<h4 id="Music.Play">ika.Music.Play()</h4>
-Plays the music. The music will start from the beginning if it had previously finished playing and is not looping; otherwise, it will start where paused.
+</div>
+<div class="entry">
+<h4 id="Music.pitchshift">ika.Music.pitchshift -&gt; <span class="type">float</span> (read/write)</h4>Gets
+or sets the music's pitch shift setting. This setting determines the
+frequency at which the music is played. The relationship between the
+value of this parameter and its effect is uncertain at this time. The
+default is 1.0. (Note: This parameter may not have an effect with music
+objects. Testing is being done.)
+</div>
+<div class="entry">
+<h4 id="Music.Play">ika.Music.Play()</h4>Plays the music. The music
+will start from the beginning if it had previously finished playing and
+is not looping; otherwise, it will start where paused.
 See also: <a href="#Music.Pause">ika.Music.Pause</a>.
-</li>
-<li>
-<h4 id="Music.position">ika.Music.position -> <u>int</u> (read/write)</h4>
-Gets or sets the position in milliseconds of the music. The range is from 0 to the length in milliseconds of the song. Setting it past these bounds will cap it at the nearest endpoint. (Note: This value is not precise, as setting it to 0 will not completely reset the song. Testing is being done. This is an Audiere issue.)
-</li>
-<li>
-<h4 id="Music.volume">ika.Music.volume -> <u>float</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Music.position">ika.Music.position -&gt; <span class="type">int</span> (read/write)</h4>
+Gets or sets the position in milliseconds of the music. The range is
+from 0 to the length in milliseconds of the song. Setting it past these
+bounds will cap it at the nearest endpoint. (Note: This value is not
+precise, as setting it to 0 will not completely reset the song. Testing
+is being done. This is an Audiere issue.)
+</div>
+<div class="entry">
+<h4 id="Music.volume">ika.Music.volume -&gt; <span class="type">float</span> (read/write)</h4>
 Gets or sets the volume of the music. 0.0 is silence and 1.0 is 100% volume. The default is 1.0.
-</li>
-</ul><br />
+</div>
+
 <h3 id="Sound">Sound</h3>
-<p>A hunk of sound data, like a sound effect. Sounds can be in .wav, .mp3, or .ogg format. This type is not intended for music. Multiple sound files can be loaded at once.
+<p>A hunk of sound data, like a sound effect. Sounds can be in .wav,
+.mp3, or .ogg format. This type is not intended for music. Multiple
+sound files can be loaded at once.
 See also: <a href="#Music">Music</a>.</p>
-<ul>
-<li>
-<h4 id="SoundConstructor">ika.Sound(<u>string</u> <i>soundFilename</i>) -> <u>ika.Sound</u> <i>sound</i></h4>
-Loads a sound file into memory and stores it in an ika.Sound object. The sound engine which ika uses, audiere, can sometimes be picky about certain sound file specifications. If one setting causes problems (such as a crash or an error), try re-encoding the file at a different bitrate. This problem is intermittent and fairly rare.
-</li>
-<li>
-<h4 id="Sound.pan">ika.Sound.pan -> <u>float</u> (read/write)</h4>
-Gets or sets the panning (horizontal position) of the sound. 0.0 is far left; 1.0 is center; 2.0 is far right. The default is 1.0.
-</li>
-<li>
+
+<div class="entry">
+<h4 id="SoundConstructor">ika.Sound(<span class="type">string</span> <var>soundFilename</var>) -&gt; <span class="type">ika.Sound</span> <var>sound</var></h4>
+Loads a sound file into memory and stores it in an ika.Sound object.
+The sound engine which ika uses, audiere, can sometimes be picky about
+certain sound file specifications. If one setting causes problems (such
+as a crash or an error), try re-encoding the file at a different
+bitrate. This problem is intermittent and fairly rare.
+</div>
+<div class="entry">
+<h4 id="Sound.pan">ika.Sound.pan -&gt; <span class="type">float</span> (read/write)</h4>Gets
+or sets the panning (horizontal position) of the sound. 0.0 is far
+left; 1.0 is center; 2.0 is far right. The default is 1.0.
+</div>
+<div class="entry">
 <h4 id="Sound.Pause">ika.Sound.Pause()</h4>
 Pauses the sound's playback. Has no effect if the sound had previously finished playing.
 See also: <a href="#Sound.Play">ika.Sound.Play</a>.
-</li>
-<li>
-<h4 id="Sound.pitchshift">ika.Sound.pitchshift -> <u>float</u> (read/write)</h4>
-Gets or sets the sound's pitch shift setting. This setting determines the frequency at which the sound is played.  The relationship between the value of this parameter and its effect is uncertain at this time. The default is 1.0.
-</li>
-<li>
-<h4 id="Sound.Play">ika.Sound.Play()</h4>
-Plays the sound. The sound will start from the beginning if it had previously finished playing; otherwise, it will start where paused.
+</div>
+<div class="entry">
+<h4 id="Sound.pitchshift">ika.Sound.pitchshift -&gt; <span class="type">float</span> (read/write)</h4>Gets
+or sets the sound's pitch shift setting. This setting determines the
+frequency at which the sound is played. The relationship between the
+value of this parameter and its effect is uncertain at this time. The
+default is 1.0.
+</div>
+<div class="entry">
+<h4 id="Sound.Play">ika.Sound.Play()</h4>Plays the sound. The sound
+will start from the beginning if it had previously finished playing;
+otherwise, it will start where paused.
 See also: <a href="#Sound.Pause">ika.Sound.Pause</a>.
-</li>
-<li>
-<h4 id="Sound.volume">ika.Sound.volume -> <u>float</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Sound.volume">ika.Sound.volume -&gt; <span class="type">float</span> (read/write)</h4>
 Gets or sets the volume of the sound. 0.0 is silence and 1.0 is 100% volume. The default is 1.0.
-</li>
-</ul><br />
+</div>
+
 <h3 id="Image">Image</h3>
-<p>A hardware-dependant image object. Objects of this type can be blit (drawn) onto the screen. Image objects are immutable, so drawing them onto the screen is all that can be done.</p>
-<ul>
-<li>
-<h4 id="Image.Blit">ika.Image.Blit(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>[, <u>int</u> <i>transparent</i>])</h4>
-Draws the image on the screen at (<i>x</i>, <i>y</i>). If transparent is specified and 0 the image is opaque. Otherwise, alpha blending is enabled.
-</li>
-<li>
-<h4 id="Image.DistortBlit">ika.Image.DistortBlit(<u>tuple</u> <i>upleft</i> (<u>int</u> <i>upleftX</i>, <u>int</u> <i>upleftY</i>), <u>tuple</u> <i>upright</i> (<u>int</u> <i>uprightX</i>, <u>int</u> <i>uprightY</i>), <u>tuple</u> <i>downright</i> (<u>int</u> <i>downrightX</i>, <u>int</u> <i>downrightY</i>), <u>tuple</u> <i>downleft</i> (<u>int</u> <i>downleftX</i>, <u>int</u> <i>downleftY</i>)[, <u>int</u> <i>transparency</i>])</h4>
+<p>A hardware-dependant image object. Objects of this type can be blit
+(drawn) onto the screen. Image objects are immutable, so drawing them
+onto the screen is all that can be done.</p>
+
+<div class="entry">
+<h4 id="Image.Blit">ika.Image.Blit(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>[, <span class="type">int</span> <var>transparent</var>])</h4>
+Draws the image on the screen at (<var>x</var>, <var>y</var>). If transparent is specified and 0 the image is opaque. Otherwise, alpha blending is enabled.
+</div>
+<div class="entry">
+<h4 id="Image.DistortBlit">ika.Image.DistortBlit(<span class="type">tuple</span> <var>upleft</var> (<span class="type">int</span> <var>upleftX</var>, <span class="type">int</span> <var>upleftY</var>), <span class="type">tuple</span> <var>upright</var> (<span class="type">int</span> <var>uprightX</var>, <span class="type">int</span> <var>uprightY</var>), <span class="type">tuple</span> <var>downright</var> (<span class="type">int</span> <var>downrightX</var>, <span class="type">int</span> <var>downrightY</var>), <span class="type">tuple</span> <var>downleft</var> (<span class="type">int</span> <var>downleftX</var>, <span class="type">int</span> <var>downleftY</var>)[, <span class="type">int</span> <var>transparency</var>])</h4>
 Blits the image scaled to the four points specified. Remember that the points go clockwise around the image in argument order.
-</li>
-<li>
-<h4 id="Image.height">ika.Image.height -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Image.height">ika.Image.height -&gt; <span class="type">int</span> (read)</h4>
 Gets the height, in pixels, of the image.
 See also: <a href="#Image.width">ika.Image.width</a>.
-</li>
-<li>
-<h4 id="Image.ScaleBlit">ika.Image.ScaleBlit(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>width</i>, <u>int</u> <i>height</i>[, <u>int</u> <i>transparent</i>])</h4>
-Blits the image, but stretches it out to the dimensions specified in (<i>width</i>, <i>height</i>). If <i>transparent</i> is non-zero or omitted, alpha blitting is enabled.
-</li>
-<li>
-<h4 id="Image.width">ika.Image.width -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Image.ScaleBlit">ika.Image.ScaleBlit(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>width</var>, <span class="type">int</span> <var>height</var>[, <span class="type">int</span> <var>transparent</var>])</h4>
+Blits the image, but stretches it out to the dimensions specified in (<var>width</var>, <var>height</var>). If <var>transparent</var> is non-zero or omitted, alpha blitting is enabled.
+</div>
+<div class="entry">
+<h4 id="Image.width">ika.Image.width -&gt; <span class="type">int</span> (read)</h4>
 Gets the width, in pixels, of the image.
 See also: <a href="#Image.height">ika.Image.height</a>.
-</li>
-</ul>
+</div>
+
 <h3>Entity</h3>
 <p>An object representing an interactive object on a map.</p>
-<ul>
-<li>
-<h4 id="EntityConstructor">ika.Entity(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>int</u> <i>layerIndex</i>, <u>string</u> <i>spriteFilename</i>) -> <u>ika.Entity</u> <i>ent</i></h4>
-Creates a new entity at pixel coordinates (<i>x</i>,<i>y</i>) on the <i>layerIndex</i> specified.  The new entity uses the sprite indicated.
-</li>
-<li>
-<h4 id="Entity.actscript">ika.Entity.actscript -> <u>function</u> (read/write)</h4>
+
+<div class="entry">
+<h4 id="EntityConstructor">ika.Entity(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">int</span> <var>layerIndex</var>, <span class="type">string</span> <var>spriteFilename</var>) -&gt; <span class="type">ika.Entity</span> <var>ent</var></h4>
+Creates a new entity at pixel coordinates (<var>x</var>,<var>y</var>) on the <var>layerIndex</var> specified.  The new entity uses the sprite indicated.
+</div>
+<div class="entry">
+<h4 id="Entity.actscript">ika.Entity.actscript -&gt; <span class="type">function</span> (read/write)</h4>
 Gets or sets the function called when the entity is activated.
-</li>
-<li>
-<h4 id="Entity.adjacentactivate">ika.Entity.adjacentactivate -> <u>function</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.adjacentactivate">ika.Entity.adjacentactivate -&gt; <span class="type">function</span> (read/write)</h4>
 Gets or sets the function called when the entity touches the player.
-</li>
-<li>
-<h4 id="Entity.curframe">ika.Entity.curframe -> <u>int</u> (read)</h4>
-Gets the entity's currently displayed frame. If <a href="#Entity.specframe">ika.Entity.specframe</a> is non-zero, curframe will return the value of specframe. Otherwise, it will return the frame of the current animation currently being displayed.
-</li>
-<li>
-<h4 id="Entity.DetectCollision">ika.Entity.DetectCollision() -> <u>ika.Entity</u> <i>touchingEnt</i></h4>
+</div>
+<div class="entry">
+<h4 id="Entity.curframe">ika.Entity.curframe -&gt; <span class="type">int</span> (read)</h4>
+Gets the entity's currently displayed frame. If <a href="#Entity.specframe">ika.Entity.specframe</a>
+is non-zero, curframe will return the value of specframe. Otherwise, it
+will return the frame of the current animation currently being
+displayed.
+</div>
+<div class="entry">
+<h4 id="Entity.DetectCollision">ika.Entity.DetectCollision() -&gt; <span class="type">ika.Entity</span> <var>touchingEnt</var></h4>
 If an entity is touching the entity, then it is returned. None is returned if there is no entity touching it.
 See also: <a href="#Entity.Touches">ika.Entity.Touches</a>.
-</li>
-<li>
-<h4 id="Entity.direction">ika.Entity.direction -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.direction">ika.Entity.direction -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets the entity's direction.
-</li>
-<li>
-<h4 id="Entity.Draw">ika.Entity.Draw([<u>int</u> <i>x</i>, <u>int</u> <i>y</i>])</h4>
-Draws the entity at the position specified.  x and y default to the position where the entity would normally be drawn, given the window position and the entity position.
+</div>
+<div class="entry">
+<h4 id="Entity.Draw">ika.Entity.Draw([<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>])</h4>Draws
+the entity at the position specified. x and y default to the position
+where the entity would normally be drawn, given the window position and
+the entity position.
 See also: <a href="#Entity.Render">ika.Entity.Render</a>.
-</li>
-<li>
-<h4 id="Entity.entobs">ika.Entity.entobs -> <u>int</u> (read/write)</h4>
-This property determines whether or not this entity is obstructed by other entities. If nonzero, the entity is unable to walk through entities whose isobs property is set.
+</div>
+<div class="entry">
+<h4 id="Entity.entobs">ika.Entity.entobs -&gt; <span class="type">int</span> (read/write)</h4>
+This property determines whether or not this entity is obstructed by
+other entities. If nonzero, the entity is unable to walk through
+entities whose isobs property is set.
 See also: <a href="#Entity.entobs">ika.Entity.isobs</a> and <a href="#Entity.mapobs">ika.Entity.mapobs</a>.
-</li>
-<li>
-<h4 id="Entity.GetAllAnimScripts">ika.Entity.GetAllAnimScripts() -> <u>dict</u> <i>scripts</i> {<u>string</u> <i>scriptName</i>: <u>string</u> <i>script</i>, ...}</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.GetAllAnimScripts">ika.Entity.GetAllAnimScripts() -&gt; <span class="type">dict</span> <var>scripts</var> {<span class="type">string</span> <var>scriptName</var>: <span class="type">string</span> <var>script</var>, ...}</h4>
 Returns a dict containing all animation scripts defined in the entity's current spriteset.
 See also: <a href="#Entity.GetAnimScript">ika.Entity.GetAnimScript</a>.
-</li>
-<li>
-<h4 id="Entity.GetAnimScript">ika.Entity.GetAnimScript(<u>string</u> <i>scriptName</i>) -> <u>string</u> <i>script</i></h4>
-Returns the animation script with the name given from the entity's current spriteset.  An empty string is returned if no such script exists.
+</div>
+<div class="entry">
+<h4 id="Entity.GetAnimScript">ika.Entity.GetAnimScript(<span class="type">string</span> <var>scriptName</var>) -&gt; <span class="type">string</span> <var>script</var></h4>
+Returns the animation script with the name given from the entity's
+current spriteset. An empty string is returned if no such script
+exists.
 See also: <a href="#Entity.GetAllAnimScripts">ika.Entity.GetAllAnimScripts</a>.
-</li>
-<li>
-<h4 id="Entity.hotheight">ika.Entity.hotheight -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.hotheight">ika.Entity.hotheight -&gt; <span class="type">int</span> (read)</h4>
 Gets the height of the entity's hotspot. (An entity's hotspot is the area of the sprite that is obstructed.)
 See also: <a href="#Entity.hotwidth">ika.Entity.hotwidth</a>.
-</li>
-<li>
-<h4 id="Entity.hotwidth">ika.Entity.hotwidth -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.hotwidth">ika.Entity.hotwidth -&gt; <span class="type">int</span> (read)</h4>
 Gets the width of the entity's hotspot. (An entity's hotspot is the area of the sprite that is obstructed.)
 See also: <a href="#Entity.hotheight">ika.Entity.hotheight</a>.
-</li>
-<li>
-<h4 id="Entity.hotx">ika.Entity.hotx -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.hotx">ika.Entity.hotx -&gt; <span class="type">int</span> (read)</h4>
 Gets the X position of the entity's hotspot. (An entity's hotspot is the area of the sprite that is obstructed.)
 See also: <a href="#Entity.hoty">ika.Entity.hoty</a>.
-</li>
-<li>
-<h4 id="Entity.hoty">ika.Entity.hoty -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.hoty">ika.Entity.hoty -&gt; <span class="type">int</span> (read)</h4>
 Gets the Y position of the entity's hotspot. (An entity's hotspot is the area of the sprite that is obstructed.)
 See also: <a href="#Entity.hotx">ika.Entity.hotx</a>.
-</li>
-<li>
-<h4 id="Entity.IsMoving">ika.Entity.IsMoving() -> <u>int</u> <i>moving</i></h4>
+</div>
+<div class="entry">
+<h4 id="Entity.IsMoving">ika.Entity.IsMoving() -&gt; <span class="type">int</span> <var>moving</var></h4>
 If the entity is moving, the result is 1.  If not, it is 0.
-</li>
-<li>
-<h4 id="Entity.isobs">ika.Entity.isobs -> <u>int</u> (read/write)</h4>
-This parameter determines whether or not the entity obstructs other entities. If nonzero, the entity prevents other entities whose entobs property is set from walking through it.
+</div>
+<div class="entry">
+<h4 id="Entity.isobs">ika.Entity.isobs -&gt; <span class="type">int</span> (read/write)</h4>
+This parameter determines whether or not the entity obstructs other
+entities. If nonzero, the entity prevents other entities whose entobs
+property is set from walking through it.
 See also: <a href="#Entity.entobs">ika.Entity.entobs</a> and <a href="#Entity.mapobs">ika.Entity.mapobs</a>.
-</li>
-<li>
-<h4 id="Entity.layer">ika.Entity.layer -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.layer">ika.Entity.layer -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets the index of the layer that the entity exists on.
-</li>
-<li>
-<h4 id="Entity.mapobs">ika.Entity.mapobs -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.mapobs">ika.Entity.mapobs -&gt; <span class="type">int</span> (read/write)</h4>
 If non-zero, the entity is unable to pass through obstructed tiles on its current layer.
 See also: <a href="#Entity.entobs">ika.Entity.entobs</a> and <a href="#Entity.mapobs">ika.Entity.isobs</a>.
-</li>
-<li>
-<h4 id="Entity.movescript">ika.Entity.movescript -> <u>string</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.movescript">ika.Entity.movescript -&gt; <span class="type">string</span> (read/write)</h4>
 Gets or sets the entity's current move script. A tutorial on movescript formatting can be found (here).
-</li>
-<li>
-<h4 id="Entity.MoveTo">ika.Entity.MoveTo(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>)</h4>
-Directs the entity to move towards the position specified. (Note: This is not an instant teleport; the entity will continue to move toward this position until it is stopped or <a href="#ProcessEntities">ika.ProcessEntities</i> is not called.)
-See also: <a href="#Entity.Stop">ika.Entity.Stop</a>.
-</li>
-<li>
-<h4 id="Entity.name">ika.Entity.name -> <u>string</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.MoveTo">ika.Entity.MoveTo(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>)</h4>
+Directs the entity to move towards the position specified. (Note: This
+is not an instant teleport; the entity will continue to move toward
+this position until it is stopped or <a href="#ProcessEntities">ika.ProcessEntities is not called.)
+See also: </a><a href="#Entity.Stop">ika.Entity.Stop</a>.
+</div>
+<div class="entry">
+<h4 id="Entity.name">ika.Entity.name -&gt; <span class="type">string</span> (read/write)</h4>
 Gets or sets the entity's name. This value has no inherent effect and is more or less for your own convenience only.
-</li>
-<li>
-<h4 id="Entity.Render">ika.Entity.Render([<u>int</u> <i>x</i>, <u>int</u> <i>y</i>])</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.Render">ika.Entity.Render([<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>])</h4>
 Draws the entity at the position specified.  Calling this will call a <a href="#Entity.renderscript">ika.Entity.renderscript</a> if one is set. For this reason, DO NOT CALL THIS IN A RENDER SCRIPT, or you will enter an infinite loop.
 See also: <a href="#Entity.Draw">ika.Entity.Draw</a>.
-</li>
-<li>
-<h4 id="Entity.renderscript">ika.Entity.renderscript -> <u>function</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.renderscript">ika.Entity.renderscript -&gt; <span class="type">function</span> (read/write)</h4>
 Gets or sets the function called when the entity is rendered. Do not call <a href="#Entity.Render">ika.Entity.Render</a> in this script, or you will enter an infinite loop.
-</li>
-<li>
-<h4 id="Entity.specanim">ika.Entity.specanim -> <u>string</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.specanim">ika.Entity.specanim -&gt; <span class="type">string</span> (read/write)</h4>
 Gets or sets the specific animation to use instead of normal animations. If 0, normal animations will be used.
-</li>
-<li>
-<h4 id="Entity.specframe">ika.Entity.specframe -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.specframe">ika.Entity.specframe -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets the specific frame to use instead of normal animations. If 0, normal animations will be used.
 See also: <a href="#Entity.curframe">ika.Entity.curframe</a>.
-</li>
-<li>
-<h4 id="Entity.speed">ika.Entity.speed -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.speed">ika.Entity.speed -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets the entity's speed, in pixels/second. Defaults to 100.
-</li>
-<li>
-<h4 id="Entity.sprite">ika.Entity.sprite -> <u>string</u> (read/write)</h4>
-Gets or sets the sprite used to display the entity. This parameter is just a string fileanem that tells ika where the .ika-sprite file is. The entity's appearance will change immediately after changing this value.
-</li>
-<li>
+</div>
+<div class="entry">
+<h4 id="Entity.sprite">ika.Entity.sprite -&gt; <span class="type">string</span> (read/write)</h4>
+Gets or sets the sprite used to display the entity. This parameter is
+just a string fileanem that tells ika where the .ika-sprite file is.
+The entity's appearance will change immediately after changing this
+value.
+</div>
+<div class="entry">
 <h4 id="Entity.Stop">ika.Entity.Stop()</h4>
 Directs the entity to stop whatever it is doing.
 See also: <a href="#Entity.MoveTo">ika.Entity.MoveTo</a>.
-</li>
-<li>
-<h4 id="Entity.Touches">ika.Entity.Touches(<u>ika.Entity</u> <i>ent</i>) -> <u>int</u> <i>touches</i></h4>
-Returns true if the entity is touching entity <i>ent</i>, else False.
+</div>
+<div class="entry">
+<h4 id="Entity.Touches">ika.Entity.Touches(<span class="type">ika.Entity</span> <var>ent</var>) -&gt; <span class="type">int</span> <var>touches</var></h4>
+Returns true if the entity is touching entity <var>ent</var>, else False.
 See also: <a href="#Entity.DetectCollision">ika.Entity.DetectCollision</a>.
-</li>
-<li>
-<h4 id="Entity.Update">ika.Entity.Update()</h4>
-Performs 1/100th of a second of entity AI. Calling this 100 times a second will cause the entity to move around as if the engine was in control. If you do not wish to call <a href="#ProcessEntities">ika.ProcessEntities</a>, call this function for every entity you wish to update.
-</li>
-<li>
-<h4 id="Entity.visible">ika.Entity.visible -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.Update">ika.Entity.Update()</h4>Performs 1/100th of a
+second of entity AI. Calling this 100 times a second will cause the
+entity to move around as if the engine was in control. If you do not
+wish to call <a href="#ProcessEntities">ika.ProcessEntities</a>, call this function for every entity you wish to update.
+</div>
+<div class="entry">
+<h4 id="Entity.visible">ika.Entity.visible -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets whether or not the entity will be drawn when in view.
-</li>
-<li>
-<h4 id="Entity.Wait">ika.Entity.Wait(<u>int</u> <i>ticks</i>)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.Wait">ika.Entity.Wait(<span class="type">int</span> <var>ticks</var>)</h4>
 Causes the entity to halt for the given interval before resuming motion.
-</li>
-<li>
-<h4 id="Entity.x">ika.Entity.x -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.x">ika.Entity.x -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets the entity's X position on its current layer (in pixels).
 See also: <a href="#Entity.y">ika.Entity.y</a>.
-</li>
-<li>
-<h4 id="Entity.y">ika.Entity.y -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Entity.y">ika.Entity.y -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets the entity's Y position on its current layer (in pixels).
 See also: <a href="#Entity.x">ika.Entity.x</a>.
-</li>
-</ul><br />
+</div>
+
 <h3 id="Font">Font</h3>
-<p>A proportional bitmap font. Variable-width fonts are supported. There are several tools to create .fnt files compatible with ika.</p>
-<ul>
-<li>
-<h4 id="FontConstructor">ika.Font(<u>string</u> <i>fontFilename</i>) -> <u>ika.Font</u> <i>font</i></h4>
-Creates an object of type ika.Font and loads the font into memory. <i>fontFilename</i> is a string that contains the filename to a font file (with extension .fnt).
-</li>
-<li>
-<h4 id="Font.CenterPrint">ika.Font.CenterPrint(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>string</u> <i>text</i>)</h4>
-Prints a string of text on screen, with x as the center point rather than the leftmost point. This means that the character in the middle of the string will be centered on this point; it also means that half of the string's width will be to the left and half will be to the right.
+<p>A proportional bitmap font. Variable-width fonts are supported.
+There are several tools to create .fnt files compatible with ika.</p>
+
+<div class="entry">
+<h4 id="FontConstructor">ika.Font(<span class="type">string</span> <var>fontFilename</var>) -&gt; <span class="type">ika.Font</span> <var>font</var></h4>
+Creates an object of type ika.Font and loads the font into memory. <var>fontFilename</var> is a string that contains the filename to a font file (with extension .fnt).
+</div>
+<div class="entry">
+<h4 id="Font.CenterPrint">ika.Font.CenterPrint(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">string</span> <var>text</var>)</h4>
+Prints a string of text on screen, with x as the center point rather
+than the leftmost point. This means that the character in the middle of
+the string will be centered on this point; it also means that half of
+the string's width will be to the left and half will be to the right.
 See also: <a href="#Font.Print">ika.Font.Print</a> and <a href="#Font.RightPrint">ika.Font.RightPrint</a>.
-</li>
-<li>
-<h4 id="Font.height">ika.Font.height -> <u>int</u> (read)</h4>
+</div>
+<div class="entry">
+<h4 id="Font.height">ika.Font.height -&gt; <span class="type">int</span> (read)</h4>
 Gets the height, in pixels, of the font. All glyphs in a font are the same height.
-</li>
-<li>
-<h4 id="Font.letterspacing">ika.Font.letterspacing -> <u>int</u> (read/write)</h4>
-Gets or sets the letter spacing, in pixels, of the font. This value determines how much padding is added between letters when printed. The default is 0.
-</li>
-<li>
-<h4 id="Font.Print">ika.Font.Print(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>string</u> <i>text</i>)</h4>
-Prints a string of <i>text</i> on screen at (<i>x</i>, <i>y</i>). This print is left-justified.
+</div>
+<div class="entry">
+<h4 id="Font.letterspacing">ika.Font.letterspacing -&gt; <span class="type">int</span> (read/write)</h4>
+Gets or sets the letter spacing, in pixels, of the font. This value
+determines how much padding is added between letters when printed. The
+default is 0.
+</div>
+<div class="entry">
+<h4 id="Font.Print">ika.Font.Print(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">string</span> <var>text</var>)</h4>
+Prints a string of <var>text</var> on screen at (<var>x</var>, <var>y</var>). This print is left-justified.
 See also: <a href="#Font.CenterPrint">ika.Font.CenterPrint</a> and <a href="#Font.RightPrint">ika.Font.RightPrint</a>.
-</li>
-<li>
-<h4 id="Font.RightPrint">ika.Font.RightPrint(<u>int</u> <i>x</i>, <u>int</u> <i>y</i>, <u>string</u> <i>text</i>)</h4>
-Prints a string of text on screen, with <i>x</i> as the rightmost point rather than the leftmost point. This means that the last letter's right edge will fall on the coordinate x specified.
+</div>
+<div class="entry">
+<h4 id="Font.RightPrint">ika.Font.RightPrint(<span class="type">int</span> <var>x</var>, <span class="type">int</span> <var>y</var>, <span class="type">string</span> <var>text</var>)</h4>
+Prints a string of text on screen, with <var>x</var>
+as the rightmost point rather than the leftmost point. This means that
+the last letter's right edge will fall on the coordinate x specified.
 See also: <a href="#Font.Print">ika.Font.Print</a> and <a href="#Font.CenterPrint">ika.Font.CenterPrint</a>.
-</li>
-<li>
-<h4 id="Font.StringWidth">ika.Font.StringWidth(<u>string</u> <i>text</i>) -> <u>int</u> <i>width</i></h4>
-Returns how many pixels in width the passed string would be when printed in the given font. This function includes the value of the current font's <a href="#Font.letterspacing">ika.Font.letterspacing</a> in its calculation.
-</li>
-<li>
-<h4 id="Font.tabsize">ika.Font.tabsize -> <u>int</u> (read/write)</h4>
+</div>
+<div class="entry">
+<h4 id="Font.StringWidth">ika.Font.StringWidth(<span class="type">string</span> <var>text</var>) -&gt; <span class="type">int</span> <var>width</var></h4>
+Returns how many pixels in width the passed string would be when
+printed in the given font. This function includes the value of the
+current font's <a href="#Font.letterspacing">ika.Font.letterspacing</a> in its calculation.
+</div>
+<div class="entry">
+<h4 id="Font.tabsize">ika.Font.tabsize -&gt; <span class="type">int</span> (read/write)</h4>
 Gets or sets the tab size, in pixels, of the font. To insert a tab into text, include a "t" in the string.
-</li>
-<li>
-<h4 id="Font.width">ika.Font.width -> <u>int</u> (read)</h4>
-Gets the width, in pixels, of the widest glyph in the font. Note that fonts in ika are variable-width, not monospace, so not all glyphs have to be the same width.
-</li>
-</ul><br />
-<hr />
+</div>
+<div class="entry">
+<h4 id="Font.width">ika.Font.width -&gt; <span class="type">int</span> (read)</h4>
+Gets the width, in pixels, of the widest glyph in the font. Note that
+fonts in ika are variable-width, not monospace, so not all glyphs have
+to be the same width.
+</div>
+
+
 <h2 id="Deprecated">Deprecated</h2>
 <p>A list of deprecated functions/object types, and the proper alternatives to use in their stead.</p>
-<ul>
-<li>
+
+<div class="entry">
 <h4 id="SetRenderList">ika.SetRenderList</h4>
 Use instead: <a href="#Render">ika.Render</a>.
-</li>
-<li>
+</div>
+<div class="entry">
 <h4 id="Map.Render">ika.Map.Render</h4>
 Use instead: <a href="#Render">ika.Render</a>.
-</li>
-</ul><br />
-<hr />
+</div>
+
+
 <h2 id="Undocumented">Undocumented</h2>
 <p>A list of built-in functions/object types that are currently undocumented.</p>
-<ul>
-<li>
+
+<div class="entry">
 <h4 id="Video.colours">ika.Video.colours</h4>
-</li>
-</ul><br />
-</body>
-</html>
+</div>
+
+
+</div>
+
+</body></html>
