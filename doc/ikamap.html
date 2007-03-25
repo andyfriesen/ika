@@ -1,0 +1,149 @@
+<html>
+<head><title>ikaMap Python Reference</title></head>
+<body>
+<h1>ikaMap Python Reference</h1>
+<h2>Functions</h2>
+<ul>
+<li>
+<h4>MessageBox(message, caption = 'Message')</h4>
+<p>Displays a popup dialog box containing the message specified.<br />
+An Ok button is placed on the box.</p>
+</li>
+<li>
+<h4>Log(message)</h4>
+<p>Writes a string to ika.log, if logging is enabled.</p>
+</li>
+<li>
+<h4>ShowDialog(columns -> int, caption -> string, elements -> sequence) -> dict</h4>
+<p>Shows a dialog to the user.  columns is the number of elements to show<br />
+in one vertical column.<br />
+<br />
+Elements is a sequence containing two-tuples of strings in the format<br />
+('name', 'type')<br />
+Currently, the only valid type is 'edit', which creates a text box.<br />
+<br />
+The return value is a dict containing string results for each element<br />
+passed.  The value depends on the type of control created.<br />
+<br />
+Edit boxes return their contents.</p>
+</li>
+</ul>
+<h2>Objects</h2>
+<h3>Map</h3>
+<p>Represents the current map</p>
+<ul>
+<li>
+<h4>Map.layercount</h4>
+<p>Gets the number of layers on the current map.</p>
+</li>
+<li>
+<h4>Map.title</h4>
+<p>Gets or sets the map's title.</p>
+</li>
+<li>
+<h4>Map.GetMetaData() -> dict</h4>
+<p>Creates a dictionary containing the map's metadata, and returns it.</p>
+</li>
+<li>
+<h4>Map.tilewidth</h4>
+<p>Gets the width of the current tileset</p>
+</li>
+<li>
+<h4>Map.GetLayerName(layerIndex) -> string</h4>
+<p>Returns the name of the layer with the given index.</p>
+</li>
+<li>
+<h4>Map.tileheight</h4>
+<p>Gets the height of the current tileset</p>
+</li>
+<li>
+<h4>Map.GetTile(x, y, layer) -> int</h4>
+<p>Returns the index of the tile at (x, y) on the layer specified.</p>
+</li>
+<li>
+<h4>Map.tilecount</h4>
+<p>Gets the number of tiles in the current tileset</p>
+</li>
+<li>
+<h4>Map.FindLayerByName(name) -> integer</h4>
+<p>Returns the index of the first layer with the given name, or None if no such layer<br />
+exists.</p>
+</li>
+<li>
+<h4>Map.GetObs(x, y, layerIndex) -> int</h4>
+<p>Returns 1 if the tile at (x, y) is obstructed, or 0 if not.</p>
+</li>
+<li>
+<h4>Map.SetParallax(layer, xmul, xdiv, ymul, ydiv)</h4>
+<p>Sets the specified layer's parallax settings according to the multipliers<br />
+and divisors given.  If either of the divisors are zero, a parallax value of 0/1<br />
+will be used for that axis.</p>
+</li>
+<li>
+<h4>Map.SetObs(x, y, layerIndex, obs)</h4>
+<p>If obs is nonzero, the tile at (x, y) is obstructed, else it is<br />
+unobstructed.</p>
+</li>
+<li>
+<h4>Map.GetLayerSize(layerIndex) -> (x,y)</h4>
+<p>Returns a tuple containing the size of the layer.</p>
+</li>
+<li>
+<h4>Map.GetParallax(layer) -> (int, int, int, int)</h4>
+<p>Returns a 4-tuple containing parallax settings for the layer specified.<br />
+Its contents are as follows:<br />
+( parallax X multiplier, <br />
+  parallax X divisor, <br />
+  parallax Y multiplier, <br />
+  parallax Y divisor )</p>
+</li>
+<li>
+<h4>Map.SetTile(x, y, layer, tile)</h4>
+<p>Sets the tile at (x, y) of the layer specified.</p>
+</li>
+<li>
+<h4>Map.SetMetaData(metaData)</h4>
+<p>Copies the dict into the map's metadata.  The dict must contain nothing<br />
+but strings for both keys and values.</p>
+</li>
+</ul>
+<h3>Editor</h3>
+<p>Methods and properties pertaining to the ikaMap editor itself.</p>
+<ul>
+<li>
+<h4>Editor.curlayer</h4>
+<p>Gets or sets the active map layer.</p>
+</li>
+<li>
+<h4>Editor.GetMouseState() -> (x, y, left, middle, right)</h4>
+<p>Returns a tuple containing the status of the mouse.<br />
+x and y are in map pixel coordinates.  Left, middle, and right<br />
+are boolean values representing the current state of each mouse<br />
+button.</p>
+</li>
+<li>
+<h4>Editor.curtile</h4>
+<p>Gets or sets the current tile.</p>
+</li>
+<li>
+<h4>Editor.xwin</h4>
+<p>Gets the current x position of the map viewport.</p>
+</li>
+<li>
+<h4>Editor.TileToMap(x, y, layer=-1) -> (x,y)</h4>
+<p>Translates the point (x,y) from tile coordinates on the layer<br />
+specified to world pixel coordinates.  If the layer is omitted<br />
+or is an invalid value, the current layer is used.</p>
+</li>
+<li>
+<h4>Editor.MapToTile(x, y, layer=-1) -> (x,y)</h4>
+<p>Translates the point (x,y) from map pixel coordinates to tile<br />
+coordinates on the layer specified.  If the layer is omitted,<br />
+or is an invalid value, the current layer is used.</p>
+</li>
+<li>
+<h4>Editor.ywin</h4>
+<p>Gets the current y position of the map viewport.</p>
+</li>
+</ul>
+</body></html>
