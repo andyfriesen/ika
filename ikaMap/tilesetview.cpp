@@ -4,6 +4,7 @@
 
 #include "mainwindow.h"
 #include "tileset.h"
+#include "mapview.h"
 #include "common/log.h"
 
 #include "common/utility.h"
@@ -27,6 +28,7 @@ TilesetView::TilesetView(Executor* e, wxWindow* parent)
     , _executor(e)
     , _ywin(0)
     , _pad(true)
+    , _drawBrushSelection(true)
 {}
 
 TilesetView::~TilesetView()
@@ -82,14 +84,96 @@ void TilesetView::OnPaint(wxPaintEvent&) {
 }
 
 void TilesetView::OnMouseDown(wxMouseEvent& event) {
-    VideoFrame::OnMouseEvent(event);
+    _dragging = true;
+    _drawBrushSelection = true;
 
     uint index = PointToTile(event.m_x, event.m_y);
     _executor->SetCurrentTile(index);
+
+    // Set tileset view rectangle origin.
+    int x = event.m_x;
+    int y = event.m_y;
+
+    PointToCoords(x, y);
+
+    _originX = x;
+    _originY = y;
+
+    SetSelection(x, y, 1, 1);
+
+    Render();
+    ShowPage();
 }
 
-void TilesetView::OnMouseMove(wxMouseEvent&) { }
-void TilesetView::OnMouseUp(wxMouseEvent&) { }
+void TilesetView::OnMouseMove(wxMouseEvent& event) {
+    if (_dragging) {
+        // Update the rectangle.
+        int x = event.m_x;
+        int y = event.m_y;
+
+        PointToCoords(x, y);
+
+        // Check if new x is less than origin x.
+        if (x < _originX) {
+            _selected.left = x;
+            _selected.right = _originX;
+        } else {
+            _selected.left = _originX;
+            _selected.right = x;
+        }
+
+        // Check if new y is less than origin y.
+        if (y < _originY) {
+            _selected.top = y;
+            _selected.bottom = _originY;
+
+        } else {
+            _selected.top = _originY;
+            _selected.bottom = y;
+        }
+
+
+
+        Render();
+        ShowPage();
+    }
+}
+
+void TilesetView::OnMouseUp(wxMouseEvent& event) {
+    _dragging = false;
+
+    VideoFrame::OnMouseEvent(event);
+
+    // Grab tiles within selection area.
+    _selected.Normalize();
+    int w = _selected.Width() + 1;
+    int h = _selected.Height() + 1;
+
+    Tileset* ts = _executor->GetTileset();
+    int tileWidth = ts->Width() + (_pad ? 1 : 0);
+    int tileHeight = ts->Height() + (_pad ? 1 : 0);
+
+    Brush newBrush;
+    newBrush.tiles.Resize(w, h);
+
+    for (int y = 0; y < h; y ++) {
+        for (int x = 0; x < w; x ++) {
+            Brush::Tile& t = newBrush.tiles(x, y);
+            t.index = PointToTile((_selected.left + x) * tileWidth, (_selected.top + y) * tileHeight - _ywin);
+            t.mask = true;
+        }
+    }
+
+    _executor->SetCurrentBrush(newBrush);
+    _drawBrushSelection = true;
+}
+
+void TilesetView::SetSelection(int x, int y, int w, int h) {
+    _selected.left = x;
+    _selected.right = x + w - 1;
+    _selected.top = y;
+    _selected.bottom = y + h - 1;
+}
 
 void TilesetView::Render() {
     SetCurrent();
@@ -144,14 +228,39 @@ void TilesetView::Render() {
 
 breakLoop:;
 
+    _executor->GetMapView()->GetEditState()->OnTilesetViewRender();
     // Highlight the current tile.
     {
-        int x;
-        int y;
-        TileToPoint(_executor->GetCurrentTile(), x, y);
+        //int x;
+        //int y;
+        //TileToPoint(_executor->GetCurrentTile(), x, y);
 
-        DrawSelectRect(x - 1, y - 1, ts->Width() + 1, ts->Height() + 1, RGBA(127, 255, 255));
+        //DrawSelectRect(_selected.left * tileWidth, _selected.top * tileHeight - _ywin, tileWidth * (_selected.Width() + 1), tileHeight * (_selected.Height() + 1), RGBA(127, 255, 255));
+        //DrawSelectRect(x - 1, y - 1, ts->Width() + 1, ts->Height() + 1, RGBA(127, 255, 255));
         //DrawRectFill(x, y, ts->Width(), ts->Height(), RGBA(127, 255, 255));
+    }
+}
+
+void TilesetView::SetTileRender() {
+    Tileset* ts = _executor->GetTileset();
+    int x;
+    int y;
+    int tileWidth  = ts->Width()  + (_pad ? 1 : 0);
+    int tileHeight = ts->Height() + (_pad ? 1 : 0);
+
+    TileToPoint(_executor->GetCurrentTile(), x, y);
+
+    DrawSelectRect(x - 1, y - 1, ts->Width() + 1, ts->Height() + 1, RGBA(127, 255, 255));
+}
+
+void TilesetView::SetBrushRender() {
+    if (_drawBrushSelection) {
+        Tileset* ts = _executor->GetTileset();
+        int tileWidth  = ts->Width()  + (_pad ? 1 : 0);
+        int tileHeight = ts->Height() + (_pad ? 1 : 0);
+
+        DrawSelectRect(_selected.left * tileWidth, _selected.top * tileHeight - _ywin, tileWidth * (_selected.Width() + 1), tileHeight * (_selected.Height() + 1), RGBA(127, 255, 255));
+        //DrawSelectRect(0, 0 - _ywin, 32, 32, RGBA(127, 255, 255));
     }
 }
 
@@ -165,12 +274,18 @@ void TilesetView::UpdateScrollBars() {
 }
 
 void TilesetView::OnTilesetChange(const TilesetEvent& event) {
+    SetSelection(0, 0, 1, 1);
+
     Refresh();
 }
 
 void TilesetView::OnCurrentTileChange(uint newTile) {
     Refresh();
     _executor->SetStatusBar(va("Tile: %3i", newTile), 2);
+}
+
+void TilesetView::OnCurrentBrushChange(const Brush& newBrush) {
+    _drawBrushSelection = false;
 }
 
 uint TilesetView::PointToTile(int x, int y) const {
@@ -207,6 +322,16 @@ void TilesetView::TileToPoint(uint index, int& x, int& y) const {
         y = (index / tilesPerRow) * tileHeight - _ywin;
         x = _pad + (index % tilesPerRow) * tileWidth;
     }
+}
+
+void TilesetView::PointToCoords(int& x, int& y) const {
+    const Tileset* ts = _executor->GetTileset();
+
+    y += _ywin;
+
+    x /= (ts->Width() + (_pad ? 1 : 0));
+    y /= (ts->Height() + (_pad ? 1 : 0));
+
 }
 
 uint TilesetView::TilesPerRow() const {

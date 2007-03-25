@@ -354,6 +354,8 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
         curLayerChanged.add     (_layerList, &LayerList::OnLayerActivated);
 
         curTileChanged.add      (_tilesetView, &TilesetView::OnCurrentTileChange);
+
+        curBrushChanged.add     (_tilesetView, &TilesetView::OnCurrentBrushChange);
     }
 
     // Create the menu.
@@ -474,6 +476,14 @@ MainWindow::MainWindow(const wxPoint& position, const wxSize& size, const long s
     ::wxSafeYield();
 
     ScriptEngine::Init(this);
+
+    // Set initial brush and tilesetview selection.
+    Brush firstBrush;
+    firstBrush.tiles.Resize(1, 1);
+    Brush::Tile& t = firstBrush.tiles(0, 0);
+    t.index = 0;
+    t.mask = true;
+    SetCurrentBrush(firstBrush);
 }
 
 MainWindow::~MainWindow() {
@@ -1137,8 +1147,7 @@ const Brush& MainWindow::GetCurrentBrush() {
 
 void MainWindow::SetCurrentBrush(const Brush& brush) {
     _curBrush = brush;
-//    GetTilesetView()->OnCurrentBrushChange(brush);
-//    curBrushChanged.fire(brush);
+    curBrushChanged.fire(brush);
 }
 
 uint MainWindow::GetCurrentTile() {

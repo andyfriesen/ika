@@ -7,6 +7,7 @@
 #include "spriteset.h"
 #include "common/chr.h"
 #include "tileset.h"
+#include "tilesetview.h"
 #include "command.h"
 
 #include "common/log.h"
@@ -583,6 +584,10 @@ VideoFrame* MapView::GetVideo() const {
     return _video;
 }
 
+EditState* MapView::GetEditState() const {
+    return _editState;
+}
+
 void MapView::SetEditState(EditState* newState) {
     _editState->OnEndState();
     _editState = newState;
@@ -590,6 +595,11 @@ void MapView::SetEditState(EditState* newState) {
 
     Render();
     ShowPage();
+
+    // THIS SHOULDNT BE HERE
+    // but it works until I can put the new tool structure in.
+    _executor->GetTilesetView()->Render();
+    _executor->GetTilesetView()->Refresh();
 }
 
 void MapView::Cock() {

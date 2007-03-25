@@ -14,6 +14,7 @@ struct BrushState : EditState {
     virtual void OnMouseMove(wxMouseEvent& event);
 
     virtual void OnRenderCurrentLayer();
+    virtual void OnTilesetViewRender();
 
 private:
     int _oldX;

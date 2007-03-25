@@ -19,6 +19,7 @@ public:
     virtual void OnRender();
 
     virtual void OnRenderCurrentLayer();
+    virtual void OnTilesetViewRender();
 
 
     void SetTile(int x, int y);

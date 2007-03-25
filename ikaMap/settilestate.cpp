@@ -36,6 +36,10 @@ void TilesetState::OnRenderCurrentLayer() {
     mv->GetVideo()->DrawSelectRect(_oldX * w - mv->GetXWin(), _oldY * h - mv->GetYWin(), w, h, RGBA(255, 192, 192, 255));
 }
 
+void TilesetState::OnTilesetViewRender() {
+    GetExecutor()->GetTilesetView()->SetTileRender();
+}
+
 void TilesetState::OnMouseDown(wxMouseEvent& event) {
     int x = event.m_x;
     int y = event.m_y;

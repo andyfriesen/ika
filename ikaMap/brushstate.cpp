@@ -2,6 +2,7 @@
 #include "brushstate.h"
 #include "executor.h"
 #include "mapview.h"
+#include "tilesetview.h"
 #include "command.h"
 
 BrushState::BrushState(Executor* e)
@@ -45,4 +46,8 @@ void BrushState::OnRenderCurrentLayer() {
     }
 
     GetMapView()->RenderBrush(_oldX, _oldY);
+}
+
+void BrushState::OnTilesetViewRender() {
+    GetExecutor()->GetTilesetView()->SetBrushRender();
 }

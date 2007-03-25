@@ -112,6 +112,7 @@ struct MapView : public wxPanel {
     aegisz: just call it cock() and be done with it
     andys evil clone: hah.
     */
+    EditState* GetEditState() const;
     void SetEditState(EditState* newState);
     void Cock();    // Sets the default tile-setting state.  Thanks aegis!
     void SetBrushState();
