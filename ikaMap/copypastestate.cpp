@@ -64,7 +64,7 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event) {
     if (_state == AddState) {
         _state = NoneState;
         _selection.Normalize();
-        
+
         // Figure out the minimum rect that can contain the union 
         // of the dragged rect and the existing selection.
         Rect newClip;
@@ -88,15 +88,12 @@ void CopyPasteState::OnMouseUp(wxMouseEvent& event) {
         // Copy the old bit over.
         for (uint y = 0; y < _tiles.Height(); y++) {
             for (unsigned int x = 0; x < _tiles.Width(); x++) {
-                //Brush::Tile& t = newBrush.tiles(x + ofsX, y + ofsY);  // Unused.
-                //Brush::Tile& u = _tiles.tiles(x, y);					// Unused.
                 newBrush.tiles(x + ofsX, y + ofsY) = _tiles.tiles(x, y);
             }
         }
 
         // Add the new stuff.
-		assert(_selection.top > 0 && _selection.right > 0 &&
-			   _selection.bottom > 0 && _selection.left > 0);
+	assert(_selection.top > 0 && _selection.right > 0 && _selection.bottom > 0 && _selection.left > 0);
         for (unsigned int y = _selection.top; y < _selection.bottom; y++) {
             for (unsigned int x = _selection.left; x < _selection.right; x++) {
                 Brush::Tile& t = newBrush.tiles(x - newClip.left, y - newClip.top);
@@ -154,7 +151,7 @@ void CopyPasteState::OnRenderCurrentLayer() {
     const Tileset* ts = GetTileset();
     const Map::Layer* curLayer = GetCurLayer();
     MapView* mv = GetMapView();
-    
+
     if (!_tiles.tiles.Empty()) {
         int xofs = _selX;
         int yofs = _selY;

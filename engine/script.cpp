@@ -26,7 +26,7 @@ void ScriptEngine::Init(Engine* njin) {
     PyObject* module = Py_InitModule3("ika", Script::standard_methods,
         "ika standard module. \n"
         "\n"
-        "Contains functions and crap for manipulating the ika game engine at runtime.\n"
+        "Interface to the ika game engine.\n"
         );
 
     engine = njin;
