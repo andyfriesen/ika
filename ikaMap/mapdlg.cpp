@@ -17,8 +17,7 @@ BEGIN_EVENT_TABLE(MapDlg, wxDialog)
 END_EVENT_TABLE()
 
 template <typename T>
-T* MapDlg::Ctrl(const std::string& name, const T*)
-{
+T* MapDlg::Ctrl(const std::string& name, const T*) {
     wxWindow* t = FindWindow(XRCID(name.c_str()));
 
 #ifdef DEBUG
@@ -28,33 +27,33 @@ T* MapDlg::Ctrl(const std::string& name, const T*)
     return (T*)t;
 }
 
-void MapDlg::OnOk(wxCommandEvent& event)
-{
+void MapDlg::OnOk(wxCommandEvent& event) {
     title  = Ctrl<wxTextCtrl>("edit_title")->GetValue().c_str();
     width  = atoi(Ctrl<wxTextCtrl>("edit_width")->GetValue().c_str());
     height = atoi(Ctrl<wxTextCtrl>("edit_height")->GetValue().c_str());
 
     Map* map = _mainWnd->GetMap();
 
-    if (width < 1 || height < 1)
+    if (width < 1 || height < 1) {
         wxMessageBox("Width and height must be positive integers.", "Negative sizes make no sense", wxOK | wxCENTER, this);
-    else if (title  != map->title ||
+    } else if (
+        title  != map->title ||
         width  != map->width ||
-        height != map->height)
+        height != map->height
+    ) {
         wxDialog::OnOK(event);
-    else
+    } else {
         wxDialog::OnCancel(event);
+    }
 }
 
-void MapDlg::OnAutoSize(wxCommandEvent&)
-{
+void MapDlg::OnAutoSize(wxCommandEvent&) {
     Map* map = _mainWnd->GetMap();
     Tileset* tileset = _mainWnd->GetTileset();
 
     width = height = 0;
 
-    for (uint i = 0; i < map->NumLayers(); i++)
-    {
+    for (uint i = 0; i < map->NumLayers(); i++) {
         Map::Layer* lay = map->GetLayer(i);
 
         width  = max(width,  lay->x + lay->Width()  * tileset->Width());
