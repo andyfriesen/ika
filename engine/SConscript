@@ -17,7 +17,6 @@ ika = ika_env.Program('ika',
         sound.cpp
         sprite.cpp
         tileset.cpp
-        timer.cpp
         script/CanvasObject.cpp
         script/ColoursObject.cpp
         script/ControlObject.cpp
