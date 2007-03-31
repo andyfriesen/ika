@@ -33,23 +33,30 @@ if sys.platform == 'win32':
         libs('mingw32')
         env.Append(LINKFLAGS = ' -mwindows')
         libs('z', 'python2.4')
+
+    # Python linking info
+    import distutils.sysconfig as sc
+    PY_INC = sc.get_python_inc()
+    PY_LIB = sc.get_config_var('LIBDEST')
+    PY_VER = sc.get_config_var('VERSION')
+    include(PY_INC)
+    libpath(PY_LIB + '/config')
+
 else:
     # *nix specific configuration
     libpath('/usr/X11R6/lib')
     libs('GL', 'GLU', 'util')
-
-# Python linking info
-import distutils.sysconfig as sc
-PY_INC = sc.get_python_inc()
-PY_LIB = sc.get_config_var('LIBDEST')
-PY_VER = sc.get_config_var('VERSION')
-include(PY_INC)
-libpath(PY_LIB + '/config')
+    env.ParseConfig('python2.4-config --cflags')
+    env.ParseConfig('python2.4-config --libs')
 
 ############## Build common sources
 
 libcommon = env.SConscript(dirs=['common'], exports='env')
 env.Alias('common', libcommon)
+
+include('#/common')
+libpath('#/common')
+libs('common')
 
 ############## Set up for and build ika
 
@@ -65,10 +72,6 @@ ika_env.Append(LIBS=Split('''
 ika_env.ParseConfig('sdl-config --cflags')
 if sys.platform == 'win32':
     ika_env.Append(LIBS=['SDLmain'])
-
-include('#/common')
-libpath('#/common')
-libs('common')
 
 ika_env.Append(LINKFLAGS = '-Wl,--export-dynamic')
 ika = ika_env.SConscript(dirs=['engine'], exports='ika_env')
