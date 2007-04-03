@@ -1223,7 +1223,7 @@
           <object class="wxBoxSizer">
             <object class="sizeritem">
               <object class="wxStaticText" name="text_version">
-                <label>ikaMap v.0</label>
+                <label>ikaMap</label>
               </object>
             </object>
             <orient>wxVERTICAL</orient>
@@ -1253,6 +1253,6 @@
       </object>
     </object>
     <title>About</title>
-    <size>200,80</size>
+    <size>160,64</size>
   </object>
 </resource>
