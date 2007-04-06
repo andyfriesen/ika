@@ -179,6 +179,40 @@ function AddNews()
             "Text",    "text",   isset($text) ? $text : "",
             "PreSub",  "preview+submit", "");
         EndBox();
+<<<<<<< .mine
+    }
+    else
+    {
+        StartBox("Write New News Entry");
+        CreateForm("$PHP_SELF?add=1&submit=1",
+            "Name",    "hidden", $_username,
+            "Subject", "input",  isset($subject)? $subject : "",
+            "Text",    "text",   isset($text) ? $text : "",
+            "PreSub",  "preview+submit", "");
+        EndBox();
+    }
+}
+
+# -----------------------------------------------------------------------------
+
+include "bin/main.php";
+
+GenerateHeader("News");
+
+VerifyLogin();
+
+# echo '<p style="text-align: center;"><a href="board.php?post=5164">Click here for information on the ika revitalization project codenamed "ika: Redux".</a></p><br><br>';
+
+if (isset($edit))
+    EditNews($view);
+else if (isset($add))
+    AddNews();
+else if (isset($destroy))
+    DeleteNews($view);
+else
+    ShowNews(isset($showall));
+
+?>=======
     }
     else
     {
@@ -212,3 +246,4 @@ else
     ShowNews(isset($showall));
 
 ?>
+>>>>>>> .r659

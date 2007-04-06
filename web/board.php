@@ -1,9 +1,8 @@
 <?php
 
 function ShowThread($post) {
-    global $PHP_SELF;
 
-    echo "<a href='$PHP_SELF?post=$post[id]'>";
+    echo "<a href='" . $_SERVER["PHP_SELF"] . "?post=$post[id]'>";
     echo NukeHTML($post["subject"]);
     echo '</a>';
     if (strlen($post["text"]) < 2)
@@ -36,7 +35,7 @@ function ShowReplies($id) {
 
 function ShowPost($id) {
     
-    global $admin, $_username, $PHP_SELF;
+    global $admin, $_username;
 
     $result = mysql_query("SELECT * FROM board WHERE id=$id")
               or FatalError("No post $id.");
@@ -81,14 +80,18 @@ function ShowPost($id) {
         echo '<table><tr>';
         if ($result["parentid"] != 0)
             echo '<td><a class="button" href="?post=', $result["parentid"], '">view parent</a></td>';
-        echo "<td><a class='button' href='$PHP_SELF?edit=$id'>edit</a></td>";
-        echo "<td><a class='button' href='$PHP_SELF?delete=$id'>delete</a></td>";
+            
+        if ((!$result["locked"] and $myPost) or $admin)
+        {
+            echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"]. "?edit=$id'>edit</a></td>";
+            echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?delete=$id'>delete</a></td>";
+        }
 
         if ($admin) {
             if (!$result["locked"]) {
-                echo "<td><a class='button' href='$PHP_SELF?lock=$id'>lock</a></td>";
+                echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?lock=$id'>lock</a></td>";
             } else {
-                echo "<td><a class='button' href='$PHP_SELF?unlock=$id'>unlock</a></td>";
+                echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?unlock=$id'>unlock</a></td>";
             }
         }
 
@@ -134,7 +137,6 @@ function ShowAllPosts($amount) {
 
 
 function ShowNewestPosts($amount) {
-    global $PHP_SELF;
 
     $result = mysql_query("SELECT * FROM board WHERE deleted=0 ORDER by id DESC LIMIT $amount;")
               or MySQL_FatalError();
@@ -146,7 +148,7 @@ function ShowNewestPosts($amount) {
 
     while ($post = mysql_fetch_array($result)) {
         echo '<tr>';
-        echo "<td><a href='$PHP_SELF?post=$post[id]'>", NukeHTML($post[subject]), "</a></td>";
+        echo "<td><a href='" . $_SERVER["PHP_SELF"] . "?post=$post[id]'>", NukeHTML($post[subject]), "</a></td>";
         echo "<td>", FormatName($post[name]), "</td><td>$post[date]</td>";
         echo '</tr>';
     }
@@ -158,11 +160,11 @@ function ShowNewestPosts($amount) {
 
 
 function ShowPostForm($header="", $title="") {
-    global $PHP_SELF, $_username, $Subject, $Text, $post;
+    global $_username, $Subject, $Text, $post;
     
-    StartBox($header);
+    StartBox($header, "", "id='post'");
     
-    CreateForm("$PHP_SELF?add=$post",
+    CreateForm($_SERVER["PHP_SELF"] . "?add=$post",
         "Name",    "hidden", isset($_username) ? $_username : "Anonymous",
         "Subject", "input",  $title ? NukeHTML($title) : (isset($Subject) ? NukeHTML($Subject) : ""),
         "Text",    "text",   isset($Text) ? NukeHTML($Text) : "",
@@ -217,7 +219,7 @@ function AddPost($parentid, $subject, $name, $text) {
 
 function UpdatePost($id, $subject, $text) {
     
-    global $admin;
+    global $admin, $_username;
 
     if ($subject)
     {
@@ -229,7 +231,7 @@ function UpdatePost($id, $subject, $text) {
             FatalError("This post is locked and cannot be edited.");
         }
 
-        if (!$admin and $_username != $post["name"]) {
+        if (!$admin and ($_username != $post["name"])) {
             FatalError("You do not have sufficient permission to edit this post.");
         }
 
@@ -269,7 +271,7 @@ function DeletePost($delete) {
 
 
 function EditPost($context, $id) {
-    global $PHP_SELF, $_username, $Subject, $Text, $post, $safe_post;
+    global $_username, $Subject, $Text, $post, $safe_post;
 
     if (!isset($safe_post["Preview"]) and !isset($safe_post["Submit"]))
     {
@@ -285,7 +287,7 @@ function EditPost($context, $id) {
     $Text = $post["text"];
 
     StartBox("Edit Post");
-    CreateForm("$PHP_SELF?$context=$id",
+    CreateForm($_SERVER["PHP_SELF"] . "?$context=$id",
             "Name",    "hidden", $post["name"],
             "Subject", "input",  isset($Subject)   ? NukeHTML($Subject) : "",
             "Text",    "text",   isset($Text)      ? NukeHTML($Text)    : "",
@@ -346,7 +348,7 @@ function UnlockPost($id) {
 function DisplayForumOptions() {
     StartBox("Forum Options");
     echo '<table><tr>';
-    echo "<td><a class='button' href='$PHP_SELF?newest=1'>new post list</a></td>";
+    echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?newest=1'>new post list</a></td>";
     echo '<td><a class="button" href="#post">write new post</a></td>';
     echo '</tr></table>';
     EndBox();
@@ -374,7 +376,7 @@ elseif (isset($add))
     }
     else if (isset($safe_post["Preview"]))
     {
-        PreviewPost($safe_post["Subject"], $safe_post["Name"], $safe_post["Text"]);
+        PreviewPost($safe_post["Subject"], $safe_post["Name"], $_POST["Text"]);
         EditPost("add", $safe_get["add"]);
         die();
     }
@@ -390,7 +392,7 @@ elseif (isset($edit))
         UpdatePost($safe_get["edit"], $safe_post["Subject"], $safe_post["Text"]);
     else if (isset($safe_post["Preview"]))
     {
-        PreviewPost($safe_post["Subject"], $safe_post["Name"], $safe_post["Text"]);
+        PreviewPost($safe_post["Subject"], $safe_post["Name"], $_POST["Text"]);
         EditPost("edit", $safe_get["edit"]);
         die();
     }

@@ -35,11 +35,11 @@ function ShowFile($file, $queued) {
         echo $td, "No description.</td>";
 
     if ($admin and $file["queued"])
-        echo "<td><a href='$PHP_SELF?approve=$file[id]'>Approve</a></td>";
+        echo "<td><a href='" . $_SERVER["PHP_SELF"] . "?approve=$file[id]'>Approve</a></td>";
     if ($admin or $_username == $file["author"])
-        echo "<td><a href='$PHP_SELF?edit=$file[id]'>Edit</a></td>";
+        echo "<td><a href='" . $_SERVER["PHP_SELF"] . "?edit=$file[id]'>Edit</a></td>";
     if ($admin)
-        echo "<td><a href='$PHP_SELF?remove=$file[id]'>Remove</a></td>";
+        echo "<td><a href='" . $_SERVER["PHP_SELF"] . "?remove=$file[id]'>Remove</a></td>";
 
     echo "</tr>";
 }
@@ -57,7 +57,7 @@ function BrowseFiles($categoryid, $queued) {
         $filelist[$files] = $file;
 
     # no files at all?
-    if (!$files) return;
+    if (!$files) return False;
     
     echo '<table class="box">';
     echo "<tr><th class='main' colspan='4'>{$fileCategory[$categoryid]}</th></tr>";
@@ -72,24 +72,31 @@ function BrowseFiles($categoryid, $queued) {
     }
 
     echo "</table>";
+    
+    return True;
 }
 
 
 function CreateFile()
 {
-    CreateForm("$PHP_SELF?submit=1",
-    "Hdr",         "header",    "Submit File",
+    global $fileCategory;
+    
+    StartBox("Add New File");
+    
+    CreateForm($_SERVER["PHP_SELF"] . "?submit=1",
     "Title",       "input",     "",
     "Author",      "input",     isset($_username) ? $_username : "Anonymous",
     "Filename",    "filename",  isset($Filename)  ? $Filename  : "",
     "Category",    "select",    $fileCategory, $fileCategory, $fileCategory[0],
     "Description", "smalltext", "",
     "Submit",      "submit",    "");
+    
+    EndBox();
 }
 
 function AddFile($title, $author, $description, $category) {
     global $Title, $Author, $Category, $Filename, $Description, $Filename_name,
-           $fileCategory, $filedir, $PHP_SELF, $URL;
+           $fileCategory, $filedir, $URL;
 
     if (!is_uploaded_file($Filename)) {
         FatalError("$Filename did not upload properly.");
@@ -118,7 +125,7 @@ function AddFile($title, $author, $description, $category) {
 
     StartBox();
     echo '<p>The file has been added to the queue.  It will be reviewed by an admin within a few days.</p>';
-    echo "<p><a href='$PHP_SELF'>Return to the files page.</a></p>";
+    echo "<p><a href='" . $_SERVER["PHP_SELF"] . "'>Return to the files page.</a></p>";
     EndBox();
 }
 
@@ -149,8 +156,9 @@ function RemoveFile($id) {
 
 function DisplayFileOptions()
 {
+    
     StartBox("Options");
-    echo "<table><tr><td><a class='button' href='$PHP_SELF?create=1'>submit file</a></td></tr></table>";
+    echo "<table><tr><td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?create=1'>submit file</a></td></tr></table>";
     EndBox();
 }
 
@@ -159,6 +167,7 @@ function DisplayFileOptions()
 include_once "bin/main.php";
 
 GenerateHeader("Files");
+
 VerifyLogin();
 
 DisplayFileOptions();
@@ -169,18 +178,29 @@ else if (isset($approve) and isset($admin))
     ApproveFile($safe_get["approve"]);
 else if (isset($remove) and isset($admin))
     RemoveFile($safe_get["remove"]);
+else if (isset($create))
+    CreateFile();
+
+$empty = False;
 
 if (isset($queued) and isset($admin)) {
+
     StartBox("Browse Queued Files");
     for ($i = 0; $i < 5; $i++) {
-        BrowseFiles($i, 1);
+        $empty |= BrowseFiles($i, 1);
     }
+    if (!$empty)
+        echo "No queued files.";
     EndBox();
+    
 } else {
+
     StartBox("Browse Files");
     for ($i = 0; $i < 5; $i++) {
         BrowseFiles($i, 0);
     }
+    if (!$empty)
+        echo "No queued files.";
     EndBox();
 }
 

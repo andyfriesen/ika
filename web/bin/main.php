@@ -121,7 +121,7 @@ function GenerateFooter()
     echo '</body>';
     echo '</html>';
 }
-register_shutdown_function(GenerateFooter);
+register_shutdown_function("GenerateFooter");
 
 # -----------------------------------------------------------------------------
 

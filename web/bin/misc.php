@@ -105,10 +105,10 @@ function Box($text) {
     echo "<div class='box'><p>$text</p></div>";
 }
 
-function StartBox($hdr='', $class='') {
+function StartBox($hdr='', $class='', $params='') {
     if ($hdr)
         echo "<div class='main'>$hdr</div>";
-    echo "<div class='box $class'>";
+    echo "<div class='box $class' $params>";
 }
 
 function EndBox() {
