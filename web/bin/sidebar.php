@@ -17,6 +17,7 @@
             <a href="admin.php">More Admin</a>
         <?php endif; if (isset($_username)): ?>
             <hr />
+            <?php echo "<b>" . $_username . "</b><br />"; ?>
             <a href="profile.php">Edit Profile</a><br />
             <a href="login.php?logout=1">Log Out</a>
         <?php elseif (!isset($_username)): ?>

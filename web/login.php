@@ -54,11 +54,17 @@ function Login()
         
         die();
     }
-    else
+    else if ($row)
     {
         GenerateHeader("Authentication");
         
         Error("The password you entered is incorrect.");
+    }
+    else
+    {
+        GenerateHeader("Authentication");
+        
+        Error("The username you entered does not exist.");
     }
 }
 
