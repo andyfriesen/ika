@@ -52,7 +52,7 @@ namespace OpenGL {
     /// The driver itself.
     struct Driver : public Video::Driver {
 
-        Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize);
+        Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize, bool filter);
         ~Driver();
 
         /// Switches the driver to display fullscreen.
@@ -159,10 +159,12 @@ namespace OpenGL {
         Video::BlendMode _blendMode;
 
         // If true, we make the real resolution twice normal, and let
-        // OpenGL scale it (bilinear filtering!) when we ShowPage
+        // OpenGL scale it when we ShowPage
         // _bufferTex is used to do the scaling.
         bool _doubleSize;
         uint _bufferTex;
+        // If true, use bilinear filtering for doublesize. If false, use nearest neighbor.
+        bool _filter;
 
         uint _lasttex;
         void SwitchTexture(uint tex);

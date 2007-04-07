@@ -20,7 +20,7 @@ namespace OpenGL {
     const uint GL_FUNC_ADD_EXT = 0x8006;
 #endif
 
-    Driver::Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize)
+    Driver::Driver(int xres, int yres, int bpp, bool fullScreen, bool doubleSize, bool filter)
         : _screen(0)
         , _xres(xres)
         , _yres(yres)
@@ -28,7 +28,8 @@ namespace OpenGL {
         , _tintColour(255, 255, 255)
         , _fullScreen(fullScreen)
         , _blendMode(Video::Normal)
-        , _doubleSize(doubleSize) 
+        , _doubleSize(doubleSize)
+        , _filter(filter)
         , _lasttex(0)
     {
         if (_doubleSize) {
@@ -278,7 +279,8 @@ namespace OpenGL {
         int height = bottom - top;
 
         if (_doubleSize) {
-            top = min(_yres * 2, _yres * 2 - top) - height;
+            top = min(_yres, _yres - top) - height;
+            top = top + _yres;
         } else {
             top = min(_yres, _yres - top) - height;
         }
@@ -294,7 +296,11 @@ namespace OpenGL {
         glGetIntegerv(GL_SCISSOR_BOX, cliprect);
 
         int height = cliprect[3];
-        int y = _yres - cliprect[1] - height;
+        // Get the y coordinate, compensated for doublesize.
+        int y = cliprect[1];
+        if (_doubleSize) y -= _yres;
+
+        y = _yres - y - height;
 
         return new Rect(cliprect[0], y, cliprect[0] + cliprect[2], y + height);
     }
@@ -307,8 +313,13 @@ namespace OpenGL {
             int texH = nextPowerOf2(_yres);
             SwitchTexture(_bufferTex);
             glCopyTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 0, _yres, texW, texH, 0);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            if (_filter) {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+            } else {
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+            }
 
             glClear(GL_COLOR_BUFFER_BIT);
 
