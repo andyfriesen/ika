@@ -223,7 +223,8 @@ void Engine::Startup() {
                 cfg.Int("yres"), 
                 cfg.Int("bitdepth"), 
                 cfg.Int("fullscreen") != 0,
-                cfg.Int("doublesize") != 0);
+                cfg.Int("doublesize") != 0,
+                cfg.Int("filter") != 0);
         }
 
 #ifdef WIN32
@@ -331,6 +332,7 @@ void Engine::DrawEntity(const Entity* ent, int x, int y, uint frameIndex) {
 
     if (frameIndex >= s->Count()) frameIndex = 0;
 
+    video->SetBlendMode(Video::Normal);
     video->BlitImage(s->GetFrame(frameIndex), x, y);
 }
 
