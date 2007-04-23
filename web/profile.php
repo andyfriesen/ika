@@ -53,13 +53,24 @@ function DisplayUserStats($view)
 
 function DisplayUserPosts($view)
 {
-    $result = mysql_query("SELECT id, subject, date, time FROM board WHERE name='$view' AND deleted=0 ORDER BY date DESC, time DESC LIMIT 8");
+    $result = mysql_query("SELECT id, parentid, subject, date, time FROM board WHERE name='$view' AND deleted=0 ORDER BY date DESC, time DESC LIMIT 8");
     
     echo "<table class='box' style='margin-bottom: 0px'>";
     echo "<tr><th class='main' colspan=3>Recent Posts by ", $view, "</th></tr>";
     if (mysql_num_rows($result))
         while ($row = mysql_fetch_array($result))
-            echo "<tr><td width='20%'>", $row["date"], "</td><td><a href='board.php?post=", $row["id"], "'>", $row["subject"], "</td><td width='15%'>", $row["time"], "</td></tr>";
+        {
+            if ($row["parentid"] == 0)
+            {
+                echo "<tr><td width='20%'>", $row["date"], "</td><td><a href='forum.php?post=", $row["id"], "'>", NukeHTML($row["subject"]), "</td><td width='15%'>", $row["time"], "</td></tr>";
+            }
+            else
+            {
+                $sub = mysql_query("SELECT COUNT(*) AS c FROM board WHERE parentid=" . $row["parentid"] . " AND id<" . $row["id"]);
+                $sub = mysql_fetch_array($sub);
+                echo "<tr><td width='20%'>", $row["date"], "</td><td><a href='forum.php?post=", $row["parentid"], "&pg=", ((int)(($sub["c"]+1)/10)+1), "#r", $row["id"], "'>", NukeHTML($row["subject"]), "</td><td width='15%'>", $row["time"], "</td></tr>";
+            }
+        }
     else
         echo "<tr><td>No posts.</td></tr>";
     echo "</table>";
@@ -148,7 +159,7 @@ if ($user)
 }
 else
 {
-    echo "<p>User does not exist.</p>";
+    Error("You must log-in to edit your profile.");
 }
 
 if (isset($submit) and $editable) {

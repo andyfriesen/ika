@@ -21,7 +21,7 @@ function ShowNews($showall) {
              or MySQL_FatalError();
 
     StartBox("Most Recent News Entries");
-
+    
     while ($row = mysql_fetch_array($result)) {
         StartBox();
         ShowPost($result, $row);
@@ -34,23 +34,23 @@ function ShowNews($showall) {
 function EditNews($view)
 {
     global $_username, $submit, $view, $Subject, $Text, $safe_post;
-
+    
     if (!$view)
     {
         StartBox("Instructions");
         echo "<p>Pick a news post to edit.</p>";
         EndBox();
-
+    
         StartBox("All News Entries");
-
+        
         $user = GetUserInfo($_username);
         if (!$user["admin"])
             FatalError("You are not an administrator.");
-
+        
         $result = mysql_query("SELECT id, subject, name, date FROM news ORDER BY id DESC");
-
+        
         $year = "0";
-
+        
         echo "<table class='box'>";
         while ($post = mysql_fetch_array($result))
         {
@@ -66,12 +66,12 @@ function EditNews($view)
         echo "</table>";
         EndBox();
     }
-
+    
     if (isset($safe_post["Preview"]))
     {
         $result = mysql_query("SELECT date, time FROM news WHERE id=$view");
         $post = mysql_fetch_array($result);
-
+        
         StartBox("Preview News Entry");
         MakePost($_POST["Subject"], $_POST["Text"], $safe_post["Name"], LVL_COMPLEX_HTML,
         $post["date"],
@@ -82,12 +82,12 @@ function EditNews($view)
     {
         $query = "UPDATE news SET Subject='$Subject', text='$Text' WHERE id=$view";
         $result = mysql_query($query) or MySQL_FatalError();
-
+        
         StartBox("Notice");
         echo "<p>News updated.</p>";
         echo '<p><a href="index.php">Return to the news page.</a></p>';
         EndBox();
-
+        
         return;
     }
     else if (isset($view))
@@ -99,7 +99,7 @@ function EditNews($view)
         }
         else
             $post = array("name" => $_POST["Name"], "subject" => $_POST["Subject"], "text" => $_POST["Text"]);
-
+        
         StartBox("Edit News");
         CreateForm("$PHP_SELF?view=$view&amp;edit=1",
             "Name",    "hidden", $post["name"],
@@ -108,7 +108,7 @@ function EditNews($view)
             "PreSub",  "preview+submit", ""
         );
         EndBox();
-
+    
         StartBox("Options");
         echo "<table><tr>";
         echo "<td><a class='button' href='$PHP_SELF?edit=1'>back to news list</a></td>";
@@ -148,7 +148,7 @@ function AddNews()
 
         $Subject = $safe_post["Subject"];
         $Text = $safe_post["Text"];
-
+        
         $query = "INSERT INTO news (subject, name, text, date, time) ".
                  "values ('$Subject', '$_username', '$Text', '$date', '$time')";
         $result = mysql_query($query) or MySQL_FatalError();
@@ -162,16 +162,16 @@ function AddNews()
     {
         $subject = $safe_post["Subject"];
         $text = $safe_post["Text"];
-
+        
         $date = date("Y-m-d");
         $time = date("G:i:s");
-
+        
         StartBox("Preview News Entry");
         MakePost($_POST["Subject"], $_POST["Text"], $safe_post["Name"], LVL_COMPLEX_HTML,
         $date,
         $time);
         EndBox();
-
+        
         StartBox("Write New News Entry");
         CreateForm("$PHP_SELF?add=1&submit=1",
             "Name",    "hidden", $_username,
@@ -179,7 +179,6 @@ function AddNews()
             "Text",    "text",   isset($text) ? $text : "",
             "PreSub",  "preview+submit", "");
         EndBox();
-<<<<<<< .mine
     }
     else
     {
@@ -193,37 +192,10 @@ function AddNews()
     }
 }
 
-# -----------------------------------------------------------------------------
-
-include "bin/main.php";
-
-GenerateHeader("News");
-
-VerifyLogin();
-
-# echo '<p style="text-align: center;"><a href="board.php?post=5164">Click here for information on the ika revitalization project codenamed "ika: Redux".</a></p><br><br>';
-
-if (isset($edit))
-    EditNews($view);
-else if (isset($add))
-    AddNews();
-else if (isset($destroy))
-    DeleteNews($view);
-else
-    ShowNews(isset($showall));
-
-?>=======
-    }
-    else
-    {
-        StartBox("Write New News Entry");
-        CreateForm("$PHP_SELF?add=1&submit=1",
-            "Name",    "hidden", $_username,
-            "Subject", "input",  isset($subject)? $subject : "",
-            "Text",    "text",   isset($text) ? $text : "",
-            "PreSub",  "preview+submit", "");
-        EndBox();
-    }
+function ShowWelcome()
+{
+    #StartBox("Here for the first time?");
+    #echo "<p><ul>";
 }
 
 # -----------------------------------------------------------------------------
@@ -243,7 +215,10 @@ else if (isset($add))
 else if (isset($destroy))
     DeleteNews($view);
 else
+{
+    if (!$_username)
+        ShowWelcome();
     ShowNews(isset($showall));
+}
 
 ?>
->>>>>>> .r659

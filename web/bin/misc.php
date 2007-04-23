@@ -3,6 +3,21 @@
 $cachedUserInfo = array();
 
 
+function GetValue($array, $index, $default=False)
+{
+    if (isset($array[$index]))
+        return $array[$index];
+    return $default;
+}
+
+
+function GetImagePath($filename)
+{
+    global $layout;
+    
+    return "layouts/" . $layout . "/images/" . $filename;
+}
+
 function GetUserInfo($userName)
 {
     global $cachedUserInfo;
@@ -115,6 +130,11 @@ function EndBox() {
     echo '</div>';
 }
 
+function Success($text) {
+    echo "<div class='main success'>Success</div>";
+    echo "<div class='success'>$text</div>";
+}
+
 function Error($text) {
     echo "<div class='main error'>Error</div>";
     echo "<div class='error'>$text</div>";
@@ -126,6 +146,7 @@ function FatalError($text) {
 }
 
 function Notice($text) {
+    echo "<div class='main notice'>Notice</div>";
     echo "<div class='notice'>$text</div>";
 }
 
@@ -290,12 +311,12 @@ function LoadImage($fileName){
     $ext = strtolower(strrchr($fileName, "."));
 
     switch ($ext)    {
-        case ".png":  return imagecreatefrompng($fileName);
-        case ".gif":  return imagecreatefromgif($fileName);
+        case ".png":  return @imagecreatefrompng($fileName);
+        case ".gif":  return @imagecreatefromgif($fileName);
         case ".jpg":
         case ".jpe":
-        case ".jpeg": return imagecreatefromjpeg($fileName);
-        case ".bmp":  return imagecreatefromwbmp($fileName);
+        case ".jpeg": return @imagecreatefromjpeg($fileName);
+        case ".bmp":  return @imagecreatefromwbmp($fileName);
         default:
             die("Unknown image extension '$ext'");
     }
@@ -317,6 +338,34 @@ function WriteImage($image, $fileName)
         default:
             die("Unknown image extension '$ext'");
     }
+}
+
+function PrintPagination($baseurl, $num_pages, $pg=0)
+{
+    echo "[ Page: ";
+    for ($a=1; $a<=$num_pages; $a++)
+    {
+        $dotted = False;
+        if ($a == $pg)
+            echo "<strong>[" . $a . "]</strong>";
+        else if ($a <= ($pg + 2) and $a >= ($pg - 2))
+            echo "<a href='" . $baseurl . "pg=" . $a . "'>" . $a . "</a>";
+        else if ($a <= 3)
+            echo "<a href='" . $baseurl . "pg=" . $a . "'>" . $a . "</a>";
+        else if ($a >= ($num_pages - 2))
+            echo "<a href='" . $baseurl . "pg=" . $a . "'>" . $a . "</a>";
+        else if ($a == ($pg + 3) or $a == ($pg - 3) or $a == 3)
+        {
+            echo " ... ";
+            $dotted = True;
+        }
+        else
+            $dotted = True;
+            
+        if ($a < $num_pages and $dotted == False and ($a != 3 or $pg <= 6) and ($a != ($pg + 2) or $pg >= ($num_pages - 5)))
+            echo ", ";
+    }
+    echo " ]";
 }
 
 ?>

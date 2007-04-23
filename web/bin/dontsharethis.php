@@ -5,7 +5,7 @@
 function ConnectToDB() {
   global $db;
   $db = mysql_connect("localhost", "ika", "ikapassword");
-  mysql_select_db("ika");
+  mysql_select_db("i38780_ika");
 }
 
 $filedir = "files/";

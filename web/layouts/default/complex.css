@@ -20,7 +20,7 @@ input[type=text], input[type=password] {cursor: text}
 sub, sup {font-size: .85em}
 
 /* bold font */
-html strong {font-weight: bolder} /* increase specificity */
+html strong {font-weight: bolder; } /* increase specificity */
 
 /* acronym/abbreviation style */
 abbr {
@@ -73,6 +73,11 @@ p, li, div.text {
     line-height: 1.4;
 }
 
+div.text {
+	overflow: hidden;
+	table-layout: fixed;
+}
+
 /* main ------------------------------------------------------------- */
 
 blockquote {margin: 0em 4% 0em 4%}
@@ -84,7 +89,7 @@ body {
     margin: 0;
 }
 
-td {padding: 5px 5px 5px 5px}
+td {padding: 5px 5px 5px 5px;}
 th {font-size: 1.2em}
 
 /* forms ------------------------------------------------------------ */
@@ -115,34 +120,41 @@ form td {vertical-align: top;}
 
 h1 {
     font-size: 1.9em;
-    letter-spacing: .5em;
+    letter-spacing: .2em;
     margin: 0 0 0 0;
 }
 
 h2 {
     font-size: 1.7em;
-    margin: 0 0 0 -5%;
-    /*border-top: 1px solid #4d626f;*/
+    margin: 0 0 10px 0;
+	padding-bottom: 3px;
+    border-bottom: 8px groove #4d626f;
 }
 
 h3 {
     font-size: 1.5em;
-    margin: 0 0 0 -4%;
+    margin: 0 0 10px 0;
+	padding-bottom: 3px;
+    border-bottom: 6px groove #4d626f;
 }
 
 h4 {
     font-size: 1.3em;
-    margin: 0 0 0 -3%;
+    margin: 0 0 10px 0;
+	padding-bottom: 3px;
+    border-bottom: 4px groove #4d626f;
 }
 
 h5 {
     font-size: 1.2em;
-    margin: 0 0 0 -2%;
+    margin: 0 0 10px 0;
+	padding-bottom: 3px;
+    border-bottom: 2px groove #4d626f;
 }
 
 h6 {
     font-size: 1.1em;
-    margin: 0 0 0 0%;
+    margin: 0 0 0 0;
 }
 
 /* classes ---------------------------------------------------------- */
@@ -196,7 +208,7 @@ a.button {font-variant: small-caps}
     position: relative;
 }
 
-.error {
+.error, .success {
     margin: 0 0 2em 0;
     padding: 1em 2% 1em 2%;
 }
@@ -212,15 +224,29 @@ a.button {font-variant: small-caps}
 
 .box {
     margin: 0 0 1.5em 0;
-    padding: 1em 2% 1em 2%;
+    padding: 1em 1em 1em 1em;
 }
 
-div.box div.box {
+.quotebox {
+    margin: 0 0 0 0;
+    padding: 1em 1em 1em 1em;
+	background: #bbbbbb;
+	border: 1px solid #4d626f;
+	font-size: 11pt;
+}
+
+.quotebox div {
+	margin-left: 1em;
+}
+
+div.box div.box, td.box {
 	background: #cccccc;
+	overflow: hidden;
+	width: 90%;
 }
 
 .post {
-    margin: 0 1% 0 4%;
+    margin: 0 4% 0 4%;
     padding: 0;
 }
 
@@ -244,6 +270,7 @@ div.box div.box {
     border-top: 1px dotted #6d826f;
     padding: .2em 0 0 0;
     margin: 1em 0 0 0;
+	overflow: hidden;
 }
 
 .sidebar hr {
@@ -262,7 +289,7 @@ table.box
 
 th
 {
-	font-size: 1.2em;
+	font-size: 1.1em;
 	background: #c0cad0;
 	padding-top: 3px;
 	padding-bottom: 3px;
@@ -270,7 +297,7 @@ th
 
 th.main, div.main
 {
-	font-size: 1.5em;
+	font-size: 1.4em;
 	background: #d9e3e9;
 	padding: 0px;
 	margin: 0px;
@@ -306,6 +333,18 @@ div.header { background-color: #e4e8f0; text-align: right;  border: 1px solid #4
 	padding-bottom: 20px;
 }
 
+.medium
+{
+	font-size: .8em;
+	line-height: 1;
+}
+
+.tiny
+{
+	font-size: .75em;
+	line-height: 1;
+}
+
 td.blank
 {
 	border: 0px;
@@ -314,7 +353,7 @@ td.blank
 
 /* inside articles -------------------------------------------------- */
 
-hr {height: 1px}
+hr {height: 6px; margin-top: 5px; margin-bottom: 5px}
 
 .string .comment * {color: purple; font-weight: normal; font-style: normal;}
 .comment .string * {color: green; font-style: italic; font-weight: normal;}

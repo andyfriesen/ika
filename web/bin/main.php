@@ -78,6 +78,18 @@ function GenerateHeader($subtitle, $userhack="", $pwhack="")
     echo "<meta name='copyright' content='Copyright &copy; 2004 $author'/>";
     echo '<meta name="ROBOTS" content="NOFOLLOW, NOIMAGEINDEX, NOIMAGECLICK"/>';
     //echo "<base href='$base'/>";
+    ?>
+    
+    <script language="javascript">
+    function quoteText(id)
+    {
+        var name = self.document.getElementById("name" + id).textContent;
+        var text = self.document.getElementById("text" + id).innerHTML;
+        text = text.replace(/<.+>/g, "");
+        self.document.forms[0].elements[2].value += '<quote name="' + name + '">' + text + '</quote>';
+    }
+    </script>
+    <?php
     echo '</head>';
     echo '<body>';
 
@@ -131,7 +143,10 @@ ConnectToDB();
 $safe_get = SanitizeData($_GET);
 $safe_post = SanitizeData($_POST);
 
-if (isset($_username) and !isset($layout))
+$_username = GetValue($_COOKIE, "_username", null);
+$_password = GetValue($_COOKIE, "_password", null);
+
+if (isset($_username) and !isset($layout) and 0)   # CURRENT HACK FOR COMPATIBILITY
 {
     $userinfo = GetUserInfo($_username);
     $layout = $userinfo["layout"];

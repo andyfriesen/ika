@@ -54,10 +54,14 @@ td {background-color: #ccc}
 td.blank {background-color: #ddd;}
 .error {background-color: #ecc}
 .main.error { background-color: #fdd; }
+.success {background-color: #cec}
+.main.success { background-color: #dfd; }
+.notice {background-color: #ccc;}
+.main.notice {background-color: #ddd;}
 
 /* border ----------------------------------------------------------- */
 abbr, img, table {border: 0}
-hr, td, th, .error, .notice, .box, .block {border: 1px solid #4d626f}
+hr, td, th, .error, .success, .notice, .box, .block {border: 1px solid #4d626f}
 .postbox {
     border-top: 1px solid #4d626f;
     border-right: 1px solid #4d626f;

@@ -49,7 +49,7 @@ function BrowseFiles($categoryid, $queued) {
     global $fileCategory;
 
     $result = mysql_query("SELECT * FROM files WHERE queued=$queued AND ".
-                          "category=$categoryid ORDER BY date DESC")
+                          "category=$categoryid ORDER BY edit_date DESC")
               or MySQL_FatalError();
 
     $filelist = array();
@@ -170,6 +170,12 @@ GenerateHeader("Files");
 
 VerifyLogin();
 
+if (isset($queued) and $admin == False)
+{
+    Error("You do not have the necessary access to view queued files.");
+    die();
+}
+
 DisplayFileOptions();
 
 if (isset($submit))
@@ -182,8 +188,8 @@ else if (isset($create))
     CreateFile();
 
 $empty = False;
-
-if (isset($queued) and isset($admin)) {
+    
+if (isset($queued) and $admin == True) {
 
     StartBox("Browse Queued Files");
     for ($i = 0; $i < 5; $i++) {
@@ -197,10 +203,10 @@ if (isset($queued) and isset($admin)) {
 
     StartBox("Browse Files");
     for ($i = 0; $i < 5; $i++) {
-        BrowseFiles($i, 0);
+        $empty |= BrowseFiles($i, 0);
     }
     if (!$empty)
-        echo "No queued files.";
+        echo "No files.";
     EndBox();
 }
 

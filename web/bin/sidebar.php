@@ -6,8 +6,10 @@
         <a href="articles.php">Articles</a><br />
         <a href="files.php">Files</a><br />
         <a href="links.php">Links</a><br />
-        <a href="board.php">Forum</a>
+        <a href="forum.php">Forum</a>
         <?php if ($admin == True): ?>
+            <hr />
+            <a href="board.php">Forum-Old</a>
             <hr />
             <a href="news.php?add=1">Add News</a><br />
             <a href="news.php?edit=1">Edit News</a><br />
@@ -17,7 +19,7 @@
             <a href="admin.php">More Admin</a>
         <?php endif; if (isset($_username)): ?>
             <hr />
-            <?php echo "<b>" . $_username . "</b><br />"; ?>
+            <?php echo "<b>" . $_username . "</b><br /><br />"; ?>
             <a href="profile.php">Edit Profile</a><br />
             <a href="login.php?logout=1">Log Out</a>
         <?php elseif (!isset($_username)): ?>

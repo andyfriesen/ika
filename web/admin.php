@@ -17,6 +17,7 @@ if ($admin == True)
     else if (isset($privs))     $subtitle = "Admin Rights";
     else if (isset($abil))      $subtitle = "Functions";
     else if (isset($explan))    $subtitle = "Site Explanation";
+    else if (isset($collapse))  $subtitle = "Collapse Forum (P)";
     else                        $subtitle = "Instructions";
     
     StartBox($subtitle);
@@ -176,6 +177,44 @@ if ($admin == True)
         
         echo "<p>I... can't really think of much else to put here right now. Oops.</p>";
     }
+    else if (isset($collapse))
+    {
+        if ($_POST["Submit"])
+        {
+            echo "<p>Fixing anomalies...</p>";
+            mysql_query("UPDATE board SET parentid=0 WHERE id=parentid AND id >= " . $_POST["Start"] . " AND id <= " . $_POST["End"]);
+            echo "<p>Anomalies fixed.</p>";
+            
+            echo "<p>Collapsing forum...</p>";
+            $all = mysql_query("SELECT id, parentid FROM board WHERE parentid!=0 AND id >= " . $_POST["Start"] . " AND id <= " . $_POST["End"] . " ORDER BY id");
+            
+            while ($row = mysql_fetch_array($all))
+            {
+                echo "<p>Post " . $row["id"] . "... (";
+                $row2 = $row;
+                while ($row2["parentid"] != 0)
+                {
+                    echo $row["parentid"] . ", ";
+                    $row2 = mysql_fetch_array(mysql_query("SELECT id, parentid FROM board WHERE id=" . $row2["parentid"]));
+                    $row["parentid"] = $row2["id"];
+                }
+                echo ") new parent is " . $row["parentid"] . ".</p>";
+                mysql_query("UPDATE board SET parentid=" . $row["parentid"] . " WHERE id=" . $row["id"]);
+            }
+        
+            echo "<p>Forum collapsed.</p>";
+        }
+        else
+        {
+            StartBox();
+            CreateForm($_SERVER["PHP_SELF"] . "?collapse=True",
+            "Instructions", "static",   "Enter a post range to collapse.",
+            "Start",   "input", "",
+            "End", "input",  "",
+            "Submit",  "submit", "");
+            EndBox();
+        }
+    }
     else
         echo "Choose an action below.";
         
@@ -189,12 +228,14 @@ if ($admin == True)
     echo "<td><a class='button' href='?privs=True'>admin rights</a></td>";
     echo "<td><a class='button' href='?abil=True'>functions</a></td>";
     echo "<td><a class='button' href='?explan=True'>site explanation</a></td>";
+    echo "</tr><tr>";
+    echo "<td><a class='button' href='?collapse=True'>collapse forum (p)</a></td>";
     echo "</tr></table>";
     EndBox();
 }
 else
 {
-    Notice("You are not an admin.");
+    Error("You are not an admin.");
 }
 
 ?>

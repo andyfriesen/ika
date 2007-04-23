@@ -13,10 +13,7 @@ function Logout()
 
     GenerateHeader("Authentication", "Anonymous", "Anonymous");
     
-    StartBox("Notice");
-    echo "<p>You are now logged out.</p>";
-    echo "<p><a href='index.php'>Go back to the main page.</a>";
-    EndBox();
+    Success("<p>You are now logged out.</p><p><a href='index.php'>Go back to the main page.</a></p>");
     
     die();
 }
@@ -33,24 +30,22 @@ function Login()
 
     $sha1 = sha1($Password);
 
-    $result = mysql_query("SELECT passwd='$sha1' AS pass_is_good FROM users WHERE name='$Username'");
+    $result = mysql_query("SELECT name, passwd='$sha1' AS pass_is_good FROM users WHERE name='$Username'");
     $row = mysql_fetch_array($result);
 
     //if ($Password == $row["password"])
     if ($row["pass_is_good"])
     {
-        setcookie("_username", $Username, time() + (60 * 60 * 24) * 365);
+    
+        setcookie("_username", $row["name"], time() + (60 * 60 * 24) * 365);
         setcookie("_password", $sha1, time() + (60 * 60 * 24) * 365);
 
-        $_username = $Username;
+        $_username = $row["name"];
         $_password = $Password;
 
         GenerateHeader("Authentication", $_username, $sha1);
         
-        StartBox("Notice");
-        echo "<p>You are now logged in as $_username.</p>";
-        echo "<p><a href='index.php'>Go back to the main page.</a>";
-        EndBox();
+        Success("<p>You are now logged in as " . $row["name"] . ".</p><p><a href='index.php'>Go back to the main page.</a></p>");
         
         die();
     }
@@ -72,9 +67,9 @@ function Login()
 
 include "bin/main.php";
 
-if (isset($logout) and isset($_username))
+if (GetValue($_GET, "logout") and isset($_username))
     Logout();
-else if (isset($login) and isset($_POST["Submit"]))
+else if (GetValue($_GET, "login") and isset($_POST["Submit"]))
     Login();
 else
     GenerateHeader("Authentication");
@@ -85,17 +80,14 @@ if (!isset($_username))
     StartBox("Log In");
     
     CreateForm("login.php?login=1",
-        "Username", "input",    "",
-        "Password", "password", "",
+        "Username", "input",    GetValue($_POST, "Username"),
+        "Password", "password", GetValue($_POST, "Password"),
         "Submit",   "submit",   "");
         
     EndBox();
 }
 else
 {
-    StartBox("Notice");
-    echo "<p>You are already logged in as $_username.</p>";
-    echo "<p><a href='index.php'>Go back to the main page.</a>";
-    EndBox();
+    Notice("<p>You are already logged in as $_username.</p><p><a href='index.php'>Go back to the main page.</a>");
 }
 ?>

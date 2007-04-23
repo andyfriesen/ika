@@ -8,9 +8,9 @@ function ShowLinks($category, $queued) {
 
     $result = mysql_query("SELECT * FROM links WHERE queued='$queued' AND category='$category'");
     $link = mysql_fetch_array($result);
-
+    
     if (!$link) {
-        return;
+        return False;
     }
 
     echo '<table class="box">';
@@ -21,7 +21,6 @@ function ShowLinks($category, $queued) {
         if (preg_match('|^[a-zA-Z]*\\://|', $link["url"]) == 0) {
         $link["url"] = "http://" . $link["url"];
     }
-
         echo '<tr>';
         echo "<td><a href='$link[url]'>", NukeHTML($link["name"]), "</a></td>";
         echo "<td style='width: 80%'>", NukeHTML($link["description"]), "</td>";  // CHANGE TO CSS!
@@ -35,6 +34,8 @@ function ShowLinks($category, $queued) {
         echo '</tr>';
     } while ($link = mysql_fetch_array($result));
     echo "</table>";
+    
+    return True;
 }
 
 
@@ -117,6 +118,8 @@ include "bin/main.php";
 VerifyLogin();
 GenerateHeader("Links");
 
+$empty = False;
+
 if (isset($submit) or isset($update)) {
     for ($c = 0, $i = 0; $i < sizeof($sCategory); $i++) {
         if ($Category == $sCategory[$i]) {
@@ -141,16 +144,24 @@ if (isset($submit) or isset($update)) {
     ApproveLink($approve);
 
 } else if (isset($admin) and isset($queued)) {
+    StartBox("Browse Queued Links");
     for ($i = 0; $i < sizeof($sCategory); $i++) {
-        ShowLinks($i, True);
+        $empty |= ShowLinks($i, True);
     }
+    if (!$empty)
+        echo "No queued links.";
 
 } else {
+    StartBox("Browse Links");
     for ($i = 0; $i < sizeof($sCategory); $i++) {
-        ShowLinks($i, False);
+        $empty |= ShowLinks($i, False);
     }
+    if (!$empty)
+        echo "No links.";
+    EndBox();
 }
 
+StartBox("Submit Link");
 CreateForm("$PHP_SELF?submit=1",
     "URL",         "input" ,    "",
     "Title",       "input",     "",
@@ -158,5 +169,6 @@ CreateForm("$PHP_SELF?submit=1",
     "Description", "smalltext", "",
     "Submit",      "submit",    ""
 );
+EndBox();
 
 ?>

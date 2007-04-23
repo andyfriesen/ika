@@ -78,6 +78,7 @@ function ShowPost($id) {
     if ((!$result["locked"] and $myPost) or $admin or $result["parentid"] != 0) {
         StartBox("Options");
         echo '<table><tr>';
+        echo "<td><a class='button' href='$PHP_SELF'>return to forum</a></td>";
         if ($result["parentid"] != 0)
             echo '<td><a class="button" href="?post=', $result["parentid"], '">view parent</a></td>';
             
@@ -87,12 +88,13 @@ function ShowPost($id) {
             echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?delete=$id'>delete</a></td>";
         }
 
-        if ($admin) {
+        if ($admin and $result["parentid"] == 0) {
             if (!$result["locked"]) {
                 echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?lock=$id'>lock</a></td>";
             } else {
                 echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?unlock=$id'>unlock</a></td>";
             }
+            echo "<td><a class='button' href='/forum.php?post=$id'>thread view</a></td>";
         }
 
         echo "</tr></table>";
@@ -118,7 +120,7 @@ function ShowAllPosts($amount) {
         $query .= " LIMIT $amount";
     }
 
-    StartBox("Posts");
+    StartBox("Posts (Branch View)");
     
     $result = mysql_query($query);
     if ($result) {
@@ -308,7 +310,7 @@ function PreviewPost($subject, $name, $text)
         $sig .= NukeHTML($poster["signature"], LVL_BASIC_HTML);
     }
     
-    $sig .= "&nbsp;&mdash; ".FormatName($safe_post["Name"]);  # CHANGE TO CSS!
+    $sig .= "&nbsp;&mdash; ".FormatName($name);  # CHANGE TO CSS!
     
     if (strlen($text) < 2) {
         $text = "No text.";
@@ -346,7 +348,7 @@ function UnlockPost($id) {
 }
 
 function DisplayForumOptions() {
-    StartBox("Forum Options");
+    StartBox("Options");
     echo '<table><tr>';
     echo "<td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?newest=1'>new post list</a></td>";
     echo '<td><a class="button" href="#post">write new post</a></td>';

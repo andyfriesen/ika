@@ -157,7 +157,7 @@ function NukeHTML($text, $level=LVL_NO_HTML)
         return $text;
 
     $patterns = array(
-        pattern('--', UxS),
+        pattern('--', 'UxS'),
         pattern(tag('(em | i)') .'(.+)'.endtag('\1'), 'USix'),
         pattern(tag('(strong | b)').'(.+)'.endtag('\1'), 'USix'),
         pattern(tag('(u)').'(.+)'.endtag('\1'), 'USix'),
@@ -171,7 +171,10 @@ function NukeHTML($text, $level=LVL_NO_HTML)
         pattern(tag('img \s+'.attr('src')  .'(\s*\/)?'), 'USix'),
         pattern(tag('a   \s+'.attr('name')).'(.+)'.endtag('a'), 'USix'),
         pattern(tag('a   \s+'.attr('href')).'(.+)'.endtag('a'), 'USix'),
-        pattern(tag('a   \s+'.attr('id'))  .'(.+)'.endtag('a'), 'USix')
+        pattern(tag('a   \s+'.attr('id'))  .'(.+)'.endtag('a'), 'USix'),
+        pattern(tag('quote').'((.|\s)+?)'.endtag('quote'), 'USix'),
+        pattern(tag('quote \s+'.attr('name')).'((.|\s)+)'.endtag('quote'), 'USix')
+        
     );
 
     $replace = array(
@@ -189,10 +192,13 @@ function NukeHTML($text, $level=LVL_NO_HTML)
         '<img src="$2"/>',
         '<a name="$2">$3</a>',
         '<a href="$2">$3</a>',
-        '<a id="$2">$3</a>'
+        '<a id="$2">$3</a>',
+        '<div class="quotebox">$2</div>',
+        '<div class="quotebox"><strong>$2</strong> wrote:<div>$3</div></div>'
     );
 
-    $text = preg_replace($patterns, $replace, $text);
+    for ($a=0; $a<10; $a++)
+        $text = preg_replace($patterns, $replace, $text);
 
     # HandleCodeTag has to do the newline conversion if we're not going to.
     # (code should always be <br />'d)
