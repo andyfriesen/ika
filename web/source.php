@@ -73,9 +73,9 @@ html, body {
 }
 ';
 
-if (isset($file))
+if (isset($_GET["file"]))
 {
-    $result = mysql_query("SELECT name, filename, author, description FROM files WHERE id=$file")
+    $result = mysql_query("SELECT name, filename, author, description FROM files WHERE id=" . $safe_get["file"])
               or MySQL_FatalError();
     $result = mysql_fetch_array($result);
 
@@ -91,8 +91,15 @@ if (isset($file))
     $contents = Colorize(NukeHTML($contents));
 
     GenerateMinimalHeader($result["name"], $style, $result["author"], $result["description"]);
+    echo "<h1>Source Viewer -- " . $result["name"] . "</h1>";
+    echo "<hr>";
+    echo "<a href='files.php?download=" . $safe_get["file"] . "'>Download source code.</a>";
+    echo "<hr><br />";
     echo "<code>$contents</code>";
-    Notice("<a href='files/$result[filename]'>Download source code.</a>");
+    echo "<hr>";
+    echo "<a href='files.php?download=" . $safe_get["file"] . "'>Download source code.</a>";
+    echo "<hr><br />";
+    die();
 }
 else
 {

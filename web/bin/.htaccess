@@ -1,0 +1,10 @@
+php_value upload_tmp_dir /home/groups/i/ik/ika/temp
+php_value max_upload_filesize 4194304
+php_value memory_limit 8388608
+php_value max_execution_time 600
+Order Deny,Allow
+Deny from all
+
+<Files ~ "\.js$">
+Allow from all
+</Files>

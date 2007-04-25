@@ -82,7 +82,7 @@ function BrowseArticles($categoryid, $queued)
 
 function ShowArticle($id)
 {
-    global $admin;
+    global $admin, $_username;
     
     $result = mysql_query("SELECT author, title, text, queued FROM articles WHERE id='$id'")
               or MySQL_FatalError();
@@ -92,7 +92,7 @@ function ShowArticle($id)
     if ($result["queued"] == 0)
         mysql_query("UPDATE articles SET view_count=view_count+1 WHERE id=$id");
 
-    if ($admin==False and $result["queued"]==1)
+    if ($admin==False and $result["author"] != $_username and $result["queued"]==1)
         return;
         
     StartBox("Article Body");
@@ -114,31 +114,18 @@ function CreateArticle()
 {
     global $PHP_SELF, $_username, $safe_post, $_POST, $admin, $articleCategory;
     
-    $a = array("title" => GetValue($_POST, "Title"), "author" => isset($_POST["Name"]) ? $_POST["Name"] : (isset($_username) ? $_username : "Anonymous"), "description" => GetValue($_POST, "Description"), "text" => GetValue($_POST, "Text"), "category_id" => GetValue($_POST, "Category", $articleCategory[0]));
+    $a = array("title" => GetValue($safe_post, "Title"), "author" => isset($safe_post["Name"]) ? $safe_post["Name"] : (isset($_username) ? $_username : "Anonymous"), "description" => GetValue($safe_post, "Description"), "text" => GetValue($safe_post, "Text"), "category_id" => GetValue($safe_post, "Category", $articleCategory[0]));
     
     StartBox("Submit Article");
-    
-    if ($admin == True)
-    
-        CreateForm("$PHP_SELF?add=1",
-            "Title",       "input",     NukeHTML($a["title"]),
-            "Name",        "input",     NukeHTML($a["author"]),
-            "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
-            "Description", "smalltext", NukeHTML($a["description"]),
-            "Text",        "text",      NukeHTML($a["text"]),
-            "Pre/Sub",     "preview+submit", ""
-        );
-    
-    else
-        
-        CreateForm("$PHP_SELF?add=1",
-            "Title",       "input",     NukeHTML($a["title"]),
-            "Name",        "hidden",    $a["author"],
-            "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
-            "Description", "smalltext", NukeHTML($a["description"]),
-            "Text",        "text",      NukeHTML($a["text"]),
-            "Pre/Sub",     "preview+submit", ""
-        );
+
+    CreateForm("$PHP_SELF?add=1",
+        "Title",       "input",     NukeHTML($a["title"]),
+        "Author",        ($admin==True) ? "input" : "hidden",     NukeHTML($a["author"]),
+        "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
+        "Description", "smalltext", NukeHTML($a["description"]),
+        "Text",        "text",      NukeHTML($a["text"]),
+        "Pre/Sub",     "preview+submit", ""
+    );
     
     EndBox();
 }
@@ -155,32 +142,19 @@ function EditArticle($id)
     }
     else
     {
-        $a = array("id" => $id, "title" => $_POST["Title"], "author" => $_POST["Name"], "description" => $_POST["Description"], "text" => $_POST["Text"], "category_id" => GetValue($_POST, "Category", $articleCategory[0]));
+        $a = array("id" => $id, "title" => $safe_post["Title"], "author" => $safe_post["Name"], "description" => $safe_post["Description"], "text" => $safe_post["Text"], "category_id" => GetValue($safe_post, "Category", $articleCategory[0]));
     }
 
     StartBox("Edit Article");
     
-    if ($admin == True)
-    
-        CreateForm("$PHP_SELF?update=$a[id]",
-            "Title",       "input",     NukeHTML($a["title"]),
-            "Name",        "input",     NukeHTML($a["author"]),
-            "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
-            "Description", "smalltext", NukeHTML($a["description"]),
-            "Text",        "text",      NukeHTML($a["text"]),
-            "Pre/Sub",     "preview+submit", ""
-        );
-    
-    else
-        
-        CreateForm("$PHP_SELF?update=$a[id]",
-            "Title",       "input",     NukeHTML($a["title"]),
-            "Name",        "hidden",    $a["author"],
-            "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
-            "Description", "smalltext", NukeHTML($a["description"]),
-            "Text",        "text",      NukeHTML($a["text"]),
-            "Pre/Sub",     "preview+submit", ""
-        );
+    CreateForm("$PHP_SELF?update=$a[id]",
+        "Title",       "input",     NukeHTML($a["title"]),
+        "Author",        ($admin==True) ? "input" : "hidden",     NukeHTML($a["author"]),
+        "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
+        "Description", "smalltext", NukeHTML($a["description"]),
+        "Text",        "text",      NukeHTML($a["text"]),
+        "Pre/Sub",     "preview+submit", ""
+    );
         
     EndBox();
 }
@@ -320,9 +294,9 @@ GenerateHeader("Articles");
 
 VerifyLogin();
 
-if (isset($view))
+if (isset($_GET["view"]))
     ShowArticle($safe_get["view"]);
-else if (isset($add))
+else if (isset($_GET["add"]))
 {
     if (!isset($safe_post["Preview"]))
         AddArticle($safe_post["Title"], $safe_post["Name"], $safe_post["Description"], $safe_post["Text"], $safe_post["Category"]);
@@ -334,15 +308,15 @@ else if (isset($add))
         die();
     }
 }
-else if ($admin==True and isset($approve))
+else if ($admin==True and isset($_GET["approve"]))
     ApproveArticle($safe_get["approve"]);
-else if (isset($create))
+else if (isset($_GET["create"]))
     CreateArticle();
-else if (isset($edit) and CanModify($safe_get["edit"], $_username))
+else if (isset($_GET["edit"]) and CanModify($safe_get["edit"], $_username))
     EditArticle($safe_get["edit"]);
-else if (isset($remove) and CanModify($safe_get["remove"], $_username))
+else if (isset($_GET["remove"]) and CanModify($safe_get["remove"], $_username))
     RemoveArticle($safe_get["remove"]);
-else if (isset($update) and CanModify($safe_get["update"], $_username))
+else if (isset($_GET["update"]) and CanModify($safe_get["update"], $_username))
 {
     if (!isset($safe_post["Preview"]))
         UpdateArticle($safe_get["update"], $safe_post["Title"], $safe_post["Name"], $safe_post["Description"], $safe_post["Text"], $safe_post["Category"]);
@@ -366,7 +340,7 @@ DisplayArticleOptions();
 $empty = False;
 
 #$articles = GetArticles(isset($queued) ? $safe_get["queued"] : 0);
-if (isset($queued) and $admin == True) {
+if (isset($_GET["queued"]) and $admin == True) {
 
     StartBox("Browse Queued Articles");
     for ($i = 0; $i < 4; $i++) {

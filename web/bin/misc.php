@@ -88,6 +88,26 @@ function FormatName($name)
 }
 
 
+function FormatSize($size, $pre=2)
+{
+    $tmpsize = $size;
+    $types = array("bytes", "kB", "mB", "gB");
+    $inc = array(1024, 1024, 1000);
+    $type = 0;
+    $more = ($tmpsize >= 1);
+    while ($more == true and $type < 3) {
+        $size = $tmpsize;
+        $tmpsize /= $inc[$type];
+        $more = ($tmpsize >= 1);
+        $type++;
+    }
+    
+    $type--;
+    $size = ((int) ($size * pow(10, $pre))) / pow(10, $pre);
+    return $size . " " . $types[$type];
+}
+
+
 function MakePost($title, $text, $signature, $level=LVL_NO_HTML, $date="", $time="")
 {
     echo '<div class="post">';

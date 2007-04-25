@@ -123,6 +123,13 @@ function ShowPost($id, $baseid=0, $cnt=1) {
     echo "</tr>";
     echo "<tr><td class='box' colspan='5' style='text-align: left; margin-left: 2em; margin-right: 2em; table-layout: fixed'> ";
     echo "<div class='text' id='text$id' style='margin-bottom: 1em;'>" . NukeHTML($text, LVL_COMPLEX_HTML) . "</div>";
+    
+    if ($post["edit_date"]) {
+        $date = substr($post["edit_date"], 0, 10);
+        $time = substr($post["edit_date"], 11, 8);
+        echo "<div class='text tiny' id='text$id' style='margin-bottom: 1em;'><i><b>Edited:</b> " . $date . " at " . $time . "</div>";
+    }
+        
     if (strlen($signature))
         echo "<div class='signature'>$signature</div>";
     
@@ -158,7 +165,7 @@ function ShowPost($id, $baseid=0, $cnt=1) {
 
 
 function ShowForum($amount) {
-    global $showall, $PHP_SELF;
+    global $showall, $PHP_SELF, $admin;
     
     $query = "SELECT COUNT(id) AS c FROM board WHERE parentid=id AND deleted=0";
     $num_threads = mysql_fetch_array(mysql_query($query));
@@ -174,14 +181,15 @@ function ShowForum($amount) {
     
     #$query = "SELECT * FROM board WHERE parentid=0 AND deleted=0 ORDER BY date DESC, time DESC";
     #$query = "SELECT id, subject, CONCAT(board.date, " ", board.time) AS dt FROM board GROUP BY parentid ORDER BY dt DESC";
-    $query = "SELECT *, COUNT(id)-1 AS post_count, MAX(CONCAT(board.date, ' ', board.time)) AS dt FROM board WHERE deleted=0 GROUP BY parentid ASC ORDER BY dt DESC LIMIT $start_thread,$amount";
+    $query = "SELECT b2.*, MAX(CONCAT(b1.date, ' ', b1.time)) AS m, COUNT(b1.id)-1 AS post_count FROM board AS b1 JOIN board AS b2 ON b2.id = b1.parentid WHERE b1.deleted=0 GROUP BY b1.parentid ORDER BY m DESC LIMIT $start_thread,$amount";
+    #$query = "SELECT *, parentid AS 'pid' FROM board JOIN (SELECT MAX(CONCAT(board.date, ' ', board.time)) AS dt FROM board WHERE parentid='pid') AS sub WHERE deleted=0 AND parentid=id GROUP BY parentid ASC ORDER BY sub.dt DESC LIMIT $start_thread,$amount";
     #$query = "SELECT *, id AS bid FROM (SELECT * FROM board WHERE parentid=0 AND deleted=0 ORDER BY id DESC LIMIT $start_thread,20) AS b ORDER BY (SELECT id FROM board WHERE bid IN (parentid, id) AND deleted=0 ORDER BY id DESC LIMIT 1) DESC";
     #$query = "SELECT *, id AS bid FROM board WHERE parentid=0 AND deleted=0 ORDER BY (SELECT id FROM board WHERE bid IN (parentid, id) AND deleted=0 ORDER BY id DESC LIMIT 1) DESC LIMIT $start_thread,$end_thread";
     
     #SELECT *, id AS bid FROM board ORDER BY (SELECT date FROM board WHERE parentid=bid OR id=bid ORDER BY date DESC, time DESC LIMIT 1) DESC, (SELECT time FROM board WHERE parentid=bid OR id=bid ORDER BY date DESC, time DESC LIMIT 1) DESC;
     
     $result = mysql_query($query);
-
+    
     echo mysql_error();
     if (!$result)
         return;
@@ -204,13 +212,12 @@ function ShowForum($amount) {
     
     while ($post = mysql_fetch_array($result)) {
         
-        $c = $post["post_count"];
         if (strlen($post["subject"]) > 30)
             $post["subject"] = substr($post["subject"], 0, 30) . "...";
             
         $query = "SELECT * FROM board WHERE parentid=$post[id] AND deleted=0 ORDER BY date DESC, time DESC LIMIT 1";
         $sub = mysql_query($query);
-        
+        $c = $post["post_count"];
         $sub_pages = (int) (((($c+1) - 1) / 10) + 1);
         
         echo '<tr>';
@@ -325,8 +332,9 @@ function UpdatePost($id, $subject, $text) {
         if (!$admin and ($_username != $post["name"])) {
             FatalError("You do not have sufficient permission to edit this post.");
         }
-
-        $result = mysql_query("UPDATE board SET subject='$subject', text='$text' where id=$id")
+        
+        $dt = date("Y-m-d H:i:s");
+        $result = mysql_query("UPDATE board SET subject='$subject', text='$text', edit_date='$dt' where id=$id")
                   or MySQL_FatalError();
 
         Notice("The post was edited successfully");
