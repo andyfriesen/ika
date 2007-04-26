@@ -1,55 +1,57 @@
 <?php
 
-$sCategory = array("ika", "ika Games", "Python", "General Programming",
-                   "Software", "Miscellaneous");
+# This needs to be added to the database someday.
+$sCategory = array('ika', 'ika Games', 'Python', 'General Programming',
+                   'Software', 'Miscellaneous');
+
 
 function ShowLinks($category, $queued) {
     global $sCategory, $admin, $PHP_SELF;
 
-    $result = mysql_query("SELECT * FROM links WHERE queued='$queued' AND category='$category'");
-    $link = mysql_fetch_array($result);
-    
-    if (!$link) {
-        return False;
+    $result = mysql_query("SELECT * FROM links WHERE queued='$queued' AND
+                           category='$category'");
+    if (!($link = mysql_fetch_array($result))) {
+        return FALSE;
     }
 
-    echo '<table class="box">';
-    echo "<tr><th colspan='2'>{$sCategory[$category]}</th></tr>";
+    ?>
+<table class="box">
+<tr><th colspan="2"><?php echo $sCategory[$category] ?></th></tr>
+    <?php
 
     do {
-        // Prepend "http://" if not present in the database entry
-        if (preg_match('|^[a-zA-Z]*\\://|', $link["url"]) == 0) {
-        $link["url"] = "http://" . $link["url"];
-    }
-        echo '<tr>';
-        echo "<td><a href='$link[url]'>", NukeHTML($link["name"]), "</a></td>";
-        echo "<td style='width: 80%'>", NukeHTML($link["description"]), "</td>";  // CHANGE TO CSS!
+        if (preg_match('|^[a-zA-Z]*\\://|', $link['url']) == 0) {
+            # Prepend "http://" if not present in the database entry
+            $link['url'] = "http://$link[url]";
+        }
+        $name = NukeHTML($link['name']);
+        $description = NukeHTML($link['description']);
+        echo "<tr><td><a href=\"$link[url]\">$name</a></td>
+              <td style=\"width: 80%\">$description</td>";  # CHANGE TO CSS!
         if ($admin) {
             if ($queued) {
-               echo "<td><a href='$PHP_SELF?approve=$link[id]'>Approve</a></td>";
+               echo "<td><a href=\"$PHP_SELF?queued=$queued&approve=$link[id]\">Approve</a></td>";
             }
-            echo "<td><a href='$PHP_SELF?delete=$link[id]'>Delete</a></td>";
-            echo "<td><a href='$PHP_SELF?edit=$link[id]'>Edit</a></td>";
+            echo "<td><a href=\"$PHP_SELF?queued=$queued&delete=$link[id]\">Delete</a></td>
+                  <td><a href=\"$PHP_SELF?queued=$queued&edit=$link[id]\">Edit</a></td>";
         }
         echo '</tr>';
     } while ($link = mysql_fetch_array($result));
-    echo "</table>";
-    
-    return True;
+    echo '</table>';
+
+    return TRUE;
 }
 
 
 function SubmitLink($url, $title, $category, $description) {
     global $PHP_SELF;
 
-    $result = mysql_query("INSERT INTO links (url, name, category, description) values " .
-                          "('$url', '$title', $category, '$description')")
+    $result = mysql_query("INSERT INTO links (url, name, category, description) values
+                           ('$url', '$title', $category, '$description')")
               or MySQL_FatalError();
 
-    Notice("<p>Link queued!  An admin will review it, and add it shortly. " .
-           "(well, eventually, at any rate)</p>" .
-           "<p><a href='$PHP_SELF'>Return to the links page.</a></p>");
-    die();
+    Notice("<p>Link queued! An admin will review it, and add it shortly. (Well,
+            eventually, at any rate.)</p>");
 }
 
 
@@ -57,30 +59,28 @@ function EditLink($id) {
     global $PHP_SELF, $admin, $sCategory;
 
     if (!$admin) {
-        FatalError("You are not an administrator.");
+        FatalError('You are not an administrator.');
     }
 
     $result = mysql_query("SELECT * FROM links WHERE id=$id");
     $a = mysql_fetch_array($result);
 
     CreateForm("$PHP_SELF?update=$a[id]",
-               "URL",         "input" ,    $a["url"],
-               "Title",       "input",     NukeHTML($a["name"]),
-               "Category",    "select",    $sCategory, $sCategory, $sCategory[$a["category"]],
-               "Description", "smalltext", NukeHTML($a["description"]),
-               "Submit",      "submit",    ""
-    );
+               'URL',         'input',     $a['url'],
+               'Title',       'input',     NukeHTML($a['name']),
+               'Category',    'select',    $sCategory, $sCategory, $sCategory[$a['category']],
+               'Description', 'smalltext', NukeHTML($a['description']),
+               'Submit',      'submit',    '');
 }
 
 
 function UpdateLink($id, $url, $name, $category, $description) {
-    $query = "UPDATE links SET "
-           . "url='$url', name='$name', category='$category', "
-           . "description='$description' WHERE id=$id";
+    $query = "UPDATE links SET
+              url='$url', name='$name', category='$category',
+              description='$description' WHERE id=$id";
     $result = mysql_query($query) or MySQL_FatalError();
 
-    Notice("Updated successfully.");
-    die();
+    Notice('Updated successfully.');
 }
 
 
@@ -93,82 +93,75 @@ function DeleteLink($id) {
     $result = mysql_query("DELETE FROM links WHERE ID='$id'")
               or MySQL_FatalError();
 
-    Notice("Link removed.");
-    die();
+    Notice('Link removed.');
 }
 
 
 function ApproveLink($id) {
     global $admin;
     if (!$admin) {
-        FatalError("You are not an administrator.");
+        FatalError('You are not an administrator.');
     }
 
     $result = mysql_query("UPDATE links SET queued=0 WHERE ID='$id'")
               or MySQL_FatalError();
 
-    Notice("Link approved.");
-    die();
+    Notice('Link approved.');
 }
 
-// -----------------------------------------------------------------------------
+# -----------------------------------------------------------------------------
 
-include "bin/main.php";
+include 'bin/main.php';
 
 VerifyLogin();
-GenerateHeader("Links");
+GenerateHeader('Links');
 
-$empty = False;
+$empty = FALSE;
 
-if (isset($submit) or isset($update)) {
+if (isset($_GET['submit']) or isset($_GET['update'])) {
     for ($c = 0, $i = 0; $i < sizeof($sCategory); $i++) {
-        if ($Category == $sCategory[$i]) {
+        if ($_POST['Category'] == $sCategory[$i]) {
             $c = $i;
             break;
         }
     }
-
-    if (isset($update)) {
-        UpdateLink($update, $URL, $Title, $c, $Description);
+    if (isset($_GET['update'])) {
+        UpdateLink($_GET['update'], $_POST['URL'], $_POST['Title'], $c, $_POST['Description']);
     } else {
-        SubmitLink($URL, $Title, $c, $Description);
+        SubmitLink($_POST['URL'], $_POST['Title'], $c, $_POST['Description']);
     }
+} else if (isset($_GET['edit'])) {
+    EditLink($_GET['edit']);
+} else if (isset($_GET['delete'])) {
+    DeleteLink($_GET['delete']);
+} else if (isset($_GET['approve'])) {
+    ApproveLink($_GET['approve']);
+}
 
-} else if (isset($edit)) {
-    EditLink($edit);
-
-} else if (isset($delete)) {
-    DeleteLink($delete);
-
-} else if (isset($approve)) {
-    ApproveLink($approve);
-
-} else if (isset($admin) and isset($queued)) {
-    StartBox("Browse Queued Links");
+if (isset($admin) and isset($_GET['queued'])) {
+    StartBox('Browse Queued Links');
     for ($i = 0; $i < sizeof($sCategory); $i++) {
-        $empty |= ShowLinks($i, True);
+        $empty |= ShowLinks($i, 1);
     }
-    if (!$empty)
-        echo "No queued links.";
-
+    if (!$empty) {
+        echo 'No queued links.';
+    }
 } else {
-    StartBox("Browse Links");
+    StartBox('Browse Links');
     for ($i = 0; $i < sizeof($sCategory); $i++) {
-        $empty |= ShowLinks($i, False);
+        $empty |= ShowLinks($i, 0);
     }
-    if (!$empty)
-        echo "No links.";
+    if (!$empty) {
+        echo 'No links.';
+    }
     EndBox();
 }
 
-StartBox("Submit Link");
+StartBox('Submit Link');
 CreateForm("$PHP_SELF?submit=1",
-    "URL",         "input" ,    "",
-    "Title",       "input",     "",
-    "Category",    "select",    $sCategory, $sCategory, $sCategory[0],
-    "Description", "smalltext", "",
-    "Submit",      "submit",    ""
-);
+           'URL',         'input' ,    '',
+           'Title',       'input',     '',
+           'Category',    'select',    $sCategory, $sCategory, $sCategory[0],
+           'Description', 'smalltext', '',
+           'Submit',      'submit',    '');
 EndBox();
-
-?>
