@@ -1,8 +1,8 @@
 <?php
 
-include "bin/main.php";
+include 'bin/main.php';
 
-GenerateHeader("Register");
+GenerateHeader('Register');
 
 do {
     if (isset($_GET['register'])) {
@@ -53,5 +53,3 @@ if (!isset($_GET['register'])) {
                $retype, 'Submit', 'submit', '');
     EndBox();
 }
-
-?>
