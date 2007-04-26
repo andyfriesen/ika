@@ -1,1 +1,1 @@
-<?php include_once "news.php"; ?>
+<?php include_once 'news.php'
