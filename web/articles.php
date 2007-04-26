@@ -139,6 +139,7 @@ function EditArticle($id)
     {
         $result = mysql_query("SELECT * FROM articles WHERE ID='$id'");
         $a = mysql_fetch_array($result);
+        $a["category_id"] = $articleCategory[$a["category_id"]];
     }
     else
     {
@@ -299,10 +300,10 @@ if (isset($_GET["view"]))
 else if (isset($_GET["add"]))
 {
     if (!isset($safe_post["Preview"]))
-        AddArticle($safe_post["Title"], $safe_post["Name"], $safe_post["Description"], $safe_post["Text"], $safe_post["Category"]);
+        AddArticle($safe_post["Title"], $safe_post["Author"], $safe_post["Description"], $safe_post["Text"], $safe_post["Category"]);
     else
     {
-        PreviewArticle("0", $_POST["Title"], $_POST["Name"], $_POST["Text"]);
+        PreviewArticle("0", $_POST["Title"], $_POST["Author"], $_POST["Text"]);
         CreateArticle();
         #BackToArticles();
         die();
