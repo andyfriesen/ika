@@ -59,7 +59,7 @@ function GenerateHeader($subtitle, $userhack="", $pwhack="") {
 
     $logo = strstr($HTTP_USER_AGENT, "MSIE") ? 'ielogo' : 'logo';
 
-    BasicHeader(ika . " - " . $subtitle, "Andy Friesen",
+    BasicHeader("ika" . " - " . $subtitle, "Andy Friesen",
                 "ika is a game engine designed to allow one to make a" .
                 "console-style RPG with a minimum of code, while allowing one " .
                 "who is willing to code an impressive level of power over the " .

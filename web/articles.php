@@ -114,7 +114,7 @@ function CreateArticle()
 {
     global $PHP_SELF, $_username, $safe_post, $_POST, $admin, $articleCategory;
     
-    $a = array("title" => GetValue($safe_post, "Title"), "author" => isset($safe_post["Name"]) ? $safe_post["Name"] : (isset($_username) ? $_username : "Anonymous"), "description" => GetValue($safe_post, "Description"), "text" => GetValue($safe_post, "Text"), "category_id" => GetValue($safe_post, "Category", $articleCategory[0]));
+    $a = array("title" => GetValue($safe_post, "Title"), "author" => isset($safe_post["Author"]) ? $safe_post["Author"] : (isset($_username) ? $_username : "Anonymous"), "description" => GetValue($safe_post, "Description"), "text" => GetValue($safe_post, "Text"), "category_id" => GetValue($safe_post, "Category", $articleCategory[0]));
     
     StartBox("Submit Article");
 
@@ -142,7 +142,7 @@ function EditArticle($id)
     }
     else
     {
-        $a = array("id" => $id, "title" => $safe_post["Title"], "author" => $safe_post["Name"], "description" => $safe_post["Description"], "text" => $safe_post["Text"], "category_id" => GetValue($safe_post, "Category", $articleCategory[0]));
+        $a = array("id" => $id, "title" => $safe_post["Title"], "author" => $safe_post["Author"], "description" => $safe_post["Description"], "text" => $_POST["Text"], "category_id" => GetValue($safe_post, "Category", $articleCategory[0]));
     }
 
     StartBox("Edit Article");
@@ -319,10 +319,10 @@ else if (isset($_GET["remove"]) and CanModify($safe_get["remove"], $_username))
 else if (isset($_GET["update"]) and CanModify($safe_get["update"], $_username))
 {
     if (!isset($safe_post["Preview"]))
-        UpdateArticle($safe_get["update"], $safe_post["Title"], $safe_post["Name"], $safe_post["Description"], $safe_post["Text"], $safe_post["Category"]);
+        UpdateArticle($safe_get["update"], $safe_post["Title"], $safe_post["Author"], $safe_post["Description"], $safe_post["Text"], $safe_post["Category"]);
     else
     {
-        PreviewArticle($safe_get["update"], $_POST["Title"], $_POST["Name"], $_POST["Text"]);
+        PreviewArticle($safe_get["update"], $_POST["Title"], $_POST["Author"], $_POST["Text"]);
         EditArticle($safe_get["update"]);
         #BackToArticles();
         die();
