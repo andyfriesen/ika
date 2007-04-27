@@ -62,11 +62,11 @@ function GenerateHeader($subtitle, $userhack='', $pwhack='') {
     $logo = strstr($HTTP_USER_AGENT, 'MSIE') ? 'ielogo' : 'logo';
 
     BasicHeader("ika - $subtitle", 'Andy Friesen',
-                'ika is a game engine designed to allow one to make a
+                "ika is a game engine designed to allow one to make a
                  console-style RPG with a minimum of code, while allowing one
                  who is willing to code an impressive level of power over the
-                 look and feel of one\'s project, thanks to the embedded
-                 Python interpreter.');
+                 look and feel of one's project, thanks to the embedded
+                 Python interpreter.");
     ?>
 <link href="layouts/<?php echo $layout ?>/style.css" rel="stylesheet"
       type="text/css" title="<?php echo $layout ?>" />
@@ -97,7 +97,7 @@ function GenerateHeader($subtitle, $userhack='', $pwhack='') {
 function GenerateFooter() {
     ?>
 </div>
-<div class="disclaimer">All site content copyright &copy; 2007.<br />The ika
+<div class="copyright">All site content copyright &copy; 2007.<br />The ika
 engine and its related tools are copyright &copy; 2001&ndash;2007 Andy Friesen.
 <br />E-mail <a href="mailto:troy.potts@gmail.com">Thrasher</a> with any
 questions, comments, or concerns.</div>
