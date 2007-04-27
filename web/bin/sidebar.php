@@ -1,3 +1,5 @@
+<?php #strong should be replaced with a span as it is purely presentational and
+      #the br tags need to be removed as well. ?>
 <div class="sidebar" id="sidebar">
     <div class="menu" id="menu">
         <a href="news.php">News</a><br />
@@ -19,7 +21,7 @@
             <a href="admin.php">More admin</a>
         <?php } if (isset($_username)) { ?>
             <hr />
-            <strong id="username"><?php echo $_username ?></strong><br />
+            <span class="username"><?php echo $_username ?></span><br />
             <a href="profile.php">Edit profile</a><br />
             <a href="login.php?logout=1">Log out</a>
         <?php } elseif (!isset($_username)) { ?>
