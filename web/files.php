@@ -1,7 +1,5 @@
 <?php
 
-include "includes.php";
-
 function LogDownload($file) {
     echo "YAY";
     mysql_query("UPDATE files SET download_count=download_count+1 WHERE id=" . $file . " AND queued=0");
@@ -13,7 +11,7 @@ function ShowFile($file, $queued) {
 
     $td = "";
     $action = "view";
-    
+
     if (stristr($file["filename"], ".py")) {
         $url = "source.php?file=$file[id]";
         $td = "background-color: #ccd;";
@@ -26,7 +24,7 @@ function ShowFile($file, $queued) {
         if (!file_exists($url))
             $td = "background-color: #dcc;";
     }
-    
+
     $sub = substr($url, 0, 7);
     if ($sub == "http://")
     {
@@ -37,7 +35,7 @@ function ShowFile($file, $queued) {
     echo $td, "<a href='$url'>", NukeHTML($file["name"]), "</a></td>";
     echo $td, FormatName($file["author"]), "</td>";
     echo $td, "$file[date]</td>";
-    
+
     if (strlen($file["description"]) > 1)
         echo $td, NukeHTML($file["description"]), "</td>";
     else
@@ -51,18 +49,18 @@ function ShowFile($file, $queued) {
         echo "<td><a href='" . $_SERVER["PHP_SELF"] . "?remove=$file[id]'>Remove</a></td>";
 
     echo "</tr>";*/
-    
+
         echo "<tr>";
         #echo "<td width='30%' style='text-align: right; vertical-align: top; " . $td . "'><div><a href='" . $url . "'>", NukeHTML($file["name"]), "</a></div>";
         echo "<td width='30%' style='text-align: right; vertical-align: top; " . $td . "'><div><a href='" . $_SERVER["PHP_SELF"] . "?" . $action . "=" . $file["id"] . "'>", NukeHTML($file["name"]), "</a></div>";
-        
+
         $d = substr($file["edit_date"], 0, 10);
         $t = substr($file["edit_date"], 11, 8);
         echo "<div class='medium'>by ", FormatName($file["author"]), " on <i>", $file["date"], "</i></div>";
         echo "</td>";
-        
+
         echo "<td style='vertical-align: top; " . $td . "'><div class='medium'>", NukeHTML($file["description"]);
-        
+
         echo " &mdash; (edited ", $file["edit_date"], ")";
         if (($admin == True or ($_username == $file["author"])) and $_username)
             echo " &mdash; ";
@@ -78,20 +76,20 @@ function ShowFile($file, $queued) {
                 echo "<a href='" . $_SERVER["PHP_SELF"] . "?remove=" . $file["id"] . "'>[Remove]</a> ";
         }
         echo "</td>";
-        
+
         #echo "<td><div class='tiny'><strong>Edit:</strong> $a[date]<br /><strong>Made:</strong> $a[date]</div></td>";
         echo "<td class='tiny' width='1%' style='text-align: center; " . $td . "'";
-        
+
         if ($sub == "http://")
             echo " colspan=2";
-            
+
         echo ">" . $file["view_count"] . "</td>";
-        
+
         if ($sub != "http://")
             echo "<td class='tiny' width='1%' style='text-align: center; " . $td . "'>" . $file["download_count"] . "</td>";
-        
+
         echo "</tr>";
-        
+
 }
 
 
@@ -108,20 +106,20 @@ function ShowFileDetails($id) {
     $editdate = $file["edit_date"];
     $views = $file["view_count"];
     $dls = $file["download_count"];
-    
+
     StartBox("File Details");
     echo "<h2>", $title;
     if ($date)
         echo " <span class='date'>&mdash; $date</span>";
     echo "</h2>";
-    
+
     echo "<p>Created by " . FormatName($author) . ".</p><br />";
     echo "<p class='medium'>" . NukeHTML($description, LVL_BASIC_HTML) . "</p><br />";
-    
+
     echo "<p class='medium'><b>Last edited:</b> " . $editdate . "</p><br />";
-    
+
     echo "<p class='tiny'><strong>Downloads:</strong> $dls<br /><strong>Views:</strong> $views</p><br />";
-    
+
     echo "<p class='tiny'>";
     if ($admin == True and $file["queued"])
         echo "<a href='" . $_SERVER["PHP_SELF"] . "?approve=" . $file["id"] . "'>[Approve]</a> ";
@@ -154,7 +152,7 @@ function BrowseFiles($categoryid, $queued) {
 
     # no files at all?
     if (!$files) return False;
-    
+
     echo '<table class="box">';
     echo "<tr><th class='main' colspan=4>" . $fileCategory[$categoryid] . "</th></tr>";
     echo "<tr><th>Title/Author</th><th>Description</th><th>Views</th><th>DLs</th></tr>";
@@ -164,7 +162,7 @@ function BrowseFiles($categoryid, $queued) {
     }
 
     echo "</table>";
-    
+
     return True;
 }
 
@@ -172,9 +170,9 @@ function BrowseFiles($categoryid, $queued) {
 function CreateFile()
 {
     global $fileCategory, $_username, $admin;
-    
+
     StartBox("Add New File");
-    
+
     CreateForm($_SERVER["PHP_SELF"] . "?create",
     "Title",       "input",     "",
     "Author",      ($admin==True) ? "input" : "hidden",     isset($_username) ? $_username : "Anonymous",
@@ -182,7 +180,7 @@ function CreateFile()
     "Category",    "select",    $fileCategory, $fileCategory, $fileCategory[0],
     "Description", "smalltext", "",
     "Submit",      "submit",    "");
-    
+
     EndBox();
 }
 
@@ -202,7 +200,7 @@ function EditFile($id)
     }
 
     StartBox("Edit Article");
-    
+
     CreateForm($_SERVER["PHP_SELF"] . "?edit=$a[id]",
         "Title",       "input",     NukeHTML($a["name"]),
         "Author",      ($admin==True) ? "input" : "hidden",     NukeHTML($a["author"]),
@@ -210,7 +208,7 @@ function EditFile($id)
         "Description", "smalltext", NukeHTML($a["description"]),
         "Submit",      "submit", ""
     );
-        
+
     EndBox();
 }
 
@@ -254,7 +252,7 @@ function AddFile($title, $author, $description, $category) {
 function UpdateFile($id)
 {
     global $fileCategory, $safe_post;
-    
+
     $date = date("Y-m-d H:i:s");
 
     for ($c = 0, $i = 0; $i < sizeof($fileCategory); $i++) {
@@ -263,11 +261,11 @@ function UpdateFile($id)
             break;
         }
     }
-    
+
     $name = $safe_post["Title"];
     $author = $safe_post["Author"];
     $desc = $safe_post["Description"];
-    
+
     $query = "UPDATE files SET ".
              "name='$name', author='$author', edit_date='$date', description='$desc', ".
              "category=$c WHERE id='$id'";
@@ -303,7 +301,7 @@ function RemoveFile($id) {
 
 function DisplayFileOptions()
 {
-    
+
     StartBox("Options");
     echo "<table><tr><td><a class='button' href='" . $_SERVER["PHP_SELF"] . "?create=1'>submit file</a></td></tr></table>";
     EndBox();
@@ -330,13 +328,13 @@ if (isset($_GET["download"]))
     if ($file["queued"] == 0)
     {
         mysql_query("UPDATE files SET download_count=download_count+1 WHERE id='" . $safe_get["download"] . "'");
-            
+
         if (strpos($file["filename"], "://") == False) {
             $url = $filedir . $file["filename"];
         } else {
             $url = $file["filename"];
         }
-        
+
         echo "<script language='javascript'>window.location.href = '" . $url . "';</script>";
     }
 }
@@ -344,7 +342,7 @@ if (isset($_GET["download"]))
 if (isset($_GET["view"])) {
 
     $file = mysql_fetch_array(mysql_query("SELECT filename, queued FROM files WHERE id='" . $safe_get["view"] . "'"));
-    
+
     if ($file["queued"] == 0)
     {
         if (stristr($file["filename"], ".py")) {
@@ -361,7 +359,7 @@ if (isset($_GET["view"])) {
             die();
         }
     }
-    
+
 } elseif (isset($_GET["create"])) {
     if (!isset($_POST["Submit"]))
         CreateFile();
@@ -390,7 +388,7 @@ if (isset($queued) and $admin == True) {
     if (!$empty)
         echo "No queued files.";
     EndBox();
-    
+
 } else {
 
     StartBox("Browse Files");

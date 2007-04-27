@@ -1,7 +1,5 @@
 <?php
 
-include "includes.php";
-
 function GetArticles($queued)
 {
     $result = mysql_query("SELECT * FROM articles WHERE queued='$queued' order by title");
@@ -33,9 +31,9 @@ function BrowseArticles($categoryid, $queued)
     $articlelist = array();
     for ($articles = 0; $article = mysql_fetch_array($result); $articles++)
         $articlelist[$articles] = $article;
-    
+
     if (!$articles) return False;
-        
+
     echo '<table class="box">';
     echo "<tr><th class='main' colspan=3>" . $articleCategory[$categoryid] . "</th></tr>";
     echo "<tr><th>Title/Author</th><th>Description</th><th>Views</th>";
@@ -44,14 +42,14 @@ function BrowseArticles($categoryid, $queued)
     {
         echo "<tr>";
         echo "<td width='30%' style='text-align: right; vertical-align: top'><div><a href='$PHP_SELF?view=$a[id]'>", NukeHTML($a["title"]), "</a></div>";
-        
+
         $d = substr($a["edit_date"], 0, 10);
         $t = substr($a["edit_date"], 11, 8);
         echo "<div class='medium'>by ", FormatName($a["author"]), " on <i>", $a["date"], "</i></div>";
         echo "</td>";
-        
+
         echo "<td style='vertical-align: top'><div class='medium'>", NukeHTML($a["description"]);
-        
+
         echo " &mdash; (edited ", $a["edit_date"], ")";
         if (($admin == True or ($_username == $a["author"])) and $_username)
             echo " &mdash; ";
@@ -67,15 +65,15 @@ function BrowseArticles($categoryid, $queued)
                 echo "<a href='$PHP_SELF?remove=$a[id]'>[Remove]</a> ";
         }
         echo "</td>";
-        
+
         #echo "<td><div class='tiny'><strong>Edit:</strong> $a[date]<br /><strong>Made:</strong> $a[date]</div></td>";
         echo "<td class='tiny' width='1%' style='text-align: center'>" . $a["view_count"] . "</td>";
-        
+
         echo "</tr>";
     }
 
     echo "</table>";
-    
+
     return True;
 }
 
@@ -83,18 +81,18 @@ function BrowseArticles($categoryid, $queued)
 function ShowArticle($id)
 {
     global $admin, $_username;
-    
+
     $result = mysql_query("SELECT author, title, text, queued FROM articles WHERE id='$id'")
               or MySQL_FatalError();
 
     $result = mysql_fetch_array($result);
-    
+
     if ($result["queued"] == 0)
         mysql_query("UPDATE articles SET view_count=view_count+1 WHERE id=$id");
 
     if ($admin==False and $result["author"] != $_username and $result["queued"]==1)
         return;
-        
+
     StartBox("Article Body");
     MakePost($result["title"], $result["text"], $result["author"], LVL_COMPLEX_HTML);
     EndBox();
@@ -103,7 +101,7 @@ function ShowArticle($id)
 
 
 function PreviewArticle($id, $title, $name, $text)
-{   
+{
     StartBox("Preview Article Body");
     MakePost($title, $text, $name, LVL_COMPLEX_HTML);
     EndBox();
@@ -113,9 +111,9 @@ function PreviewArticle($id, $title, $name, $text)
 function CreateArticle()
 {
     global $PHP_SELF, $_username, $safe_post, $_POST, $admin, $articleCategory;
-    
+
     $a = array("title" => GetValue($safe_post, "Title"), "author" => isset($safe_post["Author"]) ? $safe_post["Author"] : (isset($_username) ? $_username : "Anonymous"), "description" => GetValue($safe_post, "Description"), "text" => GetValue($safe_post, "Text"), "category_id" => GetValue($safe_post, "Category", $articleCategory[0]));
-    
+
     StartBox("Submit Article");
 
     CreateForm("$PHP_SELF?add=1",
@@ -126,7 +124,7 @@ function CreateArticle()
         "Text",        "text",      NukeHTML($a["text"]),
         "Pre/Sub",     "preview+submit", ""
     );
-    
+
     EndBox();
 }
 
@@ -147,7 +145,7 @@ function EditArticle($id)
     }
 
     StartBox("Edit Article");
-    
+
     CreateForm("$PHP_SELF?update=$a[id]",
         "Title",       "input",     NukeHTML($a["title"]),
         "Author",        ($admin==True) ? "input" : "hidden",     NukeHTML($a["author"]),
@@ -156,7 +154,7 @@ function EditArticle($id)
         "Text",        "text",      NukeHTML($a["text"]),
         "Pre/Sub",     "preview+submit", ""
     );
-        
+
     EndBox();
 }
 
@@ -164,7 +162,7 @@ function EditArticle($id)
 function AddArticle($title, $author, $description, $text, $category)
 {
     global $articleCategory;
-    
+
     $error = "";
     if (!trim($title))
         $error = "Your article needs a title.";
@@ -174,7 +172,7 @@ function AddArticle($title, $author, $description, $text, $category)
         $error = "You need to fill in a description for your article.";
     else if (!trim($text))
         $error = "Articles that have no body text aren't very interesting.";
-        
+
     if ($error)
     {
         Error($error);
@@ -188,7 +186,7 @@ function AddArticle($title, $author, $description, $text, $category)
             break;
         }
     }
-    
+
     $date = date("Y-m-d");
     $datetime = date("Y-m-d H:i:s");
 
@@ -206,7 +204,7 @@ function AddArticle($title, $author, $description, $text, $category)
 function ApproveArticle($id)
 {
     global $admin;
-    
+
     if ($admin == True)
     {
         $result = mysql_query("UPDATE articles SET queued=0 WHERE id='$id'")
@@ -222,7 +220,7 @@ function RemoveArticle($id)
     global $admin;
     $result = mysql_query("SELECT queued FROM articles WHERE id='$id'");
     $result = mysql_fetch_array($result);
-    
+
     if ($admin == True)
     {
         if ($result["queued"])
@@ -246,7 +244,7 @@ function RemoveArticle($id)
 function UpdateArticle($id, $title, $author, $description, $text, $category)
 {
     global $articleCategory;
-    
+
     $date = date("Y-m-d H:i:s");
 
     for ($c = 0, $i = 0; $i < sizeof($articleCategory); $i++) {
@@ -255,7 +253,7 @@ function UpdateArticle($id, $title, $author, $description, $text, $category)
             break;
         }
     }
-    
+
     $query = "UPDATE articles SET ".
              "title='$title', author='$author', edit_date='$date', description='$description', ".
              "text='$text', category_id=$c WHERE id='$id'";
@@ -268,10 +266,10 @@ function UpdateArticle($id, $title, $author, $description, $text, $category)
 function CanModify($id, $username)
 {
     global $admin;
-    
+
     if ($admin==True) return True;
     else if ($username == "") return False;
-    
+
     $result = mysql_query("SELECT * FROM articles WHERE id=$id");
     $result = mysql_fetch_array($result);
 
@@ -335,7 +333,7 @@ if (GetValue($_GET, "queued") and $admin == False)
     Error("You do not have the necessary access to view queued articles.");
     die();
 }
-    
+
 DisplayArticleOptions();
 
 $empty = False;
@@ -350,7 +348,7 @@ if (isset($_GET["queued"]) and $admin == True) {
     if (!$empty)
         echo "No queued articles.";
     EndBox();
-    
+
 } else {
 
     StartBox("Browse Articles");
