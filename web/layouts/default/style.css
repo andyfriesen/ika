@@ -1,106 +1,360 @@
-@import url(complex.css);  /* Hide from IE3 and NS4. */
-/*body {font-size: 100%}  Ignored by IE3. */
-
-/* font ------------------------------------------------------------- */
-
-/* main font family */
-a, abbr, address, blockquote, body, button, caption, cite, col,
-colgroup, dd, del, dfn, div, dl, dt, em, fieldset, form, h1, h2, h3, h4,
-h5, h6, input, label, legend, li, ol, optgroup, option, p, param,
-select, strong, sub, sup, table, tbody, td, tfoot, th, thead, tr, ul {
-    font-family: Verdana, Geneva, "Bitstream Vera Sans", Helvetica,
-                 sans-serif;
+table.box, form table {
+    width: 100%;
 }
 
-span {font-family: inherit}
+abbr {
+    letter-spacing: .1em;
+    text-transform: lowercase;
+    font-variant: small-caps;
+}
+
+:link, :visited {
+    background: transparent;
+    text-decoration: none;
+}
+
+.text :link, .text :visited, :link:hover, :visited:hover {
+    text-decoration: underline
+}
+
+:link {color: #303060}
+:visited {color: #303040}
+
+blockquote, caption, dd, li, ol, pre, ul {
+    padding: 0
+}
+
+caption, pre, textarea {
+    margin: 0
+}
+
+caption, blockquote, dd, div, h4, h5, h6, pre, ol, ul {
+    line-height: 1.12
+}
+
+/* effects ---------------------------------------------------------- */
+
+p, li, div.text {
+    margin: 0;
+    line-height: 1.4;
+}
+
+div.text {
+    overflow: hidden;
+    table-layout: fixed;
+}
+
+/* main ------------------------------------------------------------- */
+
+blockquote {margin: 0 4% 0 4%}
+
+body {
+    background: #eee url(images/ikagames_bg.gif) 0 20px no-repeat;
+    margin: 0;
+    color: black;
+}
+
+td {
+    background: #ccc;
+    padding: 5px
+}
+
+acronym, abbr, img, table {border: 0}
+
+/* forms ------------------------------------------------------------ */
+
+input[type=text], input[type=file], input[type=password] {
+    border: 1px solid #4d626f;
+    background: #c9d3d9;
+}
+
+select, textarea {
+    border: 1px solid #4d626f;
+    background: #c9d3d9;
+}
+
+textarea:focus, select:focus {background: #b9c3c9}
+
+textarea {padding: 10px}
+
+form td {vertical-align: top}
+
+/* headings --------------------------------------------------------- */
+
+/* header style */
+h1, h2, h3, h4, h5, h6 {padding: .5em 0 .5em 0}
+
+h1 {
+    color: #4d626f;
+    font-size: 1.9em;
+    margin: 0;
+}
+
+div.header {
+    background: #e4e8f0;
+    text-align: center;
+    border: 1px solid #4d626f;
+    margin: 0 140px 1.5em 0;
+    padding: 5px 5px 5px 5px;
+    font-variant: small-caps;
+}
+
+h2 {
+    font-size: 1.7em;
+    margin: 0 0 10px 0;
+    padding-bottom: 3px;
+    border-bottom: 8px groove #4d626f;
+}
+
+h3 {
+    font-size: 1.5em;
+    margin: 0 0 10px 0;
+    padding-bottom: 3px;
+    border-bottom: 6px groove #4d626f;
+}
+
+h4 {
+    font-size: 1.3em;
+    margin: 0 0 10px 0;
+    padding-bottom: 3px;
+    border-bottom: 4px groove #4d626f;
+}
+
+h5 {
+    font-size: 1.2em;
+    margin: 0 0 10px 0;
+    padding-bottom: 3px;
+    border-bottom: 2px groove #4d626f;
+}
+
+h6 {
+    font-size: 1.1em;
+    margin: 0;
+}
+
+th {
+    font-size: 1.1em;
+    background: #c0cad0;
+    padding: 3px 0 3px 0;
+    font-weight: normal;
+}
+
+
+hr {
+    height: 6px;
+    margin: 5px 0 5px 0;
+    border: 1px solid #4d626f;
+    background: #4d626f;
+}
+
+.sidebar hr {
+    height: 1px;
+    border: 0;
+    margin: .5em 0 .5em 0;
+    width: 100%;
+}
+
+
+/* main font family */
+body {
+    font-family: Verdana, Geneva, "Bitstream Vera Sans", Helvetica, sans-serif
+}
 
 /* monospace font */
 code, input, kbd, pre, samp, select, textarea, var {
     font-family: "Bitstream Vera Sans Mono", Fixedsys, monospace;
 }
 
-/* italic font */
-address, cite, var {font-style: italic}
-
-/* strip bold */
-th {font-weight: normal}
-
-/* bold font */
-h1, h2, h3, h4, h5, h6, dt {font-weight: bold}
-strong {font-weight: bold} /* overridden: should be bolder */
-
-pre {white-space: pre}
-
-/* text-align ------------------------------------------------------- */
-caption {text-align: center}
-p, li, .text {text-align: left}
-
-/* list-style-type -------------------------------------------------- */
-ul, ul ul ul ul {list-style-type: disc}
-ul ul, ul ul ul ul ul {list-style-type: circle}
-ul ul ul, ul ul ul ul ul ul {list-style-type: square}
-ol {list-style-type: decimal}
-ol ol {list-style-type: lower-alpha}
-ol ol ol {list-style-type: lower-roman}
-ol ol ol ol {list-style-type: upper-alpha}
-ol ol ol ol ol {list-style-type: upper-roman}
+ol, ul, dd {margin: 0 0 0 3em}
 
 /* background-color ------------------------------------------------- */
-body, html {background-color: #eee}
-.notice, .box, .postbox, .block {background-color: #ddd}
-hr {background-color: #4d626f}
-.ielogo, .subbox {background-color: #c9d3d9}
-td {background-color: #ccc}
-td.blank {background-color: #ddd;}
-.error {background-color: #ecc}
-.main.error { background-color: #fdd; }
-.success {background-color: #cec}
-.main.success { background-color: #dfd; }
-.notice {background-color: #ccc;}
-.main.notice {background-color: #ddd;}
+.notice, .main.notice, .box, .postbox, .block {background: #ddd}
+.ielogo, .subbox {background: #c9d3d9}
+.error {background: #ecc}
+.main.error { background: #fdd}
+.success {background: #cec}
+.main.success { background: #dfd}
+.notice {background: #ccc}
 
 /* border ----------------------------------------------------------- */
-abbr, img, table {border: 0}
-hr, td, th, .error, .success, .notice, .box, .block {border: 1px solid #4d626f}
+td, th, .error, .success, .notice, .box, .block {border: 1px solid #4d626f}
+
 .postbox {
     border-top: 1px solid #4d626f;
     border-right: 1px solid #4d626f;
     border-left: 1px solid #4d626f;
 }
+
 .subbox {
-    border-bottom:  1px dotted #4d626f;
+    border-bottom: 1px dotted #4d626f
 }
- hr {/*/*/ border: 1px solid #4d626f; /* */} /* hide from NS4 */
 
-/* color ------------------------------------------------------------ */
-body {color: black}
-h1 {color: #4d626f}
+/* classes ---------------------------------------------------------- */
 
-.operator {
-    color: maroon;
+.button {
+    font-variant: small-caps
+}
+
+.forum {
+    width: 100%;
+    border-spacing: 0;
+    border-collapse: collapse;
+    margin: 0 0 2em 0;
+}
+
+.body {
+    padding: 140px 4em 0 4em
+}
+
+.ielogo  {
+    background: url(images/ikagames_header3.gif) no-repeat;
+    width: 100%;
+    height: 20px;
+    border-bottom: 1px solid #4d626f;
+}
+
+.logo:before {
+    background: #c9d3d9;
+    border-bottom: 1px solid #4d626f;
+    content: "ika.sf.net :: Because pixels are awesome";
+    cursor: default;
+    display: block;
+    font-size: 10px;
+    height: 19px;
+    padding: 0 0 0 1%;
+}
+
+.sidebar {
+    float: right;
+    margin: 0 0 2em 2em;
+    position: absolute;
+    width: 8em;
+    right: 0px;
+    top: 19px;
+}
+
+.menu {
+    background: url(images/ikagames_menubg.gif) 0 100% no-repeat;
+    margin: 0 0 .5em 0;
+    padding: 0 1em 1em 1em;
+    position: relative;
+}
+
+.error, .success, .notice {
+    margin: 0 0 2em 0;
+    padding: 1em 2% 1em 2%;
+}
+
+.subbox {
+    padding: .5em 1% .5em 1%;
+}
+
+.box {
+    margin: 0 0 1.5em 0;
+    padding: 1em;
+}
+
+.quotebox {
+    margin: 0;
+    padding: 1em;
+    background: #bbb;
+    border: 1px solid #4d626f;
+    font-size: 11pt;
+}
+
+.quotebox div {
+    margin-left: 1em;
+}
+
+div.box div.box, td.box {
+    background: #ccc;
+    overflow: hidden;
+    width: 90%;
+}
+
+.post {
+    margin: 0 4% 0 4%;
+    padding: 0;
+}
+
+.postbox .post {
+    margin: 1em 1% 0 1%;
+    padding: 0 0 1em 0;
+}
+
+.date {
+    font-size: .5em;
+    vertical-align: middle;
+}
+
+.signature {
+    border-top: 1px dotted #6d826f;
+    padding: .2em 0 0 0;
+    text-indent: 2%;
+}
+
+.postbox .signature {
+    border-top: 1px dotted #6d826f;
+    padding: .2em 0 0 0;
+    margin: 1em 0 0 0;
+    overflow: hidden;
+}
+
+table.box {
+    border: 0;
+}
+
+th.main, div.main {
+    font-size: 1.4em;
+    background: #d9e3e9;
+    padding: 5px 0 5px 0;
+    margin: 0;
+    text-align: center;
+    border: 1px solid #4d626f;
+}
+
+th.main {
+    background: #c9d3d9;
+    font-size: 1.3em;
+}
+
+div.main {
+    border-bottom: 0px
+}
+
+.subtitle {
+    background: #e9f3f9;
+}
+
+.copyright {
+    font-style: italic;
+    font-size: .7em;
+    text-align: center;
+    margin-top: 20px;
+    padding-bottom: 20px;
+}
+
+.username {
     font-weight: bold;
 }
 
-.reserved {
-    color: navy;
-    font-weight: bold;
+td.blank {
+    border: 0;
 }
 
-.definition {
-    color: blue;
-    font-weight: bold;
-}
-
-.stdlib {color: blue}
+/* syntax hilighting ------------------------------------------------ */
+.operator, .reserved, .definition {font-weight: bold}
+.operator {color: maroon}
+.reserved {color: navy}
+.definition, .stdlib {color: blue}
 .exception {color: red}
 .string {color: purple}
+.number {color: olive}
 
 .comment {
     color: green;
     font-style: italic;
 }
-
-.number {color: olive}
 
 .string span {
     color: purple;
@@ -109,6 +363,18 @@ h1 {color: #4d626f}
 }
 
 .comment span {
+    color: green;
+    font-style: italic;
+    font-weight: normal;
+}
+
+.string .comment * {
+    color: purple;
+    font-weight: normal;
+    font-style: normal;
+}
+
+.comment .string * {
     color: green;
     font-style: italic;
     font-weight: normal;
