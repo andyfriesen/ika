@@ -1,7 +1,6 @@
 <?php
 
 include "bin/main.php";
-include "includes.php";
 
 #select distinct layout, count(*) as c from users group by layout order by c desc;
 
@@ -11,7 +10,7 @@ GenerateHeader("Admin Functions");
 
 if ($admin == True)
 {
-    
+
     if (isset($stats))          $subtitle = "Statistics";
     else if (isset($users))     $subtitle = "User List";
     else if (isset($privs))     $subtitle = "Admin Rights";
@@ -19,17 +18,17 @@ if ($admin == True)
     else if (isset($explan))    $subtitle = "Site Explanation";
     else if (isset($collapse))  $subtitle = "Collapse Forum (P)";
     else                        $subtitle = "Instructions";
-    
+
     StartBox($subtitle);
-    
+
     echo "<div class='post'>";
-    
+
     $layoutsCopy = $layouts;
-    
+
     if (isset($stats))
     {
         $query = mysql_query("SELECT DISTINCT layout, COUNT(*) as c from users GROUP BY layout ORDER BY c DESC");
-        
+
         echo "<table class='box'>";
         echo "<tr><th class='main' colspan=3>Layout Distribution</th></tr>";
         echo "<tr><th>Layout</th><th>Layout Name</th><th>Users</th></tr>";
@@ -59,10 +58,10 @@ if ($admin == True)
         echo "<table class='box'>";
         echo "<tr><th class='main' colspan=5>Administrators</th></tr>";
         echo "<tr><th colspan=5>Total: $num_admins</th></tr>";
-        
+
         $cnt = 0;
         $td = 0;
-        
+
         echo "<tr>";
         while ($row = mysql_fetch_array($admins))
         {
@@ -85,9 +84,9 @@ if ($admin == True)
 
         $cnt = 0;
         $td = 0;
-        
+
         echo "<tr><th class='main' colspan=5>Users</th></tr>";
-        echo "<tr><th colspan=5>Total: $num_users</th></tr>";        
+        echo "<tr><th colspan=5>Total: $num_users</th></tr>";
         echo "<tr>";
         while ($row = mysql_fetch_array($users))
         {
@@ -107,18 +106,18 @@ if ($admin == True)
             }
         }
         echo "</tr>";
-        
+
         echo "</table>";
     }
     else if (isset($privs))
     {
-        
+
         $valid = False;
-        
+
         if (isset($safe_post["Submit"]))
         {
             $result = mysql_query("SELECT name, admin FROM users WHERE name='" . $safe_post["Username"] . "'");
-            
+
             if (mysql_num_rows($result) > 0)
             {
                 $row = mysql_fetch_array($result);
@@ -130,11 +129,11 @@ if ($admin == True)
             else
                 Error("User '" . $safe_post["Username"] . "' doesn't exist.");
         }
-        
+
         if ($valid == True)
         {
             $result = mysql_query("UPDATE users SET admin=1 WHERE name='" . $safe_post["Username"] . "'");
-            
+
             if ($result)
             {
                 StartBox("Notice");
@@ -168,13 +167,13 @@ if ($admin == True)
     else if (isset($explan))
     {
         echo "<h3>Site Make-Up Explanation</h3>";
-        
+
         echo "<p>I don't really feel comfortable giving out the FTP/shell/MySQL info here, so ask me (Thrasher) for it on IRC. Until we get some kind of access level thing for users going, it'll be like this, and this section will be rather general-purpose.</p>";
-        
+
         echo "<p>If you have FTP access, go to <b>/home/groups/i/ik/ika/htdocs</b> to get to the root web directory. From there, you can upload and change any files you like.</p>";
-        
+
         echo "<p>To make a new layout, create a new folder under <b>/layouts</b> and add the necessary entries in <b>profile.php</b>. Put the necessary stylesheets in the layout folder. If your layout uses a different sidebar, name it <b>sidebar.php</b> and put it in that directory. The site code will automatically use this instead.</p>";
-        
+
         echo "<p>I... can't really think of much else to put here right now. Oops.</p>";
     }
     else if (isset($collapse))
@@ -184,10 +183,10 @@ if ($admin == True)
             echo "<p>Fixing anomalies...</p>";
             mysql_query("UPDATE board SET parentid=0 WHERE id=parentid AND id >= " . $_POST["Start"] . " AND id <= " . $_POST["End"]);
             echo "<p>Anomalies fixed.</p>";
-            
+
             echo "<p>Collapsing forum...</p>";
             $all = mysql_query("SELECT id, parentid FROM board WHERE parentid!=0 AND id >= " . $_POST["Start"] . " AND id <= " . $_POST["End"] . " ORDER BY id");
-            
+
             while ($row = mysql_fetch_array($all))
             {
                 echo "<p>Post " . $row["id"] . "... (";
@@ -201,7 +200,7 @@ if ($admin == True)
                 echo ") new parent is " . $row["parentid"] . ".</p>";
                 mysql_query("UPDATE board SET parentid=" . $row["parentid"] . " WHERE id=" . $row["id"]);
             }
-        
+
             echo "<p>Forum collapsed.</p>";
         }
         else
@@ -217,10 +216,10 @@ if ($admin == True)
     }
     else
         echo "Choose an action below.";
-        
+
     echo "</div>";
     EndBox();
-    
+
     StartBox("Admin Options");
     echo "<table><tr>";
     echo "<td><a class='button' href='?stats=True'>statistics</a></td>";
