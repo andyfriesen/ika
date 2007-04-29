@@ -1,6 +1,7 @@
 <?php
 
 include "bin/main.php";
+include "includes.php";
 
 #select distinct layout, count(*) as c from users group by layout order by c desc;
 
@@ -11,13 +12,13 @@ GenerateHeader("Admin Functions");
 if ($admin == True)
 {
 
-    if (isset($stats))          $subtitle = "Statistics";
-    else if (isset($users))     $subtitle = "User List";
-    else if (isset($privs))     $subtitle = "Admin Rights";
-    else if (isset($abil))      $subtitle = "Functions";
-    else if (isset($explan))    $subtitle = "Site Explanation";
-    else if (isset($collapse))  $subtitle = "Collapse Forum (P)";
-    else                        $subtitle = "Instructions";
+    if (isset($_GET["stats"]))          $subtitle = "Statistics";
+    else if (isset($_GET["users"]))     $subtitle = "User List";
+    else if (isset($_GET["privs"]))     $subtitle = "Admin Rights";
+    else if (isset($_GET["abil"]))      $subtitle = "Functions";
+    else if (isset($_GET["explan"]))    $subtitle = "Site Explanation";
+    #else if (isset($_GET["collapse"]))  $subtitle = "Collapse Forum (P)";
+    else                                $subtitle = "Instructions";
 
     StartBox($subtitle);
 
@@ -25,7 +26,7 @@ if ($admin == True)
 
     $layoutsCopy = $layouts;
 
-    if (isset($stats))
+    if (isset($_GET["stats"]))
     {
         $query = mysql_query("SELECT DISTINCT layout, COUNT(*) as c from users GROUP BY layout ORDER BY c DESC");
 
@@ -36,7 +37,7 @@ if ($admin == True)
         {
             $idx = array_search($res["layout"], $layouts);
             $layoutsCopy[$idx] = False;
-            echo "<tr><td width='20%'><a href='$PHP_SELF?stats=1&layout=" . $res["layout"] . "'>" . $res["layout"] . "</td><td>" . $layoutNames[$idx] . "</td><td width='20%'>" . $res[c] . "</td></tr>";
+            echo "<tr><td width='20%'><a href='$PHP_SELF?stats=1&layout=" . $res["layout"] . "'>" . $res["layout"] . "</td><td>" . $layoutNames[$idx] . "</td><td width='20%'>" . $res["c"] . "</td></tr>";
         }
         foreach ($layoutsCopy as $k)
         {
@@ -48,7 +49,7 @@ if ($admin == True)
         }
         echo "</table>";
     }
-    else if (isset($users))
+    else if (isset($_GET["users"]))
     {
         $admins = mysql_query("SELECT name FROM users WHERE admin=1 ORDER BY name ASC");
         $users = mysql_query("SET SQL_BIG_SELECTS=1;");
@@ -109,7 +110,7 @@ if ($admin == True)
 
         echo "</table>";
     }
-    else if (isset($privs))
+    else if (isset($_GET["privs"]))
     {
 
         $valid = False;
@@ -156,7 +157,7 @@ if ($admin == True)
             EndBox();
         }
     }
-    else if (isset($abil))
+    else if (isset($_GET["abil"]))
     {
         echo "<ul>";
         echo "<li><b>Delete Posts.</b> You have the ability to delete any offensive, irrelevant, or spam posts on the board.</li>";
@@ -164,7 +165,7 @@ if ($admin == True)
         echo "<li><b>Give admin rights.</b> Click on 'Admin Rights' below to administer admin status. Only super-admins may take it away. (Super-admins don't exist yet.)</li>";
         echo "</ul>";
     }
-    else if (isset($explan))
+    else if (isset($_GET["explan"]))
     {
         echo "<h3>Site Make-Up Explanation</h3>";
 
@@ -176,7 +177,8 @@ if ($admin == True)
 
         echo "<p>I... can't really think of much else to put here right now. Oops.</p>";
     }
-    else if (isset($collapse))
+    
+    /*else if (isset($collapse))
     {
         if ($_POST["Submit"])
         {
@@ -192,7 +194,7 @@ if ($admin == True)
                 echo "<p>Post " . $row["id"] . "... (";
                 $row2 = $row;
                 while ($row2["parentid"] != 0)
-                {
+                {4
                     echo $row["parentid"] . ", ";
                     $row2 = mysql_fetch_array(mysql_query("SELECT id, parentid FROM board WHERE id=" . $row2["parentid"]));
                     $row["parentid"] = $row2["id"];
@@ -213,7 +215,8 @@ if ($admin == True)
             "Submit",  "submit", "");
             EndBox();
         }
-    }
+    }*/
+    
     else
         echo "Choose an action below.";
 
@@ -227,8 +230,8 @@ if ($admin == True)
     echo "<td><a class='button' href='?privs=True'>admin rights</a></td>";
     echo "<td><a class='button' href='?abil=True'>functions</a></td>";
     echo "<td><a class='button' href='?explan=True'>site explanation</a></td>";
-    echo "</tr><tr>";
-    echo "<td><a class='button' href='?collapse=True'>collapse forum (p)</a></td>";
+    #echo "</tr><tr>";
+    #echo "<td><a class='button' href='?collapse=True'>collapse forum (p)</a></td>";
     echo "</tr></table>";
     EndBox();
 }
