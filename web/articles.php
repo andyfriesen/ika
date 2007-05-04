@@ -118,7 +118,7 @@ function CreateArticle()
 
     CreateForm("$PHP_SELF?add=1",
         "Title",       "input",     NukeHTML($a["title"]),
-        "Author",        ($admin==True) ? "input" : "hidden",     NukeHTML($a["author"]),
+        "Author",        ($admin==True) ? "input" : "static",     NukeHTML($a["author"]),
         "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
         "Description", "smalltext", NukeHTML($a["description"]),
         "Text",        "text",      NukeHTML($a["text"]),
@@ -148,7 +148,7 @@ function EditArticle($id)
 
     CreateForm("$PHP_SELF?update=$a[id]",
         "Title",       "input",     NukeHTML($a["title"]),
-        "Author",        ($admin==True) ? "input" : "hidden",     NukeHTML($a["author"]),
+        "Author",        ($admin==True) ? "input" : "static",     NukeHTML($a["author"]),
         "Category",    "select",    $articleCategory, $articleCategory, $a["category_id"],
         "Description", "smalltext", NukeHTML($a["description"]),
         "Text",        "text",      NukeHTML($a["text"]),
@@ -342,7 +342,7 @@ $empty = False;
 if (isset($_GET["queued"]) and $admin == True) {
 
     StartBox("Browse Queued Articles");
-    for ($i = 0; $i < 4; $i++) {
+    for ($i = 0; $i < sizeof($articleCategory); $i++) {
         $empty |= BrowseArticles($i, 1);
     }
     if (!$empty)
@@ -352,7 +352,7 @@ if (isset($_GET["queued"]) and $admin == True) {
 } else {
 
     StartBox("Browse Articles");
-    for ($i = 0; $i < 4; $i++) {
+    for ($i = 0; $i < sizeof($articleCategory); $i++) {
         $empty |= BrowseArticles($i, 0);
     }
     if (!$empty)

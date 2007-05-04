@@ -233,15 +233,19 @@ function CreateForm($accepturl)
                 $tabindex++;
                 break;
 
-            case "static":
+            case "decor":
                 echo "<td>$name</td><td>$value</td>";
                 break;
                 
-            case "hidden":
+            case "static":
                 echo "<td><input type='hidden' name='$name' value='$value' id='form$i' tabindex='$tabindex' />$name</td><td>$value</td>";
                 $tabindex++;
                 break;
             
+            case "hidden":
+                echo "<input type='hidden' name='$name' value='$value' id='form$i' />";
+                break;
+                
             case "header":
                 if (!$value)
                     $value = $name;

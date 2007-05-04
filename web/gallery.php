@@ -21,12 +21,12 @@ function ShowThumbNails($cursor) {
         $id = $image["id"];
 
         echo '<div style="float: left">';  // CONVERT TO CSS!
-        echo '<table style="table-layout: fixed; overflow: hidden">';
+        echo '<table style="table-layout: fixed; overflow: static">';
         echo '<tr><td>';
         echo "<a href='$PHP_SELF?view=$id'>";
         echo "<img alt='$filename' src='gallery/thumb/$filename' />";
-        echo '</a></td></tr><tr><td style="overflow: hidden; width: 200px">';
-        echo "<div class='text' style='text-align: center; overflow: hidden; width: 200px; white-space: nowrap'>$title</div>";  // CONVERT TO CSS!
+        echo '</a></td></tr><tr><td style="overflow: static; width: 200px">';
+        echo "<div class='text' style='text-align: center; overflow: static; width: 200px; white-space: nowrap'>$title</div>";  // CONVERT TO CSS!
 	echo "</td></tr></table></div>";
 
         if ($die) {
@@ -116,7 +116,7 @@ function ShowMicroThumbNails($cursor) {
         $id = $image["id"];
 
         echo '<div style="float: left">';  // CONVERT TO CSS!
-        echo '<table style="table-layout: fixed; overflow: hidden">';
+        echo '<table style="table-layout: fixed; overflow: static">';
         echo '<tr><td>';
         echo "<a href='$PHP_SELF?view=$id'>";
         echo "<img alt='$filename' src='gallery/thumb/$filename' width='50' height='37' />";
@@ -179,7 +179,7 @@ function ShowSubmitImageForm() {
     StartBox("Submit Image");
     CreateForm($_SERVER["PHP_SELF"] . "?submit=1",
         "Title",       "input",    "",
-        "Name",        ($admin == True) ? "input" : "hidden",   isset($_username) ? $_username : "Anonymous",
+        "Name",        ($admin == True) ? "input" : "static",   isset($_username) ? $_username : "Anonymous",
         "Filename",    "filename", "",
         "Description", "text",     "",
         "Submit",      "submit",   "submit");
@@ -198,7 +198,7 @@ function ShowEditImageForm($id) {
     StartBox("Edit Image");
     CreateForm($_SERVER["PHP_SELF"] . "?edit=$id",
         "Title",       "input",  NukeHTML($img["title"]),
-        "Name",        ($admin == True) ? "input" : "hidden",   $img["name"],
+        "Name",        ($admin == True) ? "input" : "static",   $img["name"],
         "Description", "text",   NukeHTML($img["description"]),
         "Submit",      "submit", "submit"
     );

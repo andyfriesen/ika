@@ -29,14 +29,14 @@ caption, pre, textarea {
 }
 
 caption, blockquote, dd, div, h4, h5, h6, pre, ol, ul {
-    line-height: 1.12
+    line-height: 1.02
 }
 
 /* effects ---------------------------------------------------------- */
 
 p, li, div.text {
     margin: 0;
-    line-height: 1.4;
+    line-height: 1.0;
 }
 
 div.text {
@@ -52,6 +52,7 @@ body {
     background: #eee url(images/ikagames_bg.gif) 0 20px no-repeat;
     margin: 0;
     color: black;
+	font-size: 10pt;
 }
 
 td {

@@ -53,7 +53,7 @@ function ShowThread($id) {
     
     StartBox("Thread: " . $post['subject']);
     
-    echo "<p class='tiny' style='float: left'>Page <strong>" . $pg . "</strong> of <strong>" . $num_pages . "</strong>. Posts <strong>" . ($start_post+1) . "</strong>-<strong>" . ($end_post+1) . "</strong> of <strong>" . $num_posts . "</strong>.</p>";
+    echo "<p style='float: left;'>Page <strong>" . $pg . "</strong> of <strong>" . $num_pages . "</strong>. Posts <strong>" . ($start_post+1) . "</strong>-<strong>" . ($end_post+1) . "</strong> of <strong>" . $num_posts . "</strong>.</p>";
     
     echo "<p class='tiny' style='float: right; text-align: right'>";
     PrintPagination($_SERVER["PHP_SELF"] . "?post=" . $id . "&", $num_pages, $pg);
@@ -222,8 +222,8 @@ function ShowForum($amount) {
         
         echo '<tr>';
         echo "<td width='40%'><a href='$PHP_SELF?post=$post[id]' style='white-space: nowrap'>", NukeHTML($post["subject"]), '</a>';
-        if ($sub_pages > 1)
-            echo '<br /><div class="tiny">', PrintPagination($_SERVER["PHP_SELF"] . "?post=$post[id]&", $sub_pages), '</td>';
+        #if ($sub_pages > 1)
+        echo '<br /><div class="tiny">', PrintPagination($_SERVER["PHP_SELF"] . "?post=$post[id]&", $sub_pages), '</td>';
         echo "<td><p class='tiny' style='text-align: center'>" . $c . "</p></td>";
         echo "<td width='15%' style='text-align: center'>", FormatName($post["name"]), '</td>';
         echo "<td><p class='tiny' style='text-align: center'>" . $post["view_count"] . "</p></td>";
@@ -262,12 +262,12 @@ function ShowPostForm($header="", $title="") {
     
     StartBox($header, "", "id='post'");
     
-    CreateForm($_SERVER["PHP_SELF"] . "?add=$post",
-        "Name",    "hidden", isset($_username) ? $_username : "Anonymous",
+    CreateForm($_SERVER["PHP_SELF"] . "?add=$post" . (isset($_username) ? "" : "&newuser"),
+        "Name",    isset($_username) ? "static" : "input", isset($_username) ? $_username : "",
         "Subject", "input",  $title ? NukeHTML($title) : (isset($Subject) ? NukeHTML($Subject) : ""),
         "Text",    "text",   isset($Text) ? NukeHTML($Text) : "",
         "PreSub",  "preview+submit", "",
-        "Posting instructions", "static",
+        "Posting instructions", "decor",
         "Use the <strong>&lt;code&gt;</strong> tag around blocks of code and ".
         "<strong>&lt;pre&gt;</strong> around blocks of preformatted text that".
         " are not code. The forum also recognizes <strong>&lt;em&gt;</strong>".
@@ -284,27 +284,45 @@ function AddPost($parentid, $subject, $name, $text) {
     
     if ($Subject)
     {
-        $Text = trim($text);
+    
+        if (isset($_username))
+        {
+            $Text = trim($text);
 
-        if (isset($_username)) {
-            VerifyLogin();
-            $name = $_username;
-        } else {
-            $name = "Anonymous";
+            if (isset($_username)) {
+                VerifyLogin();
+                $name = $_username;
+            } else {
+                $name = "Anonymous";
+            }
+
+            $date = date("Y-m-d");
+            $time = date("G:i:s");
+
+            $query = "INSERT INTO board "
+                   . "(parentid, subject, name, ip, text, date, time) values "
+                   . "('$parentid', '$Subject', '$name', '$REMOTE_ADDR', '$Text', "
+                   . "'$date', '$time');"
+            ;
+            
+            $result = mysql_query($query) or MySQL_FatalError();
+            mysql_query("UPDATE board SET parentid=id WHERE parentid=0");
+            Success("Post added successfully.");
         }
-
-        $date = date("Y-m-d");
-        $time = date("G:i:s");
-
-        $query = "INSERT INTO board "
-               . "(parentid, subject, name, ip, text, date, time) values "
-               . "('$parentid', '$Subject', '$name', '$REMOTE_ADDR', '$Text', "
-               . "'$date', '$time');"
-        ;
-        
-        $result = mysql_query($query) or MySQL_FatalError();
-        mysql_query("UPDATE board SET parentid=id WHERE parentid=0");
-        Notice("Post added successfully.");
+        else
+        {
+            StartBox("Registration Required");
+            echo "<p>Posting on the forum requires that you be a registered user.  Clicking the button below will take you to the registration form and, upon completing that, your post will be added automatically.</p><br />";
+            echo "<form enctype='multipart/form-data' action='register.php?forum' method='post'>";
+            echo "<input type='hidden' name='ID' value='" . $parentid . "' />";
+            echo "<input type='hidden' name='Username' value='" . $_POST["Name"] . "' />";
+            echo "<input type='hidden' name='Subject' value='" . $_POST["Subject"] . "' />";
+            echo "<input type='hidden' name='Text' value='" . $_POST["Text"] . "' />";
+            echo "<input type='submit' value='Continue to Registration' />";
+            echo "</form>";
+            EndBox();
+            die();
+        }
     }
     else
     {
@@ -386,8 +404,8 @@ function EditPost($context, $id) {
     $Text = $post["text"];
 
     StartBox("Edit Post");
-    CreateForm($_SERVER["PHP_SELF"] . "?$context=$id",
-            "Name",    "hidden", $post["name"],
+    CreateForm($_SERVER["PHP_SELF"] . "?$context=$id" . (isset($_username) ? "" : "&newuser"),
+            "Name",    isset($_username) ? "static" : "input", isset($_username) ? $_username : $_POST["Name"],
             "Subject", "input",  isset($Subject)   ? NukeHTML($Subject) : "",
             "Text",    "text",   isset($Text)      ? NukeHTML($Text)    : "",
             "PreSub",  "preview+submit", ""
@@ -402,6 +420,9 @@ function PreviewPost($subject, $name, $text)
     
     $poster = GetUserInfo($name);
     
+    if (!$subject)
+        $subject = "No subject.";
+        
     $sig = "";
     if (strlen($poster["signature"]) > 2) {
         $sig .= NukeHTML($poster["signature"], LVL_BASIC_HTML);

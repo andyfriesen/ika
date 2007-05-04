@@ -3,6 +3,7 @@
 include 'bin/dontsharethis.php';
 include 'bin/htmlparse.php';
 include 'bin/misc.php';
+include 'includes.php';
 
 
 function BasicHeader($title, $author, $description) {

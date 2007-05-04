@@ -175,7 +175,7 @@ function CreateFile()
 
     CreateForm($_SERVER["PHP_SELF"] . "?create",
     "Title",       "input",     "",
-    "Author",      ($admin==True) ? "input" : "hidden",     isset($_username) ? $_username : "Anonymous",
+    "Author",      ($admin==True) ? "input" : "static",     isset($_username) ? $_username : "Anonymous",
     "Filename",    "filename",  isset($Filename)  ? $Filename  : "",
     "Category",    "select",    $fileCategory, $fileCategory, $fileCategory[0],
     "Description", "smalltext", "",
@@ -203,7 +203,7 @@ function EditFile($id)
 
     CreateForm($_SERVER["PHP_SELF"] . "?edit=$a[id]",
         "Title",       "input",     NukeHTML($a["name"]),
-        "Author",      ($admin==True) ? "input" : "hidden",     NukeHTML($a["author"]),
+        "Author",      ($admin==True) ? "input" : "static",     NukeHTML($a["author"]),
         "Category",    "select",    $fileCategory, $fileCategory, $fileCategory[$a["category"]],
         "Description", "smalltext", NukeHTML($a["description"]),
         "Submit",      "submit", ""

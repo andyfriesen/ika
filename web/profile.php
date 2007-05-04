@@ -28,7 +28,7 @@ function DisplayUserStats($view)
 
     $email = ObfuscateEmail($user["email"]);
 
-    echo "<table class='box'>";
+    echo "<table>";
     echo "<tr><th class='main' colspan='2'>Statistics</th></tr>";
     echo "<tr><th colspan='2'>Contributions</th></tr>";
     echo "<tr><td width='20%'>Posts</td><td>$postcount</td></tr>";
@@ -53,7 +53,7 @@ function DisplayUserPosts($view)
 {
     $result = mysql_query("SELECT id, parentid, subject, date, time FROM board WHERE name='$view' AND deleted=0 ORDER BY date DESC, time DESC LIMIT 8");
 
-    echo "<table class='box' style='margin-bottom: 0px'>";
+    echo "<table style='margin-bottom: 0px'>";
     echo "<tr><th class='main' colspan=3>Recent Posts by ", $view, "</th></tr>";
     if (mysql_num_rows($result))
         while ($row = mysql_fetch_array($result))
@@ -78,7 +78,7 @@ function DisplayUserArticles($view)
 {
     $result = mysql_query("SELECT id, title, date FROM articles WHERE author='$view' AND queued=0 ORDER BY date DESC LIMIT 8");
 
-    echo "<table class='box' style='margin-bottom: 0px'>";
+    echo "<table style='margin-bottom: 0px'>";
     echo "<tr><th class='main' colspan=2>Articles by ", $view, "</th></tr>";
     if (mysql_num_rows($result))
         while ($row = mysql_fetch_array($result))
@@ -94,7 +94,7 @@ function DisplayUserFiles($view)
 
     $result = mysql_query("SELECT filename, name, category, date FROM files WHERE author='$view' AND queued=0 ORDER BY date DESC LIMIT 8");
 
-    echo "<table class='box' style='margin-bottom: 0px'>";
+    echo "<table style='margin-bottom: 0px'>";
     echo "<tr><th class='main' colspan=3>Files by ", $view, "</th></tr>";
     if (mysql_num_rows($result))
         while ($row = mysql_fetch_array($result))
@@ -112,6 +112,8 @@ GenerateHeader("User Profile");
 
 VerifyLogin();
 
+$view = $_GET["view"];
+
 if (!isset($view) and isset($_username)) {
     $view = $_username;
 }
@@ -125,7 +127,7 @@ if ($user)
 
     StartBox($view);
 
-    echo "<table class='box'>";
+    echo "<table>";
 
     echo "<tr><td class='blank' width='30%' style='vertical-align: top'>";
     DisplayUserStats($view);
