@@ -82,10 +82,20 @@ void MapView::OnScroll(wxScrollWinEvent& event) {
     };
     const Map* map = _executor->GetMap();
 
-    if (event.GetOrientation() == wxHORIZONTAL)
-        Local::HandleEvent(_xwin, 0, map->width,  _video->LogicalWidth(),  event.GetPosition(), event.GetEventType());
-    else
-        Local::HandleEvent(_ywin, 0, map->height, _video->LogicalHeight(), event.GetPosition(), event.GetEventType());
+    int width = 0;
+    int height = 0;
+    for (uint i = 0; i < map->NumLayers(); i++) {
+        const Map::Layer* lay = map->GetLayer(i);
+        width  = max(width, lay->x + lay->Width() * _executor->GetTileset()->Width());
+        height = max(height, lay->y + lay->Height() * _executor->GetTileset()->Height());
+    }
+
+    if (event.GetOrientation() == wxHORIZONTAL) {
+        Local::HandleEvent(_xwin, 0, width,  _video->LogicalWidth(),  event.GetPosition(), event.GetEventType());
+
+    } else {
+        Local::HandleEvent(_ywin, 0, height, _video->LogicalHeight(), event.GetPosition(), event.GetEventType());
+    }
     UpdateScrollBars();
     Render();
     ShowPage();
