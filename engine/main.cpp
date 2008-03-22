@@ -1,10 +1,12 @@
 #include <algorithm>
 #include <stdexcept>
+#include <fstream>
 #include <SDL/SDL.h>
 #include <SDL/SDL_syswm.h>
 
 #include "main.h"
 
+#include "common/aries.h"
 #include "common/utility.h"
 #include "common/version.h"
 #include "timer.h"
@@ -169,6 +171,46 @@ void Engine::MainLoop() {
 void Engine::Startup() {
     CDEBUG("Startup");
 
+    // Load game.ika-game.
+    std::ifstream file;
+    file.open("game.ika-game");
+    if (!file.is_open()) {
+        Sys_Error("Game Startup: game.ika-game does not exist.");
+    }
+
+    aries::DataNode* document;
+    file >> document;
+    file.close();
+
+    std::string title;
+    uint xres = 0;
+    uint yres = 0;
+
+    aries::DataNode* rootNode = document->getChild("ika-game");
+
+    // Load information node.
+    {
+        aries::DataNode* infoNode = rootNode->getChild("information");
+
+        title = infoNode->getChild("title")->getString();
+    }
+
+    // Load video node.
+    {
+        aries::DataNode* videoNode = rootNode->getChild("video");
+
+        xres = (uint)std::atoi(videoNode->getChild("xres")->getString().c_str());
+        yres = (uint)std::atoi(videoNode->getChild("yres")->getString().c_str());
+    }
+
+    // Load resources node.
+    {
+        aries::DataNode* resNode = rootNode->getChild("resources");
+
+        // Set map path.
+        _mapPath = resNode->getChild("maps")->getString();
+    }
+
     CConfigFile cfg("user.cfg");
 
     // init a few values
@@ -196,9 +238,9 @@ void Engine::Startup() {
 
 
 #if (!defined _DEBUG)
-        SDL_WM_SetCaption(va("ika %s", IKA_VERSION), 0);
+        SDL_WM_SetCaption(title.c_str(), 0);
 #else
-        SDL_WM_SetCaption(va("ika %s (debug)", IKA_VERSION), 0);
+        SDL_WM_SetCaption(va("%s (debug)", title), 0);
 #endif
 
         Log::Write("Initializing Video");
@@ -209,8 +251,8 @@ void Engine::Startup() {
         if (driver == "soft" || driver == "sdl") {
             Log::Write("Starting SDL video driver");
             video = new Soft32::Driver(
-                cfg.Int("xres"), 
-                cfg.Int("yres"), 
+                xres, 
+                yres, 
                 cfg.Int("bitdepth"), 
                 cfg.Int("fullscreen") != 0);
         }
@@ -219,8 +261,8 @@ void Engine::Startup() {
         {
             Log::Write("Starting OpenGL video driver");
             video = new OpenGL::Driver(
-                cfg.Int("xres"), 
-                cfg.Int("yres"), 
+                xres, 
+                yres, 
                 cfg.Int("bitdepth"), 
                 cfg.Int("fullscreen") != 0,
                 cfg.Int("doublesize") != 0,
