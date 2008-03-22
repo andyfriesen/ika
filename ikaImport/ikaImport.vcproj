@@ -1,109 +1,172 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="ikaImport"
 	ProjectGUID="{E522652F-513B-4694-9518-8760F2F17F4C}"
-	Keyword="ManagedCProj">
+	Keyword="ManagedCProj"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			ManagedExtensions="4"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="../Common;../3rdParty/include"
 				PreprocessorDefinitions="WIN32;_DEBUG"
-				MinimalRebuild="FALSE"
+				MinimalRebuild="false"
 				BasicRuntimeChecks="0"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="zlib.lib corona.lib"
 				OutputFile="$(OutDir)/ikaImport.dll"
 				LinkIncremental="2"
 				AdditionalLibraryDirectories="../3rdParty/lib"
-				GenerateDebugInformation="TRUE"/>
+				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="2"
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
 			CharacterSet="2"
-			ManagedExtensions="TRUE">
+			ManagedExtensions="4"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="../Common;../3rdParty/include"
 				PreprocessorDefinitions="WIN32;NDEBUG"
-				MinimalRebuild="FALSE"
+				MinimalRebuild="false"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"/>
+				WarningLevel="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLinkerTool"
 				AdditionalDependencies="zlib.lib"
 				OutputFile="$(OutDir)/ikaImport.dll"
 				LinkIncremental="1"
 				AdditionalLibraryDirectories="../3rdParty"
-				GenerateDebugInformation="TRUE"/>
+				GenerateDebugInformation="true"
+				RandomizedBaseAddress="1"
+				DataExecutionPrevention="0"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCManifestTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
+				Name="VCAppVerifierTool"
+			/>
 			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCWebDeploymentTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -111,153 +174,198 @@
 	<Files>
 		<Filter
 			Name="Source Files"
-			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm">
+			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
+			>
 			<File
-				RelativePath="AssemblyInfo.cpp">
+				RelativePath="AssemblyInfo.cpp"
+				>
 			</File>
 			<File
-				RelativePath="ikaTileSet.cpp">
+				RelativePath="ikaTileSet.cpp"
+				>
 			</File>
 			<File
-				RelativePath="Strings.cpp">
+				RelativePath="Strings.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc">
+			Filter="h;hpp;hxx;hm;inl;inc"
+			>
 			<File
-				RelativePath="ikaMap.h">
+				RelativePath="ikaMap.h"
+				>
 			</File>
 			<File
-				RelativePath="ikaTileSet.h">
+				RelativePath="ikaTileSet.h"
+				>
 			</File>
 			<File
-				RelativePath="Strings.h">
+				RelativePath="Strings.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;r">
+			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;r"
+			>
 		</Filter>
 		<Filter
 			Name="Common"
-			Filter="">
+			>
 			<File
-				RelativePath="..\common\aries.cpp">
+				RelativePath="..\common\aries.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\common\aries.h">
+				RelativePath="..\common\aries.h"
+				>
 			</File>
 			<File
-				RelativePath="..\common\base64.cpp">
+				RelativePath="..\common\base64.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\common\base64.h">
+				RelativePath="..\common\base64.h"
+				>
 			</File>
 			<File
-				RelativePath="..\common\compression.cpp">
+				RelativePath="..\common\compression.cpp"
+				>
 			</File>
 			<File
-				RelativePath="..\common\compression.h">
+				RelativePath="..\common\compression.h"
+				>
 			</File>
 			<Filter
 				Name="Source"
-				Filter="">
+				>
 				<File
-					RelativePath="..\common\Canvas.cpp">
+					RelativePath="..\common\Canvas.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\common\chr.cpp">
+					RelativePath="..\common\chr.cpp"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							CompileAsManaged="0"/>
+							CompileAsManaged="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\common\fileio.cpp">
+					RelativePath="..\common\fileio.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\common\fontfile.cpp">
+					RelativePath="..\common\fontfile.cpp"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							CompileAsManaged="0"/>
+							CompileAsManaged="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\common\log.cpp">
+					RelativePath="..\common\log.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\common\misc.cpp">
+					RelativePath="..\common\misc.cpp"
+					>
 				</File>
 				<File
-					RelativePath="..\common\rle.cpp">
+					RelativePath="..\common\rle.cpp"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							CompileAsManaged="0"/>
+							CompileAsManaged="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\common\vergepal.cpp">
+					RelativePath="..\common\vergepal.cpp"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							CompileAsManaged="0"/>
+							CompileAsManaged="0"
+						/>
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath="..\common\vsp.cpp">
+					RelativePath="..\common\vsp.cpp"
+					>
 					<FileConfiguration
-						Name="Release|Win32">
+						Name="Release|Win32"
+						>
 						<Tool
 							Name="VCCLCompilerTool"
-							CompileAsManaged="0"/>
+							CompileAsManaged="0"
+						/>
 					</FileConfiguration>
 				</File>
 			</Filter>
 			<Filter
 				Name="Headers"
-				Filter="">
+				>
 				<File
-					RelativePath="..\common\Canvas.h">
+					RelativePath="..\common\Canvas.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\CanvasBlitter.h">
+					RelativePath="..\common\CanvasBlitter.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\chr.h">
+					RelativePath="..\common\chr.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\fileio.h">
+					RelativePath="..\common\fileio.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\fontfile.h">
+					RelativePath="..\common\fontfile.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\log.h">
+					RelativePath="..\common\log.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\misc.h">
+					RelativePath="..\common\misc.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\types.h">
+					RelativePath="..\common\types.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\vergepal.h">
+					RelativePath="..\common\vergepal.h"
+					>
 				</File>
 				<File
-					RelativePath="..\common\vsp.h">
+					RelativePath="..\common\vsp.h"
+					>
 				</File>
 			</Filter>
 		</Filter>
 		<File
-			RelativePath="ReadMe.txt">
+			RelativePath="ReadMe.txt"
+			>
 		</File>
 	</Files>
 	<Globals>

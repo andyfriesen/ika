@@ -1,93 +1,145 @@
 <?xml version="1.0" encoding="Windows-1252"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="7.10"
+	Version="9.00"
 	Name="common"
 	ProjectGUID="{7CF113AA-D783-4E94-A0C5-03BC9F6B02A9}"
-	Keyword="Win32Proj">
+	Keyword="Win32Proj"
+	TargetFrameworkVersion="131072"
+	>
 	<Platforms>
 		<Platform
-			Name="Win32"/>
+			Name="Win32"
+		/>
 	</Platforms>
+	<ToolFiles>
+	</ToolFiles>
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
 			OutputDirectory="Debug"
 			IntermediateDirectory="Debug"
 			ConfigurationType="4"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories=".;$(SolutionDir);&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				MinimalRebuild="TRUE"
+				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="4"/>
+				DebugInformationFormat="4"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/common.lib"/>
+				OutputFile="$(OutDir)/common.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
 			OutputDirectory="Release"
 			IntermediateDirectory="Release"
 			ConfigurationType="4"
-			CharacterSet="2">
+			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC71.vsprops"
+			CharacterSet="2"
+			>
+			<Tool
+				Name="VCPreBuildEventTool"
+			/>
+			<Tool
+				Name="VCCustomBuildTool"
+			/>
+			<Tool
+				Name="VCXMLDataGeneratorTool"
+			/>
+			<Tool
+				Name="VCWebServiceProxyGeneratorTool"
+			/>
+			<Tool
+				Name="VCMIDLTool"
+			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalOptions="-D_SCL_SECURE_NO_WARNINGS"
 				AdditionalIncludeDirectories=".;&quot;$(InputDir)&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/3rdparty/include&quot;;&quot;$(SolutionDir)/3rdparty/include/python&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
-				DebugInformationFormat="3"/>
+				DebugInformationFormat="3"
+			/>
 			<Tool
-				Name="VCCustomBuildTool"/>
+				Name="VCManagedResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCResourceCompilerTool"
+			/>
+			<Tool
+				Name="VCPreLinkEventTool"
+			/>
 			<Tool
 				Name="VCLibrarianTool"
-				OutputFile="$(OutDir)/common.lib"/>
+				OutputFile="$(OutDir)/common.lib"
+			/>
 			<Tool
-				Name="VCMIDLTool"/>
+				Name="VCALinkTool"
+			/>
 			<Tool
-				Name="VCPostBuildEventTool"/>
+				Name="VCXDCMakeTool"
+			/>
 			<Tool
-				Name="VCPreBuildEventTool"/>
+				Name="VCBscMakeTool"
+			/>
 			<Tool
-				Name="VCPreLinkEventTool"/>
+				Name="VCFxCopTool"
+			/>
 			<Tool
-				Name="VCResourceCompilerTool"/>
-			<Tool
-				Name="VCWebServiceProxyGeneratorTool"/>
-			<Tool
-				Name="VCXMLDataGeneratorTool"/>
-			<Tool
-				Name="VCManagedWrapperGeneratorTool"/>
-			<Tool
-				Name="VCAuxiliaryManagedWrapperGeneratorTool"/>
+				Name="VCPostBuildEventTool"
+			/>
 		</Configuration>
 	</Configurations>
 	<References>
@@ -96,164 +148,216 @@
 		<Filter
 			Name="Source Files"
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}">
+			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			>
 			<File
-				RelativePath=".\aries.cpp">
+				RelativePath=".\aries.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\base64.cpp">
+				RelativePath=".\base64.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\Canvas.cpp">
+				RelativePath=".\Canvas.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\chr.cpp">
+				RelativePath=".\chr.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\compression.cpp">
+				RelativePath=".\compression.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\configfile.cpp">
+				RelativePath=".\configfile.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\fileio.cpp">
+				RelativePath=".\fileio.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\fontfile.cpp">
+				RelativePath=".\fontfile.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\log.cpp">
+				RelativePath=".\log.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\map.cpp">
+				RelativePath=".\map.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\mem.cpp">
+				RelativePath=".\mem.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\oldbase64.cpp">
+				RelativePath=".\oldbase64.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\rle.cpp">
+				RelativePath=".\rle.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\utility.cpp">
+				RelativePath=".\utility.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\vergemap.cpp">
+				RelativePath=".\vergemap.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\vergepal.cpp">
+				RelativePath=".\vergepal.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\version.cpp">
+				RelativePath=".\version.cpp"
+				>
 			</File>
 			<File
-				RelativePath=".\vsp.cpp">
+				RelativePath=".\vsp.cpp"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}">
+			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			>
 			<File
-				RelativePath=".\aries.h">
+				RelativePath=".\aries.h"
+				>
 			</File>
 			<File
-				RelativePath=".\base64.h">
+				RelativePath=".\base64.h"
+				>
 			</File>
 			<File
-				RelativePath=".\Canvas.h">
+				RelativePath=".\Canvas.h"
+				>
 			</File>
 			<File
-				RelativePath=".\CanvasBlitter.h">
+				RelativePath=".\CanvasBlitter.h"
+				>
 			</File>
 			<File
-				RelativePath=".\chr.h">
+				RelativePath=".\chr.h"
+				>
 			</File>
 			<File
-				RelativePath=".\compression.h">
+				RelativePath=".\compression.h"
+				>
 			</File>
 			<File
-				RelativePath=".\configfile.h">
+				RelativePath=".\configfile.h"
+				>
 			</File>
 			<File
-				RelativePath=".\fileio.h">
+				RelativePath=".\fileio.h"
+				>
 			</File>
 			<File
-				RelativePath=".\fontfile.h">
+				RelativePath=".\fontfile.h"
+				>
 			</File>
 			<File
-				RelativePath=".\foreach.hpp">
+				RelativePath=".\foreach.hpp"
+				>
 			</File>
 			<File
-				RelativePath=".\listener.h">
+				RelativePath=".\listener.h"
+				>
 			</File>
 			<File
-				RelativePath=".\log.h">
+				RelativePath=".\log.h"
+				>
 			</File>
 			<File
-				RelativePath=".\map.h">
+				RelativePath=".\map.h"
+				>
 			</File>
 			<File
-				RelativePath=".\matrix.h">
+				RelativePath=".\matrix.h"
+				>
 			</File>
 			<File
-				RelativePath=".\mem.h">
+				RelativePath=".\mem.h"
+				>
 			</File>
 			<File
-				RelativePath=".\oldbase64.h">
+				RelativePath=".\oldbase64.h"
+				>
 			</File>
 			<File
-				RelativePath=".\port.h">
+				RelativePath=".\port.h"
+				>
 			</File>
 			<File
-				RelativePath=".\refcount.h">
+				RelativePath=".\refcount.h"
+				>
 			</File>
 			<File
-				RelativePath=".\rle.h">
+				RelativePath=".\rle.h"
+				>
 			</File>
 			<File
-				RelativePath=".\types.h">
+				RelativePath=".\types.h"
+				>
 			</File>
 			<File
-				RelativePath=".\utility.h">
+				RelativePath=".\utility.h"
+				>
 			</File>
 			<File
-				RelativePath=".\vergepal.h">
+				RelativePath=".\vergepal.h"
+				>
 			</File>
 			<File
-				RelativePath=".\version.h">
+				RelativePath=".\version.h"
+				>
 			</File>
 			<File
-				RelativePath=".\vsp.h">
+				RelativePath=".\vsp.h"
+				>
 			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}">
+			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
+			>
 		</Filter>
 		<File
-			RelativePath="..\chrnotes.txt">
+			RelativePath="..\chrnotes.txt"
+			>
 		</File>
 		<File
-			RelativePath="..\CodingStyle.txt">
+			RelativePath="..\CodingStyle.txt"
+			>
 		</File>
 		<File
-			RelativePath="..\fontnotes.txt">
+			RelativePath="..\fontnotes.txt"
+			>
 		</File>
 		<File
-			RelativePath="..\Gnu.txt">
+			RelativePath="..\Gnu.txt"
+			>
 		</File>
 		<File
-			RelativePath="..\mapnotes.txt">
+			RelativePath="..\mapnotes.txt"
+			>
 		</File>
 		<File
-			RelativePath="..\readme.txt">
+			RelativePath="..\readme.txt"
+			>
 		</File>
 		<File
-			RelativePath="..\vspnotes.txt">
+			RelativePath="..\vspnotes.txt"
+			>
 		</File>
 	</Files>
 	<Globals>
