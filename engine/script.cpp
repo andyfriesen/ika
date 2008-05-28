@@ -69,6 +69,7 @@ void ScriptEngine::Init(Engine* njin) {
     PyModule_AddIntConstant(module, "AlphaBlend", 2);
     PyModule_AddIntConstant(module, "AddBlend", 3);
     PyModule_AddIntConstant(module, "SubtractBlend", 4);
+	PyModule_AddIntConstant(module, "MultiplyBlend", 5);
 
     PyModule_AddObject(module, "Version", PyString_FromString(IKA_VERSION));
 

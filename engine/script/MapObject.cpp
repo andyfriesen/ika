@@ -12,6 +12,11 @@ namespace Script {
         PyTypeObject type;
 
         PyMethodDef methods[] = {
+			{   "Save",  (PyCFunction)Map_Save,   METH_VARARGS,
+                "Save(filename)\n\n"
+                "Saves the currently loaded map under filename."
+            },
+
             {   "Switch",       (PyCFunction)Map_Switch,        METH_VARARGS,
                 "Switch(filename)\n\n"
                 "Switches the current map to the map file specified.\n"
@@ -262,6 +267,18 @@ namespace Script {
 
 #define METHOD(x) PyObject* x(PyObject* /*self*/, PyObject* args)
 #define METHOD1(x) PyObject* x(PyObject* /*self*/, PyObject* /*args*/)
+
+        METHOD(Map_Save)
+        {
+            char* fname;
+            if (!PyArg_ParseTuple(args, "s:Save", &fname))
+                return 0;
+
+            engine->map.Save(fname);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
 
         METHOD(Map_Switch) {
             char* filename;

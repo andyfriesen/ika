@@ -68,6 +68,18 @@ namespace Blitter {
         }
     };
 
+	// untested for canvas
+    struct MultiplyBlend {
+        inline RGBA operator()(RGBA src, RGBA dest) const {
+            // multiply out of a total of 255
+            dest.r = dest.r * src.r / 255;
+            dest.g = dest.g * src.g / 255;
+            dest.b = dest.b * src.b / 255;
+            dest.a = dest.a * src.a / 255;
+            return dest;
+        }
+    };
+
 
     /**
      * Helper function: Adjusts start and run length values on

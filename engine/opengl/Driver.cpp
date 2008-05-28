@@ -365,9 +365,22 @@ namespace OpenGL {
             glBegin(GL_POINTS); glVertex2i(-1, -1); glEnd();
         }
 
+		// ALPHA_TEST could be set from matte, so disable --Thrasher
+		glAlphaFunc(GL_ALWAYS, 0);
+		glEnable(GL_ALPHA_TEST);
+
         switch (bm) {
             case Video::None:    {  glDisable(GL_BLEND);     break; }
-            case Video::Matte:   // TODO: See if we can get GL to do matte?
+            
+			// added by Thrasher
+			case Video::Matte: {  
+				glAlphaFunc(GL_GREATER, 0);  
+				glEnable(GL_ALPHA_TEST);  
+				glBlendFunc(GL_ONE, GL_ZERO);  
+				glEnable(GL_BLEND); 
+				break; 
+			}
+
             case Video::Normal:  {  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;  }
             case Video::Add:     {  glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;  }
 
@@ -377,6 +390,13 @@ namespace OpenGL {
                 glEnable(GL_BLEND);
                 break;
             }
+
+			case Video::Multiply: {
+				glBlendFunc(GL_ZERO, GL_SRC_COLOR);
+				//glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
+				glEnable(GL_BLEND);
+				break;
+			}
 
             default: {
                 return _blendMode;

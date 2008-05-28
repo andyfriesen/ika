@@ -367,6 +367,7 @@ namespace Script {
         // Object type
 
         // Methods
+		METHOD(Map_Save, PyObject);
         METHOD(Map_Switch, PyObject);
         METHOD(Map_GetMetaData, PyObject);
         METHOD(Map_Render, PyObject);

@@ -29,7 +29,8 @@ namespace Video {
         Matte,
         Normal,
         Add,
-        Subtract
+        Subtract,
+		Multiply
     };
 
     /// Base interface for all ika video drivers.
