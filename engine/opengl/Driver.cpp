@@ -365,10 +365,6 @@ namespace OpenGL {
             glBegin(GL_POINTS); glVertex2i(-1, -1); glEnd();
         }
 
-		// ALPHA_TEST could be set from matte, so disable --Thrasher
-		glAlphaFunc(GL_ALWAYS, 0);
-		glEnable(GL_ALPHA_TEST);
-
         switch (bm) {
             case Video::None:    {  glDisable(GL_BLEND);     break; }
             
@@ -391,7 +387,9 @@ namespace OpenGL {
                 break;
             }
 
+			// added by Thrasher
 			case Video::Multiply: {
+				// ignores alpha for now. dunno if that's desireable.
 				glBlendFunc(GL_ZERO, GL_SRC_COLOR);
 				//glBlendFunc(GL_DST_COLOR, GL_ONE_MINUS_SRC_ALPHA);
 				glEnable(GL_BLEND);
