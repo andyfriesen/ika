@@ -59,6 +59,11 @@ namespace Script
                 "totally disregards alpha.  It *sets* the pixel, in the truest sense of the word."
             },
 
+            {   "DrawLine", (PyCFunction)Canvas_DrawLine,   METH_VARARGS,
+                "Canvas.DrawLine(x1, y1, x2, y2, colour, [blendmode])\n\n"
+                "Draws a line from (x1, y1) to (x2, y2) of the colour and blendmode specified."
+            },
+            
             {   "DrawText", (PyCFunction)Canvas_DrawText,   METH_VARARGS,
                 "Canvas.DrawText(font, x, y, text)\n\n"
                 "Draws a string starting at (x,y) with the font.  No word wrapping is done."
@@ -219,8 +224,8 @@ namespace Script
             switch (mode)
             {
             case 0: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::OpaqueBlend());  break;
-            case 1: Blitter ::Blit(*self->canvas, *dest->canvas, x, y, Blitter::MatteBlend());  break;
-            case 2: Blitter ::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AlphaBlend());  break;
+            case 1: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::MatteBlend());  break;
+            case 2: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AlphaBlend());  break;
             case 3: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AddBlend());  break;
             case 4: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::SubtractBlend());  break;
             default:
@@ -310,6 +315,31 @@ namespace Script
             return Py_None;
         }
 
+        METHOD(Canvas_DrawLine)
+        {
+            int x1, y1, x2, y2;
+            u32 colour;
+            ::Video::BlendMode blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iiiii|i:DrawLine", &x1, &y1, &x2, &y2, &colour, &blendMode))
+                return 0;
+
+            switch (blendMode)
+            {
+            case 0: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::OpaqueBlend());   break;
+            case 1: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::MatteBlend());   break;
+            case 2: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::AlphaBlend());   break;
+            case 3: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::AddBlend());   break;
+            case 4: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::SubtractBlend());   break;
+            default:
+                PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", blendMode));
+                return 0;
+            }
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        
         METHOD(Canvas_DrawText)
         {
             Script::Font::FontObject* font;

@@ -299,7 +299,7 @@ namespace Blitter {
     *  Kudos to zeromus for the algorithm.
     */
     template <typename Blender>
-    static void Line(Canvas& img, int x1, int y1, int x2, int y2, u32 colour, Blender& blend) {
+    static void DrawLine(Canvas& img, int x1, int y1, int x2, int y2, u32 colour, Blender& blend) {
         // check for the cases in which the line is vertical or horizontal or only one pixel big
         // we can do those faster through other means
         if(y1 == y2 && x1 == x2) {

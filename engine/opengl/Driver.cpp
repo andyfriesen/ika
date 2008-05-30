@@ -1,4 +1,6 @@
 
+#include <math.h>
+
 #include "SDL/SDL_opengl.h"
 
 #include "Driver.h"
@@ -665,17 +667,38 @@ namespace OpenGL {
         int b2 = b * b;
         int fa2 = 4 * a2;
 
+        float TWOPI = 6.28318;
+        float n = 180.0;
+        
         glPushMatrix();
         glTranslatef(0.375f, 0.375f, 0);
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
 
+        // ---------------------------------
+        // lifted from gamedev.net -- about 50% faster than aen's method, poo poo
+        
         if (filled) {
+            glBegin(GL_POLYGON);
+            for(float t = 0; t <= TWOPI; t += TWOPI/n)
+                glVertex2f(rx * cos(t) + cx, ry * sin(t) + cy);
+            glEnd();
+        } else {
+            glBegin(GL_LINE_LOOP);
+            for(float t = 0; t <= TWOPI; t += TWOPI/n)
+                glVertex2f(rx * cos(t) + cx, ry * sin(t) + cy);
+            glEnd();
+        }
+
+        // ---------------------------------
+        // aen's method
+        
+        /*if (filled) {
             glBegin(GL_LINES);
         } else {
             glBegin(GL_POINTS);
         }
-
+        
         // most bloated for statement ever.
         for (int 
             x = 0,
@@ -715,7 +738,7 @@ namespace OpenGL {
             }
             sigma += a2 * (4 * y + 6);
         }
-        glEnd();
+        glEnd(); */
 
         glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
         glEnable(GL_TEXTURE_2D);
