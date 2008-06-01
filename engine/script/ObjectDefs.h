@@ -324,6 +324,7 @@ namespace Script {
         METHOD(Video_DrawLine, VideoObject);
         METHOD(Video_DrawRect, VideoObject);
         METHOD(Video_DrawEllipse, VideoObject);
+        METHOD(Video_DrawArc, VideoObject);
         METHOD(Video_DrawTriangle, VideoObject);
         //METHOD(Video_DrawFreeform, VideoObject);
         METHOD(Video_ClipScreen, VideoObject);

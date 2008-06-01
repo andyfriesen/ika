@@ -108,6 +108,9 @@ namespace Video {
         /// Draws an ellipse on the screen.
         virtual void DrawEllipse(int cx, int cy, int rx, int ry, u32 colour, bool filled) = 0;
 
+        /// Draws an arc on the screen.
+        virtual void DrawArc(int cx, int cy, int rx, int ry, int irx, int iry, int start, int end, u32 colour, bool filled) = 0;
+        
         /// Draws a triangle on the screen.
         virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]) = 0;
 

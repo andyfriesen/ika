@@ -745,6 +745,41 @@ namespace OpenGL {
         glPopMatrix();
     }
 
+    void Driver::DrawArc(int cx, int cy, int rx, int ry, int irx, int iry, int start, int end, u32 colour, bool filled) {
+
+        float TWOPI = 6.28318;
+        float n = 180.0;
+        
+        glPushMatrix();
+        //glTranslatef(0.375f, 0.375f, 0);
+        glDisable(GL_TEXTURE_2D);
+        glColor4ubv((u8*)&colour);
+
+        float startrad = start * TWOPI / 360;
+        float endrad = end * TWOPI / 360;
+        
+        // ---------------------------------
+        // lifted from gamedev.net -- about 50% faster than aen's method, poo poo
+        
+        if (filled) {
+            glBegin(GL_TRIANGLE_STRIP);
+            for(float t = startrad; t <= endrad; t += TWOPI/n) {
+                glVertex2f(rx * cos(t) + cx, ry * sin(t) + cy);
+                glVertex2f(irx * cos(t) + cx, iry * sin(t) + cy);
+            }
+            glEnd();
+        } else {
+            glBegin(GL_LINE_STRIP);
+            for(float t = startrad; t <= endrad; t += TWOPI/n)
+                glVertex2f(rx * cos(t) + cx, ry * sin(t) + cy);
+            glEnd();
+        }
+
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
+        glEnable(GL_TEXTURE_2D);
+        glPopMatrix();
+    }
+
     void Driver::DrawTriangle(int x[3], int y[3], u32 colour[3]) {
         glDisable(GL_TEXTURE_2D);
         glBegin(GL_TRIANGLES);

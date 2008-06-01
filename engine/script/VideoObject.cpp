@@ -100,6 +100,13 @@ namespace Script {
                 "else it is drawn as an outline."
             },
             
+            {   "DrawArc",  (PyCFunction)Video_DrawArc, METH_VARARGS,
+                "DrawArc(cx, cy, rx, ry, irx, iry, start, end, colour[, filled, blendmode])\n\n"
+                "Draws an arc, centred at (cx, cy), of radius rx and ry and inner radius irx and iry on the X and\n"
+                "Y axis, respectively, from angle start to angle end, in degrees.  If filled is omitted or nonzero, the arc is filled in\n"
+                "else it is drawn as an outline."
+            },
+            
             {   "DrawTriangle", (PyCFunction)Video_DrawTriangle, METH_VARARGS,
                 "DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour)[, blendmode])\n\n"
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
@@ -415,6 +422,26 @@ namespace Script {
             return Py_None;
         }
 
+        METHOD(Video_DrawArc) {
+            int cx, cy;
+            int rx, ry;
+            int irx, iry;
+            int start, end;
+            u32 colour;
+            int filled = 0;
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iiiiiiiii|ii:Video.DrawArc", &cx, &cy, &rx, &ry, &irx, &iry, &start, &end, &colour, &filled, &blendMode)) {
+                return 0;
+            }
+
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
+            self->video->DrawArc(cx, cy, rx, ry, irx, iry, start, end, colour, filled != 0);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        
         METHOD(Video_DrawTriangle) {
             int x[3];
             int y[3];
