@@ -667,11 +667,11 @@ namespace OpenGL {
         int b2 = b * b;
         int fa2 = 4 * a2;
 
-        float TWOPI = 6.28318;
+        float TWOPI = 6.28318;  
         float n = 180.0;
         
         glPushMatrix();
-        glTranslatef(0.375f, 0.375f, 0);
+        //glTranslatef(0.375f, 0.375f, 0);
         glDisable(GL_TEXTURE_2D);
         glColor4ubv((u8*)&colour);
 

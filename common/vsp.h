@@ -31,8 +31,8 @@ struct VSP {
     };
 
     struct AnimState {
-        int start;
-        int finish;
+        uint start;
+        uint finish;
         int delay;
         int mode;
 

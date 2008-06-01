@@ -8,6 +8,8 @@
 
 #if defined(_MSC_VER)
 #   define DEPRECATED __declspec(deprecated)
+// kill microsoft deprecation warnings for C/C++ standard libs that aren't deprecated --Swordsman
+#   pragma warning(disable : 4996)
 #else
 #   define DEPRECATED
 #endif
