@@ -29,6 +29,12 @@ namespace Script
                 "ie.  canvas.Save('myimage.png')"
             },
 
+            {   "AlphaMask",     (PyCFunction)Canvas_AlphaMask,       METH_NOARGS,
+                "Canvas.AlphaMask()\n\n"
+                "Takes the max of r/g/b for each pixel, and applies the value to that pixel's a.\n"
+                "Very handy in conjunction with ika.Video.GrabCanvas and canvas blitting routines."
+            },
+            
             {   "Blit",     (PyCFunction)Canvas_Blit,       METH_VARARGS,
                 "Canvas.Blit(destcanvas, x, y, blendmode)\n\n"
                 "Draws the image on destcanvas, at position (x, y)\n"
@@ -212,6 +218,14 @@ namespace Script
             return Py_None;
         }
 
+        METHOD1(Canvas_AlphaMask)
+        {
+            Blitter::AlphaMask(*self->canvas);
+
+            Py_INCREF(Py_None);
+            return Py_None;        
+        }
+        
         METHOD(Canvas_Blit)
         {
             CanvasObject* dest;
@@ -228,6 +242,7 @@ namespace Script
             case 2: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AlphaBlend());  break;
             case 3: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AddBlend());  break;
             case 4: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::SubtractBlend());  break;
+            case 5: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::MultiplyBlend());  break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
@@ -254,6 +269,7 @@ namespace Script
             case 2: Blitter ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::AlphaBlend());  break;
             case 3: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::AddBlend());  break;
             case 4: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::SubtractBlend());  break;
+            case 5: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::MultiplyBlend());  break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
                 return 0;
@@ -282,6 +298,7 @@ namespace Script
             case 2: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AlphaBlend());   break;
             case 3: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AddBlend());   break;
             case 4: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::SubtractBlend());   break;
+            case 5: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::MultiplyBlend());   break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", mode));
                 return 0;
@@ -331,6 +348,7 @@ namespace Script
             case 2: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::AlphaBlend());   break;
             case 3: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::AddBlend());   break;
             case 4: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::SubtractBlend());   break;
+            case 5: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::MultiplyBlend());   break;
             default:
                 PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", blendMode));
                 return 0;

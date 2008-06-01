@@ -138,6 +138,7 @@ namespace Script {
 
         // Methods
         METHOD(Canvas_Save, CanvasObject);
+        METHOD1(Canvas_AlphaMask, CanvasObject);
         METHOD(Canvas_Blit, CanvasObject);
         METHOD(Canvas_ScaleBlit, CanvasObject);
         METHOD(Canvas_TileBlit, CanvasObject);

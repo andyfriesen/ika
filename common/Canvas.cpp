@@ -26,6 +26,14 @@ namespace Blitter {
             ylen = rClip.bottom - y;
         }
     }
+
+    void AlphaMask(Canvas& src) {
+        RGBA* sourcePixel  = src.GetPixels(); // + (ystart * src.Width()) + xstart;
+        for (int i=0; i<src.Width()*src.Height(); i++) {
+            sourcePixel->a = max(max(sourcePixel->r, sourcePixel->g), sourcePixel->b);
+            sourcePixel++;
+        }
+    }    
 }
 
 using Blitter::DoClipping;

@@ -86,7 +86,9 @@ namespace Blitter {
      * x and y axes based on the clip rectangle given.
      */
     void DoClipping(int& x, int& y, int& xstart, int& xlen, int& ystart, int& ylen, const Rect& rClip);
-
+    
+    void AlphaMask(Canvas& src); 
+    
     /// Renders an image on another image.
     template <typename Blender>
     void Blit(const Canvas& src, Canvas& dest, int x, int y, const Blender& blend) {
