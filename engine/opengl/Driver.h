@@ -128,6 +128,10 @@ namespace OpenGL {
         /// Draws a triangle on the screen.
         virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]);
 
+        /// Draws a series of polys on the screen.
+        /// doesn't work, so commented --Thrasher        
+        //virtual void DrawFreeform(int x[4], int y[4], u32 colour[4]);
+        
         /// Grabs a rect from the screen, constructs an image from it, and returns it
         virtual Image* GrabImage(int x1, int y1, int x2, int y2);
 

@@ -757,6 +757,20 @@ namespace OpenGL {
         glEnable(GL_TEXTURE_2D);
     }
 
+    // see VideoObject to see what I'm trying to do here --Thrasher
+    // these need to be dynamic vectors
+    /*void Driver::DrawFreeform(int x[4], int y[4], u32 colour[4]) {
+        glDisable(GL_TEXTURE_2D);
+        glBegin(GL_QUADS);
+        for (int i = 0; i < 4; i++) {
+            glColor4ubv((u8*)&colour[i]);
+            glVertex2i(x[i], y[i]);
+        }
+        glEnd();
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
+        glEnable(GL_TEXTURE_2D);
+    }*/
+    
     Image* Driver::GrabImage(int x1, int y1, int x2, int y2) {
         // Way fast, since there are no pixels going from the video card to system memory.
         // They just get copied from the screen to a texture (which also video memory)

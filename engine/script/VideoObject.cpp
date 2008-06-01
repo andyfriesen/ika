@@ -104,6 +104,12 @@ namespace Script {
                 "DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour)[, blendmode])\n\n"
                 "Draws a triangle onscreen.  Each point is drawn in the colour specified."
             },
+            
+            // doesn't work, try to make it work plz --Thrasher
+            /*{   "DrawFreeform", (PyCFunction)Video_DrawFreeform, METH_VARARGS,
+                "DrawFreeform((x, y, colour), (x, y, colour)[, (x, y, colour), ...[, blendmode]])\n\n"
+                "Draws a bunch of polys onscreen.  Each point is drawn in the colour specified."
+            },*/
 
             {   "ClipScreen",   (PyCFunction)Video_ClipScreen, METH_VARARGS,
                 "ClipScreen(left=0, top=0, right=xres, bottom=yres)\n\n"
@@ -426,6 +432,33 @@ namespace Script {
             return Py_None;
         }
 
+        // tried to do something cool, but couldn't figure it out
+        // kept getting "bad argument to internal function"
+        // see if you can figure it out --Thrasher
+        /*METHOD(Video_DrawFreeform) {
+            
+            // these need to be dynamic vectors
+            int x[4];
+            int y[4];
+            u32 col[4];
+            
+            int blendMode = ::Video::Normal;
+
+            int size = PyList_Size(args);
+            for (int i=0; i<size; i++) {
+                PyObject* slice = PyList_GetSlice(args, i, i+1);
+                if (!PyArg_ParseTuple(slice, "(iii):Video.DrawQuad", x + i, y + i, col + i)) {
+                    return 0;
+                }                
+            }
+
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
+            self->video->DrawFreeform(x, y, col);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }*/
+        
         METHOD(Video_ClipScreen) {
             const char* keywords[] = {
                 "left", "top", "right", "bottom"
