@@ -34,6 +34,32 @@ namespace Blitter {
             sourcePixel++;
         }
     }    
+
+    BlendType* GetBlender(int blendId) {
+        
+        static OpaqueBlend opaqueBlend;
+        static MatteBlend matteBlend;
+        static AlphaBlend alphaBlend;
+        static AddBlend addBlend;
+        static SubtractBlend subtractBlend;
+        static MultiplyBlend multiplyBlend;
+        
+        switch (blendId) {
+        
+            case 0:     return &opaqueBlend;
+            case 1:     return &matteBlend;
+            case 3:     return &addBlend;
+            case 4:     return &subtractBlend;
+            case 5:     return &multiplyBlend;
+            
+            default:    return &alphaBlend;
+            
+            // do we need this?  --Thrasher
+            /*default:
+                PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", blendMode));
+                return 0;*/
+        }
+    }    
 }
 
 using Blitter::DoClipping;

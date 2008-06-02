@@ -9,14 +9,20 @@
 
 namespace Blitter {
 
-    struct OpaqueBlend {
-        inline RGBA operator()(RGBA src, RGBA) const {
+    struct BlendType {
+        inline virtual RGBA operator()(RGBA src, RGBA) const {
+            return src;
+        }    
+    };
+    
+    struct OpaqueBlend : BlendType {
+        inline virtual RGBA operator()(RGBA src, RGBA) const {
             return src;
         }
     };
 
-    struct MatteBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) const {
+    struct MatteBlend : BlendType {
+        inline virtual RGBA operator()(RGBA src, RGBA dest) const {
             if (src.a) {
                 return src;
             } else {
@@ -25,8 +31,8 @@ namespace Blitter {
         }
     };
 
-    struct AlphaBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) const {
+    struct AlphaBlend : BlendType {
+        inline virtual RGBA operator()(RGBA src, RGBA dest) const {
             // Trivial cases: handle zero and full alpha.
             if (!src.a) return dest;
             if (src.a == 255) return src;
@@ -46,8 +52,8 @@ namespace Blitter {
         }
     };
 
-    struct AddBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) const {
+    struct AddBlend : BlendType {
+        inline virtual RGBA operator()(RGBA src, RGBA dest) const {
             // add and clamp to 255
             dest.r = (u8)min<int>(dest.r + src.r, 255);
             dest.g = (u8)min<int>(dest.g + src.g, 255);
@@ -57,8 +63,8 @@ namespace Blitter {
         }
     };
 
-    struct SubtractBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) const {
+    struct SubtractBlend : BlendType {
+        inline virtual RGBA operator()(RGBA src, RGBA dest) const {
             // subtract and clamp at 0
             dest.r = (u8)max<int>(dest.r - src.r, 0);
             dest.g = (u8)max<int>(dest.g - src.g, 0);
@@ -68,19 +74,19 @@ namespace Blitter {
         }
     };
 
-	// untested for canvas
-    struct MultiplyBlend {
-        inline RGBA operator()(RGBA src, RGBA dest) const {
+    struct MultiplyBlend : BlendType {
+        inline virtual RGBA operator()(RGBA src, RGBA dest) const {
             // multiply out of a total of 255
-            dest.r = dest.r * src.r / 255;
-            dest.g = dest.g * src.g / 255;
-            dest.b = dest.b * src.b / 255;
-            dest.a = dest.a * src.a / 255;
+            dest.r = dest.r * src.r >> 8;
+            dest.g = dest.g * src.g >> 8;
+            dest.b = dest.b * src.b >> 8;
+            dest.a = dest.a * src.a >> 8;
             return dest;
         }
     };
 
-
+    BlendType* GetBlender(int blendId);
+    
     /**
      * Helper function: Adjusts start and run length values on
      * x and y axes based on the clip rectangle given.
@@ -437,24 +443,24 @@ namespace Blitter {
             dy = dx / 2;
 
             for(;;) {
-                *w1 = blend(*w1, colour);
-                *w2 = blend(*w2, colour);
+                *w1 = blend(colour, *w1);
+                *w2 = blend(colour, *w2);
                 if((d += dir) <= 0) {
                     w1 += xi;
                     w2 -= xi;
                     if((--dy) > 0) continue;
-                    *w1 = blend(*w1, colour);
+                    *w1 = blend(colour, *w1);
                     if((dx & 1) == 0) return;
-                    *w2 = blend(*w2, colour);
+                    *w2 = blend(colour, *w2);
                     return;
                 } else {
                     w1 += xyi;
                     w2 -= xyi;
                     d += diu;
                     if((--dy) > 0) continue;
-                    *w1 = blend(*w1, colour);
+                    *w1 = blend(colour, *w1);
                     if((dx & 1) == 0) return;
-                    *w2 = blend(*w2, colour);
+                    *w2 = blend(colour, *w2);
                     return;
                 }
             }
@@ -464,24 +470,24 @@ namespace Blitter {
             diu = d * 2;
             dx = dy / 2;
             for(;;) {
-                *w1 = blend(*w1, colour);
-                *w2 = blend(*w2, colour);
+                *w1 = blend(colour, *w1);
+                *w2 = blend(colour, *w2);
                 if((d += dir) <= 0) {
                     w1 += yi;
                     w2 -= yi;
                     if((--dx) > 0) continue;
-                    *w1 = blend(*w1, colour);
+                    *w1 = blend(colour, *w1);
                     if((dy & 1) == 0) return;
-                    *w2 = blend(*w2, colour);
+                    *w2 = blend(colour, *w2);
                     return;
                 } else {
                     w1 += xyi;
                     w2 -= xyi;
                     d += diu;
                     if((--dx) > 0) continue;
-                    *w1 = blend(*w1, colour);
+                    *w1 = blend(colour, *w1);
                     if((dy & 1) == 0) return;
-                    *w2 = blend(*w2, colour);
+                    *w2 = blend(colour, *w2);
                     return;
                 }
             }

@@ -145,6 +145,7 @@ namespace Script {
         METHOD(Canvas_GetPixel, CanvasObject);
         METHOD(Canvas_SetPixel, CanvasObject);
         METHOD(Canvas_DrawLine, CanvasObject);
+        METHOD(Canvas_DrawRect, CanvasObject);
         METHOD(Canvas_DrawText, CanvasObject);
         METHOD(Canvas_Clear, CanvasObject);
         METHOD(Canvas_Resize, CanvasObject);

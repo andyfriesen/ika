@@ -70,6 +70,11 @@ namespace Script
                 "Draws a line from (x1, y1) to (x2, y2) of the colour and blendmode specified."
             },
             
+            {   "DrawRect", (PyCFunction)Canvas_DrawRect,   METH_VARARGS,
+                "Canvas.DrawRect(x1, y1, x2, y2, colour, [blendmode])\n\n"
+                "Draws a rect from top left (x1, y1) to bottom right (x2, y2) of the colour and blendmode specified."
+            },
+            
             {   "DrawText", (PyCFunction)Canvas_DrawText,   METH_VARARGS,
                 "Canvas.DrawText(font, x, y, text)\n\n"
                 "Draws a string starting at (x,y) with the font.  No word wrapping is done."
@@ -230,23 +235,12 @@ namespace Script
         {
             CanvasObject* dest;
             int x, y;
-            int mode = 0;
+            ::Video::BlendMode blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!ii|i:Blit", &type, &dest, &x, &y, &mode))
+            if (!PyArg_ParseTuple(args, "O!ii|i:Blit", &type, &dest, &x, &y, &blendMode))
                 return 0;
 
-            switch (mode)
-            {
-            case 0: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::OpaqueBlend());  break;
-            case 1: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::MatteBlend());  break;
-            case 2: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AlphaBlend());  break;
-            case 3: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::AddBlend());  break;
-            case 4: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::SubtractBlend());  break;
-            case 5: Blitter::Blit(*self->canvas, *dest->canvas, x, y, Blitter::MultiplyBlend());  break;
-            default:
-                PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
-                return 0;
-            }
+            Blitter::Blit(*self->canvas, *dest->canvas, x, y, *Blitter::GetBlender(blendMode));
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -257,23 +251,12 @@ namespace Script
             CanvasObject* dest;
             int x, y;
             int w, h;
-            int mode = 0;
+            ::Video::BlendMode blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!iiii|i:ScaleBlit", &type, &dest, &x, &y, &w, &h, &mode))
+            if (!PyArg_ParseTuple(args, "O!iiii|i:ScaleBlit", &type, &dest, &x, &y, &w, &h, &blendMode))
                 return 0;
 
-            switch (mode)
-            {
-            case 0: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::OpaqueBlend());  break;
-            case 1: Blitter ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::MatteBlend());  break;
-            case 2: Blitter ::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::AlphaBlend());  break;
-            case 3: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::AddBlend());  break;
-            case 4: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::SubtractBlend());  break;
-            case 5: Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, Blitter::MultiplyBlend());  break;
-            default:
-                PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode.", mode));
-                return 0;
-            }
+            Blitter::ScaleBlit(*self->canvas, *dest->canvas, x, y, w, h, *Blitter::GetBlender(blendMode));
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -286,23 +269,12 @@ namespace Script
             int w, h;
             int ofsx = 0;
             int ofsy = 0;
-            int mode = 0;
+            ::Video::BlendMode blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!iiii|iii:TileBlit", &type, &dest, &x, &y, &w, &h, &ofsx, &ofsy, &mode))
+            if (!PyArg_ParseTuple(args, "O!iiii|iii:TileBlit", &type, &dest, &x, &y, &w, &h, &ofsx, &ofsy, &blendMode))
                 return 0;
 
-            switch (mode)
-            {
-            case 0: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::OpaqueBlend());   break;
-            case 1: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::MatteBlend());   break;
-            case 2: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AlphaBlend());   break;
-            case 3: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::AddBlend());   break;
-            case 4: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::SubtractBlend());   break;
-            case 5: Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, Blitter::MultiplyBlend());   break;
-            default:
-                PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", mode));
-                return 0;
-            }
+            Blitter::TileBlit(*self->canvas, *dest->canvas, x, y, w, h, ofsx, ofsy, *Blitter::GetBlender(blendMode));
 
             Py_INCREF(Py_None);
             return Py_None;
@@ -341,23 +313,28 @@ namespace Script
             if (!PyArg_ParseTuple(args, "iiiii|i:DrawLine", &x1, &y1, &x2, &y2, &colour, &blendMode))
                 return 0;
 
-            switch (blendMode)
-            {
-            case 0: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::OpaqueBlend());   break;
-            case 1: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::MatteBlend());   break;
-            case 2: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::AlphaBlend());   break;
-            case 3: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::AddBlend());   break;
-            case 4: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::SubtractBlend());   break;
-            case 5: Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, Blitter::MultiplyBlend());   break;
-            default:
-                PyErr_SetString(PyExc_RuntimeError, va("%i is not a valid blending mode", blendMode));
-                return 0;
-            }
+            Blitter::DrawLine(*self->canvas, x1, y1, x2, y2, colour, *Blitter::GetBlender(blendMode));
 
             Py_INCREF(Py_None);
             return Py_None;
         }
-        
+
+        METHOD(Canvas_DrawRect)
+        {
+            int x1, y1, x2, y2;
+            u32 colour;
+            bool filled;
+            ::Video::BlendMode blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iiiii|ii:DrawRect", &x1, &y1, &x2, &y2, &colour, &filled, &blendMode))
+                return 0;
+
+            Blitter::DrawRect(*self->canvas, x1, y1, x2, y2, colour, filled, *Blitter::GetBlender(blendMode));
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+                
         METHOD(Canvas_DrawText)
         {
             Script::Font::FontObject* font;
