@@ -29,8 +29,13 @@ namespace Script {
             {   "StringWidth",  (PyCFunction)Font_StringWidth,  METH_VARARGS,
                 "Font.StringWidth(text) -> int\n\n"
                 "Returns how many pixels in width the passed string would be, \n"
-                "if printed in this font."
+                "if printed in this font.  Takes newlines into account."
             },
+            {   "StringHeight",  (PyCFunction)Font_StringHeight,  METH_VARARGS,
+                "Font.StringHeight(text) -> int\n\n"
+                "Returns how many pixels in height the passed string would be, \n"
+                "if printed in this font.  Takes newlines into account."
+            },            
             {   0,           0    }
         };
 
@@ -42,6 +47,10 @@ namespace Script {
         SET(TabSize)       { self->font->SetTabSize(PyInt_AsLong(value)); return 0; }
         GET(LetterSpacing) { return PyInt_FromLong(self->font->LetterSpacing()); }
         SET(LetterSpacing) { self->font->SetLetterSpacing(PyInt_AsLong(value)); return 0; }
+        GET(WordSpacing)   { return PyInt_FromLong(self->font->WordSpacing()); }
+        SET(WordSpacing)   { self->font->SetWordSpacing(PyInt_AsLong(value)); return 0; }        
+        GET(LineSpacing)   { return PyInt_FromLong(self->font->WordSpacing()); }
+        SET(LineSpacing)   { self->font->SetLineSpacing(PyInt_AsLong(value)); return 0; }        
 #undef GET
 #undef SET
 
@@ -50,6 +59,8 @@ namespace Script {
             {   "height",        (getter)getHeight,       0,                        "Gets the height of the font."  },
             {   "tabsize",       (getter)getTabSize,      (setter)setTabSize,       "Gets or sets the tab size of the font."    },
             {   "letterspacing", (getter)getLetterSpacing,(setter)setLetterSpacing, "Gets or sets the letter spacing of the font."   },
+            {   "wordspacing",   (getter)getWordSpacing,  (setter)setWordSpacing,   "Gets or sets the word spacing of the font."   },
+            {   "linespacing",   (getter)getLineSpacing,  (setter)setLineSpacing,   "Gets or sets the line spacing of the font."   },
             {   0   }
         };
 
@@ -148,13 +159,23 @@ namespace Script {
         METHOD(Font_StringWidth) {
             char* message;
 
-            if (!PyArg_ParseTuple(args, "s:Font.Width", &message)) {
+            if (!PyArg_ParseTuple(args, "s:Font.StringWidth", &message)) {
                 return 0;
             }
 
             return PyInt_FromLong(self->font->StringWidth(message));
         }
 
+        METHOD(Font_StringHeight) {
+            char* message;
+
+            if (!PyArg_ParseTuple(args, "s:Font.StringHeight", &message)) {
+                return 0;
+            }
+
+            return PyInt_FromLong(self->font->StringHeight(message));
+        }
+        
 #undef METHOD
     }
 }

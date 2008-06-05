@@ -20,6 +20,8 @@ namespace Ika {
         , _height(0)
         , _tabSize(30)
         , _letterSpacing(0)
+        , _wordSpacing(0)
+        , _lineSpacing(0)
     {
         CDEBUG("cfont::loadfnt");
 
@@ -79,9 +81,11 @@ namespace Ika {
         if (img) {
             _video->TintBlitImage(img, x, y, colour.i);
             x += img->Width() + _letterSpacing;
+            if (c == ' ')
+                x += _wordSpacing;
         }
     }
-
+    
     void Font::PrintChar(int& x, int y, uint subset, char c, RGBA /*colour*/, Canvas& dest, Video::BlendMode blendMode) {
         //if (c < 0 || c > 96) {
         //    return;
@@ -111,6 +115,9 @@ namespace Ika {
         }
 
         x += glyph.Width() + _letterSpacing;
+        
+        if (c == ' ')
+            x += _wordSpacing;
     }
 
     template <typename Printer>
@@ -124,7 +131,7 @@ namespace Ika {
         for (uint i = 0; i < len; i++) {
             switch (s[i]) {
                 case '\n': {  // newline
-                    y += int(_height);
+                    y += int(_height) + _lineSpacing;
                     x = startx;
                     continue;
                 }
@@ -241,9 +248,27 @@ namespace Ika {
             inline void operator ()(int& x, int /*y*/, int subset, char c, RGBA /*colour*/, Font* font) {
                 const Canvas& glyph = font->GetGlyphCanvas(c, subset);
                 x += glyph.Width() + font->LetterSpacing();
+                if (c == ' ')
+                    x += font->WordSpacing();
                 width = max(width, x);
             }
         };
+        
+        struct CountHeight {
+            int height;
+
+            CountHeight()
+                : height(0)
+            {}
+
+            inline void operator ()(int /*x*/, int& y, int subset, char c, RGBA /*colour*/, Font* font) {
+                if (y == 0)
+                    y += font->Height() + font->LineSpacing();
+                if (c == '\n')
+                    y += font->Height() + font->LineSpacing();
+                height = max(height, y);
+            }
+        };        
     }
 
     void Font::PrintString(int x, int y, const std::string& s) {
@@ -262,5 +287,11 @@ namespace Ika {
         PaintString(0, 0, s, counter);
         return counter.width;
     }
+    
+    int Font::StringHeight(const std::string& s) {
+        CountHeight counter;
+        PaintString(0, 0, s, counter);
+        return counter.height;
+    }    
 
 }

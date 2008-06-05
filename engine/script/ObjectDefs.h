@@ -177,6 +177,7 @@ namespace Script {
         METHOD(Font_CenterPrint, FontObject);
         METHOD(Font_RightPrint, FontObject);
         METHOD(Font_StringWidth, FontObject);
+        METHOD(Font_StringHeight, FontObject);
 
         void Init();
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw);

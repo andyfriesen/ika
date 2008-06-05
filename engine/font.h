@@ -36,13 +36,18 @@ namespace Ika {
         void PrintString(int x, int y, const std::string& s, Canvas& dest, Video::BlendMode blendMode);  ///< Draws the string on a canvas.
 
         int StringWidth(const std::string& s);                            ///< Returns the width, in pixels, of the string, if printed in this font.
+        int StringHeight(const std::string& s);                           ///< Returns the height, in pixels, of the string, if printed in this font.
 
         uint Width()  const { return _width; }                            ///< Returns the width of the widest char in the font.
         uint Height() const { return _height; }                           ///< Returns the height of the highest char in the font.
         int TabSize() const { return _tabSize; }                          ///< Returns the tab granularity.
         int LetterSpacing() const { return _letterSpacing; }              ///< Returns the letter spacing.
+        int WordSpacing() const { return _wordSpacing; }                  ///< Returns the word spacing.
+        int LineSpacing() const { return _lineSpacing; }                  ///< Returns the line spacing.
         void SetTabSize(int tabsize) { _tabSize = tabsize; }              ///< Sets the tab granularity.
         void SetLetterSpacing(int spacing) { _letterSpacing = spacing; }  ///< Sets the letter spacing, in pixels.
+        void SetWordSpacing(int spacing) { _wordSpacing = spacing; }      ///< Sets the word spacing, in pixels.
+        void SetLineSpacing(int spacing) { _lineSpacing = spacing; }      ///< Sets the line spacing, in pixels.
 
     private:
         FontFile _fontFile;
@@ -53,6 +58,8 @@ namespace Ika {
         uint _width, _height;  ///< Width/height of the widest/highest character in the whole font.
         int _tabSize;          ///< Tab granularity, in pixels.
         int _letterSpacing;    ///< Spacing between letters, in pixels.
+        int _wordSpacing;      ///< Spacing between words, in pixels.
+        int _lineSpacing;      ///< Spacing between lines, in pixels.
     };
 
 }
