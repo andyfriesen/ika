@@ -792,9 +792,7 @@ namespace OpenGL {
         glEnable(GL_TEXTURE_2D);
     }
 
-    // see VideoObject to see what I'm trying to do here --Thrasher
-    // these need to be dynamic vectors
-    /*void Driver::DrawFreeform(int x[4], int y[4], u32 colour[4]) {
+    void Driver::DrawQuad(int x[4], int y[4], u32 colour[4]) {
         glDisable(GL_TEXTURE_2D);
         glBegin(GL_QUADS);
         for (int i = 0; i < 4; i++) {
@@ -804,7 +802,69 @@ namespace OpenGL {
         glEnd();
         glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
         glEnable(GL_TEXTURE_2D);
-    }*/
+    }
+    
+    void Driver::DrawLineList(std::vector<int> x, std::vector<int> y, std::vector<u32> colour, int drawmode) {
+                
+        glDisable(GL_TEXTURE_2D);
+        
+        switch (drawmode) {
+            case 1:  glBegin(GL_LINE_STRIP);  break;
+            default:  glBegin(GL_LINES);  break;
+        }
+        
+        if (drawmode == 3) {
+        
+            for (size_t i = 0; i < x.capacity(); i++) {
+                for (size_t j = 0; j < x.capacity(); j++) {
+                    if (j != i) {
+                        glColor4ubv((u8*)&colour[i]);
+                        glVertex2i(x[i], y[i]);
+                        glColor4ubv((u8*)&colour[j]);
+                        glVertex2i(x[j], y[j]);                                        
+                    }
+                }
+            }
+        }
+        else {
+        
+            for (size_t i = 0; i < x.capacity(); i++) {
+            
+                if (drawmode == 2 && i >= 2) {
+                    glColor4ubv((u8*)&colour[0]);
+                    glVertex2i(x[0], y[0]);
+                }
+                
+                glColor4ubv((u8*)&colour[i]);
+                glVertex2i(x[i], y[i]);
+            
+            }
+
+        }
+        glEnd();
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
+        glEnable(GL_TEXTURE_2D);
+    }
+
+    void Driver::DrawTriangleList(std::vector<int> x, std::vector<int> y, std::vector<u32> colour, int drawmode) {
+                
+        glDisable(GL_TEXTURE_2D);
+        
+        switch (drawmode) {
+            case 1:  glBegin(GL_TRIANGLE_STRIP);  break;
+            case 2:  glBegin(GL_POLYGON);  break;
+            default:  glBegin(GL_TRIANGLES);  break;
+        }
+        
+        for (size_t i = 0; i < x.capacity(); i++) {
+            glColor4ubv((u8*)&colour[i]);
+            glVertex2i(x[i], y[i]);
+        }
+        
+        glEnd();
+        glColor4ub(_tintColour.r, _tintColour.g, _tintColour.b, _tintColour.a);
+        glEnable(GL_TEXTURE_2D);
+    }
     
     Image* Driver::GrabImage(int x1, int y1, int x2, int y2) {
         // Way fast, since there are no pixels going from the video card to system memory.

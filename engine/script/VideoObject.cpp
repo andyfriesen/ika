@@ -109,14 +109,41 @@ namespace Script {
             
             {   "DrawTriangle", (PyCFunction)Video_DrawTriangle, METH_VARARGS,
                 "DrawTriangle((x, y, colour), (x, y, colour), (x, y, colour)[, blendmode])\n\n"
-                "Draws a triangle onscreen.  Each point is drawn in the colour specified."
+                "Draws a filled triangle onscreen.  Each point is drawn in the colour specified, "
+                "and a gradient is applied between the points."
             },
             
-            // doesn't work, try to make it work plz --Thrasher
-            /*{   "DrawFreeform", (PyCFunction)Video_DrawFreeform, METH_VARARGS,
-                "DrawFreeform((x, y, colour), (x, y, colour)[, (x, y, colour), ...[, blendmode]])\n\n"
-                "Draws a bunch of polys onscreen.  Each point is drawn in the colour specified."
-            },*/
+            {   "DrawQuad", (PyCFunction)Video_DrawQuad, METH_VARARGS,
+                "DrawQuad((x, y, colour), (x, y, colour), (x, y, colour), (x, y, colour)[, blendmode])\n\n"
+                "Draws a quad onscreen.  Each point is drawn in the colour specified.\n"
+                "(A quad is two triangles from (p1,p2,p3) and (p2,p3,p4).  Therefore, make sure p2 and p3 are"
+                "opposite corners of the quad.)"
+            },
+
+            {   "DrawLineList", (PyCFunction)Video_DrawLineList, METH_VARARGS,
+                "DrawLineList(pointlist[, drawmode, blendmode]])\n\n"
+                "Draws a bunch of points onscreen.  Each argument of pointlist should be a tuple in the format (x,y,colour)."
+                "Each point is drawn in the colour specified, and a gradient is applied between the points.\n"
+                "There is no extra python overhead on this function, so it is much better suited for drawing a lot of lines than"
+                "calling DrawLine a bunch of times.\n"
+                "Method of drawing depends on the value of drawmode as follows:\n"
+                "0 - draws lines between each pair of points, so (p1,p2) (p3,p4) etc. (default)\n"
+                "1 - draws lines between each point and the last point, so (p1,p2) (p2,p3) (p3,p4) etc.\n"
+                "2 - draws lines between the first point and the other points, so (p1,p2) (p1,p3) (p1,p4) etc.\n"
+                "3 - draws lines between each point and every other point."
+            },
+                        
+            {   "DrawTriangleList", (PyCFunction)Video_DrawTriangleList, METH_VARARGS,
+                "DrawTriangleList(pointlist[, drawmode, blendmode]])\n\n"
+                "Draws a bunch of filled triangles onscreen.  Each argument of pointlist should be a tuple in the format (x,y,colour)."
+                "Each point is drawn in the colour specified, and a gradient is applied between the points.\n"
+                "There is no extra python overhead on this function, so it is much better suited for drawing a lot of triangles than"
+                "calling DrawTriangle a bunch of times.\n"
+                "Method of drawing depends on the value of drawmode as follows:\n"
+                "0 - draws triangles between each set of 3 points, so (p1,p2,p3) (p4,p5,p6) etc. (default)\n"
+                "1 - draws triangles between each point and the last 2 points, so (p1,p2,p3) (p2,p3,p4) (p3,p4,p5) etc.\n"
+                "2 - draws triangles between the first point, the previous point, and the current point, so (p1,p2,p3) (p1,p3,p4) (p1,p4,p5) etc."
+            },
 
             {   "ClipScreen",   (PyCFunction)Video_ClipScreen, METH_VARARGS,
                 "ClipScreen(left=0, top=0, right=xres, bottom=yres)\n\n"
@@ -459,32 +486,106 @@ namespace Script {
             return Py_None;
         }
 
-        // tried to do something cool, but couldn't figure it out
-        // kept getting "bad argument to internal function"
-        // see if you can figure it out --Thrasher
-        /*METHOD(Video_DrawFreeform) {
-            
-            // these need to be dynamic vectors
+        METHOD(Video_DrawQuad) {
             int x[4];
             int y[4];
             u32 col[4];
-            
             int blendMode = ::Video::Normal;
 
-            int size = PyList_Size(args);
-            for (int i=0; i<size; i++) {
-                PyObject* slice = PyList_GetSlice(args, i, i+1);
-                if (!PyArg_ParseTuple(slice, "(iii):Video.DrawQuad", x + i, y + i, col + i)) {
-                    return 0;
-                }                
+            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii)(iii)|i:Video.DrawQuad", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2, x + 3, y + 3, col + 3, &blendMode)) {
+                return 0;
             }
 
             self->video->SetBlendMode((::Video::BlendMode)blendMode);
-            self->video->DrawFreeform(x, y, col);
+            self->video->DrawQuad(x, y, col);
 
             Py_INCREF(Py_None);
             return Py_None;
-        }*/
+        }
+        
+        METHOD(Video_DrawLineList) {
+            
+            int drawMode = 0;
+            int blendMode = ::Video::Normal;
+
+            PyObject* pointList;
+            if (!PyArg_ParseTuple(args, "O!|ii:Video.DrawLineList", &PyList_Type, &pointList, &drawMode, &blendMode))
+                return 0;
+                
+            int len = PyObject_Length(pointList);
+            
+            std::vector<int> px;
+            std::vector<int> py;
+            std::vector<u32> pc;
+            
+            int x = 0;
+            int y = 0;
+            u32 col = 0;
+            
+            px.reserve(len);
+            py.reserve(len);
+            pc.reserve(len);
+            
+            for (int i = 0; i < len; i++) {
+                
+                PyObject* slice = PyList_GetItem(pointList, i);
+                
+                if (!PyArg_ParseTuple(slice, "iii:Video.DrawLineList", &x, &y, &col))
+                    return 0;
+                    
+                px.push_back(x);
+                py.push_back(y);
+                pc.push_back(col);
+            }
+
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
+            self->video->DrawLineList(px, py, pc, drawMode);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+        
+        METHOD(Video_DrawTriangleList) {
+            
+            int drawMode = 0;
+            int blendMode = ::Video::Normal;
+
+            PyObject* pointList;
+            if (!PyArg_ParseTuple(args, "O!|ii:Video.DrawTriangleList", &PyList_Type, &pointList, &drawMode, &blendMode))
+                return 0;
+                
+            int len = PyObject_Length(pointList);
+            
+            std::vector<int> px;
+            std::vector<int> py;
+            std::vector<u32> pc;
+            
+            int x = 0;
+            int y = 0;
+            u32 col = 0;
+            
+            px.reserve(len);
+            py.reserve(len);
+            pc.reserve(len);
+            
+            for (int i = 0; i < len; i++) {
+                
+                PyObject* slice = PyList_GetItem(pointList, i);
+                
+                if (!PyArg_ParseTuple(slice, "iii:Video.DrawTriangleList", &x, &y, &col))
+                    return 0;
+                    
+                px.push_back(x);
+                py.push_back(y);
+                pc.push_back(col);
+            }
+
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
+            self->video->DrawTriangleList(px, py, pc, drawMode);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
         
         METHOD(Video_ClipScreen) {
             const char* keywords[] = {

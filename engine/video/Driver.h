@@ -114,6 +114,15 @@ namespace Video {
         /// Draws a triangle on the screen.
         virtual void DrawTriangle(int x[3], int y[3], u32 colour[3]) = 0;
 
+        /// Draws a quad on the screen.
+        virtual void DrawQuad(int x[4], int y[4], u32 colour[4]) = 0;
+
+        /// Draws a series of lines on the screen.
+        virtual void DrawLineList(std::vector<int> x, std::vector<int> y, std::vector<u32> colour, int drawmode) = 0;
+        
+        /// Draws a series of triangles on the screen.
+        virtual void DrawTriangleList(std::vector<int> x, std::vector<int> y, std::vector<u32> colour, int drawmode) = 0;
+        
         /// Draws a series of polys on the screen.
         /// doesn't work, so commented --Thrasher
         //virtual void DrawFreeform(int x[4], int y[4], u32 colour[4]) = 0;

@@ -544,8 +544,8 @@ void Engine::Render(const std::vector<uint>& list) {
         const Map::Layer* layer = map.GetLayer(cameraTarget->layerIndex);
 
         SetCamera(Point(
-            cameraTarget->x - res.x / 2 + layer->x,
-            cameraTarget->y - res.y / 2 + layer->y));
+            cameraTarget->x + cameraTarget->sprite->nHotw / 2 - res.x / 2 + layer->x,
+            cameraTarget->y + cameraTarget->sprite->nHoth / 2 - res.y / 2 + layer->y));
     }
 
     // Note that we do not clear the screen here.  This is intentional.

@@ -157,6 +157,8 @@ namespace Script {
             GET(MapObs)             { return PyInt_FromLong(self->ent->obstructedByMap?1:0); }
             GET(EntObs)             { return PyInt_FromLong(self->ent->obstructedByEntities?1:0); }
             GET(SpriteName)         { return PyString_FromString(self->ent->sprite->_fileName.c_str()); }
+            GET(SpriteWidth)        { return PyInt_FromLong(self->ent->sprite->Width()); }
+            GET(SpriteHeight)       { return PyInt_FromLong(self->ent->sprite->Height()); }
             GET(HotX)               { return PyInt_FromLong(self->ent->sprite->nHotx); }
             GET(HotY)               { return PyInt_FromLong(self->ent->sprite->nHoty); }
             GET(HotWidth)           { return PyInt_FromLong(self->ent->sprite->nHotw); }
@@ -275,6 +277,8 @@ namespace Script {
             {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
             {   "entobs",           (getter)getEntObs,              (setter)setEntObs,          "If nonzero, the entity is unable to walk through entities whose isobs property is set."    },
             {   "spritename",       (getter)getSpriteName,          (setter)setSpriteName,      "Gets or sets the filename of the sprite used to display the entity.  Setting this will load a spriteset and make the sprite use it."   },
+            {   "spritewidth",      (getter)getSpriteWidth,         0,                          "Gets the width of the entity's sprite."  },
+            {   "spriteheight",     (getter)getSpriteHeight,        0,                          "Gets the height of the entity's sprite."  },
             {   "hotx",             (getter)getHotX,                0,                          "Gets the X position of the entity's hotspot."  },
             {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
             {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
