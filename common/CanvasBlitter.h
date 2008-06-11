@@ -35,12 +35,11 @@ namespace Blitter {
         inline virtual RGBA operator()(RGBA src, RGBA dest) const {
             // Trivial cases: handle zero and full alpha.
             if (!src.a) return dest;
-            if (src.a == 255) return src;
 
             u8  a = src.a;
 
             RGBA result;
-            result.a = a;
+            result.a = dest.a;
 
             // Classic alpha blend:
             // dest = (source * opacity) + (dest * (1 - opacity))
