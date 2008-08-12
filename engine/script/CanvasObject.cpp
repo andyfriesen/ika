@@ -155,6 +155,7 @@ namespace Script
         {
             CanvasObject* canvas = PyObject_New(CanvasObject, &type);
             canvas->canvas = c;
+            canvas->ref = false;
             return (PyObject*)canvas;
         }
         
