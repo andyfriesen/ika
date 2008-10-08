@@ -9,18 +9,18 @@
 # suitability of this code for any purpose.
 """
 
-import binascii
-import struct
-
 import ika
 
-
-def hexColour(r, g, b, a=255):
-    c = ika.RGB(r, g, b, a)
-    v = binascii.hexlify(struct.pack('!l', c))
-    return v
-
-hexColor = hexColour
+try:
+    import binascii
+    import struct
+    def hexColour(r, g, b, a=255):
+        c = ika.RGB(r, g, b, a)
+        v = binascii.hexlify(struct.pack('!l', c))
+        return v
+except:
+    def hexColour(r, g, b, a=255):
+        return '%02X'*4 % (a, b, g, r)
 
 
 _o = 0x00
@@ -37,5 +37,6 @@ colours = dict([(name, '#[%s]' % hexColour(*value))
                                     ('white',   (_x, _x, _x)))])
 
 colors = colours
+hexColor = hexColour
 
 __all__ = ['colors', 'colours', 'hexColor', 'hexColour']
