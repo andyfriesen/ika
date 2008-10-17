@@ -33,7 +33,7 @@ function ShowNews($showall) {
 
 function EditNews($view)
 {
-    global $_username, $submit, $view, $Subject, $Text, $safe_post;
+    global $_username, $submit, $Subject, $Text, $safe_post;
     
     if (!$view)
     {
@@ -208,17 +208,17 @@ VerifyLogin();
 
 # echo '<p style="text-align: center;"><a href="board.php?post=5164">Click here for information on the ika revitalization project codenamed "ika: Redux".</a></p><br><br>';
 
-if (isset($edit))
-    EditNews($view);
-else if (isset($add))
+if (isset($_GET["edit"]))
+    EditNews($_GET["view"]);
+else if (isset($_GET["add"]))
     AddNews();
-else if (isset($destroy))
-    DeleteNews($view);
+else if (isset($_GET["destroy"]))
+    DeleteNews($_GET["view"]);
 else
 {
     if (!$_username)
         ShowWelcome();
-    ShowNews(isset($showall));
+    ShowNews(isset($_GET["showall"]));
 }
 
 ?>
