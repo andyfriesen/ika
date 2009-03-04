@@ -2,6 +2,7 @@
       #the br tags need to be removed as well. ?>
 <div class="sidebar" id="sidebar">
     <div class="menu" id="menu">
+        <a href="articles.php?view=26"><strong>Get Started!</strong></a><br />
         <a href="news.php">News</a><br />
         <a href="gallery.php">Gallery</a><br />
         <a href="articles.php?view=1"><abbr title="Frequently Asked Questions">FAQ</abbr></a><br />

@@ -237,7 +237,7 @@ td, th, .error, .success, .notice, .box, .block {border: 1px solid #4d626f}
 .menu {
     background: url(images/ikagames_menubg.gif) 0 100% no-repeat;
     margin: 0 0 .5em 0;
-    padding: 0 1em 1em 1em;
+    padding: 0 0 1em 1em;
     position: relative;
 }
 
