@@ -77,6 +77,9 @@ namespace Video {
         /// Blits a scaled version of the provided image to the screen.
         virtual void ScaleBlitImage(Image* img, int x, int y, int w, int h) = 0;
 
+        /// Blits a rotated (and possibly scaled) version of the provided image to the screen.
+        virtual void RotateBlitImage(Image* img, int x, int y, float angle, float scalex, float scaley) = 0;
+
         /// Blits a distorted version of the image to the screen, given the provided corner points.
         virtual void DistortBlitImage(Image* img, int x[4], int y[4]) = 0;
 

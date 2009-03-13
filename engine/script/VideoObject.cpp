@@ -31,6 +31,15 @@ namespace Script {
                 "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
                 "The default is ika.Alphablend."
             },
+
+            {   "RotateBlit",    (PyCFunction)Video_RotateBlit,   METH_VARARGS,
+                "RotateBlit(image, x, y, angle, [scalex[, scaley [, blendmode]]])\n\n"
+                "Draws the image at (x, y), rotating to the angle given.\n"
+                "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
+            },
             
             {   "DistortBlit",  (PyCFunction)Video_DistortBlit, METH_VARARGS,
                 "DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[, blendmode])\n\n"
@@ -283,6 +292,25 @@ namespace Script {
             Py_INCREF(Py_None);
             return Py_None;
         }
+
+        METHOD(Video_RotateBlit) {
+            Script::Image::ImageObject* image;
+            int x, y;
+			float angle;
+            float scalex = 1;
+			float scaley = 1;
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "O!iif|ffi:Video.RotateBlit", &Script::Image::type, &image, &x, &y, &angle, &scalex, &scaley, &blendMode)) {
+                return 0;
+            }
+
+            self->video->SetBlendMode((::Video::BlendMode)blendMode);
+            self->video->RotateBlitImage(image->img, x, y, angle, scalex, scaley);
+            
+            Py_INCREF(Py_None);
+            return Py_None;
+		}
 
         METHOD(Video_DistortBlit) {
             Script::Image::ImageObject* image;

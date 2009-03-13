@@ -96,6 +96,9 @@ namespace OpenGL {
         /// Blits a scaled version of the provided image to the screen.
         virtual void ScaleBlitImage(Video::Image* img, int x, int y, int w, int h);
 
+        /// Blits a rotated (and possibly scaled) version of the provided image to the screen.
+		virtual void RotateBlitImage(Video::Image* img, int x, int y, float angle, float scalex, float scaley);
+
         /// Blits a distorted version of the image to the screen, given the provided corner points.
         virtual void DistortBlitImage(Video::Image* img, int x[4], int y[4]);
 

@@ -166,6 +166,8 @@ namespace OpenGL {
                 glGenTextures(1, &tex->handle);
                 SwitchTexture(tex->handle);
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyShit);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                 _textures.insert(tex);
@@ -236,6 +238,8 @@ namespace OpenGL {
             glGenTextures(1, &texture);
             SwitchTexture(texture);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
+            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             src.Flip();
@@ -496,6 +500,28 @@ namespace OpenGL {
         glTexCoord2f(texCoords[0], texCoords[1]);   glVertex2i(x, y + h);
         glEnd();
         glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+    }
+
+	void Driver::RotateBlitImage(Video::Image* i, int x, int y, float angle, float scalex, float scaley) {
+        Image* img = (Image*)i;
+                  
+        const float* texCoords = img->_texCoords;
+		float w = img->_width * scalex;
+		float h = img->_height * scaley;
+        SwitchTexture(img->_texture->handle);
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+		glPushMatrix();
+		glTranslatef(x + w / 2.0f, y + h / 2.0f, 0);
+		glRotatef(angle * 180.0f / 3.14159265f, 0, 0, 1);
+		glTranslatef(-w / 2.0f, -h / 2.0f, 0.0f);
+        glBegin(GL_QUADS);
+        glTexCoord2f(texCoords[0], texCoords[3]); glVertex2d(0.0, 0.0);
+        glTexCoord2f(texCoords[2], texCoords[3]); glVertex2d(w, 0.0);
+        glTexCoord2f(texCoords[2], texCoords[1]); glVertex2d(w + 1, h + 1);
+        glTexCoord2f(texCoords[0], texCoords[1]); glVertex2d(1.0, h);
+        glEnd();
+		glPopMatrix();
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
     }
 
     void Driver::DistortBlitImage(Video::Image* i, int x[4], int y[4]) {
