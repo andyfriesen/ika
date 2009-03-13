@@ -221,6 +221,17 @@ namespace OpenGL {
                 }
             }
 
+#ifdef PREMULTIPLY
+			// Premultiply alpha
+			RGBA* p;
+			for (int i = 0; i < texwidth * texheight; i++) {
+				p = &(pixels[i]);
+				p->r = (p->r * p->a) / 255;
+				p->g = (p->g * p->a) / 255;
+				p->b = (p->b * p->a) / 255;
+			}
+#endif
+
             uint texture;
             glGenTextures(1, &texture);
             SwitchTexture(texture);
@@ -379,7 +390,11 @@ namespace OpenGL {
 				break; 
 			}
 
-            case Video::Normal:  {  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;  }
+#ifdef PREMULTIPLY_ALPHA
+            case Video::Normal:  {  glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);  glEnable(GL_BLEND); break;  }
+#else
+			case Video::Normal:  {  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA); glEnable(GL_BLEND); break; }
+#endif
             case Video::Add:     {  glBlendFunc(GL_ONE, GL_ONE);                        glEnable(GL_BLEND); break;  }
 
             case Video::Subtract: {
@@ -543,8 +558,8 @@ namespace OpenGL {
             const float* texCoords = img->_texCoords;
     
             glBegin(GL_QUADS);
-            for (float curY = float(y); curY < y + h; curY += imgWidth) {
-                for (float curX = float(x); curX < x + w; curX += imgHeight) {
+            for (float curY = float(y); curY < y + h; curY += imgHeight) {
+                for (float curX = float(x); curX < x + w; curX += imgWidth) {
                     glTexCoord2f(texCoords[0], texCoords[3]); glVertex2f(curX, curY);
                     glTexCoord2f(texCoords[2], texCoords[3]); glVertex2f(curX + imgWidth, curY);
                     glTexCoord2f(texCoords[2], texCoords[1]); glVertex2f(curX + imgWidth, curY + imgHeight);

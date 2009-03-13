@@ -1,10 +1,12 @@
 #pragma once
 
-#define SHARE_TEXTURES
+//#define SHARE_TEXTURES
 
 #ifdef SHARE_TEXTURES
 #   include <set>
 #endif
+
+//#define PREMULTIPLY_ALPHA
 
 #include "SDL/SDL.h"
 
