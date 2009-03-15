@@ -176,6 +176,7 @@ void Engine::Startup() {
     file.open("game.ika-game");
     if (!file.is_open()) {
         Sys_Error("Game Startup: game.ika-game does not exist.");
+		return;
     }
 
     aries::DataNode* document;
@@ -183,33 +184,52 @@ void Engine::Startup() {
     file.close();
 
     std::string title;
+	std::string currentNodeName = "<?>";
     uint xres = 0;
     uint yres = 0;
 
-    aries::DataNode* rootNode = document->getChild("ika-game");
+	try {
+		aries::DataNode* rootNode = document->getChild("ika-game");
+		currentNodeName = "ika-game";
 
-    // Load information node.
-    {
-        aries::DataNode* infoNode = rootNode->getChild("information");
+		// Load information node.
+		{
+			aries::DataNode* infoNode = rootNode->getChild("information");
+			currentNodeName = "information";
 
-        title = infoNode->getChild("title")->getString();
-    }
+			title = infoNode->getChild("title")->getString();
+		}
 
-    // Load video node.
-    {
-        aries::DataNode* videoNode = rootNode->getChild("video");
+		// Load video node.
+		{
+			aries::DataNode* videoNode = rootNode->getChild("video");
+			currentNodeName = "video";
 
-        xres = (uint)std::atoi(videoNode->getChild("xres")->getString().c_str());
-        yres = (uint)std::atoi(videoNode->getChild("yres")->getString().c_str());
-    }
+			xres = (uint)std::atoi(videoNode->getChild("xres")->getString().c_str());
+			yres = (uint)std::atoi(videoNode->getChild("yres")->getString().c_str());
+		}
 
-    // Load resources node.
-    {
-        aries::DataNode* resNode = rootNode->getChild("resources");
+		// Load resources node (optional).
+		{
+			if(rootNode->hasChild("resources")) {
+				aries::DataNode* resNode = rootNode->getChild("resources");
+				currentNodeName = "resources";
 
-        // Set map path.
-        _mapPath = resNode->getChild("maps")->getString();
-    }
+				// Set map path.
+				_mapPath = resNode->hasChild("maps") ? resNode->getChild("maps")->getString() : ".";
+			}
+			else {
+				_mapPath = ".";
+			}
+		}
+	}
+	catch (std::runtime_error error) {
+		std::string msg = "Game Startup: Error in game.ika-game, inside node '";
+		msg += currentNodeName + "': ";
+		msg += error.what();
+		Sys_Error(msg.c_str());
+		return;
+	}
 
     CConfigFile cfg("user.cfg");
 
