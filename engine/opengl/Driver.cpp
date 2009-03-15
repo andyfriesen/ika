@@ -166,8 +166,6 @@ namespace OpenGL {
                 glGenTextures(1, &tex->handle);
                 SwitchTexture(tex->handle);
                 glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyShit);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-                glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                 _textures.insert(tex);
@@ -233,13 +231,23 @@ namespace OpenGL {
 				p->b = (p->b * p->a) / 255;
 			}
 #endif
+			// Lessen the ugliness of the interpolated artifacts on alpha.
+			// Replaces all 0-alpha pixels with the color provided by alphaTint
+			RGBA* p;
+			for (int i = 0; i < texwidth * texheight; i++) {
+				p = &(pixels[i]);
+				if(p->a == 0)
+				{
+					p->r = 0;
+					p->g = 0;
+					p->b = 0;
+				}
+			}
 
             uint texture;
             glGenTextures(1, &texture);
             SwitchTexture(texture);
             glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, texwidth, texheight, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP);
-            glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
             src.Flip();

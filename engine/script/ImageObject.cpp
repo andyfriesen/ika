@@ -20,16 +20,73 @@ namespace Script {
 
             },
 
+            {   "ClipBlit",        (PyCFunction)Image_ClipBlit,   METH_VARARGS,
+                "ClipBlit(x, y, ix, iy, iw, ih[, blendmode])\n\n"
+                "Draws a portion of the image defined by the coordinates (ix, iy, iw, ih)\n"
+				"at screen coordinates (x, y).\n"
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "blendMode defaults to ika.AlphaBlend."
+            },
+
             {   "ScaleBlit",    (PyCFunction)Image_ScaleBlit,    METH_VARARGS,
                 "Image.ScaleBlit(x, y, width, height[, transparent])\n\n"
                 "Blits the image, but stretches it out to the dimensions\n"
                 "specified in (width, height)."
             },
 
+			{   "RotateBlit",  (PyCFunction)Image_RotateBlit,  METH_VARARGS,
+                "RotateBlit(x, y, angle, [scalex[, scaley [, blendmode]]])\n\n"
+                "Draws the image at (x, y), rotating to the angle given.\n"
+                "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
+            },
+
             {   "DistortBlit",  (PyCFunction)Image_DistortBlit,  METH_VARARGS,
                 "Image.DistortBlit((x1, y1), (x2, y2), (x3, y3), (x4, y4)[, transparency])\n\n"
                 "Blits the image scaled to the four points specified."
             },
+
+			{   "TileBlit",  (PyCFunction)Image_TileBlit,  METH_VARARGS,
+                "Image.TileBlit(x, y, width, height[, scalex[, scaley[, blendmode]]])\n\n"
+                "Draws the image onscreen, \"tiling\" it as necessary to fit the rectangle specified.\n"
+                "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
+                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
+                "The default is ika.Alphablend."
+			},
+
+            {   "TintBlit",  (PyCFunction)Image_TintBlit,  METH_VARARGS,
+                "Image.TintBlit(x, y, tintColour[, blendMode])\n\n"
+                "Draws the image onscreen, using tintColour to 'tint' the image.\n"
+                "Each pixel is multiplied by tintColour.  The resultant values are then\n"
+                "scaled before the pixel is plotted.\n\n"
+
+                "In English, this means that RGBA(255, 255, 255, 255) is a normal blit,\n"
+                "while RGBA(0, 0, 0, 255) will leave the alpha channel intact, but reduce\n"
+                "all pixels to black. (effectively drawing a silhouette)\n\n"
+
+                "blendMode is handled the same way as all the other blits.\n\n"
+
+                "Lots of effects could be created by using this creatively.  Experiment!"
+            },
+
+            {   "TintDistortBlit",  (PyCFunction)Image_TintDistortBlit, METH_VARARGS,
+                "Image.TintDistortBlit((upleftX, upleftY, upleftTint), (uprightX, uprightY, uprightTint), (downrightX, downrightY, downrightTint), (downleftX, downleftY, downrightTint)[, blendmode])\n\n"
+                "Combines the effects of DistortBlit and TintBlit.  Each corner can be tinted individually,\n"
+                "using the same algorithm as TintBlit.  The corners, if not the same, are smoothly interpolated\n"
+                "across the image."
+            },
+
+            {   "TintTileBlit",     (PyCFunction)Image_TintTileBlit, METH_VARARGS,
+                "Image.TintTileBlit(x, y, width, height, tintColour, scalex=1, scaley=1, blendmode=Normal)\n\n"
+                "\"tile\"-blits the image, just like Video.TileBlit, except it multiplies each pixel by\n"
+                "tintColour, resulting in a colour tint."
+            },
+
+
 
             /*{   "Clip",         (PyCFunction)Image_Clip,         METH_VARARGS,
                 "Image.Clip(x, y, x2, y2)\n\n"
@@ -82,7 +139,7 @@ namespace Script {
         }
 
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
-            static char* keywords[] = { "src", 0 };
+			static char* keywords[] = { "src", 0 };
             PyObject* obj;
 
             if (!PyArg_ParseTupleAndKeywords(args, kw, "O:__new__", keywords, &obj))
@@ -126,13 +183,28 @@ namespace Script {
 
         PyObject* Image_Blit(ImageObject* self, PyObject* args) {
             int x, y;
-            int trans = ::Video::Normal;
+            int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "ii|i:Image.Blit", &x, &y, &trans))
+            if (!PyArg_ParseTuple(args, "ii|i:Image.Blit", &x, &y, &blendMode))
                 return 0;
 
-            engine->video->SetBlendMode((::Video::BlendMode)trans);
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
             engine->video->BlitImage(self->img, x, y);
+            
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+        PyObject* Image_ClipBlit(ImageObject* self, PyObject* args) {
+            int x, y, ix, iy, iw, ih;
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iiiiii|i:Image.ClipBlit", &x, &y, &ix, &iy, &iw, &ih, &blendMode)) {
+                return 0;
+            }
+
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
+            engine->video->ClipBlitImage(self->img, x, y, ix, iy, iw, ih);
             
             Py_INCREF(Py_None);
             return Py_None;
@@ -140,31 +212,125 @@ namespace Script {
 
         PyObject* Image_ScaleBlit(ImageObject* self, PyObject* args) {
             int x, y, w, h;
-            int trans = ::Video::Normal;
+            int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "iiii|i:Image.ScaleBlit", &x, &y, &w, &h, &trans))
+            if (!PyArg_ParseTuple(args, "iiii|i:Image.ScaleBlit", &x, &y, &w, &h, &blendMode))
                 return 0;
 
-            engine->video->SetBlendMode((::Video::BlendMode)trans);
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
             engine->video->ScaleBlitImage(self->img, x, y, w, h);
 
             Py_INCREF(Py_None);
             return Py_None;
         }
 
+        PyObject* Image_RotateBlit(ImageObject* self, PyObject* args) {
+            int x, y;
+			float angle;
+            float scalex = 1;
+			float scaley = 1;
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iif|ffi:Image.RotateBlit", &x, &y, &angle, &scalex, &scaley, &blendMode)) {
+                return 0;
+            }
+
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
+            engine->video->RotateBlitImage(self->img, x, y, angle, scalex, scaley);
+            
+            Py_INCREF(Py_None);
+            return Py_None;
+        };
+
         PyObject* Image_DistortBlit(ImageObject* self, PyObject* args) {
             int x[4], y[4];
-            int trans = ::Video::Normal;
+            int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "(ii)(ii)(ii)(ii)|i:Video.DistortBlit", x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &trans))
+            if (!PyArg_ParseTuple(args, "(ii)(ii)(ii)(ii)|i:Image.DistortBlit", x, y, x + 1, y + 1, x + 2, y + 2, x + 3, y + 3, &blendMode))
                 return 0;
 
-            engine->video->SetBlendMode((::Video::BlendMode)trans);
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
             engine->video->DistortBlitImage(self->img, x, y);
 
             Py_INCREF(Py_None);
             return Py_None;
         };
+
+        PyObject* Image_TileBlit(ImageObject* self, PyObject* args) {
+			int x, y;
+            int w, h;
+            float scalex = 1, scaley = 1;
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iiii|ffi:Image.TileBlit", &x, &y, &w, &h, &scalex, &scaley, &blendMode)) {
+                return 0;
+            }
+
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
+            engine->video->TileBlitImage(self->img, x, y, w, h, scalex, scaley);
+            
+            Py_INCREF(Py_None);
+            return Py_None;
+        };
+
+        PyObject* Image_TintBlit(ImageObject* self, PyObject* args) {
+            int x, y;
+            u32 tint;
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iii|i:Image.TintBlit", &x, &y, &tint, &blendMode)) {
+                return 0;
+            }
+
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
+            engine->video->TintBlitImage(self->img, x, y, tint);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        };
+
+        PyObject* Image_TintDistortBlit(ImageObject* self, PyObject* args) {
+            int x[4];
+            int y[4];
+            u32 tint[4];
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii)(iii)|i:Image.TintDistortBlit", 
+                x, y, tint, 
+                x + 1, y + 1, tint + 1,
+                x + 2, y + 2, tint + 2,
+                x + 3, y + 3, tint + 3,
+                &blendMode)
+            ) {
+                return 0;
+            }
+
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
+            engine->video->TintDistortBlitImage(self->img, x, y, tint);
+
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
+
+		PyObject* Image_TintTileBlit(ImageObject* self, PyObject* args) {
+            int x, y;
+            int w, h;
+            u32 colour;
+            float scalex = 1, scaley = 1;
+            int blendMode = ::Video::Normal;
+
+            if (!PyArg_ParseTuple(args, "iiiii|ffi:Image.TintTileBlit", 
+                &x, &y, &w, &h, &colour, &scalex, &scaley, &blendMode)
+            ) {
+                return 0;
+            }
+
+            engine->video->SetBlendMode((::Video::BlendMode)blendMode);
+            engine->video->TintTileBlitImage(self->img, x, y, w, h, scalex, scaley, colour);
+            
+            Py_INCREF(Py_None);
+            return Py_None;
+        }
 
         PyObject* Image_Clip(ImageObject* /*self*/, PyObject* /*args*/) {
             Py_INCREF(Py_None);

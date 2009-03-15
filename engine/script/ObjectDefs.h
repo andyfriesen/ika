@@ -49,8 +49,14 @@ namespace Script {
 
         // Methods
         METHOD(Image_Blit, ImageObject);
+		METHOD(Image_ClipBlit, ImageObject);
         METHOD(Image_ScaleBlit, ImageObject);
+		METHOD(Image_RotateBlit, ImageObject);
         METHOD(Image_DistortBlit, ImageObject);
+		METHOD(Image_TileBlit, ImageObject);
+		METHOD(Image_TintBlit, ImageObject);
+		METHOD(Image_TintDistortBlit, ImageObject);
+		METHOD(Image_TintTileBlit, ImageObject);
         METHOD(Image_Clip, ImageObject);
 
         void Init();

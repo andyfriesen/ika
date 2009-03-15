@@ -10,80 +10,47 @@ namespace Script {
         PyMethodDef methods[] = {
             {   "Blit",         (PyCFunction)Video_Blit,        METH_VARARGS,
                 "Blit(image, x, y[, blendmode])\n\n"
-                "Draws the image at (x, y) at its original size.\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+                "Deprecated. Use ika.Image.Blit instead.\n"
             },
             
             {   "ClipBlit",         (PyCFunction)Video_ClipBlit,   METH_VARARGS,
                 "ClipBlit(image, x, y, ix, iy, iw, ih[, blendmode])\n\n"
-                "Draws a portion of the image defined by the coordinates (ix, iy, iw, ih)\n" "at screen coordinates (x, y).\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "blendMode defaults to ika.AlphaBlend."
+                "Deprecated. Use ika.Image.ClipBlit instead.\n"
             },
 
             {   "ScaleBlit",    (PyCFunction)Video_ScaleBlit,   METH_VARARGS,
                 "ScaleBlit(image, x, y, width, height[, blendmode])\n\n"
-                "Draws the image at (x, y), stretching it out to the size given.\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+                "Deprecated. Use ika.Image.ScaleBlit instead.\n"
             },
 
             {   "RotateBlit",    (PyCFunction)Video_RotateBlit,   METH_VARARGS,
                 "RotateBlit(image, x, y, angle, [scalex[, scaley [, blendmode]]])\n\n"
-                "Draws the image at (x, y), rotating to the angle given.\n"
-                "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+                "Deprecated. Use ika.Image.RotateBlit instead.\n"
             },
             
             {   "DistortBlit",  (PyCFunction)Video_DistortBlit, METH_VARARGS,
                 "DistortBlit(image, (upleftX, upleftY), (uprightX, uprightY), (downrightX, downrightY), (downleftX, downleftY)[, blendmode])\n\n"
-                "Draws the image onscreen, stretched to the four points specified.\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+				"Deprecated. Use ika.Image.DistortBlit instead.\n"
             },
 
             {   "TileBlit",     (PyCFunction)Video_TileBlit,    METH_VARARGS,
                 "TileBlit(image, x, y, width, height[, scalex[, scaley[, blendmode]]])\n\n"
-                "Draws the image onscreen, \"tiling\" it as necessary to fit the rectangle specified.\n"
-                "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+                "Deprecated. Use ika.Image.TileBlit instead.\n"
             },
 
             {   "TintBlit",     (PyCFunction)Video_TintBlit,    METH_VARARGS,
                 "TintBlit(image, x, y, tintColour[, blendMode])\n\n"
-                "Draws the image onscreen, using tintColour to 'tint' the image.\n"
-                "Each pixel is multiplied by tintColour.  The resultant values are then\n"
-                "scaled before the pixel is plotted.\n\n"
-
-                "In English, this means that RGBA(255, 255, 255, 255) is a normal blit,\n"
-                "while RGBA(0, 0, 0, 255) will leave the alpha channel intact, but reduce\n"
-                "all pixels to black. (effectively drawing a silhouette)\n\n"
-
-                "blendMode is handled the same way as all the other blits.\n\n"
-
-                "Lots of effects could be created by using this creatively.  Experiment!"
-            },
+                "Deprecated. Use ika.Image.TintBlit instead.\n"
+			},
 
             {   "TintDistortBlit",  (PyCFunction)Video_TintDistortBlit, METH_VARARGS,
                 "TintDistortBlit(image, (upleftX, upleftY, upleftTint), (uprightX, uprightY, uprightTint), (downrightX, downrightY, downrightTint), (downleftX, downleftY, downrightTint)[, blendmode])\n\n"
-                "Combines the effects of DistortBlit and TintBlit.  Each corner can be tinted individually,\n"
-                "using the same algorithm as TintBlit.  The corners, if not the same, are smoothly interpolated\n"
-                "across the image."
+                "Deprecated. Use ika.Image.TintDistortBlit instead.\n"
             },
 
             {   "TintTileBlit",     (PyCFunction)Video_TintTileBlit, METH_VARARGS,
                 "TintTileBlit(image, x, y, width, height, tintColour, scalex=1, scaley=1, blendmode=Normal)\n\n"
-                "\"tile\"-blits the image, just like Video.TileBlit, except it multiplies each pixel by\n"
-                "tintColour, resulting in a colour tint."
+                "Deprecated. Use ika.Image.TintTileBlit instead.\n"
             },
 
             {   "DrawPixel",    (PyCFunction)Video_DrawPixel,   METH_VARARGS,
@@ -243,8 +210,17 @@ namespace Script {
 
 #define METHOD(x) PyObject* x(VideoObject* self, PyObject* args)
 #define METHOD1(x) PyObject* x(VideoObject* self)
+#define BLIT_DEPRECATION_WARNING(name) \
+				static bool warnFlag = false; \
+				if(!warnFlag) \
+				{ \
+					Log::Write("* ika.Video."#name" is deprecated. Use ika.Image."#name" instead."); \
+					warnFlag = true; \
+				}
 
         METHOD(Video_Blit) {
+			BLIT_DEPRECATION_WARNING(Blit);
+
             Script::Image::ImageObject* image;
             int x, y;
             int blendMode = ::Video::Normal;
@@ -261,6 +237,7 @@ namespace Script {
         }
 
         METHOD(Video_ClipBlit) {
+			BLIT_DEPRECATION_WARNING(ClipBlit);
             Script::Image::ImageObject* image;
             int x, y, ix, iy, iw, ih;
             int blendMode = ::Video::Normal;
@@ -277,6 +254,7 @@ namespace Script {
         }
 
         METHOD(Video_ScaleBlit) {
+			BLIT_DEPRECATION_WARNING(ScaleBlit);
             Script::Image::ImageObject* image;
             int x, y;
             int w, h;
@@ -294,6 +272,7 @@ namespace Script {
         }
 
         METHOD(Video_RotateBlit) {
+			BLIT_DEPRECATION_WARNING(RotateBlit);
             Script::Image::ImageObject* image;
             int x, y;
 			float angle;
@@ -313,6 +292,7 @@ namespace Script {
 		}
 
         METHOD(Video_DistortBlit) {
+			BLIT_DEPRECATION_WARNING(DistortBlit);
             Script::Image::ImageObject* image;
             int x[4], y[4];
             int blendMode = ::Video::Normal;
@@ -329,6 +309,7 @@ namespace Script {
         }
 
         METHOD(Video_TileBlit) {
+			BLIT_DEPRECATION_WARNING(TileBlit);
             Script::Image::ImageObject* image;
             int x, y;
             int w, h;
@@ -347,6 +328,7 @@ namespace Script {
         }
 
         METHOD(Video_TintBlit) {
+			BLIT_DEPRECATION_WARNING(TintBlit);
             Script::Image::ImageObject* image;
             int x, y;
             u32 tint;
@@ -364,6 +346,7 @@ namespace Script {
         }
 
         METHOD(Video_TintDistortBlit) {
+			BLIT_DEPRECATION_WARNING(TintDistortBlit);
             Script::Image::ImageObject* image;
             int x[4];
             int y[4];
@@ -389,6 +372,7 @@ namespace Script {
         }
 
         METHOD(Video_TintTileBlit) {
+			BLIT_DEPRECATION_WARNING(TintTileBlit);
             Script::Image::ImageObject* image;
             int x, y;
             int w, h;
