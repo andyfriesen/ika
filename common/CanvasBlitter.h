@@ -33,8 +33,23 @@ namespace Blitter {
 
     struct AlphaBlend : BlendType {
         inline virtual RGBA operator()(RGBA src, RGBA dest) const {
+			RGBA result;
+            int finalAlpha = src.a + ((255 - src.a) * dest.a) / 255;
+            int sourceAlpha = (finalAlpha == 0) ? 0 : src.a * 255 / finalAlpha;
+
+            result.r = (src.r * sourceAlpha + dest.r * (255 - sourceAlpha)) >> 8;
+            result.g = (src.g * sourceAlpha + dest.g * (255 - sourceAlpha)) >> 8;
+            result.b = (src.b * sourceAlpha + dest.b * (255 - sourceAlpha)) >> 8;
+            result.a = finalAlpha;
+            return result;
+        }
+    };
+
+	struct PreserveBlend : BlendType {
+		inline virtual RGBA operator()(RGBA src, RGBA dest) const {
             // Trivial cases: handle zero and full alpha.
             if (!src.a) return dest;
+			if (!dest.a) return 0;
 
             u8  a = src.a;
 
@@ -46,10 +61,9 @@ namespace Blitter {
             result.r = ( (src.r * a) + (dest.r * (255 - a)) ) >> 8;
             result.g = ( (src.g * a) + (dest.g * (255 - a)) ) >> 8;
             result.b = ( (src.b * a) + (dest.b * (255 - a)) ) >> 8;
-
-            return result;
-        }
-    };
+			return result;
+		}
+	};
 
     struct AddBlend : BlendType {
         inline virtual RGBA operator()(RGBA src, RGBA dest) const {

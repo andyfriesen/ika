@@ -43,6 +43,7 @@ namespace Blitter {
         static AddBlend addBlend;
         static SubtractBlend subtractBlend;
         static MultiplyBlend multiplyBlend;
+		static PreserveBlend preserveBlend;
         
         switch (blendId) {
         
@@ -51,6 +52,7 @@ namespace Blitter {
             case 3:     return &addBlend;
             case 4:     return &subtractBlend;
             case 5:     return &multiplyBlend;
+			case 6:     return &preserveBlend;
             
             default:    return &alphaBlend;
             

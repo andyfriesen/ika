@@ -13,11 +13,11 @@ namespace Script {
 
         PyMethodDef methods[] = {
             {   "Blit",         (PyCFunction)Image_Blit,         METH_VARARGS,
-                "Image.Blit(x, y[, transparent])\n\n"
+                "Image.Blit(x, y[, blendmode])\n\n"
                 "Draws the image at (x, y).\n"
-                "If transparent is specified and 0 the image is opaque.\n"
-                "Otherwise, alpha blending is enabled."
-
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
             {   "ClipBlit",        (PyCFunction)Image_ClipBlit,   METH_VARARGS,
@@ -25,37 +25,43 @@ namespace Script {
                 "Draws a portion of the image defined by the coordinates (ix, iy, iw, ih)\n"
 				"at screen coordinates (x, y).\n"
                 "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "blendMode defaults to ika.AlphaBlend."
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
             {   "ScaleBlit",    (PyCFunction)Image_ScaleBlit,    METH_VARARGS,
-                "Image.ScaleBlit(x, y, width, height[, transparent])\n\n"
+                "Image.ScaleBlit(x, y, width, height[, blendmode])\n\n"
                 "Blits the image, but stretches it out to the dimensions\n"
                 "specified in (width, height)."
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
 			{   "RotateBlit",  (PyCFunction)Image_RotateBlit,  METH_VARARGS,
                 "RotateBlit(x, y, angle, [scalex[, scaley [, blendmode]]])\n\n"
                 "Draws the image at (x, y), rotating to the angle given.\n"
                 "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
             {   "DistortBlit",  (PyCFunction)Image_DistortBlit,  METH_VARARGS,
-                "Image.DistortBlit((x1, y1), (x2, y2), (x3, y3), (x4, y4)[, transparency])\n\n"
+                "Image.DistortBlit((x1, y1), (x2, y2), (x3, y3), (x4, y4)[, blendmode])\n\n"
                 "Blits the image scaled to the four points specified."
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
 			{   "TileBlit",  (PyCFunction)Image_TileBlit,  METH_VARARGS,
                 "Image.TileBlit(x, y, width, height[, scalex[, scaley[, blendmode]]])\n\n"
                 "Draws the image onscreen, \"tiling\" it as necessary to fit the rectangle specified.\n"
                 "scalex and scaley are floating point values used as a scale factor.  The default is 1.\n"
-                "blendmode specifies the algorithm used to blend pixels.  It is one of\n"
-                "ika.Opaque, ika.Matte, ika.AlphaBlend, ika.AddBlend, or ika.SubtractBlend.\n"
-                "The default is ika.Alphablend."
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
 			},
 
             {   "TintBlit",  (PyCFunction)Image_TintBlit,  METH_VARARGS,

@@ -30,7 +30,8 @@ namespace Video {
         Normal,
         Add,
         Subtract,
-		Multiply
+		Multiply,
+		Preserve
     };
 
     /// Base interface for all ika video drivers.

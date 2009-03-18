@@ -38,20 +38,26 @@ namespace Script
             {   "Blit",     (PyCFunction)Canvas_Blit,       METH_VARARGS,
                 "Canvas.Blit(destcanvas, x, y, blendmode)\n\n"
                 "Draws the image on destcanvas, at position (x, y)\n"
-                "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
             {   "ScaleBlit", (PyCFunction)Canvas_ScaleBlit,  METH_VARARGS,
                 "Canvas.ScaleBlit(destcanvas, x, y, width, height, blendmode)\n\n"
                 "Draws the image on destcanvas, at position (x, y), scaled to (width, height) pixels in size.\n"
-                "blendmode is either ika.Opaque, ika.Matte, or ika.AlphaBlend."
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
             {   "TileBlit", (PyCFunction)Canvas_TileBlit,   METH_VARARGS,
                 "Canvas.TileBlit(destcanvas, x, y, width, height, [offsetx, offsety, blendmode])\n\n"
                 "Tiles the image within the region specified, on destcanvas.  The tiling is offset\n"
-                "(moved) by offsetx and offsety. (both default to zero) blendmode is either ika.Opaque, ika.Matte\n"
-                "ika.AlphaBlend.  blendmode defaults to Opaque"
+                "(moved) by offsetx and offsety. (both default to zero)\n"
+				"blendmode specifies the algorithm used to blend pixels.  It is one of\n"
+				"the available blend modes defined in ika's constants section.\n"
+                "blendmode defaults to ika.AlphaBlend."
             },
 
             {   "GetPixel", (PyCFunction)Canvas_GetPixel,   METH_VARARGS,

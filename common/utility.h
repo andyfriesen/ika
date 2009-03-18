@@ -78,13 +78,14 @@ struct Type2Type {
 
 #ifndef __GNUC__
 // note: g++ STL already has a swap(), it will use that instead
-template <typename T>
+/*template <typename T>
 inline void swap(T& a, T& b) {
     T c;
     c = a;
     a = b;
     b = c;
-}
+}*/
+using std::swap;
 #endif //__GNUC__
 
 // Clamps val such that
