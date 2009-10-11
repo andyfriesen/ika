@@ -28,6 +28,7 @@
 
 #include <vector>
 #include <string>
+#include <cstring>
 
 #ifdef _MSC_VER
 #pragma warning(disable : 4786)
@@ -183,39 +184,6 @@ namespace audiere {
   bool operator!=(const T* a, const RefPtr<T>& b) {
       return (a != b.get());
   }
-
-
-  /**
-   * A basic implementation of the RefCounted interface.  Derive
-   * your implementations from RefImplementation<YourInterface>.
-   */
-  template<class Interface>
-  class RefImplementation : public Interface {
-  protected:
-    RefImplementation() {
-      m_ref_count = 0;
-    }
-
-    /**
-     * So the implementation can put its destruction logic in the destructor,
-     * as natural C++ code does.
-     */
-    virtual ~RefImplementation() { }
-
-  public:
-    void ADR_CALL ref() {
-      ++m_ref_count;
-    }
-
-    void ADR_CALL unref() {
-      if (--m_ref_count == 0) {
-        delete this;
-      }
-    }
-
-  private:
-    int m_ref_count;
-  };
 
 
   /**
@@ -1046,6 +1014,9 @@ namespace audiere {
 
     ADR_FUNCTION(const char*) AdrGetVersion();
 
+    ADR_FUNCTION(long) AdrAtomicIncrement(volatile long& var);
+    ADR_FUNCTION(long) AdrAtomicDecrement(volatile long& var);
+
     /**
      * Returns a formatted string that lists the file formats that Audiere
      * supports.  This function is DLL-safe.
@@ -1137,6 +1108,20 @@ namespace audiere {
     return hidden::AdrGetVersion();
   }
 
+
+  /**
+   * Atomically increments a counter.  Returns incremented value.
+   */
+  inline long AtomicIncrement(volatile long& var) {
+    return hidden::AdrAtomicIncrement(var);
+  }
+
+  /**
+   * Atomically decrements a counter.  Returns decremented value.
+   */
+  inline long AtomicDecrement(volatile long& var) {
+    return hidden::AdrAtomicDecrement(var);
+  }
 
   inline void SplitString(
     std::vector<std::string>& out,
@@ -1558,6 +1543,39 @@ namespace audiere {
   inline MIDIDevice* OpenMIDIDevice(const char* device) {
     return hidden::AdrOpenMIDIDevice(device);
   }
+
+
+  /**
+   * A basic implementation of the RefCounted interface.  Derive
+   * your implementations from RefImplementation<YourInterface>.
+   */
+  template<class Interface>
+  class RefImplementation : public Interface {
+  protected:
+    RefImplementation() {
+      m_ref_count = 0;
+    }
+
+    /**
+     * So the implementation can put its destruction logic in the destructor,
+     * as natural C++ code does.
+     */
+    virtual ~RefImplementation() { }
+
+  public:
+    void ADR_CALL ref() {
+      AtomicIncrement(m_ref_count);
+    }
+
+    void ADR_CALL unref() {
+      if (AtomicDecrement(m_ref_count) == 0) {
+        delete this;
+      }
+    }
+
+  private:
+    volatile long m_ref_count;
+  };
 
 }
 
