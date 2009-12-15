@@ -481,26 +481,43 @@ void Engine::RenderLayer(uint layerIndex) {
     int xw = (xwin * layer->parallax.mulx / layer->parallax.divx) - layer->x;
     int yw = (ywin * layer->parallax.muly / layer->parallax.divy) - layer->y;
 
+    adjustX = xw % tiles->Width();
+    adjustY = yw % tiles->Height();
+
     firstX = xw / tiles->Width();
     firstY = yw / tiles->Height();
 
-    adjustX = xw % tiles->Width();
-    adjustY = yw % tiles->Height();
+	if (xw < 0 && layer->wrapx) firstX -= 1;
+	if (yw < 0 && layer->wrapy) firstY -= 1;
 
     const Point res = video->GetResolution();
     lenX = res.x / tiles->Width() + 1;
     lenY = res.y / tiles->Height() + 2;
 
     if (firstX < 0) {
-        lenX -= -firstX;
-        adjustX += firstX * tiles->Width();
-        firstX = 0;
+		if (layer->wrapx) {
+			lenX += 1;
+			firstX = layer->Width() + firstX - 1;
+			adjustX += tiles->Width() * 2;
+		}
+		else {
+			lenX -= -firstX;
+			adjustX += firstX * tiles->Width();
+			firstX = 0;
+		}
     }
 
     if (firstY < 0) {
-        lenY -= -firstY;
-        adjustY += firstY * tiles->Height();
-        firstY = 0;
+		if (layer->wrapy) {
+			lenY += 1;
+			firstY = layer->Height() + firstY - 1;
+			adjustY += tiles->Height() * 2;
+		}
+		else {
+	        lenY -= -firstY;
+			adjustY += firstY * tiles->Height();
+			firstY = 0;
+		}
     }
 
     if (!layer->wrapx) {
