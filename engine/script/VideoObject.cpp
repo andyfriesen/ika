@@ -178,7 +178,8 @@ namespace Script {
         PyGetSetDef properties[] = {
             {   "xres",     (getter)getXRes,    0,  "Gets the horizontal resolution of the current display mode, in pixels."    },
             {   "yres",     (getter)getYRes,    0,  "Gets the vertical resolution of the current display mode, in pixels."      },
-            {   "colours",  (getter)getColours, 0,  "Gets a mapping containing the currently-defined colours by name."      },
+            {   "colours",  (getter)getColours, 0,  "Alias for colors."      },
+			{	"colors",	(getter)getColours, 0,	"Gets a mapping containing the currently-defined colours by name."		},
             {   0   }
         };
 
