@@ -15,16 +15,15 @@ ika
     ika.Font.StringHeight
     Reimplemented ika.Video.DrawEllipse; no longer uses "3d" ellipse so filled ellipses look normal now.
     Added ika.MultiplyBlend blendmode
+    Added ika.PreserveBlend blendmode
     Fixed implementation of ika.Matte blendmode
     Changed doublesize to default to a nearest resize instead of bilinear.
     Added in new user.cfg option "filter". Setting "filter 1" will set doublesizer to use bilinear filtering.
     Fixed GetClipRect so it functions properly in doublesize mode.
     Map camera now centers on the center of the player's hotspot, instead of the top left.
-    
+    Implemented game.ika-game files, which stores game specific data. This supercedes the resolution settings in user.cfg for now.
+    Renamed ika.Video.colours to ika.Video.colors. ika.Video.colours still exists but will be removed in the future.
+    Map looping should work in all directions now.
+
 DLLs
     Updated to newest version of audiere, fixing sound slowdowns and Vista issues.
-    Began to package DLLs with ika distributions.  No more 3rdparty zip.
-    
-Website
-    You can now upload files! Thanks to WIP for the new webspace (make sure to check out rpgmaker.net) and the spiffy domain name, ika-engine.com.
-    

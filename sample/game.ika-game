@@ -1,0 +1,15 @@
+(ika-game
+	(version '1.0')
+	(information
+		(title 'ika sample')
+	)
+	(video
+		(xres '320')
+		(yres '240')
+	)
+	(resources
+		(maps '')
+	)
+	(meta
+	)
+)

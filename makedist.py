@@ -68,7 +68,7 @@ Create our folders here.
 path = os.path.dirname(__file__) + '/'
 makedist_path = path + 'makedist_temp'
 win_path = makedist_path + '/ika-' + version
-demo_path = win_path + '/demo'
+demo_path = win_path + '/sample'
 core_path = makedist_path + '/core'
 src_path = makedist_path + '/src'
 
@@ -103,22 +103,29 @@ print "Done"
 # Windows ZIP
 print "Assembling Windows distribution"
 
-copy("3rdparty/dlls/audiere.dll", demo_path)
-copy("3rdparty/dlls/corona.dll", demo_path)
 copy("3rdparty/dlls/corona.dll", win_path)
-copy("3rdparty/dlls/msvcp90.dll", demo_path)
-copy("3rdparty/dlls/msvcr90.dll", demo_path)
-copy("3rdparty/dlls/python25.dll", demo_path)
+#copy("3rdparty/dlls/msvcp90.dll", demo_path)
+#copy("3rdparty/dlls/msvcr90.dll", demo_path)
+copy("3rdparty/dlls/msvcp71.dll", win_path)
+copy("3rdparty/dlls/msvcr71.dll", win_path)
 copy("3rdparty/dlls/python25.dll", win_path)
-copy("3rdparty/dlls/zlib.dll", demo_path)
 copy("3rdparty/dlls/zlib.dll", win_path)
-copy("3rdparty/dlls/sdl.dll", demo_path)
 copy("3rdparty/dlls/sdl.dll", win_path)
-copy("3rdparty/dlls/Microsoft.VC90.CRT.manifest", demo_path)
-copy("engine/Release/ika.exe", demo_path)
+#copy("3rdparty/dlls/Microsoft.VC90.CRT.manifest", demo_path)
 copy("ikamap/Release/ikaMap.exe", win_path)
 
-copy_files(path + "dist", demo_path)
+copy("3rdparty/dlls/audiere.dll", demo_path)
+copy("3rdparty/dlls/corona.dll", demo_path)
+copy("3rdparty/dlls/msvcp71.dll", demo_path)
+copy("3rdparty/dlls/msvcr71.dll", demo_path)
+copy("3rdparty/dlls/python25.dll", demo_path)
+copy("3rdparty/dlls/sdl.dll", demo_path)
+copy("3rdparty/dlls/zlib.dll", demo_path)
+copy("engine/Release/ika.exe", demo_path)
+
+
+
+copy_files(path + "sample", demo_path)
 copy_files(path + "doc", win_path + "/doc")
 
 zip_files(win_path, path + "ika-win-" + version + ".zip")
