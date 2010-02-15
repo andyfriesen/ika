@@ -1,4 +1,6 @@
-
+#ifdef linux
+#include <string.h>
+#endif
 #include <sstream>
 #include <stdexcept>
 

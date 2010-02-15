@@ -1,4 +1,8 @@
 // VSP.cpp
+#ifdef linux
+#include <string.h>
+#endif
+
 #include <cassert>
 #include <stdio.h>
 #include "vsp.h"

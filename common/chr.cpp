@@ -1,3 +1,6 @@
+#ifdef linux
+#include <string.h>
+#endif
 #include <cassert>
 #include <cstdlib>
 #include <fstream>

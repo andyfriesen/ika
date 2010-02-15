@@ -59,7 +59,7 @@ void Log::Writen(const char* s, ...) {
 
 #elif defined(__GNUC__)
     char* buffer = 0;
-    int len = asprintf(&buffer, s, lst);
+    int len = vasprintf(&buffer, s, lst);
 
     if (len == -1) {
         logFile << "Log system error: Unable to write some stuff.";
@@ -95,7 +95,7 @@ void Log::Write(const char* s, ...) {
 
 #elif defined(__GNUC__)
     char* buffer = 0;
-    int len = asprintf(&buffer, s, lst);
+    int len = vasprintf(&buffer, s, lst);
 
     if (len == -1) {
         logFile << "Log system error: Unable to write some stuff.";

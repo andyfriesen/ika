@@ -1,3 +1,6 @@
+#ifdef linux
+#include <string.h>
+#endif
 #include "fileio.h"
 #include "zlib.h"
 #include <stdio.h>
