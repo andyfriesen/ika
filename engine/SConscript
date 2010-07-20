@@ -1,46 +1,5 @@
 Import('*')
 
-ika = ika_env.Program('ika',
-    source = Split('''
-        animscript.cpp
-        benchmark.cpp
-        entity.cpp
-        font.cpp
-        FPSCounter.cpp
-        input.cpp
-        joystick.cpp
-        keyboard.cpp
-        main.cpp
-        mouse.cpp
-        script.cpp
-        scriptobject.cpp
-        sound.cpp
-        sprite.cpp
-        tileset.cpp
-        script/CanvasObject.cpp
-        script/ColoursObject.cpp
-        script/ControlObject.cpp
-        script/EntityObject.cpp
-        script/ErrorObject.cpp
-        script/FontObject.cpp
-        script/ImageObject.cpp
-        script/InputDeviceObject.cpp
-        script/InputObject.cpp
-        script/JoystickObject.cpp
-        script/KeyboardObject.cpp
-        script/MapObject.cpp
-        script/ModuleFuncs.cpp
-        script/MouseObject.cpp
-        script/MusicObject.cpp
-        script/SoundObject.cpp
-        script/TileSetObject.cpp
-        script/VideoObject.cpp
-        opengl/Driver.cpp
-        opengl/Image.cpp
-        soft32/Driver.cpp
-        soft32/Image.cpp
-        video/ColourHandler.cpp
-        ''')
-    )
+ika = ika_env.Program('ika', source = Glob('*.cpp') + Glob('*/*.cpp'))
 
 Return('ika')
