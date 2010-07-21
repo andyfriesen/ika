@@ -1,7 +1,7 @@
 
 #pragma once
 
-#include "common/utility.h"
+#include "utility.h"
 #include "types.h"
 #include "matrix.h"
 
@@ -37,9 +37,9 @@ struct Map {
         Direction direction;
         int speed;
         std::string moveScript;
-        bool obstructsEntities;
-        bool obstructedByEntities;
-        bool obstructedByMap;
+		bool obstructedByEntities;		
+		bool obstructedByMap;        
+		bool obstructsEntities;                
         std::string adjActivateScript;  // called when the entity touches another entity
         std::string activateScript;     // called when the entity is activated. (talked to, etc)
         Entity()
@@ -88,13 +88,13 @@ struct Map {
         std::vector<Entity> entities;
         std::vector<Zone> zones;
 
-        RGBA tintColour;
-
         // TODO:
         // std::vector<LineSegments> obstructionVectors;
 
-        Matrix<u8> obstructions;
-        Matrix<uint> tiles;
+		Matrix<uint> tiles;        
+		Matrix<u8> obstructions;
+
+		RGBA tintColour;        
 
         Layer(const std::string& l = "", int width = 0, int height = 0)
             : label(l)

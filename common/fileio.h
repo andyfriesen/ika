@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common/utility.h"
+#include "utility.h"
 #include <stdio.h>
 
 struct File {

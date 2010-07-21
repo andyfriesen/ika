@@ -5,7 +5,7 @@
 #include "aries.h"
 #include "base64.h"
 #include "compression.h"
-#include "common/log.h"
+#include "log.h"
 #include "map.h"
 #include "oldbase64.h"
 #include "utility.h"
@@ -267,7 +267,7 @@ bool Map::Load(const std::string& filename) {
 
                         std::string dir = Local::getStringNode(*iter, "direction");
                         e.direction = face_down;
-                        for (uint i = 0; i < numDirs; i++)
+                        for (uint i = 0; i < (uint)numDirs; i++)
                             if (dir == dirNames[i]) {   e.direction = (Direction)i; break;  }
 
                         e.speed = Local::getIntNode(*iter, "speed");

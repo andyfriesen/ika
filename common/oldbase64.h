@@ -1,8 +1,8 @@
 #include <string>
-#include "common/utility.h"
+#include "utility.h"
 
 /**
- * Old shitty base64 implementation.
+ * Old base64 implementation.
  * This is WRONG.  It does not produce correct output.
  * It remains in the source so ika can load files that were made using it.
  */

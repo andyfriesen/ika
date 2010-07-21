@@ -11,7 +11,7 @@
 #include "chr.h"
 #include "compression.h"
 #include "fileio.h"
-#include "common/log.h"
+#include "log.h"
 #include "oldbase64.h"
 #include "rle.h"
 #include "utility.h"
@@ -406,7 +406,7 @@ void CCHRfile::SaveOld(const std::string& filename) {
     
     f.Write(moveScripts.size());                                 // write the number of scripts
     
-    for (uint i = 0; i < scriptCount; i++) {
+    for (uint i = 0; i < (uint)scriptCount; i++) {
         const std::string& script = moveScripts[scriptNames[i]];
         f.Write(script.length());                                // write the length
         f.Write(script.c_str(), script.length());                // write the actual script

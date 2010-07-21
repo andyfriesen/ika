@@ -6,10 +6,10 @@
 #include <cassert>
 #include <stdio.h>
 #include "vsp.h"
-#include "common/utility.h"
+#include "utility.h"
 #include "rle.h"
 #include "fileio.h"
-#include "common/log.h"
+#include "log.h"
 #include "zlib.h"
 
 VSP::VSP()

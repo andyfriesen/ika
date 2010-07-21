@@ -1,7 +1,7 @@
 #pragma once
 
 #include <map>
-#include "common/utility.h"
+#include "utility.h"
 #include "Canvas.h"
 
 struct File;
@@ -12,7 +12,7 @@ struct File;
  * Note that the data structure allows for each frame to have its own dimensions.
  * The file format does too, however we won't be actually implementing this yet.
  *
- * This is TERRIBLE.  TODO: unscrew. :P
+ * This is TERRIBLE.  TODO: fix this. :P
  */
 struct CCHRfile {
     typedef std::map<std::string, std::string> StringMap;
@@ -57,9 +57,11 @@ struct CCHRfile {
 
 private:
     std::vector<Canvas*> _frame;       ///< Frame data.
-    int _width, _height;
-    int _hotspotX, _hotspotY;         ///< Hotspot position.
-    int _hotspotWidth, _hotspotHeight; ///< Hotspot width and height.
+	int _hotspotX, _hotspotY;         ///< Hotspot position.		
+	int _hotspotWidth, _hotspotHeight; ///< Hotspot width and height.    	
+	int _width, _height;
+    
+    
 
     void LoadCHR(const std::string& filename);
     void Loadv2CHR(File& f);

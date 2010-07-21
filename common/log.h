@@ -6,7 +6,7 @@
 
 #pragma once
 
-#include "common/utility.h"
+#include "utility.h"
 
 //#define LOG_CALLBACK
 

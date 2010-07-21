@@ -8,17 +8,26 @@
 #include "map.h"
 #include "vsp.h"
 #include "rle.h"
+#include "log.h"
 #include "utility.h"
 
 static u16 fgetw(FILE* f) {
     u16 s = 0;
-    fread(&s, 1, 2, f);
+    int rf = fread(&s, 1, 2, f);
+	if (!rf) {
+		Log::Write("vergemap: Error fgetw\n");
+        return 0;
+	}
     return s;
 }
 
 static u32 fgetq(FILE* f) {
     u32 q = 0;
-    fread(&q, 1, 4, f);
+    int rf = fread(&q, 1, 4, f);
+	if (!rf) {
+		Log::Write("vergemap: Error fgetq\n");
+        return 0;
+	}
     return q;
 }
 
@@ -49,8 +58,16 @@ Map* ImportVerge1Map(const std::string& fileName) {
         char buffer[256];
         std::fill(buffer, buffer + 256, 0);
 
-        fread(buffer, 1, 13, f);    map->tilesetName = buffer;
-        fread(buffer, 1, 13, f);    map->metaData["music"] = buffer;
+        int rf = fread(buffer, 1, 13, f);    map->tilesetName = buffer;
+		if (!rf) {
+			Log::Write("vergemap: Error tilesetname\n");
+        	return 0;
+		}
+        rf = fread(buffer, 1, 13, f);    map->metaData["music"] = buffer;
+		if (!rf) {
+			Log::Write("vergemap: Error metaData['music']\n");
+        	return 0;
+		}
 
         fgetc(f);  // layerCount
         fgetc(f);  // pmulx
@@ -58,7 +75,11 @@ Map* ImportVerge1Map(const std::string& fileName) {
         fgetc(f);  // pdivx
         //int pdivy = pdivx;
 
-        fread(buffer, 1, 30, f);    map->metaData["name"] = buffer;
+        int rn = fread(buffer, 1, 30, f);    map->metaData["name"] = buffer;
+		if (!rn) {
+			Log::Write("vergemap: Error metaData['name']\n");
+        	return 0;
+		}
 
         bool showName = fgetc(f) != 0;   map->metaData["showname"] = showName ? "true" : "false";
         bool saveFlag = fgetc(f) != 0;   map->metaData["saveflag"] = saveFlag ? "true" : "false";
@@ -79,9 +100,22 @@ Map* ImportVerge1Map(const std::string& fileName) {
         ScopedArray<u16> lay0(new u16[xsize * ysize]);
         ScopedArray<u16> lay1(new u16[xsize * ysize]);
         ScopedArray<u8>  obs(new u8[xsize * ysize]);
-        fread(lay0.get(), sizeof(u16), xsize * ysize, f);
-        fread(lay1.get(), sizeof(u16), xsize * ysize, f);
-        fread(obs.get(),  sizeof(u8),  xsize * ysize, f);
+
+        rf = fread(lay0.get(), sizeof(u16), xsize * ysize, f);
+		if (!rf) {
+			Log::Write("vergemap: Error layer 0\n");
+        	return 0;
+		}
+        rf = fread(lay1.get(), sizeof(u16), xsize * ysize, f);
+		if (!rf) {
+			Log::Write("vergemap: Error layer 1\n");
+        	return 0;
+		}
+        rf = fread(obs.get(),  sizeof(u8),  xsize * ysize, f);
+		if (!rf) {
+			Log::Write("vergemap: Error obstruction layer\n");
+        	return 0;
+		}
 
         // copy 16 bit indeces into a 32 bit buffer
         ScopedArray<uint> layBuffer(new uint[xsize * ysize]);
@@ -114,12 +148,16 @@ Map* ImportVerge1Map(const std::string& fileName) {
         std::fill(buffer, buffer + 256, 0);
         std::vector<std::string> chrlist;
         for (int i = 0; i < 100; i++) {
-            fread(buffer, 1, 13, f);
+            rf = fread(buffer, 1, 13, f);
             chrlist.push_back(std::string(buffer));
         }
 
         int numEntities = 0;
-        fread(&numEntities, 1, 4, f);
+        rf = fread(&numEntities, 1, 4, f);
+		if (!rf) {
+			Log::Write("vergemap: Error numEntities\n");
+			return 0;
+		}
 
         struct VergeEntity {
             u16 x;       
@@ -157,7 +195,7 @@ Map* ImportVerge1Map(const std::string& fileName) {
             VergeEntity vergeEnt;
             Map::Entity ikaEnt;
 
-            fread(&vergeEnt, 1, 88, f); // don't ask where the 88 comes from :P
+            rf = fread(&vergeEnt, 1, 88, f); // don't ask where the 88 comes from :P
             ikaEnt.label = va("Ent%i", i);
             ikaEnt.x = vergeEnt.x * 16;
             ikaEnt.y = vergeEnt.y * 16;
@@ -173,7 +211,7 @@ Map* ImportVerge1Map(const std::string& fileName) {
         int numMoveScripts = fgetc(f);
         int thingie = fgetq(f);
         fseek(f, numMoveScripts, SEEK_CUR); // skip movescripts
-        fseek(f, thingie, SEEK_CUR);    // and other shit (who knows what the hell it is)
+        fseek(f, thingie, SEEK_CUR);    	// and other stuff
 
         fclose(f);
         return map;
@@ -198,16 +236,32 @@ Map* ImportVerge2Map(const std::string& fileName) {
 
         std::fill(buffer, buffer + 256, 0);
 
-        fread(buffer, 1, 6, f);
+        int rf = fread(buffer, 1, 6, f);
+		if (!rf) {
+			Log::Write("vergemap: Error fgetw\n");
+			return 0;
+		}
         if (std::string(buffer) != mapsig) {
             throw "Bogus map file";
         }
 
         fseek(f, 4, SEEK_CUR);
 
-        fread(buffer, 1, 60, f);    map->tilesetName = buffer;
-        fread(buffer, 1, 60, f);    map->metaData["music"] = buffer;
-        fread(buffer, 1, 20, f);    map->metaData["rstring"] = buffer;
+        rf = fread(buffer, 1, 60, f);    map->tilesetName = buffer;
+		if (!rf) {
+			Log::Write("vergemap: Error map->tilesetName\n");
+			return 0;
+		}
+        rf = fread(buffer, 1, 60, f);    map->metaData["music"] = buffer;
+		if (!rf) {
+			Log::Write("vergemap: Error map->metaData['music']\n");
+			return 0;
+		}
+        rf = fread(buffer, 1, 20, f);    map->metaData["rstring"] = buffer;
+		if (!rf) {
+			Log::Write("vergemap: Error map->metaData['rstring']\n");
+			return 0;
+		}
 
         fseek(f, 55, SEEK_CUR);
 
@@ -237,7 +291,7 @@ Map* ImportVerge2Map(const std::string& fileName) {
             u32 bufSize = fgetq(f);
             ScopedArray<u16> buffer(new u16[bufSize]);
             ScopedArray<u32> data(new u32[width * height]);
-            fread(buffer.get(), 1, bufSize, f);
+            rf = fread(buffer.get(), 1, bufSize, f);
             ReadCompressedLayer2tou32(data.get(), width * height, buffer.get());
             Map::Layer* lay = new Map::Layer(va("Layer%i", i), width, height);
 
@@ -264,7 +318,7 @@ Map* ImportVerge2Map(const std::string& fileName) {
         u32 bufSize = fgetq(f);
         ScopedArray<u8> rleBuffer(new u8[bufSize]);
         ScopedArray<u8> obsData(new u8[width * height]);
-        fread(rleBuffer.get(), 1, bufSize, f);
+        rf = fread(rleBuffer.get(), 1, bufSize, f);
         ReadCompressedLayer1(obsData.get(), width * height, rleBuffer.get());
         if (map->NumLayers()) {
             map->GetLayer(0)->obstructions = Matrix<u8>(width, height, obsData.get());
@@ -290,7 +344,7 @@ Map* ImportVerge2Map(const std::string& fileName) {
         int numSprites = fgetc(f);
         std::vector<std::string> chrList(numSprites);
         for (int i = 0; i < numSprites; i++) {
-            fread(buffer, 1, 60, f);
+            rf = fread(buffer, 1, 60, f);
             chrList.push_back(buffer);
         }
 
@@ -341,7 +395,11 @@ Map* ImportVerge2Map(const std::string& fileName) {
 
             fseek(f, 18, SEEK_CUR); // ???
 
-            fread(buffer, 1, 20, f);
+            rf = fread(buffer, 1, 20, f);
+			if (!rf) {
+				Log::Write("vergemap: Error numEntities\n");
+				return 0;
+			}
             ent.label = buffer; // what the hell
 
             map->GetLayer(0)->entities.push_back(ent);
@@ -371,7 +429,12 @@ static void DecompressVerge3(void* dest, int outSize, FILE* f) {
     uLong zsize = outSize;
     ScopedArray<u8> cdata(new u8[compressedSize]);
 
-    fread(cdata.get(), 1, compressedSize, f);
+    int rf = fread(cdata.get(), 1, compressedSize, f);
+	if (!rf) {
+		Log::Write("vergemap: Error decompression\n");
+		return;
+	}
+
     int result = uncompress(reinterpret_cast<Bytef*>(dest), &zsize, cdata.get(), compressedSize);
     if (result != Z_OK) {
         throw std::runtime_error(va("DecompressVerge3 returned zlib error %i", result));
@@ -406,7 +469,12 @@ Map* ImportVerge3Map(const std::string& fileName) {
 
         char buffer[256];
 
-        fread(buffer, 1, 6, f);
+        int rf = fread(buffer, 1, 6, f);
+		if (!rf) {
+			Log::Write("vergemap: Error reading file\n");
+			return 0;
+		}
+
         if (std::string(buffer) != verge3MapSig) {
             throw std::runtime_error("Bogus map signature");
         }
@@ -418,11 +486,11 @@ Map* ImportVerge3Map(const std::string& fileName) {
 
         fseek(f, 4, SEEK_CUR); // skip vc offset
 
-        fread(buffer, 1, 256, f);   map->title = buffer;
-        fread(buffer, 1, 256, f);   map->tilesetName = buffer;
-        fread(buffer, 1, 256, f);   map->metaData["music"] = buffer;
-        fread(buffer, 1, 256, f);   map->metaData["rstring"] = buffer;
-        fread(buffer, 1, 256, f);   map->metaData["startupscript"] = buffer;
+        rf = fread(buffer, 1, 256, f);   map->title = buffer;
+        rf = fread(buffer, 1, 256, f);   map->tilesetName = buffer;
+        rf = fread(buffer, 1, 256, f);   map->metaData["music"] = buffer;
+        rf = fread(buffer, 1, 256, f);   map->metaData["rstring"] = buffer;
+        rf = fread(buffer, 1, 256, f);   map->metaData["startupscript"] = buffer;
 
         map->metaData["startx"] = toString(fgetw(f));
         map->metaData["starty"] = toString(fgetw(f));
@@ -430,11 +498,13 @@ Map* ImportVerge3Map(const std::string& fileName) {
         int numLayers = fgetq(f);
         for (int i = 0; i < numLayers; i++) {
             Map::Layer* lay = new Map::Layer;
-            fread(buffer, 1, 256, f);   lay->label = buffer;
+            rf = fread(buffer, 1, 256, f);   lay->label = buffer;
             assert(sizeof(double) == 8);
             // TODO: convert to a fraction somehow. #_#
-            double parallaxX;   fread(&parallaxX, 1, 8, f);
-            double parallaxY;   fread(&parallaxY, 1, 8, f);
+            double parallaxX;   
+			rf = fread(&parallaxX, 1, 8, f);
+            double parallaxY;   
+			rf = fread(&parallaxY, 1, 8, f);
             int width = fgetw(f);
             int height = fgetw(f);
             fgetc(f);  // lucent
@@ -503,7 +573,7 @@ VSP* ImportVerge3Tileset(const std::string& fileName) {
     char buffer[256];
     std::fill(buffer, buffer + 256, 0);
 
-    fread(buffer, 1, 4, f);
+    int rf = fread(buffer, 1, 4, f);
     if (std::string(buffer) != VSP_SIGNATURE) {
         throw std::runtime_error("VSP signature ain't there.  This isn't no map.");
     }
@@ -559,7 +629,7 @@ VSP* ImportVerge3Tileset(const std::string& fileName) {
     for (int i = 0; i < numAnimStrands; i++) {
         VSP::AnimState ikaAnim;
 
-        fread(buffer, 1, 256, f); // discard strand name
+        rf = fread(buffer, 1, 256, f); // discard strand name
         ikaAnim.start = fgetq(f);
         ikaAnim.finish = fgetq(f);
         ikaAnim.delay = fgetq(f);

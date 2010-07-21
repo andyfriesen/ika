@@ -3,6 +3,7 @@
 #endif
 #include "fileio.h"
 #include "zlib.h"
+#include "log.h"
 #include <stdio.h>
 
 /* 
@@ -163,11 +164,15 @@ void File::Close() {
 }
 
 void File::Read(void* dest, int numbytes) {
-    if (numbytes == 0)            return;
-    if (dest == NULL)                     return;
+    if (numbytes == 0)			return;
+    if (dest == NULL)			return;
     if (mode!=open_read)        return;
 
-    fread(dest, 1, numbytes, f);
+    int rf = fread(dest, 1, numbytes, f);
+	if (!rf) {
+		Log::Write("Fileio: Error while reading file\n");
+        return;
+	}
 }
 
 void File::ReadString(char* dest) {
@@ -183,7 +188,12 @@ void File::ReadToken(std::string& dest) {
 
     char buffer[256];
 
-    fscanf(f, "%255s", buffer);
+    int sf = fscanf(f, "%255s", buffer);
+	if (!sf) {
+		Log::Write("Fileio: Error while reading token\n");
+        return;
+	}
+
     dest = buffer;
 }
 

@@ -1,5 +1,5 @@
 
-#include "common/log.h"
+#include "log.h"
 #include "utility.h"
 
 #include <stdarg.h>

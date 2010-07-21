@@ -48,18 +48,18 @@ uint lengthof(const T (&array)[N]) {
 #endif
 
 template <bool B>
-struct static_assert {
+struct static_assertion {
     int static_assert_failed[B ? 1 : -1];
 };
 
 #ifndef __GNUC__
-static_assert<sizeof(u8) == 1>;
-static_assert<sizeof(u16) == 2>;
-static_assert<sizeof(u32) == 4>;
-static_assert<sizeof(u64) == 8>;
+static_assertion<sizeof(u8) == 1>;
+static_assertion<sizeof(u16) == 2>;
+static_assertion<sizeof(u32) == 4>;
+static_assertion<sizeof(u64) == 8>;
 #endif
 
-// This really belongs in the language anyway, so fuckit.
+// This really belongs in the language anyway, or whatever.
 #define foreach BOOST_FOREACH
 
 // Tempted, but probably a bad idea:

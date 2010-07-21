@@ -1,5 +1,5 @@
 
-#include "common/utility.h"
+#include "utility.h"
 
 void ReadCompressedLayer1(u8 *dest, int numBytes, u8 *src) {
     int j, n = 0;

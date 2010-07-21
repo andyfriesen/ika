@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "common/utility.h"
+#include "utility.h"
 
 extern void ReadCompressedLayer1(u8 *dest, int numbytes, u8 *src);
 extern void ReadCompressedLayer2(u16 *dest, int numwords, u16 *src);

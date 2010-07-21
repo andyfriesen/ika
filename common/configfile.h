@@ -15,7 +15,7 @@
 
 #include <map>
 
-#include "common/utility.h"
+#include "utility.h"
 
 struct CConfigFile {
     typedef std::map<std::string, std::string> ConfigMap;

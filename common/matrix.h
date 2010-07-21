@@ -3,7 +3,7 @@
 #include <cassert>
 #include <algorithm>
 
-#include "common/utility.h"
+#include "utility.h"
 
 //#define FOLLOWTHEWHITERABBIT
 

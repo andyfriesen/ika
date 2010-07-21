@@ -4,7 +4,7 @@ Font file
 
 #pragma once
 
-#include "common/utility.h"
+#include "utility.h"
 #include "Canvas.h"
 
 struct File;

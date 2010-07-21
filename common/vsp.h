@@ -1,16 +1,16 @@
 /* 
     the Speed Bump's Spiffy VSP class object thingie (tm)
     Copyright (c) 2000 the Speed Bump
-    Based on some crap that vecna made way back when. (c) 199x
+    Based on the vsp code that vecna made way back. (c) 199x
 
-    Ihis is my first real attempt to make anything object - oriented, so it may
+    This is my first real attempt to make anything object - oriented, so it may
     look icky, but I'm kinda proud of it right now.
       
     This has got to be the oldest code chunk I have that I still
     use. ^_~
     --tSB May 2001
         
-    And it sucked!  Major revamp.
+    And it failed!  Major revamp.
     --andy Nov 2001
 */
 
@@ -18,7 +18,7 @@
 
 #pragma once
 
-#include "common/utility.h"
+#include "utility.h"
 #include "Canvas.h"
 
 struct VSP {
@@ -65,6 +65,10 @@ struct VSP {
     
     void SetSize(int w, int h);
     
+private:										// just to get the warnings out
+	int _width, _height;
+
+public:
     std::vector<AnimState>& vspAnim;            // I see no reason to hide this, really.
 
     Canvas& GetTile(uint tileidx);
@@ -90,6 +94,6 @@ private:
     
     std::vector<AnimState>  _vspanim;
     
-    int _width, _height;
+    
 };
 

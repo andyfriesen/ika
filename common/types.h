@@ -8,13 +8,13 @@
 
 /// Everybody has their own Rect struct.  This is mine.
 struct Rect {
-    int left;
-    int top;
-    int right;
-    int bottom;
+	int left;	
+	int right; 	
+	int top;  	
+	int bottom;    
     
-    inline int Width() const  { return right - left; }
-    inline int Height() const { return bottom - top; }
+	inline int Width() const  { return right - left; }    	
+	inline int Height() const { return bottom - top; }    	
     void Normalize() {
         if (left > right)
             std::swap(left, right);

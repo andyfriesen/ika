@@ -1,7 +1,7 @@
 #pragma once
 
-#include "common/utility.h"
-#include "common/types.h"
+#include "utility.h"
+#include "types.h"
 
 /**
  *  Canvases are purely software representations of images.  Nothing more.
@@ -48,9 +48,8 @@ struct Canvas {
     void SetClipRect(const Rect& r);
 
 private:
-    RGBA* _pixels;                                              ///< Pointer to raw pixel data
     int   _width, _height;                                      ///< Dimensions
-
+	RGBA* _pixels;                                              ///< Pointer to raw pixel data
     Rect _cliprect;                                             ///< Operations are restricted to this region of the image.
 };
 
