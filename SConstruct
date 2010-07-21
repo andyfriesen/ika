@@ -1,3 +1,7 @@
+# Just in case: 
+# type python2.6-config --cflags in the terminal to see if you have the correct flags,
+# but without the ones that produce useless "Hey, you can't use that for C++!" warnings. 
+
 import sys
 import os
 
@@ -8,6 +12,7 @@ env.EnsureSConsVersion(1, 0)
 def tokenlist(x,*y):
     if type(x) is list: return x + list(y)
     return [x] + list(y)
+def cppflags(*x): env.Append(CPPFLAGS = tokenlist(*x))
 def include(*x): env.Append(CPPPATH = tokenlist(*x))
 def libs(*x):    env.Append(LIBS = tokenlist(*x))
 def libpath(*x): env.Append(LIBPATH = tokenlist(*x))
@@ -46,27 +51,27 @@ else:
     # *nix specific configuration
     libpath('/usr/X11R6/lib')
     libs('GL', 'GLU', 'util')
-    env.ParseConfig('python2.6-config --cflags')
-    env.ParseConfig('python2.6-config --libs')
+    cppflags('-fno-strict-aliasing', '-DNDEBUG', '-g', '-fwrapv', '-O2', '-Wall')
+    cppflags('-Wno-unknown-pragmas')
+    env.ParseConfig('python-config --include')
+    env.ParseConfig('python-config --libs') 
 
 ############## Build common sources
 
-libcommon = env.SConscript(dirs=['common'], exports='env')
+env.VariantDir('build_common', 'common', duplicate=0)
+libcommon = env.SConscript(dirs=['build_common'], exports='env')
 env.Alias('common', libcommon)
 
-include('#/common')
-libpath('#/common')
+include('#/build_common')
+libpath('#/build_common')
 libs('common')
 
+# TODO: See if it's possible for the objects of the common library be only built once. 
 ############## Set up for and build ika
 
 ika_env = env.Clone()
 
-ika_env.Append(LIBS=Split('''
-    SDL
-    audiere
-    corona
-'''))
+ika_env.Append(LIBS = ['SDL', 'audiere', 'corona'])
 
 # SDL linking info
 ika_env.ParseConfig('sdl-config --cflags')
@@ -76,6 +81,5 @@ if sys.platform == 'win32':
 ika_env.Append(LINKFLAGS = '-Wl,--export-dynamic')
 ika_env.VariantDir('build', 'engine', duplicate=0)
 ika = ika_env.SConscript(dirs=['build'], exports='ika_env')
-ika_env.Alias('ika', ika)
-ika_env.Default('ika')
-ika_env.Install( "../debian/ika/usr/games", "ika" )
+#ika_env.Alias('ika', ika)
+#ika_env.Default('ika')
