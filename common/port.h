@@ -43,7 +43,7 @@
 #endif
 
 // signed/unsigned ints of whatever size.
-typedef size_t uint;
+typedef unsigned uint;
 //typedef ptrdiff_t sint;
 
 #if defined(_MSC_VER) && _MSC_VER < 1300
