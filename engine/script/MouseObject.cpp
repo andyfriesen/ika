@@ -21,12 +21,12 @@ namespace Script
 
         PyGetSetDef properties[] =
         {
-            {   "x",        (getter)getX,       0,  "Gets the X axis of the mouse." },
-            {   "y",        (getter)getY,       0,  "Gets the Y axis of the mouse." },
-            {   "wheel",    (getter)getWheel,   0,  "Gets the mouse wheel."         },
-            {   "left",     (getter)getLeft,    0,  "Gets the left mouse button."   },
-            {   "right",    (getter)getRight,   0,  "Gets the right mouse button."  },
-            {   "middle",   (getter)getMiddle,  0,  "Gets the middle mouse button." },
+            {   (char*)"x",        (getter)getX,       0,  (char*)"Gets the X axis of the mouse." },
+            {   (char*)"y",        (getter)getY,       0,  (char*)"Gets the Y axis of the mouse." },
+            {   (char*)"wheel",    (getter)getWheel,   0,  (char*)"Gets the mouse wheel."         },
+            {   (char*)"left",     (getter)getLeft,    0,  (char*)"Gets the left mouse button."   },
+            {   (char*)"right",    (getter)getRight,   0,  (char*)"Gets the right mouse button."  },
+            {   (char*)"middle",   (getter)getMiddle,  0,  (char*)"Gets the middle mouse button." },
             {   0   }
         };
 

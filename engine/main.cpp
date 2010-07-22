@@ -127,7 +127,7 @@ void Engine::CheckMessages() {
 
 void Engine::MainLoop() {
     CDEBUG("mainloop");
-    static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
+    // static int numframes, t = 0, fps = 0;                           // frame counter stuff (Why do these need to be static?)
 
     ScopedPtr<Ika::Font> font;
     try {
@@ -781,6 +781,7 @@ void Engine::TestActivate(const Entity* player) {
         case face_upright:   tx += sprite->nHotw;    ty -= sprite->nHoth;    break;
         case face_downleft:  tx -= sprite->nHotw;    ty += sprite->nHoth;    break;
         case face_downright: tx += sprite->nHotw;    ty += sprite->nHoth;    break;
+		default: break;// do nothing
     }
 
     Entity* ent = DetectEntityCollision(0 , tx, ty, sprite->nHotw, sprite->nHoth, player->layerIndex);

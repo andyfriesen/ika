@@ -22,31 +22,41 @@ struct Sprite;
  */
 
 struct Entity {
-    AnimScript  defaultAnim;                                        ///< Default animation script flow.
-    AnimScript  specAnim;                                           ///< "special" animation script (set from python)
-    bool        useSpecAnim;                                        ///< true if specAnim should be used instead of defaultAnim
 
-    int         x, y;                                               ///< coordinates of the entity
-    uint        layerIndex;                                         ///< layer the entity inhabits
-    Point       destVector;                                         ///< Direction the entity is going.
-    Point       destLocation;                                       ///< coordinates the entity is walking towards.
-    int         speed;                                              ///< Speed of the entity (Number of ticks of AI per second.  100 is the default)
-    int         speedCount;                                         ///< Speed counter.
-    uint        delayCount;                                         ///< Delay counter. (der)
-    
-    Sprite*     sprite;                                             ///< the sprite this entity uses
-    std::string spriteName;                                         ///< filename of the sprite this entity uses.
+private:
+    Engine&    engine;                                              ///< engine instance.  This allows the entity to gather information about its surroundings
+
+public:
+	std::string name;                                               ///< the entity's name    
+	int         x, y;                                               ///< coordinates of the entity
+    uint        layerIndex;                                         ///< layer the entity inhabits  
+	
+	int         speed;                                              ///< Speed of the entity (Number of ticks of AI per second.  100 is the default)	
+	int         speedCount;                                         ///< Speed counter.
+    uint        delayCount;                                         ///< Delay counter. (der)	
     
     Direction   direction;                                          ///< the direction the entity is facing (and moving in, if applicable)
     bool        isMoving;                                           ///< true if the entity is moving
-    uint        curFrame;                                           ///< the frame that the engine should render
-    int         specFrame;                                          ///< 0 if the engine should use normal frame progression, the frame that should be drawn otherwise
     bool        isVisible;                                          ///< true if the entity should be rendered
-    bool        obstructedByMap;                                    ///< if true, the entity cannot walk on obstructed map tiles
-    bool        obstructedByEntities;                               ///< if true, the entity cannot walk on entities whose bIsobs flag is set
-    bool        obstructsEntities;                                  ///< if true, the entity obstructs entities whose bEntobs flag is set
+
+	Point       destLocation;                                       ///< coordinates the entity is walking towards.	
+	Point       destVector;                                         ///< Direction the entity is going.    
     
-    std::string name;                                               ///< the entity's name
+	bool        obstructedByMap;                                    ///< if true, the entity cannot walk on obstructed map
+	bool        obstructedByEntities;                               ///< if true, the entity cannot walk on entities whose bIsobs flag is set tiles		
+	bool        obstructsEntities;                                  ///< if true, the entity obstructs entities whose bEntobs flag is set 	
+		
+	std::string spriteName;                                         ///< filename of the sprite this entity uses.
+    Sprite*     sprite;                                             ///< the sprite this entity uses
+
+    AnimScript  defaultAnim;                                        ///< Default animation script flow.
+    AnimScript  specAnim;                                           ///< "special" animation script (set from python)	
+	bool        useSpecAnim;                                        ///< true if specAnim should be used instead of defaultAnim   
+	  
+	uint        curFrame;                                           ///< the frame that the engine should render
+    int         specFrame;                                          ///< 0 if the engine should use normal frame progression, the frame that should be drawn otherwise
+    
+    
     
     ScriptObject moveScript;                                        ///< Movement script assigned to this entity.
     ScriptObject activateScript;                                    ///< event to be called when the entity is activated
@@ -77,9 +87,8 @@ struct Entity {
 
     void        Update();                                           ///< Performs one tick of AI
 
-private:
-    Engine&    engine;                                              ///< engine instance.  This allows the entity to gather information about its surroundings
 
+private:
     // NO.
     Entity(Entity&);
     Entity& operator=(Entity&);

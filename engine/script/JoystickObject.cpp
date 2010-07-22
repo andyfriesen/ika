@@ -15,11 +15,11 @@ namespace Script {
 #undef GET
 
         PyGetSetDef properties[] = {
-            {   "axes",         (getter)getAxes,        0,  "A tuple containing all of the joystick axes."      },
-            {   "reverseaxes",  (getter)getReverseAxes, 0,  "A tuple containing all of the joystick axes.\n"
+            {   (char*)"axes",         (getter)getAxes,        0,  (char*)"A tuple containing all of the joystick axes."      },
+            {   (char*)"reverseaxes",  (getter)getReverseAxes, 0,  (char*)"A tuple containing all of the joystick axes.\n"
                                                             "Unlike axes, these controls *reverse* the direction \n"
                                                             "of the axis."                                      },
-            {   "buttons",      (getter)getButtons,     0,  "A tuple containing all of the joystick buttons."   },
+            {   (char*)"buttons",      (getter)getButtons,     0,  (char*)"A tuple containing all of the joystick buttons."   },
             {   0   }
         };
 

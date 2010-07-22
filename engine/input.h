@@ -55,8 +55,8 @@ struct InputControl {
 
 private:
     // Used to implement Pressed() and Delta()
-    float  _oldPos;
-    float  _curPos;
+	float  _curPos;    
+	float  _oldPos;    
 };
 
 // TODO: some kind of control compositor, so we can have a single
@@ -94,14 +94,6 @@ struct Input {
     // Unpress everything.
     void Unpress();
 
-    // Standard controls:
-    InputControl* const& up;
-    InputControl* const& down;
-    InputControl* const& left;
-    InputControl* const& right;
-    InputControl* const& enter;
-    InputControl* const& cancel;
-
     // teehee.
     void SetStandardControl(InputControl* const& ctrl, InputControl* newControl);
 
@@ -121,6 +113,18 @@ private:
     ScopedPtr<Keyboard> _keyboard;
     ScopedPtr<Mouse>    _mouse;
     std::vector<Joystick*> _joysticks;
+
+public:
+
+	// Standard controls:
+	InputControl* const& up;
+	InputControl* const& down;
+	InputControl* const& left;
+	InputControl* const& right;
+	InputControl* const& enter;
+	InputControl* const& cancel;
+
+private:
 
     // Actual standard controls.
     InputControl* _up;

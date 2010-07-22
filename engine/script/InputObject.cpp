@@ -140,15 +140,15 @@ namespace Script {
 #undef SET
 
         PyGetSetDef properties[] = {
-            {   "up",       (getter)getUp,          (setter)setUp,      "Gets the standard \"Up\" control."     },
-            {   "down",     (getter)getDown,        (setter)setDown,    "Gets the standard \"Down\" control."   },
-            {   "left",     (getter)getLeft,        (setter)setLeft,    "Gets the standard \"Left\" control."   },
-            {   "right",    (getter)getRight,       (setter)setRight,   "Gets the standard \"Right\" control."  },
-            {   "enter",    (getter)getEnter,       (setter)setEnter,   "Gets the standard \"Enter\" control."  },
-            {   "cancel",   (getter)getCancel,      (setter)setCancel,  "Gets the standard \"Cancel\" control." },
-            {   "keyboard", (getter)getKeyboard,                    0,  "Gets the keyboard device."             },
-            {   "mouse",    (getter)getMouse,                       0,  "Gets the mouse device."                },
-            {   "joysticks",(getter)getJoysticks,0, "Gets a tuple containing all the connected joystick devices."   },
+            {   (char*)"up",       (getter)getUp,          	(setter)setUp,      (char*)"Gets the standard \"Up\" control."     },
+            {   (char*)"down",     (getter)getDown,        	(setter)setDown,    (char*)"Gets the standard \"Down\" control."   },
+            {   (char*)"left",     (getter)getLeft,        	(setter)setLeft,    (char*)"Gets the standard \"Left\" control."   },
+            {   (char*)"right",    (getter)getRight,       	(setter)setRight,   (char*)"Gets the standard \"Right\" control."  },
+            {   (char*)"enter",    (getter)getEnter,        (setter)setEnter,   (char*)"Gets the standard \"Enter\" control."  },
+            {   (char*)"cancel",   (getter)getCancel,       (setter)setCancel,  (char*)"Gets the standard \"Cancel\" control." },
+            {   (char*)"keyboard", (getter)getKeyboard,                     0,  (char*)"Gets the keyboard device."             },
+            {   (char*)"mouse",    (getter)getMouse,                        0,  (char*)"Gets the mouse device."                },
+            {   (char*)"joysticks",(getter)getJoysticks,                    0,  (char*)"Gets a tuple containing all the connected joystick devices."   },
             {   0   }
         };
 

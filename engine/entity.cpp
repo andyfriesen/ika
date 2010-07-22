@@ -13,19 +13,23 @@ Entity::Entity(Engine* njin)
     , x                   (0)
     , y                   (0)
     , layerIndex          (0)
-    , useSpecAnim         (false)
-    , delayCount          (0)
+
     , speed               (entspeed_normal)
     , speedCount          (0)
-    , sprite              (0)
+	, delayCount          (0)
+
     , direction           (face_down)
     , isMoving            (false)
     , isVisible           (true)
-    , obstructsEntities   (true)
-    , obstructedByMap     (true)
-    , obstructedByEntities(true)
 
-    , curFrame            (0)
+	, obstructedByMap     (true)
+	, obstructedByEntities(true)	
+	, obstructsEntities   (true)    	    
+
+	, sprite              (0)
+
+	, useSpecAnim         (false)
+	, curFrame            (0)
     , specFrame           (-1)
 
     , moveScript(0)
@@ -34,29 +38,33 @@ Entity::Entity(Engine* njin)
 {}
 
 Entity::Entity(Engine* njin, const Map::Entity& e, uint _layerIndex)
-    : engine(*njin)
-    , useSpecAnim(false)
-    , delayCount          (0)
-    , x                   (e.x)
+    : engine(*njin)    
+	, name                (e.label)    
+	, x                   (e.x)
     , y                   (e.y)
     , layerIndex          (_layerIndex) // :x
-    , destLocation        (e.x, e.y)
-    , destVector          (0, 0)
-    , name                (e.label)
+    
     , speed               (e.speed)
     , speedCount          (0)
-    , sprite              (0)
-    , spriteName          (e.spriteName)
-    , direction           ((Direction)e.direction)
+	, delayCount          (0)
+
+	, direction           ((Direction)e.direction)
     , isMoving            (false)
     , isVisible           (true)
+	
+    , destLocation        (e.x, e.y)
+    , destVector          (0, 0)
 
-    , curFrame            (0)
+	, obstructedByMap     (e.obstructedByMap)  
+	, obstructedByEntities(e.obstructedByEntities)  
+	, obstructsEntities   (e.obstructsEntities)
+
+	, spriteName          (e.spriteName)    
+	, sprite              (0)
+
+	, useSpecAnim(false)
+	, curFrame            (0)
     , specFrame           (-1)
-
-    , obstructsEntities   (e.obstructsEntities)
-    , obstructedByMap     (e.obstructedByMap)
-    , obstructedByEntities(e.obstructedByEntities)
 
     // These can't be set here, because the entities are created before the script is loaded
     , moveScript(0)

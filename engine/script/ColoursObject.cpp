@@ -33,7 +33,7 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
             
-            mapmethods.mp_length = (inquiry)&Colours_Len;
+            mapmethods.mp_length = (lenfunc)&Colours_Len;
             mapmethods.mp_subscript = (binaryfunc)&Colours_GetItem;
             mapmethods.mp_ass_subscript = (objobjargproc)&Colours_SetItem;
             

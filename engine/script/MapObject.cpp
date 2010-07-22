@@ -215,26 +215,26 @@ namespace Script {
 
         PyGetSetDef properties[] =
         {
-            {   "title",        (getter)getTitle,           (setter)setTitle,   "Gets or sets the map's title."                     },
-            {   "xwin",         (getter)getXWin,            (setter)setXWin,    "Gets or sets the X coordinate of the camera"       },
-            {   "ywin",         (getter)getYWin,            (setter)setYWin,    "Gets or sets the Y coordinate of the camera"       },
-            {   "layercount",   (getter)getLayerCount,      0,                  "Gets the number of layers on the current map."     },
-            {   "numtiles",     (getter)getNumTiles,        0,                  "Gets the number of tiles in the current tileset.\n"
+            {   (char*)"title",        (getter)getTitle,           (setter)setTitle,   (char*)"Gets or sets the map's title."                     },
+            {   (char*)"xwin",         (getter)getXWin,            (setter)setXWin,    (char*)"Gets or sets the X coordinate of the camera"       },
+            {   (char*)"ywin",         (getter)getYWin,            (setter)setYWin,    (char*)"Gets or sets the Y coordinate of the camera"       },
+            {   (char*)"layercount",   (getter)getLayerCount,      0,                  (char*)"Gets the number of layers on the current map."     },
+            {   (char*)"numtiles",     (getter)getNumTiles,        0,                  (char*)"Gets the number of tiles in the current tileset.\n"
                                                                                 "Deprecated: Use ika.Tileset.tilecount instead."
             },
-            {   "tilewidth",    (getter)getTileWidth,       0,                  "Gets the width of the current tileset.\n" 
+            {   (char*)"tilewidth",    (getter)getTileWidth,       0,                  (char*)"Gets the width of the current tileset.\n" 
                                                                                 "Deprecated: Use ika.Tileset.tilewidth instead."
             },
-            {   "tileheight",   (getter)getTileHeight,      0,                  "Gets the height of the current tileset.\n"
+            {   (char*)"tileheight",   (getter)getTileHeight,      0,                  (char*)"Gets the height of the current tileset.\n"
                                                                                 "Deprecated: Use ika.Tileset.tilewidth instead."
             },
-            {   "width",        (getter)getWidth,           0,                  "Gets the width of the current map, in pixels"      },
-            {   "height",       (getter)getHeight,          0,                  "Gets the height of the current map, in pixels"     },
-            {   "tilesetname",  (getter)getTilesetName, (setter)setTilesetName, "Gets or sets the name of the current tileset.\n"
+            {   (char*)"width",        (getter)getWidth,           0,                  (char*)"Gets the width of the current map, in pixels"      },
+            {   (char*)"height",       (getter)getHeight,          0,                  (char*)"Gets the height of the current map, in pixels"     },
+            {   (char*)"tilesetname",  (getter)getTilesetName, (setter)setTilesetName, (char*)"Gets or sets the name of the current tileset.\n"
                                                                                 "Don't set this: use ika.Tileset.Load instead."
             },
-            {   "entities",     (getter)getEntities,        0,                  "Gets a dictionary of entities currently tied to the map"   },
-            {   "module",       (getter)getModule,          0,                  "Gets the loaded Python module of the current map.\n"
+            {   (char*)"entities",     (getter)getEntities,        0,                  (char*)"Gets a dictionary of entities currently tied to the map"   },
+            {   (char*)"module",       (getter)getModule,          0,                  (char*)"Gets the loaded Python module of the current map.\n"
                                                                                 "Returns None if no map has been loaded."
             },
             {   0   }

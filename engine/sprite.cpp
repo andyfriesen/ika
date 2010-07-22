@@ -8,9 +8,7 @@
 #include "video/Driver.h"
 #include "video/Image.h"
 
-Sprite::Sprite(const std::string& fname, Video::Driver* v)
-    : video(v)
-{
+Sprite::Sprite(const std::string& fname, Video::Driver* v) : video(v) {
     CCHRfile chr;
     chr.Load(fname);
         
@@ -30,8 +28,7 @@ Sprite::Sprite(const std::string& fname, Video::Driver* v)
         "upleft", "upright", "downleft", "downright"
     };
     const int numDirs = sizeof dirNames / sizeof dirNames[0];
-    for (uint i = 0; i < numDirs; i++)
-    {
+    for (uint i = 0; i < (uint)numDirs; i++) {
         std::string s;
         
         s = "idle_";    s += dirNames[i];   _idleScripts[i] = _scripts[s];
@@ -39,8 +36,7 @@ Sprite::Sprite(const std::string& fname, Video::Driver* v)
     }
     
     _frames.resize(chr.NumFrames());
-    for (uint i = 0; i < chr.NumFrames(); i++)
-    {
+    for (uint i = 0; i < chr.NumFrames(); i++) {
         _frames[i] = video->CreateImage(chr.GetFrame(i));
     }
 }

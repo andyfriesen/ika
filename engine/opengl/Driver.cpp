@@ -6,10 +6,10 @@
 #include "Driver.h"
 #include "Image.h"
 
-#include "common/types.h"
-#include "common/utility.h"
-#include "common/Canvas.h"
-#include "common/log.h"
+#include "types.h"
+#include "utility.h"
+#include "Canvas.h"
+#include "log.h"
 
 static void IKA_STDCALL glBlendEquationStub(int) {}
 
@@ -136,8 +136,7 @@ namespace OpenGL {
          * glSubTexImage2Ding. (we do NOT, however, fly away on wings of silver dust.  That's
          * strictly reserved for when there is an existing texture for us to use)
          *
-         * oh yeah.  I know this is messy.  Don't give a shit yet.  Prototyping is a bitch
-         * that way.
+         * oh yeah.  This is still a prototype.
          *
          * TODO: Generalize this so that we hold onto a bunch of textures for every power-of-two
          * size of image that is created. (8x8, 64x64, et cetera)
@@ -707,14 +706,14 @@ namespace OpenGL {
             return;
         }
 
-        width--;
-        height--;
-        int a = rx;
-        int b = ry;
+        // width--;
+        // height--;
+        // int a = rx;
+        // int b = ry;
 
-        int a2 = a * a;
-        int b2 = b * b;
-        int fa2 = 4 * a2;
+        // int a2 = a * a;
+        // int b2 = b * b;
+        // int fa2 = 4 * a2;
 
         double TWOPI = 6.28318;  
         double n = 180.0;

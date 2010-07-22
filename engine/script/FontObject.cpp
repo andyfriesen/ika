@@ -11,28 +11,28 @@ namespace Script {
         PyTypeObject type;
 
         PyMethodDef methods[] = {
-            {   "Print",        (PyCFunction)Font_Print,        METH_VARARGS,
-                "Font.Print(x, y, text)\n\n"
+            {   (char*)"Print",        (PyCFunction)Font_Print,        METH_VARARGS,
+                (char*)"Font.Print(x, y, text)\n\n"
                 "Prints a string of text on screen at (x, y)."
             },
-            {   "CenterPrint",  (PyCFunction)Font_CenterPrint,  METH_VARARGS,
-                "Font.CenterPrint(x, y, text)\n\n"
+            {   (char*)"CenterPrint",  (PyCFunction)Font_CenterPrint,  METH_VARARGS,
+                (char*)"Font.CenterPrint(x, y, text)\n\n"
                 "Prints a string of text on screen, \n"
                 "with x as the center point rather than the leftmost point."
 
             },
-            {   "RightPrint",   (PyCFunction)Font_RightPrint,   METH_VARARGS,
-                "Font.RightPrint(x, y, text)\n\n"
+            {   (char*)"RightPrint",   (PyCFunction)Font_RightPrint,   METH_VARARGS,
+                (char*)"Font.RightPrint(x, y, text)\n\n"
                 "Prints a string of text on screen, with x as the rightmost point\n"
                 "rather than the leftmost point."
             },
-            {   "StringWidth",  (PyCFunction)Font_StringWidth,  METH_VARARGS,
-                "Font.StringWidth(text) -> int\n\n"
+            {   (char*)"StringWidth",  (PyCFunction)Font_StringWidth,  METH_VARARGS,
+                (char*)"Font.StringWidth(text) -> int\n\n"
                 "Returns how many pixels in width the passed string would be, \n"
                 "if printed in this font.  Takes newlines into account."
             },
-            {   "StringHeight",  (PyCFunction)Font_StringHeight,  METH_VARARGS,
-                "Font.StringHeight(text) -> int\n\n"
+            {   (char*)"StringHeight",  (PyCFunction)Font_StringHeight,  METH_VARARGS,
+                (char*)"Font.StringHeight(text) -> int\n\n"
                 "Returns how many pixels in height the passed string would be, \n"
                 "if printed in this font.  Takes newlines into account."
             },            
@@ -55,12 +55,12 @@ namespace Script {
 #undef SET
 
         PyGetSetDef properties[] = {
-            {   "width",         (getter)getWidth,        0,                        "Gets the width of the widest glyph in the font."   },
-            {   "height",        (getter)getHeight,       0,                        "Gets the height of the font."  },
-            {   "tabsize",       (getter)getTabSize,      (setter)setTabSize,       "Gets or sets the tab size of the font."    },
-            {   "letterspacing", (getter)getLetterSpacing,(setter)setLetterSpacing, "Gets or sets the letter spacing of the font."   },
-            {   "wordspacing",   (getter)getWordSpacing,  (setter)setWordSpacing,   "Gets or sets the word spacing of the font."   },
-            {   "linespacing",   (getter)getLineSpacing,  (setter)setLineSpacing,   "Gets or sets the line spacing of the font."   },
+            {   (char*)"width",         (getter)getWidth,        0,                        (char*)"Gets the width of the widest glyph in the font."   },
+            {   (char*)"height",        (getter)getHeight,       0,                        (char*)"Gets the height of the font."  },
+            {   (char*)"tabsize",       (getter)getTabSize,      (setter)setTabSize,       (char*)"Gets or sets the tab size of the font."    },
+            {   (char*)"letterspacing", (getter)getLetterSpacing,(setter)setLetterSpacing, (char*)"Gets or sets the letter spacing of the font."   },
+            {   (char*)"wordspacing",   (getter)getWordSpacing,  (setter)setWordSpacing,   (char*)"Gets or sets the word spacing of the font."   },
+            {   (char*)"linespacing",   (getter)getLineSpacing,  (setter)setLineSpacing,   (char*)"Gets or sets the line spacing of the font."   },
             {   0   }
         };
 
@@ -83,7 +83,7 @@ namespace Script {
         }
 
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
-            static char* keywords[] = { "filename", 0 };
+            static char* keywords[] = { (char*)"filename", 0 };
             char* filename;
 
             if (!PyArg_ParseTupleAndKeywords(args, kw, "s:Font", keywords, &filename)) {

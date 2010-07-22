@@ -66,8 +66,8 @@ namespace Script {
 #undef SET
 
         PyGetSetDef properties[] = {
-            {   "onpress",      (getter)getOnPress,     (setter)setOnPress,     "Gets or sets the function to be executed when the key is pressed."   },
-            {   "onunpress",    (getter)getOnUnpress,   (setter)setOnUnpress,   "Gets or sets the function to be executed when the key is released."  },
+            {   (char*)"onpress",      (getter)getOnPress,     (setter)setOnPress,     (char*)"Gets or sets the function to be executed when the key is pressed."   },
+            {   (char*)"onunpress",    (getter)getOnUnpress,   (setter)setOnUnpress,   (char*)"Gets or sets the function to be executed when the key is released."  },
             {   0   }
         };
 

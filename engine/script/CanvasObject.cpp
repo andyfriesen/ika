@@ -130,8 +130,8 @@ namespace Script
 
         PyGetSetDef properties[] =
         {
-            {   "width",    (getter)getWidth, 0, "Gets the width of the canvas" },
-            {   "height",   (getter)getHeight, 0, "Gets the height of the canvas" },
+            {   (char*)"width",    (getter)getWidth, 0, (char*)"Gets the width of the canvas" },
+            {   (char*)"height",   (getter)getHeight, 0, (char*)"Gets the height of the canvas" },
             {   0  },
         };
 
@@ -166,8 +166,8 @@ namespace Script
         }
         
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw)
-        {
-            static char* keywords[] = { "x", "y", 0 };
+        {          
+			static char* keywords[] = { (char*)"x", (char*)"y", 0 };
             PyObject* o;
             int x, y;
 

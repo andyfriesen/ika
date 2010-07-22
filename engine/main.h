@@ -32,35 +32,39 @@
 
 struct Engine {
 
-    // This sucks.
+    // This is not good.
     friend struct ScriptEngine;
 
     typedef std::list<Entity*>      EntityList;
     
-public:                                                                             // Too many components need access to this class.  Kinda sucks. :/
+public:                                                                             // Too many components need access to this class.  
     
     Map                             map;                                            ///< tile placement and stuff
     Tileset*                        tiles;                                          ///< Images.  Of Tiles.
     ScriptEngine                    script;
     
     SpriteController                sprite;                                         ///< sprite files
-    EntityList                      entities;                                       ///< entities
+    EntityList                      entities;                                       ///< entities	
 
     Video::Driver*                  video;
 
-    bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
-    bool                            _isMapLoaded;                                   ///< true if a map is loaded (gah)
+	Entity*                         player;                                         ///< Points to the current player entity
+	
 
-    // Path variables for resource loading.
-    std::string                     _mapPath;
+    bool                            _showFramerate;                                 ///< The current framerate is printed in the upper left corner of the screen if true.
+   
     
 private:
     int                             xwin, ywin;                                     ///< world coordinates of the viewport
     int                             _oldTime;                                       ///< used for framerate regulation
 
 public:
-    Entity*                         player;                                         ///< Points to the current player entity
     Entity*                         cameraTarget;                                   ///< Points to the current camera target
+    
+	 // Path variables for resource loading.
+    std::string                     _mapPath;   
+	bool                            _isMapLoaded;                                   ///< true if a map is loaded (gah)
+
     std::vector<uint>               renderList;                                     ///< List of layer indeces to draw by default.
     
     // Odds and ends
@@ -71,8 +75,8 @@ public:
     int                             _frameSkip;                                     ///< the map engine will skip no more than this amount of ticks per retrace
     
     // interface
-    void      Sys_Error(const char* errmsg);                                        ///< bitches, and quits
-    void      Script_Error();                                                       ///< also bitchy and quitty
+    void      Sys_Error(const char* errmsg);                                        ///< complains, and quits
+    void      Script_Error();                                                       ///< also complains and quits
     void      Script_Error(std::string msg);
     void      CheckMessages();                                                      ///< Play nice with Mr. Gates (or Torvalds, or Jobs, or...)
     

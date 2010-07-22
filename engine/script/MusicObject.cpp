@@ -11,12 +11,12 @@ namespace Script {
         PyTypeObject type;
 
         PyMethodDef methods[] = {
-            {   "Play",     (PyCFunction)Music_Play,  METH_NOARGS,
-                "Music.Play()\n\n"
+            {   (char*)"Play",     (PyCFunction)Music_Play,  METH_NOARGS,
+                (char*)"Music.Play()\n\n"
                 "Plays the stream."
             },
-            {   "Pause",    (PyCFunction)Music_Pause, METH_NOARGS,
-                "Music.Pause()\n\n"
+            {   (char*)"Pause",    (PyCFunction)Music_Pause, METH_NOARGS,
+                (char*)"Music.Pause()\n\n"
                 "Pauses the stream.  Calling Music.Play() will cause playback to resume\n"
                 "where it left off."
             },
@@ -41,11 +41,11 @@ namespace Script {
 #undef SET
 
         PyGetSetDef properties[] = {
-            {   "volume",       (getter)getVolume,      (setter)setVolume,      "The volume of the sound.  Ranges from 0 to 1, with 1 being full volume."   },
-            {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  -1 is left.  1 is right.  0 is centre."   },
-            {   "position",     (getter)getPosition,    (setter)setPosition,    "The chronological position of the sound, in milliseconds." },
-            {   "pitchshift",   (getter)getPitchShift,  (setter)setPitchShift,  "Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing" },
-            {   "loop",         (getter)getLoop,        (setter)setLoop,        "If nonzero, the sound loops.  If zero, then the sound stops playing when it reaches the end."  },
+            {   (char*)"volume",       (getter)getVolume,      (setter)setVolume,      (char*)"The volume of the sound.  Ranges from 0 to 1, with 1 being full volume."   },
+            {   (char*)"pan",          (getter)getPan,         (setter)setPan,         (char*)"Panning.  -1 is left.  1 is right.  0 is centre."   },
+            {   (char*)"position",     (getter)getPosition,    (setter)setPosition,    (char*)"The chronological position of the sound, in milliseconds." },
+            {   (char*)"pitchshift",   (getter)getPitchShift,  (setter)setPitchShift,  (char*)"Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing" },
+            {   (char*)"loop",         (getter)getLoop,        (setter)setLoop,        (char*)"If nonzero, the sound loops.  If zero, then the sound stops playing when it reaches the end."  },
             {   0   }
         };
 

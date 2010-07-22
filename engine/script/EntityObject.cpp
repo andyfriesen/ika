@@ -251,19 +251,19 @@ namespace Script {
 #undef GET
 
         PyGetSetDef properties[] = {
-            {   "x",                (getter)getX,                   (setter)setX,               "Gets or sets the entity's X position. (in pixels)" },
-            {   "y",                (getter)getY,                   (setter)setY,               "Gets or sets the entity's Y position. (in pixels)" },
-            {   "layer",            (getter)getLayer,               (setter)setLayer,           "Gets or sets the index of the layer that the entity exists on."    },
-            {   "speed",            (getter)getSpeed,               (setter)setSpeed,           "Gets or sets the entity's speed, in pixels/second" },
-            {   "direction",        (getter)getDirection,           (setter)setDirection,       "Gets or sets the entity's direction"   },
-            {   "curframe",         (getter)getCurFrame,            0,                          "Gets the entity's currently displayed frame"   },
-            {   "specframe",        (getter)getSpecFrame,           (setter)setSpecFrame,       "If not -1, this frame is displayed instead of the normal animation" },
-            {   "specanim",         (getter)getSpecAnim,            (setter)setSpecAnim,        "If not None, this animation strand is used instead of the normal animation scripts."   },
-            {   "visible",          (getter)getVisible,             (setter)setVisible,         "If nonzero, the entity is drawn when onscreen" },
-            {   "name",             (getter)getName,                (setter)setName,            "Gets or sets the entity's name.  This is more or less for your own convenience only."  },
-            {   "movescript",       (getter)getMoveScript,          (setter)setMoveScript,      "Gets or sets the entity's current move script."    },
-            {   "actscript",        (getter)getActScript,           (setter)setActScript,       "Gets or sets the object called when the entity is activated."    },
-            {   "renderscript",     (getter)getRenderScript,        (setter)setRenderScript,    "Gets or sets a script to be called when the entity is drawn.\n"
+            {   (char*)"x",                (getter)getX,                   (setter)setX,               (char*)"Gets or sets the entity's X position. (in pixels)" },
+            {   (char*)"y",                (getter)getY,                   (setter)setY,               (char*)"Gets or sets the entity's Y position. (in pixels)" },
+            {   (char*)"layer",            (getter)getLayer,               (setter)setLayer,           (char*)"Gets or sets the index of the layer that the entity exists on."    },
+            {   (char*)"speed",            (getter)getSpeed,               (setter)setSpeed,           (char*)"Gets or sets the entity's speed, in pixels/second" },
+            {   (char*)"direction",        (getter)getDirection,           (setter)setDirection,       (char*)"Gets or sets the entity's direction"   },
+            {   (char*)"curframe",         (getter)getCurFrame,            0,                          (char*)"Gets the entity's currently displayed frame"   },
+            {   (char*)"specframe",        (getter)getSpecFrame,           (setter)setSpecFrame,       (char*)"If not -1, this frame is displayed instead of the normal animation" },
+            {   (char*)"specanim",         (getter)getSpecAnim,            (setter)setSpecAnim,        (char*)"If not None, this animation strand is used instead of the normal animation scripts."   },
+            {   (char*)"visible",          (getter)getVisible,             (setter)setVisible,         (char*)"If nonzero, the entity is drawn when onscreen" },
+            {   (char*)"name",             (getter)getName,                (setter)setName,            (char*)"Gets or sets the entity's name.  This is more or less for your own convenience only."  },
+            {   (char*)"movescript",       (getter)getMoveScript,          (setter)setMoveScript,      (char*)"Gets or sets the entity's current move script."    },
+            {   (char*)"actscript",        (getter)getActScript,           (setter)setActScript,       (char*)"Gets or sets the object called when the entity is activated."    },
+            {   (char*)"renderscript",     (getter)getRenderScript,        (setter)setRenderScript,    (char*)"Gets or sets a script to be called when the entity is drawn.\n"
                                                                                                 "If None, the default behaviour is performed. (ie to draw the\n"
                                                                                                 "current frame at the current position)\n"
                                                                                                 "The function should be of the form myscript(entity, x, y, frame),\n"
@@ -271,18 +271,18 @@ namespace Script {
                                                                                                 "would normally be drawn, and frame is the frame that would\n"
                                                                                                 "be displayed." 
             },
-            {   "adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, "Gets or sets the object called when the entity touches another entity." },
+            {   (char*)"adjacentactivate", (getter)getAdjacentActivate,    (setter)setAdjacentActivate, (char*)"Gets or sets the object called when the entity touches another entity." },
             //{   "autoface",         (getter)getAutoFace,            (setter)setAutoFace,        "If nonzero, the entity will automatically face the player when activated. (not implemented)"  },
-            {   "isobs",            (getter)getIsObs,               (setter)setIsObs,           "If nonzero, the entity will obstruct other entities."  },
-            {   "mapobs",           (getter)getMapObs,              (setter)setMapObs,          "If nonzero, the entity is unable to walk on obstructed areas of the map."  },
-            {   "entobs",           (getter)getEntObs,              (setter)setEntObs,          "If nonzero, the entity is unable to walk through entities whose isobs property is set."    },
-            {   "spritename",       (getter)getSpriteName,          (setter)setSpriteName,      "Gets or sets the filename of the sprite used to display the entity.  Setting this will load a spriteset and make the sprite use it."   },
-            {   "spritewidth",      (getter)getSpriteWidth,         0,                          "Gets the width of the entity's sprite."  },
-            {   "spriteheight",     (getter)getSpriteHeight,        0,                          "Gets the height of the entity's sprite."  },
-            {   "hotx",             (getter)getHotX,                0,                          "Gets the X position of the entity's hotspot."  },
-            {   "hoty",             (getter)getHotY,                0,                          "Gets the Y position of the entity's hotspot."  },
-            {   "hotwidth",         (getter)getHotWidth,            0,                          "Gets the width of the entity's hotspot."  },
-            {   "hotheight",        (getter)getHotHeight,           0,                          "Gets the height of the entity's hotspot."  },
+            {   (char*)"isobs",            (getter)getIsObs,               (setter)setIsObs,           (char*)"If nonzero, the entity will obstruct other entities."  },
+            {   (char*)"mapobs",           (getter)getMapObs,              (setter)setMapObs,          (char*)"If nonzero, the entity is unable to walk on obstructed areas of the map."  },
+            {   (char*)"entobs",           (getter)getEntObs,              (setter)setEntObs,          (char*)"If nonzero, the entity is unable to walk through entities whose isobs property is set."    },
+            {   (char*)"spritename",       (getter)getSpriteName,          (setter)setSpriteName,      (char*)"Gets or sets the filename of the sprite used to display the entity.  Setting this will load a spriteset and make the sprite use it."   },
+            {   (char*)"spritewidth",      (getter)getSpriteWidth,         0,                          (char*)"Gets the width of the entity's sprite."  },
+            {   (char*)"spriteheight",     (getter)getSpriteHeight,        0,                          (char*)"Gets the height of the entity's sprite."  },
+            {   (char*)"hotx",             (getter)getHotX,                0,                          (char*)"Gets the X position of the entity's hotspot."  },
+            {   (char*)"hoty",             (getter)getHotY,                0,                          (char*)"Gets the Y position of the entity's hotspot."  },
+            {   (char*)"hotwidth",         (getter)getHotWidth,            0,                          (char*)"Gets the width of the entity's hotspot."  },
+            {   (char*)"hotheight",        (getter)getHotHeight,           0,                          (char*)"Gets the height of the entity's hotspot."  },
             {   0   }
         };
 
@@ -321,7 +321,7 @@ namespace Script {
 
         // This is much more complicated than it should be.
         PyObject* New(PyTypeObject* /*type*/, PyObject* args, PyObject* kw) {
-            static char* keywords[] = { "x", "y", "layer", "spritename", 0 };
+            static char* keywords[] = { (char*)"x", (char*)"y", (char*)"layer", (char*)"spritename", 0 };
 
             int x, y;
             uint layer;

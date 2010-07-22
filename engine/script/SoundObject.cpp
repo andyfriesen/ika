@@ -36,9 +36,9 @@ namespace Script {
 #undef SET
 
         PyGetSetDef properties[] = {
-            {   "volume",       (getter)getVolume,      (setter)setVolume,      "The volume of the sound effect.  Ranges from 0 to 1, with 1 being full volume."   },
-            {   "pan",          (getter)getPan,         (setter)setPan,         "Panning.  -1 is left.  1 is right.  0 is centre."   },
-            {   "pitchshift",   (getter)getPitchShift,  (setter)setPitchShift,  "Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing" },
+            {   (char*)"volume",       (getter)getVolume,      (setter)setVolume,      (char*)"The volume of the sound effect.  Ranges from 0 to 1, with 1 being full volume."   },
+            {   (char*)"pan",          (getter)getPan,         (setter)setPan,         (char*)"Panning.  -1 is left.  1 is right.  0 is centre."   },
+            {   (char*)"pitchshift",   (getter)getPitchShift,  (setter)setPitchShift,  (char*)"Pitch shift.  1.0 is normal, I think.  2.0 being double the frequency.  I think.  TODO: document this after testing" },
             {   0   }
         };
 
@@ -59,7 +59,7 @@ namespace Script {
         }
 
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
-            char* keywords[] = { "filename" , 0};
+            char* keywords[] = { (char*)"filename" , 0};
             char* filename;
 
             if (!PyArg_ParseTupleAndKeywords(args, kw, "s:newsound", keywords, &filename))

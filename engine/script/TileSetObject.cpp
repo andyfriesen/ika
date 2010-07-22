@@ -38,9 +38,9 @@ namespace Script {
 
         PyGetSetDef properties[] =
         {
-            {   "tilecount",        (getter)getTileCount,               0,   "Gets the number of tiles in the tileset."                         },
-            {   "width",            (getter)getTileWidth,               0,   "Gets the width of the tiles in the tileset."                      },
-            {   "height",           (getter)getTileHeight,              0,   "Gets the height of the tiles in the tileset."                     },
+            {   (char*)"tilecount",        (getter)getTileCount,               0,   (char*)"Gets the number of tiles in the tileset."                         },
+            {   (char*)"width",            (getter)getTileWidth,               0,   (char*)"Gets the width of the tiles in the tileset."                      },
+            {   (char*)"height",           (getter)getTileHeight,              0,   (char*)"Gets the height of the tiles in the tileset."                     },
 
             { 0 }
         };

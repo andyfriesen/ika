@@ -18,7 +18,7 @@ struct FPSCounter {
 
 private:
     int frames;
-    int count;
     int fps;
+	int count;    
     int lastTime;
 };
