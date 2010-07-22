@@ -53,8 +53,8 @@ else:
     libs('GL', 'GLU', 'util')
     cppflags('-fno-strict-aliasing', '-DNDEBUG', '-g', '-fwrapv', '-O2', '-Wall')
     cppflags('-Wno-unknown-pragmas')
-    env.ParseConfig('python-config --include')
-    env.ParseConfig('python-config --libs') 
+    env.ParseConfig('python2.6-config --include')
+    env.ParseConfig('python2.6-config --libs') 
 
 ############## Build common sources
 
