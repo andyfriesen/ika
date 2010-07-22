@@ -29,10 +29,10 @@ static string       cvt = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 string base64::encode(const string& data)
 {
-    auto     string::size_type  i;
-    auto     char               c;
-    auto     string::size_type  len = data.length();
-    auto     string             ret;
+    string::size_type  i;
+    char               c;
+    string::size_type  len = data.length();
+    string             ret;
 
     for (i = 0; i < len; ++i)
     {
@@ -73,11 +73,11 @@ string base64::encode(const string& data)
 
 string base64::decode(const string& data)
 {
-    auto     string::size_type  i;
-    auto     char               c;
-    auto     char               c1;
-    auto     string::size_type  len = data.length();
-    auto     string             ret;
+    string::size_type  i;
+    char               c;
+    char               c1;
+    string::size_type  len = data.length();
+    string             ret;
 
     for (i = 0; i < len; ++i)
     {
