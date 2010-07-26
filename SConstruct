@@ -2,6 +2,7 @@
 # type python2.6-config --cflags in the terminal to see if you have the correct flags,
 # but without the ones that produce useless "Hey, you can't use that for C++!" warnings. 
 
+import platform
 import sys
 import os
 
@@ -53,8 +54,14 @@ else:
     libs('GL', 'GLU', 'util')
     cppflags('-fno-strict-aliasing', '-DNDEBUG', '-g', '-fwrapv', '-O2', '-Wall')
     cppflags('-Wno-unknown-pragmas')
-    env.ParseConfig('python2.6-config --include')
-    env.ParseConfig('python2.6-config --libs') 
+
+    print `platform.linux_distribution()[0]`
+    if platform.linux_distribution()[0] == 'gentoo':
+        include('-I/usr/include/python2.6')        
+        cppflags('-lpthread', '-ldl', '-lutil', '-lm', '-lpython2.6')        
+    else:
+        env.ParseConfig('python2.6-config --include')
+        env.ParseConfig('python2.6-config --libs') 
 
 ############## Build common sources
 
