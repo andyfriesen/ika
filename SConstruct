@@ -51,12 +51,11 @@ if sys.platform == 'win32':
 else:
     # *nix specific configuration
     libpath('/usr/X11R6/lib')
-    libs('GL', 'GLU', 'util')
+    libs('GL', 'GLU', 'util', 'asound')
     cppflags('-fno-strict-aliasing', '-DNDEBUG', '-g', '-fwrapv', '-O2', '-Wall')
     cppflags('-Wno-unknown-pragmas')
 
-    print `platform.linux_distribution()[0]`
-    if platform.linux_distribution()[0] == 'gentoo':
+    if platform.linux_distribution()[0] == 'Gentoo Base System':
         include('-I/usr/include/python2.6')        
         cppflags('-lpthread', '-ldl', '-lutil', '-lm', '-lpython2.6')        
     else:
