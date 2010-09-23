@@ -15,21 +15,45 @@ using namespace Script;
 
 bool ScriptEngine::_inited = false;
 
-void ScriptEngine::Init(Engine* njin) {
-    assert(!_inited);
-    _inited = true;
 
-    Py_Initialize();
-    PyRun_SimpleString("import sys; sys.path.insert(0, '.')");  // :x
+/* Remove if not useful. copypasted. */
+/*
 
-    PyImport_AddModule("ika");
-    PyObject* module = Py_InitModule3("ika", Script::standard_methods,
-        "ika standard module. \n"
-        "\n"
-        "Interface to the ika game engine.\n"
-        );
+struct module_state {
+    PyObject *error;
+};
 
-    engine = njin;
+#define GETSTATE(m) ((struct module_state*)PyModule_GetState(m))
+
+static int ika_traverse(PyObject *m, visitproc visit, void *arg) {
+    Py_VISIT(GETSTATE(m)->error);
+    return 0;
+}
+
+static int ika_clear(PyObject *m) {
+    Py_CLEAR(GETSTATE(m)->error);
+    return 0;
+}*/
+/* END Remove if not useful */
+
+static struct PyModuleDef ikaModule = {
+	{},                                     /* m_base */
+	"ika",                                  /* m_name */
+	"ika standard module. \n"
+    "\n"
+    "Interface to the ika game engine.\n",  /* m_doc */
+	0,                                      /* m_size */
+	Script::standard_methods,               /* m_methods */
+	0,                                      /* m_reload */
+	0,                                      /* m_traverse */
+	0,                                      /* m_clear */
+	0,                                      /* m_free */
+};
+
+#define INITERROR return NULL
+
+PyObject* PyInit_ika(void) {
+    PyObject *module = PyModule_Create(&ikaModule);
 
     // Initialize objects
     Script::Image::Init();
@@ -72,7 +96,7 @@ void ScriptEngine::Init(Engine* njin) {
 	PyModule_AddIntConstant(module, "MultiplyBlend", 5);
 	PyModule_AddIntConstant(module, "PreserveBlend", 6);
 
-    PyModule_AddObject(module, "Version", PyString_FromString(IKA_VERSION));
+    PyModule_AddObject(module, "Version", PyBytes_FromString(IKA_VERSION));
 
     Py_INCREF(&Script::Entity::type);   PyModule_AddObject(module, "Entity", (PyObject*)&Script::Entity::type);
     Py_INCREF(&Script::Font::type);     PyModule_AddObject(module, "Font",  (PyObject*)&Script::Font::type);
@@ -80,6 +104,21 @@ void ScriptEngine::Init(Engine* njin) {
     Py_INCREF(&Script::Image::type);    PyModule_AddObject(module, "Image", (PyObject*)&Script::Image::type);
     Py_INCREF(&Script::Music::type);    PyModule_AddObject(module, "Music", (PyObject*)&Script::Music::type);
     Py_INCREF(&Script::Sound::type);    PyModule_AddObject(module, "Sound", (PyObject*)&Script::Sound::type);
+
+	return module;
+}
+
+void ScriptEngine::Init(Engine* njin) {
+    wchar_t *args[] = {(wchar_t*)L"embed", (wchar_t*)L"hello", 0};  // whatever, as long as PySys_SetArgv can be called
+
+    assert(!_inited);
+    _inited = true;
+
+    PyImport_AppendInittab("ika", PyInit_ika);
+    Py_Initialize();
+    PySys_SetArgv(0, args);  
+
+    engine = njin;
 
     // Create entity dictionary
     entityDict = PyDict_New();
@@ -104,10 +143,11 @@ void ScriptEngine::Shutdown() {
     Py_Finalize();
 }
 
-bool ScriptEngine::LoadSystemScripts(const std::string& /*fname*/) {
-    Py_XDECREF(sysModule);                                              // free it if it's already allocated
+bool ScriptEngine::LoadSystemScripts(const std::string& /*fname*/) {    
+    PyObject*   sysModule;                                              // free it if it's already allocated
 
     sysModule = PyImport_ImportModule("system");
+    
     if (sysModule == 0) {
         PyErr_Print();
         return false;
@@ -178,8 +218,7 @@ void ScriptEngine::ExecObject(const ScriptObject& func) {
 void ScriptEngine::ExecObject(const ScriptObject& func, const ::Entity* ent) {
     CDEBUG("ScriptEngine::ExecObject");
 
-    Script::Entity::EntityObject* entObject =
-		Script::Entity::instances[const_cast< ::Entity*>(ent)];
+    Script::Entity::EntityObject* entObject = Script::Entity::instances[const_cast< ::Entity*>(ent)];
     assert(entObject);
 
     if (func.get() == 0) {

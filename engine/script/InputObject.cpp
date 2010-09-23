@@ -9,6 +9,7 @@ Python interface for input.
 
 namespace Script {
     namespace Input {
+        PyObject obj;
         PyTypeObject type;
 
         PyMethodDef methods[] = {
@@ -72,7 +73,7 @@ namespace Script {
         SET(Up) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type) {
+            if (o != (Script::Control::ControlObject*)&Script::Control::obj) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
             } else {
                 the< ::Input>() ->SetStandardControl(the< ::Input>()->up, o->control);
@@ -83,7 +84,7 @@ namespace Script {
         SET(Down) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type) {
+            if (o != (Script::Control::ControlObject*)&Script::Control::obj) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
             } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->down, o->control);
@@ -94,7 +95,7 @@ namespace Script {
         SET(Left) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type) {
+            if (o != (Script::Control::ControlObject*)&Script::Control::obj) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
             } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->left, o->control);
@@ -105,7 +106,8 @@ namespace Script {
         SET(Right) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type) {
+        
+            if (o != (Script::Control::ControlObject*)&Script::Control::obj) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
             } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->right, o->control);
@@ -116,7 +118,7 @@ namespace Script {
         SET(Enter) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
 
-            if (o->ob_type != &Script::Control::type) {
+            if (o != (Script::Control::ControlObject*)&Script::Control::obj) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
             } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->enter, o->control);
@@ -126,8 +128,8 @@ namespace Script {
 
         SET(Cancel) {
             Script::Control::ControlObject* o = reinterpret_cast<Script::Control::ControlObject*>(value);
-
-            if (o->ob_type != &Script::Control::type) {
+            
+            if (o != (Script::Control::ControlObject*)&Script::Control::obj) {
                 PyErr_SetString(PyExc_RuntimeError, "Standard controls can only be set to control objects!");
             } else {
                 the< ::Input>()->SetStandardControl(the< ::Input>()->cancel, o->control);
@@ -159,8 +161,8 @@ namespace Script {
             //mappingmethods.mp_subscript = (binaryfunc)&Input_Subscript;
             //mappingmethods.mp_ass_subscript = 0;
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            obj.ob_refcnt = 1;
+            obj.ob_type = &PyType_Type;
             type.tp_name = "Input";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
@@ -227,7 +229,7 @@ namespace Script {
             char c = self->input->GetKey();
 
             if (c {
-                return PyString_FromStringAndSize(&c, 1);   // wtf.  No PyString_FromChar
+                return PyBytes_FromStringAndSize(&c, 1);   // wtf.  No PyBytes_FromChar
             } else {
                 Py_INCREF(Py_None);
                 return Py_None;
@@ -241,7 +243,7 @@ namespace Script {
         }
 
         METHOD1(Input_WasKeyPressed) {
-            return PyInt_FromLong(self->input->WasKeyPressed() ? 1 : 0);
+            return PyLong_FromLong(self->input->WasKeyPressed() ? 1 : 0);
         }*/
 
 #undef METHOD
@@ -249,13 +251,13 @@ namespace Script {
 
         /*PyObject* Input_Subscript(InputObject* self, PyObject* key) {
             try {
-                const char* name = PyString_AsString(key);
+                const char* name = PyBytes_AsString(key);
                 if (!name {
                     throw "Non-string passed as input control name.";
 
                 PyObject* obj = Script::Control::New(*self->input, name);
 
-                if (!obj {
+                if (!obj) {
                     throw va("%s is not a valid input control name.", name);
 
                 return obj;

@@ -45,8 +45,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+           // type.ob_refcnt = 1;
+           // type.ob_type = &PyType_Type;
             type.tp_name = "Sound";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;

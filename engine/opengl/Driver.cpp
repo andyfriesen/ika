@@ -11,6 +11,8 @@
 #include "Canvas.h"
 #include "log.h"
 
+#include "debug.h"
+
 static void IKA_STDCALL glBlendEquationStub(int) {}
 
 namespace OpenGL {
@@ -160,11 +162,11 @@ namespace OpenGL {
 
             if (!tex) {
                 // no texture?  no problem.
-                static u32 dummyShit[256 * 256] = {0}; // initialized to 0
+                static u32 dummy[256 * 256] = {0}; // initialized to 0
                 tex = new Texture(0, 256, 256);
                 glGenTextures(1, &tex->handle);
                 SwitchTexture(tex->handle);
-                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummyShit);
+                glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA8, 256, 256, 0, GL_RGBA, GL_UNSIGNED_BYTE, dummy);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
                 glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
                 _textures.insert(tex);

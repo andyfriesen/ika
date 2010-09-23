@@ -286,7 +286,7 @@ void Engine::Startup() {
                 cfg.Int("bitdepth"), 
                 cfg.Int("fullscreen") != 0,
                 cfg.Int("doublesize") != 0,
-                cfg.Int("filter") != 0);
+                cfg.Long("filter") != 0);
         }
 
 #ifdef WIN32
@@ -320,6 +320,7 @@ void Engine::Startup() {
     script.Init(this);
     Log::Write("Executing system.py");
     bool result = script.LoadSystemScripts("system.py");
+
     if (!result) {
         Script_Error();
     }

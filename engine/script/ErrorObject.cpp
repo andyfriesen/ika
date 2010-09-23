@@ -11,6 +11,7 @@ namespace Script {
     namespace Error {
         int softspace = 1;
 
+        PyObject obj;
         PyTypeObject type;
 
         PyMethodDef methods[] =
@@ -31,8 +32,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            obj.ob_refcnt = 1;
+            obj.ob_type = &PyType_Type;
             type.tp_name = "ErrorHandler";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
@@ -86,7 +87,7 @@ namespace Script {
 #undef METHOD
 
         PyObject* getSoftSpace(PyObject* /*self*/) {
-            return PyInt_FromLong(softspace);
+            return PyLong_FromLong(softspace);
         }
 
         PyObject* setSoftSpace(PyObject* /*self*/, PyObject* value) {

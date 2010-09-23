@@ -9,6 +9,7 @@ Colour registry pseudo-dictionary
 namespace Script {
     namespace Colours {
         PyTypeObject type;
+        PyObject obj;
         PyMappingMethods mapmethods;
         PySequenceMethods seqmethods;
         
@@ -40,13 +41,13 @@ namespace Script {
             memset(&seqmethods, 0, sizeof(PySequenceMethods));
             seqmethods.sq_contains = (objobjproc)&Colours_Contains;
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            obj.ob_refcnt = 1;
+            obj.ob_type = &PyType_Type;
             type.tp_name = "Colours";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
             type.tp_methods = methods;
-            type.tp_flags = Py_TPFLAGS_HAVE_SEQUENCE_IN | Py_TPFLAGS_HAVE_ITER;
+            // type.tp_flags = Py_TPFLAGS_HAVE_SEQUENCE_IN | Py_TPFLAGS_HAVE_ITER;
             type.tp_as_mapping = &mapmethods;
             type.tp_as_sequence = &seqmethods;
             type.tp_iter = (getiterfunc)Colours_Iter;
@@ -57,12 +58,12 @@ namespace Script {
         }
 
         PyObject* New(ColourHandler* handler) {
-            ColoursObject* obj = PyObject_New(ColoursObject, &type);
+            ColoursObject* coloursObject = PyObject_New(ColoursObject, &type);
 
-            if (!obj)
+            if (!coloursObject)
                 return 0;
-            obj->handler = handler;
-            return (PyObject*)obj;
+            coloursObject->handler = handler;
+            return (PyObject*)coloursObject;
         }
 
         void Destroy(ColoursObject* self) {
@@ -70,7 +71,7 @@ namespace Script {
         }
         
         PyObject* Colours_GetItem(ColoursObject* self, PyObject* key) {
-            char* name = PyString_AsString(key);
+            char* name = PyBytes_AsString(key);
             if (!name) {
                 PyErr_SetString(PyExc_SyntaxError, "Colour names must be strings!");
                 return 0;
@@ -81,11 +82,11 @@ namespace Script {
                 return 0;
             }
 
-            return PyInt_FromLong(self->handler->getColour(name));
+            return PyLong_FromLong(self->handler->getColour(name));
         }
 
         int Colours_SetItem(ColoursObject* self, PyObject* key, PyObject* value) {
-            char* name = PyString_AsString(key);
+            char* name = PyBytes_AsString(key);
             if (!name || name[0] == '\0') {
                 PyErr_SetString(PyExc_TypeError, "Colour names must be non-empty strings!");
                 return -1;
@@ -94,11 +95,11 @@ namespace Script {
             if(value == 0) {
                 self->handler->removeColour(name);
             } else {
-                if(!PyInt_Check(value)) {
+                if(!PyLong_Check(value)) {
                     PyErr_SetString(PyExc_TypeError, "Only colour values can be inserted.");
                     return -1;
                 }
-                RGBA colour = PyInt_AsLong(value);
+                RGBA colour = PyLong_AsLong(value);
                 self->handler->addColour(name, colour);
             }
             return 0;
@@ -109,7 +110,7 @@ namespace Script {
         }
         
         int Colours_Contains(ColoursObject* self, PyObject* key) {
-            char* colour = PyString_AsString(key);
+            char* colour = PyBytes_AsString(key);
             if(!colour)
                 return 0;
 
@@ -130,7 +131,7 @@ namespace Script {
                 return 0;
             }
             
-            return PyInt_FromLong(self->handler->hasColour(name));
+            return PyLong_FromLong(self->handler->hasColour(name));
         }
         
         METHOD1(Colours_Keys) {
@@ -143,7 +144,7 @@ namespace Script {
 
             ColourHandler::colourMap::const_iterator iter = colours.begin();
             for(int i = 0; iter != colours.end(); iter++, i++) {
-                name = PyString_FromString(iter->first.c_str());
+                name = PyBytes_FromString(iter->first.c_str());
                 if(name == 0)
                     return 0;
 
@@ -163,7 +164,7 @@ namespace Script {
 
             ColourHandler::colourMap::const_iterator iter = colours.begin();
             for(int i = 0; iter != colours.end(); iter++, i++) {
-                colour = PyInt_FromLong(iter->second);
+                colour = PyLong_FromLong(iter->second);
                 if(PyDict_SetItemString(dict, iter->first.c_str(), colour) < 0)
                     return 0;
                 Py_XDECREF(colour);
@@ -182,8 +183,8 @@ namespace Script {
             ColourHandler::colourMap::const_iterator iter = colours.begin();
             for(int i = 0; iter != colours.end(); iter++, i++) {
                 tuple = PyTuple_New(2);
-                PyTuple_SetItem(tuple, 0, PyString_FromString(iter->first.c_str()));
-                PyTuple_SetItem(tuple, 1, PyInt_FromLong(iter->second));
+                PyTuple_SetItem(tuple, 0, PyBytes_FromString(iter->first.c_str()));
+                PyTuple_SetItem(tuple, 1, PyLong_FromLong(iter->second));
                 PyList_SetItem(items, i, tuple);
                 //Py_XDECREF(tuple);
             }

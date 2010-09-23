@@ -29,9 +29,9 @@ namespace Script {
 #define GET(x) PyObject* get ## x(TilesetObject* /*self*/)
 #define SET(x) PyObject* set ## x(TilesetObject* /*self*/, PyObject* value)
 
-        GET(TileCount)  { return PyInt_FromLong(engine->tiles->NumTiles()); }
-        GET(TileWidth)  { return PyInt_FromLong(engine->tiles->Width());    }
-        GET(TileHeight) { return PyInt_FromLong(engine->tiles->Height());   }
+        GET(TileCount)  { return PyLong_FromLong(engine->tiles->NumTiles()); }
+        GET(TileWidth)  { return PyLong_FromLong(engine->tiles->Width());    }
+        GET(TileHeight) { return PyLong_FromLong(engine->tiles->Height());   }
 
 #undef GET
 #undef SET
@@ -48,8 +48,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            //type.ob_refcnt = 1;
+            //type.ob_type = &PyType_Type;
             type.tp_name = "Tileset";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;

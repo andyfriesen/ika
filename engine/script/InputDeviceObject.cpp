@@ -1,9 +1,11 @@
 
 #include "ObjectDefs.h"
 #include "input.h"
+#include "debug.cpp"
 
 namespace Script {
     namespace InputDevice {
+        PyObject obj;
         PyTypeObject type;
         PyMappingMethods mappingmethods;
 
@@ -30,8 +32,8 @@ namespace Script {
             mappingmethods.mp_subscript = (binaryfunc)&Device_Subscript;
             mappingmethods.mp_ass_subscript = 0;
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            obj.ob_refcnt = 1;
+            obj.ob_type = &PyType_Type;
             type.tp_base = 0;
             type.tp_name = "InputDevice";
             type.tp_basicsize = sizeof type;
@@ -80,15 +82,16 @@ namespace Script {
 #undef METHOD1
 
         PyObject* Device_Subscript(DeviceObject* self, PyObject* key) {
-            const char* name = PyString_AsString(key);
+            const char* name = PyBytes_AsString(key);
+
             if (!name) {
-                PyErr_SetString(PyExc_KeyError, "Control names must be strings!");
+                DEBUG_PyERR(PyExc_KeyError, "Control names must be strings!");
                 return 0;
             }
 
             ::InputControl* control = self->device->GetControl(name);
             if (!control) {
-                PyErr_SetString(PyExc_KeyError, va("%s is not a valid control name", name));
+                DEBUG_PyERR(PyExc_KeyError, va("%s is not a valid control name", name));
                 return 0;
             }
 

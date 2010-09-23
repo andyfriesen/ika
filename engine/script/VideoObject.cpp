@@ -49,7 +49,7 @@ namespace Script {
             },
 
             {   (char*)"TintTileBlit",     (PyCFunction)Video_TintTileBlit, METH_VARARGS,
-                (char*)"TintTileBlit(image, x, y, width, height, tintColour, scalex=1, scaley=1, blendmode=Normal)\n\n"
+                (char*)"TintTileBlit(image, x, y, width, height, tintColour, scalex=1, scaley=1, blendmode=NormaI)\n\n"
                 "Deprecated. Use ika.Image.TintTileBlit instead.\n"
             },
 
@@ -170,8 +170,8 @@ namespace Script {
         };
 
 #define GET(x) PyObject* get ## x(VideoObject* self)
-        GET(XRes) { return PyInt_FromLong(self->video->GetResolution().x);  }
-        GET(YRes) { return PyInt_FromLong(self->video->GetResolution().y);  }
+        GET(XRes) { return PyLong_FromLong(self->video->GetResolution().x);  }
+        GET(YRes) { return PyLong_FromLong(self->video->GetResolution().y);  }
         GET(Colours) { return ::Script::Colours::New(self->video);  }
 #undef GET
 
@@ -186,8 +186,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            //type.ob_refcnt = 1;
+            //type.ob_type = &PyType_Type;
             type.tp_name = "Video";
             type.tp_basicsize = sizeof type;
             type.tp_methods = methods;
@@ -354,7 +354,7 @@ namespace Script {
             u32 tint[4];
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!(iii)(iii)(iii)(iii)|i:Video.TintDistortBlit", 
+            if (!PyArg_ParseTuple(args, "O!(iiI)(iiI)(iiI)(iiI)|i:Video.TintDistortBlit", 
                 &Script::Image::type, &image, 
                 x, y, tint, 
                 x + 1, y + 1, tint + 1,
@@ -375,13 +375,13 @@ namespace Script {
         METHOD(Video_TintTileBlit) {
 			BLIT_DEPRECATION_WARNING(TintTileBlit);
             Script::Image::ImageObject* image;
-            int x, y;
-            int w, h;
+            float x, y;
+            float w, h;
             u32 colour;
             float scalex = 1, scaley = 1;
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "O!iiiii|ffi:Video.TintTileBlit", 
+            if (!PyArg_ParseTuple(args, "O!iiiiI|ffi:Video.TintTileBlit", 
                 &Script::Image::type, &image, 
                 &x, &y, &w, &h, &colour, &scalex, &scaley, &blendMode)
             ) {
@@ -396,11 +396,11 @@ namespace Script {
         }
 
         METHOD(Video_DrawPixel) {
-            int x, y;
+            float x, y;
             u32 colour;
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "iii|i:Video.DrawPixel", &x, &y, &colour, &blendMode)) {
+            if (!PyArg_ParseTuple(args, "iiI|i:Video.DrawPixel", &x, &y, &colour, &blendMode)) {
                 return 0;
             }
 
@@ -412,14 +412,14 @@ namespace Script {
         }
 
         METHOD(Video_DrawLine) {
-            int x1, y1, x2, y2;
+            float x1, y1, x2, y2;
             u32 colour;
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "iiiii|i:Video.DrawLine", &x1, &y1, &x2, &y2, &colour, &blendMode)) {
+            if (!PyArg_ParseTuple(args, "ffffI|i:Video.DrawLine", &x1, &y1, &x2, &y2, &colour, &blendMode)) {
                 return 0;
             }
-
+            
             self->video->SetBlendMode((::Video::BlendMode)blendMode);
             self->video->DrawLine(x1, y1, x2, y2, colour);
 
@@ -428,12 +428,12 @@ namespace Script {
         }
 
         METHOD(Video_DrawRect) {
-            int x1, y1, x2, y2;
+            float x1, y1, x2, y2;
             u32 colour;
             int filled = 0;
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "iiiii|ii:Video.DrawRect", &x1, &y1, &x2, &y2, &colour, &filled, &blendMode)) {
+            if (!PyArg_ParseTuple(args, "ffffI|ii:Video.DrawRect", &x1, &y1, &x2, &y2, &colour, &filled, &blendMode)) {
                 return 0;
             }
 
@@ -445,13 +445,13 @@ namespace Script {
         }
 
         METHOD(Video_DrawEllipse) {
-            int cx, cy;
-            int rx, ry;
+            float cx, cy;
+            float rx, ry;
             u32 colour;
             int filled = 0;
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "iiiii|ii:Video.DrawEllipse", &cx, &cy, &rx, &ry, &colour, &filled, &blendMode)) {
+            if (!PyArg_ParseTuple(args, "ffffI|ii:Video.DrawEllipse", &cx, &cy, &rx, &ry, &colour, &filled, &blendMode)) {
                 return 0;
             }
 
@@ -463,15 +463,15 @@ namespace Script {
         }
 
         METHOD(Video_DrawArc) {
-            int cx, cy;
-            int rx, ry;
-            int irx, iry;
+            float cx, cy;
+            float rx, ry;
+            float irx, iry;
             int start, end;
             u32 colour;
             int filled = 0;
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "iiiiiiiii|ii:Video.DrawArc", &cx, &cy, &rx, &ry, &irx, &iry, &start, &end, &colour, &filled, &blendMode)) {
+            if (!PyArg_ParseTuple(args, "ffffffiiI|ii:Video.DrawArc", &cx, &cy, &rx, &ry, &irx, &iry, &start, &end, &colour, &filled, &blendMode)) {
                 return 0;
             }
 
@@ -483,13 +483,18 @@ namespace Script {
         }
         
         METHOD(Video_DrawTriangle) {
-            int x[3];
-            int y[3];
+            float fx[4], fy[4];
+            int x[4],y[4];
             u32 col[3];
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii)|i:Video.DrawTriangle", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2, &blendMode)) {
+            if (!PyArg_ParseTuple(args, "(ffI)(ffI)(ffI)|i:Video.DrawTriangle", fx, fy, col, fx + 1, fy + 1, col + 1, fx + 2, fy + 2, col + 2, &blendMode)) {
                 return 0;
+            }
+
+            for(int i=3; i--;) {
+                x[i] = fx[i];
+                y[i] = fy[i];
             }
 
             self->video->SetBlendMode((::Video::BlendMode)blendMode);
@@ -500,13 +505,18 @@ namespace Script {
         }
 
         METHOD(Video_DrawQuad) {
-            int x[4];
-            int y[4];
+            float fx[4], fy[4];
+            int x[4],y[4];
             u32 col[4];
             int blendMode = ::Video::Normal;
 
-            if (!PyArg_ParseTuple(args, "(iii)(iii)(iii)(iii)|i:Video.DrawQuad", x, y, col, x + 1, y + 1, col + 1, x + 2, y + 2, col + 2, x + 3, y + 3, col + 3, &blendMode)) {
+            if (!PyArg_ParseTuple(args, "(ffI)(ffI)(ffI)(ffI)|i:Video.DrawQuad", fx, fy, col, fx + 1, fy + 1, col + 1, fx + 2, fy + 2, col + 2, fx + 3, fy + 3, col + 3, &blendMode)) {
                 return 0;
+            }
+            
+            for(int i=4; i--;) {
+                x[i] = fx[i];
+                y[i] = fy[i];
             }
 
             self->video->SetBlendMode((::Video::BlendMode)blendMode);
@@ -531,8 +541,8 @@ namespace Script {
             std::vector<int> py;
             std::vector<u32> pc;
             
-            int x = 0;
-            int y = 0;
+            float x = 0;
+            float y = 0;
             u32 col = 0;
             
             px.reserve(len);
@@ -543,7 +553,7 @@ namespace Script {
                 
                 PyObject* slice = PyList_GetItem(pointList, i);
                 
-                if (!PyArg_ParseTuple(slice, "iii:Video.DrawLineList", &x, &y, &col))
+                if (!PyArg_ParseTuple(slice, "ffI:Video.DrawLineList", &x, &y, &col))
                     return 0;
                     
                 px.push_back(x);
@@ -573,8 +583,8 @@ namespace Script {
             std::vector<int> py;
             std::vector<u32> pc;
             
-            int x = 0;
-            int y = 0;
+            float x = 0;
+            float y = 0;
             u32 col = 0;
             
             px.reserve(len);
@@ -585,7 +595,7 @@ namespace Script {
                 
                 PyObject* slice = PyList_GetItem(pointList, i);
                 
-                if (!PyArg_ParseTuple(slice, "iii:Video.DrawTriangleList", &x, &y, &col))
+                if (!PyArg_ParseTuple(slice, "ffI:Video.DrawTriangleList", &x, &y, &col))
                     return 0;
                     
                 px.push_back(x);
@@ -601,10 +611,7 @@ namespace Script {
         }
         
         METHOD(Video_ClipScreen) {
-            const char* keywords[] = {
-                (char*)"left", (char*)"top", (char*)"right", (char*)"bottom"
-            };
-            keywords;  // To remove use warning.
+            // const char* keywords[] = { (char*)"left", (char*)"top", (char*)"right", (char*)"bottom" };
 
             Point p = self->video->GetResolution();
 
@@ -626,7 +633,7 @@ namespace Script {
         METHOD1(Video_GetClipRect) {
             Rect* points = self->video->GetClipRect();
 
-            PyObject* cliprect = PyTuple_Pack(4, PyInt_FromLong(points->left), PyInt_FromLong(points->top), PyInt_FromLong(points->right), PyInt_FromLong(points->bottom));
+            PyObject* cliprect = PyTuple_Pack(4, PyLong_FromLong(points->left), PyLong_FromLong(points->top), PyLong_FromLong(points->right), PyLong_FromLong(points->bottom));
 
             Py_INCREF(cliprect);
             return cliprect;

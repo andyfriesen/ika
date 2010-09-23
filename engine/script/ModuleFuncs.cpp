@@ -56,7 +56,7 @@ namespace Script {
         char* s;
         SDL_WM_GetCaption(&s, 0);
 
-        return PyString_FromString(s);
+        return PyBytes_FromString(s);
     }
 
     METHOD(ika_setcaption) {
@@ -72,7 +72,7 @@ namespace Script {
     }
 
     METHOD1(ika_getframerate) {
-        return PyInt_FromLong(engine->video->GetFrameRate());
+        return PyLong_FromLong(engine->video->GetFrameRate());
     }
 
     METHOD(ika_delay) {
@@ -122,7 +122,7 @@ namespace Script {
     }
 
     METHOD1(ika_gettime) {
-        return PyInt_FromLong((long)GetTime());
+        return PyLong_FromLong((long)GetTime());
     }
 
     METHOD(ika_random) {
@@ -131,7 +131,7 @@ namespace Script {
         if (!PyArg_ParseTuple(args, "ii:Random", &min, &max))
             return 0;
 
-        return PyInt_FromLong(Random(min, max));
+        return PyLong_FromLong(Random(min, max));
     }
 
     // video
@@ -139,10 +139,10 @@ namespace Script {
     METHOD(ika_getrgb) {
         RGBA colour;
 
-        if (!PyArg_ParseTuple(args, "i:GetRGB", &colour.i))
+        if (!PyArg_ParseTuple(args, "I:GetRGB", &colour))
             return 0;
 
-        return Py_BuildValue("iiii", colour.r, colour.g, colour.b, colour.a);
+        return Py_BuildValue("IIII", colour.r, colour.g, colour.b, colour.a);
     }
 
     METHOD(ika_rgb) {
@@ -151,7 +151,7 @@ namespace Script {
         if (!PyArg_ParseTuple(args, "BBB|B:RGB", &r, &g, &b, &a))
             return 0;
 
-        return PyInt_FromLong(RGBA(r, g, b, a).i);
+        return PyLong_FromLong(RGBA(r, g, b, a).i);
     }
 
     METHOD(ika_processentities) {
@@ -175,10 +175,11 @@ namespace Script {
             Py_XDECREF(cameraTarget);
             cameraTarget = 0;
         } else {
+            /* FIXME
             if (ent->ob_type != &Script::Entity::type) {
                 PyErr_SetString(PyExc_TypeError, "SetcameraTarget not called with entity/None object");
                 return 0;
-            }
+            }*/
 
             engine->cameraTarget = ent->ent;  // oops
 
@@ -210,10 +211,12 @@ namespace Script {
             playerent = 0;
             engine->player = 0;
         } else {
-            if (ent->ob_type != &Script::Entity::type) {
+            
+            // FIXME
+            /*if (ent->ob_type != &Script::Entity::type) {
                 PyErr_SetString(PyExc_TypeError, "SetPlayerEntity not called with entity object or None.");
                 return 0;
-            }
+            }*/
 
             Py_INCREF(ent);
             Py_XDECREF(playerent);
@@ -298,12 +301,13 @@ namespace Script {
         if (!func) {
             engine->_hookRetrace.clear();
         } else {
+            /* FIXME
             foreach (ScriptObject iter, engine->_hookRetrace) {
                 if (iter.get() == func) {
                     engine->_hookRetrace.remove(iter.get());
                     break;
                 }
-            }
+            }*/
         }        
 
         Py_INCREF(Py_None);
@@ -329,7 +333,7 @@ namespace Script {
     }
 
 
-    // GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY GAY
+    // not good
     METHOD(ika_unhooktimer) {
         PyObject* func = 0;
 
@@ -341,13 +345,14 @@ namespace Script {
             engine->_hookTimer.clear();
 
         } else {
+            /* FIXME
             foreach (ScriptObject iter, engine->_hookTimer) {
                 if (iter.get() == func) {
                     Py_DECREF(func);
                     engine->_hookTimer.remove(iter.get());
                     break;
                 }
-            }
+            }*/
         }
         Py_INCREF(Py_None);
         return Py_None;
@@ -359,11 +364,11 @@ namespace Script {
         
         for (uint i = 0; i < renderList.size(); i++) {
             PyObject* item = PyTuple_GetItem(args, i);
-            if (!PyInt_Check(item)) {
+            if (!PyLong_Check(item)) {
                 PyErr_SetString(PyExc_SyntaxError, "SetRenderList needs INTEGERS.");  return 0;
             }
 
-            uint layerIndex = (uint)PyInt_AsLong(item);
+            uint layerIndex = (uint)PyLong_AsLong(item);
 
             if (layerIndex >= engine->map.NumLayers()) {   
                 PyErr_SetString(PyExc_RuntimeError, 
@@ -391,11 +396,11 @@ namespace Script {
             
             for (uint i = 0; i < renderList.size(); i++) {
                 PyObject* item = PyTuple_GetItem(args, i);
-                if (!PyInt_Check(item)) {
+                if (!PyLong_Check(item)) {
                     PyErr_SetString(PyExc_SyntaxError, "Map.Render needs INTEGERS.");  return 0;
                 }
 
-                uint layerIndex = (uint)PyInt_AsLong(item);
+                uint layerIndex = (uint)PyLong_AsLong(item);
 
                 if (layerIndex >= engine->map.NumLayers()) {
                     PyErr_SetString(PyExc_RuntimeError, 

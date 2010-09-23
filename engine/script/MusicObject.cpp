@@ -28,14 +28,14 @@ namespace Script {
 
         GET(Volume)     { return PyFloat_FromDouble(self->music->getVolume()); }
         GET(Pan)        { return PyFloat_FromDouble(self->music->getPan()); }
-        GET(Position)   { return PyInt_FromLong(self->music->getPosition()); }
+        GET(Position)   { return PyLong_FromLong(self->music->getPosition()); }
         GET(PitchShift) { return PyFloat_FromDouble(self->music->getPitchShift()); }
-        GET(Loop)       { return PyInt_FromLong(self->music->getRepeat()); }
+        GET(Loop)       { return PyLong_FromLong(self->music->getRepeat()); }
         SET(Volume)     { self->music->setVolume((float)PyFloat_AsDouble(value));       return 0;   }
         SET(Pan)        { self->music->setPan((float)PyFloat_AsDouble(value));          return 0;   }
-        SET(Position)   { self->music->setPosition(PyInt_AsLong(value));                return 0;   }
+        SET(Position)   { self->music->setPosition(PyLong_AsLong(value));                return 0;   }
         SET(PitchShift) { self->music->setPitchShift((float)PyFloat_AsDouble(value));   return 0;   }
-        SET(Loop)       { self->music->setRepeat(PyInt_AsLong(value) != 0);             return 0;   }
+        SET(Loop)       { self->music->setRepeat(PyLong_AsLong(value) != 0);             return 0;   }
 
 #undef GET
 #undef SET
@@ -52,8 +52,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            //type.ob_refcnt = 1;
+            //type.ob_type = &PyType_Type;
             type.tp_name = "Music";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;

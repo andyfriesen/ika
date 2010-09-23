@@ -9,6 +9,7 @@
 
 namespace Script {
     namespace Image {
+        PyObject obj;
         PyTypeObject type;
 
         PyMethodDef methods[] = {
@@ -105,8 +106,8 @@ namespace Script {
 
 #define GET(x) PyObject* get ## x(ImageObject* self)
 #define SET(x) PyObject* set ## x(ImageObject* self, PyObject* value)
-        GET(Width) { return PyInt_FromLong(self->img->Width()); }
-        GET(Height) { return PyInt_FromLong(self->img->Height()); }
+        GET(Width) { return PyLong_FromLong(self->img->Width()); }
+        GET(Height) { return PyLong_FromLong(self->img->Height()); }
 
 #undef GET
 #undef SET
@@ -120,8 +121,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            obj.ob_refcnt = 1;
+            obj.ob_type = &PyType_Type;
             type.tp_name = "Image";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
@@ -151,9 +152,9 @@ namespace Script {
             if (!PyArg_ParseTupleAndKeywords(args, kw, "O:__new__", keywords, &obj))
                 return NULL;
 
-            if (obj->ob_type == &PyString_Type) {
+            if (obj->ob_type == &PyBytes_Type) {
                 try {
-                    const char* filename = PyString_AsString(obj);
+                    const char* filename = PyBytes_AsString(obj);
 
                     ::Canvas img(filename);
 
@@ -281,7 +282,7 @@ namespace Script {
 
         PyObject* Image_TintBlit(ImageObject* self, PyObject* args) {
             int x, y;
-            u32 tint;
+            u64 tint;
             int blendMode = ::Video::Normal;
 
             if (!PyArg_ParseTuple(args, "iii|i:Image.TintBlit", &x, &y, &tint, &blendMode)) {

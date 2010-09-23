@@ -23,6 +23,7 @@ namespace Script {
         // Maps all existing Entity objects to their Python counterparts.
         EntityMap instances;
 
+        PyObject obj;
         PyTypeObject type;
 
         PyMethodDef methods [] = {
@@ -98,25 +99,25 @@ namespace Script {
 
 #define GET(x) PyObject* get ## x(EntityObject* self)
 #define SET(x) PyObject* set ## x(EntityObject* self, PyObject* value)
-            GET(X)                  { return PyInt_FromLong(self->ent->x); }
-            GET(Y)                  { return PyInt_FromLong(self->ent->y); }
-            GET(Layer)              { return PyInt_FromLong(self->ent->layerIndex); }
-            GET(Speed)              { return PyInt_FromLong(self->ent->speed); }
-            GET(Direction)          { return PyInt_FromLong(self->ent->direction); }
-            GET(CurFrame)           { return PyInt_FromLong(self->ent->curFrame); }
-            GET(SpecFrame)          { return PyInt_FromLong(self->ent->specFrame); }
+            GET(X)                  { return PyLong_FromLong(self->ent->x); }
+            GET(Y)                  { return PyLong_FromLong(self->ent->y); }
+            GET(Layer)              { return PyLong_FromLong(self->ent->layerIndex); }
+            GET(Speed)              { return PyLong_FromLong(self->ent->speed); }
+            GET(Direction)          { return PyLong_FromLong(self->ent->direction); }
+            GET(CurFrame)           { return PyLong_FromLong(self->ent->curFrame); }
+            GET(SpecFrame)          { return PyLong_FromLong(self->ent->specFrame); }
             GET(SpecAnim)
             {
                 if (self->ent->useSpecAnim) {
-                    return PyString_FromString(self->ent->specAnim.toString().c_str());
+                    return PyBytes_FromString(self->ent->specAnim.toString().c_str());
                 } else {
                     Py_INCREF(Py_None);
                     return Py_None;
                 }
             }
 
-            GET(Visible)            { return PyInt_FromLong(self->ent->isVisible ? 1 : 0); }
-            GET(Name)               { return PyString_FromString(self->ent->name.c_str()); }
+            GET(Visible)            { return PyLong_FromLong(self->ent->isVisible ? 1 : 0); }
+            GET(Name)               { return PyBytes_FromString(self->ent->name.c_str()); }
 
             GET(MoveScript) {
                 PyObject* o = (PyObject*)self->ent->moveScript.get();
@@ -152,23 +153,23 @@ namespace Script {
                 return o;
             }
 
-//            GET(AutoFace)           { return PyInt_FromLong(self->ent->bAutoface?1:0; }
-            GET(IsObs)              { return PyInt_FromLong(self->ent->obstructsEntities?1:0); }
-            GET(MapObs)             { return PyInt_FromLong(self->ent->obstructedByMap?1:0); }
-            GET(EntObs)             { return PyInt_FromLong(self->ent->obstructedByEntities?1:0); }
-            GET(SpriteName)         { return PyString_FromString(self->ent->sprite->_fileName.c_str()); }
-            GET(SpriteWidth)        { return PyInt_FromLong(self->ent->sprite->Width()); }
-            GET(SpriteHeight)       { return PyInt_FromLong(self->ent->sprite->Height()); }
-            GET(HotX)               { return PyInt_FromLong(self->ent->sprite->nHotx); }
-            GET(HotY)               { return PyInt_FromLong(self->ent->sprite->nHoty); }
-            GET(HotWidth)           { return PyInt_FromLong(self->ent->sprite->nHotw); }
-            GET(HotHeight)          { return PyInt_FromLong(self->ent->sprite->nHoth); }
+//            GET(AutoFace)           { return PyLong_FromLong(self->ent->bAutoface?1:0; }
+            GET(IsObs)              { return PyLong_FromLong(self->ent->obstructsEntities?1:0); }
+            GET(MapObs)             { return PyLong_FromLong(self->ent->obstructedByMap?1:0); }
+            GET(EntObs)             { return PyLong_FromLong(self->ent->obstructedByEntities?1:0); }
+            GET(SpriteName)         { return PyBytes_FromString(self->ent->sprite->_fileName.c_str()); }
+            GET(SpriteWidth)        { return PyLong_FromLong(self->ent->sprite->Width()); }
+            GET(SpriteHeight)       { return PyLong_FromLong(self->ent->sprite->Height()); }
+            GET(HotX)               { return PyLong_FromLong(self->ent->sprite->nHotx); }
+            GET(HotY)               { return PyLong_FromLong(self->ent->sprite->nHoty); }
+            GET(HotWidth)           { return PyLong_FromLong(self->ent->sprite->nHotw); }
+            GET(HotHeight)          { return PyLong_FromLong(self->ent->sprite->nHoth); }
 
-            SET(X)                  { self->ent->x = PyInt_AsLong(value); return 0; }
-            SET(Y)                  { self->ent->y = PyInt_AsLong(value); return 0; }
+            SET(X)                  { self->ent->x = PyLong_AsLong(value); return 0; }
+            SET(Y)                  { self->ent->y = PyLong_AsLong(value); return 0; }
 
             SET(Layer) {
-                uint i = (uint)PyInt_AsLong(value);
+                uint i = (uint)PyLong_AsLong(value);
                 if (i >= engine->map.NumLayers()) {
                     PyErr_SetString(PyExc_RuntimeError,
                         va("Cannot put entity on layer %i.  The map only has %i layers.", i, engine->map.NumLayers())
@@ -179,10 +180,10 @@ namespace Script {
                 return 0;
             }
 
-            SET(Speed)              { self->ent->speed = PyInt_AsLong(value); return 0; }
+            SET(Speed)              { self->ent->speed = PyLong_AsLong(value); return 0; }
 
             SET(Direction) {
-                self->ent->direction = (Direction)PyInt_AsLong(value);
+                self->ent->direction = (Direction)PyLong_AsLong(value);
 
                 Direction dir = self->ent->direction;
                 if (!self->ent->isMoving) {
@@ -195,20 +196,20 @@ namespace Script {
                 return 0;
             }
 
-            SET(SpecFrame)          { self->ent->specFrame = PyInt_AsLong(value); return 0; }
+            SET(SpecFrame)          { self->ent->specFrame = PyLong_AsLong(value); return 0; }
 
             SET(SpecAnim) {
                 if (value == Py_None) {
                     self->ent->useSpecAnim = false;
                 } else {
                     self->ent->useSpecAnim = true;
-                    self->ent->specAnim = AnimScript(PyString_AsString(value));
+                    self->ent->specAnim = AnimScript(PyBytes_AsString(value));
                 }
                 return 0;
             }
 
-            SET(Visible)            { self->ent->isVisible = PyInt_AsLong(value)!=0 ; return 0; }
-            SET(Name)               { self->ent->name = PyString_AsString(value); return 0; }
+            SET(Visible)            { self->ent->isVisible = PyLong_AsLong(value)!=0 ; return 0; }
+            SET(Name)               { self->ent->name = PyBytes_AsString(value); return 0; }
             SET(MoveScript) {
                 self->ent->delayCount = 0;
                 self->ent->moveScript.set(value);
@@ -230,14 +231,14 @@ namespace Script {
                 return 0;
             }
 
-//            SET(AutoFace)           { self->ent->bAutoface = PyInt_AsLong(value) != 0; return 0; }
-            SET(IsObs)              { self->ent->obstructsEntities = (PyInt_AsLong(value)!=0) ; return 0; }
-            SET(MapObs)             { self->ent->obstructedByMap = (PyInt_AsLong(value)!=0) ; return 0; }
-            SET(EntObs)             { self->ent->obstructedByEntities = (PyInt_AsLong(value)!=0) ; return 0; }
+//            SET(AutoFace)           { self->ent->bAutoface = PyLong_AsLong(value) != 0; return 0; }
+            SET(IsObs)              { self->ent->obstructsEntities = (PyLong_AsLong(value)!=0) ; return 0; }
+            SET(MapObs)             { self->ent->obstructedByMap = (PyLong_AsLong(value)!=0) ; return 0; }
+            SET(EntObs)             { self->ent->obstructedByEntities = (PyLong_AsLong(value)!=0) ; return 0; }
 
             SET(SpriteName) {
                 engine->sprite.Free(self->ent->sprite);
-                self->ent->sprite = engine->sprite.Load(PyString_AsString(value), engine->video);
+                self->ent->sprite = engine->sprite.Load(PyBytes_AsString(value), engine->video);
 
                 Direction dir = self->ent->direction;
                 if (!self->ent->isMoving)
@@ -289,8 +290,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            obj.ob_refcnt = 1;
+            obj.ob_type = &PyType_Type;
             type.tp_name = "Entity";
             type.tp_basicsize = sizeof(EntityObject);
             type.tp_dealloc = (destructor)Destroy;
@@ -413,7 +414,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyInt_FromLong(self->ent->isMoving ? 1 : 0);
+            return PyLong_FromLong(self->ent->isMoving ? 1 : 0);
         }
 
         METHOD(Entity_DetectCollision) {
@@ -428,9 +429,14 @@ namespace Script {
             const int x2 = x1 + e1->sprite->nHotw;
             const int y2 = y1 + e1->sprite->nHoth;
 
-            foreach (const EntityPair& iter, instances) {
-                EntityObject* entObj = iter.second;
-                const ::Entity* e2 = iter.first;
+
+            //foreach (const EntityPair& iter, instances) {
+
+            std::map< ::Entity*, Script::Entity::EntityObject*>::iterator iter;
+
+            for (iter = instances.begin(); iter != instances.end(); ++iter) {    
+                EntityObject* entObj = (*iter).second; 
+                const ::Entity* e2 = (*iter).first; 
 
                 if ((e1 != e2)                        &&
                     (x1 <= e2->x + e2->sprite->nHotw) &&
@@ -525,7 +531,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyString_FromString(self->ent->sprite->GetScript(scriptName).c_str());
+            return PyBytes_FromString(self->ent->sprite->GetScript(scriptName).c_str());
         }
 
         METHOD(Entity_GetAllAnimScripts) {
@@ -535,12 +541,15 @@ namespace Script {
 
             PyObject* dict = PyDict_New();
 
-            const std::map<std::string, std::string>& scripts = self->ent->sprite->GetAllScripts();
+            //const std::map<std::string, std::string>& scripts = self->ent->sprite->GetAllScripts();
 
-            typedef std::pair<std::string, std::string> StringPair;
-            foreach (const StringPair& iter, scripts) {
-                PyDict_SetItemString(dict, iter.first.c_str(), PyString_FromString(iter.second.c_str()));
-            }
+            //typedef std::pair<std::string, std::string> StringPair;
+            //map<std::string, std::string>::iterator iter; //, end(scripts.end());
+
+            /*
+            for (iter = scripts.begin(); iter != scripts.end(); ++iter) {   
+                PyDict_SetItemString(dict, *iter.first.c_str(), PyBytes_FromString(*iter.second.c_str()));
+            }*/
 
             return dict;
         }

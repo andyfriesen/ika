@@ -149,13 +149,13 @@ namespace Script {
 #define GET(x) PyObject* get ## x(PyObject* /*self*/)
 #define SET(x) PyObject* set ## x(PyObject* /*self*/, PyObject* value)
 
-        GET(Title)      { return PyString_FromString(engine->map.title.c_str()); }
-        SET(Title)      { engine->map.title = PyString_AsString(value); return 0;   }
-        GET(XWin)       { return PyInt_FromLong(engine->GetCamera().x); }
-        SET(XWin)       { engine->SetCamera(Point(PyInt_AsLong(value), engine->GetCamera().y)); return 0; }
-        GET(YWin)       { return PyInt_FromLong(engine->GetCamera().y); }
-        SET(YWin)       { engine->SetCamera(Point(engine->GetCamera().x, PyInt_AsLong(value)));  return 0;}
-        GET(LayerCount) { return PyInt_FromLong(engine->map.NumLayers());   }
+        GET(Title)      { return PyBytes_FromString(engine->map.title.c_str()); }
+        SET(Title)      { engine->map.title = PyBytes_AsString(value); return 0;   }
+        GET(XWin)       { return PyLong_FromLong(engine->GetCamera().x); }
+        SET(XWin)       { engine->SetCamera(Point(PyLong_AsLong(value), engine->GetCamera().y)); return 0; }
+        GET(YWin)       { return PyLong_FromLong(engine->GetCamera().y); }
+        SET(YWin)       { engine->SetCamera(Point(engine->GetCamera().x, PyLong_AsLong(value)));  return 0;}
+        GET(LayerCount) { return PyLong_FromLong(engine->map.NumLayers());   }
         GET(NumTiles)   { 
             static bool warned = false;
             if (!warned) {
@@ -163,7 +163,7 @@ namespace Script {
                 warned = true;
             }
 
-            return PyInt_FromLong(engine->tiles->NumTiles()); 
+            return PyLong_FromLong(engine->tiles->NumTiles()); 
         }
 
         GET(TileWidth)  { 
@@ -173,7 +173,7 @@ namespace Script {
                 warned = true;
             }
 
-            return PyInt_FromLong(engine->tiles->Width()); 
+            return PyLong_FromLong(engine->tiles->Width()); 
         }
 
         GET(TileHeight) { 
@@ -183,7 +183,7 @@ namespace Script {
                 warned = true;
             }
 
-            return PyInt_FromLong(engine->tiles->Height()); 
+            return PyLong_FromLong(engine->tiles->Height()); 
         }
 
         GET(Module) {
@@ -200,14 +200,14 @@ namespace Script {
             }
         }
 
-        GET(Width)      { return PyInt_FromLong(engine->map.width); }
-        GET(Height)     { return PyInt_FromLong(engine->map.height); }
-        //GET(RString)    { return PyString_FromString(engine->map.GetRString().c_str()); }
-        //SET(RString)    { engine->map.SetRString(PyString_AsString(value));     return 0;   }
-        GET(TilesetName)    { return PyString_FromString(engine->map.tilesetName.c_str()); }
-        SET(TilesetName)    { engine->map.tilesetName = PyString_AsString(value);     return 0;   }
-        //GET(Music)      { return PyString_FromString(engine->map.GetMusic().c_str()); }
-        //SET(Music)      { engine->map.SetMusic(PyString_AsString(value));       return 0;   }
+        GET(Width)      { return PyLong_FromLong(engine->map.width); }
+        GET(Height)     { return PyLong_FromLong(engine->map.height); }
+        //GET(RString)    { return PyBytes_FromString(engine->map.GetRString().c_str()); }
+        //SET(RString)    { engine->map.SetRString(PyBytes_AsString(value));     return 0;   }
+        GET(TilesetName)    { return PyBytes_FromString(engine->map.tilesetName.c_str()); }
+        SET(TilesetName)    { engine->map.tilesetName = PyBytes_AsString(value);     return 0;   }
+        //GET(Music)      { return PyBytes_FromString(engine->map.GetMusic().c_str()); }
+        //SET(Music)      { engine->map.SetMusic(PyBytes_AsString(value));       return 0;   }
         GET(Entities)   { Py_INCREF(entityDict); return entityDict; }
 
 #undef GET
@@ -243,8 +243,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type = &PyType_Type;
+            //type.ob_refcnt = 1;
+            //type.ob_type = &PyType_Type;
             type.tp_name = "Map";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc = (destructor)Destroy;
@@ -302,7 +302,7 @@ namespace Script {
             PyObject* dict = PyDict_New();
 
             for (std::map<std::string, std::string>::iterator iter = engine->map.metaData.begin(); iter != engine->map.metaData.end(); iter++) {
-                PyDict_SetItemString(dict, const_cast<char*>(iter->first.c_str()), PyString_FromString(iter->second.c_str()));
+                PyDict_SetItemString(dict, const_cast<char*>(iter->first.c_str()), PyBytes_FromString(iter->second.c_str()));
             }
 
             return dict;
@@ -332,7 +332,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyInt_FromLong(engine->map.GetLayer(lay)->tiles(x, y));
+            return PyLong_FromLong(engine->map.GetLayer(lay)->tiles(x, y));
         }
 
         METHOD(Map_SetTile) {
@@ -367,7 +367,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyInt_FromLong(engine->map.GetLayer(lay)->obstructions(x, y));
+            return PyLong_FromLong(engine->map.GetLayer(lay)->obstructions(x, y));
         }
 
         METHOD(Map_SetObs) {
@@ -396,7 +396,7 @@ namespace Script {
             if (!PyArg_ParseTuple(args, "ii:Map.GetZone", &x, &y))
                 return 0;
 
-            return PyInt_FromLong(engine->map.GetZone(x, y));
+            return PyLong_FromLong(engine->map.GetZone(x, y));
         }
 
         METHOD(Map_SetZone) {
@@ -424,7 +424,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyString_FromString(engine->map.GetLayer(index)->label.c_str());
+            return PyBytes_FromString(engine->map.GetLayer(index)->label.c_str());
         }
 
         METHOD(Map_SetLayerName) {
@@ -458,7 +458,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyInt_FromLong(engine->map.GetLayer(index)->tintColour);
+            return PyLong_FromLong(engine->map.GetLayer(index)->tintColour);
         }
 
         METHOD(Map_SetLayerTint) {
@@ -488,7 +488,7 @@ namespace Script {
 
             for (uint i = 0; i < engine->map.NumLayers(); i++) {
                 if (engine->map.GetLayer(i)->label == name) {
-                    return PyInt_FromLong(i);
+                    return PyLong_FromLong(i);
                 }
             }
 
@@ -626,11 +626,11 @@ namespace Script {
                 const ::Map::Zone& bp = engine->map.zones[zone.label];
 
                 PyObject* o = PyTuple_New(5);
-                PyTuple_SET_ITEM(o, 0, PyInt_FromLong(zone.position.left));
-                PyTuple_SET_ITEM(o, 1, PyInt_FromLong(zone.position.top));
-                PyTuple_SET_ITEM(o, 2, PyInt_FromLong(zone.position.Width()));
-                PyTuple_SET_ITEM(o, 3, PyInt_FromLong(zone.position.Height()));
-                PyTuple_SET_ITEM(o, 4, PyString_FromString(bp.scriptName.c_str()));
+                PyTuple_SET_ITEM(o, 0, PyLong_FromLong(zone.position.left));
+                PyTuple_SET_ITEM(o, 1, PyLong_FromLong(zone.position.top));
+                PyTuple_SET_ITEM(o, 2, PyLong_FromLong(zone.position.Width()));
+                PyTuple_SET_ITEM(o, 3, PyLong_FromLong(zone.position.Height()));
+                PyTuple_SET_ITEM(o, 4, PyBytes_FromString(bp.scriptName.c_str()));
 
                 PyList_SET_ITEM(list, i, o);
             }
@@ -655,9 +655,9 @@ namespace Script {
                 ::Map::WayPoint& wp = iter->second;
 
                 PyObject* o = PyTuple_New(3);
-                PyTuple_SET_ITEM(o, 0, PyString_FromString(wp.label.c_str()));
-                PyTuple_SET_ITEM(o, 1, PyInt_FromLong(wp.x));
-                PyTuple_SET_ITEM(o, 2, PyInt_FromLong(wp.y));
+                PyTuple_SET_ITEM(o, 0, PyBytes_FromString(wp.label.c_str()));
+                PyTuple_SET_ITEM(o, 1, PyLong_FromLong(wp.x));
+                PyTuple_SET_ITEM(o, 2, PyLong_FromLong(wp.y));
 
                 PyTuple_SET_ITEM(list, i, o);
                 i++;

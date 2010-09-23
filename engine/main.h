@@ -2,6 +2,12 @@
 #ifndef MAIN_H
 #define MAIN_H
 
+// Uncomment for Debug version 
+#define DEBUG
+
+// for the debug version
+#include "debug.h"
+
 // low level components/containers/etc..
 #include <list>
 #include <vector>

@@ -67,6 +67,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     /// Reflects a sound stream.
@@ -88,6 +89,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     namespace Sound {
@@ -108,6 +110,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     /// Reflects an input control.
@@ -130,6 +133,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     // Engine resources
@@ -168,6 +172,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     /// Reflects a bitmap font. (maybe a std::vector font later on)
@@ -192,6 +197,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     /// Reflects a map entity.
@@ -225,6 +231,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     namespace InputDevice {
@@ -244,6 +251,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     namespace Keyboard {
@@ -257,6 +265,7 @@ namespace Script {
 
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     namespace Mouse {
@@ -266,6 +275,7 @@ namespace Script {
 
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     namespace Joystick {
@@ -286,6 +296,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     // Singletons
@@ -310,6 +321,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     /// Reflects the video driver.
@@ -355,6 +367,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
     
     namespace Colours {
@@ -375,6 +388,7 @@ namespace Script {
 
         // Method table
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     /// Reflects the current map, and some aspects of the engine.
@@ -413,6 +427,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     namespace Tileset {
@@ -434,6 +449,7 @@ namespace Script {
         // method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     /// lil' Python object used to redirect error messages to pyout.log
@@ -450,6 +466,7 @@ namespace Script {
         // Method table
         extern PyMethodDef methods[];
         extern PyTypeObject type;
+        extern PyObject obj;
     }
 
     // "Global" things.

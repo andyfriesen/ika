@@ -8,6 +8,7 @@ Python font object
 
 namespace Script {
     namespace Font {
+        PyObject obj;
         PyTypeObject type;
 
         PyMethodDef methods[] = {
@@ -41,16 +42,16 @@ namespace Script {
 
 #define GET(x) PyObject* get ## x(FontObject* self)
 #define SET(x) PyObject* set ## x(FontObject* self, PyObject* value)
-        GET(Width)         { return PyInt_FromLong(self->font->Width()); }
-        GET(Height)        { return PyInt_FromLong(self->font->Height()); }
-        GET(TabSize)       { return PyInt_FromLong(self->font->TabSize()); }
-        SET(TabSize)       { self->font->SetTabSize(PyInt_AsLong(value)); return 0; }
-        GET(LetterSpacing) { return PyInt_FromLong(self->font->LetterSpacing()); }
-        SET(LetterSpacing) { self->font->SetLetterSpacing(PyInt_AsLong(value)); return 0; }
-        GET(WordSpacing)   { return PyInt_FromLong(self->font->WordSpacing()); }
-        SET(WordSpacing)   { self->font->SetWordSpacing(PyInt_AsLong(value)); return 0; }        
-        GET(LineSpacing)   { return PyInt_FromLong(self->font->WordSpacing()); }
-        SET(LineSpacing)   { self->font->SetLineSpacing(PyInt_AsLong(value)); return 0; }        
+        GET(Width)         { return PyLong_FromLong(self->font->Width()); }
+        GET(Height)        { return PyLong_FromLong(self->font->Height()); }
+        GET(TabSize)       { return PyLong_FromLong(self->font->TabSize()); }
+        SET(TabSize)       { self->font->SetTabSize(PyLong_AsLong(value)); return 0; }
+        GET(LetterSpacing) { return PyLong_FromLong(self->font->LetterSpacing()); }
+        SET(LetterSpacing) { self->font->SetLetterSpacing(PyLong_AsLong(value)); return 0; }
+        GET(WordSpacing)   { return PyLong_FromLong(self->font->WordSpacing()); }
+        SET(WordSpacing)   { self->font->SetWordSpacing(PyLong_AsLong(value)); return 0; }        
+        GET(LineSpacing)   { return PyLong_FromLong(self->font->WordSpacing()); }
+        SET(LineSpacing)   { self->font->SetLineSpacing(PyLong_AsLong(value)); return 0; }        
 #undef GET
 #undef SET
 
@@ -67,8 +68,8 @@ namespace Script {
         void Init() {
             memset(&type, 0, sizeof type);
 
-            type.ob_refcnt = 1;
-            type.ob_type=&PyType_Type;
+            obj.ob_refcnt = 1;
+            obj.ob_type=&PyType_Type;
             type.tp_name="Font";
             type.tp_basicsize = sizeof type;
             type.tp_dealloc=(destructor)Destroy;
@@ -163,7 +164,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyInt_FromLong(self->font->StringWidth(message));
+            return PyLong_FromLong(self->font->StringWidth(message));
         }
 
         METHOD(Font_StringHeight) {
@@ -173,7 +174,7 @@ namespace Script {
                 return 0;
             }
 
-            return PyInt_FromLong(self->font->StringHeight(message));
+            return PyLong_FromLong(self->font->StringHeight(message));
         }
         
 #undef METHOD
