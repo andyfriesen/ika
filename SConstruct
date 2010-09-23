@@ -1,5 +1,5 @@
 # Just in case: 
-# type python2.6-config --cflags in the terminal to see if you have the correct flags,
+# type python3.1-config --cflags in the terminal to see if you have the correct flags,
 # but without the ones that produce useless "Hey, you can't use that for C++!" warnings. 
 
 import platform
@@ -7,7 +7,6 @@ import sys
 import os
 
 env = Environment(ENV=os.environ, tools=['mingw'])
-env.EnsurePythonVersion(2, 6)
 env.EnsureSConsVersion(1, 0)
 
 def tokenlist(x,*y):
@@ -34,11 +33,11 @@ if sys.platform == 'win32':
     if 'msvc' in env['TOOLS']:
         env.Append(CXXFLAGS = '/EHsc /MD')
         env.Append(LINKFLAGS = ' /SUBSYSTEM:CONSOLE')
-        libs('zlib', 'python26')
+        libs('zlib', 'python3.1')
     elif 'mingw' in env['TOOLS']:
         libs('mingw32')
         env.Append(LINKFLAGS = ' -mwindows')
-        libs('z', 'python2.6')
+        libs('z', 'python3.1')
 
     # Python linking info
     import distutils.sysconfig as sc
@@ -56,11 +55,11 @@ else:
     cppflags('-Wno-unknown-pragmas')
 
     if platform.linux_distribution()[0] == 'Gentoo Base System':
-        include('-I/usr/include/python2.6')        
-        cppflags('-lpthread', '-ldl', '-lutil', '-lm', '-lpython2.6')        
+        include('-I/usr/include/python3.1')        
+        cppflags('-lpthread', '-ldl', '-lutil', '-lm', '-lpython3.1')        
     else:
-        env.ParseConfig('python2.6-config --include')
-        env.ParseConfig('python2.6-config --libs') 
+        env.ParseConfig('python3.1-config --include')
+        env.ParseConfig('python3.1-config --libs') 
 
 ############## Build common sources
 
@@ -87,5 +86,5 @@ if sys.platform == 'win32':
 ika_env.Append(LINKFLAGS = '-Wl,--export-dynamic')
 ika_env.VariantDir('build', 'engine', duplicate=0)
 ika = ika_env.SConscript(dirs=['build'], exports='ika_env')
-#ika_env.Alias('ika', ika)
-#ika_env.Default('ika')
+ika_env.Alias('ika', ika)
+ika_env.Default('ika')
