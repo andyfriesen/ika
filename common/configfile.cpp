@@ -42,8 +42,11 @@ std::string CConfigFile::operator [](const std::string& key)
     return i->second;
 }
 
-int CConfigFile::Int(const std::string& key)
-{
+int CConfigFile::Int(const std::string& key) {
+    return atoi((*this)[key].c_str());
+}
+
+long long CConfigFile::Long(const std::string& key) {
     return atoi((*this)[key].c_str());
 }
 

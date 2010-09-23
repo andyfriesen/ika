@@ -29,6 +29,7 @@ public:
     void        Add(const std::string& key, const std::string& value);
     std::string      operator [](const std::string& key);
     int         Int(const std::string& key);
+    long long   Long(const std::string& key);
 
     void        Load(const char* fname);
     void        Save(const char* fname);
