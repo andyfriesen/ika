@@ -25,7 +25,7 @@ namespace Script {
 
         PyGetSetDef properties[] =
         {
-            { (char*)"softspace", (getter)getSoftSpace, (setter)setSoftSpace, "blah." },
+            { (char*)"softspace", (getter)getSoftSpace, (setter)setSoftSpace, (char*)"blah." },
             {   0   }
         };
 

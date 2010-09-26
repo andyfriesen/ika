@@ -2,5 +2,6 @@ Import('*')
 
 ika = ika_env.Program('ika', source = Glob('*.cpp') + Glob('*/*.cpp'))
 ika_env.Install( "#/debian/ika-engine/usr/games", "ika" )
+ika_env.Alias('install', '#/debian/ika-engine/usr/games')
 
 Return('ika')

@@ -68,7 +68,7 @@ namespace Script {
         }
 
         PyObject* New(PyTypeObject* type, PyObject* args, PyObject* kw) {
-            char* keywords[] = { "filename" , 0};
+            char* keywords[] = { (char*)"filename" , 0};
             char* filename;
 
             if (!PyArg_ParseTupleAndKeywords(args, kw, "s:__init__", keywords, &filename)) {
