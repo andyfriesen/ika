@@ -4,13 +4,24 @@
 #endif
 
 #include <cassert>
+#include <cstdlib>
+#include <fstream>
+#include <stdexcept>
 #include <stdio.h>
+#include "aries.h"
+#include "base64.h"
+#include "compression.h"
 #include "vsp.h"
-#include "utility.h"
+#include "common/utility.h"
 #include "rle.h"
 #include "fileio.h"
-#include "log.h"
+#include "common/log.h"
 #include "zlib.h"
+
+using aries::NodeList;
+using aries::DataNodeList;
+using aries::DataNode;
+using aries::newNode;
 
 VSP::VSP()
     : _width(0)
@@ -39,6 +50,8 @@ bool VSP::Load(const std::string& fileName) {
     }
 
     name = fileName;
+
+    bool newVersion = false;
 
     u16 ver;
     f.Read(&ver, 2);
@@ -90,7 +103,7 @@ bool VSP::Load(const std::string& fileName) {
 
             ScopedArray<u16> data16(new u16[numTiles * _width * _height]);
 
-            f.Read(data16.get(), numTiles * _width * _height * 2); 
+            f.Read(data16.get(), numTiles * _width * _height * 2);
 
             CreateTilesFromBuffer(data16.get(), numTiles, _width, _height);
 
@@ -171,20 +184,132 @@ bool VSP::Load(const std::string& fileName) {
 
             break;
         }
+        case 26920: {	//first two bytes == "(i".
+        				//The tileset WILL NOT LOAD if this is not the case (and if it's not an old VSP.
+			f.Close(); //close file and restart the process from the beginning.
+			newVersion = true;
+			try {
+				if (!fileName.length()) {
+					throw std::runtime_error("VSP::Load: No filename given.");
+				}
+
+				std::ifstream file;
+				file.open(fileName.c_str());
+				if (!file.is_open()) {
+					throw std::runtime_error(va("VSP::Load: %s does not exist.", fileName.c_str()));
+				}
+
+				DataNode* document;
+				file >> document;
+				file.close();
+
+				DataNode* rootNode = document->getChild("ika-tileset");
+
+				std::string version = rootNode->getChild("version")->getString();
+
+				if (version == "1.0") {
+					Log::Write(
+						"Warning: v%s ika-tileset being loaded.\n",
+						version.c_str(),
+						fileName.c_str()
+					);
+
+				}
+				else {
+					Log::Write(
+						"Warning: Unknown ika-tileset version %s in %s!  Expecting\n"
+						"         1.0.  Trying to load it anyway.",
+						version.c_str(), fileName.c_str()
+					);
+				}
+
+				{
+					DataNode* infoNode = rootNode->getChild("information");
+
+					{
+						DataNode* metaNode = infoNode->getChild("meta");
+
+						NodeList nodes = metaNode->getChildren();
+						for (NodeList::iterator iter = nodes.begin(); iter != nodes.end(); iter++) {
+							if ((*iter)->isString()) {
+								continue;
+							}
+
+							DataNode* n = static_cast<DataNode*>(*iter);
+
+							if (n->getString().empty()) {
+								metaData[n->getName()] = n->getString();
+							}
+						}
+
+						name = infoNode->getChild("title")->getString();
+					}
+				}
+
+				{
+					//DataNode* animationNode = rootNode->getChild("animations");
+
+					//I'll need to know a little more about the animations part of ika-tileset to complete this
+				}
+
+				{
+					DataNode* tileNode = rootNode->getChild("tiles");
+
+					numTiles = (int)std::atoi(tileNode->getChild("count")->getString().c_str());
+
+					DataNode* dimNode = tileNode->getChild("dimensions");
+					_width = std::atoi(dimNode->getChild("width")->getString().c_str());
+					_height = std::atoi(dimNode->getChild("height")->getString().c_str());
+
+					DataNode* dataNode = tileNode->getChild("data");
+					if (dataNode->getChild("format")->getString() != "zlib") {
+						throw std::runtime_error("Unsupported data format");
+					}
+
+					std::string d64 = dataNode->getString();
+					ScopedArray<u8> compressed(new u8[d64.length()]); // way more than enough.
+					uint compressedSize;
+
+					std::string un64 = base64::decode(d64);
+					std::copy((u8*)(un64.c_str()), (u8*)(un64.c_str() + un64.length()), compressed.get());
+					compressedSize = un64.length();
+
+					ScopedArray<u8> pixels(new u8[_width * _height * numTiles * sizeof(RGBA)]);
+					Compression::decompress(compressed.get(), compressedSize, pixels.get(), _width * _height * numTiles * sizeof(RGBA));
+
+					tiles.clear();
+					tiles.reserve(numTiles);
+					RGBA* ptr = (RGBA*)pixels.get();
+					for (uint i = 0; i < (uint)numTiles; i++) {
+						tiles.push_back(Canvas(ptr, _width, _height));
+						ptr += _width * _height;
+					}
+				}
+
+				delete rootNode;
+			}
+			catch (std::runtime_error error) {
+				Log::Write("VSP::Load(\"%s\"): %s", fileName.c_str(), error.what());
+				throw error;
+			}
+			break;
+		}
         default: {
             Log::Write("Fatal error: unknown VSP version (%d)", ver);
             return false;
         }
     }
 
-    for (int j = 0; j < 100; j++) {
-        f.Read(&_vspanim[j].start, 2);
-        f.Read(&_vspanim[j].finish, 2);
-        f.Read(&_vspanim[j].delay, 2);
-        f.Read(&_vspanim[j].mode, 2);
-    }
-
-    f.Close();
+	if (!newVersion)
+	{
+		for (int j = 0; j < 100; j++) {
+			f.Read(&_vspanim[j].start, 2);
+			f.Read(&_vspanim[j].finish, 2);
+			f.Read(&_vspanim[j].delay, 2);
+			f.Read(&_vspanim[j].mode, 2);
+		}
+		f.Close();
+	}
 
     return true;
 }
@@ -203,8 +328,8 @@ int VSP::Save(const std::string& fname) {
     // copy all the tile data into one big long buffer that we can write to disk
     for (uint j = 0; j < tiles.size(); j++) {
         memcpy(
-            tileBuffer.get() + (j * _width * _height), 
-            tiles[j].GetPixels(), 
+            tileBuffer.get() + (j * _width * _height),
+            tiles[j].GetPixels(),
             _width * _height * sizeof(RGBA)
         );
     }
