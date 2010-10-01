@@ -116,7 +116,7 @@ public:
     
     void      DoHook(HookList& hooklist);                                           ///< Calls every function in the list, then flushes any pending adds/removals from said list
 
-    void      Startup();                                                            ///< Inits the engine
+    void      Startup(char* pathname);                                              ///< Inits the engine
     void      Shutdown();                                                           ///< deinits the engine
     void      MainLoop();                                                           ///< runs the engine
 

@@ -168,14 +168,21 @@ void Engine::MainLoop() {
 
 // TODO: Make a nice happy GUI thingie for making a user.cfg
 // This is ugly. :(
-void Engine::Startup() {
+void Engine::Startup(char* pathname) {
     CDEBUG("Startup");
 
     // Load game.ika-game.
     std::ifstream file;
-    file.open("game.ika-game");
+    if(pathname)    strcat(pathname,"/game.ika-game");    
+    else            pathname = (char*)"game.ika-game";    
+    file.open(pathname);
     if (!file.is_open()) {
-        Sys_Error("Game Startup: game.ika-game does not exist.");
+        // We should have a function for concatenating multiple char arrays.
+        char* fileError = new char();
+        strcat(fileError, "Game Startup: ");
+        strcat(fileError, pathname);
+        strcat(fileError, " does not exist.\n");
+        Sys_Error(fileError);
 		return;
     }
 
@@ -959,9 +966,9 @@ Engine::Engine()
     , _isMapLoaded(false)
     , _recurseStop(false) {}
 
-int main(int /*argc*/, char* /*args*/[]) {
+int main(int argc, char* argv[]) {
     Engine engine;
-    engine.Startup();
+    engine.Startup(argv[1]);
     engine.MainLoop();
     engine.Shutdown();
 
