@@ -23,6 +23,10 @@
 #include "Canvas.h"
 
 struct VSP {
+private:
+    int _width, _height;
+
+public:
     /// VSP animation modes
     enum {
         linear,
@@ -93,7 +97,5 @@ private:
     std::string name;           // the VSPs filename
 
     std::vector<AnimState>  _vspanim;
-
-    int _width, _height;
 };
 
