@@ -896,8 +896,6 @@ void Engine::LoadMap(const std::string& filename) {
         xwin = ywin = 0;                                                // just in case
         _isMapLoaded = true;
 
-        DEBUG_PRINT(mapName);
-
         if (!script.LoadMapScripts(mapName)) {
             Script_Error();
         }

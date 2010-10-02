@@ -179,8 +179,6 @@ bool ScriptEngine::LoadMapScripts(const std::string& fname) {
         }
     }
 
-    DEBUG_PRINT("moduleName:" + moduleName);
-
     mapModule = PyImport_ImportModule(const_cast<char*>(moduleName.c_str()));
 
     if (mapModule == 0) {
