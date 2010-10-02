@@ -172,6 +172,7 @@ void Engine::Startup(std::string& pathname) {
     CDEBUG("Startup");
     std::string gamePathName;
     std::string cfgPathName;
+    std::string logPathName;
 
     // Load game.ika-game.
     std::ifstream file;
@@ -180,6 +181,7 @@ void Engine::Startup(std::string& pathname) {
     }
     gamePathName = IkaPath::_game + "game.ika-game"; 
     cfgPathName = IkaPath::_game + "user.cfg";
+    logPathName = IkaPath::_game + "ika.log";
 
     file.open(gamePathName.c_str());
     if (!file.is_open()) {
@@ -250,7 +252,7 @@ void Engine::Startup(std::string& pathname) {
     // Now the tricky stuff.
     try {
         if (cfg.Int("log")) {
-            Log::Init("ika.log");
+            Log::Init(logPathName.c_str());
         }
 
         Log::Write("ika %s startup", IKA_VERSION);
