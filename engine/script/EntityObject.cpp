@@ -321,16 +321,18 @@ namespace Script {
         }
 
         // This is much more complicated than it should be.
-        PyObject* New(PyTypeObject* /*type*/, PyObject* args, PyObject* kw) {
+        PyObject* New(PyTypeObject* /*type*/, PyObject* args, PyObject* kw) {            
             static char* keywords[] = { (char*)"x", (char*)"y", (char*)"layer", (char*)"spritename", 0 };
 
             int x, y;
             uint layer;
-            char* spritename;
+            char* filename;
+            std::string pathname;
 
-            if (!PyArg_ParseTupleAndKeywords(args, kw, "iiis:Entity", keywords, &x, &y, &layer, &spritename)) {
+            if (!PyArg_ParseTupleAndKeywords(args, kw, "iiis:Entity", keywords, &x, &y, &layer, &filename)) {
                 return 0;
             }
+            pathname = IkaPath::_game + filename;       
 
             if (layer >= engine->map.NumLayers()) {
                 PyErr_SetString(PyExc_RuntimeError,
@@ -341,10 +343,10 @@ namespace Script {
 
             Sprite* sprite;
             try {
-                sprite = engine->sprite.Load(spritename, engine->video);
+                sprite = engine->sprite.Load(pathname, engine->video);
 
             } catch (std::runtime_error error) {
-                PyErr_SetString(PyExc_IOError, va("sprite.Load(\"%s\") failed: %s", spritename, error.what()));
+                PyErr_SetString(PyExc_IOError, va("sprite.Load(\"%s\") failed: %s", pathname.c_str(), error.what()));
                 return 0;
             }
 

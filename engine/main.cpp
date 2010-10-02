@@ -168,21 +168,26 @@ void Engine::MainLoop() {
 
 // TODO: Make a nice happy GUI thingie for making a user.cfg
 // This is ugly. :(
-void Engine::Startup(char* pathname) {
+void Engine::Startup(std::string& pathname) {
     CDEBUG("Startup");
+    std::string gamePathName;
+    std::string cfgPathName;
 
     // Load game.ika-game.
     std::ifstream file;
-    if(pathname)    strcat(pathname,"/game.ika-game");    
-    else            pathname = (char*)"game.ika-game";    
-    file.open(pathname);
+    if(!pathname.empty()) {
+        IkaPath::_game = pathname + "/";
+    }
+    gamePathName = IkaPath::_game + "game.ika-game"; 
+    cfgPathName = IkaPath::_game + "user.cfg";
+
+    file.open(gamePathName.c_str());
     if (!file.is_open()) {
         // We should have a function for concatenating multiple char arrays.
-        char* fileError = new char();
-        strcat(fileError, "Game Startup: ");
-        strcat(fileError, pathname);
-        strcat(fileError, " does not exist.\n");
-        Sys_Error(fileError);
+        std::string fileError = "Game Startup: "; 
+        fileError += gamePathName;
+        fileError += " does not exist.\n";
+        Sys_Error(fileError.c_str());
 		return;
     }
 
@@ -223,10 +228,8 @@ void Engine::Startup(char* pathname) {
 				currentNodeName = "resources";
 
 				// Set map path.
-				_mapPath = resNode->hasChild("maps") ? resNode->getChild("maps")->getString() : ".";
-			}
-			else {
-				_mapPath = ".";
+				if(resNode->hasChild("maps")) IkaPath::_map = resNode->getChild("maps")->getString();
+                if(!IkaPath::_map.empty()) IkaPath::_map +=  "/";
 			}
 		}
 	}
@@ -238,7 +241,7 @@ void Engine::Startup(char* pathname) {
 		return;
 	}
 
-    CConfigFile cfg("user.cfg");
+    CConfigFile cfg(cfgPathName.c_str());
 
     // init a few values
     _showFramerate  = cfg.Int("showfps") != 0;
@@ -326,7 +329,7 @@ void Engine::Startup(char* pathname) {
     Log::Write("Initing Python");
     script.Init(this);
     Log::Write("Executing system.py");
-    bool result = script.LoadSystemScripts("system.py");
+    bool result = script.LoadSystemScripts(pathname);
 
     if (!result) {
         Script_Error();
@@ -843,15 +846,17 @@ void Engine::DestroyEntity(Entity* e) {
 // Most of the work involved here is storing the various parts of the v2-style map into memory under the new structure. 
 void Engine::LoadMap(const std::string& filename) {
     CDEBUG("loadmap");
-    
-    std::string mapName = _mapPath + filename;
+
+    std::string mapPath = IkaPath::_map;
+    std::string mapName = IkaPath::_map + filename;
+    std::string fullPath = IkaPath::_game + mapName;
 
     try {
         Log::Write("Loading map \"%s\"", mapName.c_str());
 
-        std::string oldTilesetName = _mapPath + map.tilesetName;
+        std::string oldTilesetName = mapPath + map.tilesetName;
 
-        bool result = map.Load(mapName);
+        bool result = map.Load(fullPath);
 
         if (!result) {
             throw std::runtime_error("LoadMap(\"%s\") failed: invalid map file?");
@@ -864,9 +869,9 @@ void Engine::LoadMap(const std::string& filename) {
         }
 
         // Only load the tileset if it's different
-        if (_mapPath + map.tilesetName != oldTilesetName) {
+        if (mapPath + map.tilesetName != oldTilesetName) {
             delete tiles;                                               // nuke the old tileset
-            tiles = new Tileset(_mapPath + map.tilesetName, video);               // load up them tiles
+            tiles = new Tileset(mapPath + map.tilesetName, video);               // load up them tiles
         }
 
         script.ClearEntityList();
@@ -890,6 +895,8 @@ void Engine::LoadMap(const std::string& filename) {
 
         xwin = ywin = 0;                                                // just in case
         _isMapLoaded = true;
+
+        DEBUG_PRINT(mapName);
 
         if (!script.LoadMapScripts(mapName)) {
             Script_Error();
@@ -962,13 +969,16 @@ Engine::Engine()
     , xwin(0)
     , ywin(0)
     , cameraTarget(0)
-    , _mapPath("")
     , _isMapLoaded(false)
     , _recurseStop(false) {}
 
 int main(int argc, char* argv[]) {
+    // for linux we may want to have a pathname as argument.
+    std::string pathname;
+    if(argc > 1) pathname = argv[1];
+
     Engine engine;
-    engine.Startup(argv[1]);
+    engine.Startup(pathname);
     engine.MainLoop();
     engine.Shutdown();
 

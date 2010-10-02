@@ -97,7 +97,7 @@ namespace Script {
             }
 
             try {
-                font->font = new Ika::Font(filename, engine->video);
+                font->font = new Ika::Font(IkaPath::_game + filename, engine->video);
             } catch (Ika::FontException) {
                 PyErr_SetString(PyExc_IOError, va("Failed to load %s", filename));
                 return 0;
