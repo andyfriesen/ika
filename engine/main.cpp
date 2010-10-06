@@ -974,8 +974,18 @@ Engine::Engine()
 
 int main(int argc, char* argv[]) {
     // for linux we may want to have a pathname as argument.
+    /* 
+     * INFO: You can't put a path with spaces in them into one argument. 
+     * Some launchers programs simply refuse you to use escape characters :/. 
+     */  
     std::string pathname;
-    if(argc > 1) pathname = argv[1];
+    if(argc > 1) {
+        pathname = argv[1];
+        for (int i = 2; i < argc; i++) {      
+            pathname = pathname + " " + argv[i];
+        }
+    }
+    
 
     Engine engine;
     engine.Startup(pathname);
